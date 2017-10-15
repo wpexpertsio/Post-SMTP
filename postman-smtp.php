@@ -1,10 +1,10 @@
 <?php
 
 /*
- * Plugin Name: Postman SMTP
- * Plugin URI: https://wordpress.org/plugins/postman-smtp/
- * Description: Email not reliable? Postman is the first and only WordPress SMTP plugin to implement OAuth 2.0 for Gmail, Hotmail and Yahoo Mail. Setup is a breeze with the Configuration Wizard and integrated Port Tester. Enjoy worry-free delivery even if your password changes!
- * Version: 1.7.3
+ * Plugin Name: Post SMTP
+ * Plugin URI: https://wordpress.org/plugins/post-smtp/
+ * Description: Email not reliable? Post SMTP is the first and only WordPress SMTP plugin to implement OAuth 2.0 for Gmail, Hotmail and Yahoo Mail. Setup is a breeze with the Configuration Wizard and integrated Port Tester. Enjoy worry-free delivery even if your password changes!
+ * Version: 1.7.4
  * Author: Jason Hendriks, Yehuda Hassine
  * Text Domain: postman-smtp
  * Author URI: https://github.com/yehudah/Postman-SMTP
@@ -32,25 +32,43 @@
 // -- multisite support for site-wide email configuration. allow network admin to choose whether subdomains may override with their own settings. subdomains may override with their own settings.
 // -- multiple mailbox support
 /**
+ * DO some check and Start Postman
+ */
+
+
+if ( in_array( 'postman-smtp/postman-smtp.php', (array) get_option( 'active_plugins', array() ) ) ) {
+	add_action( 'admin_init', 'post_smtp_plugin_deactivate' );
+	add_action( 'admin_notices', 'post_smtp_plugin_admin_notice' );
+} else {
+	post_start( memory_get_usage() );
+}
+
+
+function post_smtp_plugin_deactivate() {
+		deactivate_plugins( plugin_basename( __FILE__ ) );
+}
+
+function post_smtp_plugin_admin_notice() {
+		echo '<div class="error"><p><strong>Post SMTP</strong> plugin is a fork of the original Postman SMTP, you must disable Postman SMTP to use this plugin.</p></div>';
+
+	if ( isset( $_GET['activate'] ) ) {
+		unset( $_GET['activate'] ); }
+}
+
+/**
  * Create the main Postman class to start Postman
  *
  * @param unknown $startingMemory
  */
-function postman_start( $startingMemory ) {
-	postman_setupPostman();
+function post_start( $startingMemory ) {
+	post_setupPostman();
 	PostmanUtils::logMemoryUse( $startingMemory, 'Postman' );
 }
 
 /**
  * Instantiate the mail Postman class
  */
-function postman_setupPostman() {
+function post_setupPostman() {
 	require_once 'Postman/Postman.php';
-	$kevinCostner = new Postman( __FILE__, '1.7.2' );
+	$kevinCostner = new Postman( __FILE__, '1.7.3' );
 }
-
-/**
- * Start Postman
- */
-postman_start( memory_get_usage() );
-
