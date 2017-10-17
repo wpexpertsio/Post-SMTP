@@ -274,6 +274,7 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 = 1.7.6 - 2017-10-17
 * Missing sendgrid files
 * Fixed: Localization slug
+* Fixed: Error sending files with sendgrid
 
 = 1.7.5 - 2017-10-07 =
 * Fixed: security issue (XSS)

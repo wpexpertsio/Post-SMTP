@@ -342,7 +342,7 @@ class Postman {
 	 * http://striderweb.com/nerdaphernalia/2008/06/give-your-wordpress-plugin-credit/
 	 */
 	function print_signature() {
-		printf( '<a href="https://wordpress.org/plugins/postman-smtp/">%s</a> %s<br/>', $this->pluginData ['name'], $this->pluginData ['version'] );
+		printf( '<a href="https://wordpress.org/plugins/post-smtp/">%s</a> %s<br/>', $this->pluginData ['name'], $this->pluginData ['version'] );
 	}
 
 	/**
