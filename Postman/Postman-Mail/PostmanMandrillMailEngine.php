@@ -69,7 +69,7 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 			// add the From Header
 			$sender = $message->getFromAddress();
 			{
-				$senderEmail = $sender->getEmail();
+				$senderEmail = PostmanOptions::getInstance()->getMessageSenderEmail();
 				$senderName = $sender->getName();
 				assert( ! empty( $senderEmail ) );
 				$this->mandrillMessage ['from_email'] = $senderEmail;
@@ -217,7 +217,7 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 						$attachment = array(
 								'type' => 'attachment',
 								'name' => basename( $file ),
-								'content' => file_get_contents( $file ),
+								'content' => base64_encode( file_get_contents( $file ) ),
 						);
 						array_push( $this->mandrillMessage ['attachments'], $attachment );
 					}

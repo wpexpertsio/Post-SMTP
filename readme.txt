@@ -3,7 +3,7 @@ Contributors: yehudah, jasonhendriks
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, sparkpost api
 Requires at least: 3.9
 Tested up to: 4.8
-Stable tag: 1.7.6
+Stable tag: 1.7.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -270,11 +270,14 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+= 1.7.7 - 2017-10-17
+* Fixed: Error sending files with sendgrid
+* Fixed: Wrong attachments format in Mandrill
+* Fixed: Wrong Sender Header in Mandrill
 
 = 1.7.6 - 2017-10-17
 * Missing sendgrid files
 * Fixed: Localization slug
-* Fixed: Error sending files with sendgrid
 
 = 1.7.5 - 2017-10-07 =
 * Fixed: security issue (XSS)
