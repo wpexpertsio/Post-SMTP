@@ -347,7 +347,7 @@ class PostmanSettingsRegistry {
 	 * Get the settings option array and print one of its values
 	 */
 	public function log_level_callback() {
-		$inputDescription = sprintf ( __ ( 'Log Level specifies the level of detail written to the <a target="_new" href="%s">WordPress Debug log</a> - view the log with <a target-"_new" href="%s">Debug</a>.', Postman::TEXT_DOMAIN ), 'https://codex.wordpress.org/Debugging_in_WordPress', 'https://wordpress.org/plugins/debug/' );
+		$inputDescription = sprintf ( __ ( 'Log Level specifies the level of detail written to the <a target="_blank" href="%s">WordPress Debug log</a> - view the log with <a target-"_new" href="%s">Debug</a>.', Postman::TEXT_DOMAIN ), 'https://codex.wordpress.org/Debugging_in_WordPress', 'https://wordpress.org/plugins/debug/' );
 		printf ( '<select id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]">', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::LOG_LEVEL );
 		$currentKey = $this->options->getLogLevel ();
 		$this->printSelectOption ( __ ( 'Off', Postman::TEXT_DOMAIN ), PostmanLogger::OFF_INT, $currentKey );

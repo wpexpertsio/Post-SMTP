@@ -528,7 +528,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$inputValue = (null !== $this->options->getEnvelopeSender() ? esc_attr( $this->options->getEnvelopeSender() ) : '');
 		$requiredLabel = __( 'Required', Postman::TEXT_DOMAIN );
 		$envelopeFromMessage = __( 'This address, like the <b>return address</b> printed on an envelope, identifies the account owner to the SMTP server.', Postman::TEXT_DOMAIN );
-		$spfMessage = sprintf( __( 'For reliable delivery, this domain must specify an <a target="_new" href="%s">SPF record</a> permitting the use of the SMTP server named above.', Postman::TEXT_DOMAIN ), 'https://www.mail-tester.com/spf/' );
+		$spfMessage = sprintf( __( 'For reliable delivery, this domain must specify an <a target="_blank" href="%s">SPF record</a> permitting the use of the SMTP server named above.', Postman::TEXT_DOMAIN ), 'https://www.mail-tester.com/spf/' );
 		printf( '<input type="email" id="input_envelope_sender_email" name="postman_options[envelope_sender]" value="%s" size="40" class="required" placeholder="%s"/> <br/><span class="postman_input_description">%s %s</span>', $inputValue, $requiredLabel, $envelopeFromMessage, $spfMessage );
 	}
 

@@ -70,5 +70,5 @@ function post_start( $startingMemory ) {
  */
 function post_setupPostman() {
 	require_once 'Postman/Postman.php';
-	$kevinCostner = new Postman( __FILE__, '1.7.7' );
+	$kevinCostner = new Postman( __FILE__, '1.7.8' );
 }
