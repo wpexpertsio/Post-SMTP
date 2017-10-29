@@ -3,7 +3,7 @@ Contributors: yehudah, jasonhendriks
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email
 Requires at least: 3.9
 Tested up to: 4.8
-Stable tag: 1.7.8
+Stable tag: 1.7.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
