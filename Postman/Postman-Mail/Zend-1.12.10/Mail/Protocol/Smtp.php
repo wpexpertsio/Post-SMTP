@@ -203,6 +203,11 @@ class Postman_Zend_Mail_Protocol_Smtp extends Postman_Zend_Mail_Protocol_Abstrac
         if ($this->_secure == 'tls') {
             $this->_send('STARTTLS');
             $this->_expect(220, 180);
+
+            stream_context_set_option($this->_socket, 'ssl', 'verify_peer', true);
+            //stream_context_set_option($this->_socket, 'ssl', 'verify_peer_name', false);
+            stream_context_set_option($this->_socket, 'ssl', 'allow_self_signed', true);
+
             if (!stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
                 /**
                  * @see Postman_Zend_Mail_Protocol_Exception
