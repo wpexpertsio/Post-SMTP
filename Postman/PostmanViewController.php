@@ -292,7 +292,8 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			print '<ul>';
 			printf( '<li><a href="%s" class="welcome-icon run-port-test">%s</a></li>', $this->getPageUrl( PostmanConnectivityTestController::PORT_TEST_SLUG ), __( 'Connectivity Test', Postman::TEXT_DOMAIN ) );
 			printf( '<li><a href="%s" class="welcome-icon run-port-test">%s</a></li>', $this->getPageUrl( PostmanDiagnosticTestController::DIAGNOSTICS_SLUG ), __( 'Diagnostic Test', Postman::TEXT_DOMAIN ) );
-			printf( '<li><a href="https://wordpress.org/support/plugin/postman-smtp" class="welcome-icon postman_support">%s</a></li>', __( 'Online Support', Postman::TEXT_DOMAIN ) );
+			printf( '<li><a href="https://wordpress.org/support/plugin/post-smtp" class="welcome-icon postman_support">%s</a></li>', __( 'Online Support', Postman::TEXT_DOMAIN ) );
+			printf( '<li><div class="new-item"><span>New</span></div><a href="https://postmansmtp.com/category/guides/" class="welcome-icon postman_guides">%s</a></li>', __( 'Guides', Postman::TEXT_DOMAIN ) );
 			print '</ul></div></div></div></div>';
 		}
 	}
