@@ -97,6 +97,12 @@ p#back_to_main_menu {
 	animation: pulse 2s linear 0s infinite;
 }
 
+.align-middle {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+
 @keyframes pulse {
 	0% {
 		opacity: 0;

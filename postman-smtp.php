@@ -35,6 +35,7 @@
  * DO some check and Start Postman
  */
 
+define( 'POST_BASE', __FILE__ );
 
 if ( in_array( 'postman-smtp/postman-smtp.php', (array) get_option( 'active_plugins', array() ) ) ) {
 	add_action( 'admin_init', 'post_smtp_plugin_deactivate' );

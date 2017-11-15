@@ -338,11 +338,42 @@ class PostmanEmailLogController {
 		echo __( 'This is a record of deliveries made to the mail server. It does not neccessarily indicate sucessful delivery to the recipient.', Postman::TEXT_DOMAIN )?></p>
 	</div>
 
+	<?php
+	$from_date = isset( $_POST['from_date'] ) ? sanitize_text_field( $_POST['from_date'] ) : '';
+	$to_date = isset( $_POST['to_date'] ) ? sanitize_text_field( $_POST['to_date'] ) : '';
+	$search = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
+	?>
+
+	<form id="postman-email-log-filter" method="post">
+		<div id="email-log-filter">
+			<div class="form-control">
+				<label for="from_date"><?php _e( 'From Date', Postman::TEXT_DOMAIN ); ?></label>
+				<input id="from_date" class="email-log-date" value="<?php echo $from_date; ?>" type="text" name="from_date" placeholder="<?php _e( 'From Date', Postman::TEXT_DOMAIN ); ?>">
+			</div>
+			<div class="form-control">
+				<label for="to_date"><?php _e( 'To Date', Postman::TEXT_DOMAIN ); ?></label>		
+				<input id="to_date" class="email-log-date" value="<?php echo $to_date; ?>" type="text" name="to_date" placeholder="<?php _e( 'To Date', Postman::TEXT_DOMAIN ); ?>">
+			</div>
+			<div class="form-control">
+				<label for="search"><?php _e( 'Search', Postman::TEXT_DOMAIN ); ?></label>		
+				<input id="search" type="text" name="search" value="<?php echo $search; ?>" placeholder="<?php _e( 'Search', Postman::TEXT_DOMAIN ); ?>">
+			</div>
+			<div class="form-control">
+				<button type="submit" name="filter" class="button button-primary"><?php _e( 'Filter', Postman::TEXT_DOMAIN ); ?></button>
+			</div>
+
+			<div class="form-control">
+				<!-- <button type="submit" name="export_email_logs" class="button button-primary">Export To CSV</button> -->
+			</div>		
+		</div>			
+	</form>
+	
 	<!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions -->
 	<form id="movies-filter" method="get">
 		<!-- For plugins, we also need to ensure that the form posts back to our current page -->
 		<input type="hidden" name="page"
 			value="<?php echo filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING ); ?>" />
+			
 		<!-- Now we can render the completed list table -->
 			<?php $testListTable->display()?>
 		</form>

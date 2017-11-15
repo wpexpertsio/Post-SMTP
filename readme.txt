@@ -11,6 +11,9 @@ Send, log and troubleshoot your Outgoing Email easily. Supports everything: SMTP
 
 == Description ==
 
+= From now all the support is made on Post SMTP forums =
+https://postmansmtp.com/forums/
+
 = Postman SMTP is back! =
 Now under new maintenance, no need to search for another SMTP plugin anymore.
 
@@ -282,6 +285,7 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 * Fixed: IP detection error in some web hosts
 * Fixed: Link open in new page attribute = _blank
 * Fixed: Replace deprecated PHP 7 functions.
+* Updated: Validator TLD's list
 
 = 1.7.7 - 2017-10-17
 * Fixed: Error sending files with sendgrid
