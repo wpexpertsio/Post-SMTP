@@ -345,6 +345,7 @@ class PostmanEmailLogView extends WP_List_Table {
 				/* Translators: where %s indicates the relative time from now */
 				$date = sprintf( _x( '%s ago', 'A relative time as in "five days ago"', Postman::TEXT_DOMAIN ), $humanTime );
 			}
+
 			$flattenedPost = array(
 					// the post title must be escaped as they are displayed in the HTML output
 					'title' => esc_html( $post->post_title ),

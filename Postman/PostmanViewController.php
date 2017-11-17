@@ -56,7 +56,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					$this,
 					'outputDefaultContent',
 			);
-			$mainPostmanSettingsPage = add_options_page( $pageTitle, $pluginName, Postman::MANAGE_POSTMAN_CAPABILITY_NAME, $uniqueId, $pageOptions );
+			$mainPostmanSettingsPage = add_menu_page( $pageTitle, $pluginName, Postman::MANAGE_POSTMAN_CAPABILITY_NAME, $uniqueId, $pageOptions );
 			// When the plugin options page is loaded, also load the stylesheet
 			add_action( 'admin_print_styles-' . $mainPostmanSettingsPage, array(
 					$this,

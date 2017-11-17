@@ -32,7 +32,7 @@ class PostmanPluginFeedback {
 
 		if ( isset( $_POST['support'] ) ) {
 			$payload['support']['email'] = sanitize_email( $_POST['support']['email'] );
-			$payload['support']['title'] = sanitize_email( $_POST['support']['title'] );
+			$payload['support']['title'] = sanitize_text_field( $_POST['support']['title'] );
 			$payload['support']['text'] = sanitize_textarea_field( $_POST['support']['text'] );
 		}
 
@@ -40,7 +40,7 @@ class PostmanPluginFeedback {
 			'body' => $payload,
 		);
 		$result = wp_remote_post( 'https://postmansmtp.com/feedback', $args );
-		die();
+		die( 'success' );
 	}
 
 	function admin_head() {

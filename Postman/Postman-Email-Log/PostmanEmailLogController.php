@@ -20,7 +20,7 @@ class PostmanEmailLogController {
 			add_action( 'admin_menu', array(
 					$this,
 					'postmanAddMenuItem',
-			) );
+			),20 );
 		} else {
 			$this->logger->trace( 'not creating PostmanEmailLog admin menu item' );
 		}
@@ -227,11 +227,18 @@ class PostmanEmailLogController {
 			print '</table>';
 			print '<hr/>';
 			print '<pre>';
-			print esc_html( $post->post_content );
+			print $this->sanitize_message( $post->post_content );
 			print '</pre>';
 			print '</body></html>';
 			die();
 		}
+	}
+
+	function sanitize_message( $message ) {
+		$allowed_tags = wp_kses_allowed_html( 'post' );
+		$allowed_tags['style'] = array();
+
+		return wp_kses( $message, $allowed_tags );
 	}
 
 	/**
@@ -279,11 +286,13 @@ class PostmanEmailLogController {
 		// only do this for administrators
 		if ( PostmanUtils::isAdmin() ) {
 			$this->logger->trace( 'created PostmanEmailLog admin menu item' );
-			/* Translators where (%s) is the name of the plugin */
-			$page = add_management_page( sprintf( __( '%s Email Log', Postman::TEXT_DOMAIN ), __( 'Postman SMTP', Postman::TEXT_DOMAIN ) ), _x( 'Email Log', 'The log of Emails that have been delivered', Postman::TEXT_DOMAIN ), 'read_private_posts', 'postman_email_log', array(
-					$this,
-					'postman_render_email_page',
-			) );
+			/*
+			Translators where (%s) is the name of the plugin */
+			$pageTitle = sprintf( __( '%s Email Log', Postman::TEXT_DOMAIN ), __( 'Postman SMTP', Postman::TEXT_DOMAIN ) );
+			$pluginName = _x( 'Email Log', 'The log of Emails that have been delivered', Postman::TEXT_DOMAIN );
+
+			$page = add_submenu_page( PostmanViewController::POSTMAN_MENU_SLUG, $pageTitle, $pluginName, 'read_private_posts', 'postman_email_log', array( $this, 'postman_render_email_page' ) );
+
 			// When the plugin options page is loaded, also load the stylesheet
 			add_action( 'admin_print_styles-' . $page, array(
 					$this,

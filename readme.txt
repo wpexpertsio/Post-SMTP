@@ -2,8 +2,8 @@
 Contributors: yehudah, jasonhendriks
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email
 Requires at least: 3.9
-Tested up to: 4.8
-Stable tag: 1.7.7
+Tested up to: 4.9
+Stable tag: 1.7.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -281,11 +281,15 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
-= 1.7.8 - 2017-10-28
+= 1.7.8 - 2017-11-17
+* = Menu Items grouping =
 * Fixed: IP detection error in some web hosts
 * Fixed: Link open in new page attribute = _blank
 * Fixed: Replace deprecated PHP 7 functions.
 * Updated: Validator TLD's list
+* Added: Email log date and search filter.
+* Added: Alert on sending error (Fallback to local mail)
+* Added: Email body preview (not raw)
 
 = 1.7.7 - 2017-10-17
 * Fixed: Error sending files with sendgrid

@@ -10,13 +10,13 @@ class PostmanUtils {
 	private static $logger;
 	private static $emailValidator;
 
-		const POSTMAN_SETTINGS_PAGE_STUB = 'postman';
+	const POSTMAN_SETTINGS_PAGE_STUB = 'postman';
 	const REQUEST_OAUTH2_GRANT_SLUG = 'postman/requestOauthGrant';
 	const POSTMAN_EMAIL_LOG_PAGE_STUB = 'postman_email_log';
 
 	// redirections back to THIS SITE should always be relative because of IIS bug
-	const POSTMAN_EMAIL_LOG_PAGE_RELATIVE_URL = 'tools.php?page=postman_email_log';
-	const POSTMAN_HOME_PAGE_RELATIVE_URL = 'options-general.php?page=postman';
+	const POSTMAN_EMAIL_LOG_PAGE_RELATIVE_URL = 'admin.php?page=postman_email_log';
+	const POSTMAN_HOME_PAGE_RELATIVE_URL = 'admin.php?page=postman';
 
 	// custom admin post page
 	const ADMIN_POST_OAUTH2_GRANT_URL_PART = 'admin-post.php?action=postman/requestOauthGrant';
@@ -36,7 +36,7 @@ class PostmanUtils {
 	 * @return string
 	 */
 	public static function getPageUrl( $slug ) {
-		return get_admin_url() . 'options-general.php?page=' . $slug;
+		return get_admin_url() . 'admin.php?page=' . $slug;
 	}
 
 	/**
