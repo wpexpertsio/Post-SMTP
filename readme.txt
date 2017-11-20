@@ -287,8 +287,9 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 * Fixed: misspled false
 * Fixed: feedback form
 * Fixed: Some localization strings
-* Added: explain message on email log filter
 * Removed: deprecated function
+* New: Option to input emails when resend email
+* Added: explain message on email log filter
 
 = 1.7.8 - 2017-11-17
 * = Menu Items grouping =
