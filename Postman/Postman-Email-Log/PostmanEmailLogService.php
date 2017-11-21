@@ -156,12 +156,18 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		}
 
 		private function checkForLogErrors( PostmanEmailLog $log ) {
+			$message = __( 'You getting this message because an error detected while delivered your email.', Postman::TEXT_DOMAIN );
+			$message .= "\r\n" . __( 'You are welcome to post a support issue.', Postman::TEXT_DOMAIN );
+			$message .= "\r\n" . __( 'The log to paste with your support issue:', Postman::TEXT_DOMAIN ) . "\r\n";
+
 			if ( $log->statusMessage && ! empty( $log->statusMessage ) ) {
-				mail( get_bloginfo( 'admin_email' ), __( 'Post SMTP email error', Postman::TEXT_DOMAIN ), $log->statusMessage );
+				mail( get_bloginfo( 'admin_email' ), __( 'Post SMTP email error', Postman::TEXT_DOMAIN ), $message . $log->statusMessage );
 			}
 
-			if ( strpos( strtolower( $log->sessionTranscript ), 'error' ) !== false ) {
-				mail( get_bloginfo( 'admin_email' ), __( 'Post SMTP session transcript error', Postman::TEXT_DOMAIN ), $log->sessionTranscript );
+			preg_match_all( '/(.*)From/s', $log->sessionTranscript, $matches );
+
+			if ( isset( $matches[1][0] ) && ! empty( $matches[1][0] ) && strpos( strtolower( $matches[1][0] ), 'error' ) !== false ) {
+				mail( get_bloginfo( 'admin_email' ), __( 'Post SMTP session transcript error', Postman::TEXT_DOMAIN ), $message . $log->sessionTranscript );
 			}
 		}
 
