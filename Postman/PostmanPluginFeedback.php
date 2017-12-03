@@ -4,7 +4,6 @@ class PostmanPluginFeedback {
 	function __construct() {
 		add_filter( 'plugin_action_links_' . plugin_basename( POST_BASE ), array( $this, 'insert_deactivate_link_id' ) );
 		add_action( 'wp_ajax_post_user_feedback', array( $this, 'post_user_feedback' ) );
-
 		global $pagenow;
 		if ( 'plugins.php' === $pagenow ) {
 			add_action( 'admin_enqueue_scripts', array( $this, 'load_scripts' ) );
@@ -15,7 +14,7 @@ class PostmanPluginFeedback {
 
 	function load_scripts() {
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
-		wp_register_script( 'post-feedback', plugins_url( 'script/feedback/feedback.js', POST_BASE ), array( 'jquery', 'jquery-ui-core', 'jquery-ui-dialog' ), fasle, true );
+		wp_register_script( 'post-feedback', plugins_url( 'script/feedback/feedback.js', POST_BASE ), array( 'jquery', 'jquery-ui-core', 'jquery-ui-dialog' ), false, true );
 		wp_localize_script( 'post-feedback', 'post_feedback', array( 'admin_ajax' => admin_url( 'admin-ajax.php' ) ) );
 		wp_enqueue_script( 'post-feedback' );
 	}
@@ -27,7 +26,7 @@ class PostmanPluginFeedback {
 
 		$payload = array(
 			'reason' => sanitize_text_field( $_POST['reason'] ),
-			'other_input' => isset( $_POST['other_input'] ) ? sanitize_textarea_field( $_POST['other_input'] ) : '',
+			'other_input' => isset( $_POST['other_input'] ) ? sanitize_text_field( $_POST['other_input'] ) : '',
 		);
 
 		if ( isset( $_POST['support'] ) ) {
@@ -38,6 +37,7 @@ class PostmanPluginFeedback {
 
 		$args = array(
 			'body' => $payload,
+			'timeout' => 20,
 		);
 		$result = wp_remote_post( 'https://postmansmtp.com/feedback', $args );
 		die( 'success' );
@@ -50,11 +50,11 @@ class PostmanPluginFeedback {
 				float: none !important;
 			}
 
-			#postman-feedback-dialog-skip {
+			#postman-feedback-dialog-go {
 				float: left;
 			}
 
-			#postman-feedback-dialog-go, #postman-feedback-dialog-cancel {
+			#postman-feedback-dialog-skip, #postman-feedback-dialog-cancel {
 				float: right;
 			}
 
@@ -62,11 +62,31 @@ class PostmanPluginFeedback {
 				font-size: 1.1em;
 			}
 
-			#postman-deactivate-reasons textarea {
+			.postman-reason-input textarea {
 				margin-top: 10px;
 				width: 100%;
 				height: 150px;
 			}
+
+			.postman-feedback-dialog-form .ui-icon {
+				display: none;
+			}
+
+			#postman-feedback-dialog-go.postman-ajax-progress .ui-icon {
+				text-indent: inherit;
+				display: inline-block !important;
+				vertical-align: middle;
+				animation: rotate 2s infinite linear;
+			}
+
+			#postman-feedback-dialog-go.postman-ajax-progress .ui-button-text {
+				vertical-align: middle;
+			}			
+
+			@keyframes rotate {
+			  0%    { transform: rotate(0deg); }
+			  100%  { transform: rotate(360deg); }
+			}			
 		</style>
 	<?php
 	}
@@ -87,31 +107,32 @@ class PostmanPluginFeedback {
 			<form>
 				<?php wp_nonce_field(); ?>
 				<ul id="postman-deactivate-reasons">
+
+					<li class="postman-reason">
+						<label>
+							<span><input value="bad support" type="radio" name="reason" checked/></span>
+							<span><?php _e( 'Bad Support', 'postman' ); ?></span>
+						</label>					
+					</li>				
 					<li class="postman-reason postman-custom-input">
 						<label>
 							<span><input value="Found a better plugin" type="radio" name="reason" /></span>
 							<span><?php _e( 'Found a better plugin', 'postman' ); ?></span>
-						</label>
-						<div class="postman-reason-input" style="display: none;">
-							<textarea name="other_input"></textarea>
-						</div>					
+						</label>				
 					</li>
-					<li class="postman-reason">
+					<li class="postman-reason postman-custom-input">
 						<label>
-							<span><input value="The plugin didn't work" type="radio" name="reason" /></span>
+							<span><input value="<?php echo esc_attr( "The plugin didn't work" ); ?>" type="radio" name="reason" /></span>
 							<span><?php _e( 'The plugin didn\'t work', 'postman' ); ?></span>
-						</label>
-					</li>
+						</label>					
+					</li>					
 					<li class="postman-reason postman-custom-input">
 						<label>
 							<span><input value="Other Reason" type="radio" name="reason" /></span>
 							<span><?php _e( 'Other Reason', 'postman' ); ?></span>
 						</label>
-						<div class="postman-reason-input" style="display: none;">
-							<textarea name="other_input"></textarea>
-						</div>
 					</li>
-					<li class="postman-reason postman-custom-input">
+					<li class="postman-reason postman-support-input">
 						<label>
 							<span><input value="Support Ticket" type="radio" name="reason" /></span>
 							<span><?php _e( 'Open A support ticket for me', 'postman' ); ?></span>
@@ -121,8 +142,11 @@ class PostmanPluginFeedback {
 							<input type="text" name="support[title]" placeholder="The Title" required>
 							<textarea name="support[text]" placeholder="Describe the issue" required></textarea>
 						</div>
-					</li>														
+					</li>																				
 				</ul>
+				<div class="postman-reason-input" style="display: none;">
+					<input type="text" class="regular-text" name="other_input" placeholder="Do you mind help and give more detailes?">
+				</div>				
 			</form>
 		</div>
 	<?php

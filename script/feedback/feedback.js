@@ -13,24 +13,17 @@ jQuery(document).ready(function($) {
 	      	minWidth: 400,
 	      	minHeight: 300,
 	      	modal: true,
-	      	buttons: {
-	      		'skip' : {
-		        	text: 'Skip',
-		        	id: 'postman-feedback-dialog-skip',
-		        	click: function() {
-		          		$( this ).dialog( "close" );
-
-		          		location.href = deactivateLink;
-		        	}				      			
-	      		},	      		
+	      	buttons: {      		
 	      		'go' : {
 		        	text: 'Continue',
+        			icons: { primary: "dashicons dashicons-update" },        	
 		        	id: 'postman-feedback-dialog-go',
 					class: 'button',
 		        	click: function() {
-		          		$( this ).dialog( "close" );
 
-		          		var form = $( this ).find( 'form' ).serializeArray(),
+		        		var dialog = $(this),
+		        			go = $('#postman-feedback-dialog-go'),
+		          			form = dialog.find( 'form' ).serializeArray(),
 							result = {};
 
 						$.each( form, function() {
@@ -41,13 +34,26 @@ jQuery(document).ready(function($) {
 						if ( ! jQuery.isEmptyObject( result ) ) {
 							result.action = 'post_user_feedback';
 
-							$.post( post_feedback.admin_ajax, result, function(result) {
-
-							});
+						    $.ajax({
+						        url: post_feedback.admin_ajax,
+						        type: 'POST',
+						        data: result,
+						        error: function(){},
+						        success: function(msg){},
+						        beforeSend: function() { 
+						        	go.addClass('postman-ajax-progress'); 
+						        },
+						        complete: function() { 
+						        	go.removeClass('postman-ajax-progress'); 
+			        	
+						        	dialog.dialog( "close" );
+						            location.href = deactivateLink;						        	
+						        }						        
+						    });		
+	
 						}
 
-		          		// Remove this comment to deactivate plugin
-		          		location.href = deactivateLink;
+
 		        	},				      			
 	      		},
 	      		'cancel' : {
@@ -57,7 +63,16 @@ jQuery(document).ready(function($) {
 		        	click: function() {
 		          		$( this ).dialog( "close" );
 		        	}				      			
-	      		}
+	      		},
+	      		'skip' : {
+		        	text: 'Skip',
+		        	id: 'postman-feedback-dialog-skip',
+		        	click: function() {
+		          		$( this ).dialog( "close" );
+
+		          		location.href = deactivateLink;
+		        	}				      			
+	      		},		      		
 	      	}
 	    });
 
@@ -65,8 +80,13 @@ jQuery(document).ready(function($) {
 			$( '.postman-reason-input' ).hide();
 
 			if ( $( this ).hasClass( 'postman-custom-input' ) ) {
-				$( this ).find( '.postman-reason-input' ).show();
+				$( '#postman-deactivate-reasons' ).next( '.postman-reason-input' ).show();
 			}
+
+			if ( $( this ).hasClass( 'postman-support-input' ) ) {
+				console.log($(this));
+				$( this ).find( '.postman-reason-input' ).show();
+			}			
 		});
 				    
 	});

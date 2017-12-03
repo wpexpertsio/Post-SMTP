@@ -105,7 +105,9 @@ class PostmanEmailLogView extends WP_List_Table {
 		}
 		if ( ! (empty( $meta_values ['original_to'] [0] ) && empty( $meta_values ['originalHeaders'] [0] )) ) {
 			// $actions ['resend'] = sprintf ( '<a href="%s">%s</a>', $resendUrl, __ ( 'Resend', Postman::TEXT_DOMAIN ) );
-			$actions ['resend'] = sprintf( '<span id="%3$s"><a href="javascript:postman_resend_email(%1$s);">%2$s</a></span>', $item ['ID'], __( 'Resend', Postman::TEXT_DOMAIN ), 'resend-' . $item ['ID'] );
+			$emails = maybe_unserialize( $meta_values ['original_to'] [0] );
+			$to = is_array( $emails ) ? implode( ',', $emails ) : $emails;
+			$actions ['resend'] = sprintf( '<span id="%3$s"><a class="postman-open-resend" href="#">%2$s</a></span><div style="display:none;"><input type="hidden" name="security" value="%6$s"><input type="text" name="mail_to" class="regular-text ltr" data-id="%1$s" value="%4$s"><button class="postman-resend button button-primary">%2$s</button><i style="color: black;">%5$s</i></div>', $item ['ID'], __( 'Resend', Postman::TEXT_DOMAIN ), 'resend-' . $item ['ID'], esc_attr( $to ), __( 'comma-separated for multiple emails', Postman::TEXT_DOMAIN ), wp_create_nonce( 'resend' ) );
 		} else {
 			$actions ['resend'] = sprintf( '%2$s', $resendUrl, __( 'Resend', Postman::TEXT_DOMAIN ) );
 		}
@@ -317,6 +319,7 @@ class PostmanEmailLogView extends WP_List_Table {
 			$from_date = sanitize_text_field( $_POST['from_date'] );
 
 		    $args['date_query']['after'] = $from_date;
+		    $args['date_query']['column']  = 'post_date';
 		    $args['date_query']['inclusive'] = false;
 		}
 
@@ -324,6 +327,7 @@ class PostmanEmailLogView extends WP_List_Table {
 			$to_date = sanitize_text_field( $_POST['to_date'] );
 
 		    $args['date_query']['before'] = $to_date;
+			$args['date_query']['column']  = 'post_date';
 		    $args['date_query']['inclusive'] = true;
 		}
 
@@ -336,6 +340,8 @@ class PostmanEmailLogView extends WP_List_Table {
 		}
 
 		$posts = new WP_query( $args );
+		$date_format = get_option( 'date_format' );
+		$time_format = get_option( 'time_format' );
 
 		foreach ( $posts->posts as $post ) {
 			$date = $post->post_date;
@@ -351,7 +357,7 @@ class PostmanEmailLogView extends WP_List_Table {
 					'title' => esc_html( $post->post_title ),
 					// the post status must be escaped as they are displayed in the HTML output
 					'status' => ($post->post_excerpt != null ? esc_html( $post->post_excerpt ) : __( 'Sent', Postman::TEXT_DOMAIN )),
-					'date' => $date,
+					'date' => date( "$date_format $time_format", strtotime( $post->post_date ) ),
 					'ID' => $post->ID,
 			);
 			array_push( $data, $flattenedPost );

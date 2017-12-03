@@ -49,8 +49,8 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		 */
 		public function generateDefaultContent() {
 			// This page will be under "Settings"
-			$pageTitle = sprintf( __( '%s Setup', Postman::TEXT_DOMAIN ), __( 'Postman SMTP', Postman::TEXT_DOMAIN ) );
-			$pluginName = __( 'Postman SMTP', Postman::TEXT_DOMAIN );
+			$pageTitle = sprintf( __( '%s Setup', Postman::TEXT_DOMAIN ), __( 'Post SMTP', Postman::TEXT_DOMAIN ) );
+			$pluginName = __( 'Post SMTP', Postman::TEXT_DOMAIN );
 			$uniqueId = self::POSTMAN_MENU_SLUG;
 			$pageOptions = array(
 					$this,
@@ -72,7 +72,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		 * Register the Email Test screen
 		 */
 		public function addPurgeDataSubmenu() {
-			$page = add_submenu_page( null, sprintf( __( '%s Setup', Postman::TEXT_DOMAIN ), __( 'Postman SMTP', Postman::TEXT_DOMAIN ) ), __( 'Postman SMTP', Postman::TEXT_DOMAIN ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanAdminController::MANAGE_OPTIONS_PAGE_SLUG, array(
+			$page = add_submenu_page( null, sprintf( __( '%s Setup', Postman::TEXT_DOMAIN ), __( 'Post SMTP', Postman::TEXT_DOMAIN ) ), __( 'Post SMTP', Postman::TEXT_DOMAIN ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanAdminController::MANAGE_OPTIONS_PAGE_SLUG, array(
 					$this,
 					'outputPurgeDataContent',
 			) );
@@ -182,7 +182,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		 * @param string  $slug
 		 */
 		public static function outputChildPageHeader( $title, $slug = '' ) {
-			printf( '<h2>%s</h2>', sprintf( __( '%s Setup', Postman::TEXT_DOMAIN ), __( 'Postman SMTP', Postman::TEXT_DOMAIN ) ) );
+			printf( '<h2>%s</h2>', sprintf( __( '%s Setup', Postman::TEXT_DOMAIN ), __( 'Post SMTP', Postman::TEXT_DOMAIN ) ) );
 			printf( '<div id="postman-main-menu" class="welcome-panel %s">', $slug );
 			print '<div class="welcome-panel-content">';
 			print '<div class="welcome-panel-column-container">';
@@ -253,15 +253,14 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		/**
 		 */
 		private function displayTopNavigation() {
-			screen_icon();
-			printf( '<h2>%s</h2>', sprintf( __( '%s Setup', Postman::TEXT_DOMAIN ), __( 'Postman SMTP', Postman::TEXT_DOMAIN ) ) );
+			printf( '<h2>%s</h2>', sprintf( __( '%s Setup', Postman::TEXT_DOMAIN ), __( 'Post SMTP', Postman::TEXT_DOMAIN ) ) );
 			print '<div id="postman-main-menu" class="welcome-panel">';
 			print '<div class="welcome-panel-content">';
 			print '<div class="welcome-panel-column-container">';
 			print '<div class="welcome-panel-column">';
 			printf( '<h4>%s</h4>', __( 'Configuration', Postman::TEXT_DOMAIN ) );
 			printf( '<a class="button button-primary button-hero" href="%s">%s</a>', $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG ), __( 'Start the Wizard', Postman::TEXT_DOMAIN ) );
-			printf( '<p class="">or <a href="%s" class="configure_manually">%s</a></p>', $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_SLUG ), __( 'Show All Settings', Postman::TEXT_DOMAIN ) );
+			printf( '<p class="">%s <a href="%s" class="configure_manually">%s</a></p>', __( 'or', Postman::TEXT_DOMAIN ), $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_SLUG ), __( 'Show All Settings', Postman::TEXT_DOMAIN ) );
 			print '</div>';
 			print '<div class="welcome-panel-column">';
 			printf( '<h4>%s</h4>', _x( 'Actions', 'Main Menu', Postman::TEXT_DOMAIN ) );
@@ -295,7 +294,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			printf( '<li><a href="%s" class="welcome-icon run-port-test">%s</a></li>', $this->getPageUrl( PostmanConnectivityTestController::PORT_TEST_SLUG ), __( 'Connectivity Test', Postman::TEXT_DOMAIN ) );
 			printf( '<li><a href="%s" class="welcome-icon run-port-test">%s</a></li>', $this->getPageUrl( PostmanDiagnosticTestController::DIAGNOSTICS_SLUG ), __( 'Diagnostic Test', Postman::TEXT_DOMAIN ) );
 			printf( '<li><a href="https://postmansmtp.com/forums/" class="welcome-icon postman_support">%s</a></li>', __( 'Online Support', Postman::TEXT_DOMAIN ) );
-			printf( '<li><img class="align-middle" src="' . plugins_url( 'style/images/new.gif', dirname( __DIR__ ) . '/postman-smtp.php' ) . '"><a class="align-middle" href="https://postmansmtp.com/category/guides/" class="welcome-icon postman_guides">%s</a></li>', __( 'Guides', Postman::TEXT_DOMAIN ) );
+			printf( '<li><img class="align-middle" src="' . plugins_url( 'style/images/new.gif', dirname( __DIR__ ) . '/postman-smtp.php' ) . '"><a target="blank" class="align-middle" href="https://postmansmtp.com/category/guides/" class="welcome-icon postman_guides">%s</a></li>', __( 'Guides', Postman::TEXT_DOMAIN ) );
 			print '</ul></div></div></div></div>';
 		}
 	}

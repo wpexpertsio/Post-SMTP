@@ -3,7 +3,7 @@ Contributors: yehudah, jasonhendriks
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email
 Requires at least: 3.9
 Tested up to: 4.9
-Stable tag: 1.7.8
+Stable tag: 1.7.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -277,10 +277,20 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 1. Emai Log screen
 1. Connectivity Test utility screen
 1. Diagnostic Information screen
+1. Email Log Filter
 
 
 
 == Changelog ==
+
+= 1.7.9 - 2017-11-20
+* Fixed: misspled false
+* Fixed: feedback form
+* Fixed: Some localization strings
+* Removed: deprecated function
+* New: Option to input emails when resend email
+* Added: explain message on email log filter
+
 = 1.7.8 - 2017-11-17
 * = Menu Items grouping =
 * Fixed: IP detection error in some web hosts

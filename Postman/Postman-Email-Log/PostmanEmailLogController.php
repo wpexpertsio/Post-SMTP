@@ -70,13 +70,22 @@ class PostmanEmailLogController {
 	/**
 	 */
 	public function resendMail() {
+		check_ajax_referer( 'resend', 'security' );
+
 		// get the email address of the recipient from the HTTP Request
 		$postid = $this->getRequestParameter( 'email' );
 		if ( ! empty( $postid ) ) {
 			$post = get_post( $postid );
 			$meta_values = get_post_meta( $postid );
 
-			$success = wp_mail( $meta_values ['original_to'] [0], $meta_values ['original_subject'] [0], $meta_values ['original_message'] [0], $meta_values ['original_headers'] [0] );
+			if ( isset( $_POST['mail_to'] ) && ! empty( $_POST['mail_to'] ) ) {
+				$emails = explode( ',', $_POST['mail_to'] );
+				$to = array_map( 'sanitize_email', $emails );
+			} else {
+				$to = $meta_values ['original_to'] [0];
+			}
+
+			$success = wp_mail( $to, $meta_values ['original_subject'] [0], $meta_values ['original_message'] [0], $meta_values ['original_headers'] [0] );
 
 			// Postman API: retrieve the result of sending this message from Postman
 			$result = apply_filters( 'postman_wp_mail_result', null );
@@ -288,7 +297,7 @@ class PostmanEmailLogController {
 			$this->logger->trace( 'created PostmanEmailLog admin menu item' );
 			/*
 			Translators where (%s) is the name of the plugin */
-			$pageTitle = sprintf( __( '%s Email Log', Postman::TEXT_DOMAIN ), __( 'Postman SMTP', Postman::TEXT_DOMAIN ) );
+			$pageTitle = sprintf( __( '%s Email Log', Postman::TEXT_DOMAIN ), __( 'Post SMTP', Postman::TEXT_DOMAIN ) );
 			$pluginName = _x( 'Email Log', 'The log of Emails that have been delivered', Postman::TEXT_DOMAIN );
 
 			$page = add_submenu_page( PostmanViewController::POSTMAN_MENU_SLUG, $pageTitle, $pluginName, 'read_private_posts', 'postman_email_log', array( $this, 'postman_render_email_page' ) );
@@ -338,7 +347,7 @@ class PostmanEmailLogController {
 	</div>
 	<h2><?php
 	/* Translators where (%s) is the name of the plugin */
-		echo sprintf( __( '%s Email Log', Postman::TEXT_DOMAIN ), __( 'Postman SMTP', Postman::TEXT_DOMAIN ) )?></h2>
+		echo sprintf( __( '%s Email Log', Postman::TEXT_DOMAIN ), __( 'Post SMTP', Postman::TEXT_DOMAIN ) )?></h2>
 
 	<div
 		style="background: #ECECEC; border: 1px solid #CCC; padding: 0 10px; margin-top: 5px; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;">
@@ -374,7 +383,8 @@ class PostmanEmailLogController {
 			<div class="form-control">
 				<!-- <button type="submit" name="export_email_logs" class="button button-primary">Export To CSV</button> -->
 			</div>		
-		</div>			
+		</div>
+		<div class="error">Please notice: when you select a date for example 11/20/2017, behind the scene the query select <b>11/20/2017 00:00:00</b>.<br>So if you searching for an email arrived that day at any hour you need to select 11/20/2017 as the <b>From Date</b> and 11/21/2017 as the <b>To Date</b>.</div>
 	</form>
 	
 	<!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions -->
