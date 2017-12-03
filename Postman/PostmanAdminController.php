@@ -137,6 +137,8 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 					$this,
 					'postmanModifyLinksOnPluginsListPage',
 			) );
+
+			require_once( 'PostmanPluginFeedback.php' );
 		}
 
 		/**

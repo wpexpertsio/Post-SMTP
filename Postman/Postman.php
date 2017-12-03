@@ -16,7 +16,7 @@
  */
 class Postman {
 
-		const ADMINISTRATOR_ROLE_NAME = 'administrator';
+	const ADMINISTRATOR_ROLE_NAME = 'administrator';
 	const MANAGE_POSTMAN_CAPABILITY_NAME = 'manage_postman_smtp';
 	const TEXT_DOMAIN = 'post-smtp';
 
@@ -250,7 +250,26 @@ class Postman {
 				// on any admin pages, show this error message
 				// I noticed the wpMandrill and SendGrid plugins have the exact same error message here
 				// I've adopted their error message as well, for shits and giggles .... :D
+				$reflFunc = new ReflectionFunction( 'wp_mail' );
+
 				$message = __( 'Postman: wp_mail has been declared by another plugin or theme, so you won\'t be able to use Postman until the conflict is resolved.', Postman::TEXT_DOMAIN );
+				$plugin_full_path = $reflFunc->getFileName();
+
+				if ( strpos( $plugin_full_path, 'plugins' ) !== false ) {
+
+					require_once ABSPATH . '/wp-admin/includes/plugin.php';
+
+					preg_match( '/([a-z]+\/[a-z]+\.php)$/', $plugin_full_path, $output_array );
+
+					$plugin_file = $output_array[1];
+					$plugin_data = get_plugin_data( $plugin_full_path );
+
+					$deactivate_url = '<a href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( $plugin_file ) . '&amp;plugin_status=active&amp;paged=1&amp;s=deactivate-plugin_' . $plugin_file ) . '" aria-label="' . esc_attr( sprintf( _x( 'Deactivate %s', 'plugin' ), $plugin_data['Name'] ) ) . '">' . __( 'Deactivate' ) . '</a><br>';
+					$message .= '<br><strong>Plugin Name:</strong> ' . $plugin_data['Name'];
+					$message .= '<br>' . $deactivate_url;
+				}
+
+				$message .= '<br><strong>More info that may help</strong> - ' . $reflFunc->getFileName() . ':' . $reflFunc->getStartLine();
 				$this->messageHandler->addError( $message );
 			}
 		} else {
@@ -392,4 +411,3 @@ if ( ! function_exists( 'str_getcsv' ) ) {
 		return PostmanUtils::postman_strgetcsv_impl( $string );
 	}
 }
-

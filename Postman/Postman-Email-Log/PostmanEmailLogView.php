@@ -2,14 +2,13 @@
 
 /**
  * See http://wpengineer.com/2426/wp_list_table-a-step-by-step-guide/
- * 
  */
-if (! class_exists ( 'WP_List_Table' )) {
-	require_once (ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
+if ( ! class_exists( 'WP_List_Table' ) ) {
+	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
 class PostmanEmailLogView extends WP_List_Table {
 	private $logger;
-	
+
 	/**
 	 * ************************************************************************
 	 * REQUIRED.
@@ -18,16 +17,16 @@ class PostmanEmailLogView extends WP_List_Table {
 	 * *************************************************************************
 	 */
 	function __construct() {
-		$this->logger = new PostmanLogger ( get_class ( $this ) );
-		
+		$this->logger = new PostmanLogger( get_class( $this ) );
+
 		// Set parent defaults
-		parent::__construct ( array (
+		parent::__construct( array(
 				'singular' => 'email_log_entry', // singular name of the listed records
 				'plural' => 'email_log_entries', // plural name of the listed records
-				'ajax' => false 
+				'ajax' => false,
 		) ); // does this table support ajax?
 	}
-	
+
 	/**
 	 * ************************************************************************
 	 * Recommended.
@@ -54,16 +53,16 @@ class PostmanEmailLogView extends WP_List_Table {
 	 * @return string Text or HTML to be placed inside the column <td>
 	 *         ************************************************************************
 	 */
-	function column_default($item, $column_name) {
-		switch ($column_name) {
+	function column_default( $item, $column_name ) {
+		switch ( $column_name ) {
 			case 'date' :
 			case 'status' :
-				return $item [$column_name];
+				return $item [ $column_name ];
 			default :
-				return print_r ( $item, true ); // Show the whole array for troubleshooting purposes
+				return print_r( $item, true ); // Show the whole array for troubleshooting purposes
 		}
 	}
-	
+
 	/**
 	 * ************************************************************************
 	 * Recommended.
@@ -77,48 +76,47 @@ class PostmanEmailLogView extends WP_List_Table {
 	 * should be an associative array formatted as 'slug'=>'link html' - and you
 	 * will need to generate the URLs yourself. You could even ensure the links
 	 *
-	 *
 	 * @see WP_List_Table::::single_row_columns()
 	 * @param array $item
 	 *        	A singular item (one full row's worth of data)
 	 * @return string Text to be placed inside the column <td> (movie title only)
 	 *         ************************************************************************
 	 */
-	function column_title($item) {
-		
+	function column_title( $item ) {
+
 		// Build row actions
 		$iframeUri = 'admin-post.php?page=postman_email_log&action=%s&email=%s&TB_iframe=true&width=700&height=550';
-		$deleteUrl = wp_nonce_url ( admin_url ( sprintf ( 'admin-post.php?page=postman_email_log&action=%s&email=%s', 'delete', $item ['ID'] ) ), 'delete_email_log_item_' . $item ['ID'] );
-		$viewUrl = admin_url ( sprintf ( $iframeUri, 'view', $item ['ID'] ) );
-		$transcriptUrl = admin_url ( sprintf ( $iframeUri, 'transcript', $item ['ID'] ) );
-		$resendUrl = admin_url ( sprintf ( $iframeUri, 'resend', $item ['ID'] ) );
-		
-		$meta_values = get_post_meta ( $item ['ID'] );
-		
-		$actions = array (
-				'delete' => sprintf ( '<a href="%s">%s</a>', $deleteUrl, _x ( 'Delete', 'Delete an item from the email log', Postman::TEXT_DOMAIN ) ),
-				'view' => sprintf ( '<a href="%s" class="thickbox">%s</a>', $viewUrl, _x ( 'View', 'View an item from the email log', Postman::TEXT_DOMAIN ) ) 
+		$deleteUrl = wp_nonce_url( admin_url( sprintf( 'admin-post.php?page=postman_email_log&action=%s&email=%s', 'delete', $item ['ID'] ) ), 'delete_email_log_item_' . $item ['ID'] );
+		$viewUrl = admin_url( sprintf( $iframeUri, 'view', $item ['ID'] ) );
+		$transcriptUrl = admin_url( sprintf( $iframeUri, 'transcript', $item ['ID'] ) );
+		$resendUrl = admin_url( sprintf( $iframeUri, 'resend', $item ['ID'] ) );
+
+		$meta_values = get_post_meta( $item ['ID'] );
+
+		$actions = array(
+				'delete' => sprintf( '<a href="%s">%s</a>', $deleteUrl, _x( 'Delete', 'Delete an item from the email log', Postman::TEXT_DOMAIN ) ),
+				'view' => sprintf( '<a href="%s" class="thickbox">%s</a>', $viewUrl, _x( 'View', 'View an item from the email log', Postman::TEXT_DOMAIN ) ),
 		);
-		
-		if (! empty ( $meta_values ['session_transcript'] [0] )) {
-			$actions ['transcript'] = sprintf ( '<a href="%1$s" class="thickbox">%2$s</a>', $transcriptUrl, __ ( 'Session Transcript', Postman::TEXT_DOMAIN ) );
+
+		if ( ! empty( $meta_values ['session_transcript'] [0] ) ) {
+			$actions ['transcript'] = sprintf( '<a href="%1$s" class="thickbox">%2$s</a>', $transcriptUrl, __( 'Session Transcript', Postman::TEXT_DOMAIN ) );
 		} else {
-			$actions ['transcript'] = sprintf ( '%2$s', $transcriptUrl, __ ( 'Session Transcript', Postman::TEXT_DOMAIN ) );
+			$actions ['transcript'] = sprintf( '%2$s', $transcriptUrl, __( 'Session Transcript', Postman::TEXT_DOMAIN ) );
 		}
-		if (! (empty ( $meta_values ['original_to'] [0] ) && empty ( $meta_values ['originalHeaders'] [0] ))) {
+		if ( ! (empty( $meta_values ['original_to'] [0] ) && empty( $meta_values ['originalHeaders'] [0] )) ) {
 			// $actions ['resend'] = sprintf ( '<a href="%s">%s</a>', $resendUrl, __ ( 'Resend', Postman::TEXT_DOMAIN ) );
-			$actions ['resend'] = sprintf ( '<span id="%3$s"><a href="javascript:postman_resend_email(%1$s);">%2$s</a></span>', $item ['ID'], __ ( 'Resend', Postman::TEXT_DOMAIN ), 'resend-' . $item ['ID'] );
+			$actions ['resend'] = sprintf( '<span id="%3$s"><a href="javascript:postman_resend_email(%1$s);">%2$s</a></span>', $item ['ID'], __( 'Resend', Postman::TEXT_DOMAIN ), 'resend-' . $item ['ID'] );
 		} else {
-			$actions ['resend'] = sprintf ( '%2$s', $resendUrl, __ ( 'Resend', Postman::TEXT_DOMAIN ) );
+			$actions ['resend'] = sprintf( '%2$s', $resendUrl, __( 'Resend', Postman::TEXT_DOMAIN ) );
 		}
-		
+
 		// Return the title contents
-		return sprintf ( '%1$s %3$s',
-            /*$1%s*/ $item ['title'],
-            /*$2%s*/ $item ['ID'],
-            /*$3%s*/ $this->row_actions ( $actions ) );
+		return sprintf( '%1$s %3$s',
+			/*$1%s*/ $item ['title'],
+			/*$2%s*/ $item ['ID'],
+		/*$3%s*/ $this->row_actions( $actions ) );
 	}
-	
+
 	/**
 	 * ************************************************************************
 	 * REQUIRED if displaying checkboxes or using bulk actions! The 'cb' column
@@ -132,13 +130,13 @@ class PostmanEmailLogView extends WP_List_Table {
 	 * @return string Text to be placed inside the column <td> (movie title only)
 	 *         ************************************************************************
 	 */
-	function column_cb($item) {
-		return sprintf ( '<input type="checkbox" name="%1$s[]" value="%2$s" />',
-            /*$1%s*/ $this->_args ['singular'], // Let's simply repurpose the table's singular label ("movie")
-		/* $2%s */
+	function column_cb( $item ) {
+		return sprintf( '<input type="checkbox" name="%1$s[]" value="%2$s" />',
+			/*$1%s*/ $this->_args ['singular'], // Let's simply repurpose the table's singular label ("movie")
+			/* $2%s */
 		$item ['ID'] ); // The value of the checkbox should be the record's id
 	}
-	
+
 	/**
 	 * ************************************************************************
 	 * REQUIRED! This method dictates the table's columns and titles.
@@ -156,15 +154,15 @@ class PostmanEmailLogView extends WP_List_Table {
 	 *         ************************************************************************
 	 */
 	function get_columns() {
-		$columns = array (
+		$columns = array(
 				'cb' => '<input type="checkbox" />', // Render a checkbox instead of text
-				'title' => _x ( 'Subject', 'What is the subject of this message?', Postman::TEXT_DOMAIN ),
-				'status' => __ ( 'Status', Postman::TEXT_DOMAIN ),
-				'date' => _x ( 'Delivery Time', 'When was this email sent?', Postman::TEXT_DOMAIN ) 
+				'title' => _x( 'Subject', 'What is the subject of this message?', Postman::TEXT_DOMAIN ),
+				'status' => __( 'Status', Postman::TEXT_DOMAIN ),
+				'date' => _x( 'Delivery Time', 'When was this email sent?', Postman::TEXT_DOMAIN ),
 		);
 		return $columns;
 	}
-	
+
 	/**
 	 * ************************************************************************
 	 * Optional.
@@ -183,24 +181,24 @@ class PostmanEmailLogView extends WP_List_Table {
 	 *         ************************************************************************
 	 */
 	function get_sortable_columns() {
-		return array ();
-		$sortable_columns = array (
-				'title' => array (
+		return array();
+		$sortable_columns = array(
+				'title' => array(
 						'title',
-						false 
+						false,
 				), // true means it's already sorted
-				'status' => array (
+				'status' => array(
 						'status',
-						false 
+						false,
 				),
-				'date' => array (
+				'date' => array(
 						'date',
-						false 
-				) 
+						false,
+				),
 		);
 		return $sortable_columns;
 	}
-	
+
 	/**
 	 * ************************************************************************
 	 * Optional.
@@ -219,12 +217,12 @@ class PostmanEmailLogView extends WP_List_Table {
 	 *         ************************************************************************
 	 */
 	function get_bulk_actions() {
-		$actions = array (
-				'bulk_delete' => _x ( 'Delete', 'Delete an item from the email log', Postman::TEXT_DOMAIN ) 
+		$actions = array(
+				'bulk_delete' => _x( 'Delete', 'Delete an item from the email log', Postman::TEXT_DOMAIN ),
 		);
 		return $actions;
 	}
-	
+
 	/**
 	 * ************************************************************************
 	 * Optional.
@@ -236,7 +234,7 @@ class PostmanEmailLogView extends WP_List_Table {
 	 */
 	function process_bulk_action() {
 	}
-	
+
 	/**
 	 * ************************************************************************
 	 * REQUIRED! This is where you prepare your data for display.
@@ -256,12 +254,12 @@ class PostmanEmailLogView extends WP_List_Table {
 	 *       ************************************************************************
 	 */
 	function prepare_items() {
-		
+
 		/**
 		 * First, lets decide how many records per page to show
 		 */
 		$per_page = 10;
-		
+
 		/**
 		 * REQUIRED.
 		 * Now we need to define our column headers. This includes a complete
@@ -270,10 +268,10 @@ class PostmanEmailLogView extends WP_List_Table {
 		 * can be defined in another method (as we've done here) before being
 		 * used to build the value for our _column_headers property.
 		 */
-		$columns = $this->get_columns ();
-		$hidden = array ();
-		$sortable = $this->get_sortable_columns ();
-		
+		$columns = $this->get_columns();
+		$hidden = array();
+		$sortable = $this->get_sortable_columns();
+
 		/**
 		 * REQUIRED.
 		 * Finally, we build an array to be used by the class for column
@@ -281,19 +279,19 @@ class PostmanEmailLogView extends WP_List_Table {
 		 * 3 other arrays. One for all columns, one for hidden columns, and one
 		 * for sortable columns.
 		 */
-		$this->_column_headers = array (
+		$this->_column_headers = array(
 				$columns,
 				$hidden,
-				$sortable 
+				$sortable,
 		);
-		
+
 		/**
 		 * Optional.
 		 * You can handle your bulk actions however you see fit. In this
 		 * case, we'll handle them within our package just to keep things clean.
 		 */
-		$this->process_bulk_action ();
-		
+		$this->process_bulk_action();
+
 		/**
 		 * Instead of querying a database, we're going to fetch the example data
 		 * property we created for use in this plugin.
@@ -304,44 +302,61 @@ class PostmanEmailLogView extends WP_List_Table {
 		 * use sort and pagination data to build a custom query instead, as you'll
 		 * be able to use your precisely-queried data immediately.
 		 */
-		$data = array ();
-		$args = array (
+		$data = array();
+		$args = array(
 				'posts_per_page' => 1000,
 				'offset' => 0,
-				'category' => '',
-				'category_name' => '',
 				'orderby' => 'date',
 				'order' => 'DESC',
-				'include' => '',
-				'exclude' => '',
-				'meta_key' => '',
-				'meta_value' => '',
 				'post_type' => PostmanEmailLogPostType::POSTMAN_CUSTOM_POST_TYPE_SLUG,
-				'post_mime_type' => '',
-				'post_parent' => '',
 				'post_status' => 'private',
-				'suppress_filters' => true 
+				'suppress_filters' => true,
 		);
-		$posts = get_posts ( $args );
-		foreach ( $posts as $post ) {
-			$date = $post->post_date;
-			$humanTime = human_time_diff ( strtotime ( $post->post_date_gmt ) );
-			// if this PHP system support humanTime, than use it
-			if (! empty ( $humanTime )) {
-				/* Translators: where %s indicates the relative time from now */
-				$date = sprintf ( _x ( '%s ago', 'A relative time as in "five days ago"', Postman::TEXT_DOMAIN ), $humanTime );
-			}
-			$flattenedPost = array (
-					// the post title must be escaped as they are displayed in the HTML output
-					'title' => esc_html ( $post->post_title ),
-					// the post status must be escaped as they are displayed in the HTML output
-					'status' => ($post->post_excerpt != null ? esc_html ( $post->post_excerpt ) : __ ( 'Sent', Postman::TEXT_DOMAIN )),
-					'date' => $date,
-					'ID' => $post->ID 
-			);
-			array_push ( $data, $flattenedPost );
+
+		if ( isset( $_POST['from_date'] ) && ! empty( $_POST['from_date'] ) ) {
+			$from_date = sanitize_text_field( $_POST['from_date'] );
+
+		    $args['date_query']['after'] = $from_date;
+		    $args['date_query']['inclusive'] = false;
 		}
-		
+
+		if ( isset( $_POST['to_date'] ) && ! empty( $_POST['to_date'] ) ) {
+			$to_date = sanitize_text_field( $_POST['to_date'] );
+
+		    $args['date_query']['before'] = $to_date;
+		    $args['date_query']['inclusive'] = true;
+		}
+
+		if ( ! empty( $_POST['search'] ) ) {
+
+			if ( isset( $args['date_query'] ) ) {
+				unset( $args['date_query'] ); }
+
+			$args['s'] = sanitize_text_field( $_POST['search'] );
+		}
+
+		$posts = new WP_query( $args );
+
+		foreach ( $posts->posts as $post ) {
+			$date = $post->post_date;
+			$humanTime = human_time_diff( strtotime( $post->post_date_gmt ) );
+			// if this PHP system support humanTime, than use it
+			if ( ! empty( $humanTime ) ) {
+				/* Translators: where %s indicates the relative time from now */
+				$date = sprintf( _x( '%s ago', 'A relative time as in "five days ago"', Postman::TEXT_DOMAIN ), $humanTime );
+			}
+
+			$flattenedPost = array(
+					// the post title must be escaped as they are displayed in the HTML output
+					'title' => esc_html( $post->post_title ),
+					// the post status must be escaped as they are displayed in the HTML output
+					'status' => ($post->post_excerpt != null ? esc_html( $post->post_excerpt ) : __( 'Sent', Postman::TEXT_DOMAIN )),
+					'date' => $date,
+					'ID' => $post->ID,
+			);
+			array_push( $data, $flattenedPost );
+		}
+
 		/**
 		 * This checks for sorting input and sorts the data in our array accordingly.
 		 *
@@ -350,14 +365,13 @@ class PostmanEmailLogView extends WP_List_Table {
 		 * to a custom query. The returned data will be pre-sorted, and this array
 		 * sorting technique would be unnecessary.
 		 */
-		function usort_reorder($a, $b) {
-			$orderby = (! empty ( $_REQUEST ['orderby'] )) ? $_REQUEST ['orderby'] : 'title'; // If no sort, default to title
-			$order = (! empty ( $_REQUEST ['order'] )) ? $_REQUEST ['order'] : 'asc'; // If no order, default to asc
-			$result = strcmp ( $a [$orderby], $b [$orderby] ); // Determine sort order
+		function usort_reorder( $a, $b ) {
+			$orderby = ( ! empty( $_REQUEST ['orderby'] )) ? $_REQUEST ['orderby'] : 'title'; // If no sort, default to title
+			$order = ( ! empty( $_REQUEST ['order'] )) ? $_REQUEST ['order'] : 'asc'; // If no order, default to asc
+			$result = strcmp( $a [ $orderby ], $b [ $orderby ] ); // Determine sort order
 			return ($order === 'asc') ? $result : - $result; // Send final sort direction to usort
 		}
 		// usort($data, 'usort_reorder');
-		
 		/**
 		 * *********************************************************************
 		 * ---------------------------------------------------------------------
@@ -372,15 +386,15 @@ class PostmanEmailLogView extends WP_List_Table {
 		 * ---------------------------------------------------------------------
 		 * ********************************************************************
 		 */
-		
+
 		/**
 		 * REQUIRED for pagination.
 		 * Let's figure out what page the user is currently
 		 * looking at. We'll need this later, so you should always include it in
 		 * your own package classes.
 		 */
-		$current_page = $this->get_pagenum ();
-		
+		$current_page = $this->get_pagenum();
+
 		/**
 		 * REQUIRED for pagination.
 		 * Let's check how many items are in our data array.
@@ -388,31 +402,31 @@ class PostmanEmailLogView extends WP_List_Table {
 		 * without filtering. We'll need this later, so you should always include it
 		 * in your own package classes.
 		 */
-		$total_items = count ( $data );
-		
+		$total_items = count( $data );
+
 		/**
 		 * The WP_List_Table class does not handle pagination for us, so we need
 		 * to ensure that the data is trimmed to only the current page.
 		 * We can use
 		 * array_slice() to
 		 */
-		$data = array_slice ( $data, (($current_page - 1) * $per_page), $per_page );
-		
+		$data = array_slice( $data, (($current_page - 1) * $per_page), $per_page );
+
 		/**
 		 * REQUIRED.
 		 * Now we can add our *sorted* data to the items property, where
 		 * it can be used by the rest of the class.
 		 */
 		$this->items = $data;
-		
+
 		/**
 		 * REQUIRED.
 		 * We also have to register our pagination options & calculations.
 		 */
-		$this->set_pagination_args ( array (
+		$this->set_pagination_args( array(
 				'total_items' => $total_items, // WE have to calculate the total number of items
 				'per_page' => $per_page, // WE have to determine how many items to show on a page
-				'total_pages' => ceil ( $total_items / $per_page ) 
+				'total_pages' => ceil( $total_items / $per_page ),
 		) ); // WE have to calculate the total number of pages
 	}
 }

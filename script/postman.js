@@ -1,3 +1,7 @@
+jQuery(document).ready(function($) {
+	$( ".email-log-date" ).datepicker();
+});
+
 var redirectUrlWarning = false;
 if (!console)
 	console = {

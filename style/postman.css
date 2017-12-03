@@ -82,3 +82,45 @@ p#back_to_main_menu {
 .welcome-panel-column welcome-panel-last {
 	padding-bottom: 10px;
 }
+
+.new-item {
+	display: inline-block;
+	padding: 5px;
+	border-radius: 20px;
+	background-color: red;
+	margin-right: 10px;
+}
+
+.new-item span {
+	font-weight: bold;
+	color: white;
+	animation: pulse 2s linear 0s infinite;
+}
+
+.align-middle {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+
+@keyframes pulse {
+	0% {
+		opacity: 0;
+	}
+
+	25% {
+		opacity: 0.25;
+	}
+
+	50% {
+		opacity: 0.5;
+	}
+
+	75% {
+		opacity: 0.75;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
