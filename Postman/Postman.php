@@ -203,6 +203,7 @@ class Postman {
 		// load the dependencies
 		require_once 'PostmanMessageHandler.php';
 		require_once 'PostmanAdminController.php';
+		require_once 'Postman-Controller/PostmanWelcomeController.php';
 		require_once 'Postman-Controller/PostmanDashboardWidgetController.php';
 		require_once 'Postman-Controller/PostmanAdminPointer.php';
 		require_once 'Postman-Email-Log/PostmanEmailLogController.php';
@@ -215,6 +216,7 @@ class Postman {
 		$this->messageHandler = new PostmanMessageHandler();
 
 		// create the Admin Controllers
+		new PostmanWelcomeController( $rootPluginFilenameAndPath );
 		new PostmanDashboardWidgetController( $rootPluginFilenameAndPath, $options, $authToken, $this->wpMailBinder );
 		new PostmanAdminController( $rootPluginFilenameAndPath, $options, $authToken, $this->messageHandler, $this->wpMailBinder );
 		new PostmanEmailLogController( $rootPluginFilenameAndPath );

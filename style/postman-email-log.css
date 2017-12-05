@@ -4,13 +4,6 @@ th#date {
 	width:15%;
 }
 
-#email-log-filter {
-	padding: 20px;
-	display: flex;
-	justify-content: space-around;
-	align-items: center;
-	border-bottom: 1px solid #ddd;
-}
 
 #email-log-filter label {
 	font-weight: bold;
@@ -22,6 +15,27 @@ th#date {
 	border-radius: 5px;
 }
 
+.postman-log-row {
+    padding: 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-bottom: 1px solid #ddd;    
+}
+
+#postman-log-actions {
+    border-bottom: 1px solid #ddd;   
+}
+
+#postman-log-actions .postman-log-row {
+    width: 50%;
+}
+
+.postman-no-sep {
+    border-bottom: none;
+}
+
+#postman-log-actions postman-log-actions
 
 /* Date Picker Default Styles */
 .ui-datepicker {

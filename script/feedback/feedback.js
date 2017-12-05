@@ -80,11 +80,20 @@ jQuery(document).ready(function($) {
 			$( '.postman-reason-input' ).hide();
 
 			if ( $( this ).hasClass( 'postman-custom-input' ) ) {
-				$( '#postman-deactivate-reasons' ).next( '.postman-reason-input' ).show();
+				var reason = $(this).find('input').data('reason');
+				var wrap = $( '#postman-deactivate-reasons' ).next( '.postman-reason-input' );
+				var input = wrap.find('input');
+				console.log(input);
+
+				if ( reason ) {
+					input.attr('placeholder',reason);
+				} else {
+					input.attr('placeholder','Do you mind help and give more detailes?');
+				}
+				wrap.show();
 			}
 
 			if ( $( this ).hasClass( 'postman-support-input' ) ) {
-				console.log($(this));
 				$( this ).find( '.postman-reason-input' ).show();
 			}			
 		});

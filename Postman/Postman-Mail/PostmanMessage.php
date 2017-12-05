@@ -35,7 +35,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 
 		// determined by the send() method
 		private $isTextHtml;
-		private $contentType;
+		private $contentType = 'text/plain';
 		private $charset;
 
 		private $boundary;
@@ -81,7 +81,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 				$this->contentType = sprintf( "%s;\r\n\t boundary=\"%s\"", $this->contentType, $this->getBoundary() );
 			}
 
-						$body = $this->getBody();
+			$body = $this->getBody();
 			$contentType = $this->getContentType();
 			// add the message content as either text or html
 			if ( empty( $contentType ) || substr( $contentType, 0, 10 ) === 'text/plain' ) {

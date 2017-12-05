@@ -35,11 +35,34 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			PostmanUtils::registerAdminMenu( $this, 'addPurgeDataSubmenu' );
 
 			// initialize the scripts, stylesheets and form fields
-			add_action( 'admin_init', array(
-					$this,
-					'registerStylesAndScripts',
-			), 0 );
+			add_action( 'admin_init', array( $this, 'registerStylesAndScripts' ), 0 );
+			add_action( 'admin_init', array( $this, 'do_activation_redirect' ) );
+
 		}
+
+		function do_activation_redirect() {
+
+			// Bail if no activation redirect
+		    if ( ! get_transient( '_post_activation_redirect' ) ) {
+				return;
+			}
+
+			// Delete the redirect transient
+			// delete_transient( '_post_activation_redirect' );
+			// Bail if activating from network, or bulk
+			if ( is_network_admin() || isset( $_GET['activate-multi'] ) ) {
+				return;
+			}
+
+			// Bail if the current user cannot see the about page
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
+
+			// Redirect to bbPress about page
+			wp_safe_redirect( add_query_arg( array( 'page' => 'post-about' ), admin_url( 'index.php' ) ) );
+		}
+
 		public static function getPageUrl( $slug ) {
 			return PostmanUtils::getPageUrl( $slug );
 		}

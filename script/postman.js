@@ -1,5 +1,13 @@
 jQuery(document).ready(function($) {
 	$( ".email-log-date" ).datepicker();
+
+	$('#postman_trash_all').on('click',function(e) {
+		if (confirm("Are You Sure?") == false) {
+		    e.preventDefault();
+
+		    return false;
+		}
+	});
 });
 
 var redirectUrlWarning = false;

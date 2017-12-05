@@ -234,10 +234,10 @@ if ( ! class_exists( 'PostmanEmailLogPurger' ) ) {
 		 *
 		 * @return unknown
 		 */
-		function __construct() {
+		function __construct( $args = array() ) {
 			$this->logger = new PostmanLogger( get_class( $this ) );
-			$args = array(
-					'posts_per_page' => 1000,
+			$defaults = array(
+					'posts_per_page' => -1,
 					'offset' => 0,
 					'category' => '',
 					'category_name' => '',
@@ -253,7 +253,9 @@ if ( ! class_exists( 'PostmanEmailLogPurger' ) ) {
 					'post_status' => 'private',
 					'suppress_filters' => true,
 			);
-			$this->posts = get_posts( $args );
+			$args = wp_parse_args( $args, $defaults );
+			$query = new WP_Query( $args );
+			$this->posts = $query->posts;
 		}
 
 		/**

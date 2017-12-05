@@ -110,13 +110,13 @@ class PostmanPluginFeedback {
 
 					<li class="postman-reason">
 						<label>
-							<span><input value="bad support" type="radio" name="reason" checked/></span>
-							<span><?php _e( 'Bad Support', 'postman' ); ?></span>
+							<span><input value="no time for this" type="radio" name="reason" checked/></span>
+							<span><?php _e( 'I have no time for this', 'postman' ); ?></span>
 						</label>					
 					</li>				
 					<li class="postman-reason postman-custom-input">
 						<label>
-							<span><input value="Found a better plugin" type="radio" name="reason" /></span>
+							<span><input value="Found a better plugin" type="radio" name="reason" data-reason="What is the name of the plugin?" /></span>
 							<span><?php _e( 'Found a better plugin', 'postman' ); ?></span>
 						</label>				
 					</li>
@@ -145,7 +145,7 @@ class PostmanPluginFeedback {
 					</li>																				
 				</ul>
 				<div class="postman-reason-input" style="display: none;">
-					<input type="text" class="regular-text" name="other_input" placeholder="Do you mind help and give more detailes?">
+					<input type="text" class="regular-text" name="other_input" placeholder="">
 				</div>				
 			</form>
 		</div>
