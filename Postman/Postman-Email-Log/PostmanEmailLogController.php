@@ -377,22 +377,21 @@ class PostmanEmailLogController {
 				<input id="search" type="text" name="search" value="<?php echo $search; ?>" placeholder="<?php _e( 'Search', Postman::TEXT_DOMAIN ); ?>">
 			</div>
 			<div class="form-control">
-				<button type="submit" name="filter" class="button button-primary"><?php _e( 'Filter', Postman::TEXT_DOMAIN ); ?></button>
-			</div>	
-		</div>
-		<div id="postman-log-actions">
-			<div class="postman-log-row postman-no-sep">
-				<label id="postman_page_records"><?php _e( 'Number of records per page', Postman::TEXT_DOMAIN ); ?></label>
+				<label id="postman_page_records"><?php _e( 'Records per page', Postman::TEXT_DOMAIN ); ?></label>
 				<select id="postman_page_records" name="postman_page_records">
 					<option value="10">10</option>
 					<option value="25">25</option>
 					<option value="50">50</option>
 					<option value="75">75</option>
 					<option value="100">100</option>
-				</select>
-				<label id="postman-log-trash-all"><?php _e( 'Trash all records', Postman::TEXT_DOMAIN ); ?></label>
+				</select>	
+			</div>		
+			<div class="form-control" style="padding: 0 5px 0 5px;">
+				<button type="submit" name="filter" class="button button-primary"><?php _e( 'Filter', Postman::TEXT_DOMAIN ); ?></button>
+			</div>	
+			<div class="form-control">
 				<button type="submit" id="postman_trash_all" name="postman_trash_all" class="button button-primary"><?php _e( 'Trash All', Postman::TEXT_DOMAIN ); ?></button>
-			</div>
+			</div>			
 		</div>
 		<div class="error">Please notice: when you select a date for example 11/20/2017, behind the scene the query select <b>11/20/2017 00:00:00</b>.<br>So if you searching for an email arrived that day at any hour you need to select 11/20/2017 as the <b>From Date</b> and 11/21/2017 as the <b>To Date</b>.</div>
 	</form>
