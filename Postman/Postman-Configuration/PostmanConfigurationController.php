@@ -73,11 +73,15 @@ class PostmanConfigurationController {
 		}
 		// register the stylesheet and javascript external resources
 		$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
+
 		wp_register_script( 'postman_manual_config_script', plugins_url( 'Postman/Postman-Configuration/postman_manual_config.js', $this->rootPluginFilenameAndPath ), array(
 				PostmanViewController::JQUERY_SCRIPT,
+				'jquery-ui-core',
+				'jquery-ui-tabs',
 				'jquery_validation',
 				PostmanViewController::POSTMAN_SCRIPT,
 		), $pluginData ['version'] );
+
 		wp_register_script( 'postman_wizard_script', plugins_url( 'Postman/Postman-Configuration/postman_wizard.js', $this->rootPluginFilenameAndPath ), array(
 				PostmanViewController::JQUERY_SCRIPT,
 				'jquery_validation',
@@ -145,7 +149,6 @@ class PostmanConfigurationController {
 		wp_enqueue_style( PostmanViewController::POSTMAN_STYLE );
 		wp_enqueue_style( 'jquery_ui_style' );
 		wp_enqueue_script( 'postman_manual_config_script' );
-		wp_enqueue_script( 'jquery-ui-tabs' );
 	}
 
 	/**
@@ -221,6 +224,9 @@ class PostmanConfigurationController {
 		print '</div>';
 		print '<div id="sendgrid_settings" class="authentication_setting non-basic non-oauth2">';
 		do_settings_sections( PostmanSendGridTransport::SENDGRID_AUTH_OPTIONS );
+		print '</div>';
+		print '<div id="mailgun_settings" class="authentication_setting non-basic non-oauth2">';
+		do_settings_sections( PostmanMailgunTransport::MAILGUN_AUTH_OPTIONS );
 		print '</div>';
 		print '</section>';
 		print '<section id="message_config">';

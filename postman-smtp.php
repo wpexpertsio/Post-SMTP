@@ -50,7 +50,7 @@ function post_smtp_plugin_deactivate() {
 }
 
 function post_smtp_plugin_admin_notice() {
-		echo '<div class="error"><p><strong>Post SMTP</strong> plugin is a fork of the original Postman SMTP, you must disable Postman SMTP to use this plugin.</p></div>';
+		echo '<div class="error"><p><strong>Post SMTP</strong> plugin is a fork (twin brother) of the original Postman SMTP, you must disable Postman SMTP to use this plugin.</p></div>';
 
 	if ( isset( $_GET['activate'] ) ) {
 		unset( $_GET['activate'] ); }

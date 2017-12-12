@@ -85,6 +85,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const BASIC_AUTH_PASSWORD = 'basic_auth_password';
 		const MANDRILL_API_KEY = 'mandrill_api_key';
 		const SENDGRID_API_KEY = 'sendgrid_api_key';
+		const MAILGUN_API_KEY = 'mailgun_api_key';
+		const MAILGUN_DOMAIN_NAME = 'mailgun_domain_name';
 		const PREVENT_MESSAGE_SENDER_NAME_OVERRIDE = 'prevent_sender_name_override';
 		const PREVENT_MESSAGE_SENDER_EMAIL_OVERRIDE = 'prevent_sender_email_override';
 		const CONNECTION_TIMEOUT = 'connection_timeout';
@@ -261,6 +263,15 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		public function getSendGridApiKey() {
 			if ( isset( $this->options [ PostmanOptions::SENDGRID_API_KEY ] ) ) {
 				return base64_decode( $this->options [ PostmanOptions::SENDGRID_API_KEY ] ); }
+		}
+		public function getMailgunApiKey() {
+			if ( isset( $this->options [ PostmanOptions::MAILGUN_API_KEY ] ) ) {
+				return base64_decode( $this->options [ PostmanOptions::MAILGUN_API_KEY ] ); }
+		}
+		public function getMailgunDomainName() {
+			if ( isset( $this->options [ PostmanOptions::MAILGUN_DOMAIN_NAME ] ) ) {
+				return $this->options [ PostmanOptions::MAILGUN_DOMAIN_NAME ];
+			}
 		}
 		public function getReplyTo() {
 			if ( isset( $this->options [ PostmanOptions::REPLY_TO ] ) ) {

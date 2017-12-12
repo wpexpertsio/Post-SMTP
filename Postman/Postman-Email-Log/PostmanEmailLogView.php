@@ -260,7 +260,7 @@ class PostmanEmailLogView extends WP_List_Table {
 		/**
 		 * First, lets decide how many records per page to show
 		 */
-		$per_page = 10;
+		$per_page = isset( $_POST['postman_page_records'] ) ? absint( $_POST['postman_page_records'] ) : 10;
 
 		/**
 		 * REQUIRED.
@@ -305,11 +305,9 @@ class PostmanEmailLogView extends WP_List_Table {
 		 * be able to use your precisely-queried data immediately.
 		 */
 		$data = array();
-		$posts_per_page = absint( $_POST['postman_page_records'] );
 
 		$args = array(
-				'posts_per_page' => $posts_per_page,
-				'offset' => 0,
+				'posts_per_page' => -1,
 				'orderby' => 'date',
 				'order' => 'DESC',
 				'post_type' => PostmanEmailLogPostType::POSTMAN_CUSTOM_POST_TYPE_SLUG,

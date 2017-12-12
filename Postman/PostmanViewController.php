@@ -48,7 +48,8 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			}
 
 			// Delete the redirect transient
-			// delete_transient( '_post_activation_redirect' );
+			delete_transient( '_post_activation_redirect' );
+
 			// Bail if activating from network, or bulk
 			if ( is_network_admin() || isset( $_GET['activate-multi'] ) ) {
 				return;

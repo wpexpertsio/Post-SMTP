@@ -360,6 +360,8 @@ class PostmanEmailLogController {
 	$from_date = isset( $_POST['from_date'] ) ? sanitize_text_field( $_POST['from_date'] ) : '';
 	$to_date = isset( $_POST['to_date'] ) ? sanitize_text_field( $_POST['to_date'] ) : '';
 	$search = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
+	$page_records = apply_filters( 'postman_log_per_page', array( 10, 15, 25, 50, 75, 100 ) );
+	$postman_page_records = isset( $_POST['postman_page_records'] ) ? absint( $_POST['postman_page_records'] ) : '';
 	?>
 
 	<form id="postman-email-log-filter" method="post">
@@ -379,11 +381,12 @@ class PostmanEmailLogController {
 			<div class="form-control">
 				<label id="postman_page_records"><?php _e( 'Records per page', Postman::TEXT_DOMAIN ); ?></label>
 				<select id="postman_page_records" name="postman_page_records">
-					<option value="10">10</option>
-					<option value="25">25</option>
-					<option value="50">50</option>
-					<option value="75">75</option>
-					<option value="100">100</option>
+					<?php
+					foreach ( $page_records as $value ) {
+						$selected = selected( $postman_page_records, $value, false );
+						echo '<option value="' . $value . '"' . $selected . '>' . $value . '</option>';
+					}
+					?>
 				</select>	
 			</div>		
 			<div class="form-control" style="padding: 0 5px 0 5px;">

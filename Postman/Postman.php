@@ -48,6 +48,7 @@ class Postman {
 		require_once 'Postman-Mail/PostmanGmailApiModuleTransport.php';
 		require_once 'Postman-Mail/PostmanMandrillTransport.php';
 		require_once 'Postman-Mail/PostmanSendGridTransport.php';
+		require_once 'Postman-Mail/PostmanMailgunTransport.php';
 		require_once 'PostmanOAuthToken.php';
 		require_once 'PostmanWpMailBinder.php';
 		require_once 'PostmanConfigTextHelper.php';
@@ -355,6 +356,7 @@ class Postman {
 		PostmanTransportRegistry::getInstance()->registerTransport( new PostmanGmailApiModuleTransport( $rootPluginFilenameAndPath ) );
 		PostmanTransportRegistry::getInstance()->registerTransport( new PostmanMandrillTransport( $rootPluginFilenameAndPath ) );
 		PostmanTransportRegistry::getInstance()->registerTransport( new PostmanSendGridTransport( $rootPluginFilenameAndPath ) );
+		PostmanTransportRegistry::getInstance()->registerTransport( new PostmanMailgunTransport( $rootPluginFilenameAndPath ) );
 	}
 
 	/**
