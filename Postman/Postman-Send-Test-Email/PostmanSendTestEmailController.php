@@ -206,7 +206,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		$serverName = PostmanUtils::postmanGetServerName();
 
 		/* translators: where %s is the domain name of the site */
-		$subject = sprintf( _x( 'Postman SMTP Test (%s)', 'Test Email Subject', Postman::TEXT_DOMAIN ), $serverName );
+		$subject = sprintf( _x( 'Post SMTP Test (%s)', 'Test Email Subject', Postman::TEXT_DOMAIN ), $serverName );
 
 		// Postman API: indicate to Postman this is just for testing
 		add_filter( 'postman_test_email', array(
