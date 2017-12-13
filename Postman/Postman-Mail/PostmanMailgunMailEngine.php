@@ -148,7 +148,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 
 			// add attachments
 			$this->logger->debug( 'Adding attachments' );
-			$attachments = $this->addAttachmentsToMail( $message );
+			$this->addAttachmentsToMail( $message );
 
 			$result = array();
 			try {
@@ -161,10 +161,10 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 					$this->logger->debug( 'Sending mail' );
 				}
 
-				$mgClient = new Mailgun( $this->apiKey );
+				$mg = Mailgun::create( $this->apiKey );
 
 				// Make the call to the client.
-				$result = $mgClient->sendMessage( $this->domainName, array_filter( $this->mailgunMessage ), array( 'attachment' => $attachments ) );
+				$result = $mg->messages()->send( $this->domainName, array_filter( $this->mailgunMessage ) );
 
 				if ( $this->logger->isInfo() ) {
 					$this->logger->info( sprintf( 'Message %d accepted for delivery', PostmanState::getInstance()->getSuccessfulDeliveries() + 1 ) );
@@ -196,7 +196,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 			$attachments = $message->getAttachments();
 			if ( ! is_array( $attachments ) ) {
 				// WordPress may a single filename or a newline-delimited string list of multiple filenames
-				$attArray = explode( PHP_EOL, $attachments );
+				$attArray[] = explode( PHP_EOL, $attachments );
 			} else {
 				$attArray = $attachments;
 			}
@@ -205,11 +205,16 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 			foreach ( $attArray as $file ) {
 				if ( ! empty( $file ) ) {
 					$this->logger->debug( 'Adding attachment: ' . $file );
-					$attachments[] = $file;
+					$attachments[] = array( 'filePath' => $file );
 				}
 			}
 
-			return $attachments;
+			if ( ! empty( $attachments ) ) {
+				if ( $this->logger->isTrace() ) {
+					$this->logger->trace( $attachments );
+				}
+				$this->mailgunMessage['attachment'] = $attachments;
+			}
 		}
 
 		// return the SMTP session transcript
