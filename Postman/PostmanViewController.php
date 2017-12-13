@@ -145,7 +145,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				$this->printDeliveryDetails();
 				/* translators: where %d is the number of emails delivered */
 				print '<p style="margin:10px 10px"><span>';
-				printf( _n( 'Postman has delivered <span style="color:green">%d</span> email.', 'Postman has delivered <span style="color:green">%d</span> emails.', PostmanState::getInstance()->getSuccessfulDeliveries(), Postman::TEXT_DOMAIN ), PostmanState::getInstance()->getSuccessfulDeliveries() );
+				printf( _n( 'Post SMTP has delivered <span style="color:green">%d</span> email.', 'Post SMTP has delivered <span style="color:green">%d</span> emails.', PostmanState::getInstance()->getSuccessfulDeliveries(), Postman::TEXT_DOMAIN ), PostmanState::getInstance()->getSuccessfulDeliveries() );
 				if ( $this->options->isMailLoggingEnabled() ) {
 					print ' ';
 					printf( __( 'The last %d email attempts are recorded <a href="%s">in the log</a>.', Postman::TEXT_DOMAIN ), PostmanOptions::getInstance()->getMailLoggingMaxEntries(), PostmanUtils::getEmailLogPageUrl() );
@@ -153,7 +153,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				print '</span></p>';
 			}
 			if ( $this->options->isNew() ) {
-				printf( '<h3 style="padding-top:10px">%s</h3>', __( 'Thank-you for choosing Postman!', Postman::TEXT_DOMAIN ) );
+				printf( '<h3 style="padding-top:10px">%s</h3>', __( 'Thank-you for choosing Post SMTP!', Postman::TEXT_DOMAIN ) );
 				/* translators: where %s is the URL of the Setup Wizard */
 				printf( '<p><span>%s</span></p>', sprintf( __( 'Let\'s get started! All users are strongly encouraged to <a href="%s">run the Setup Wizard</a>.', Postman::TEXT_DOMAIN ), $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG ) ) );
 				printf( '<p><span>%s</span></p>', sprintf( __( 'Alternately, <a href="%s">manually configure</a> your own settings and/or modify advanced options.', Postman::TEXT_DOMAIN ), $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_SLUG ) ) );
@@ -163,7 +163,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					/* translators: where %s is the URL to the WordPress.org review and ratings page */
 					printf( '%s</span></p>', sprintf( __( 'Please consider <a href="%s">leaving a review</a> to help spread the word! :D', Postman::TEXT_DOMAIN ), 'https://wordpress.org/support/view/plugin-reviews/post-smtp?filter=5' ) );
 				}
-				printf( '<p><span>%s :-)</span></p>', sprintf( __( 'Postman needs translators! Please take a moment to <a href="%s">translate a few sentences on-line</a>', Postman::TEXT_DOMAIN ), 'https://translate.wordpress.org/projects/wp-plugins/post-smtp/stable' ) );
+				printf( '<p><span>%s :-)</span></p>', sprintf( __( 'Post SMTP needs translators! Please take a moment to <a href="%s">translate a few sentences on-line</a>', Postman::TEXT_DOMAIN ), 'https://translate.wordpress.org/projects/wp-plugins/post-smtp/stable' ) );
 			}			
 		}
 
@@ -203,7 +203,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			PostmanViewController::outputChildPageHeader( sprintf( '%s/%s/%s', $importTitle, $exportTile, $resetTitle ) );
 			print '<section id="export_settings">';
 			printf( '<h3><span>%s<span></h3>', $exportTile );
-			printf( '<p><span>%s</span></p>', __( 'Copy this data into another instance of Postman to duplicate the configuration.', Postman::TEXT_DOMAIN ) );
+			printf( '<p><span>%s</span></p>', __( 'Copy this data into another instance of Post SMTP to duplicate the configuration.', Postman::TEXT_DOMAIN ) );
 			$data = '';
 			if ( ! PostmanPreRequisitesCheck::checkZlibEncode() ) {
 				$extraDeleteButtonAttributes = sprintf( 'disabled="true"' );
@@ -222,7 +222,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			wp_nonce_field( PostmanAdminController::IMPORT_SETTINGS_SLUG );
 			printf( '<input type="hidden" name="action" value="%s" />', PostmanAdminController::IMPORT_SETTINGS_SLUG );
 			print '<p>';
-			printf( '<span>%s</span>', __( 'Paste data from another instance of Postman here to duplicate the configuration.', Postman::TEXT_DOMAIN ) );
+			printf( '<span>%s</span>', __( 'Paste data from another instance of Post SMTP here to duplicate the configuration.', Postman::TEXT_DOMAIN ) );
 			if ( PostmanTransportRegistry::getInstance()->getSelectedTransport()->isOAuthUsed( PostmanOptions::getInstance()->getAuthenticationType() ) ) {
 				$warning = __( 'Warning', Postman::TEXT_DOMAIN );
 				$errorMessage = __( 'Using the same OAuth 2.0 Client ID and Client Secret from this site at the same time as another site will cause failures.', Postman::TEXT_DOMAIN );
@@ -238,7 +238,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			print '<form method="POST" action="' . get_admin_url() . 'admin-post.php">';
 			wp_nonce_field( PostmanAdminController::PURGE_DATA_SLUG );
 			printf( '<input type="hidden" name="action" value="%s" />', PostmanAdminController::PURGE_DATA_SLUG );
-			printf( '<p><span>%s</span></p><p><span>%s</span></p>', __( 'This will purge all of Postman\'s settings, including account credentials and the email log.', Postman::TEXT_DOMAIN ), __( 'Are you sure?', Postman::TEXT_DOMAIN ) );
+			printf( '<p><span>%s</span></p><p><span>%s</span></p>', __( 'This will purge all of Post SMTP\'s settings, including account credentials and the email log.', Postman::TEXT_DOMAIN ), __( 'Are you sure?', Postman::TEXT_DOMAIN ) );
 			$extraDeleteButtonAttributes = 'style="background-color:red;color:white"';
 			if ( $this->options->isNew() ) {
 				$extraDeleteButtonAttributes .= ' disabled="true"';
