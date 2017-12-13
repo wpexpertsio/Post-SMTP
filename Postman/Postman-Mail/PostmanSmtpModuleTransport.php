@@ -265,7 +265,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 			$authDesc = $this->getAuthenticationDescription( $recommendation ['auth'] );
 			$recommendation ['label'] = sprintf( 'SMTP - %2$s:%3$d', $transportDescription, $hostData->hostnameDomainOnly, $port );
 			/* translators: where %1$s is a description of the transport (eg. SMTPS-SSL), %2$s is a description of the authentication (eg. Password-CRAMMD5), %3$d is the TCP port (eg. 465), %4$d is the hostname */
-			$recommendation ['message'] = sprintf( __( 'Postman recommends %1$s with %2$s authentication to host %4$s on port %3$d.', Postman::TEXT_DOMAIN ), $transportDescription, $authDesc, $port, $hostname );
+			$recommendation ['message'] = sprintf( __( 'Post SMTP recommends %1$s with %2$s authentication to host %4$s on port %3$d.', Postman::TEXT_DOMAIN ), $transportDescription, $authDesc, $port, $hostname );
 		}
 
 		// fill-in the rest of the recommendation
