@@ -156,7 +156,7 @@ class PostmanSendTestEmailController {
 		printf( '<h5>%s</h5>', __( 'Session Transcript', Postman::TEXT_DOMAIN ) );
 		print '<fieldset>';
 		printf( '<legend>%s</legend>', __( 'Examine the Session Transcript if you need to.', Postman::TEXT_DOMAIN ) );
-		printf( '<p>%s</p>', __( 'This is the conversation between Postman and the mail server. It can be useful for diagnosing problems. <b>DO NOT</b> post it on-line, it may contain your account password.', Postman::TEXT_DOMAIN ) );
+		printf( '<p>%s</p>', __( 'This is the conversation between Post SMTP and the mail server. It can be useful for diagnosing problems. <b>DO NOT</b> post it on-line, it may contain your account password.', Postman::TEXT_DOMAIN ) );
 		print '<section>';
 		printf( '<p><label for="postman_test_message_transcript">%s</label></p>', __( 'Session Transcript', Postman::TEXT_DOMAIN ) );
 		print '<textarea readonly="readonly" id="postman_test_message_transcript" cols="65" rows="8"></textarea>';
