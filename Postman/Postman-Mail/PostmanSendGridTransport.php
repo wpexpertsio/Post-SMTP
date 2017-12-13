@@ -76,7 +76,7 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 	}
 	public function getDeliveryDetails() {
 		/* translators: where (1) is the secure icon and (2) is the transport name */
-		return sprintf ( __ ( 'Postman will send mail via the <b>%1$s %2$s</b>.', Postman::TEXT_DOMAIN ), '🔐', $this->getName () );
+		return sprintf ( __ ( 'Post SMTP will send mail via the <b>%1$s %2$s</b>.', Postman::TEXT_DOMAIN ), '🔐', $this->getName () );
 	}
 	
 	/**
