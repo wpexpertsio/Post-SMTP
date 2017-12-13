@@ -134,7 +134,7 @@ class PostmanSendTestEmailController {
 		printf( '<p>%s', __( 'This utility allows you to send an email message for testing.', Postman::TEXT_DOMAIN ) );
 		print ' ';
 		/* translators: where %d is an amount of time, in seconds */
-		printf( '%s</p>', sprintf( _n( 'If there is a problem, Postman will give up after %d second.', 'If there is a problem, Postman will give up after %d seconds.', $this->options->getReadTimeout(), Postman::TEXT_DOMAIN ), $this->options->getReadTimeout() ) );
+		printf( '%s</p>', sprintf( _n( 'If there is a problem, Post SMTP will give up after %d second.', 'If there is a problem, Post SMTP will give up after %d seconds.', $this->options->getReadTimeout(), Postman::TEXT_DOMAIN ), $this->options->getReadTimeout() ) );
 		printf( '<label for="postman_test_options[test_email]">%s</label>', _x( 'Recipient Email Address', 'Configuration Input Field', Postman::TEXT_DOMAIN ) );
 		print $this->test_email_callback();
 		print '</fieldset>';
@@ -292,7 +292,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		// English - Mandarin - French - Hindi - Spanish - Portuguese - Russian - Japanese
 		// http://www.pinyin.info/tools/converter/chars2uninumbers.html
 		$greeting = 'Hello! - &#20320;&#22909; - Bonjour! - &#2344;&#2350;&#2360;&#2381;&#2340;&#2375; - ¡Hola! - Ol&#225; - &#1055;&#1088;&#1080;&#1074;&#1077;&#1090;! - &#20170;&#26085;&#12399;';
-		$sentBy = sprintf( _x( 'Sent by Postman %s', 'Test Email Tagline', Postman::TEXT_DOMAIN ), $pluginData ['version'] );
+		$sentBy = sprintf( _x( 'Sent by Post SMTP %s', 'Test Email Tagline', Postman::TEXT_DOMAIN ), $pluginData ['version'] );
 		$imageSource = __( 'Image source', Postman::TEXT_DOMAIN );
 		$withPermission = __( 'Used with permission', Postman::TEXT_DOMAIN );
 		$messageArray = array(
