@@ -130,7 +130,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			print '<div class="wrap">';
 			$this->displayTopNavigation();
 			if ( ! PostmanPreRequisitesCheck::isReady() ) {
-				printf( '<p><span style="color:red; padding:2px 0; font-size:1.1em">%s</span></p>', __( 'Postman is unable to run. Email delivery is being handled by WordPress (or another plugin).', Postman::TEXT_DOMAIN ) );
+				printf( '<p><span style="color:red; padding:2px 0; font-size:1.1em">%s</span></p>', __( 'Post SMTP is unable to run. Email delivery is being handled by WordPress (or another plugin).', Postman::TEXT_DOMAIN ) );
 			} else {
 				$statusMessage = PostmanTransportRegistry::getInstance()->getReadyMessage();
 				if ( PostmanTransportRegistry::getInstance()->getActiveTransport()->isConfiguredAndReady() ) {
