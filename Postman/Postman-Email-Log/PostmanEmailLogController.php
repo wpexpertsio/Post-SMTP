@@ -265,7 +265,7 @@ class PostmanEmailLogController {
     border-bottom: 1px dashed #ccc;
     background: #bbb;
 }</style></head><body>';
-			printf( '<p>%s</p>', __( 'This is the conversation between Postman and the mail server. It can be useful for diagnosing problems. <b>DO NOT</b> post it on-line, it may contain your account password.', Postman::TEXT_DOMAIN ) );
+			printf( '<p>%s</p>', __( 'This is the conversation between Post SMTP and the mail server. It can be useful for diagnosing problems. <b>DO NOT</b> post it on-line, it may contain your account password.', Postman::TEXT_DOMAIN ) );
 			print '<hr/>';
 			print '<pre>';
 			if ( ! empty( $meta_values ['session_transcript'] [0] ) ) {
