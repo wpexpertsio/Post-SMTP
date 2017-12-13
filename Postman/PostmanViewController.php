@@ -164,8 +164,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					printf( '%s</span></p>', sprintf( __( 'Please consider <a href="%s">leaving a review</a> to help spread the word! :D', Postman::TEXT_DOMAIN ), 'https://wordpress.org/support/view/plugin-reviews/post-smtp?filter=5' ) );
 				}
 				printf( '<p><span>%s :-)</span></p>', sprintf( __( 'Postman needs translators! Please take a moment to <a href="%s">translate a few sentences on-line</a>', Postman::TEXT_DOMAIN ), 'https://translate.wordpress.org/projects/wp-plugins/post-smtp/stable' ) );
-			}
-			printf( '<p><span>%s</span></p>', __( '<b style="background-color:yellow">New for v1.7!</style></b> Send mail with the Mandrill or SendGrid APIs.', Postman::TEXT_DOMAIN ) );
+			}			
 		}
 
 		/**
@@ -294,7 +293,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			printf( '<li><a href="%s" class="welcome-icon run-port-test">%s</a></li>', $this->getPageUrl( PostmanConnectivityTestController::PORT_TEST_SLUG ), __( 'Connectivity Test', Postman::TEXT_DOMAIN ) );
 			printf( '<li><a href="%s" class="welcome-icon run-port-test">%s</a></li>', $this->getPageUrl( PostmanDiagnosticTestController::DIAGNOSTICS_SLUG ), __( 'Diagnostic Test', Postman::TEXT_DOMAIN ) );
 			printf( '<li><a href="https://postmansmtp.com/forums/" class="welcome-icon postman_support">%s</a></li>', __( 'Online Support', Postman::TEXT_DOMAIN ) );
-			printf( '<li><img class="align-middle" src="' . plugins_url( 'style/images/new.gif', dirname( __DIR__ ) . '/postman-smtp.php' ) . '"><a target="blank" class="align-middle" href="https://postmansmtp.com/category/guides/" class="welcome-icon postman_guides">%s</a></li>', __( 'Guides', Postman::TEXT_DOMAIN ) );
+			printf( '<li><a href="https://postmansmtp.com/category/guides/" class="welcome-icon postman_guides">%s</a></li>', __( 'Guides', Postman::TEXT_DOMAIN ) );
 			print '</ul></div></div></div></div>';
 		}
 	}
