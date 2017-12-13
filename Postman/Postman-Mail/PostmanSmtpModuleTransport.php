@@ -536,7 +536,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	 */
 	public function printWizardMailServerHostnameStep() {
 		printf( '<legend>%s</legend>', _x( 'Which host will relay the mail?', 'Wizard Step Title', Postman::TEXT_DOMAIN ) );
-		printf( '<p>%s</p>', __( 'This is the Outgoing (SMTP) Mail Server, or Mail Submission Agent (MSA), which Postman delegates mail delivery to. This server is specific to your email account, and if you don\'t know what to use, ask your email service provider.', Postman::TEXT_DOMAIN ) );
+		printf( '<p>%s</p>', __( 'This is the Outgoing (SMTP) Mail Server, or Mail Submission Agent (MSA), which Post SMTP delegates mail delivery to. This server is specific to your email account, and if you don\'t know what to use, ask your email service provider.', Postman::TEXT_DOMAIN ) );
 		printf( '<p>%s</p>', __( 'Note that many WordPress hosts, such as GoDaddy, Bluehost and Dreamhost, require that you use their mail accounts with their mail servers, and prevent you from using others.', Postman::TEXT_DOMAIN ) );
 		printf( '<label for="hostname">%s</label>', __( 'Outgoing Mail Server Hostname', Postman::TEXT_DOMAIN ) );
 		print $this->hostname_callback();
