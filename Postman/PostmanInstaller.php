@@ -42,7 +42,7 @@ class PostmanInstaller {
 			$this->addCapability();
 		}
 
-		$this->add_activation_redirect();
+		//$this->add_activation_redirect();
 	}
 
 	function add_activation_redirect() {
@@ -52,7 +52,7 @@ class PostmanInstaller {
 			return; }
 
 		// Add the transient to redirect
-	    set_transient( '_post_activation_redirect', true, 30 );
+	    //set_transient( '_post_activation_redirect', true, 30 );
 	}
 
 	/**

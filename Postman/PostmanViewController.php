@@ -36,7 +36,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 
 			// initialize the scripts, stylesheets and form fields
 			add_action( 'admin_init', array( $this, 'registerStylesAndScripts' ), 0 );
-			add_action( 'admin_init', array( $this, 'do_activation_redirect' ) );
+			//add_action( 'admin_init', array( $this, 'do_activation_redirect' ) );
 
 		}
 

@@ -234,7 +234,7 @@ class PostmanTransportRegistry {
 				return __( 'Postman is configured.', Postman::TEXT_DOMAIN );
 			}
 		} else {
-			return '<div class="updated error otgs-is-dismissible settings-error notice is-dismissible" style="20px;">' . __( 'Postman is <em>not</em> configured and is mimicking out-of-the-box WordPress email delivery.', Postman::TEXT_DOMAIN ) . '</div>';
+			return __( 'Postman is <em>not</em> configured and is mimicking out-of-the-box WordPress email delivery.', Postman::TEXT_DOMAIN );
 		}
 	}
 }

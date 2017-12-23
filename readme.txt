@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehuda@m
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365
 Requires at least: 3.9
 Tested up to: 4.9
-Stable tag: 1.7.10
+Stable tag: 1.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -283,6 +283,11 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+= 1.8 - 2017-12-24
+* New: Mailgun API integration
+* New: New filter controls
+* New: WPML conflict fix
+* Fix: Minor old bugs
 
 = 1.7.10 - 2017-11-21 ==
 * Fixed: bug while detecting transcript error

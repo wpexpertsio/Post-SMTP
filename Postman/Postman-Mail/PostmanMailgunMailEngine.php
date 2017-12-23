@@ -90,7 +90,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 				$recipient->log( $this->logger, 'To' );
 				$recipients[] = $recipient->getEmail();
 			}
-			$this->mailgunMessage['to'] = implode( ',', $recipients );
+			$this->mailgunMessage['to'] = $recipients;
 
 			// add the cc recipients
 			$recipients = array();
@@ -164,7 +164,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 				$mg = Mailgun::create( $this->apiKey );
 
 				// Make the call to the client.
-				$result = $mg->messages()->send( $this->domainName, array_filter( $this->mailgunMessage ) );
+				$result = $this->processSend( $mg );
 
 				if ( $this->logger->isInfo() ) {
 					$this->logger->info( sprintf( 'Message %d accepted for delivery', PostmanState::getInstance()->getSuccessfulDeliveries() + 1 ) );
@@ -179,6 +179,40 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 				$this->transcript .= print_r( $this->mailgunMessage, true );
 				throw $e;
 			}
+		}
+
+
+		private function processSend( $mg ) {
+
+			if ( count( $this->mailgunMessage['to'] ) == 1 ) {
+
+				return $mg->messages()->send( $this->domainName, array_filter( $this->mailgunMessage ) );
+			} else {
+				$chunks = array_chunk( $this->mailgunMessage['to'], 1000, true );
+
+				$result = array();
+				foreach ( $chunks as $key => $emails ) {
+					$this->mailgunMessage['to'] = $emails;
+					$recipient_variables = $this->getRecipientVariables( $emails );
+					$this->mailgunMessage['recipient-variables'] = $recipient_variables;
+
+					$result[] = $mg->messages()->send( $this->domainName, array_filter( $this->mailgunMessage ) );
+
+					// Don't have a reason just wait a bit before sending the next chunk
+					sleep(2);
+				}
+
+				return $result;
+			}
+		}
+
+		private function getRecipientVariables( $emails ) {
+			$recipient_variables = array();
+			foreach ( $emails as $key => $email ) {
+				$recipient_variables[$email] = array( 'id' => $key );
+			}
+
+			return json_encode( $recipient_variables );
 		}
 
 		private function addHeader( $name, $value, $deprecated = '' ) {

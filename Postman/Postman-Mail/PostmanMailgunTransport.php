@@ -154,7 +154,7 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 		$overrideItem ['auth_items'] = array(
 				array(
 						'selected' => true,
-						'name' => __( 'API Kkey', Postman::TEXT_DOMAIN ),
+						'name' => __( 'API Key', Postman::TEXT_DOMAIN ),
 						'value' => 'api_key',
 				),
 		);
