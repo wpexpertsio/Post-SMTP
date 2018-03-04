@@ -259,7 +259,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 			// the message was NOT sent successfully, generate an appropriate message for the user
 			$statusMessage = $result ['exception']->getMessage();
 
-						$this->logger->debug( 'statusmessage: ' . $statusMessage );
+			$this->logger->debug( 'statusmessage: ' . $statusMessage );
 
 			// compose the JSON response for the caller
 			$response = array(

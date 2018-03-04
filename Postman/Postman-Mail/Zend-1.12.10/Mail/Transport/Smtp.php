@@ -120,7 +120,7 @@ class Postman_Zend_Mail_Transport_Smtp extends Postman_Zend_Mail_Transport_Abstr
         if (isset($config['name'])) {
             $this->_name = $config['name'];
         } else {
-            $this->_name = PostmanUtils::getServerIp();
+            $this->_name = PostmanUtils::getServerName();
         }
 
         if (isset($config['port'])) {

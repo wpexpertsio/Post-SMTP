@@ -431,7 +431,7 @@ class PostmanUtils {
 		}
 	}
 
-	public static function getServerIp() {
+	public static function getServerName() {
 		$ip = '';
 
 		if ( strpos( $_SERVER['SERVER_SOFTWARE'], 'iis' ) !== false ) {
@@ -442,13 +442,21 @@ class PostmanUtils {
 			$ip = $_SERVER['SERVER_ADDR'];
 		}
 
-	    $serverIp = filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 );
-
-	    if ( ! $serverIp ) {
-	    	$serverIp = filter_var( gethostbyname( $_SERVER['SERVER_NAME'] ), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 );
+	    if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+		    $host = gethostbyaddr( $ip );
 	    }
 
-	    return $serverIp ? $serverIp : 'localhost';
+	    if ( $host == $ip || $host == false ) {
+		    $host = filter_var( $_SERVER['HTTP_HOST'], FILTER_SANITIZE_STRING );
+	    }
+
+	    return $host ? $host : 'localhost';
+	}
+
+	public static function getHost( $url ) {
+		$host = parse_url( trim( $url ), PHP_URL_HOST );
+
+		return str_replace('www.', '', $host );
 	}
 }
 PostmanUtils::staticInit();

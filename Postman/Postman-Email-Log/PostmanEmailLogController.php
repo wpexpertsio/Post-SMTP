@@ -43,6 +43,8 @@ class PostmanEmailLogController {
 					$this,
 					'on_admin_init',
 			) );
+
+
 		}
 		if ( is_admin() ) {
 			$actionName = self::RESEND_MAIL_AJAX_SLUG;
@@ -390,7 +392,7 @@ class PostmanEmailLogController {
 				</select>	
 			</div>		
 			<div class="form-control" style="padding: 0 5px 0 5px;">
-				<button type="submit" name="filter" class="button button-primary"><?php _e( 'Filter', Postman::TEXT_DOMAIN ); ?></button>
+				<button type="submit" name="filter" class="button button-primary"><?php _e( 'Filter/Search', Postman::TEXT_DOMAIN ); ?></button>
 			</div>	
 			<div class="form-control">
 				<button type="submit" id="postman_trash_all" name="postman_trash_all" class="button button-primary"><?php _e( 'Trash All', Postman::TEXT_DOMAIN ); ?></button>

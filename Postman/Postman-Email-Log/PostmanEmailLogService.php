@@ -160,14 +160,16 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 			$message .= "\r\n" . __( 'You are welcome to post a support issue.', Postman::TEXT_DOMAIN );
 			$message .= "\r\n" . __( 'The log to paste with your support issue:', Postman::TEXT_DOMAIN ) . "\r\n";
 
+			$to_email = get_bloginfo( 'admin_email' );
+			$domain = get_bloginfo( 'url' );
 			if ( $log->statusMessage && ! empty( $log->statusMessage ) ) {
-				mail( get_bloginfo( 'admin_email' ), __( 'Post SMTP email error', Postman::TEXT_DOMAIN ), $message . $log->statusMessage );
+				mail( $to_email, "{$domain}: " .  __( 'Post SMTP email error', Postman::TEXT_DOMAIN ), $message . $log->statusMessage, null, "-f{$to_email}" );
 			}
 
 			preg_match_all( '/(.*)From/s', $log->sessionTranscript, $matches );
 
 			if ( isset( $matches[1][0] ) && ! empty( $matches[1][0] ) && strpos( strtolower( $matches[1][0] ), 'error' ) !== false ) {
-				mail( get_bloginfo( 'admin_email' ), __( 'Post SMTP session transcript error', Postman::TEXT_DOMAIN ), $message . $log->sessionTranscript );
+				mail( $to_email, "{$domain}: " . __( 'Post SMTP session transcript error', Postman::TEXT_DOMAIN ), $message . $log->sessionTranscript, null, "-f{$to_email}" );
 			}
 		}
 

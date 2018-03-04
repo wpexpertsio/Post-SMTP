@@ -1176,7 +1176,9 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
         if ($transport === null) {
             if (! self::$_defaultTransport instanceof Postman_Zend_Mail_Transport_Abstract) {
                 require_once 'Zend/Mail/Transport/Sendmail.php';
-                $transport = new Postman_Zend_Mail_Transport_Sendmail();
+	            
+	            $replyTo = self::getDefaultReplyTo();
+                $transport = new Postman_Zend_Mail_Transport_Sendmail("-f{$replyTo['email']}");
             } else {
                 $transport = self::$_defaultTransport;
             }

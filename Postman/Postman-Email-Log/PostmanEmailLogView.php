@@ -55,6 +55,7 @@ class PostmanEmailLogView extends WP_List_Table {
 	 */
 	function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
+			case 'sent_to' :
 			case 'date' :
 			case 'status' :
 				return $item [ $column_name ];
@@ -159,6 +160,7 @@ class PostmanEmailLogView extends WP_List_Table {
 		$columns = array(
 				'cb' => '<input type="checkbox" />', // Render a checkbox instead of text
 				'title' => _x( 'Subject', 'What is the subject of this message?', Postman::TEXT_DOMAIN ),
+				'sent_to' => __( 'Sent To', Postman::TEXT_DOMAIN ),
 				'status' => __( 'Status', Postman::TEXT_DOMAIN ),
 				'date' => _x( 'Delivery Time', 'When was this email sent?', Postman::TEXT_DOMAIN ),
 		);
@@ -363,9 +365,10 @@ class PostmanEmailLogView extends WP_List_Table {
 				/* Translators: where %s indicates the relative time from now */
 				$date = sprintf( _x( '%s ago', 'A relative time as in "five days ago"', Postman::TEXT_DOMAIN ), $humanTime );
 			}
-
+			$meta_values = get_post_meta( $post->ID );
 			$flattenedPost = array(
 					// the post title must be escaped as they are displayed in the HTML output
+					'sent_to' => sanitize_email( $meta_values ['to_header'] [0] ),
 					'title' => esc_html( $post->post_title ),
 					// the post status must be escaped as they are displayed in the HTML output
 					'status' => ($post->post_excerpt != null ? esc_html( $post->post_excerpt ) : __( 'Sent', Postman::TEXT_DOMAIN )),

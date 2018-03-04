@@ -23,6 +23,12 @@ th#date {
     border-bottom: 1px solid #ddd;    
 }
 
+#postman_page_records {
+	padding: 10px;
+	line-height: normal;
+	height: auto;
+}
+
 #postman-log-actions {
     border-bottom: 1px solid #ddd;   
 }

@@ -23,7 +23,7 @@ if (! class_exists ( 'PostmanSmtpModuleTransport' )) {
 			parent::init();
 			// From email and name
 			// If we don't have a name from the input headers
-			$this->fromName = 'WordPress';
+			$this->fromName = apply_filters( 'wp_mail_from_name', 'WordPress' );
 			
 			/*
 			 * If we don't have an email from the input headers default to wordpress@$sitename
@@ -34,12 +34,10 @@ if (! class_exists ( 'PostmanSmtpModuleTransport' )) {
 			 */
 			
 			// Get the site domain and get rid of www.
-			$sitename = strtolower ( $_SERVER ['SERVER_NAME'] );
-			if (substr ( $sitename, 0, 4 ) == 'www.') {
-				$sitename = substr ( $sitename, 4 );
-			}
+			$site_url = get_bloginfo( 'url' );
+			$sitename = strtolower ( PostmanUtils::getHost( $site_url ) );
 			
-			$this->fromEmail = 'wordpress@' . $sitename;
+			$this->fromEmail = apply_filters( 'wp_mail_from', 'wordpress@' . $sitename );
 		}
 		public function isConfiguredAndReady() {
 			return false;
