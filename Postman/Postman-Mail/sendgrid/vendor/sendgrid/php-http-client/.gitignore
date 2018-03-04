@@ -1,0 +1,6 @@
+.env
+*.lock
+vendor/
+*.old
+.idea/
+*.phar
