@@ -3,8 +3,8 @@ Contributors: yehudah, jasonhendriks
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehuda@myinbox.in&item_name=Donation+for+PostSMTP
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
-Tested up to: 4.9
-Stable tag: 1.8
+Tested up to: 4.9.4
+Stable tag: 1.8.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -283,6 +283,17 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 1.8.1 - 2017-12-24
+* New: Sendgrid API & Client Version 6
+* New: Add email log 'send to' column
+* Fix: fallback emails on hosting require the '-f' parameter
+* Fix: Using hostname insted of an IP
+* Fix: Remove mailgun test folder ( virustotal issue )
+* Fix: Additional bugs collected from support tickets.
+* Added: added filters to from_name and from_email filters (local connection)
+* change hostname extrect logic
+
 = 1.8 - 2017-12-24
 * New: Mailgun API integration
 * New: New filter controls
