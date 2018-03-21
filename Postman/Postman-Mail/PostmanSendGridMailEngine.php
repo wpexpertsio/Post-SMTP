@@ -55,12 +55,24 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 			// add the to recipients
 			$counter = 0;
 			$emails = array();
+			/**
+			 * @todo: Find a better approch.
+			 */
+			$duplicates = array();
 			foreach ( ( array ) $message->getToRecipients() as $recipient ) {
 				$recipient->log( $this->logger, 'To' );
+
+				$email = $recipient->getEmail();
 				if ( $counter == 0 ) {
+					$this->logger->debug( 'Adding to=' . $recipient->getEmail() );
 					$to = new SendGrid\Email( $recipient->getName(), $recipient->getEmail() );
+					$duplicates[] = $email;
 				} else {
-					$emails[] = new SendGrid\Email( $recipient->getName(), $recipient->getEmail() );
+					if ( ! in_array( $email, $duplicates ) ) {
+						$duplicates[] = $email;
+						$this->logger->debug( 'Adding personalization to=' . $recipient->getEmail() );
+						$emails[] = new SendGrid\Email( $recipient->getName(), $recipient->getEmail() );
+					}
 				}
 
 				$counter++;
@@ -118,14 +130,20 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 			// add the cc recipients
 			foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
-				$recipient->log( $this->logger, 'Cc' );
-				$mail->personalization[0]->addCc( $recipient->getEmail(), $recipient->getName() );
+				if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
+					$recipient->log( $this->logger, 'Cc' );
+					$email = new SendGrid\Email( $recipient->getName(), $recipient->getEmail() );
+					$mail->personalization[0]->addCc( $email );
+				}
 			}
 
 			// add the bcc recipients
 			foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
-				$recipient->log( $this->logger, 'Bcc' );
-				$mail->personalization[0]->addBcc( $recipient->getEmail(), $recipient->getName() );
+				if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
+					$recipient->log( $this->logger, 'Bcc' );
+					$email = new SendGrid\Email( $recipient->getName(), $recipient->getEmail() );
+					$mail->personalization[0]->addBcc( $email );
+				}
 			}
 
 			// add the messageId
@@ -163,7 +181,7 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 				$response = $sendgrid->client->mail()->send()->post( $mail );
 				if ( $this->logger->isInfo() ) {
-					$this->logger->info( );
+					$this->logger->info( sprintf( 'Message %d accepted for delivery', PostmanState::getInstance()->getSuccessfulDeliveries() + 1 ) );
 				}
 
 				$response_body = json_decode( $response->body() );
@@ -172,6 +190,9 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 					$this->transcript = $response_body->errors[0]->message;
 					$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 					$this->transcript .= print_r( $mail, true );
+
+					$this->logger->debug( 'Transcript=' . $this->transcript );
+
 					throw new Exception( $response_body->errors[0]->message );
 				}
 				$this->transcript = print_r( $response->body(), true );
@@ -181,6 +202,7 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 				$this->transcript = $e->getMessage();
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 				$this->transcript .= print_r( $mail, true );
+				$this->logger->debug( 'Transcript=' . $this->transcript );
 				throw $e;
 			}
 		}
