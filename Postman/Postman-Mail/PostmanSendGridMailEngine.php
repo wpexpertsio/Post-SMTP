@@ -18,7 +18,6 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 		// the result
 		private $transcript;
 
-		private $personalization;
 		private $apiKey;
 
 		/**
@@ -32,9 +31,6 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 			// create the logger
 			$this->logger = new PostmanLogger( get_class( $this ) );
-
-			// create the Message
-			$this->personalization = new SendGrid\Personalization();
 		}
 
 		/**
@@ -44,24 +40,6 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 		 */
 		public function send( PostmanMessage $message ) {
 			$options = PostmanOptions::getInstance();
-
-			// add the Postman signature - append it to whatever the user may have set
-			if ( ! $options->isStealthModeEnabled() ) {
-				$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
-				$this->personalization->addHeader( 'X-Mailer', sprintf( 'Postman SMTP %s for WordPress (%s)', $pluginData ['version'], 'https://wordpress.org/plugins/post-smtp/' ) );
-			}
-
-			// add the headers - see http://framework.zend.com/manual/1.12/en/zend.mail.additional-headers.html
-			foreach ( ( array ) $message->getHeaders() as $header ) {
-				$this->logger->debug( sprintf( 'Adding user header %s=%s', $header ['name'], $header ['content'] ) );
-				$this->personalization->addHeader( $header ['name'], $header ['content'] );
-			}
-
-			// if the caller set a Content-Type header, use it
-			$contentType = $message->getContentType();
-			if ( ! empty( $contentType ) ) {
-				$this->logger->debug( 'Some header keys are reserved. You may not include any of the following reserved headers: x-sg-id, x-sg-eid, received, dkim-signature, Content-Type, Content-Transfer-Encoding, To, From, Subject, Reply-To, CC, BCC.' );
-			}
 
 			// add the From Header
 			$sender = $message->getFromAddress();
@@ -76,35 +54,16 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 			// add the to recipients
 			$counter = 0;
+			$emails = array();
 			foreach ( ( array ) $message->getToRecipients() as $recipient ) {
 				$recipient->log( $this->logger, 'To' );
 				if ( $counter == 0 ) {
-					$to = new SendGrid\Email($recipient->getName(), $recipient->getEmail());
-					$this->personalization->addTo( $to );
+					$to = new SendGrid\Email( $recipient->getName(), $recipient->getEmail() );
 				} else {
-					$email = new SendGrid\Email($recipient->getName(), $recipient->getEmail());
-					$this->personalization->addTo( $email );
+					$emails[] = new SendGrid\Email( $recipient->getName(), $recipient->getEmail() );
 				}
 
 				$counter++;
-			}
-
-			// add the cc recipients
-			foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
-				$recipient->log( $this->logger, 'Cc' );
-				$this->personalization->addCc( $recipient->getEmail(), $recipient->getName() );
-			}
-
-			// add the bcc recipients
-			foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
-				$recipient->log( $this->logger, 'Bcc' );
-				$this->personalization->addBcc( $recipient->getEmail(), $recipient->getName() );
-			}
-
-			// add the messageId
-			$messageId = $message->getMessageId();
-			if ( ! empty( $messageId ) ) {
-				$this->personalization->addHeader( 'message-id', $messageId );
 			}
 
 			// add the subject
@@ -113,44 +72,81 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 			}
 
 			// add the message content
-
 			$textPart = $message->getBodyTextPart();
 			if ( ! empty( $textPart ) ) {
 				$this->logger->debug( 'Adding body as text' );
-				$content = new SendGrid\Content("text/plain", $textPart);
+				$content = new SendGrid\Content( 'text/plain', $textPart );
 			}
 
 			$htmlPart = $message->getBodyHtmlPart();
 			if ( ! empty( $htmlPart ) ) {
 				$this->logger->debug( 'Adding body as html' );
-				$content = new SendGrid\Content("text/html", $htmlPart);
+				$content = new SendGrid\Content( 'text/html', $htmlPart );
 			}
 
-			// add attachments
-			$this->logger->debug( 'Adding attachments' );
+			$mail = new SendGrid\Mail( $from, $subject, $to, $content );
 
-			$mail = new SendGrid\Mail($from, $subject, $to, $content);
-			$mail->addPersonalization($this->personalization);
-
+			foreach ( $emails as $email ) {
+				$mail->personalization[0]->addTo( $email );
+			}
 
 			// add the reply-to
 			$replyTo = $message->getReplyTo();
 			// $replyTo is null or a PostmanEmailAddress object
 			if ( isset( $replyTo ) ) {
 				$reply_to = new SendGrid\ReplyTo( $replyTo->getEmail(), $replyTo->getName() );
-				$mail->setReplyTo($reply_to);
+				$mail->setReplyTo( $reply_to );
 			}
+
+			// add the Postman signature - append it to whatever the user may have set
+			if ( ! $options->isStealthModeEnabled() ) {
+				$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
+				$mail->personalization[0]->addHeader( 'X-Mailer', sprintf( 'Postman SMTP %s for WordPress (%s)', $pluginData ['version'], 'https://wordpress.org/plugins/post-smtp/' ) );
+			}
+
+			// add the headers - see http://framework.zend.com/manual/1.12/en/zend.mail.additional-headers.html
+			foreach ( ( array ) $message->getHeaders() as $header ) {
+				$this->logger->debug( sprintf( 'Adding user header %s=%s', $header ['name'], $header ['content'] ) );
+				$mail->personalization[0]->addHeader( $header ['name'], $header ['content'] );
+			}
+
+			// if the caller set a Content-Type header, use it
+			$contentType = $message->getContentType();
+			if ( ! empty( $contentType ) ) {
+				$this->logger->debug( 'Some header keys are reserved. You may not include any of the following reserved headers: x-sg-id, x-sg-eid, received, dkim-signature, Content-Type, Content-Transfer-Encoding, To, From, Subject, Reply-To, CC, BCC.' );
+			}
+
+			// add the cc recipients
+			foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
+				$recipient->log( $this->logger, 'Cc' );
+				$mail->personalization[0]->addCc( $recipient->getEmail(), $recipient->getName() );
+			}
+
+			// add the bcc recipients
+			foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
+				$recipient->log( $this->logger, 'Bcc' );
+				$mail->personalization[0]->addBcc( $recipient->getEmail(), $recipient->getName() );
+			}
+
+			// add the messageId
+			$messageId = $message->getMessageId();
+			if ( ! empty( $messageId ) ) {
+				$mail->personalization[0]->addHeader( 'message-id', $messageId );
+			}
+
+			// add attachments
+			$this->logger->debug( 'Adding attachments' );
 
 			$attachments = $this->addAttachmentsToMail( $message );
 
 			foreach ( $attachments as $index => $attachment ) {
 				$attach = new SendGrid\Attachment();
-				$attach->setContent($attachment['content']);
-				$attach->setType($attachment['type']);
-				$attach->setFilename($attachment['file_name']);
-				$attach->setDisposition("attachment");
-				$attach->setContentId($attachment['id']);
-				$mail->addAttachment($attach);
+				$attach->setContent( $attachment['content'] );
+				$attach->setType( $attachment['type'] );
+				$attach->setFilename( $attachment['file_name'] );
+				$attach->setDisposition( 'attachment' );
+				$attach->setContentId( $attachment['id'] );
+				$mail->addAttachment( $attach );
 			}
 
 			try {
@@ -165,7 +161,7 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 					$this->logger->debug( 'Sending mail' );
 				}
 
-				$response = $sendgrid->client->mail()->send()->post($mail);
+				$response = $sendgrid->client->mail()->send()->post( $mail );
 				if ( $this->logger->isInfo() ) {
 					$this->logger->info( );
 				}

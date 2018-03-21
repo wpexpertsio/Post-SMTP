@@ -366,9 +366,10 @@ class PostmanEmailLogView extends WP_List_Table {
 				$date = sprintf( _x( '%s ago', 'A relative time as in "five days ago"', Postman::TEXT_DOMAIN ), $humanTime );
 			}
 			$meta_values = get_post_meta( $post->ID );
+			$sent_to = array_map( 'sanitize_email', explode( ',' , $meta_values ['to_header'] [0] ) );
 			$flattenedPost = array(
 					// the post title must be escaped as they are displayed in the HTML output
-					'sent_to' => sanitize_email( $meta_values ['to_header'] [0] ),
+					'sent_to' => implode( ', ', $sent_to ),
 					'title' => esc_html( $post->post_title ),
 					// the post status must be escaped as they are displayed in the HTML output
 					'status' => ($post->post_excerpt != null ? esc_html( $post->post_excerpt ) : __( 'Sent', Postman::TEXT_DOMAIN )),
