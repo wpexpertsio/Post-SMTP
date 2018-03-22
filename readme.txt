@@ -284,10 +284,13 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
-= 1.8.2 - 2017-12-24
+= 1.8.3 - 2018-03-21
+* Fix: SendGrid API Call Structure (The previous try didn't work)
+
+= 1.8.2 - 2018-03-21
 * Fix: SendGrid API Call Structure
 
-= 1.8.1 - 2017-12-24
+= 1.8.1 - 2018-03-20
 * New: Sendgrid API & Client Version 6
 * New: Add email log 'send to' column
 * Fix: fallback emails on hosting require the '-f' parameter
