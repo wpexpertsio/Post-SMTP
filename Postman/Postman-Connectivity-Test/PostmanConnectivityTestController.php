@@ -154,7 +154,7 @@ class PostmanConnectivityTestController {
 		}
 		print '</table>';
 		/* Translators: Where %s is the name of the service providing Internet connectivity test */
-		printf( '<p class="portquiz" style="display:none; font-size:0.8em">* %s</p>', sprintf( __( 'According to %s', Postman::TEXT_DOMAIN ), '<a target="_blank" href="http://ww.downor.me/portquiz.net">portquiz.net</a>' ) );
+		printf( '<p class="portquiz" style="display:none; font-size:0.8em">* %s</p>', sprintf( __( 'According to %s', Postman::TEXT_DOMAIN ), '<a target="_blank" href="https://downor.me/portquiz.net">portquiz.net</a>' ) );
 		printf( '<p class="ajax-loader" style="display:none"><img src="%s"/></p>', plugins_url( 'post-smtp/style/ajax-loader.gif' ) );
 		print '<section id="conclusion" style="display:none">';
 		print sprintf( '<h3>%s:</h3>', __( 'Summary', Postman::TEXT_DOMAIN ) );
