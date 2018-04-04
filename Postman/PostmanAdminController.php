@@ -51,6 +51,10 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		const MULTISITE_SECTION = 'postman_multisite_section';
 		const ADVANCED_OPTIONS = 'postman_advanced_options';
 		const ADVANCED_SECTION = 'postman_advanced_section';
+		const NOTIFICATIONS_OPTIONS = 'postman_notifications_options';
+		const NOTIFICATIONS_SECTION = 'postman_notifications_section';
+		const NOTIFICATIONS_PUSHOVER_CRED = 'postman_pushover_cred';
+		const NOTIFICATIONS_SLACK_CRED = 'postman_slack_cred';
 		const EMAIL_VALIDATION_SECTION = 'postman_email_validation_section';
 		const EMAIL_VALIDATION_OPTIONS = 'postman_email_validation_options';
 

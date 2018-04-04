@@ -8,6 +8,17 @@ jQuery(document).ready(function($) {
 		    return false;
 		}
 	});
+
+	$('.release-lock-file').on('click', function(e) {
+		e.preventDefault();
+
+		var security = $(this).data('security');
+
+		$.post(ajaxurl, {action: 'delete_lock_file', security: security}, function(result) {
+			alert(result);
+		});
+
+	});
 });
 
 var redirectUrlWarning = false;

@@ -36,8 +36,21 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 
 			// initialize the scripts, stylesheets and form fields
 			add_action( 'admin_init', array( $this, 'registerStylesAndScripts' ), 0 );
+			add_action( 'wp_ajax_delete_lock_file', array( $this, 'delete_lock_file' ) );
 			//add_action( 'admin_init', array( $this, 'do_activation_redirect' ) );
 
+		}
+
+		function delete_lock_file() {
+			check_ajax_referer( 'postman', 'security' );
+
+			if ( ! PostmanUtils::lockFileExists() ) {
+				echo __('No lock file found.', Postman::TEXT_DOMAIN );
+				die();
+			}
+
+			echo PostmanUtils::deleteLockFile() == true ? __('Success', Postman::TEXT_DOMAIN ) : __('Failed, try again.', Postman::TEXT_DOMAIN );
+			die();
 		}
 
 		function do_activation_redirect() {
@@ -317,6 +330,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			print '<ul>';
 			printf( '<li><a href="%s" class="welcome-icon run-port-test">%s</a></li>', $this->getPageUrl( PostmanConnectivityTestController::PORT_TEST_SLUG ), __( 'Connectivity Test', Postman::TEXT_DOMAIN ) );
 			printf( '<li><a href="%s" class="welcome-icon run-port-test">%s</a></li>', $this->getPageUrl( PostmanDiagnosticTestController::DIAGNOSTICS_SLUG ), __( 'Diagnostic Test', Postman::TEXT_DOMAIN ) );
+			printf( '<li><a href="%s" data-security="%s" class="welcome-icon release-lock-file">%s</a></li>', '#', wp_create_nonce( "postman" ), __( 'Release Lock File Error', Postman::TEXT_DOMAIN ) );
 			printf( '<li><a href="https://postmansmtp.com/forums/" class="welcome-icon postman_support">%s</a></li>', __( 'Online Support', Postman::TEXT_DOMAIN ) );
 			printf( '<li><img class="align-middle" src="' . plugins_url( 'style/images/new.gif', dirname( __DIR__ ) . '/postman-smtp.php' ) . '"><a target="blank" class="align-middle" href="https://postmansmtp.com/category/guides/" class="welcome-icon postman_guides">%s</a></li>', __( 'Guides', Postman::TEXT_DOMAIN ) );
 			print '</ul></div></div></div></div>';

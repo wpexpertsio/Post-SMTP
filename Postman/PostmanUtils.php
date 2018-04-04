@@ -227,6 +227,13 @@ class PostmanUtils {
 			}
 		}
 	}
+
+	static function lockFileExists() {
+		$path = PostmanUtils::calculateTemporaryLockPath( null );
+
+		return file_exists($path);
+	}
+
 	static function deleteLockFile( $tempDirectory = null ) {
 		$path = PostmanUtils::calculateTemporaryLockPath( $tempDirectory );
 		$success = @unlink( $path );

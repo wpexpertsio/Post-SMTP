@@ -54,6 +54,7 @@ class Postman {
 		require_once 'PostmanConfigTextHelper.php';
 		require_once 'Postman-Email-Log/PostmanEmailLogPostType.php';
 		require_once 'Postman-Mail/PostmanMyMailConnector.php';
+		require_once 'Postman-Mail/PostmanWooCommerce.php';
 
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
@@ -104,6 +105,9 @@ class Postman {
 
 		// MyMail integration
 		new PostmanMyMailConnector( $rootPluginFilenameAndPath );
+
+		// WooCommerce Integration
+		new PostmanWoocommerce();
 
 		// register the shortcode handler on the add_shortcode event
 		add_shortcode( 'postman-version', array(

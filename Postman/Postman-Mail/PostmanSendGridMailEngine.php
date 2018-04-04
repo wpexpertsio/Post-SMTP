@@ -65,13 +65,13 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 				$email = $recipient->getEmail();
 				if ( $counter == 0 ) {
 					$this->logger->debug( 'Adding to=' . $recipient->getEmail() );
-					$to = new SendGrid\Email( $recipient->getName(), $recipient->getEmail() );
+					$to = new SendGrid\Email($recipient->getName(), $recipient->getEmail() );
 					$duplicates[] = $email;
 				} else {
 					if ( ! in_array( $email, $duplicates ) ) {
 						$duplicates[] = $email;
 						$this->logger->debug( 'Adding personalization to=' . $recipient->getEmail() );
-						$emails[] = new SendGrid\Email( $recipient->getName(), $recipient->getEmail() );
+						$emails[] = new SendGrid\Email($recipient->getName(), $recipient->getEmail() );
 					}
 				}
 
@@ -84,22 +84,23 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 			}
 
 			// add the message content
+
 			$textPart = $message->getBodyTextPart();
 			if ( ! empty( $textPart ) ) {
 				$this->logger->debug( 'Adding body as text' );
-				$content = new SendGrid\Content( 'text/plain', $textPart );
+				$content = new SendGrid\Content("text/plain", $textPart);
 			}
 
 			$htmlPart = $message->getBodyHtmlPart();
 			if ( ! empty( $htmlPart ) ) {
 				$this->logger->debug( 'Adding body as html' );
-				$content = new SendGrid\Content( 'text/html', $htmlPart );
+				$content = new SendGrid\Content("text/html", $htmlPart);
 			}
 
-			$mail = new SendGrid\Mail( $from, $subject, $to, $content );
+			$mail = new SendGrid\Mail($from, $subject, $to, $content);
 
-			foreach ( $emails as $email ) {
-				$mail->personalization[0]->addTo( $email );
+			foreach ( $emails as $email) {
+				$mail->personalization[0]->addTo($email);
 			}
 
 			// add the reply-to
@@ -107,7 +108,7 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 			// $replyTo is null or a PostmanEmailAddress object
 			if ( isset( $replyTo ) ) {
 				$reply_to = new SendGrid\ReplyTo( $replyTo->getEmail(), $replyTo->getName() );
-				$mail->setReplyTo( $reply_to );
+				$mail->setReplyTo($reply_to);
 			}
 
 			// add the Postman signature - append it to whatever the user may have set
@@ -135,14 +136,15 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 					$email = new SendGrid\Email( $recipient->getName(), $recipient->getEmail() );
 					$mail->personalization[0]->addCc( $email );
 				}
+
 			}
 
 			// add the bcc recipients
 			foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
 				if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
-					$recipient->log( $this->logger, 'Bcc' );
-					$email = new SendGrid\Email( $recipient->getName(), $recipient->getEmail() );
-					$mail->personalization[0]->addBcc( $email );
+					$recipient->log($this->logger, 'Bcc');
+					$email = new SendGrid\Email($recipient->getName(), $recipient->getEmail());
+					$mail->personalization[0]->addBcc($email);
 				}
 			}
 
@@ -159,12 +161,12 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 			foreach ( $attachments as $index => $attachment ) {
 				$attach = new SendGrid\Attachment();
-				$attach->setContent( $attachment['content'] );
-				$attach->setType( $attachment['type'] );
-				$attach->setFilename( $attachment['file_name'] );
-				$attach->setDisposition( 'attachment' );
-				$attach->setContentId( $attachment['id'] );
-				$mail->addAttachment( $attach );
+				$attach->setContent($attachment['content']);
+				$attach->setType($attachment['type']);
+				$attach->setFilename($attachment['file_name']);
+				$attach->setDisposition("attachment");
+				$attach->setContentId($attachment['id']);
+				$mail->addAttachment($attach);
 			}
 
 			try {
@@ -179,7 +181,7 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 					$this->logger->debug( 'Sending mail' );
 				}
 
-				$response = $sendgrid->client->mail()->send()->post( $mail );
+				$response = $sendgrid->client->mail()->send()->post($mail);
 				if ( $this->logger->isInfo() ) {
 					$this->logger->info( sprintf( 'Message %d accepted for delivery', PostmanState::getInstance()->getSuccessfulDeliveries() + 1 ) );
 				}

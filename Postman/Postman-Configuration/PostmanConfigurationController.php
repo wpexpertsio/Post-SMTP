@@ -200,6 +200,7 @@ class PostmanConfigurationController {
 		print sprintf( '<li><a href="#message_config">%s</a></li>', __( 'Message', Postman::TEXT_DOMAIN ) );
 		print sprintf( '<li><a href="#logging_config">%s</a></li>', __( 'Logging', Postman::TEXT_DOMAIN ) );
 		print sprintf( '<li><a href="#advanced_options_config">%s</a></li>', __( 'Advanced', Postman::TEXT_DOMAIN ) );
+		print sprintf( '<li><a href="#notifications">%s</a></li>', __( 'Notifications', Postman::TEXT_DOMAIN ) );
 		print '</ul>';
 		print '<form method="post" action="options.php">';
 		// This prints out all hidden setting fields
@@ -248,6 +249,24 @@ class PostmanConfigurationController {
 		do_settings_sections( PostmanAdminController::NETWORK_OPTIONS );
 		do_settings_sections( PostmanAdminController::ADVANCED_OPTIONS );
 		print '</section>';
+
+		print '<section id="notifications">';
+		do_settings_sections( PostmanAdminController::NOTIFICATIONS_OPTIONS );
+
+			$currentKey = $this->options->getNotificationService();
+			$pushover = $currentKey == 'pushover' ? 'block' : 'none';
+			$slack = $currentKey == 'slack' ? 'block' : 'none';
+
+			echo '<div id="pushover_cred" style="display: ' . $pushover . ';">';
+			do_settings_sections( PostmanAdminController::NOTIFICATIONS_PUSHOVER_CRED );
+			echo '</div>';
+
+			echo '<div id="slack_cred" style="display: ' . $slack . ';">';
+			do_settings_sections( PostmanAdminController::NOTIFICATIONS_SLACK_CRED );
+			echo '</div>';
+
+		print '</section>';
+
 		submit_button();
 		print '</form>';
 		print '</div>';
@@ -362,7 +381,57 @@ class PostmanConfigurationController {
 		}
 		print '</fieldset>';
 
-		// Wizard Step 5
+		// Wizard Step 5 - Notificiations
+		printf( '<h5>%s</h5>', __( 'Notifications', Postman::TEXT_DOMAIN ) );
+		print '<fieldset>';
+		printf( '<legend>%s</legend>', __( 'Select a notify service to notify you when an email is failed to delivered.', Postman::TEXT_DOMAIN ) );
+
+		?>
+		<select id="input_notification_service" class="input_notification_service" name="postman_options[notification_service]">
+			<option value="default">Email</option>
+			<option value="pushover">Pushover</option>
+			<option value="slack">Slack</option>
+		</select>
+		<div id="pushover_cred" style="display: none;">
+			<h2><?php _e( 'Pushover Credentials', Postman::TEXT_DOMAIN ); ?></h2>
+			<table class="form-table">
+				<tbody>
+					<tr>
+						<th scope="row"><?php _e( 'Pushover User Key', Postman::TEXT_DOMAIN ); ?></th>
+						<td>
+							<input type="password" id="pushover_user" name="postman_options[pushover_user]" value="">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e( 'Pushover App Token', Postman::TEXT_DOMAIN ); ?></th>
+						<td>
+							<input type="password" id="pushover_token" name="postman_options[pushover_token]" value="">
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div id="slack_cred" style="display: none;">
+			<h2><?php _e( 'Slack Credentials', Postman::TEXT_DOMAIN ); ?></h2>
+			<table class="form-table">
+				<tbody>
+				<tr>
+					<th scope="row"><?php _e( 'Slack webhook', Postman::TEXT_DOMAIN ); ?></th>
+					<td>
+						<input type="password" id="slack_token" name="postman_options[slack_token]" value="">
+						<a target="_blank" class="" href="https://slack.postmansmtp.com/">
+							<?php _e( 'Get your webhook URL here.', Postman::TEXT_DOMAIN ); ?>
+						</a>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<?php
+		print '</fieldset>';
+
+		// Wizard Step 6
 		printf( '<h5>%s</h5>', _x( 'Finish', 'The final step of the Wizard', Postman::TEXT_DOMAIN ) );
 		print '<fieldset>';
 		printf( '<legend>%s</legend>', _x( 'You\'re Done!', 'Wizard Step Title', Postman::TEXT_DOMAIN ) );

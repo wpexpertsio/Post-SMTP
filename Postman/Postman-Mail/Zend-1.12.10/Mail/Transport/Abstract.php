@@ -132,7 +132,7 @@ abstract class Postman_Zend_Mail_Transport_Abstract
             if (!$type) {
                 if ($this->_mail->hasAttachments) {
                     $type = Postman_Zend_Mime::MULTIPART_MIXED;
-                } elseif ($this->_mail->getBodyText() && $this->_mail->getBodyHtml()) {
+                } elseif ($this->_mail->getBodyText() && $this->_mail->getBodyHtml() ) {
                     $type = Postman_Zend_Mime::MULTIPART_ALTERNATIVE;
                 } else {
                     $type = Postman_Zend_Mime::MULTIPART_MIXED;

@@ -61,12 +61,11 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		require_once 'PostmanGmailApiModuleZendMailTransport.php';
 		
 		// Gmail Client includes
-		require_once 'google-api-php-client-1.1.2/src/Google/Client.php';
-		require_once 'google-api-php-client-1.1.2/src/Google/Service/Gmail.php';
+		require_once 'google-api-client/vendor/autoload.php';
 		
 		// build the Gmail Client
 		$authToken = PostmanOAuthToken::getInstance ();
-		$client = new Postman_Google_Client ();
+		$client = new Google_Client ();
 		$client->setClientId ( $this->options->getClientId () );
 		$client->setClientSecret ( $this->options->getClientSecret () );
 		$client->setRedirectUri ( '' );
@@ -81,7 +80,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		$client->setAccessToken ( json_encode ( $token ) );
 		// We only need permissions to compose and send emails
 		$client->addScope ( "https://www.googleapis.com/auth/gmail.compose" );
-		$service = new Postman_Google_Service_Gmail ( $client );
+		$service = new Google_Service_Gmail ( $client );
 		$config [PostmanGmailApiModuleZendMailTransport::SERVICE_OPTION] = $service;
 		
 		return new PostmanGmailApiModuleZendMailTransport ( self::HOST, $config );

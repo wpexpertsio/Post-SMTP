@@ -181,19 +181,48 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 		 * @todo Rename this to sendMail, it's a public method...
 		 */
 		public function _sendMail() {
-			
+
 			// Prepare the message in message/rfc822
 			$message = $this->header . Postman_Zend_Mime::LINEEND . $this->body;
 			$this->message = $message;
-			
+
 			// The message needs to be encoded in Base64URL
 			$encodedMessage = rtrim ( strtr ( base64_encode ( $message ), '+/', '-_' ), '=' );
-			$googleApiMessage = new Postman_Google_Service_Gmail_Message ();
+			$googleApiMessage = new Google_Service_Gmail_Message ();
 			$googleApiMessage->setRaw ( $encodedMessage );
 			$googleService = $this->_config [self::SERVICE_OPTION];
+			$googleClient = $googleService->getClient();
+			//$googleService = new Google_Service_Gmail($googleClient);
+
 			$result = array ();
 			try {
-				$result = $googleService->users_messages->send ( 'me', $googleApiMessage );
+				$googleClient->setDefer(true);
+				$result = $googleService->users_messages->send ( 'me', $googleApiMessage, array('uploadType' => 'resumable') );
+
+				$chunkSizeBytes = 1 * 1024 * 1024;
+
+				// create mediafile upload
+				$media = new Google_Http_MediaFileUpload(
+					$googleClient,
+					$result,
+					'message/rfc822',
+					$message,
+					true,
+					$chunkSizeBytes
+				);
+				$media->setFileSize(strlen($message));
+
+				$status = false;
+				while (! $status) {
+					$status = $media->nextChunk();
+				}
+				$result = false;
+
+				// Reset to the client to execute requests immediately in the future.
+				$googleClient->setDefer(false);
+
+				$googleMessageId = $status->getId();
+
 				if ($this->logger->isInfo ()) {
 					$this->logger->info ( sprintf ( 'Message %d accepted for delivery', PostmanState::getInstance ()->getSuccessfulDeliveries () + 1 ) );
 				}
@@ -207,6 +236,7 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 				throw $e;
 			}
 		}
+
 		public function getMessage() {
 			return $this->message;
 		}

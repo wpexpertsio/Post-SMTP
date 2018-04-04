@@ -174,6 +174,45 @@ class PostmanSettingsRegistry {
 					$this,
 					'temporaryDirectoryCallback',
 			), PostmanAdminController::ADVANCED_OPTIONS, PostmanAdminController::ADVANCED_SECTION );
+
+			// Notifications
+			add_settings_section( PostmanAdminController::NOTIFICATIONS_SECTION, _x( 'Notifications Settings', 'Configuration Section Title', Postman::TEXT_DOMAIN ), array(
+				$this,
+				'printNotificationsSectionInfo',
+			), PostmanAdminController::NOTIFICATIONS_OPTIONS );
+
+			add_settings_field( PostmanOptions::NOTIFICATION_SERVICE, _x( 'Notification Service', 'Configuration Input Field', Postman::TEXT_DOMAIN ), array(
+				$this,
+				'notification_service_callback',
+			), PostmanAdminController::NOTIFICATIONS_OPTIONS, PostmanAdminController::NOTIFICATIONS_SECTION );
+
+			// Pushover
+			add_settings_section( 'pushover_credentials', _x( 'Pushover Credentials', 'Configuration Section Title', Postman::TEXT_DOMAIN ), array(
+				$this,
+				'printNotificationsSectionInfo',
+			), PostmanAdminController::NOTIFICATIONS_PUSHOVER_CRED );
+
+			add_settings_field( PostmanOptions::PUSHOVER_USER, _x( 'Pushover User Key', 'Configuration Input Field', Postman::TEXT_DOMAIN ), array(
+				$this,
+				'pushover_user_callback',
+			), PostmanAdminController::NOTIFICATIONS_PUSHOVER_CRED, 'pushover_credentials' );
+
+			add_settings_field( PostmanOptions::PUSHOVER_TOKEN, _x( 'Pushover App Token', 'Configuration Input Field', Postman::TEXT_DOMAIN ), array(
+				$this,
+				'pushover_token_callback',
+			), PostmanAdminController::NOTIFICATIONS_PUSHOVER_CRED, 'pushover_credentials' );
+
+			// Slack
+			add_settings_section( 'slack_credentials', _x( 'Slack Credentials', 'Configuration Section Title', Postman::TEXT_DOMAIN ), array(
+				$this,
+				'printNotificationsSectionInfo',
+			), PostmanAdminController::NOTIFICATIONS_SLACK_CRED );
+
+			add_settings_field( PostmanOptions::SLACK_TOKEN, _x( 'Slack Webhook', 'Configuration Input Field', Postman::TEXT_DOMAIN ), array(
+				$this,
+				'slack_token_callback',
+			), PostmanAdminController::NOTIFICATIONS_SLACK_CRED, 'slack_credentials' );
+
 		}
 	}
 
@@ -207,11 +246,19 @@ class PostmanSettingsRegistry {
 	public function printNetworkSectionInfo() {
 		print __( 'Increase the timeouts if your host is intermittenly failing to send mail. Be careful, this also correlates to how long your user must wait if the mail server is unreachable.', Postman::TEXT_DOMAIN );
 	}
+
 	/**
 	 * Print the Section text
 	 */
 	public function printAdvancedSectionInfo() {
 	}
+
+	/**
+	 * Print the Section text
+	 */
+	public function printNotificationsSectionInfo() {
+	}
+
 	/**
 	 * Print the Section text
 	 */
@@ -345,7 +392,7 @@ class PostmanSettingsRegistry {
 	 * Get the settings option array and print one of its values
 	 */
 	public function log_level_callback() {
-		$inputDescription = sprintf( __( 'Log Level specifies the level of detail written to the <a target="_blank" href="%s">WordPress Debug log</a> - view the log with <a target-"_blank" href="%s">Debug</a>.', Postman::TEXT_DOMAIN ), 'https://codex.wordpress.org/Debugging_in_WordPress', 'https://wordpress.org/plugins/debug/' );
+		$inputDescription = sprintf( __( 'Log Level specifies the level of detail written to the <a target="_blank" href="%s">WordPress Debug log</a> - view the log with <a target-"_new" href="%s">Debug</a>.', Postman::TEXT_DOMAIN ), 'https://codex.wordpress.org/Debugging_in_WordPress', 'https://wordpress.org/plugins/debug/' );
 		printf( '<select id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]">', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::LOG_LEVEL );
 		$currentKey = $this->options->getLogLevel();
 		$this->printSelectOption( __( 'Off', Postman::TEXT_DOMAIN ), PostmanLogger::OFF_INT, $currentKey );
@@ -356,6 +403,32 @@ class PostmanSettingsRegistry {
 		$this->printSelectOption( __( 'Error', Postman::TEXT_DOMAIN ), PostmanLogger::ERROR_INT, $currentKey );
 		printf( '</select><br/><span class="postman_input_description">%s</span>', $inputDescription );
 	}
+
+	public function notification_service_callback() {
+		$inputDescription =  __( 'Select the notification service you want to recieve alerts about failed emails.' );
+		printf( '<select id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]">', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::NOTIFICATION_SERVICE );
+		$currentKey = $this->options->getNotificationService();
+
+		$this->printSelectOption( __( 'Email', Postman::TEXT_DOMAIN ), 'default', $currentKey );
+		$this->printSelectOption( __( 'Pushover', Postman::TEXT_DOMAIN ), 'pushover', $currentKey );
+		$this->printSelectOption( __( 'Slack', Postman::TEXT_DOMAIN ), 'slack', $currentKey );
+		printf( '</select><br/><span class="postman_input_description">%s</span>', $inputDescription );
+	}
+
+	public function pushover_user_callback() {
+		printf( '<input type="password" id="pushover_user" name="%s[%s]" value="%s" />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::PUSHOVER_USER, $this->options->getPushoverUser() );
+	}
+
+	public function pushover_token_callback() {
+		printf( '<input type="password" id="pushover_token" name="%s[%s]" value="%s" />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::PUSHOVER_TOKEN, $this->options->getPushoverToken() );
+	}
+
+	public function slack_token_callback() {
+		printf( '<input type="password" id="slack_token" name="%s[%s]" value="%s" />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::SLACK_TOKEN, $this->options->getPushoverToken() );
+		echo '<a target="_blank" href="https://slack.postmansmtp.com/">' . __( 'Get your webhook URL here', Postman::TEXT_DOMAIN ) . '</a>';
+
+	}
+
 	private function printSelectOption( $label, $optionKey, $currentKey ) {
 		$optionPattern = '<option value="%1$s" %2$s>%3$s</option>';
 		printf( $optionPattern, $optionKey, $optionKey == $currentKey ? 'selected="selected"' : '', $label );
@@ -369,9 +442,11 @@ class PostmanSettingsRegistry {
 		$this->printSelectOption( __( 'Delete All Emails', Postman::TEXT_DOMAIN ), PostmanOptions::RUN_MODE_IGNORE, $currentKey );
 		printf( '</select><br/><span class="postman_input_description">%s</span>', $inputDescription );
 	}
+
 	public function stealthModeCallback() {
 		printf( '<input type="checkbox" id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]" %3$s /> %4$s', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::STEALTH_MODE, $this->options->isStealthModeEnabled() ? 'checked="checked"' : '', __( 'Remove the Postman X-Header signature from messages', Postman::TEXT_DOMAIN ) );
 	}
+
 	public function temporaryDirectoryCallback() {
 		$inputDescription = __( 'Lockfiles are written here to prevent users from triggering an OAuth 2.0 token refresh at the same time.' );
 		printf( '<input type="text" id="input_%2$s" name="%1$s[%2$s]" value="%3$s" />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::TEMPORARY_DIRECTORY, $this->options->getTempDirectory() );
