@@ -494,21 +494,21 @@ function handleConfigurationResponse(response) {
 	}
 
 	jQuery('select#input_notification_service').change(function() {
-		var selected = $( this ).val();
+		var selected = jQuery( this ).val();
 		
 		if ( selected == 'default' ) {
-			$('#slack_cred').fadeOut('fast');
-			$('#pushover_cred').fadeOut('fast');
+			jQuery('#slack_cred').fadeOut('fast');
+			jQuery('#pushover_cred').fadeOut('fast');
 		}
 
 		if ( selected == 'pushover' ) {
-			$('#slack_cred').fadeOut('fast');
-			$('#pushover_cred').fadeIn();
+			jQuery('#slack_cred').fadeOut('fast');
+			jQuery('#pushover_cred').fadeIn();
 		}
 
 		if ( selected == 'slack' ) {
-			$('#pushover_cred').fadeOut('fast');
-			$('#slack_cred').fadeIn();
+			jQuery('#pushover_cred').fadeOut('fast');
+			jQuery('#slack_cred').fadeIn();
 		}
 	});
 

@@ -439,25 +439,17 @@ class PostmanUtils {
 	}
 
 	public static function getServerName() {
-		$ip = '';
+        $result = 'localhost.localdomain';
+        
+        if (isset($_SERVER) and array_key_exists('SERVER_NAME', $_SERVER)) {
+            $result = $_SERVER['SERVER_NAME'];
+        } elseif (function_exists('gethostname') and gethostname() !== false) {
+            $result = gethostname();
+        } elseif (php_uname('n') !== false) {
+            $result = php_uname('n');
+        }
 
-		if ( strpos( $_SERVER['SERVER_SOFTWARE'], 'iis' ) !== false ) {
-			$ip = $_SERVER['LOCAL_ADDR'];
-		}
-
-		if ( empty( $ip ) ) {
-			$ip = $_SERVER['SERVER_ADDR'];
-		}
-
-	    if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
-		    $host = gethostbyaddr( $ip );
-	    }
-
-	    if ( $host == $ip || $host == false ) {
-		    $host = filter_var( $_SERVER['HTTP_HOST'], FILTER_SANITIZE_STRING );
-	    }
-
-	    return $host ? $host : 'localhost';
+        return $result;
 	}
 
 	public static function getHost( $url ) {

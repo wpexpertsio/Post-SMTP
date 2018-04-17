@@ -189,10 +189,10 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 			// The message needs to be encoded in Base64URL
 			$encodedMessage = rtrim ( strtr ( base64_encode ( $message ), '+/', '-_' ), '=' );
 			$googleApiMessage = new Google_Service_Gmail_Message ();
-			$googleApiMessage->setRaw ( $encodedMessage );
 			$googleService = $this->_config [self::SERVICE_OPTION];
 			$googleClient = $googleService->getClient();
-			//$googleService = new Google_Service_Gmail($googleClient);
+
+			$file_size = strlen($message);
 
 			$result = array ();
 			try {
@@ -210,7 +210,7 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 					true,
 					$chunkSizeBytes
 				);
-				$media->setFileSize(strlen($message));
+				$media->setFileSize($file_size);
 
 				$status = false;
 				while (! $status) {

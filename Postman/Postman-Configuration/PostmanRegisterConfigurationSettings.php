@@ -424,7 +424,7 @@ class PostmanSettingsRegistry {
 	}
 
 	public function slack_token_callback() {
-		printf( '<input type="password" id="slack_token" name="%s[%s]" value="%s" />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::SLACK_TOKEN, $this->options->getPushoverToken() );
+		printf( '<input type="password" id="slack_token" name="%s[%s]" value="%s" />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::SLACK_TOKEN, $this->options->getSlackToken() );
 		echo '<a target="_blank" href="https://slack.postmansmtp.com/">' . __( 'Get your webhook URL here', Postman::TEXT_DOMAIN ) . '</a>';
 
 	}
