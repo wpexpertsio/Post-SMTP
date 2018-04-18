@@ -1,7 +1,7 @@
 var transports = [];
 
 jQuery(document).ready(
-		function() {
+		function($) {
 
 			// display password on entry
 			enablePasswordDisplayOnEntry('input_basic_auth_password',

@@ -1,6 +1,19 @@
 jQuery(document).ready(function($) {
 	$( ".email-log-date" ).datepicker();
 
+	$('.notice-dismiss.postman-release-message').on('click', function() {
+		var $this = $(this);
+		var args = {
+			action: 'dismiss_version_notify',
+			security: $this.data('security'),
+			version: $this.data('version'),
+		};
+
+		$.post(ajaxurl, args, function() {
+			$this.parent().slideUp();
+		});
+	});
+
 	$('#postman_trash_all').on('click',function(e) {
 		if (confirm("Are You Sure?") == false) {
 		    e.preventDefault();

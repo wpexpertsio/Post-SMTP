@@ -367,15 +367,21 @@ class Postman {
 			if ( $this->logger->isDebug() ) {
 				$this->logger->debug( 'Displaying configuration required warning' );
 			}
-			$message = sprintf( PostmanTransportRegistry::getInstance()->getReadyMessage() );
+			$msg = PostmanTransportRegistry::getInstance()->getReadyMessage();
+			$message = sprintf( $msg['message'] );
 			$goToSettings = sprintf( '<a href="%s">%s</a>', PostmanUtils::getSettingsPageUrl(), __( 'Settings', Postman::TEXT_DOMAIN ) );
 			$goToEmailLog = sprintf( '%s', _x( 'Email Log', 'The log of Emails that have been delivered', Postman::TEXT_DOMAIN ) );
 			if ( PostmanOptions::getInstance()->isMailLoggingEnabled() ) {
 				$goToEmailLog = sprintf( '<a href="%s">%s</a>', PostmanUtils::getEmailLogPageUrl(), $goToEmailLog );
 			}
 			$message .= (sprintf( ' %s | %s', $goToEmailLog, $goToSettings ));
-			;
-			$this->messageHandler->printMessage( $message, PostmanMessageHandler::WARNING_CLASS );
+			$message .= '<input type="hidden" name="security" class="security" value="' . wp_create_nonce('postsmtp') . '">';
+			
+			$hide = get_option('postman_release_version_not_configured' );
+
+			if ( $msg['error'] == true && ! $hide ) {
+				$this->messageHandler->printMessage( $message, 'postman-not-configured-notice notice notice-error is-dismissible' );
+			}
 		}
 	}
 

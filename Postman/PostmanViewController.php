@@ -37,8 +37,16 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			// initialize the scripts, stylesheets and form fields
 			add_action( 'admin_init', array( $this, 'registerStylesAndScripts' ), 0 );
 			add_action( 'wp_ajax_delete_lock_file', array( $this, 'delete_lock_file' ) );
+			add_action( 'wp_ajax_dismiss_version_notify', array( $this, 'dismiss_version_notify' ) );
 			//add_action( 'admin_init', array( $this, 'do_activation_redirect' ) );
 
+		}
+
+		function dismiss_version_notify() {
+			check_ajax_referer( 'postsmtp', 'security' );
+
+			$version = sanitize_text_field($_POST['version']);
+			$result = update_option('postman_release_version_'. $version, true );
 		}
 
 		function delete_lock_file() {
@@ -169,7 +177,8 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			if ( ! PostmanPreRequisitesCheck::isReady() ) {
 				printf( '<p><span style="color:red; padding:2px 0; font-size:1.1em">%s</span></p>', __( 'Postman is unable to run. Email delivery is being handled by WordPress (or another plugin).', Postman::TEXT_DOMAIN ) );
 			} else {
-				$statusMessage = PostmanTransportRegistry::getInstance()->getReadyMessage();
+				$ready_messsage = PostmanTransportRegistry::getInstance()->getReadyMessage();
+				$statusMessage = $ready_messsage['message'];
 				if ( PostmanTransportRegistry::getInstance()->getActiveTransport()->isConfiguredAndReady() ) {
 					if ( $this->options->getRunMode() != PostmanOptions::RUN_MODE_PRODUCTION ) {
 						printf( '<p><span style="background-color:yellow">%s</span></p>', $statusMessage );
@@ -290,7 +299,22 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		/**
 		 */
 		private function displayTopNavigation() {
+			$version = PostmanState::getInstance()->getVersion();
+			$show = get_option('postman_release_version_'. $version );
 			printf( '<h2>%s</h2>', sprintf( __( '%s Setup', Postman::TEXT_DOMAIN ), __( 'Post SMTP', Postman::TEXT_DOMAIN ) ) );
+
+			if ( ! $show ) {
+				echo '
+				<div class="updated settings-error notice is-dismissible"> 
+					<p>
+					<strong>Version ' . $version . ' released with Gmail upgrade and notifications:</strong> <a target="_blank" href="https://postmansmtp.com/post-smtp-1-8-4-best-wordpress-gmail-client">Read Here</a>
+					</p>
+					<button style="z-index: 100;" data-version="'. $version . '" data-security="' . wp_create_nonce('postsmtp') .'" type="button" class="notice-dismiss postman-release-message">
+						<span class="screen-reader-text">Dismiss this notice.</span>
+					</button>
+				</div>';
+			}
+
 			print '<div id="postman-main-menu" class="welcome-panel">';
 			print '<div class="welcome-panel-content">';
 			print '<div class="welcome-panel-column-container">';
