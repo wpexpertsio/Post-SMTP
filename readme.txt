@@ -4,13 +4,16 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehuda@m
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 4.9.5
-Stable tag: 1.8.4
+Stable tag: 1.8.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Send, log and troubleshoot your Outgoing Email easily. Supports everything: SMTP, Gmail, Mailgun, Mandril, SendGrid, Elastic Email and OAuth 2.0!
 
 == Description ==
+
+= Version 1.8.5 released = 
+Making Post SMTP the best Gmail client for WordPress, and a notification feature for failed emails. [Read the detailes here](https://postmansmtp.com/post-smtp-1-8-4-best-wordpress-gmail-client/)
 
 = WordPress Mail SMTP Plugin =
 

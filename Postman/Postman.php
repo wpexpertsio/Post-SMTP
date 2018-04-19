@@ -54,7 +54,7 @@ class Postman {
 		require_once 'PostmanConfigTextHelper.php';
 		require_once 'Postman-Email-Log/PostmanEmailLogPostType.php';
 		require_once 'Postman-Mail/PostmanMyMailConnector.php';
-		require_once 'Postman-Mail/PostmanWooCommerce.php';
+		//require_once 'Postman-Mail/PostmanWooCommerce.php';
 
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
@@ -107,7 +107,7 @@ class Postman {
 		new PostmanMyMailConnector( $rootPluginFilenameAndPath );
 
 		// WooCommerce Integration
-		new PostmanWoocommerce();
+		//new PostmanWoocommerce();
 
 		// register the shortcode handler on the add_shortcode event
 		add_shortcode( 'postman-version', array(
@@ -121,12 +121,19 @@ class Postman {
 				'on_plugins_loaded',
 		) );
 
-		$active_plugins = (array) get_option( 'active_plugins', array() );
-		if ( in_array( 'sitepress-multilingual-cms/sitepress.php', $active_plugins ) && !get_option( 'postman_wpml_fixed' ) ) {
-			add_action( 'admin_notices', array( $this, 'post_smtp_wpml_admin_notice' ) );
+		/**
+		 * @todo: WPML say they fix the issue in version 3.9
+		 * https://wordpress.org/support/topic/error-in-pluggable-php173/#post-10021301
+		 */
+		if ( get_option( 'icl_sitepress_version' ) && version_compare( get_option( 'icl_sitepress_version' ), '3.9', '<' ) ) {
 
-			// Temp: Just a quick solution, need to find a better option.
-			add_action( 'admin_init', array( $this, 'postman_fix_wpml' ) );
+			$active_plugins = (array)get_option('active_plugins', array());
+			if (in_array('sitepress-multilingual-cms/sitepress.php', $active_plugins) && !get_option('postman_wpml_fixed')) {
+				add_action('admin_notices', array($this, 'post_smtp_wpml_admin_notice'));
+
+				// Temp: Just a quick solution, need to find a better option.
+				add_action('admin_init', array($this, 'postman_fix_wpml'));
+			}
 		}
 
 		// hook on the wp_loaded event
@@ -151,7 +158,7 @@ class Postman {
 	public function post_smtp_wpml_admin_notice() {
 		$class = 'notice notice-error';
 		$title =  __( 'Post SMTP notice!', Postman::TEXT_DOMAIN );
-		$intro = __( 'WPML is installed and has a known bug with Post SMTP and few other plugins.', Postman::TEXT_DOMAIN );
+		$intro = __( 'WPML is installed and has a known bug with Post SMTP and few other plugins - you better upgrade, but we can try to fix it.', Postman::TEXT_DOMAIN );
 		$text = __( 'Click here to fix', Postman::TEXT_DOMAIN );
 		$message = '<br><a href="' . esc_url( add_query_arg( 'action', 'postman_fix_wpml', get_permalink() ) ) . '">' . $text . '</a>';
 
@@ -458,3 +465,4 @@ if ( ! function_exists( 'str_getcsv' ) ) {
 		return PostmanUtils::postman_strgetcsv_impl( $string );
 	}
 }
+
