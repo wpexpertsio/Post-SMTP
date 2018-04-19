@@ -296,6 +296,11 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 1.8.5 - 2018-04-19
+* Remove Beta Woocommerce integration
+* Better check for WPML less then version 3.9
+
 = 1.8.4 - 2018-04-18
 * New: Multiple notification options to failed emails
 * Upgrade: The Gmail code was upgraded and code change to support large attachments
