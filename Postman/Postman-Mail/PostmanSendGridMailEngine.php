@@ -188,14 +188,16 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 				$response_body = json_decode( $response->body() );
 
-				if ( isset( $response_body->errors[0]->message ) ) {
-					$this->transcript = $response_body->errors[0]->message;
+				if ( isset( $response_body->errors[0]->message ) || $response->statusCode() != 200 ) {
+
+					$e = $response->statusCode() != 200 ? sprintf( __( 'ERROR: Status code is %1$s', Postman::TEXT_DOMAIN ), $response->statusCode() ) : $response_body->errors[0]->message;
+					$this->transcript = $e;
 					$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 					$this->transcript .= print_r( $mail, true );
 
 					$this->logger->debug( 'Transcript=' . $this->transcript );
 
-					throw new Exception( $response_body->errors[0]->message );
+					throw new Exception( $e );
 				}
 				$this->transcript = print_r( $response->body(), true );
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;

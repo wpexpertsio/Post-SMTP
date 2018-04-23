@@ -243,6 +243,9 @@ class PostmanUtils {
 		return $success;
 	}
 	static function createLockFile( $tempDirectory = null ) {
+		if ( self::lockFileExists() ) {
+			self::deleteLockFile();
+		}
 		$path = PostmanUtils::calculateTemporaryLockPath( $tempDirectory );
 		$success = @fopen( $path, 'xb' );
 		if ( PostmanUtils::$logger->isTrace() ) {

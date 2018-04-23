@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehuda@m
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 4.9.5
-Stable tag: 1.8.5
+Stable tag: 1.8.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,8 +12,8 @@ Send, log and troubleshoot your Outgoing Email easily. Supports everything: SMTP
 
 == Description ==
 
-= Version 1.8.5 released = 
-Making Post SMTP the best Gmail client for WordPress, and a notification feature for failed emails. [Read the detailes here](https://postmansmtp.com/post-smtp-1-8-4-best-wordpress-gmail-client/)
+= Version 1.8.6 released =
+Lockfile, Contact form 7 and raise the PHP version. [Read the detailes here](https://postmansmtp.com/post-smtp-v1-8-6-lockfile-and-raise-the-php-version/)
 
 = WordPress Mail SMTP Plugin =
 
@@ -81,7 +81,7 @@ SendGrid has a free SMTP plan that you can use to send up to 100 emails per day.
 * .. and every other plugin that uses the WordPress API [wp_mail](https://codex.wordpress.org/Function_Reference/wp_mail) to send mail!
 
 = Requirements =
-* WordPress 3.9 and PHP 5.2 with SPL and iconv
+* WordPress 3.9 and PHP 5.6 with SPL and iconv
 * Memory: 750KiB per process at idle
 * Reliable mail delivery with custom email domains requires an SPF record
 * Reliable SMTP delivery requires credentials with an email service provider
@@ -296,6 +296,11 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 1.8.6 - 2018-04-24
+* Fix lockfile erros
+* Contact form 7 integration
+* PHP 5.6 requirement
 
 = 1.8.5 - 2018-04-19
 * Remove Beta Woocommerce integration

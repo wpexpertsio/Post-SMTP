@@ -54,6 +54,7 @@ class Postman {
 		require_once 'PostmanConfigTextHelper.php';
 		require_once 'Postman-Email-Log/PostmanEmailLogPostType.php';
 		require_once 'Postman-Mail/PostmanMyMailConnector.php';
+		require_once 'Postman-Mail/PostmanContactForm7.php';
 		//require_once 'Postman-Mail/PostmanWooCommerce.php';
 
 		// get plugin metadata - alternative to get_plugin_data
@@ -106,6 +107,9 @@ class Postman {
 		// MyMail integration
 		new PostmanMyMailConnector( $rootPluginFilenameAndPath );
 
+		// Contact form 7
+		new Postsmtp_ContactForm7;
+
 		// WooCommerce Integration
 		//new PostmanWoocommerce();
 
@@ -153,6 +157,7 @@ class Postman {
 				$this,
 				'on_deactivation',
 		) );
+
 	}
 
 	public function post_smtp_wpml_admin_notice() {
@@ -426,7 +431,7 @@ class Postman {
 		// because __FILE__ returns the wrong path if the plugin is installed as a symlink
 		$shortLocale = substr( get_locale(), 0, 2 );
 		if ( $shortLocale != 'en' ) {
-			$langDir = 'postman-smtp/Postman/languages';
+			$langDir = 'post-smtp/Postman/languages';
 			$success = load_plugin_textdomain( Postman::TEXT_DOMAIN, false, $langDir );
 			if ( $this->logger->isDebug() ) {
 				if ( $success ) {

@@ -20,7 +20,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 
 		private $apiKey;
 		private $domainName;
-		private $mandrillMessage;
+		private $mailgunMessage;
 
 		/**
 		 *
@@ -153,7 +153,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 			$result = array();
 			try {
 				if ( $this->logger->isDebug() ) {
-					$this->logger->debug( 'Creating Mandrill service with apiKey=' . $this->apiKey );
+					$this->logger->debug( 'Creating Mailgun service with apiKey=' . $this->apiKey );
 				}
 
 				// send the message
@@ -184,7 +184,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 
 		private function processSend( $mg ) {
 
-			if ( count( $this->mailgunMessage['to'] ) == 1 ) {
+			if ( count( $this->mailgunMessage['to'] ) <= 1 ) {
 
 				return $mg->messages()->send( $this->domainName, array_filter( $this->mailgunMessage ) );
 			} else {

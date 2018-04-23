@@ -57,7 +57,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				die();
 			}
 
-			echo PostmanUtils::deleteLockFile() == true ? __('Success', Postman::TEXT_DOMAIN ) : __('Failed, try again.', Postman::TEXT_DOMAIN );
+			echo PostmanUtils::deleteLockFile() == true ? __('Success, try to send test email.', Postman::TEXT_DOMAIN ) : __('Failed, try again.', Postman::TEXT_DOMAIN );
 			die();
 		}
 
@@ -307,7 +307,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				echo '
 				<div class="updated settings-error notice is-dismissible"> 
 					<p>
-					<strong>Version ' . $version . ' released with Gmail upgrade and notifications:</strong> <a target="_blank" href="https://postmansmtp.com/post-smtp-1-8-4-best-wordpress-gmail-client">Read Here</a>
+					<strong>Version ' . $version . ' released with lockfile fix and new PHP requirement:</strong> <a target="_blank" href="https://postmansmtp.com/post-smtp-v1-8-6-lockfile-and-raise-the-php-version">Read Here</a>
 					</p>
 					<button style="z-index: 100;" data-version="'. $version . '" data-security="' . wp_create_nonce('postsmtp') .'" type="button" class="notice-dismiss postman-release-message">
 						<span class="screen-reader-text">Dismiss this notice.</span>
