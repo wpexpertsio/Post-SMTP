@@ -1,5 +1,5 @@
 === Post SMTP Mailer/Email Log ===
-Contributors: yehudah, jasonhendriks
+Contributors: yehudah, abdullahramzan ,jasonhendriks
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehuda@myinbox.in&item_name=Donation+for+PostSMTP
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
