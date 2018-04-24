@@ -188,9 +188,12 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 				$response_body = json_decode( $response->body() );
 
-				if ( isset( $response_body->errors[0]->message ) || $response->statusCode() != 200 ) {
+				$error_code = $response->statusCode();
+				$email_not_sent = $error_code != 202;
 
-					$e = $response->statusCode() != 200 ? sprintf( __( 'ERROR: Status code is %1$s', Postman::TEXT_DOMAIN ), $response->statusCode() ) : $response_body->errors[0]->message;
+				if ( isset( $response_body->errors[0]->message ) || $email_not_sent ) {
+
+					$e = $email_not_sent ? $this->errorCodesMap($error_code) : $response_body->errors[0]->message;
 					$this->transcript = $e;
 					$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 					$this->transcript .= print_r( $mail, true );
@@ -209,6 +212,55 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 				$this->logger->debug( 'Transcript=' . $this->transcript );
 				throw $e;
 			}
+		}
+
+		private function get_response_error($body) {
+
+			$error_text = array();
+
+			if ( ! empty( $body['errors'] ) ) {
+				foreach ( $body['errors'] as $error ) {
+					if ( property_exists( $error, 'message' ) ) {
+						// Prepare additional information from SendGrid API.
+						$extra = '';
+						if ( property_exists( $error, 'field' ) && ! empty( $error->field ) ) {
+							$extra .= $error->field . '; ';
+						}
+						if ( property_exists( $error, 'help' ) && ! empty( $error->help ) ) {
+							$extra .= $error->help;
+						}
+
+						// Assign both the main message and perhaps extra information, if exists.
+						$error_text[] = $error->message . ( ! empty( $extra ) ? ' - ' . $extra : '' );
+					}
+				}
+			}
+
+			return implode( '<br>', array_map( 'esc_textarea', $error_text ) );
+		}
+
+		private function errorCodesMap($error_code) {
+			switch ($error_code) {
+				case 413:
+					$message = sprintf( __( 'ERROR: The JSON payload you have included in your request is too large. Status code is %1$s', Postman::TEXT_DOMAIN ), $error_code );
+					break;
+				case 429:
+					$message = sprintf( __( 'ERROR: The number of requests you have made exceeds SendGrid rate limitations. Status code is %1$s', Postman::TEXT_DOMAIN ), $error_code );
+					break;
+				case 500:
+					$message = sprintf( __( 'ERROR: An error occurred on a SendGrid server. Status code is %1$s', Postman::TEXT_DOMAIN ), $error_code );
+					break;
+				case 513:
+					$message = sprintf( __( 'ERROR: The SendGrid v3 Web API is not available. Status code is %1$s', Postman::TEXT_DOMAIN ), $error_code );
+					break;
+				case 502:
+					$message =  sprintf( __( 'ERROR: No recipient supplied. Status code is %1$s', Postman::TEXT_DOMAIN ), $error_code );
+					break;
+				default:
+					$message = sprintf( __( 'ERROR: Status code is %1$s', Postman::TEXT_DOMAIN ), $error_code );
+			}
+
+			return $message;
 		}
 
 		/**
