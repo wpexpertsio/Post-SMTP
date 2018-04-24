@@ -188,12 +188,12 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 				$response_body = json_decode( $response->body() );
 
-				$error_code = $response->statusCode();
-				$email_not_sent = $error_code != 202;
+                $response_code = $response->statusCode();
+				$email_sent = ( $response_code >= 200 and $response_code < 300 );
 
-				if ( isset( $response_body->errors[0]->message ) || $email_not_sent ) {
+				if ( isset( $response_body->errors[0]->message ) || ! $email_sent ) {
 
-					$e = $email_not_sent ? $this->errorCodesMap($error_code) : $response_body->errors[0]->message;
+					$e = ! $email_sent ? $this->errorCodesMap($response_code) : $response_body->errors[0]->message;
 					$this->transcript = $e;
 					$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 					$this->transcript .= print_r( $mail, true );
@@ -213,31 +213,7 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 				throw $e;
 			}
 		}
-
-		private function get_response_error($body) {
-
-			$error_text = array();
-
-			if ( ! empty( $body['errors'] ) ) {
-				foreach ( $body['errors'] as $error ) {
-					if ( property_exists( $error, 'message' ) ) {
-						// Prepare additional information from SendGrid API.
-						$extra = '';
-						if ( property_exists( $error, 'field' ) && ! empty( $error->field ) ) {
-							$extra .= $error->field . '; ';
-						}
-						if ( property_exists( $error, 'help' ) && ! empty( $error->help ) ) {
-							$extra .= $error->help;
-						}
-
-						// Assign both the main message and perhaps extra information, if exists.
-						$error_text[] = $error->message . ( ! empty( $extra ) ? ' - ' . $extra : '' );
-					}
-				}
-			}
-
-			return implode( '<br>', array_map( 'esc_textarea', $error_text ) );
-		}
+		
 
 		private function errorCodesMap($error_code) {
 			switch ($error_code) {
