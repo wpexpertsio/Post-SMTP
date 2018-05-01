@@ -220,7 +220,8 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 				// write the error to the PHP log
 				$this->logger->error( get_class( $e ) . ' code=' . $e->getCode() . ' message=' . trim( $e->getMessage() ) );
-
+				do_action( 'wp_mail_failed', new WP_Error( $e->getCode(), trim( $e->getMessage() ));
+				
 				// increment the failure counter, unless we are just tesitng
 				if ( ! $testMode && $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {
 					PostmanState::getInstance()->incrementFailedDelivery();
