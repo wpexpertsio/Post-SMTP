@@ -452,6 +452,29 @@ class PostmanUtils {
             $result = php_uname('n');
         }
 
+		if ( $result !== 'localhost.localdomain' ) {
+			// get the current result ip
+			$ip = gethostbyname($result);
+
+			// dns query failed
+			if ( $ip == $result ) {
+				return $result;
+			}
+
+			// get the current ip hostname - reverse dns
+			$host = gethostbyaddr($ip);
+
+			// dns query failed
+			if ( $host == $ip ) {
+				return $result;
+			}
+
+			// if hostname is not equal to the result set the ptr
+			if ( $result !== $host ) {
+				$result = $host;
+			}
+		}
+
         return $result;
 	}
 
