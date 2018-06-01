@@ -51,6 +51,25 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			$this->bccRecipients = array();
 		}
 
+		function __get( $name ) {
+			$message = __( '<code>%1$s</code> property of a <code>PostmanMessage</code> object is <strong>not supported</strong>. For now all of this class properties are private.', Postman::TEXT_DOMAIN );
+
+			if ( WP_DEBUG ) {
+				trigger_error( sprintf( $message, $name ) );
+			}
+		}
+
+		function __call($name, $args) {
+			$class = new ReflectionClass(__CLASS__);
+			$methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
+
+			$message = __( '<code>%1$s</code> method of a <code>PostmanMessage</code> object is <strong>not supported</strong>. Use one of the following methods <pre><code>%2$s</code></pre>', Postman::TEXT_DOMAIN );
+
+			if ( WP_DEBUG ) {
+				trigger_error( sprintf( $message, $name, print_r( $methods, true ) ) );
+			}
+		}
+
 		/**
 		 *
 		 * @return boolean
@@ -557,5 +576,238 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		public function getAttachments() {
 			return $this->attachments;
 		}
+
+		/**
+		 * @todo
+		 * is this right? maybe extending the phpmailer class insted?
+		 */
+
+		/**
+		 * Add an embedded (inline) attachment from a file.
+		 * This can include images, sounds, and just about any other document type.
+		 * These differ from 'regular' attachments in that they are intended to be
+		 * displayed inline with the message, not just attached for download.
+		 * This is used in HTML messages that embed the images
+		 * the HTML refers to using the $cid value.
+		 * Never use a user-supplied path to a file!
+		 * @param string $path Path to the attachment.
+		 * @param string $cid Content ID of the attachment; Use this to reference
+		 *        the content when using an embedded image in HTML.
+		 * @param string $name Overrides the attachment name.
+		 * @param string $encoding File encoding (see $Encoding).
+		 * @param string $type File MIME type.
+		 * @param string $disposition Disposition to use
+		 * @return boolean True on successfully adding an attachment
+		 */
+		public function addEmbeddedImage($path, $cid, $name = '', $encoding = 'base64', $type = '', $disposition = 'inline') {
+			if (!@is_file($path)) {
+				return false;
+			}
+
+			// If a MIME type is not specified, try to work it out from the file name
+			if ($type == '') {
+				$type = self::filenameToType($path);
+			}
+
+			$filename = basename($path);
+			if ($name == '') {
+				$name = $filename;
+			}
+
+			// Append to $attachment array
+			$this->attachments[] = array(
+				0 => $path,
+				1 => $filename,
+				2 => $name,
+				3 => $encoding,
+				4 => $type,
+				5 => false, // isStringAttachment
+				6 => $disposition,
+				7 => $cid
+			);
+
+			return true;
+		}
+
+		/**
+		 * Get the MIME type for a file extension.
+		 * @param string $ext File extension
+		 * @access public
+		 * @return string MIME type of file.
+		 * @static
+		 */
+		public static function _mime_types($ext = '')
+		{
+			$mimes = array(
+				'xl'    => 'application/excel',
+				'js'    => 'application/javascript',
+				'hqx'   => 'application/mac-binhex40',
+				'cpt'   => 'application/mac-compactpro',
+				'bin'   => 'application/macbinary',
+				'doc'   => 'application/msword',
+				'word'  => 'application/msword',
+				'xlsx'  => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+				'xltx'  => 'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
+				'potx'  => 'application/vnd.openxmlformats-officedocument.presentationml.template',
+				'ppsx'  => 'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
+				'pptx'  => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+				'sldx'  => 'application/vnd.openxmlformats-officedocument.presentationml.slide',
+				'docx'  => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+				'dotx'  => 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
+				'xlam'  => 'application/vnd.ms-excel.addin.macroEnabled.12',
+				'xlsb'  => 'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
+				'class' => 'application/octet-stream',
+				'dll'   => 'application/octet-stream',
+				'dms'   => 'application/octet-stream',
+				'exe'   => 'application/octet-stream',
+				'lha'   => 'application/octet-stream',
+				'lzh'   => 'application/octet-stream',
+				'psd'   => 'application/octet-stream',
+				'sea'   => 'application/octet-stream',
+				'so'    => 'application/octet-stream',
+				'oda'   => 'application/oda',
+				'pdf'   => 'application/pdf',
+				'ai'    => 'application/postscript',
+				'eps'   => 'application/postscript',
+				'ps'    => 'application/postscript',
+				'smi'   => 'application/smil',
+				'smil'  => 'application/smil',
+				'mif'   => 'application/vnd.mif',
+				'xls'   => 'application/vnd.ms-excel',
+				'ppt'   => 'application/vnd.ms-powerpoint',
+				'wbxml' => 'application/vnd.wap.wbxml',
+				'wmlc'  => 'application/vnd.wap.wmlc',
+				'dcr'   => 'application/x-director',
+				'dir'   => 'application/x-director',
+				'dxr'   => 'application/x-director',
+				'dvi'   => 'application/x-dvi',
+				'gtar'  => 'application/x-gtar',
+				'php3'  => 'application/x-httpd-php',
+				'php4'  => 'application/x-httpd-php',
+				'php'   => 'application/x-httpd-php',
+				'phtml' => 'application/x-httpd-php',
+				'phps'  => 'application/x-httpd-php-source',
+				'swf'   => 'application/x-shockwave-flash',
+				'sit'   => 'application/x-stuffit',
+				'tar'   => 'application/x-tar',
+				'tgz'   => 'application/x-tar',
+				'xht'   => 'application/xhtml+xml',
+				'xhtml' => 'application/xhtml+xml',
+				'zip'   => 'application/zip',
+				'mid'   => 'audio/midi',
+				'midi'  => 'audio/midi',
+				'mp2'   => 'audio/mpeg',
+				'mp3'   => 'audio/mpeg',
+				'mpga'  => 'audio/mpeg',
+				'aif'   => 'audio/x-aiff',
+				'aifc'  => 'audio/x-aiff',
+				'aiff'  => 'audio/x-aiff',
+				'ram'   => 'audio/x-pn-realaudio',
+				'rm'    => 'audio/x-pn-realaudio',
+				'rpm'   => 'audio/x-pn-realaudio-plugin',
+				'ra'    => 'audio/x-realaudio',
+				'wav'   => 'audio/x-wav',
+				'bmp'   => 'image/bmp',
+				'gif'   => 'image/gif',
+				'jpeg'  => 'image/jpeg',
+				'jpe'   => 'image/jpeg',
+				'jpg'   => 'image/jpeg',
+				'png'   => 'image/png',
+				'tiff'  => 'image/tiff',
+				'tif'   => 'image/tiff',
+				'eml'   => 'message/rfc822',
+				'css'   => 'text/css',
+				'html'  => 'text/html',
+				'htm'   => 'text/html',
+				'shtml' => 'text/html',
+				'log'   => 'text/plain',
+				'text'  => 'text/plain',
+				'txt'   => 'text/plain',
+				'rtx'   => 'text/richtext',
+				'rtf'   => 'text/rtf',
+				'vcf'   => 'text/vcard',
+				'vcard' => 'text/vcard',
+				'xml'   => 'text/xml',
+				'xsl'   => 'text/xml',
+				'mpeg'  => 'video/mpeg',
+				'mpe'   => 'video/mpeg',
+				'mpg'   => 'video/mpeg',
+				'mov'   => 'video/quicktime',
+				'qt'    => 'video/quicktime',
+				'rv'    => 'video/vnd.rn-realvideo',
+				'avi'   => 'video/x-msvideo',
+				'movie' => 'video/x-sgi-movie'
+			);
+			if (array_key_exists(strtolower($ext), $mimes)) {
+				return $mimes[strtolower($ext)];
+			}
+			return 'application/octet-stream';
+		}
+
+		/**
+		 * Map a file name to a MIME type.
+		 * Defaults to 'application/octet-stream', i.e.. arbitrary binary data.
+		 * @param string $filename A file name or full path, does not need to exist as a file
+		 * @return string
+		 * @static
+		 */
+		public static function filenameToType($filename)
+		{
+			// In case the path is a URL, strip any query string before getting extension
+			$qpos = strpos($filename, '?');
+			if (false !== $qpos) {
+				$filename = substr($filename, 0, $qpos);
+			}
+			$pathinfo = self::mb_pathinfo($filename);
+			return self::_mime_types($pathinfo['extension']);
+		}
+
+		/**
+		 * Multi-byte-safe pathinfo replacement.
+		 * Drop-in replacement for pathinfo(), but multibyte-safe, cross-platform-safe, old-version-safe.
+		 * Works similarly to the one in PHP >= 5.2.0
+		 * @link http://www.php.net/manual/en/function.pathinfo.php#107461
+		 * @param string $path A filename or path, does not need to exist as a file
+		 * @param integer|string $options Either a PATHINFO_* constant,
+		 *      or a string name to return only the specified piece, allows 'filename' to work on PHP < 5.2
+		 * @return string|array
+		 * @static
+		 */
+		public static function mb_pathinfo($path, $options = null)
+		{
+			$ret = array('dirname' => '', 'basename' => '', 'extension' => '', 'filename' => '');
+			$pathinfo = array();
+			if (preg_match('%^(.*?)[\\\\/]*(([^/\\\\]*?)(\.([^\.\\\\/]+?)|))[\\\\/\.]*$%im', $path, $pathinfo)) {
+				if (array_key_exists(1, $pathinfo)) {
+					$ret['dirname'] = $pathinfo[1];
+				}
+				if (array_key_exists(2, $pathinfo)) {
+					$ret['basename'] = $pathinfo[2];
+				}
+				if (array_key_exists(5, $pathinfo)) {
+					$ret['extension'] = $pathinfo[5];
+				}
+				if (array_key_exists(3, $pathinfo)) {
+					$ret['filename'] = $pathinfo[3];
+				}
+			}
+			switch ($options) {
+				case PATHINFO_DIRNAME:
+				case 'dirname':
+					return $ret['dirname'];
+				case PATHINFO_BASENAME:
+				case 'basename':
+					return $ret['basename'];
+				case PATHINFO_EXTENSION:
+				case 'extension':
+					return $ret['extension'];
+				case PATHINFO_FILENAME:
+				case 'filename':
+					return $ret['filename'];
+				default:
+					return $ret;
+			}
+		}
+
 	}
 }

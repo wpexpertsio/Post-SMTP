@@ -166,6 +166,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// apply the WordPress filters
 			// may impact the from address, from email, charset and content-type
 			$message->applyFilters();
+			do_action_ref_array( 'phpmailer_init', array( &$message ) );
 
 			// create the body parts (if they are both missing)
 			if ( $message->isBodyPartsEmpty() ) {
@@ -233,6 +234,17 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 					// log the failed delivery
 					PostmanEmailLogService::getInstance()->writeFailureLog( $log, $message, $engine->getTranscript(), $transport, $e->getMessage() );
 				}
+
+				$mail_error_data = array(
+					'to' => $message->getToRecipients(),
+					'subject' => $message->getSubject(),
+					'message' => $message->getBody(),
+					'headers' => $message->getHeaders(),
+					'attachments' => $message->getAttachments()
+				);
+				$mail_error_data['phpmailer_exception_code'] = $e->getCode();
+
+				do_action( 'wp_mail_failed', new WP_Error( 'wp_mail_failed', $e->getMessage(), $mail_error_data ) );
 
 				// return failure
 				return false;
