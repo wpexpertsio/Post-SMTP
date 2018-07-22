@@ -208,7 +208,14 @@ class Postman_Zend_Mail_Protocol_Smtp extends Postman_Zend_Mail_Protocol_Abstrac
             stream_context_set_option($this->_socket, 'ssl', 'verify_peer_name', false);
             stream_context_set_option($this->_socket, 'ssl', 'allow_self_signed', true);
 
-            if (!stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+            $crypto_method = STREAM_CRYPTO_METHOD_TLS_CLIENT;
+
+            if (defined('STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT')) {
+                $crypto_method |= STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+                $crypto_method |= STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT;
+            }
+
+            if (!stream_socket_enable_crypto($this->_socket, true, $crypto_method)) {
                 /**
                  * @see Postman_Zend_Mail_Protocol_Exception
                  */

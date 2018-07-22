@@ -260,16 +260,42 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				return $this->options [ PostmanOptions::AUTHENTICATION_TYPE ]; }
 		}
 		public function getEncryptionType() {
-			if ( isset( $this->options [ PostmanOptions::SECURITY_TYPE ] ) ) {
-				return $this->options [ PostmanOptions::SECURITY_TYPE ]; }
+		    $port = $this->getPort();
+		    switch ($port):
+                case 25:
+                    return 'none';
+                    break;
+                case 465:
+                    return 'ssl';
+                    break;
+                case 587:
+                    return 'tls';
+                    break;
+                case 2525:
+                    return 'tls';
+                    break;
+                default:
+                    return isset( $this->options [ PostmanOptions::SECURITY_TYPE ] ) ? $this->options [ PostmanOptions::SECURITY_TYPE ] : 'none';
+            endswitch;
 		}
 		public function getUsername() {
+            if ( defined( POST_SMTP_AUTH_USERNAME ) ) {
+                return POST_SMTP_AUTH_USERNAME;
+            }
+
 			if ( isset( $this->options [ PostmanOptions::BASIC_AUTH_USERNAME ] ) ) {
-				return $this->options [ PostmanOptions::BASIC_AUTH_USERNAME ]; }
+				return $this->options [ PostmanOptions::BASIC_AUTH_USERNAME ];
+			}
 		}
 		public function getPassword() {
+
+		    if ( defined( POST_SMTP_AUTH_PASSWORD ) ) {
+		        return POST_SMTP_AUTH_PASSWORD;
+            }
+
 			if ( isset( $this->options [ PostmanOptions::BASIC_AUTH_PASSWORD ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::BASIC_AUTH_PASSWORD ] ); }
+				return base64_decode( $this->options [ PostmanOptions::BASIC_AUTH_PASSWORD ] );
+			}
 		}
 		public function getMandrillApiKey() {
 			if ( isset( $this->options [ PostmanOptions::MANDRILL_API_KEY ] ) ) {
