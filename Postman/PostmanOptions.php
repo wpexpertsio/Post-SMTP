@@ -279,7 +279,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             endswitch;
 		}
 		public function getUsername() {
-            if ( defined( POST_SMTP_AUTH_USERNAME ) ) {
+            if ( defined( 'POST_SMTP_AUTH_USERNAME' ) ) {
                 return POST_SMTP_AUTH_USERNAME;
             }
 
@@ -289,7 +289,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		}
 		public function getPassword() {
 
-		    if ( defined( POST_SMTP_AUTH_PASSWORD ) ) {
+		    if ( defined( 'POST_SMTP_AUTH_PASSWORD' ) ) {
 		        return POST_SMTP_AUTH_PASSWORD;
             }
 
