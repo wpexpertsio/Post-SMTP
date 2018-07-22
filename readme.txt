@@ -12,8 +12,8 @@ Send, log and troubleshoot your Outgoing Email easily. Supports everything: SMTP
 
 == Description ==
 
-= Version 1.8.9 released =
-Lockfile, Contact form 7 and raise the PHP version. [Read the detailes here](https://postmansmtp.com/post-smtp-v1-8-6-lockfile-and-raise-the-php-version/)
+= Version 1.9.0 released =
+Better secure delivery and external auth credentials (wp-config). [Read the detailes here](https://postmansmtp.com/post-smtp-1-9-0-better-support-for-secure-delivery/)
 
 = WordPress Mail SMTP Plugin =
 
