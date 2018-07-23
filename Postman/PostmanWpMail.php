@@ -166,7 +166,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// apply the WordPress filters
 			// may impact the from address, from email, charset and content-type
 			$message->applyFilters();
-			do_action_ref_array( 'phpmailer_init', array( &$message ) );
+			//do_action_ref_array( 'phpmailer_init', array( &$message ) );
 
 			// create the body parts (if they are both missing)
 			if ( $message->isBodyPartsEmpty() ) {

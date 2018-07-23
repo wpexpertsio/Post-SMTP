@@ -61,7 +61,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 
 		function __call($name, $args) {
 			$class = new ReflectionClass(__CLASS__);
-			$methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
+			$methods = $class->getMethods(ReflectionMethod::IS_PUBLIC );
 
 			$message = __( '<code>%1$s</code> method of a <code>PostmanMessage</code> object is <strong>not supported</strong>. Use one of the following methods <pre><code>%2$s</code></pre>', Postman::TEXT_DOMAIN );
 

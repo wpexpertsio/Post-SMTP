@@ -84,7 +84,7 @@ if (! class_exists ( 'PostmanSmtpMappings' )) {
 		);
 		public static function getSmtpFromEmail($hostname) {
 			reset ( PostmanSmtpMappings::$emailDomain );
-			while ( list ( $domain, $smtp ) = each ( PostmanSmtpMappings::$emailDomain ) ) {
+			foreach ( PostmanSmtpMappings::$emailDomain as $domain => $smtp ) {
 				if (strcasecmp ( $hostname, $domain ) == 0) {
 					return $smtp;
 				}
@@ -93,7 +93,7 @@ if (! class_exists ( 'PostmanSmtpMappings' )) {
 		}
 		public static function getSmtpFromMx($mx) {
 			reset ( PostmanSmtpMappings::$mxMappings );
-			while ( list ( $domain, $smtp ) = each ( PostmanSmtpMappings::$mxMappings ) ) {
+            foreach ( PostmanSmtpMappings::$mxMappings as $domain => $smtp ) {
 				if (PostmanUtils::endswith ( $mx, $domain )) {
 					return $smtp;
 				}

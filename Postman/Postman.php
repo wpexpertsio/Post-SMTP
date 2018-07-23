@@ -470,4 +470,3 @@ if ( ! function_exists( 'str_getcsv' ) ) {
 		return PostmanUtils::postman_strgetcsv_impl( $string );
 	}
 }
-
