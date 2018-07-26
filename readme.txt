@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehuda@m
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 4.9.5
-Stable tag: 1.9.2
+Stable tag: 1.9.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Send, log and troubleshoot your Outgoing Email easily. Supports everything: SMTP
 
 == Description ==
 
-= Version 1.9.1 released =
+= Version 1.9.3 released =
 Better secure delivery and external auth credentials (wp-config). [Read the detailes here](https://postmansmtp.com/post-smtp-1-9-0-better-support-for-secure-delivery/)
 
 = WordPress Mail SMTP Plugin =
@@ -296,6 +296,9 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+= 1.9.3 - 2018-07-26
+Removed auto configure for port 25 (can be TLS)
+
 = 1.9.2 - 2018-07-23
 Removed deprecated functions from 7.2 + comment unready feature
 

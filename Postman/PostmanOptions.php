@@ -262,9 +262,6 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		public function getEncryptionType() {
 		    $port = $this->getPort();
 		    switch ($port):
-                case 25:
-                    return 'none';
-                    break;
                 case 465:
                     return 'ssl';
                     break;
