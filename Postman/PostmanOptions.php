@@ -178,6 +178,10 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			} else { 				return self::DEFAULT_MAIL_LOG_ENABLED; }
 		}
 		public function getRunMode() {
+			if ( defined( 'POST_SMTP_RUN_MODE' ) ) {
+				return POST_SMTP_RUN_MODE;
+			}
+			
 			if ( isset( $this->options [ self::RUN_MODE ] ) ) {
 				return $this->options [ self::RUN_MODE ];
 			} else { 				return self::DEFAULT_RUN_MODE; }
@@ -288,24 +292,35 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 		}
 		public function getPassword() {
-
-		    if ( defined( 'POST_SMTP_AUTH_PASSWORD' ) ) {
-		        return POST_SMTP_AUTH_PASSWORD;
-            }
+			if ( defined( 'POST_SMTP_AUTH_PASSWORD' ) ) {
+				return POST_SMTP_AUTH_PASSWORD;
+			}
 
 			if ( isset( $this->options [ PostmanOptions::BASIC_AUTH_PASSWORD ] ) ) {
 				return base64_decode( $this->options [ PostmanOptions::BASIC_AUTH_PASSWORD ] );
 			}
 		}
 		public function getMandrillApiKey() {
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+				return POST_SMTP_API_KEY;
+			}
+			
 			if ( isset( $this->options [ PostmanOptions::MANDRILL_API_KEY ] ) ) {
 				return base64_decode( $this->options [ PostmanOptions::MANDRILL_API_KEY ] ); }
 		}
 		public function getSendGridApiKey() {
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+				return POST_SMTP_API_KEY;
+			}
+
 			if ( isset( $this->options [ PostmanOptions::SENDGRID_API_KEY ] ) ) {
 				return base64_decode( $this->options [ PostmanOptions::SENDGRID_API_KEY ] ); }
 		}
 		public function getMailgunApiKey() {
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+				return POST_SMTP_API_KEY;
+			}
+
 			if ( isset( $this->options [ PostmanOptions::MAILGUN_API_KEY ] ) ) {
 				return base64_decode( $this->options [ PostmanOptions::MAILGUN_API_KEY ] ); }
 		}
