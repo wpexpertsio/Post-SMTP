@@ -13,7 +13,7 @@ Send, log and troubleshoot your Outgoing Email easily. Supports everything: SMTP
 == Description ==
 
 = Version 1.9.4 released - A MUST READ FOR EXISTING USERS =
-I tryed to simplify and I just the did opposite. [Read the detailes here](https://postmansmtp.com/post-smtp-1-9-4-im-only-human/)
+I tryed to do stuff simple and I just the did opposite. [Read the detailes here](https://postmansmtp.com/post-smtp-1-9-4-im-only-human/)
 
 = WordPress Mail SMTP Plugin =
 
