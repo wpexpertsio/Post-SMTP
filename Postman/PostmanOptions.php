@@ -264,21 +264,11 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				return $this->options [ PostmanOptions::AUTHENTICATION_TYPE ]; }
 		}
 		public function getEncryptionType() {
-		    $port = $this->getPort();
-		    switch ($port):
-                case 465:
-                    return 'ssl';
-                    break;
-                case 587:
-                    return 'tls';
-                    break;
-                case 2525:
-                    return 'tls';
-                    break;
-                default:
-                    return isset( $this->options [ PostmanOptions::SECURITY_TYPE ] ) ? $this->options [ PostmanOptions::SECURITY_TYPE ] : 'none';
-            endswitch;
+			if ( isset( $this->options [ PostmanOptions::SECURITY_TYPE ] ) ) {
+				return $this->options [ PostmanOptions::SECURITY_TYPE ];
+			}
 		}
+
 		public function getUsername() {
             if ( defined( 'POST_SMTP_AUTH_USERNAME' ) ) {
                 return POST_SMTP_AUTH_USERNAME;
