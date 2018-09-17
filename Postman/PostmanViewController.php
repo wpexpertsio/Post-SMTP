@@ -171,47 +171,99 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		 * Options page callback
 		 */
 		public function outputDefaultContent() {
-			// Set class property
-			print '<div class="wrap">';
-			$this->displayTopNavigation();
-			if ( ! PostmanPreRequisitesCheck::isReady() ) {
-				printf( '<p><span style="color:red; padding:2px 0; font-size:1.1em">%s</span></p>', __( 'Postman is unable to run. Email delivery is being handled by WordPress (or another plugin).', Postman::TEXT_DOMAIN ) );
-			} else {
-				$ready_messsage = PostmanTransportRegistry::getInstance()->getReadyMessage();
-				$statusMessage = $ready_messsage['message'];
-				if ( PostmanTransportRegistry::getInstance()->getActiveTransport()->isConfiguredAndReady() ) {
-					if ( $this->options->getRunMode() != PostmanOptions::RUN_MODE_PRODUCTION ) {
-						printf( '<p><span style="background-color:yellow">%s</span></p>', $statusMessage );
-					} else {
-						printf( '<p><span style="color:green;padding:2px 0; font-size:1.1em">%s</span></p>', $statusMessage );
-					}
-				} else {
-					printf( '<p><span style="color:red; padding:2px 0; font-size:1.1em">%s</span></p>', $statusMessage );
-				}
-				$this->printDeliveryDetails();
-				/* translators: where %d is the number of emails delivered */
-				print '<p style="margin:10px 10px"><span>';
-				printf( _n( 'Postman has delivered <span style="color:green">%d</span> email.', 'Postman has delivered <span style="color:green">%d</span> emails.', PostmanState::getInstance()->getSuccessfulDeliveries(), Postman::TEXT_DOMAIN ), PostmanState::getInstance()->getSuccessfulDeliveries() );
-				if ( $this->options->isMailLoggingEnabled() ) {
-					print ' ';
-					printf( __( 'The last %d email attempts are recorded <a href="%s">in the log</a>.', Postman::TEXT_DOMAIN ), PostmanOptions::getInstance()->getMailLoggingMaxEntries(), PostmanUtils::getEmailLogPageUrl() );
-				}
-				print '</span></p>';
-			}
-			if ( $this->options->isNew() ) {
-				printf( '<h3 style="padding-top:10px">%s</h3>', __( 'Thank-you for choosing Postman!', Postman::TEXT_DOMAIN ) );
-				/* translators: where %s is the URL of the Setup Wizard */
-				printf( '<p><span>%s</span></p>', sprintf( __( 'Let\'s get started! All users are strongly encouraged to <a href="%s">run the Setup Wizard</a>.', Postman::TEXT_DOMAIN ), $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG ) ) );
-				printf( '<p><span>%s</span></p>', sprintf( __( 'Alternately, <a href="%s">manually configure</a> your own settings and/or modify advanced options.', Postman::TEXT_DOMAIN ), $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_SLUG ) ) );
-			} else {
-				if ( PostmanState::getInstance()->isTimeToReviewPostman() && ! PostmanOptions::getInstance()->isNew() ) {
-					print '</br><hr width="70%"></br>';
-					/* translators: where %s is the URL to the WordPress.org review and ratings page */
-					printf( '%s</span></p>', sprintf( __( 'Please consider <a href="%s">leaving a review</a> to help spread the word! :D', Postman::TEXT_DOMAIN ), 'https://wordpress.org/support/view/plugin-reviews/post-smtp?filter=5' ) );
-				}
-				printf( '<p><span>%s :-)</span></p>', sprintf( __( 'Postman needs translators! Please take a moment to <a href="%s">translate a few sentences on-line</a>', Postman::TEXT_DOMAIN ), 'https://translate.wordpress.org/projects/wp-plugins/post-smtp/stable' ) );
-			}
-			printf( '<p><span>%s</span></p>', __( '<b style="background-color:yellow">New for v1.7!</style></b> Send mail with the Mandrill or SendGrid APIs.', Postman::TEXT_DOMAIN ) );
+			// Set class property ?>
+			<div class="wrap">
+				<h2><?php printf( __( '%s Setup', Postman::TEXT_DOMAIN ), __( 'Post SMTP', Postman::TEXT_DOMAIN ) ); ?></h2>
+				<div id="poststuff">
+					<div id="post-body" class="columns-2">
+						<div id="post-body-content">
+							<?php
+							$this->displayTopNavigation();
+							if ( ! PostmanPreRequisitesCheck::isReady() ) {
+								printf( '<p><span style="color:red; padding:2px 0; font-size:1.1em">%s</span></p>', __( 'Postman is unable to run. Email delivery is being handled by WordPress (or another plugin).', Postman::TEXT_DOMAIN ) );
+							} else {
+								$ready_messsage = PostmanTransportRegistry::getInstance()->getReadyMessage();
+								$statusMessage = $ready_messsage['message'];
+								if ( PostmanTransportRegistry::getInstance()->getActiveTransport()->isConfiguredAndReady() ) {
+									if ( $this->options->getRunMode() != PostmanOptions::RUN_MODE_PRODUCTION ) {
+										printf( '<p><span style="background-color:yellow">%s</span></p>', $statusMessage );
+									} else {
+										printf( '<p><span style="color:green;padding:2px 0; font-size:1.1em">%s</span></p>', $statusMessage );
+									}
+								} else {
+									printf( '<p><span style="color:red; padding:2px 0; font-size:1.1em">%s</span></p>', $statusMessage );
+								}
+								$this->printDeliveryDetails();
+								/* translators: where %d is the number of emails delivered */
+								print '<p style="margin:10px 10px"><span>';
+								printf( _n( 'Postman has delivered <span style="color:green">%d</span> email.', 'Postman has delivered <span style="color:green">%d</span> emails.', PostmanState::getInstance()->getSuccessfulDeliveries(), Postman::TEXT_DOMAIN ), PostmanState::getInstance()->getSuccessfulDeliveries() );
+								if ( $this->options->isMailLoggingEnabled() ) {
+									print ' ';
+									printf( __( 'The last %d email attempts are recorded <a href="%s">in the log</a>.', Postman::TEXT_DOMAIN ), PostmanOptions::getInstance()->getMailLoggingMaxEntries(), PostmanUtils::getEmailLogPageUrl() );
+								}
+								print '</span></p>';
+							}
+
+							printf( '<p><span>%s</span></p>', __( '<b style="background-color:yellow">New for v1.7!</style></b> Send mail with the Mandrill or SendGrid APIs.', Postman::TEXT_DOMAIN ) );
+
+							?>
+						</div><!-- .post-body-content -->
+						<div id="postbox-container-1" class="postbox-container">
+							<div id="submitdiv" class="postbox">
+								<h2 class="ui-sortable-handle"><span>Post-SMTP <code><?php $version = PostmanState::getInstance()->getVersion(); echo $version; ?></code></span></h2>
+								<div class="inside">
+									<div id="minor-publishing" style="padding:0 10px;">
+										<p>Some text with lorem should be here. Some text with lorem should be here.</p>
+										<p>Some text with lorem should be here. Some text with lorem should be here.</p>
+										<p>Some text with lorem should be here. Some text with lorem should be here.</p>
+									</div>
+									<div id="major-publishing-actions">
+										<ul>
+											<li>
+												<a href="https://wordpress.org/plugins/post-smtp/" target="_blank">Post-SMTP Plugin</a>
+											</li>
+											<li>
+												<a href="#" target="_blank">Online Support</a>
+											</li>
+											<li>
+												<a href="#" target="_blank">Guides</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div id="postbox-container-2" class="postbox-container">
+							<div id="normal-sortables" class="meta-box-sortables">
+								<div class="postbox" style="display: block;">
+									<?php
+									if ( $this->options->isNew() ) { ?>
+										<h2><span><?php _e( 'Thank-you for choosing Postman!', Postman::TEXT_DOMAIN ); ?></span></h2>
+										<div class="inside">
+											<p><?php printf( __( 'Let\'s get started! All users are strongly encouraged to <a href="%s">run the Setup Wizard</a>.', Postman::TEXT_DOMAIN ), $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG ) ); ?></p>
+											<p><?php printf( __( 'Alternately, <a href="%s">manually configure</a> your own settings and/or modify advanced options.', Postman::TEXT_DOMAIN ), $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_SLUG ) ); ?></p>
+										</div>
+									<?php
+									} else { ?>
+										<h2><span><?php _e( 'Thank-you for using Postman!', Postman::TEXT_DOMAIN ); ?></span></h2>
+										<div class="inside">
+											<?php
+											if ( PostmanState::getInstance()->isTimeToReviewPostman() ) {
+												/* translators: where %s is the URL to the WordPress.org review and ratings page */
+												printf( '<p>%s</p>', sprintf( __( 'Please consider <a href="%s">leaving a review</a> to help spread the word! :D', Postman::TEXT_DOMAIN ), 'https://wordpress.org/support/view/plugin-reviews/post-smtp?filter=5' ) );
+											}
+											printf( '<p>%s :-)</p>', sprintf( __( 'Postman needs translators! Please take a moment to <a href="%s">translate a few sentences on-line</a>', Postman::TEXT_DOMAIN ), 'https://translate.wordpress.org/projects/wp-plugins/post-smtp/stable' ) );
+											?>
+										</div>
+									<?php
+									}
+									?>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			<?php
 		}
 
 		/**
@@ -301,11 +353,10 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		private function displayTopNavigation() {
 			$version = PostmanState::getInstance()->getVersion();
 			$show = get_option('postman_release_version_'. $version );
-			printf( '<h2>%s</h2>', sprintf( __( '%s Setup', Postman::TEXT_DOMAIN ), __( 'Post SMTP', Postman::TEXT_DOMAIN ) ) );
 
 			if ( ! $show ) {
 				echo '
-				<div class="updated settings-error notice is-dismissible"> 
+				<div class="updated settings-error notice is-dismissible">
 					<p>
 					<strong>Version ' . $version . ' I do mistakes too - A must read:</strong> <a target="_blank" href="https://postmansmtp.com/post-smtp-1-9-4-im-only-human/">Read Here</a>
 					</p>
