@@ -38,7 +38,7 @@
 define( 'POST_BASE', __FILE__ );
 define( 'POST_PATH', __DIR__ );
 
-$postman_smtp_exist = in_array( 'postman-smtp/postman-smtp.php', (array) get_option( 'active_plugins', array() ) );
+$postman_smtp_exist = is_plugin_active( 'postman-smtp/postman-smtp.php' );
 $required_php_version = version_compare( PHP_VERSION, '5.6.0', '<' );
 
 if ( $postman_smtp_exist || $required_php_version ) {
