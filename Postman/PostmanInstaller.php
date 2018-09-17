@@ -59,6 +59,8 @@ class PostmanInstaller {
 
 	/**
 	 * Handle deactivation of the plugin
+	 *
+	 * @param $network_wide
 	 */
 	public function deactivatePostman( $network_wide ) {
 		if ( is_multisite() && $network_wide ) {
