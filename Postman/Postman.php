@@ -101,7 +101,7 @@ class Postman {
 			}
 			require_once 'PostmanInstaller.php';
 			$upgrader = new PostmanInstaller();
-			$upgrader->activatePostman();
+			$upgrader->activatePostman( 'upgrade' );
 		}
 
 		// MyMail integration
@@ -218,26 +218,26 @@ class Postman {
 	 * Functions to execute on the register_activation_hook
 	 * ref: https://codex.wordpress.org/Function_Reference/register_activation_hook
 	 */
-	public function on_activation() {
+	public function on_activation( $network_wide ) {
 		if ( $this->logger->isInfo() ) {
 			$this->logger->info( 'Activating plugin' );
 		}
 		require_once 'PostmanInstaller.php';
 		$upgrader = new PostmanInstaller();
-		$upgrader->activatePostman();
+		$upgrader->activatePostman( $network_wide );
 	}
 
 	/**
 	 * Functions to execute on the register_deactivation_hook
 	 * ref: https://codex.wordpress.org/Function_Reference/register_deactivation_hook
 	 */
-	public function on_deactivation() {
+	public function on_deactivation( $network_wide ) {
 		if ( $this->logger->isInfo() ) {
 			$this->logger->info( 'Deactivating plugin' );
 		}
 		require_once 'PostmanInstaller.php';
 		$upgrader = new PostmanInstaller();
-		$upgrader->deactivatePostman();
+		$upgrader->deactivatePostman( $network_wide );
 	}
 
 	/**

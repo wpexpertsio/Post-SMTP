@@ -20,22 +20,24 @@ class PostmanInstaller {
 
 	/**
 	 * Handle activation of the plugin
+	 *
+	 * @param $network_wide
 	 */
-	public function activatePostman() {
-		if ( function_exists( 'is_multisite' ) && is_multisite() ) {
+	public function activatePostman( $network_wide ) {
+		if ( is_multisite() && $network_wide ) {
 			// handle network activation
 			// from https://wordpress.org/support/topic/new-function-wp_get_sites?replies=11
 			// run the activation function for each blog id
-			$old_blog = get_current_blog_id();
+			$current_blog = get_current_blog_id();
 			// Get all blog ids
-			$subsites = wp_get_sites();
-			foreach ( $subsites as $subsite ) {
-				$this->logger->trace( 'multisite: switching to blog ' . $subsite ['blog_id'] );
-				switch_to_blog( $subsite ['blog_id'] );
+			$sites = get_sites();
+			foreach ( $sites as $site ) {
+				$this->logger->trace( 'multisite: switching to blog ' . $site->blog_id );
+				switch_to_blog( $site->blog_id );
 				$this->handleOptionUpdates();
 				$this->addCapability();
 			}
-			switch_to_blog( $old_blog );
+			switch_to_blog( $current_blog );
 		} else {
 			// handle single-site activation
 			$this->handleOptionUpdates();
@@ -58,20 +60,20 @@ class PostmanInstaller {
 	/**
 	 * Handle deactivation of the plugin
 	 */
-	public function deactivatePostman() {
-		if ( function_exists( 'is_multisite' ) && is_multisite() ) {
+	public function deactivatePostman( $network_wide ) {
+		if ( is_multisite() && $network_wide ) {
 			// handle network deactivation
 			// from https://wordpress.org/support/topic/new-function-wp_get_sites?replies=11
 			// run the deactivation function for each blog id
-			$old_blog = get_current_blog_id();
+			$current_blog = get_current_blog_id();
 			// Get all blog ids
-			$subsites = wp_get_sites();
-			foreach ( $subsites as $subsite ) {
-				$this->logger->trace( 'multisite: switching to blog ' . $subsite ['blog_id'] );
-				switch_to_blog( $subsite ['blog_id'] );
+			$sites = get_sites();
+			foreach ( $sites as $site ) {
+				$this->logger->trace( 'multisite: switching to blog ' . $site->blog_id );
+				switch_to_blog( $site->blog_id );
 				$this->removeCapability();
 			}
-			switch_to_blog( $old_blog );
+			switch_to_blog( $current_blog );
 		} else {
 			// handle single-site deactivation
 			$this->removeCapability();
