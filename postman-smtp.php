@@ -3,7 +3,7 @@
  * Plugin Name: Post SMTP
  * Plugin URI: https://wordpress.org/plugins/post-smtp/
  * Description: Email not reliable? Post SMTP is the first and only WordPress SMTP plugin to implement OAuth 2.0 for Gmail, Hotmail and Yahoo Mail. Setup is a breeze with the Configuration Wizard and integrated Port Tester. Enjoy worry-free delivery even if your password changes!
- * Version: 1.9.7
+ * Version: 1.9.8
  * Author: Yehuda Hassine
  * Text Domain: post-smtp
  * Author URI: https://postmansmtp.com
@@ -126,5 +126,5 @@ function post_start( $startingMemory ) {
  */
 function post_setupPostman() {
 	require_once 'Postman/Postman.php';
-	$kevinCostner = new Postman( __FILE__, '1.9.7' );
+	$kevinCostner = new Postman( __FILE__, '1.9.8' );
 }

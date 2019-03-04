@@ -118,6 +118,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
         const FALLBACK_SMTP_HOSTNAME = 'fallback_smtp_hostname';
         const FALLBACK_SMTP_PORT = 'fallback_smtp_port';
         const FALLBACK_SMTP_SECURITY = 'fallback_smtp_security';
+		const FALLBACK_FROM_EMAIL = 'fallback_from_email';
         const FALLBACK_SMTP_USE_AUTH = 'fallback_smtp_use_auth';
         const FALLBACK_SMTP_USERNAME = 'fallback_smtp_username';
         const FALLBACK_SMTP_PASSWORD = 'fallback_smtp_password';
@@ -286,7 +287,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		public function getEnvelopeSender() {
 
 		    if ( $this->is_fallback ) {
-		        return $this->getFallbackUsername();
+		        return $this->getFallbackFromEmail();
             }
 
 			if ( isset( $this->options [ PostmanOptions::ENVELOPE_SENDER ] ) ) {
@@ -296,12 +297,18 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		public function getMessageSenderEmail() {
 
 		    if ( $this->is_fallback ) {
-		        return $this->getFallbackUsername();
+		        return $this->getFallbackFromEmail();
             }
 
 			if ( isset( $this->options [ PostmanOptions::MESSAGE_SENDER_EMAIL ] ) ) {
 				return $this->options [ PostmanOptions::MESSAGE_SENDER_EMAIL ]; }
 		}
+
+		public function getFallbackFromEmail() {
+			if ( isset( $this->options [ PostmanOptions::FALLBACK_FROM_EMAIL ] ) ) {
+				return $this->options [ PostmanOptions::FALLBACK_FROM_EMAIL ]; }
+		}
+
 		public function getMessageSenderName() {
 			if ( isset( $this->options [ PostmanOptions::MESSAGE_SENDER_NAME ] ) ) {
 				return $this->options [ PostmanOptions::MESSAGE_SENDER_NAME ]; }
@@ -534,10 +541,6 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			return $this->isPluginSenderEmailEnforced();
 		}
 		public function isPluginSenderEmailEnforced() {
-			
-			if ( $this->is_fallback ) {
-				return true;
-			}
 
 			if ( $this->isNew() ) {
 				return self::DEFAULT_PLUGIN_MESSAGE_SENDER_EMAIL_ENFORCED; }

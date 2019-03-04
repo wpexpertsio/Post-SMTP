@@ -228,6 +228,13 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 				$this->logger->debug( sprintf( 'Forced From email address: before=%s after=%s', $this->getFromAddress()->getEmail(), $forcedEmailAddress ) );
 				$this->getFromAddress()->setEmail( $forcedEmailAddress );
 			}
+
+			if ( $options->is_fallback ) {
+				$fallback_email = $options->getFallbackFromEmail();
+				$this->logger->debug( sprintf( 'Fallback: Forced From email address: before=%s after=%s', $this->getFromAddress()->getEmail(), $fallback_email ) );
+				$this->getFromAddress()->setEmail( $fallback_email );
+			}
+
 			$forcedEmailName = $options->getMessageSenderName();
 			if ( $options->isSenderNameOverridePrevented() && $this->getFromAddress()->getName() !== $forcedEmailName ) {
 				$this->logger->debug( sprintf( 'Forced From email name: before=%s after=%s', $this->getFromAddress()->getName(), $forcedEmailName ) );

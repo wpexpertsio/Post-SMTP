@@ -85,6 +85,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
             $this->sanitizeInt( 'Fallback port', PostmanOptions::FALLBACK_SMTP_PORT, $input, $new_input );
             $this->sanitizeString( 'Fallback security', PostmanOptions::FALLBACK_SMTP_SECURITY, $input, $new_input );
             $this->sanitizeString( 'Fallback auth', PostmanOptions::FALLBACK_SMTP_USE_AUTH, $input, $new_input );
+			$this->sanitizeString( 'Fallback username', PostmanOptions::FALLBACK_FROM_EMAIL, $input, $new_input );
             $this->sanitizeString( 'Fallback username', PostmanOptions::FALLBACK_SMTP_USERNAME, $input, $new_input );
             $this->sanitizePassword( 'Fallback password', PostmanOptions::FALLBACK_SMTP_PASSWORD, $input, $new_input, $this->options->getFallbackPassword() );
 

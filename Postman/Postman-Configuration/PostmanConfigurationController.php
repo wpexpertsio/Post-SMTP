@@ -301,6 +301,18 @@ class PostmanConfigurationController {
                     </td>
                 </tr>
 
+				<tr>
+					<th scope="row"><?php _e('From Email', Postman::TEXT_DOMAIN ); ?></th>
+					<td>
+						<input type="email" id="fallback-smtp-from-email"
+							   value="<?php echo $this->options->getFallbackFromEmail(); ?>"
+							   name="postman_options[<?php echo PostmanOptions::FALLBACK_FROM_EMAIL; ?>]"
+						>
+						<br>
+						<small><?php _e( "Use allowed email, for example: If you are using Gmail, type your Gmail adress.", Postman::TEXT_DOMAIN ); ?></small>
+					</td>
+				</tr>
+
                 <tr valign="">
                     <th scope="row"><?php _e( 'Use SMTP Authentication?', Postman::TEXT_DOMAIN ); ?></th>
                     <td>
