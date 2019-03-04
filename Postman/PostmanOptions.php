@@ -106,6 +106,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const TEMPORARY_DIRECTORY = 'tmp_dir';
 		const DISABLE_EMAIL_VALIDAITON = 'disable_email_validation';
 		const NOTIFICATION_SERVICE = 'notification_service';
+        const NOTIFICATION_USE_CHROME = 'notification_use_chrome';
+        const NOTIFICATION_CHROME_UID = 'notification_chrome_uid';
 		const PUSHOVER_USER = 'pushover_user';
 		const PUSHOVER_TOKEN = 'pushover_token';
 		const SLACK_TOKEN = 'slack_token';
@@ -341,6 +343,18 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				return base64_decode( $this->options [ PostmanOptions::SLACK_TOKEN ] );
 			}
 		}
+
+        public function useChromeExtension() {
+            if ( isset( $this->options [ PostmanOptions::NOTIFICATION_USE_CHROME ] ) ) {
+                return $this->options [ PostmanOptions::NOTIFICATION_USE_CHROME ];
+            }
+        }
+
+        public function getNotificationChromeUid() {
+            if ( isset( $this->options [ PostmanOptions::NOTIFICATION_CHROME_UID ] ) ) {
+                return base64_decode( $this->options [ PostmanOptions::NOTIFICATION_CHROME_UID ] );
+            }
+        }
 		
 		public function getReplyTo() {
 			if ( isset( $this->options [ PostmanOptions::REPLY_TO ] ) ) {

@@ -445,37 +445,21 @@ class PostmanUtils {
         $result = 'localhost.localdomain';
         
         if (isset($_SERVER) and array_key_exists('SERVER_NAME', $_SERVER)) {
-            $result = $_SERVER['SERVER_NAME'];
+            $host = $_SERVER['SERVER_NAME'];
         } elseif (function_exists('gethostname') and gethostname() !== false) {
-            $result = gethostname();
+            $host = gethostname();
         } elseif (php_uname('n') !== false) {
-            $result = php_uname('n');
+            $host = php_uname('n');
         }
 
-		if ( $result !== 'localhost.localdomain' ) {
-			// get the current result ip
-			$ip = gethostbyname($result);
+        // as final option - if ip returned or hostname without extension (not valid dns name)
+        $extension = pathinfo( $host, PATHINFO_EXTENSION );
+		if ( filter_var( $result, FILTER_VALIDATE_IP ) || empty( $extension ) ) {
+            $siteurl = get_bloginfo('url');
+            $host = parse_url($siteurl, PHP_URL_HOST);
+        }
 
-			// dns query failed
-			if ( $ip == $result ) {
-				return $result;
-			}
-
-			// get the current ip hostname - reverse dns
-			$host = gethostbyaddr($ip);
-
-			// dns query failed
-			if ( $host == $ip ) {
-				return $result;
-			}
-
-			// if hostname is not equal to the result set the ptr
-			if ( $result !== $host ) {
-				$result = $host;
-			}
-		}
-
-        return $result;
+        return str_replace('www.', '', $host );
 	}
 
 	public static function getHost( $url ) {

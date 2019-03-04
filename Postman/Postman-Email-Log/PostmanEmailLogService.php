@@ -182,6 +182,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 
 				$notify = new PostmanNotify( $notifyer, $message );
 				$notify->send($message, $log);
+				$notify->push_to_chrome($log->statusMessage);
 			}
 
 			/**

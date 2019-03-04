@@ -210,7 +210,19 @@ class Postman_Zend_Mail_Protocol_Smtp extends Postman_Zend_Mail_Protocol_Abstrac
 
             $crypto_method = STREAM_CRYPTO_METHOD_TLS_CLIENT;
 
-            if (defined('STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT')) {
+            $curl = curl_version();
+            preg_match('/.*\/(\d*\.\d*\.\d*)[a-z]?/', $curl['ssl_version'], $ver_match );
+            $tlsv1_2_installed = ! empty( $ver_match[1] ) ? $ver_match[1] >= '1.0.1'  : true;
+
+            if ( $this->_host == 'smtp.office365.com' && ! $tlsv1_2_installed ) {
+
+                $error = sprintf( 'Office365 SMTP servie require TLS v1.2 and OpenSSL version 1.0.1 or greater, your current OpenSSL version is: %s.
+You need to contact your web hosting support for help.', $ver_match[1] );
+
+                throw new Postman_Zend_Mail_Protocol_Exception( $error );
+            }
+
+            if ( defined('STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT') ) {
                 $crypto_method |= STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
                 $crypto_method |= STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT;
             }

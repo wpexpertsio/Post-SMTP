@@ -428,6 +428,29 @@ class PostmanConfigurationController {
 			</table>
 		</div>
 
+        <div id="use-chrome-extension">
+            <h2><?php _e( 'Push To Chrome Extension', Postman::TEXT_DOMAIN ); ?></h2>
+            <table class="form-table">
+                <tbody>
+                <tr>
+                    <th scope="row"><?php _e( 'This is an extra notification to the selection above', Postman::TEXT_DOMAIN ); ?></th>
+                    <td>
+                        <input type="checkbox" id="notification_use_chrome" name="postman_options[notification_use_chrome]">
+                        <a target="_blank" class="" href="https://chrome.google.com/webstore/detail/npklmbkpbknkmbohdbpikeidiaekjoch">
+                            <?php _e( 'You can download the chrome extensiom here.', Postman::TEXT_DOMAIN ); ?>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><?php _e( 'Your UID as you see in the extension.', Postman::TEXT_DOMAIN ); ?></th>
+                    <td>
+                        <input type="password" id="notification_chrome_uid" name="postman_options[notification_chrome_uid]" value="">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
 		<?php
 		print '</fieldset>';
 

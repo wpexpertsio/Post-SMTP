@@ -74,6 +74,9 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizePassword( 'Pushover Token', PostmanOptions::PUSHOVER_TOKEN, $input, $new_input, $this->options->getPushoverToken() );
 			$this->sanitizePassword( 'Slack Token', PostmanOptions::SLACK_TOKEN, $input, $new_input, $this->options->getSlackToken() );
 
+            $this->sanitizeString( 'Push Chrome Extension', PostmanOptions::NOTIFICATION_USE_CHROME, $input, $new_input );
+            $this->sanitizePassword( 'Push Chrome Extension UID', PostmanOptions::NOTIFICATION_CHROME_UID, $input, $new_input, $this->options->getNotificationChromeUid() );
+
 			if ( $new_input [ PostmanOptions::CLIENT_ID ] != $this->options->getClientId() || $new_input [ PostmanOptions::CLIENT_SECRET ] != $this->options->getClientSecret() || $new_input [ PostmanOptions::HOSTNAME ] != $this->options->getHostname() ) {
 				$this->logger->debug( 'Recognized new Client ID' );
 				// the user entered a new client id and we should destroy the stored auth token

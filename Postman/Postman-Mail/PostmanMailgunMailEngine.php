@@ -224,7 +224,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 
 		private function addHeader( $name, $value, $deprecated = '' ) {
 			if ( $value && ! empty( $value ) ) {
-				$this->mailgunMessage['h:' . $name] = $value;
+				$this->mailgunMessage['h:' . $name] = preg_replace('/.*:\s?/', '', $value);
 			}
 		}
 

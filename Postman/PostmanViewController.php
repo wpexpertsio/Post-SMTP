@@ -307,7 +307,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				echo '
 				<div class="updated settings-error notice is-dismissible"> 
 					<p>
-					<strong>Version ' . $version . ' Mailgun Europe region support:</strong> <a target="_blank" href="https://postmansmtp.com/post-smtp-1-9-5-mailgun-europe-region-support/">Read Here</a>
+					<strong>Version ' . $version . ' We have a new Chrome Extension:</strong> <a target="_blank" href="https://postmansmtp.com/post-smtp-1-9-6-new-chrome-extension/">Read Here</a>
 					</p>
 					<button style="z-index: 100;" data-version="'. $version . '" data-security="' . wp_create_nonce('postsmtp') .'" type="button" class="notice-dismiss postman-release-message">
 						<span class="screen-reader-text">Dismiss this notice.</span>

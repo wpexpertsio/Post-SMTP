@@ -208,8 +208,11 @@ class PostmanGetDiagnosticsViaAjax {
 	/**
 	 */
 	public function getDiagnostics() {
+	    $curl = curl_version();
 		$transportRegistry = PostmanTransportRegistry::getInstance();
 		$this->addToDiagnostics( 'HostName', PostmanUtils::getServerName() );
+		$this->addToDiagnostics( 'cURL Version', $curl['version'] );
+		$this->addToDiagnostics( 'OpenSSL Version', $curl['ssl_version'] );
 		$this->addToDiagnostics( 'OS', php_uname() );
 		$this->addToDiagnostics( 'PHP', PHP_OS . ' ' . PHP_VERSION . ' ' . setlocale( LC_CTYPE, 0 ) );
 		$this->addToDiagnostics( 'PHP Dependencies', $this->getPhpDependencies() );
