@@ -69,13 +69,24 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizeInt( 'Transcript Size', PostmanOptions::TRANSCRIPT_SIZE, $input, $new_input );
 			$this->sanitizeString( 'Temporary Directory', PostmanOptions::TEMPORARY_DIRECTORY, $input, $new_input );
 
+			// Notifications
 			$this->sanitizeString( 'Pushover Service', PostmanOptions::NOTIFICATION_SERVICE, $input, $new_input, $this->options->getNotificationService() );
 			$this->sanitizePassword( 'Pushover Username', PostmanOptions::PUSHOVER_USER, $input, $new_input, $this->options->getPushoverUser() );
 			$this->sanitizePassword( 'Pushover Token', PostmanOptions::PUSHOVER_TOKEN, $input, $new_input, $this->options->getPushoverToken() );
 			$this->sanitizePassword( 'Slack Token', PostmanOptions::SLACK_TOKEN, $input, $new_input, $this->options->getSlackToken() );
 
+			// Chrome extension
             $this->sanitizeString( 'Push Chrome Extension', PostmanOptions::NOTIFICATION_USE_CHROME, $input, $new_input );
             $this->sanitizePassword( 'Push Chrome Extension UID', PostmanOptions::NOTIFICATION_CHROME_UID, $input, $new_input, $this->options->getNotificationChromeUid() );
+
+            // Fallback
+            $this->sanitizeString( 'Use fallback', PostmanOptions::FALLBACK_SMTP_ENABLED, $input, $new_input );
+            $this->sanitizeString( 'Fallback hostname', PostmanOptions::FALLBACK_SMTP_HOSTNAME, $input, $new_input );
+            $this->sanitizeInt( 'Fallback port', PostmanOptions::FALLBACK_SMTP_PORT, $input, $new_input );
+            $this->sanitizeString( 'Fallback security', PostmanOptions::FALLBACK_SMTP_SECURITY, $input, $new_input );
+            $this->sanitizeString( 'Fallback auth', PostmanOptions::FALLBACK_SMTP_USE_AUTH, $input, $new_input );
+            $this->sanitizeString( 'Fallback username', PostmanOptions::FALLBACK_SMTP_USERNAME, $input, $new_input );
+            $this->sanitizePassword( 'Fallback password', PostmanOptions::FALLBACK_SMTP_PASSWORD, $input, $new_input, $this->options->getFallbackPassword() );
 
 			if ( $new_input [ PostmanOptions::CLIENT_ID ] != $this->options->getClientId() || $new_input [ PostmanOptions::CLIENT_SECRET ] != $this->options->getClientSecret() || $new_input [ PostmanOptions::HOSTNAME ] != $this->options->getHostname() ) {
 				$this->logger->debug( 'Recognized new Client ID' );

@@ -18,6 +18,7 @@ class Postman {
 
 	const ADMINISTRATOR_ROLE_NAME = 'administrator';
 	const MANAGE_POSTMAN_CAPABILITY_NAME = 'manage_postman_smtp';
+	const MANAGE_POSTMAN_CAPABILITY_LOGS = 'manage_postman_logs';
 	const TEXT_DOMAIN = 'post-smtp';
 
 	private $logger;

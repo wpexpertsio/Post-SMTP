@@ -210,6 +210,7 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 				$this->transcript .= print_r( $mail, true );
 				$this->logger->debug( 'Transcript=' . $this->transcript );
+
 				throw $e;
 			}
 		}

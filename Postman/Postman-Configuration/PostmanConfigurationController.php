@@ -197,14 +197,18 @@ class PostmanConfigurationController {
 		PostmanViewController::outputChildPageHeader( __( 'Settings', Postman::TEXT_DOMAIN ), 'advanced_config' );
 		print '<div id="config_tabs"><ul>';
 		print sprintf( '<li><a href="#account_config">%s</a></li>', __( 'Account', Postman::TEXT_DOMAIN ) );
+		print sprintf( '<li><a href="#fallback">%s</a></li>', __( 'Fallback', Postman::TEXT_DOMAIN ) );
 		print sprintf( '<li><a href="#message_config">%s</a></li>', __( 'Message', Postman::TEXT_DOMAIN ) );
 		print sprintf( '<li><a href="#logging_config">%s</a></li>', __( 'Logging', Postman::TEXT_DOMAIN ) );
 		print sprintf( '<li><a href="#advanced_options_config">%s</a></li>', __( 'Advanced', Postman::TEXT_DOMAIN ) );
 		print sprintf( '<li><a href="#notifications">%s</a></li>', __( 'Notifications', Postman::TEXT_DOMAIN ) );
 		print '</ul>';
+
 		print '<form method="post" action="options.php">';
 		// This prints out all hidden setting fields
 		settings_fields( PostmanAdminController::SETTINGS_GROUP_NAME );
+
+		// account_config
 		print '<section id="account_config">';
 		if ( sizeof( PostmanTransportRegistry::getInstance()->getTransports() ) > 1 ) {
 			do_settings_sections( 'transport_options' );
@@ -230,6 +234,115 @@ class PostmanConfigurationController {
 		do_settings_sections( PostmanMailgunTransport::MAILGUN_AUTH_OPTIONS );
 		print '</div>';
 		print '</section>';
+        // end account config
+		?>
+
+        <!-- Fallback Start -->
+        <section id="fallback">
+            <h2><?php esc_html_e( 'Failed emails fallback', Postman::TEXT_DOMAIN ); ?></h2>
+            <p><?php esc_html_e( 'By enable this option, if your email is fail to send Post SMTP will try to use the SMTP service you define here.', Postman::TEXT_DOMAIN ); ?></p>
+            <table class="form-table">
+                <tr valign="">
+                    <th scope="row"><?php _e( 'Use Fallback?', Postman::TEXT_DOMAIN ); ?></th>
+                    <td>
+                        <label>
+                            <input name="postman_options[<?php echo PostmanOptions::FALLBACK_SMTP_ENABLED; ?>]" type="radio"
+                                   value="no"<?php echo checked( $this->options->getFallbackIsEnabled(), 'no' ); ?>>
+                            <?php _e( 'No', Postman::TEXT_DOMAIN ); ?>
+                        </label>
+                        &nbsp;
+                        <label>
+                            <?php $checked = checked( $this->options->getFallbackIsEnabled(), 'yes', false ); ?>
+                            <input name="postman_options[<?php echo PostmanOptions::FALLBACK_SMTP_ENABLED; ?>]" type="radio"
+                                   value="yes"<?php echo checked( $this->options->getFallbackIsEnabled(), 'yes' ); ?>>
+                            <?php _e( 'Yes', Postman::TEXT_DOMAIN ); ?>
+                        </label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th scope="row"><?php _e('Outgoing Mail Server', Postman::TEXT_DOMAIN ); ?></th>
+                    <?php $host = $this->options->getFallbackHostname(); ?>
+                    <td>
+                        <input type="text" id="fallback-smtp-host" name="postman_options[<?php echo PostmanOptions::FALLBACK_SMTP_HOSTNAME; ?>]"
+                               value="<?php echo $host; ?>" placeholder="Example: smtp.host.com">
+                    </td>
+                </tr>
+
+                <tr>
+                    <th scope="row"><?php _e('Mail Server Port', Postman::TEXT_DOMAIN ); ?></th>
+                    <?php $port = $this->options->getFallbackPort(); ?>
+                    <td>
+                        <input type="number" id="fallback-smtp-port" name="postman_options[<?php echo PostmanOptions::FALLBACK_SMTP_PORT; ?>]"
+                               value="<?php echo $port; ?>" placeholder="Example: 587">
+                    </td>
+                </tr>
+
+                <tr>
+                    <th scope="row"><?php _e('Security', Postman::TEXT_DOMAIN ); ?></th>
+                    <?php
+                    $security_options = array(
+                            'none' => __( 'None', Postman::TEXT_DOMAIN ),
+                            'ssl' => __( 'SSL', Postman::TEXT_DOMAIN ),
+                            'tls' => __( 'TLS', Postman::TEXT_DOMAIN ),
+                    );
+                    ?>
+                    <td>
+                        <select id="fallback-smtp-security" name="postman_options[<?php echo PostmanOptions::FALLBACK_SMTP_SECURITY; ?>]">
+                            <?php
+                            foreach ( $security_options as $key => $label ) {
+                                $selected = selected( $this->options->getFallbackSecurity(), $key,false );
+                                ?>
+                                <option value="<?php echo $key; ?>"<?php echo $selected; ?>><?php echo $label; ?></option>
+                                <?php
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr valign="">
+                    <th scope="row"><?php _e( 'Use SMTP Authentication?', Postman::TEXT_DOMAIN ); ?></th>
+                    <td>
+                        <label>
+                            <input name="postman_options[<?php echo PostmanOptions::FALLBACK_SMTP_USE_AUTH; ?>]"
+                                   type="radio" value="none"<?php checked( $this->options->getFallbackAuth(), 'none' ); ?>>
+                            <?php _e( 'No', Postman::TEXT_DOMAIN ); ?>
+                        </label>
+                        &nbsp;
+                        <label>
+                            <input name="postman_options[<?php echo PostmanOptions::FALLBACK_SMTP_USE_AUTH; ?>]"
+                                   type="radio" value="login"<?php checked( $this->options->getFallbackAuth(), 'login' ); ?>>
+                            <?php _e( 'Yes', Postman::TEXT_DOMAIN ); ?>
+                        </label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th scope="row"><?php _e('User name', Postman::TEXT_DOMAIN ); ?></th>
+                    <td>
+                        <input type="text" id="fallback-smtp-username"
+                               value="<?php echo $this->options->getFallbackUsername(); ?>"
+                               name="postman_options[<?php echo PostmanOptions::FALLBACK_SMTP_USERNAME; ?>]"
+                        >
+                    </td>
+                </tr>
+
+                <tr>
+                    <th scope="row"><?php _e('Password', Postman::TEXT_DOMAIN ); ?></th>
+                    <td>
+                        <input type="password" id="fallback-smtp-password"
+                               value="<?php echo PostmanUtils::obfuscatePassword( $this->options->getFallbackPassword() ); ?>"
+                               name="postman_options[<?php echo PostmanOptions::FALLBACK_SMTP_PASSWORD; ?>]"
+                        >
+                    </td>
+                </tr>
+
+            </table>
+        </section>
+        <!-- Fallback End -->
+
+        <?php
 		print '<section id="message_config">';
 		do_settings_sections( PostmanAdminController::MESSAGE_SENDER_OPTIONS );
 		do_settings_sections( PostmanAdminController::MESSAGE_FROM_OPTIONS );

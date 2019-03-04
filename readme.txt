@@ -1,10 +1,10 @@
 === Post SMTP Mailer/Email Log ===
-Contributors: yehudah ,jasonhendriks
+Contributors: yehudah
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehuda@myinbox.in&item_name=Donation+for+PostSMTP
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 5.0.3
-Stable tag: 1.9.6
+Stable tag: 1.9.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,8 +12,9 @@ Send, log and troubleshoot your Outgoing Email easily. Supports everything: SMTP
 
 == Description ==
 
-= Version 1.9.6 released - We have a new Chrome extension =
-New Chrome extension and small updates. [Read the detailes here](https://postmansmtp.com/post-smtp-1-9-6-new-chrome-extension/)
+= Version 1.9.7 released - The SMTP Fallback =
+A fallback is a unique solution only exist on Post SMTP.
+You can configure a backup SMTP, so if your emails are failing your site will keep sending emails !!! [Read the detailes here](https://postmansmtp.com/post-smtp-1-9-7-the-smtp-fallback/)
 
 = The Only SMTP plugin with chrome Notifications = 
 Get notified if your emails are failing inside your Chrome browser. [Download here](https://chrome.google.com/webstore/detail/post-smtp-notifications/npklmbkpbknkmbohdbpikeidiaekjoch?hl=en-US)
@@ -92,7 +93,7 @@ SendGrid has a free SMTP plan that you can use to send up to 100 emails per day.
 
 = CREDITS =
 
-Post SMTP (aka Postman SMTP) plugin was originally created by Jason Hendriks. It is now owned and maintained by Yehuda Hassine.
+Post SMTP (aka Postman SMTP) plugin was originally created by Jason Hendriks.
 
 == Installation ==
 
@@ -289,13 +290,20 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
+= 1.9.7 - 2019-02-17
+* New: Fallback Feature - Configure a backup SMTP when emails are failing.
+* New: WordPress Multisite compability - with global settings.
+* New: Email Log capability - give other user cheking the logs.
+* Fixed: compatibility with mailster plugin
+* Fixed: Mandrill exception bug - Thanks to Niels de Blaauw from Level-Level
+
 = 1.9.6 - 2019-01-29
 * Added support for our new chrome notification extension.
 * few fixes
 
 = 1.9.5 - 2018-10-02
 * Added support for Mailgun Europe region.
-* Replace "buggey" mime_content_type php function
+* Replace "buggy" mime_content_type php function
 
 = 1.9.4 - 2018-08-03
 The most stupid idea ever remove (auto security select)

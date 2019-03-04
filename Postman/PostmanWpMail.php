@@ -235,6 +235,13 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 					PostmanEmailLogService::getInstance()->writeFailureLog( $log, $message, $engine->getTranscript(), $transport, $e->getMessage() );
 				}
 
+                // Fallback
+                if ( $this->fallback( $log, $message, $options ) ) {
+
+				    return true;
+
+                }
+
 				$mail_error_data = array(
 					'to' => $message->getToRecipients(),
 					'subject' => $message->getSubject(),
@@ -248,8 +255,28 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 				// return failure
 				return false;
+
 			}
 		}
+
+		private function fallback( $log, $postMessage,$options ) {
+
+            if ( ! $options->is_fallback && $options->getFallbackIsEnabled() && $options->getFallbackIsEnabled() == 'yes' ) {
+
+                $options->is_fallback = true;
+
+                $status = $this->sendMessage( $postMessage, $log );
+
+                $options->is_fallback = false;
+
+                return $status;
+
+            } else {
+                $options->is_fallback = false;
+            }
+
+			return false;
+        }
 
 		/**
 		 * Clean up after sending the mail

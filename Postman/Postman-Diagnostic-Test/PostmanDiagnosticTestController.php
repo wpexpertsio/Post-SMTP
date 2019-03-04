@@ -102,9 +102,9 @@ class PostmanDiagnosticTestController {
 
 		printf( '<h4>%s</h4>', __( 'Are you having issues with Postman?', Postman::TEXT_DOMAIN ) );
 		/* translators: where %1$s and %2$s are the URLs to the Troubleshooting and Support Forums on WordPress.org */
-		printf( '<p style="margin:0 10px">%s</p>', sprintf( __( 'Please check the <a href="%1$s">troubleshooting and error messages</a> page and the <a href="%2$s">support forum</a>.', Postman::TEXT_DOMAIN ), 'https://wordpress.org/plugins/post-smtp/other_notes/', 'https://wordpress.org/support/plugin/postman-smtp' ) );
+		printf( '<p style="margin:0 10px">%s</p>', sprintf( __( 'Please check the <a href="%1$s">troubleshooting and error messages</a> page and the <a href="%2$s">support forum</a>.', Postman::TEXT_DOMAIN ), 'https://wordpress.org/plugins/post-smtp/other_notes/', 'https://wordpress.org/support/plugin/post-smtp' ) );
 		printf( '<h4>%s</h4>', __( 'Diagnostic Test', Postman::TEXT_DOMAIN ) );
-		printf( '<p style="margin:0 10px">%s</p><br/>', sprintf( __( 'If you write for help, please include the following:', Postman::TEXT_DOMAIN ), 'https://wordpress.org/plugins/post-smtp/other_notes/', 'https://wordpress.org/support/plugin/postman-smtp' ) );
+		printf( '<p style="margin:0 10px">%s</p><br/>', sprintf( __( 'If you write for help, please include the following:', Postman::TEXT_DOMAIN ), 'https://wordpress.org/plugins/post-smtp/other_notes/', 'https://wordpress.org/support/plugin/post-smtp' ) );
 		printf( '<textarea readonly="readonly" id="diagnostic-text" cols="80" rows="15">%s</textarea>', _x( 'Checking..', 'The "please wait" message', Postman::TEXT_DOMAIN ) );
 		print '</div>';
 	}

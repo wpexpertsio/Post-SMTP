@@ -1,6 +1,6 @@
 <?php
-define( 'MYMAIL_POSTMAN_REQUIRED_VERSION', '2.0' );
-define( 'MYMAIL_POSTMAN_ID', 'postman' );
+define( 'MAILSTER_POSTMAN_REQUIRED_VERSION', '2.0' );
+define( 'MAILSTER_POSTMAN_ID', 'postman' );
 
 /**
  * Enables MyMail to deliver via Postman
@@ -36,36 +36,36 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 		 * Initialize the Connector
 		 */
 		public function init() {
-			if ( ! defined( 'MYMAIL_VERSION' ) || version_compare( MYMAIL_POSTMAN_REQUIRED_VERSION, MYMAIL_VERSION, '>' ) ) {
+			if ( ! defined( 'MAILSTER_VERSION' ) || version_compare( MAILSTER_POSTMAN_REQUIRED_VERSION, MAILSTER_VERSION, '>' ) ) {
 				// no-op
 			} else {
 				// create an instance of the Logger
 				$this->logger = new PostmanLogger( get_class( $this ) );
 				$this->logger->debug( 'Starting' );
 
-				add_filter( 'mymail_delivery_methods', array(
+				add_filter( 'mailster_delivery_methods', array(
 						&$this,
 						'delivery_method',
 				) );
-				add_action( 'mymail_deliverymethod_tab_postman', array(
+				add_action( 'mailster_deliverymethod_tab_postman', array(
 						&$this,
 						'deliverytab',
 				) );
 
-				if ( mymail_option( 'deliverymethod' ) == MYMAIL_POSTMAN_ID ) {
-					add_action( 'mymail_initsend', array(
+				if ( mailster_option( 'deliverymethod' ) == MAILSTER_POSTMAN_ID ) {
+					add_action( 'mailster_initsend', array(
 							&$this,
 							'initsend',
 					) );
-					add_action( 'mymail_presend', array(
+					add_action( 'mailster_presend', array(
 							&$this,
 							'presend',
 					) );
-					add_action( 'mymail_dosend', array(
+					add_action( 'mailster_dosend', array(
 							&$this,
 							'dosend',
 					) );
-					add_action( 'MYMAIL_POSTMAN_cron', array(
+					add_action( 'MAILSTER_POSTMAN_cron', array(
 							&$this,
 							'reset',
 					) );
@@ -76,7 +76,7 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 		/**
 		 * initsend function.
 		 *
-		 * uses mymail_initsend hook to set initial settings
+		 * uses mailster_initsend hook to set initial settings
 		 *
 		 * @access public
 		 * @param mixed $mailobject
@@ -91,7 +91,7 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 		/**
 		 * presend function.
 		 *
-		 * uses the mymail_presend hook to apply setttings before each mail
+		 * uses the mailster_presend hook to apply setttings before each mail
 		 *
 		 * @access public
 		 * @param mixed $mailobject
@@ -110,7 +110,7 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 		/**
 		 * dosend function.
 		 *
-		 * uses the mymail_dosend hook and triggers the send
+		 * uses the mailster_dosend hook and triggers the send
 		 *
 		 * @access public
 		 * @param mixed $mailobject
@@ -158,8 +158,8 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 		 * @return array
 		 */
 		public function reset() {
-			update_option( '_transient__mymail_send_period_timeout', false );
-			update_option( '_transient__mymail_send_period', 0 );
+			update_option( '_transient__mailster_send_period_timeout', false );
+			update_option( '_transient__mailster_send_period', 0 );
 		}
 
 		/**
@@ -172,7 +172,7 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 		 * @return void
 		 */
 		public function delivery_method( $delivery_methods ) {
-			$delivery_methods [ MYMAIL_POSTMAN_ID ] = __( 'Postman SMTP', Postman::TEXT_DOMAIN );
+			$delivery_methods [ MAILSTER_POSTMAN_ID ] = __( 'Postman SMTP', Postman::TEXT_DOMAIN );
 			return $delivery_methods;
 		}
 
@@ -195,8 +195,8 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 		 * @return void
 		 */
 		public function activate() {
-			if ( defined( 'MYMAIL_VERSION' ) && version_compare( MYMAIL_POSTMAN_REQUIRED_VERSION, MYMAIL_VERSION, '<=' ) ) {
-				mymail_notice( sprintf( __( 'MyMail: Change the delivery method in the %s!', Postman::TEXT_DOMAIN ), sprintf( '<a href="options-general.php?page=newsletter-settings&mymail_remove_notice=mymail_delivery_method#delivery">%s</a>', __( 'Settings', 'postman-smtp' ) ) ), '', false, 'delivery_method' );
+			if ( defined( 'MAILSTER_VERSION' ) && version_compare( MAILSTER_POSTMAN_REQUIRED_VERSION, MAILSTER_VERSION, '<=' ) ) {
+				mailster_notice( sprintf( __( 'MyMail: Change the delivery method in the %s!', Postman::TEXT_DOMAIN ), sprintf( '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=mailster_delivery_method#delivery">%s</a>', __( 'Settings', 'postman-smtp' ) ) ), '', false, 'delivery_method' );
 				$this->reset();
 			}
 		}
@@ -208,11 +208,11 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 		 * @return void
 		 */
 		public function deactivate() {
-			if ( defined( 'MYMAIL_VERSION' ) && function_exists( 'mymail_option' ) && version_compare( MYMAIL_POSTMAN_REQUIRED_VERSION, MYMAIL_VERSION, '<=' ) ) {
-				if ( mymail_option( 'deliverymethod' ) == MYMAIL_POSTMAN_ID ) {
-					mymail_update_option( 'deliverymethod', 'simple' );
+			if ( defined( 'MAILSTER_VERSION' ) && function_exists( 'mailster_option' ) && version_compare( MAILSTER_POSTMAN_REQUIRED_VERSION, MAILSTER_VERSION, '<=' ) ) {
+				if ( mailster_option( 'deliverymethod' ) == MAILSTER_POSTMAN_ID ) {
+					mailster_update_option( 'deliverymethod', 'simple' );
 					/* Translators where %s is the name of the page */
-					mymail_notice( sprintf( __( 'MyMail: Change the delivery method in the %s!', Postman::TEXT_DOMAIN ), sprintf( '<a href="options-general.php?page=newsletter-settings&mymail_remove_notice=mymail_delivery_method#delivery">%s</a>', __( 'Settings', 'postman-smtp' ) ) ), '', false, 'delivery_method' );
+					mailster_notice( sprintf( __( 'MyMail: Change the delivery method in the %s!', Postman::TEXT_DOMAIN ), sprintf( '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=mailster_delivery_method#delivery">%s</a>', __( 'Settings', 'postman-smtp' ) ) ), '', false, 'delivery_method' );
 				}
 			}
 		}

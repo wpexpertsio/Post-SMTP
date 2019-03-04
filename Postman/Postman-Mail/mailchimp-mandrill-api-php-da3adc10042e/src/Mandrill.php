@@ -149,7 +149,7 @@ class Postman_Mandrill {
     public function castError($result) {
         if($result['status'] !== 'error' || !$result['name']) throw new Postman_Mandrill_Error('We received an unexpected error: ' . json_encode($result));
 
-        $class = (isset(self::$error_map[$result['name']])) ? self::$error_map[$result['name']] : 'Mandrill_Error';
+        $class = (isset(self::$error_map[$result['name']])) ? self::$error_map[$result['name']] : 'Postman_Mandrill_Error';
         return new $class($result['message'], $result['code']);
     }
 

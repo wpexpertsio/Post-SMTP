@@ -21,7 +21,7 @@ class PostmanSettingsRegistry {
 
 		// only administrators should be able to trigger this
 		if ( PostmanUtils::isAdmin() ) {
-						$sanitizer = new PostmanInputSanitizer();
+			$sanitizer = new PostmanInputSanitizer();
 			register_setting( PostmanAdminController::SETTINGS_GROUP_NAME, PostmanOptions::POSTMAN_OPTIONS, array(
 					$sanitizer,
 					'sanitize',
@@ -100,6 +100,8 @@ class PostmanSettingsRegistry {
 					$this,
 					'headers_callback',
 			), PostmanAdminController::MESSAGE_HEADERS_OPTIONS, PostmanAdminController::MESSAGE_HEADERS_SECTION );
+
+			// Fallback
 
 			// the Email Validation section
 			add_settings_section( PostmanAdminController::EMAIL_VALIDATION_SECTION, __( 'Validation', Postman::TEXT_DOMAIN ), array(
@@ -431,7 +433,7 @@ class PostmanSettingsRegistry {
     }
 
     public function notification_chrome_uid_callback() {
-        printf( '<input type="password" id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]" value="%3$s" />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::NOTIFICATION_CHROME_UID, $this->options->getNotificationChromeUid() );
+        printf( '<input type="password" id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]" value="%3$s" />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::NOTIFICATION_CHROME_UID, PostmanUtils::obfuscatePassword( $this->options->getNotificationChromeUid() ) );
     }
 
 	public function pushover_user_callback() {

@@ -16,6 +16,10 @@ if ( ! class_exists( 'PostmanEmailLog' ) ) {
 		public $originalSubject;
 		public $originalMessage;
 		public $originalHeaders;
+
+		public function setStatusMessage( $message ) {
+		    $this->statusMessage .= $message;
+        }
 	}
 }
 
@@ -95,7 +99,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		public function writeFailureLog( PostmanEmailLog $log, PostmanMessage $message = null, $transcript, PostmanModuleTransport $transport, $statusMessage ) {
 			if ( PostmanOptions::getInstance()->isMailLoggingEnabled() ) {
 				$this->createLog( $log, $message, $transcript, $statusMessage, false, $transport );
-				$this->writeToEmailLog( $log );
+				$this->writeToEmailLog( $log,$message );
 			}
 		}
 
@@ -104,21 +108,43 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 *
 		 * From http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields
 		 */
-		private function writeToEmailLog( PostmanEmailLog $log ) {
+		private function writeToEmailLog( PostmanEmailLog $log, PostmanMessage $message = null ) {
 
-			$this->checkForLogErrors( $log );
+		    $options = PostmanOptions::getInstance();
+
+			$this->checkForLogErrors( $log ,$message );
+            $new_status = $log->statusMessage;
+
+			if ( $options->is_fallback && empty( $log->statusMessage ) ) {
+                $new_status = 'Sent ( ** Fallback ** )';
+            }
+
+            if ( $options->is_fallback &&  ! empty( $log->statusMessage ) ) {
+                $new_status = '( ** Fallback ** ) ' . $log->statusMessage;
+            }
+
 			// nothing here is sanitized as WordPress should take care of
 			// making database writes safe
 			$my_post = array(
 					'post_type' => PostmanEmailLogPostType::POSTMAN_CUSTOM_POST_TYPE_SLUG,
 					'post_title' => $log->subject,
 					'post_content' => $log->body,
-					'post_excerpt' => $log->statusMessage,
+					'post_excerpt' => $new_status,
 					'post_status' => PostmanEmailLogService::POSTMAN_CUSTOM_POST_STATUS_PRIVATE,
 			);
 
 			// Insert the post into the database (WordPress gives us the Post ID)
-			$post_id = wp_insert_post( $my_post );
+			$post_id = wp_insert_post( $my_post, true );
+
+			if ( is_wp_error( $post_id ) ) {
+			    add_action( 'admin_notices', function() use( $post_id ) {
+                    $class = 'notice notice-error';
+                    $message = $post_id->get_error_message();
+
+                    printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
+                });
+            }
+
 			$this->logger->debug( sprintf( 'Saved message #%s to the database', $post_id ) );
 			$this->logger->trace( $log );
 
@@ -155,7 +181,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 			$purger->truncateLogItems( PostmanOptions::getInstance()->getMailLoggingMaxEntries() );
 		}
 
-		private function checkForLogErrors( PostmanEmailLog $log ) {
+		private function checkForLogErrors( PostmanEmailLog $log, $postMessage ) {
 			$message = __( 'You getting this message because an error detected while delivered your email.', Postman::TEXT_DOMAIN );
 			$message .= "\r\n" . sprintf( __( 'For the domain: %1$s',Postman::TEXT_DOMAIN ), get_bloginfo('url') );
 			$message .= "\r\n" . __( 'The log to paste when you open a support issue:', Postman::TEXT_DOMAIN ) . "\r\n";
@@ -180,7 +206,8 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 						$notifyer = new PostmanMailNotify;
 				}
 
-				$notify = new PostmanNotify( $notifyer, $message );
+                // Notifications
+				$notify = new PostmanNotify( $notifyer );
 				$notify->send($message, $log);
 				$notify->push_to_chrome($log->statusMessage);
 			}

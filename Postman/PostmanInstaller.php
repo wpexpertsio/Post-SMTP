@@ -12,6 +12,8 @@ require_once( 'PostmanOptions.php' );
 class PostmanInstaller {
 	private $logger;
 
+	private $roles;
+
 	/**
 	 */
 	public function __construct() {
@@ -22,16 +24,39 @@ class PostmanInstaller {
 	 * Handle activation of the plugin
 	 */
 	public function activatePostman() {
+		$options = get_option( PostmanOptions::POSTMAN_OPTIONS );
+		$args = array(
+			'fallback_smtp_enabled' => 'no',
+		);
+
+		if ( empty( $options ) ) {
+			add_option( 'postman_options', $args );
+
+		} else {
+			if ( empty( $options['fallback_smtp_enabled'] ) ) {
+				$result = array_merge($options, $args);
+				update_option( PostmanOptions::POSTMAN_OPTIONS, $result );
+			}
+		}
+
 		if ( function_exists( 'is_multisite' ) && is_multisite() ) {
+
+/*            $role = get_role( Postman::ADMINISTRATOR_ROLE_NAME );
+            $role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
+            $role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );*/
+
+            $options['post_smtp_allow_overwrite'] = '1';
+            update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, $options );
+			
 			// handle network activation
 			// from https://wordpress.org/support/topic/new-function-wp_get_sites?replies=11
 			// run the activation function for each blog id
 			$old_blog = get_current_blog_id();
 			// Get all blog ids
-			$subsites = wp_get_sites();
+			$subsites = get_sites();
 			foreach ( $subsites as $subsite ) {
-				$this->logger->trace( 'multisite: switching to blog ' . $subsite ['blog_id'] );
-				switch_to_blog( $subsite ['blog_id'] );
+				$this->logger->trace( 'multisite: switching to blog ' . $subsite->blog_id );
+				switch_to_blog( $subsite->blog_id );
 				$this->handleOptionUpdates();
 				$this->addCapability();
 			}
@@ -65,10 +90,10 @@ class PostmanInstaller {
 			// run the deactivation function for each blog id
 			$old_blog = get_current_blog_id();
 			// Get all blog ids
-			$subsites = wp_get_sites();
+			$subsites = get_sites();
 			foreach ( $subsites as $subsite ) {
-				$this->logger->trace( 'multisite: switching to blog ' . $subsite ['blog_id'] );
-				switch_to_blog( $subsite ['blog_id'] );
+				$this->logger->trace( 'multisite: switching to blog ' . $subsite->blog_id );
+				switch_to_blog( $subsite->blog_id );
 				$this->removeCapability();
 			}
 			switch_to_blog( $old_blog );
@@ -90,6 +115,7 @@ class PostmanInstaller {
 		// add the custom capability to the administrator role
 		$role = get_role( Postman::ADMINISTRATOR_ROLE_NAME );
 		$role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
+		$role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
 	}
 
 	/**
@@ -104,6 +130,7 @@ class PostmanInstaller {
 		// remove the custom capability from the administrator role
 		$role = get_role( Postman::ADMINISTRATOR_ROLE_NAME );
 		$role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
+        $role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
 	}
 
 	/**

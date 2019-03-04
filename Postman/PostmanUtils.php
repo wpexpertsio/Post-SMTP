@@ -36,6 +36,10 @@ class PostmanUtils {
 	 * @return string
 	 */
 	public static function getPageUrl( $slug ) {
+		if ( is_network_admin() ) {
+			return network_admin_url( 'admin.php?page=' . $slug );
+		}
+
 		return get_admin_url() . 'admin.php?page=' . $slug;
 	}
 
@@ -393,6 +397,7 @@ class PostmanUtils {
 		if ( $logger->isTrace() ) {
 			$logger->trace( 'Registering admin menu ' . $callbackName );
 		}
+		
 		add_action( 'admin_menu', array(
 				$viewController,
 				$callbackName,
