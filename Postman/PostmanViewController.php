@@ -307,7 +307,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				echo '
 				<div class="updated settings-error notice is-dismissible"> 
 					<p>
-					<strong>Version ' . $version . ' I do mistakes too - A must read:</strong> <a target="_blank" href="https://postmansmtp.com/post-smtp-1-9-4-im-only-human/">Read Here</a>
+					<strong>Version ' . $version . ' Mailgun Europe region support:</strong> <a target="_blank" href="https://postmansmtp.com/post-smtp-1-9-5-mailgun-europe-region-support/">Read Here</a>
 					</p>
 					<button style="z-index: 100;" data-version="'. $version . '" data-security="' . wp_create_nonce('postsmtp') .'" type="button" class="notice-dismiss postman-release-message">
 						<span class="screen-reader-text">Dismiss this notice.</span>

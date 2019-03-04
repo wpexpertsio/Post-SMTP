@@ -1,10 +1,10 @@
 === Post SMTP Mailer/Email Log ===
-Contributors: yehudah, abdullahramzan ,jasonhendriks
+Contributors: yehudah ,jasonhendriks
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehuda@myinbox.in&item_name=Donation+for+PostSMTP
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
-Tested up to: 4.9.5
-Stable tag: 1.9.4
+Tested up to: 4.9.9
+Stable tag: 1.9.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,8 +12,8 @@ Send, log and troubleshoot your Outgoing Email easily. Supports everything: SMTP
 
 == Description ==
 
-= Version 1.9.4 released - A MUST READ FOR EXISTING USERS =
-I tryed to do stuff simple and I just the did opposite. [Read the detailes here](https://postmansmtp.com/post-smtp-1-9-4-im-only-human/)
+= Version 1.9.5 released - Mailgun Europe region support =
+Small updates but important to read. [Read the detailes here](https://postmansmtp.com/post-smtp-1-9-5-mailgun-europe-region-support/)
 
 = WordPress Mail SMTP Plugin =
 
@@ -175,18 +175,7 @@ There are many reasons why OAuth 2.0 is better than any password-based mechanism
 To use OAuth, your website needs it's own Client ID. The Client ID is used to control authentication and authorization and is tied to the specific URL of your website. If you manage several websites, you will need a different Client ID for each one.
 
 = How do I get a Google Client ID? (For Gmail users only!) =
-
-https://vimeo.com/128589255
-
-1. Go to [Google Developer's Console](https://www.google.com/accounts/Logout?continue=https://console.developers.google.com/start/api?id=gmail) and login with the same email address that you are configuring Post with.
-1. Choose 'Create a New Project'. This project will be for Post SMTP only.
-1. Select 'Consent Screen' from under 'APIs & auth'. Into 'Email address' choose the correct Gmail address and in 'Product name' put 'Post SMTP'. Choose 'Save'.
-1. Select 'Credentials' from under 'APIs & auth'. Choose 'Create a new Client ID'.
-1. For the 'Application Type' use 'Web application'.
-1. In 'Authorized Javascript origins' enter the 'Javascript Origins' given by Post (either from the wizard[[screenshot]](http://plugins.svn.wordpress.org/Post-smtp/assets/examples/Screen_Shot_2015-03-06_at_2_34_22_PM.png), or from the manual configuration page[[screenshot]](http://plugins.svn.wordpress.org/Post-smtp/assets/examples/Screen_Shot_2015-03-06_at_2_44_48_PM.png)).
-1. In 'Authorized Redirect URIs' enter the 'Redirect URI' given by Post (either from the wizard[[screenshot]](http://plugins.svn.wordpress.org/Post-smtp/assets/examples/Screen_Shot_2015-03-06_at_2_34_22_PM.png), or from the manual configuration page[[screenshot]](http://plugins.svn.wordpress.org/Post-smtp/assets/examples/Screen_Shot_2015-03-06_at_2_44_48_PM.png)).
-1. Choose 'Create Client ID'.
-1. Enter the Client ID and Client Secret displayed here into Post's settings page [screenshot](https://ps.w.org/Post-smtp/assets/screenshot-7.png?rev=1108485).
+Go to [Configure Post SMTP with Gmail\Gsuite OAuth](https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/)
 
 = How do I get a Microsoft Client ID? (For Hotmail/Live/Outlook.com users only!) =
 1. Go to [Microsoft account Developer Center](https://account.live.com/developers/applications/index) and select 'Create application'.
@@ -296,6 +285,10 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+= 1.9.5 - 2018-10-02
+* Added support for Mailgun Europe region.
+* Replace "buggey" mime_content_type php function
+
 = 1.9.4 - 2018-08-03
 The most stupid idea ever remove (auto security select)
 

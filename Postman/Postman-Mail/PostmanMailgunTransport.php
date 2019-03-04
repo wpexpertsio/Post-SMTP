@@ -9,6 +9,7 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	const SLUG = 'mailgun_api';
 	const PORT = 443;
 	const HOST = 'api.mailgun.net';
+	const EU_REGION = 'api.eu.mailgun.net';
 	const PRIORITY = 8000;
 	const MAILGUN_AUTH_OPTIONS = 'postman_mailgun_auth_options';
 	const MAILGUN_AUTH_SECTION = 'postman_mailgun_auth_section';
@@ -43,7 +44,7 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	 * @return string
 	 */
 	public function getHostname() {
-		return self::HOST;
+		return ! is_null( $this->options->getMailgunRegion() ) ? self::EU_REGION : self::HOST;
 	}
 	/**
 	 * v0.2.1
@@ -128,10 +129,10 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 		$recommendation ['transport'] = self::SLUG;
 		$recommendation ['hostname'] = null; // scribe looks this
 		$recommendation ['label'] = $this->getName();
-		if ( $hostData->hostname == self::HOST && $hostData->port == self::PORT ) {
+		if ( $hostData->hostname == $this->getHostname() && $hostData->port == self::PORT ) {
 			$recommendation ['priority'] = self::PRIORITY;
 			/* translators: where variables are (1) transport name (2) host and (3) port */
-			$recommendation ['message'] = sprintf( __( ('Postman recommends the %1$s to host %2$s on port %3$d.') ), $this->getName(), self::HOST, self::PORT );
+			$recommendation ['message'] = sprintf( __( ('Postman recommends the %1$s to host %2$s on port %3$d.') ), $this->getName(), $this->getHostname(), self::PORT );
 		}
 		return $recommendation;
 	}
@@ -197,6 +198,11 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 			$this,
 			'mailgun_domain_name_callback',
 		), PostmanMailgunTransport::MAILGUN_AUTH_OPTIONS, PostmanMailgunTransport::MAILGUN_AUTH_SECTION );
+
+		add_settings_field( PostmanOptions::MAILGUN_REGION, __( 'Mailgun Europe Region?', Postman::TEXT_DOMAIN ), array(
+			$this,
+			'mailgun_region_callback',
+		), PostmanMailgunTransport::MAILGUN_AUTH_OPTIONS, PostmanMailgunTransport::MAILGUN_AUTH_SECTION );
 	}
 	public function printMailgunAuthSectionInfo() {
 		/* Translators: Where (1) is the service URL and (2) is the service name and (3) is a api key URL */
@@ -212,6 +218,11 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 
 	function mailgun_domain_name_callback() {
 		printf( '<input type="text" autocomplete="off" id="mailgun_domain_name" name="postman_options[mailgun_domain_name]" value="%s" size="60" class="required" placeholder="%s"/>', null !== $this->options->getMailgunDomainName() ? esc_attr( $this->options->getMailgunDomainName() ) : '', __( 'Required', Postman::TEXT_DOMAIN ) );
+	}
+
+	function mailgun_region_callback() {
+		$value = $this->options->getMailgunRegion();
+		printf( '<input type="checkbox" id="mailgun_region" name="postman_options[mailgun_region]"%s />', null !== $value ? ' checked' : '' );
 	}
 
 	/**
@@ -243,6 +254,10 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 		printf( '<label for="domain_name">%s</label>', __( 'Domain Name', Postman::TEXT_DOMAIN ) );
 		print '<br />';
 		print $this->mailgun_domain_name_callback();
+		print '<br />';
+		printf( '<label for="mailgun_region">%s</label>', __( 'Mailgun Europe Region?', Postman::TEXT_DOMAIN ) );
+		print '<br />';
+		print $this->mailgun_region_callback();
 		print '</section>';
 	}
 }

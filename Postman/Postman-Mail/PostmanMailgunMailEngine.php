@@ -1,6 +1,8 @@
 <?php
 require_once 'mailgun/mailgun.php';
+
 use Mailgun\Mailgun;
+use Mailgun\HttpClientConfigurator;
 
 if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 
@@ -18,6 +20,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		// the result
 		private $transcript;
 
+		private $api_endpoint;
 		private $apiKey;
 		private $domainName;
 		private $mailgunMessage;
@@ -48,6 +51,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		 */
 		public function send( PostmanMessage $message ) {
 			$options = PostmanOptions::getInstance();
+			$this->api_endpoint = ! is_null( $options->getMailgunRegion() ) ? 'https://api.eu.mailgun.net' : 'https://api.mailgun.net';
 
 			// add the Postman signature - append it to whatever the user may have set
 			if ( ! $options->isStealthModeEnabled() ) {
@@ -161,7 +165,10 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 					$this->logger->debug( 'Sending mail' );
 				}
 
-				$mg = Mailgun::create( $this->apiKey );
+				$configurator = new HttpClientConfigurator();
+				$configurator->setEndpoint( $this->api_endpoint . '/v3/'. $this->domainName .'/messages');
+				$configurator->setApiKey($this->apiKey);
+				$mg = Mailgun::configure($configurator);
 
 				// Make the call to the client.
 				$result = $this->processSend( $mg );

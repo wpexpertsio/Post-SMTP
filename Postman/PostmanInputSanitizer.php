@@ -54,6 +54,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizeString( 'From Name Override', PostmanOptions::PREVENT_MESSAGE_SENDER_NAME_OVERRIDE, $input, $new_input );
 			$this->sanitizeString( 'From Email Override', PostmanOptions::PREVENT_MESSAGE_SENDER_EMAIL_OVERRIDE, $input, $new_input );
 			$this->sanitizeString( 'Disable Email Validation', PostmanOptions::DISABLE_EMAIL_VALIDAITON, $input, $new_input );
+			$this->sanitizeString( 'Mailgun Europe Region', PostmanOptions::MAILGUN_REGION, $input, $new_input );
 			$this->sanitizeString( 'Forced To Recipients', PostmanOptions::FORCED_TO_RECIPIENTS, $input, $new_input );
 			$this->sanitizeString( 'Forced CC Recipients', PostmanOptions::FORCED_CC_RECIPIENTS, $input, $new_input );
 			$this->sanitizeString( 'Forced BCC Recipients', PostmanOptions::FORCED_BCC_RECIPIENTS, $input, $new_input );

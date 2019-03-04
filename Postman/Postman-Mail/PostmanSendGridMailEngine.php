@@ -260,9 +260,10 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 					$file_name = basename( $file );
 					$file_parts = explode( '.', $file_name );
+					$file_type = wp_check_filetype( $file );
 					$attachments[] = array(
 						'content' => base64_encode( file_get_contents( $file ) ),
-						'type' => mime_content_type( $file ),
+						'type' => $file_type['type'],
 						'file_name' => $file_name,
 						'disposition' => 'attachment',
 						'id' => $file_parts[0],
@@ -279,4 +280,3 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 		}
 	}
 }
-

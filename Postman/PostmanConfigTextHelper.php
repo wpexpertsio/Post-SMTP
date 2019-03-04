@@ -28,13 +28,10 @@ if ( ! class_exists( 'PostmanAbstractConfigTextHelper' ) ) {
 	 */
 	abstract class PostmanAbstractConfigTextHelper implements PostmanConfigTextHelper {
 		public function getOAuthHelp() {
-			$attention = __( 'Attention' );
-			/* translators: parameters available are 1=portal-url, 2=portal-name, 3=clientId-name, 4=clientSecret-name, 5=callbackUrl, 6=service-name, 7=portal-application (e.g. Open the Google Developer Console, create a Client ID for web application using the URL's displayed below, and copy the Client ID and Client Secret here.) */
-			$errorMessage = sprintf( __( 'Open the <a href="%1$s" target="_blank">%2$s</a>, create <b>%7$s</b> with the values displayed below, and copy the generated %3$s and %4$s here.', Postman::TEXT_DOMAIN ), $this->getApplicationPortalUrl(), $this->getApplicationPortalName(), $this->getClientIdLabel(), $this->getClientSecretLabel(), $this->getCallbackUrlLabel(), $this->getOwnerName(), $this->getApplicationDescription() );
+			$attention = __( 'Attention', Postman::TEXT_DOMAIN );
+			$errorMessage = sprintf( __('Check this article how to configure Gmail/Gsuite OAuth:<a href="%1$s" target="_blank">Read Here</a>', Postman::TEXT_DOMAIN ), 'https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/' );
 			$text = sprintf( '<b style="color:red">%s!</b> %s', $attention, $errorMessage );
-			/* translators: parameters available are 1=clientId-name, 2=service-name, 3=FAQ-URL, 4=Video-URL (e.g. See How do I get a Google Client ID? in the F.A.Q.) */
-			$howToTemplate = __( 'See <a href="%3$s" target="_blank">How do I get a %1$s %2$s?</a> in the F.A.Q. or <a href="%4$s" target="_blank">watch our How-To video 📺</a>.', Postman::TEXT_DOMAIN );
-			$text .= sprintf( ' %s', sprintf( $howToTemplate, $this->getOwnerName(), $this->getClientIdLabel(), 'https://wordpress.org/plugins/post-smtp/faq/', 'https://vimeo.com/128589255' ) );
+			
 			return $text;
 		}
 		function isOauthHost() {

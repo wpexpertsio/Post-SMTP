@@ -87,6 +87,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const SENDGRID_API_KEY = 'sendgrid_api_key';
 		const MAILGUN_API_KEY = 'mailgun_api_key';
 		const MAILGUN_DOMAIN_NAME = 'mailgun_domain_name';
+		const MAILGUN_REGION = 'mailgun_region';
 		const PREVENT_MESSAGE_SENDER_NAME_OVERRIDE = 'prevent_sender_name_override';
 		const PREVENT_MESSAGE_SENDER_EMAIL_OVERRIDE = 'prevent_sender_email_override';
 		const CONNECTION_TIMEOUT = 'connection_timeout';
@@ -314,6 +315,12 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		public function getMailgunDomainName() {
 			if ( isset( $this->options [ PostmanOptions::MAILGUN_DOMAIN_NAME ] ) ) {
 				return $this->options [ PostmanOptions::MAILGUN_DOMAIN_NAME ];
+			}
+		}
+
+		public function getMailgunRegion() {
+			if ( isset( $this->options [ PostmanOptions::MAILGUN_REGION ] ) ) {
+				return $this->options [ PostmanOptions::MAILGUN_REGION ];
 			}
 		}
 
