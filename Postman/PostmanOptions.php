@@ -174,10 +174,9 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		    if ( is_multisite() ) {
                 $network_options = get_site_option( self::POSTMAN_NETWORK_OPTIONS );
 
+                $blog_id = get_current_blog_id();
                 if ( isset( $network_options['post_smtp_global_settings'] ) ) {
                     $blog_id = apply_filters( 'post_smtp_default_site_option', 1 );
-                } elseif ( $options && isset( $network_options['post_smtp_allow_overwrite'] ) ) {
-                    $blog_id = get_current_blog_id();
                 }
 
                 switch_to_blog($blog_id);
