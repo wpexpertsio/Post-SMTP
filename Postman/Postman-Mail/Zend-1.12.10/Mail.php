@@ -365,7 +365,7 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
         }
 
         $mp = new Postman_Zend_Mime_Part($txt);
-        $mp->encoding = $encoding;
+        $mp->encoding = apply_filters( 'post_smtp_content_transfer_encoding', $encoding, Postman_Zend_Mime::TYPE_TEXT);
         $mp->type = Postman_Zend_Mime::TYPE_TEXT;
         $mp->disposition = Postman_Zend_Mime::DISPOSITION_INLINE;
         $mp->charset = $charset;
@@ -406,7 +406,7 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
         }
 
         $mp = new Postman_Zend_Mime_Part($html);
-        $mp->encoding = $encoding;
+        $mp->encoding = apply_filters( 'post_smtp_content_transfer_encoding', $encoding, Postman_Zend_Mime::TYPE_HTML );
         $mp->type = Postman_Zend_Mime::TYPE_HTML;
         $mp->disposition = Postman_Zend_Mime::DISPOSITION_INLINE;
         $mp->charset = $charset;
