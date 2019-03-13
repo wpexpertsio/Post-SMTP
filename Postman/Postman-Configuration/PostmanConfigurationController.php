@@ -12,6 +12,8 @@ class PostmanConfigurationController {
 	// Holds the values to be used in the fields callbacks
 	private $rootPluginFilenameAndPath;
 
+	private $importableConfiguration;
+
 	/**
 	 * Constructor
 	 *

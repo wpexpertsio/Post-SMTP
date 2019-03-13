@@ -90,8 +90,6 @@ if (! class_exists ( 'PostmanWpMailBinder' )) {
 		 *
 		 * If the function does not exist, then the replacement was successful
 		 * and we set a success flag.
-		 *
-		 * @return boolean
 		 */
 		private function replacePluggableFunctionWpMail() {
 			/**

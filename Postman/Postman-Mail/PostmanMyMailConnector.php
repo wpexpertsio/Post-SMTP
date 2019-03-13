@@ -155,7 +155,6 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 		 *
 		 * @access public
 		 * @param mixed $message
-		 * @return array
 		 */
 		public function reset() {
 			update_option( '_transient__mailster_send_period_timeout', false );
@@ -169,7 +168,7 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 		 *
 		 * @access public
 		 * @param mixed $delivery_methods
-		 * @return void
+		 * @return mixed
 		 */
 		public function delivery_method( $delivery_methods ) {
 			$delivery_methods [ MAILSTER_POSTMAN_ID ] = __( 'Postman SMTP', 'post-smtp' );

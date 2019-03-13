@@ -54,7 +54,7 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 	/**
 	 * v0.2.1
 	 *
-	 * @return string
+	 * @return int
 	 */
 	public function getPort() {
 		return self::PORT;
