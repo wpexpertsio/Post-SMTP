@@ -43,6 +43,7 @@ interface PostmanModuleTransport extends PostmanTransport {
 	public function isReadyToSendMail();
 	public function getFromEmailAddress();
 	public function getFromName();
+	public function getHostname();
 	public function getProtocol();
 	public function isEmailValidationSupported();
 	public function getPort();
@@ -68,7 +69,7 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	/**
 	 * These internal variables are exposed for the subclasses to use
 	 *
-	 * @var unknown
+	 * @var mixed
 	 */
 	protected $logger;
 	protected $options;
