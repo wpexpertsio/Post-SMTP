@@ -189,7 +189,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	 *
 	 * 70 gmail api on port 465 to www.googleapis.com
 	 *
-	 * @param unknown $hostData        	
+	 * @param mixed $hostData        	
 	 */
 	public function getConfigurationBid(PostmanWizardSocket $hostData, $userAuthOverride, $originalSmtpServer) {
 		$recommendation = array ();

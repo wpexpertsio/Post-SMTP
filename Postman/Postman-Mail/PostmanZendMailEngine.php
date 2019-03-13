@@ -47,8 +47,8 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 
 		/**
 		 *
-		 * @param unknown $senderEmail
-		 * @param unknown $accessToken
+		 * @param mixed $senderEmail
+		 * @param mixed $accessToken
 		 */
 		function __construct( PostmanZendModuleTransport $transport ) {
 			assert( isset( $transport ) );

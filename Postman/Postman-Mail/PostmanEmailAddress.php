@@ -61,8 +61,8 @@ if (! class_exists ( 'PostmanEmailAddress' )) {
 		/**
 		 * Accept a String of addresses or an array and return an array
 		 *
-		 * @param unknown $recipientList        	
-		 * @param unknown $recipients        	
+		 * @param mixed $recipientList        	
+		 * @param mixed $recipients        	
 		 */
 		public static function convertToArray($emails) {
 			assert ( ! empty ( $emails ) );

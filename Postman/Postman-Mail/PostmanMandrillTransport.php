@@ -25,7 +25,7 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 	
 	/**
 	 *
-	 * @param unknown $data        	
+	 * @param mixed $data        	
 	 */
 	public function prepareOptionsForExport($data) {
 		$data = parent::prepareOptionsForExport ( $data );

@@ -78,7 +78,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		/**
 		 * Constructor
 		 *
-		 * @param unknown               $rootPluginFilenameAndPath
+		 * @param mixed               $rootPluginFilenameAndPath
 		 * @param PostmanOptions        $options
 		 * @param PostmanOAuthToken     $authorizationToken
 		 * @param PostmanMessageHandler $messageHandler
@@ -264,8 +264,8 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 
 		/**
 		 *
-		 * @param unknown $actionName
-		 * @param unknown $callbackName
+		 * @param mixed $actionName
+		 * @param mixed $callbackName
 		 */
 		private function registerInitFunction( $callbackName ) {
 			$this->logger->debug( 'Registering init function ' . $callbackName );
@@ -278,8 +278,8 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		/**
 		 * Registers actions posted by am HTML FORM with the WordPress 'action' parameter
 		 *
-		 * @param unknown $actionName
-		 * @param unknown $callbankName
+		 * @param mixed $actionName
+		 * @param mixed $callbankName
 		 */
 		private function registerAdminPostAction( $actionName, $callbankName ) {
 			// $this->logger->debug ( 'Registering ' . $actionName . ' Action Post handler' );
@@ -292,7 +292,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		/**
 		 * Add "Settings" link to the plugin action page
 		 *
-		 * @param unknown $links
+		 * @param mixed $links
 		 * @return multitype:
 		 */
 		public function postmanModifyLinksOnPluginsListPage( $links ) {

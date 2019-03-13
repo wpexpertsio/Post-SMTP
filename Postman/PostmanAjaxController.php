@@ -15,8 +15,8 @@ if (! class_exists ( 'PostmanAbstractAjaxHandler' )) {
 		}
 		/**
 		 *
-		 * @param unknown $actionName        	
-		 * @param unknown $callbackName        	
+		 * @param mixed $actionName        	
+		 * @param mixed $callbackName        	
 		 */
 		protected function registerAjaxHandler($actionName, $class, $callbackName) {
 			if (is_admin ()) {
@@ -31,7 +31,7 @@ if (! class_exists ( 'PostmanAbstractAjaxHandler' )) {
 		
 		/**
 		 *
-		 * @param unknown $parameterName        	
+		 * @param mixed $parameterName        	
 		 * @return mixed
 		 */
 		protected function getBooleanRequestParameter($parameterName) {
@@ -40,8 +40,8 @@ if (! class_exists ( 'PostmanAbstractAjaxHandler' )) {
 		
 		/**
 		 *
-		 * @param unknown $parameterName        	
-		 * @return unknown
+		 * @param mixed $parameterName        	
+		 * @return mixed
 		 */
 		protected function getRequestParameter($parameterName) {
 			if (isset ( $_POST [$parameterName] )) {

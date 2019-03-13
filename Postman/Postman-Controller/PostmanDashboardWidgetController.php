@@ -120,7 +120,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		 * From http://www.hughlashbrooke.com/2014/02/wordpress-add-items-glance-widget/
 		 * http://coffeecupweb.com/how-to-add-custom-post-types-to-at-a-glance-dashboard-widget-in-wordpress/
 		 *
-		 * @param unknown $items        	
+		 * @param mixed $items        	
 		 * @return string
 		 */
 		function customizeAtAGlanceDashboardWidget($items = array()) {

@@ -114,7 +114,7 @@ add_action( 'admin_footer', 'post_dismiss_not_configured' );
 /**
  * Create the main Postman class to start Postman
  *
- * @param unknown $startingMemory
+ * @param mixed $startingMemory
  */
 function post_start( $startingMemory ) {
 	post_setupPostman();

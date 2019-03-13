@@ -13,7 +13,7 @@ class PostmanConnectivityTestController {
 	/**
 	 * Constructor
 	 *
-	 * @param unknown $rootPluginFilenameAndPath
+	 * @param mixed $rootPluginFilenameAndPath
 	 */
 	public function __construct( $rootPluginFilenameAndPath ) {
 		assert( ! empty( $rootPluginFilenameAndPath ) );
@@ -271,9 +271,9 @@ class PostmanPortTestAjaxController {
 
 	/**
 	 *
-	 * @param unknown $hostname
-	 * @param unknown $port
-	 * @param unknown $success
+	 * @param mixed $hostname
+	 * @param mixed $port
+	 * @param mixed $success
 	 */
 	private function buildResponse( $hostname, $port, PostmanPortTest $portTest, $success, $transport = '' ) {
 		$this->logger->debug( sprintf( 'testing port result for %s:%s success=%s', $hostname, $port, $success ) );

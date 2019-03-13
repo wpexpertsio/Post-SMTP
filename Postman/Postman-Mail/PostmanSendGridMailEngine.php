@@ -22,8 +22,8 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 		/**
 		 *
-		 * @param unknown $senderEmail
-		 * @param unknown $accessToken
+		 * @param mixed $senderEmail
+		 * @param mixed $accessToken
 		 */
 		function __construct( $apiKey ) {
 			assert( ! empty( $apiKey ) );

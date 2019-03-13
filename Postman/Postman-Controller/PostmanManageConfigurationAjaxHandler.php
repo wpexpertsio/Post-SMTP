@@ -27,7 +27,7 @@ class PostmanWizardSocket {
 	
 	/**
 	 *
-	 * @param unknown $queryHostData        	
+	 * @param mixed $queryHostData        	
 	 */
 	function __construct($queryHostData) {
 		$this->hostname = $queryHostData ['hostname'];

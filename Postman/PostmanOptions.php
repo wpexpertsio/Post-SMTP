@@ -624,7 +624,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		/**
 		 *
-		 * @param unknown $data
+		 * @param mixed $data
 		 */
 		public function import( $data ) {
 			if ( PostmanPreRequisitesCheck::checkZlibEncode() ) {

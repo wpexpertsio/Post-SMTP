@@ -226,7 +226,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 
 		/**
 		 *
-		 * @param unknown $title
+		 * @param mixed $title
 		 * @param string  $slug
 		 */
 		public static function outputChildPageHeader( $title, $slug = '' ) {
