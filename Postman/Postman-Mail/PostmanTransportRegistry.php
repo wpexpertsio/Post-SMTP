@@ -71,7 +71,7 @@ class PostmanTransportRegistry {
 	/**
 	 * Retrieve the transport Postman is currently configured with.
 	 *
-	 * @return PostmanDummyTransport|PostmanModuleTransport
+	 * @return PostmanModuleTransport
 	 * @deprecated
 	 */
 	public function getCurrentTransport() {
@@ -105,7 +105,7 @@ class PostmanTransportRegistry {
 	/**
 	 * Retrieve the transport Postman is currently configured with.
 	 *
-	 * @return PostmanDummyTransport|PostmanModuleTransport
+	 * @return PostmanModuleTransport
 	 */
 	public function getSelectedTransport() {
 		$selectedTransport = PostmanOptions::getInstance()->getTransportType();
