@@ -67,7 +67,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 * Logs successful email attempts
 		 *
 		 * @param PostmanMessage         $message
-		 * @param unknown                $transcript
+		 * @param mixed                $transcript
 		 * @param PostmanModuleTransport $transport
 		 */
 		public function writeSuccessLog( PostmanEmailLog $log, PostmanMessage $message, $transcript, PostmanModuleTransport $transport ) {
@@ -88,13 +88,13 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 * Logs failed email attempts, requires more metadata so the email can be resent in the future
 		 *
 		 * @param PostmanMessage         $message
-		 * @param unknown                $transcript
+		 * @param mixed                $transcript
 		 * @param PostmanModuleTransport $transport
-		 * @param unknown                $statusMessage
-		 * @param unknown                $originalTo
-		 * @param unknown                $originalSubject
-		 * @param unknown                $originalMessage
-		 * @param unknown                $originalHeaders
+		 * @param mixed                $statusMessage
+		 * @param mixed                $originalTo
+		 * @param mixed                $originalSubject
+		 * @param mixed                $originalMessage
+		 * @param mixed                $originalHeaders
 		 */
 		public function writeFailureLog( PostmanEmailLog $log, PostmanMessage $message = null, $transcript, PostmanModuleTransport $transport, $statusMessage ) {
 			if ( PostmanOptions::getInstance()->isMailLoggingEnabled() ) {
@@ -227,9 +227,9 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 * Creates a Log object for use by writeToEmailLog()
 		 *
 		 * @param PostmanMessage         $message
-		 * @param unknown                $transcript
-		 * @param unknown                $statusMessage
-		 * @param unknown                $success
+		 * @param mixed                $transcript
+		 * @param mixed                $statusMessage
+		 * @param mixed                $success
 		 * @param PostmanModuleTransport $transport
 		 * @return PostmanEmailLog
 		 */
@@ -284,7 +284,7 @@ if ( ! class_exists( 'PostmanEmailLogPurger' ) ) {
 
 		/**
 		 *
-		 * @return unknown
+		 * @return mixed
 		 */
 		function __construct( $args = array() ) {
 			$this->logger = new PostmanLogger( get_class( $this ) );
@@ -313,7 +313,7 @@ if ( ! class_exists( 'PostmanEmailLogPurger' ) ) {
 		/**
 		 *
 		 * @param array   $posts
-		 * @param unknown $postid
+		 * @param mixed $postid
 		 */
 		function verifyLogItemExistsAndRemove( $postid ) {
 			$force_delete = true;
@@ -336,7 +336,7 @@ if ( ! class_exists( 'PostmanEmailLogPurger' ) ) {
 
 		/**
 		 *
-		 * @param unknown $size
+		 * @param mixed $size
 		 */
 		function truncateLogItems( $size ) {
 			$index = count( $this->posts );

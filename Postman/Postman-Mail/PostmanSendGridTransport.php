@@ -16,7 +16,7 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 	
 	/**
 	 *
-	 * @param unknown $rootPluginFilenameAndPath        	
+	 * @param mixed $rootPluginFilenameAndPath        	
 	 */
 	public function __construct($rootPluginFilenameAndPath) {
 		parent::__construct ( $rootPluginFilenameAndPath );
@@ -81,7 +81,7 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 	
 	/**
 	 *
-	 * @param unknown $data        	
+	 * @param mixed $data        	
 	 */
 	public function prepareOptionsForExport($data) {
 		$data = parent::prepareOptionsForExport ( $data );
@@ -129,8 +129,8 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 	
 	/**
 	 *
-	 * @param unknown $hostname        	
-	 * @param unknown $response        	
+	 * @param mixed $hostname        	
+	 * @param mixed $response        	
 	 */
 	public function populateConfiguration($hostname) {
 		$response = parent::populateConfiguration ( $hostname );

@@ -117,7 +117,7 @@ if (! class_exists ( 'PostmanSmtpDiscovery' )) {
 		/**
 		 * Constructor
 		 *
-		 * @param unknown $email        	
+		 * @param mixed $email        	
 		 */
 		public function __construct($email) {
 			$this->email = $email;
@@ -137,7 +137,7 @@ if (! class_exists ( 'PostmanSmtpDiscovery' )) {
 		}
 		/**
 		 *
-		 * @param unknown $email        	
+		 * @param mixed $email        	
 		 * @return Ambigous <number, boolean>
 		 */
 		private function validateEmail($email) {
@@ -171,7 +171,7 @@ if (! class_exists ( 'PostmanSmtpDiscovery' )) {
 		/**
 		 * Uses getmxrr to retrieve the MX records of a hostname
 		 *
-		 * @param unknown $hostname        	
+		 * @param mixed $hostname        	
 		 * @return mixed|boolean
 		 */
 		private function findMxHostViaDns($hostname) {
@@ -201,9 +201,9 @@ if (! class_exists ( 'PostmanSmtpDiscovery' )) {
 		 * This is a custom implementation of mxrr for Windows PHP installations
 		 * which don't have this method natively.
 		 *
-		 * @param unknown $hostname        	
-		 * @param unknown $mxhosts        	
-		 * @param unknown $mxweight        	
+		 * @param mixed $hostname        	
+		 * @param mixed $mxhosts        	
+		 * @param mixed $mxweight        	
 		 * @return boolean
 		 */
 		function getmxrr($hostname, &$mxhosts, &$mxweight) {

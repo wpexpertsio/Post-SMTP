@@ -12,7 +12,7 @@ class PostmanDiagnosticTestController {
 	/**
 	 * Constructor
 	 *
-	 * @param unknown $rootPluginFilenameAndPath
+	 * @param mixed $rootPluginFilenameAndPath
 	 */
 	public function __construct( $rootPluginFilenameAndPath ) {
 		assert( ! empty( $rootPluginFilenameAndPath ) );

@@ -8,7 +8,7 @@ if (! class_exists ( 'PostmanSmtpModuleTransport' )) {
 		
 		/**
 		 *
-		 * @param unknown $rootPluginFilenameAndPath        	
+		 * @param mixed $rootPluginFilenameAndPath        	
 		 */
 		public function __construct($rootPluginFilenameAndPath) {
 			parent::__construct ( $rootPluginFilenameAndPath );

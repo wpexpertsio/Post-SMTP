@@ -291,7 +291,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		/**
 		 * Set the charset
 		 *
-		 * @param unknown $charset
+		 * @param mixed $charset
 		 */
 		public function setCharset( $charset ) {
 			$this->charset = $charset;
@@ -310,7 +310,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		}
 		/**
 		 *
-		 * @param unknown $recipients
+		 * @param mixed $recipients
 		 *        	Array or comma-separated list of email addresses to send message.
 		 * @throws Exception
 		 */
@@ -319,7 +319,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		}
 		/**
 		 *
-		 * @param unknown $recipients
+		 * @param mixed $recipients
 		 *        	Array or comma-separated list of email addresses to send message.
 		 * @throws Exception
 		 */
@@ -328,7 +328,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		}
 		/**
 		 *
-		 * @param unknown $recipients
+		 * @param mixed $recipients
 		 *        	Array or comma-separated list of email addresses to send message.
 		 * @throws Exception
 		 */
@@ -337,7 +337,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		}
 		/**
 		 *
-		 * @param unknown $recipients
+		 * @param mixed $recipients
 		 *        	Array or comma-separated list of email addresses to send message.
 		 * @throws Exception
 		 */
@@ -391,8 +391,8 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		 * Add the headers that were processed in processHeaders()
 		 * Zend requires that several headers are specially handled.
 		 *
-		 * @param unknown           $name
-		 * @param unknown           $value
+		 * @param mixed           $name
+		 * @param mixed           $value
 		 * @param Postman_Zend_Mail $mail
 		 */
 		private function processHeader( $name, $content ) {
@@ -477,9 +477,9 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 
 		/**
 		 *
-		 * @param unknown $desc
-		 * @param unknown $name
-		 * @param unknown $content
+		 * @param mixed $desc
+		 * @param mixed $name
+		 * @param mixed $content
 		 */
 		private function logProcessHeader( $desc, $name, $content ) {
 			$this->logger->debug( 'Processing ' . $desc . ' Header - ' . $name . ': ' . $content );

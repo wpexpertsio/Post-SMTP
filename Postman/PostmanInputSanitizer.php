@@ -121,10 +121,10 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 		/**
 		 * Sanitize a Basic Auth password, and base64-encode it
 		 *
-		 * @param unknown $desc
-		 * @param unknown $key
-		 * @param unknown $input
-		 * @param unknown $new_input
+		 * @param mixed $desc
+		 * @param mixed $key
+		 * @param mixed $input
+		 * @param mixed $new_input
 		 */
 		private function sanitizePassword( $desc, $key, $input, &$new_input, $existingPassword ) {
 			// WordPress calling Sanitize twice is a known issue

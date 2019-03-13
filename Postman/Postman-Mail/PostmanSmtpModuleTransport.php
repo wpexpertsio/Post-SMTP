@@ -160,7 +160,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	/**
 	 * SendGrid will never recommend it's configuration
 	 *
-	 * @param unknown $hostData
+	 * @param mixed $hostData
 	 */
 	public function getConfigurationBid( PostmanWizardSocket $hostData, $userAuthOverride, $originalSmtpServer ) {
 		$port = $hostData->port;

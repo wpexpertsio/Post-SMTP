@@ -15,7 +15,7 @@ class PostmanConfigurationController {
 	/**
 	 * Constructor
 	 *
-	 * @param unknown $rootPluginFilenameAndPath
+	 * @param mixed $rootPluginFilenameAndPath
 	 */
 	public function __construct( $rootPluginFilenameAndPath ) {
 		assert( ! empty( $rootPluginFilenameAndPath ) );
@@ -745,8 +745,8 @@ class PostmanManageConfigurationAjaxHandler extends PostmanAbstractAjaxHandler {
 	 * // ask a transport if they support it, and if they do at what priority is it
 	 * // configure for the highest priority you find
 	 *
-	 * @param unknown $queryHostData
-	 * @return unknown
+	 * @param mixed $queryHostData
+	 * @return mixed
 	 */
 	private function getWinningRecommendation( $sockets, $userSocketOverride, $userAuthOverride, $originalSmtpServer ) {
 		foreach ( $sockets as $socket ) {
@@ -759,9 +759,9 @@ class PostmanManageConfigurationAjaxHandler extends PostmanAbstractAjaxHandler {
 	/**
 	 *
 	 * @param PostmanSocket $socket
-	 * @param unknown       $userSocketOverride
-	 * @param unknown       $userAuthOverride
-	 * @param unknown       $originalSmtpServer
+	 * @param mixed       $userSocketOverride
+	 * @param mixed       $userAuthOverride
+	 * @param mixed       $originalSmtpServer
 	 * @return Ambigous <NULL, unknown, string>
 	 */
 	private function getWin( PostmanWizardSocket $socket, $userSocketOverride, $userAuthOverride, $originalSmtpServer ) {
@@ -790,7 +790,7 @@ class PostmanManageConfigurationAjaxHandler extends PostmanAbstractAjaxHandler {
 
 	/**
 	 *
-	 * @param unknown $queryHostData
+	 * @param mixed $queryHostData
 	 * @return multitype:
 	 */
 	private function createOverrideMenus( $sockets, $winningRecommendation, $userSocketOverride, $userAuthOverride ) {
@@ -815,9 +815,9 @@ class PostmanManageConfigurationAjaxHandler extends PostmanAbstractAjaxHandler {
 	/**
 	 *
 	 * @param PostmanWizardSocket $socket
-	 * @param unknown             $winningRecommendation
-	 * @param unknown             $userSocketOverride
-	 * @param unknown             $userAuthOverride
+	 * @param mixed             $winningRecommendation
+	 * @param mixed             $userSocketOverride
+	 * @param mixed             $userAuthOverride
 	 */
 	private function createOverrideMenu( PostmanWizardSocket $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride ) {
 		if ( $socket->success ) {

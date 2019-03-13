@@ -78,11 +78,11 @@ if (! class_exists ( 'PostmanOAuth2ConfigurationFactory' )) {
 		 *
 		 * Create the Configuration structure for Zend_Mail
 		 *
-		 * @param unknown $hostname        	
-		 * @param unknown $port        	
-		 * @param unknown $securityType        	
-		 * @param unknown $authenticationType        	
-		 * @param unknown $initClientRequestEncoded        	
+		 * @param mixed $hostname        	
+		 * @param mixed $port        	
+		 * @param mixed $securityType        	
+		 * @param mixed $authenticationType        	
+		 * @param mixed $initClientRequestEncoded        	
 		 * @return multitype:unknown NULL
 		 */
 		private static function createConfiguration($logger, $hostname, $port, $securityType, $authenticationType, $initClientRequestEncoded) {
@@ -99,7 +99,7 @@ if (! class_exists ( 'PostmanOAuth2ConfigurationFactory' )) {
 		/**
 		 * Create the vendor string (for Yahoo servers only)
 		 *
-		 * @param unknown $hostname        	
+		 * @param mixed $hostname        	
 		 * @return string
 		 */
 		private static function createVendorString($hostname) {
@@ -116,9 +116,9 @@ if (! class_exists ( 'PostmanOAuth2ConfigurationFactory' )) {
 		/**
 		 * Create the standard OAuth2 SMTP Authentication string
 		 *
-		 * @param unknown $senderEmail        	
-		 * @param unknown $oauth2AccessToken        	
-		 * @param unknown $vendor        	
+		 * @param mixed $senderEmail        	
+		 * @param mixed $oauth2AccessToken        	
+		 * @param mixed $vendor        	
 		 * @return string
 		 */
 		private static function createAuthenticationString($senderEmail, $oauth2AccessToken, $vendor) {

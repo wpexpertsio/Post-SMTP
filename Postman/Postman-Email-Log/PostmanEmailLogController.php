@@ -134,8 +134,8 @@ class PostmanEmailLogController {
 	/**
 	 * TODO move this somewhere reusable
 	 *
-	 * @param unknown $parameterName
-	 * @return unknown
+	 * @param mixed $parameterName
+	 * @return mixed
 	 */
 	private function getRequestParameter( $parameterName ) {
 		if ( isset( $_POST [ $parameterName ] ) ) {

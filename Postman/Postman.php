@@ -38,7 +38,7 @@ class Postman {
 	/**
 	 * The constructor
 	 *
-	 * @param unknown $rootPluginFilenameAndPath
+	 * @param mixed $rootPluginFilenameAndPath
 	 *        	- the __FILE__ of the caller
 	 */
 	public function __construct( $rootPluginFilenameAndPath, $version ) {
@@ -412,7 +412,7 @@ class Postman {
 	 * The Gmail API used to be a separate plugin which was registered when that plugin
 	 * was loaded. But now both the SMTP, Gmail API and other transports are registered here.
 	 *
-	 * @param unknown $pluginData
+	 * @param mixed $pluginData
 	 */
 	private function registerTransports( $rootPluginFilenameAndPath ) {
 		PostmanTransportRegistry::getInstance()->registerTransport( new PostmanDefaultModuleTransport( $rootPluginFilenameAndPath ) );
@@ -468,7 +468,7 @@ if ( ! function_exists( 'str_getcsv' ) ) {
 	/**
 	 * PHP version less than 5.3 don't have str_getcsv natively.
 	 *
-	 * @param unknown $string
+	 * @param mixed $string
 	 * @return multitype:
 	 */
 	function str_getcsv( $string ) {

@@ -32,7 +32,7 @@ class PostmanUtils {
 
 	/**
 	 *
-	 * @param unknown $slug
+	 * @param mixed $slug
 	 * @return string
 	 */
 	public static function getPageUrl( $slug ) {
@@ -71,8 +71,8 @@ class PostmanUtils {
 	/**
 	 * from http://stackoverflow.com/questions/834303/startswith-and-endswith-functions-in-php
 	 *
-	 * @param unknown $haystack
-	 * @param unknown $needle
+	 * @param mixed $haystack
+	 * @param mixed $needle
 	 * @return boolean
 	 */
 	public static function startsWith( $haystack, $needle ) {
@@ -82,8 +82,8 @@ class PostmanUtils {
 	/**
 	 * from http://stackoverflow.com/questions/834303/startswith-and-endswith-functions-in-php
 	 *
-	 * @param unknown $haystack
-	 * @param unknown $needle
+	 * @param mixed $haystack
+	 * @param mixed $needle
 	 * @return boolean
 	 */
 	public static function endsWith( $haystack, $needle ) {
@@ -99,7 +99,7 @@ class PostmanUtils {
 	/**
 	 * Detect if the host is NOT a domain name
 	 *
-	 * @param unknown $ipAddress
+	 * @param mixed $ipAddress
 	 * @return number
 	 */
 	public static function isHostAddressNotADomainName( $host ) {
@@ -115,8 +115,8 @@ class PostmanUtils {
 	 * Inside WordPress we can use wp_remote_post().
 	 * Outside WordPress, not so much.
 	 *
-	 * @param unknown $url
-	 * @param unknown $args
+	 * @param mixed $url
+	 * @param mixed $args
 	 * @return the HTML body
 	 */
 	static function remotePostGetBodyOnly( $url, $parameters, array $headers = array() ) {
@@ -130,8 +130,8 @@ class PostmanUtils {
 	 * Inside WordPress we can use wp_remote_post().
 	 * Outside WordPress, not so much.
 	 *
-	 * @param unknown $url
-	 * @param unknown $args
+	 * @param mixed $url
+	 * @param mixed $args
 	 * @return the HTTP response
 	 */
 	static function remotePost( $url, $parameters = array(), array $headers = array() ) {
@@ -161,7 +161,7 @@ class PostmanUtils {
 	 * A facade function that handles redirects.
 	 * Inside WordPress we can use wp_redirect(). Outside WordPress, not so much. **Load it before postman-core.php**
 	 *
-	 * @param unknown $url
+	 * @param mixed $url
 	 */
 	static function redirect( $url ) {
 		// redirections back to THIS SITE should always be relative because of IIS bug
@@ -182,7 +182,7 @@ class PostmanUtils {
 	 * Rounds the bytes returned from memory_get_usage to smaller amounts used IEC binary prefixes
 	 * See http://en.wikipedia.org/wiki/Binary_prefix
 	 *
-	 * @param unknown $size
+	 * @param mixed $size
 	 * @return string
 	 */
 	static function roundBytes( $size ) {
@@ -261,7 +261,7 @@ class PostmanUtils {
 	/**
 	 * Creates the pathname of the lockfile
 	 *
-	 * @param unknown $tempDirectory
+	 * @param mixed $tempDirectory
 	 * @return string
 	 */
 	private static function calculateTemporaryLockPath( $tempDirectory ) {
@@ -290,7 +290,7 @@ class PostmanUtils {
 	/**
 	 * From http://stackoverflow.com/a/381275/4368109
 	 *
-	 * @param unknown $text
+	 * @param mixed $text
 	 * @return boolean
 	 */
 	public static function isEmpty( $text ) {
@@ -324,7 +324,7 @@ class PostmanUtils {
 	/**
 	 * Validate an e-mail address
 	 *
-	 * @param unknown $email
+	 * @param mixed $email
 	 * @return number
 	 */
 	static function validateEmail( $email ) {
@@ -348,7 +348,7 @@ class PostmanUtils {
 	/**
 	 * From http://stackoverflow.com/questions/13430120/str-getcsv-alternative-for-older-php-version-gives-me-an-empty-array-at-the-e
 	 *
-	 * @param unknown $string
+	 * @param mixed $string
 	 * @return multitype:
 	 */
 	static function postman_strgetcsv_impl( $string ) {
@@ -380,7 +380,7 @@ class PostmanUtils {
 	/**
 	 * Does this hostname belong to Google?
 	 *
-	 * @param unknown $hostname
+	 * @param mixed $hostname
 	 * @return boolean
 	 */
 	static function isGoogle( $hostname ) {
@@ -389,8 +389,8 @@ class PostmanUtils {
 
 	/**
 	 *
-	 * @param unknown $actionName
-	 * @param unknown $callbackName
+	 * @param mixed $actionName
+	 * @param mixed $callbackName
 	 */
 	public static function registerAdminMenu( $viewController, $callbackName ) {
 		$logger = PostmanUtils::$logger;
@@ -406,8 +406,8 @@ class PostmanUtils {
 
 	/**
 	 *
-	 * @param unknown $actionName
-	 * @param unknown $callbackName
+	 * @param mixed $actionName
+	 * @param mixed $callbackName
 	 */
 	public static function registerAjaxHandler( $actionName, $class, $callbackName ) {
 		if ( is_admin() ) {
@@ -422,7 +422,7 @@ class PostmanUtils {
 
 	/**
 	 *
-	 * @param unknown $parameterName
+	 * @param mixed $parameterName
 	 * @return mixed
 	 */
 	public static function getBooleanRequestParameter( $parameterName ) {
@@ -431,8 +431,8 @@ class PostmanUtils {
 
 	/**
 	 *
-	 * @param unknown $parameterName
-	 * @return unknown
+	 * @param mixed $parameterName
+	 * @return mixed
 	 */
 	public static function getRequestParameter( $parameterName ) {
 		$logger = PostmanUtils::$logger;

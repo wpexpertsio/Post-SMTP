@@ -124,7 +124,7 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	
 	/**
 	 *
-	 * @param unknown $data        	
+	 * @param mixed $data        	
 	 */
 	public function prepareOptionsForExport($data) {
 		// no-op
@@ -139,7 +139,7 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	
 	/**
 	 *
-	 * @param unknown $queryHostname        	
+	 * @param mixed $queryHostname        	
 	 */
 	protected function createScribe($hostname) {
 		$scribe = new PostmanNonOAuthScribe ( $hostname );
@@ -281,8 +281,8 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	
 	/**
 	 *
-	 * @param unknown $hostname        	
-	 * @param unknown $response        	
+	 * @param mixed $hostname        	
+	 * @param mixed $response        	
 	 */
 	public function populateConfiguration($hostname) {
 		$configuration = array ();
@@ -290,8 +290,8 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	}
 	/**
 	 *
-	 * @param unknown $winningRecommendation        	
-	 * @param unknown $response        	
+	 * @param mixed $winningRecommendation        	
+	 * @param mixed $response        	
 	 */
 	public function populateConfigurationFromRecommendation($winningRecommendation) {
 		$configuration = array ();
@@ -421,7 +421,7 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 	
 	/**
 	 *
-	 * @param unknown $data        	
+	 * @param mixed $data        	
 	 */
 	public function prepareOptionsForExport($data) {
 		$data = parent::prepareOptionsForExport ( $data );
@@ -455,7 +455,7 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 	
 	/**
 	 *
-	 * @param unknown $queryHostname        	
+	 * @param mixed $queryHostname        	
 	 */
 	protected function createScribe($hostname) {
 		$scribe = null;
@@ -508,7 +508,7 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 	
 	/**
 	 *
-	 * @param unknown $encType        	
+	 * @param mixed $encType        	
 	 * @return string
 	 */
 	protected function getTransportDescription($encType) {
@@ -525,7 +525,7 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 	
 	/**
 	 *
-	 * @param unknown $authType        	
+	 * @param mixed $authType        	
 	 */
 	protected function getAuthenticationDescription($authType) {
 		if (PostmanOptions::AUTHENTICATION_TYPE_OAUTH2 == $authType) {
@@ -621,8 +621,8 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 	
 	/**
 	 *
-	 * @param unknown $hostname        	
-	 * @param unknown $response        	
+	 * @param mixed $hostname        	
+	 * @param mixed $response        	
 	 */
 	public function populateConfiguration($hostname) {
 		$response = parent::populateConfiguration ( $hostname );
@@ -650,8 +650,8 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 	/**
 	 * Populate the Ajax response for the Setup Wizard / Manual Configuration
 	 *
-	 * @param unknown $hostname        	
-	 * @param unknown $response        	
+	 * @param mixed $hostname        	
+	 * @param mixed $response        	
 	 */
 	public function populateConfigurationFromRecommendation($winningRecommendation) {
 		$response = parent::populateConfigurationFromRecommendation ( $winningRecommendation );
