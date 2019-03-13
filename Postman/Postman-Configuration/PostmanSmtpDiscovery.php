@@ -137,8 +137,8 @@ if (! class_exists ( 'PostmanSmtpDiscovery' )) {
 		}
 		/**
 		 *
-		 * @param mixed $email        	
-		 * @return Ambigous <number, boolean>
+		 * @param mixed $email
+		 * @return string|bool
 		 */
 		private function validateEmail($email) {
 			return PostmanUtils::validateEmail ( $email );

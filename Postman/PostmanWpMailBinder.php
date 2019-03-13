@@ -26,7 +26,7 @@ if (! class_exists ( 'PostmanWpMailBinder' )) {
 		/**
 		 * Return the Singleton instance
 		 *
-		 * @return Ambigous <NULL, PostmanWpMailBinder>
+		 * @return PostmanWpMailBinder
 		 */
 		public static function getInstance() {
 			static $inst = null;

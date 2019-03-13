@@ -758,11 +758,11 @@ class PostmanManageConfigurationAjaxHandler extends PostmanAbstractAjaxHandler {
 
 	/**
 	 *
-	 * @param PostmanSocket $socket
+	 * @param PostmanWizardSocket $socket
 	 * @param mixed       $userSocketOverride
 	 * @param mixed       $userAuthOverride
 	 * @param mixed       $originalSmtpServer
-	 * @return Ambigous <NULL, unknown, string>
+	 * @return mixed
 	 */
 	private function getWin( PostmanWizardSocket $socket, $userSocketOverride, $userAuthOverride, $originalSmtpServer ) {
 		static $recommendationPriority = - 1;

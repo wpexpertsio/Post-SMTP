@@ -100,7 +100,7 @@ class PostmanUtils {
 	 * Detect if the host is NOT a domain name
 	 *
 	 * @param mixed $ipAddress
-	 * @return number
+	 * @return bool
 	 */
 	public static function isHostAddressNotADomainName( $host ) {
 		// IPv4 / IPv6 test from http://stackoverflow.com/a/17871737/4368109
@@ -117,7 +117,7 @@ class PostmanUtils {
 	 *
 	 * @param mixed $url
 	 * @param mixed $args
-	 * @return the HTML body
+	 * @return string the HTML body
 	 */
 	static function remotePostGetBodyOnly( $url, $parameters, array $headers = array() ) {
 		$response = PostmanUtils::remotePost( $url, $parameters, $headers );
@@ -132,7 +132,7 @@ class PostmanUtils {
 	 *
 	 * @param mixed $url
 	 * @param mixed $args
-	 * @return the HTTP response
+	 * @return array|WP_Error the HTTP response
 	 */
 	static function remotePost( $url, $parameters = array(), array $headers = array() ) {
 		$args = array(
@@ -325,7 +325,7 @@ class PostmanUtils {
 	 * Validate an e-mail address
 	 *
 	 * @param mixed $email
-	 * @return number
+	 * @return string|bool
 	 */
 	static function validateEmail( $email ) {
 		if ( PostmanOptions::getInstance()->isEmailValidationDisabled() ) {
@@ -364,7 +364,7 @@ class PostmanUtils {
 
 	/**
 	 *
-	 * @return Ambigous <string, unknown>
+	 * @return string|mixed
 	 */
 	static function postmanGetServerName() {
 		if ( ! empty( $_SERVER ['SERVER_NAME'] ) ) {
