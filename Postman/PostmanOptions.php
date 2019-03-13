@@ -603,7 +603,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		 * @see PostmanOptionsInterface::getSenderEmail()
 		 */
 		public function getSenderName() {
-			return $this->getMessageNameEmail();
+			return $this->getMessageSenderName();
 		}
 
 		/**
