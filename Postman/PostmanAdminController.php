@@ -111,7 +111,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				// do a redirect on the init hook
 				$this->registerInitFunction( 'handleSuccessfulSave' );
 				// add a saved message to be shown after the redirect
-				$this->messageHandler->addMessage( _x( 'Settings saved.', 'The plugin successfully saved new settings.', Postman::TEXT_DOMAIN ) );
+				$this->messageHandler->addMessage( _x( 'Settings saved.', 'The plugin successfully saved new settings.', 'post-smtp' ) );
 				return;
 			} else {
 				// unset the action in the failed case as well
@@ -162,11 +162,11 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		    ?>
             <input type="hidden" name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_global_settings]" value="null">
             <input type="hidden" name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_allow_overwrite]" value="null">
-            <h2><?php _e( 'Post SMTP Settings', Postman::TEXT_DOMAIN ); ?></h2>
+            <h2><?php _e( 'Post SMTP Settings', 'post-smtp' ); ?></h2>
             <table id="menu" class="form-table">
                 <tr>
                     <th scope="row">
-                        <?php _e( 'Enable global settings', Postman::TEXT_DOMAIN ); ?>
+                        <?php _e( 'Enable global settings', 'post-smtp' ); ?>
                     </th>
                     <td>
                         <?php $checked = checked( $options['post_smtp_global_settings'], 1, false ); ?>
@@ -177,14 +177,14 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
                                    <?php echo $checked; ?>
                             >
                             <p class="description">
-                                <?php _e('Same settings as the main site/blog (id:1)', Postman::TEXT_DOMAIN ); ?>
+                                <?php _e('Same settings as the main site/blog (id:1)', 'post-smtp' ); ?>
                             </p>
                         </label>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">
-                        <?php _e( 'Allow user to load saved options', Postman::TEXT_DOMAIN ); ?>
+                        <?php _e( 'Allow user to load saved options', 'post-smtp' ); ?>
                     </th>
                     <td>
                         <?php $checked = checked( $options['post_smtp_allow_overwrite'], 1, false ); ?>
@@ -252,7 +252,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			foreach ( $states as $state ) {
 				if ( ! $state ['ready'] ) {
 					/* Translators: where %1$s is the name of the library */
-					$message = sprintf( __( 'This PHP installation requires the <b>%1$s</b> library.', Postman::TEXT_DOMAIN ), $state ['name'] );
+					$message = sprintf( __( 'This PHP installation requires the <b>%1$s</b> library.', 'post-smtp' ), $state ['name'] );
 					if ( $state ['required'] ) {
 						$this->messageHandler->addError( $message );
 					} else {
@@ -299,8 +299,8 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			// only administrators should be able to trigger this
 			if ( PostmanUtils::isAdmin() ) {
 				$mylinks = array(
-						sprintf( '<a href="%s" class="postman_settings">%s</a>', PostmanUtils::getSettingsPageUrl(), __( 'Settings', Postman::TEXT_DOMAIN ) ),
-						sprintf( '<a href="%s" class="postman_settings">%s</a>', 'https://postmansmtp.com', __( 'Visit us', Postman::TEXT_DOMAIN ) ),
+						sprintf( '<a href="%s" class="postman_settings">%s</a>', PostmanUtils::getSettingsPageUrl(), __( 'Settings', 'post-smtp' ) ),
+						sprintf( '<a href="%s" class="postman_settings">%s</a>', 'https://postmansmtp.com', __( 'Visit us', 'post-smtp' ) ),
 				);
 				return array_merge( $mylinks, $links );
 			}
@@ -328,7 +328,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				$success = false;
 			}
 			if ( ! $success ) {
-				$this->messageHandler->addError( __( 'There was an error importing the data.', Postman::TEXT_DOMAIN ) );
+				$this->messageHandler->addError( __( 'There was an error importing the data.', 'post-smtp' ) );
 				$this->logger->error( 'There was an error importing the data' );
 			}
 			PostmanUtils::redirect( PostmanUtils::POSTMAN_HOME_PAGE_RELATIVE_URL );
@@ -345,7 +345,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				delete_option( PostmanAdminController::TEST_OPTIONS );
 				$logPurger = new PostmanEmailLogPurger();
 				$logPurger->removeAll();
-				$this->messageHandler->addMessage( __( 'Plugin data was removed.', Postman::TEXT_DOMAIN ) );
+				$this->messageHandler->addMessage( __( 'Plugin data was removed.', 'post-smtp' ) );
 				PostmanUtils::redirect( PostmanUtils::POSTMAN_HOME_PAGE_RELATIVE_URL );
 			}
 		}
@@ -369,16 +369,16 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 					$logger->debug( 'Authorization successful' );
 					// save to database
 					$authorizationToken->save();
-					$this->messageHandler->addMessage( __( 'The OAuth 2.0 authorization was successful. Ready to send e-mail.', Postman::TEXT_DOMAIN ) );
+					$this->messageHandler->addMessage( __( 'The OAuth 2.0 authorization was successful. Ready to send e-mail.', 'post-smtp' ) );
 				} else {
-					$this->messageHandler->addError( __( 'Your email provider did not grant Postman permission. Try again.', Postman::TEXT_DOMAIN ) );
+					$this->messageHandler->addError( __( 'Your email provider did not grant Postman permission. Try again.', 'post-smtp' ) );
 				}
 			} catch ( PostmanStateIdMissingException $e ) {
-				$this->messageHandler->addError( __( 'The grant code from Google had no accompanying state and may be a forgery', Postman::TEXT_DOMAIN ) );
+				$this->messageHandler->addError( __( 'The grant code from Google had no accompanying state and may be a forgery', 'post-smtp' ) );
 			} catch ( Exception $e ) {
 				$logger->error( 'Error: ' . get_class( $e ) . ' code=' . $e->getCode() . ' message=' . $e->getMessage() );
 				/* translators: %s is the error message */
-				$this->messageHandler->addError( sprintf( __( 'Error authenticating with this Client ID. [%s]', Postman::TEXT_DOMAIN ), '<em>' . $e->getMessage() . '</em>' ) );
+				$this->messageHandler->addError( sprintf( __( 'Error authenticating with this Client ID. [%s]', 'post-smtp' ), '<em>' . $e->getMessage() . '</em>' ) );
 			}
 
 			// clean-up

@@ -19,6 +19,14 @@ class Postman {
 	const ADMINISTRATOR_ROLE_NAME = 'administrator';
 	const MANAGE_POSTMAN_CAPABILITY_NAME = 'manage_postman_smtp';
 	const MANAGE_POSTMAN_CAPABILITY_LOGS = 'manage_postman_logs';
+
+	/**
+	 * Use the text domain directly instead of this constant, as it 
+	 * causes issues with https://translate.wordpress.org.
+	 * 
+	 * @deprecated
+	 * @see https://github.com/yehudah/Post-SMTP/issues/1#issuecomment-421940923
+	 */
 	const TEXT_DOMAIN = 'post-smtp';
 
 	private $logger;
@@ -60,7 +68,7 @@ class Postman {
 
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
-				'name' => __( 'Postman SMTP', Postman::TEXT_DOMAIN ),
+				'name' => __( 'Postman SMTP', 'post-smtp' ),
 				'version' => $version,
 		);
 
@@ -163,9 +171,9 @@ class Postman {
 
 	public function post_smtp_wpml_admin_notice() {
 		$class = 'notice notice-error';
-		$title =  __( 'Post SMTP notice!', Postman::TEXT_DOMAIN );
-		$intro = __( 'WPML is installed and has a known bug with Post SMTP and few other plugins - you better upgrade, but we can try to fix it.', Postman::TEXT_DOMAIN );
-		$text = __( 'Click here to fix', Postman::TEXT_DOMAIN );
+		$title =  __( 'Post SMTP notice!', 'post-smtp' );
+		$intro = __( 'WPML is installed and has a known bug with Post SMTP and few other plugins - you better upgrade, but we can try to fix it.', 'post-smtp' );
+		$text = __( 'Click here to fix', 'post-smtp' );
 		$message = '<br><a href="' . esc_url( add_query_arg( 'action', 'postman_fix_wpml', get_permalink() ) ) . '">' . $text . '</a>';
 
 		printf( '<div class="%1$s"><h2>%2$s</h2><p>%3$s</p><p>%4$s</p></div>', esc_attr( $class ), $title, $intro, $message );
@@ -305,7 +313,7 @@ class Postman {
 				// I've adopted their error message as well, for shits and giggles .... :D
 				$reflFunc = new ReflectionFunction( 'wp_mail' );
 
-				$message = __( 'Postman: wp_mail has been declared by another plugin or theme, so you won\'t be able to use Postman until the conflict is resolved.', Postman::TEXT_DOMAIN );
+				$message = __( 'Postman: wp_mail has been declared by another plugin or theme, so you won\'t be able to use Postman until the conflict is resolved.', 'post-smtp' );
 				$plugin_full_path = $reflFunc->getFileName();
 
 				if ( strpos( $plugin_full_path, 'plugins' ) !== false ) {
@@ -382,8 +390,8 @@ class Postman {
 			}
 			$msg = PostmanTransportRegistry::getInstance()->getReadyMessage();
 			$message = sprintf( $msg['message'] );
-			$goToSettings = sprintf( '<a href="%s">%s</a>', PostmanUtils::getSettingsPageUrl(), __( 'Settings', Postman::TEXT_DOMAIN ) );
-			$goToEmailLog = sprintf( '%s', _x( 'Email Log', 'The log of Emails that have been delivered', Postman::TEXT_DOMAIN ) );
+			$goToSettings = sprintf( '<a href="%s">%s</a>', PostmanUtils::getSettingsPageUrl(), __( 'Settings', 'post-smtp' ) );
+			$goToEmailLog = sprintf( '%s', _x( 'Email Log', 'The log of Emails that have been delivered', 'post-smtp' ) );
 			if ( PostmanOptions::getInstance()->isMailLoggingEnabled() ) {
 				$goToEmailLog = sprintf( '<a href="%s">%s</a>', PostmanUtils::getEmailLogPageUrl(), $goToEmailLog );
 			}
@@ -433,12 +441,12 @@ class Postman {
 		$shortLocale = substr( get_locale(), 0, 2 );
 		if ( $shortLocale != 'en' ) {
 			$langDir = 'post-smtp/Postman/languages';
-			$success = load_plugin_textdomain( Postman::TEXT_DOMAIN, false, $langDir );
+			$success = load_plugin_textdomain( 'post-smtp', false, $langDir );
 			if ( $this->logger->isDebug() ) {
 				if ( $success ) {
 					$this->logger->debug( sprintf( 'local translation file loaded for locale=%s', get_locale() ) );
 				} else {
-					$this->logger->debug( sprintf( 'failed to load local translation file: locale=%s file=%s/%s-%s.mo', get_locale(), $langDir, Postman::TEXT_DOMAIN, get_locale() ) );
+					$this->logger->debug( sprintf( 'failed to load local translation file: locale=%s file=%s/%s-%s.mo', get_locale(), $langDir, 'post-smtp', get_locale() ) );
 				}
 			}
 		}
