@@ -219,22 +219,22 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 		private function errorCodesMap($error_code) {
 			switch ($error_code) {
 				case 413:
-					$message = sprintf( __( 'ERROR: The JSON payload you have included in your request is too large. Status code is %1$s', Postman::TEXT_DOMAIN ), $error_code );
+					$message = sprintf( __( 'ERROR: The JSON payload you have included in your request is too large. Status code is %1$s', 'post-smtp' ), $error_code );
 					break;
 				case 429:
-					$message = sprintf( __( 'ERROR: The number of requests you have made exceeds SendGrid rate limitations. Status code is %1$s', Postman::TEXT_DOMAIN ), $error_code );
+					$message = sprintf( __( 'ERROR: The number of requests you have made exceeds SendGrid rate limitations. Status code is %1$s', 'post-smtp' ), $error_code );
 					break;
 				case 500:
-					$message = sprintf( __( 'ERROR: An error occurred on a SendGrid server. Status code is %1$s', Postman::TEXT_DOMAIN ), $error_code );
+					$message = sprintf( __( 'ERROR: An error occurred on a SendGrid server. Status code is %1$s', 'post-smtp' ), $error_code );
 					break;
 				case 513:
-					$message = sprintf( __( 'ERROR: The SendGrid v3 Web API is not available. Status code is %1$s', Postman::TEXT_DOMAIN ), $error_code );
+					$message = sprintf( __( 'ERROR: The SendGrid v3 Web API is not available. Status code is %1$s', 'post-smtp' ), $error_code );
 					break;
 				case 502:
-					$message =  sprintf( __( 'ERROR: No recipient supplied. Status code is %1$s', Postman::TEXT_DOMAIN ), $error_code );
+					$message =  sprintf( __( 'ERROR: No recipient supplied. Status code is %1$s', 'post-smtp' ), $error_code );
 					break;
 				default:
-					$message = sprintf( __( 'ERROR: Status code is %1$s', Postman::TEXT_DOMAIN ), $error_code );
+					$message = sprintf( __( 'ERROR: Status code is %1$s', 'post-smtp' ), $error_code );
 			}
 
 			return $message;

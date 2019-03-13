@@ -76,7 +76,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				$status = true;
 				$subject = $message->getSubject();
 				if ( empty( $subject ) ) {
-					$statusMessage = sprintf( '%s: %s', __( 'Warning', Postman::TEXT_DOMAIN ), __( 'An empty subject line can result in delivery failure.', Postman::TEXT_DOMAIN ) );
+					$statusMessage = sprintf( '%s: %s', __( 'Warning', 'post-smtp' ), __( 'An empty subject line can result in delivery failure.', 'post-smtp' ) );
 					$status = 'WARN';
 				}
 				$this->createLog( $log, $message, $transcript, $statusMessage, $status, $transport );
@@ -182,9 +182,9 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		}
 
 		private function checkForLogErrors( PostmanEmailLog $log, $postMessage ) {
-			$message = __( 'You getting this message because an error detected while delivered your email.', Postman::TEXT_DOMAIN );
-			$message .= "\r\n" . sprintf( __( 'For the domain: %1$s',Postman::TEXT_DOMAIN ), get_bloginfo('url') );
-			$message .= "\r\n" . __( 'The log to paste when you open a support issue:', Postman::TEXT_DOMAIN ) . "\r\n";
+			$message = __( 'You getting this message because an error detected while delivered your email.', 'post-smtp' );
+			$message .= "\r\n" . sprintf( __( 'For the domain: %1$s','post-smtp' ), get_bloginfo('url') );
+			$message .= "\r\n" . __( 'The log to paste when you open a support issue:', 'post-smtp' ) . "\r\n";
 
 			if ( $log->statusMessage && ! empty( $log->statusMessage ) ) {
 				require_once POST_PATH . '/Postman/notifications/PostmanNotify.php';
@@ -263,7 +263,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 			$count = 0;
 			foreach ( $addresses as $address ) {
 				if ( $count >= 3 ) {
-					$flat .= sprintf( __( '.. +%d more', Postman::TEXT_DOMAIN ), sizeof( $addresses ) - $count );
+					$flat .= sprintf( __( '.. +%d more', 'post-smtp' ), sizeof( $addresses ) - $count );
 					break;
 				}
 				if ( $count > 0 ) {

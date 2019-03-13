@@ -172,7 +172,7 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 		 * @return void
 		 */
 		public function delivery_method( $delivery_methods ) {
-			$delivery_methods [ MAILSTER_POSTMAN_ID ] = __( 'Postman SMTP', Postman::TEXT_DOMAIN );
+			$delivery_methods [ MAILSTER_POSTMAN_ID ] = __( 'Postman SMTP', 'post-smtp' );
 			return $delivery_methods;
 		}
 
@@ -196,7 +196,7 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 		 */
 		public function activate() {
 			if ( defined( 'MAILSTER_VERSION' ) && version_compare( MAILSTER_POSTMAN_REQUIRED_VERSION, MAILSTER_VERSION, '<=' ) ) {
-				mailster_notice( sprintf( __( 'MyMail: Change the delivery method in the %s!', Postman::TEXT_DOMAIN ), sprintf( '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=mailster_delivery_method#delivery">%s</a>', __( 'Settings', 'postman-smtp' ) ) ), '', false, 'delivery_method' );
+				mailster_notice( sprintf( __( 'MyMail: Change the delivery method in the %s!', 'post-smtp' ), sprintf( '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=mailster_delivery_method#delivery">%s</a>', __( 'Settings', 'postman-smtp' ) ) ), '', false, 'delivery_method' );
 				$this->reset();
 			}
 		}
@@ -212,7 +212,7 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 				if ( mailster_option( 'deliverymethod' ) == MAILSTER_POSTMAN_ID ) {
 					mailster_update_option( 'deliverymethod', 'simple' );
 					/* Translators where %s is the name of the page */
-					mailster_notice( sprintf( __( 'MyMail: Change the delivery method in the %s!', Postman::TEXT_DOMAIN ), sprintf( '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=mailster_delivery_method#delivery">%s</a>', __( 'Settings', 'postman-smtp' ) ) ), '', false, 'delivery_method' );
+					mailster_notice( sprintf( __( 'MyMail: Change the delivery method in the %s!', 'post-smtp' ), sprintf( '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=mailster_delivery_method#delivery">%s</a>', __( 'Settings', 'postman-smtp' ) ) ), '', false, 'delivery_method' );
 				}
 			}
 		}

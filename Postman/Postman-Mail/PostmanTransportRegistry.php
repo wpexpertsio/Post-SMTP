@@ -231,18 +231,18 @@ class PostmanTransportRegistry {
 			if ( PostmanOptions::getInstance()->getRunMode() != PostmanOptions::RUN_MODE_PRODUCTION ) {
 				return array(
 					'error' => true,
-					'message' => __( 'Postman is in <em>non-Production</em> mode and is dumping all emails.', Postman::TEXT_DOMAIN ),
+					'message' => __( 'Postman is in <em>non-Production</em> mode and is dumping all emails.', 'post-smtp' ),
 				);
 			} else {
 				return array(
 					'error' => false,
-					'message' => __( 'Postman is configured.', Postman::TEXT_DOMAIN ),
+					'message' => __( 'Postman is configured.', 'post-smtp' ),
 				);
 			}
 		} else {
 			return array(
 				'error' => true,
-				'message' => __( 'Postman is <em>not</em> configured and is mimicking out-of-the-box WordPress email delivery.', Postman::TEXT_DOMAIN ),
+				'message' => __( 'Postman is <em>not</em> configured and is mimicking out-of-the-box WordPress email delivery.', 'post-smtp' ),
 			);
 		}
 	}

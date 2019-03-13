@@ -98,7 +98,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		return self::SLUG;
 	}
 	public function getName() {
-		return __ ( 'Gmail API', Postman::TEXT_DOMAIN );
+		return __ ( 'Gmail API', 'post-smtp' );
 	}
 	public function isEnvelopeFromValidationSupported() {
 		return false;
@@ -148,7 +148,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	 */
 	public function getDeliveryDetails() {
 		/* translators: where (1) is the secure icon and (2) is the transport name */
-		return sprintf ( __ ( 'Postman will send mail via the <b>%1$s %2$s</b>.', Postman::TEXT_DOMAIN ), '🔐', $this->getName () );
+		return sprintf ( __ ( 'Postman will send mail via the <b>%1$s %2$s</b>.', 'post-smtp' ), '🔐', $this->getName () );
 	}
 	
 	/**
@@ -162,7 +162,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 			$this->setReadyForOAuthGrant ();
 			if ($this->isPermissionNeeded ()) {
 				/* translators: %1$s is the Client ID label, and %2$s is the Client Secret label */
-				$message = sprintf ( __ ( 'You have configured OAuth 2.0 authentication, but have not received permission to use it.', Postman::TEXT_DOMAIN ), $this->getScribe ()->getClientIdLabel (), $this->getScribe ()->getClientSecretLabel () );
+				$message = sprintf ( __ ( 'You have configured OAuth 2.0 authentication, but have not received permission to use it.', 'post-smtp' ), $this->getScribe ()->getClientIdLabel (), $this->getScribe ()->getClientSecretLabel () );
 				$message .= sprintf ( ' <a href="%s">%s</a>.', PostmanUtils::getGrantOAuthPermissionUrl (), $this->getScribe ()->getRequestPermissionLinkText () );
 				array_push ( $messages, $message );
 				$this->setNotConfiguredAndReady ();
@@ -217,7 +217,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		$overrideItem ['auth_items'] = array (
 				array (
 						'selected' => true,
-						'name' => __ ( 'OAuth 2.0 (requires Client ID and Client Secret)', Postman::TEXT_DOMAIN ),
+						'name' => __ ( 'OAuth 2.0 (requires Client ID and Client Secret)', 'post-smtp' ),
 						'value' => 'oauth2' 
 				) 
 		);

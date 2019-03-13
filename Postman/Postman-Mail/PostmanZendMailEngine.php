@@ -204,7 +204,7 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 				$message = $e->getMessage();
 				if ( $e->getCode() == 334 ) {
 					// replace the unusable Google message with a better one in the case of code 334
-					$message = sprintf( __( 'Communication Error [334] - make sure the Envelope From email is the same account used to create the Client ID.', Postman::TEXT_DOMAIN ) );
+					$message = sprintf( __( 'Communication Error [334] - make sure the Envelope From email is the same account used to create the Client ID.', 'post-smtp' ) );
 				}
 				// create a new exception
 				$newException = new Exception( $message, $e->getCode() );

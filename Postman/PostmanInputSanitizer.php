@@ -157,7 +157,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 				if ( $value <= 0 ) {
 					$new_input [ $key ] = PostmanOptions::getInstance()->getMailLoggingMaxEntries();
 					$h = new PostmanMessageHandler();
-					$h->addError( sprintf( '%s %s', __( 'Maximum Log Entries', Postman::TEXT_DOMAIN ), __( 'must be greater than 0', Postman::TEXT_DOMAIN ) ) );
+					$h->addError( sprintf( '%s %s', __( 'Maximum Log Entries', 'post-smtp' ), __( 'must be greater than 0', 'post-smtp' ) ) );
 				} else {
 					$this->logSanitize( $desc, $input [ $key ] );
 					$new_input [ $key ] = $value;

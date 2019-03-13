@@ -90,7 +90,7 @@ class PostmanSendTestEmailController {
 	 * Register the Email Test screen
 	 */
 	public function addEmailTestSubmenu() {
-		$page = add_submenu_page( null, sprintf( __( '%s Setup', Postman::TEXT_DOMAIN ), __( 'Postman SMTP', Postman::TEXT_DOMAIN ) ), __( 'Postman SMTP', Postman::TEXT_DOMAIN ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanSendTestEmailController::EMAIL_TEST_SLUG, array(
+		$page = add_submenu_page( null, sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ), __( 'Postman SMTP', 'post-smtp' ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanSendTestEmailController::EMAIL_TEST_SLUG, array(
 				$this,
 				'outputTestEmailContent',
 		) );
@@ -110,11 +110,11 @@ class PostmanSendTestEmailController {
 		wp_enqueue_script( 'postman_test_email_wizard_script' );
 		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_email_test', array(
 				'recipient' => '#' . self::RECIPIENT_EMAIL_FIELD_NAME,
-				'not_started' => _x( 'In Outbox', 'Email Test Status', Postman::TEXT_DOMAIN ),
-				'sending' => _x( 'Sending...', 'Email Test Status', Postman::TEXT_DOMAIN ),
-				'success' => _x( 'Success', 'Email Test Status', Postman::TEXT_DOMAIN ),
-				'failed' => _x( 'Failed', 'Email Test Status', Postman::TEXT_DOMAIN ),
-				'ajax_error' => __( 'Ajax Error', Postman::TEXT_DOMAIN ),
+				'not_started' => _x( 'In Outbox', 'Email Test Status', 'post-smtp' ),
+				'sending' => _x( 'Sending...', 'Email Test Status', 'post-smtp' ),
+				'success' => _x( 'Success', 'Email Test Status', 'post-smtp' ),
+				'failed' => _x( 'Failed', 'Email Test Status', 'post-smtp' ),
+				'ajax_error' => __( 'Ajax Error', 'post-smtp' ),
 		) );
 	}
 
@@ -123,42 +123,42 @@ class PostmanSendTestEmailController {
 	public function outputTestEmailContent() {
 		print '<div class="wrap">';
 
-		PostmanViewController::outputChildPageHeader( __( 'Send a Test Email', Postman::TEXT_DOMAIN ) );
+		PostmanViewController::outputChildPageHeader( __( 'Send a Test Email', 'post-smtp' ) );
 
 		printf( '<form id="postman_test_email_wizard" method="post" action="%s">', PostmanUtils::getSettingsPageUrl() );
 
 		// Step 1
-		printf( '<h5>%s</h5>', __( 'Specify the Recipient', Postman::TEXT_DOMAIN ) );
+		printf( '<h5>%s</h5>', __( 'Specify the Recipient', 'post-smtp' ) );
 		print '<fieldset>';
-		printf( '<legend>%s</legend>', __( 'Who is this message going to?', Postman::TEXT_DOMAIN ) );
-		printf( '<p>%s', __( 'This utility allows you to send an email message for testing.', Postman::TEXT_DOMAIN ) );
+		printf( '<legend>%s</legend>', __( 'Who is this message going to?', 'post-smtp' ) );
+		printf( '<p>%s', __( 'This utility allows you to send an email message for testing.', 'post-smtp' ) );
 		print ' ';
 		/* translators: where %d is an amount of time, in seconds */
-		printf( '%s</p>', sprintf( _n( 'If there is a problem, Postman will give up after %d second.', 'If there is a problem, Postman will give up after %d seconds.', $this->options->getReadTimeout(), Postman::TEXT_DOMAIN ), $this->options->getReadTimeout() ) );
-		printf( '<label for="postman_test_options[test_email]">%s</label>', _x( 'Recipient Email Address', 'Configuration Input Field', Postman::TEXT_DOMAIN ) );
+		printf( '%s</p>', sprintf( _n( 'If there is a problem, Postman will give up after %d second.', 'If there is a problem, Postman will give up after %d seconds.', $this->options->getReadTimeout(), 'post-smtp' ), $this->options->getReadTimeout() ) );
+		printf( '<label for="postman_test_options[test_email]">%s</label>', _x( 'Recipient Email Address', 'Configuration Input Field', 'post-smtp' ) );
 		print $this->test_email_callback();
 		print '</fieldset>';
 
 		// Step 2
-		printf( '<h5>%s</h5>', __( 'Send The Message', Postman::TEXT_DOMAIN ) );
+		printf( '<h5>%s</h5>', __( 'Send The Message', 'post-smtp' ) );
 		print '<fieldset>';
 		print '<legend>';
-		print __( 'Sending the message:', Postman::TEXT_DOMAIN );
-		printf( ' <span id="postman_test_message_status">%s</span>', _x( 'In Outbox', 'Email Test Status', Postman::TEXT_DOMAIN ) );
+		print __( 'Sending the message:', 'post-smtp' );
+		printf( ' <span id="postman_test_message_status">%s</span>', _x( 'In Outbox', 'Email Test Status', 'post-smtp' ) );
 		print '</legend>';
 		print '<section>';
-		printf( '<p><label>%s</label></p>', __( 'Status', Postman::TEXT_DOMAIN ) );
+		printf( '<p><label>%s</label></p>', __( 'Status', 'post-smtp' ) );
 		print '<textarea id="postman_test_message_error_message" readonly="readonly" cols="65" rows="4"></textarea>';
 		print '</section>';
 		print '</fieldset>';
 
 		// Step 3
-		printf( '<h5>%s</h5>', __( 'Session Transcript', Postman::TEXT_DOMAIN ) );
+		printf( '<h5>%s</h5>', __( 'Session Transcript', 'post-smtp' ) );
 		print '<fieldset>';
-		printf( '<legend>%s</legend>', __( 'Examine the Session Transcript if you need to.', Postman::TEXT_DOMAIN ) );
-		printf( '<p>%s</p>', __( 'This is the conversation between Postman and the mail server. It can be useful for diagnosing problems. <b>DO NOT</b> post it on-line, it may contain your account password.', Postman::TEXT_DOMAIN ) );
+		printf( '<legend>%s</legend>', __( 'Examine the Session Transcript if you need to.', 'post-smtp' ) );
+		printf( '<p>%s</p>', __( 'This is the conversation between Postman and the mail server. It can be useful for diagnosing problems. <b>DO NOT</b> post it on-line, it may contain your account password.', 'post-smtp' ) );
 		print '<section>';
-		printf( '<p><label for="postman_test_message_transcript">%s</label></p>', __( 'Session Transcript', Postman::TEXT_DOMAIN ) );
+		printf( '<p><label for="postman_test_message_transcript">%s</label></p>', __( 'Session Transcript', 'post-smtp' ) );
 		print '<textarea readonly="readonly" id="postman_test_message_transcript" cols="65" rows="8"></textarea>';
 		print '</section>';
 		print '</fieldset>';
@@ -206,7 +206,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		$serverName = PostmanUtils::postmanGetServerName();
 
 		/* translators: where %s is the domain name of the site */
-		$subject = sprintf( _x( 'Postman SMTP Test (%s)', 'Test Email Subject', Postman::TEXT_DOMAIN ), $serverName );
+		$subject = sprintf( _x( 'Postman SMTP Test (%s)', 'Test Email Subject', 'post-smtp' ), $serverName );
 
 		// Postman API: indicate to Postman this is just for testing
 		add_filter( 'postman_test_email', array(
@@ -236,7 +236,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		if ( $success ) {
 			$this->logger->debug( 'Test Email delivered to server' );
 			// the message was sent successfully, generate an appropriate message for the user
-			$statusMessage = sprintf( __( 'Your message was delivered (%d ms) to the SMTP server! Congratulations :)', Postman::TEXT_DOMAIN ), $result ['time'] );
+			$statusMessage = sprintf( __( 'Your message was delivered (%d ms) to the SMTP server! Congratulations :)', 'post-smtp' ), $result ['time'] );
 
 						$this->logger->debug( 'statusmessage: ' . $statusMessage );
 
@@ -292,9 +292,9 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		// English - Mandarin - French - Hindi - Spanish - Portuguese - Russian - Japanese
 		// http://www.pinyin.info/tools/converter/chars2uninumbers.html
 		$greeting = 'Hello! - &#20320;&#22909; - Bonjour! - &#2344;&#2350;&#2360;&#2381;&#2340;&#2375; - ¡Hola! - Ol&#225; - &#1055;&#1088;&#1080;&#1074;&#1077;&#1090;! - &#20170;&#26085;&#12399;';
-		$sentBy = sprintf( _x( 'Sent by Postman %s', 'Test Email Tagline', Postman::TEXT_DOMAIN ), $pluginData ['version'] );
-		$imageSource = __( 'Image source', Postman::TEXT_DOMAIN );
-		$withPermission = __( 'Used with permission', Postman::TEXT_DOMAIN );
+		$sentBy = sprintf( _x( 'Sent by Postman %s', 'Test Email Tagline', 'post-smtp' ), $pluginData ['version'] );
+		$imageSource = __( 'Image source', 'post-smtp' );
+		$withPermission = __( 'Used with permission', 'post-smtp' );
 		$messageArray = array(
 				'Content-Type: text/plain; charset = "UTF-8"',
 				'Content-Transfer-Encoding: 8bit',

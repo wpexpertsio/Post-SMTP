@@ -503,7 +503,7 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 		$deliveryDetails ['host'] = $this->getHostname () . ':' . $this->getPort ();
 		$deliveryDetails ['auth_desc'] = $this->getAuthenticationDescription ( $this->getAuthenticationType () );
 		/* translators: where (1) is the transport type, (2) is the host, and (3) is the Authentication Type (e.g. Postman will send mail via smtp.gmail.com:465 using OAuth 2.0 authentication.) */
-		return sprintf ( __ ( 'Postman will send mail via %1$s to %2$s using %3$s authentication.', Postman::TEXT_DOMAIN ), '<b>' . $deliveryDetails ['transport_name'] . '</b>', '<b>' . $deliveryDetails ['host'] . '</b>', '<b>' . $deliveryDetails ['auth_desc'] . '</b>' );
+		return sprintf ( __ ( 'Postman will send mail via %1$s to %2$s using %3$s authentication.', 'post-smtp' ), '<b>' . $deliveryDetails ['transport_name'] . '</b>', '<b>' . $deliveryDetails ['host'] . '</b>', '<b>' . $deliveryDetails ['auth_desc'] . '</b>' );
 	}
 	
 	/**
@@ -531,7 +531,7 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 		if (PostmanOptions::AUTHENTICATION_TYPE_OAUTH2 == $authType) {
 			return 'OAuth 2.0';
 		} else if (PostmanOptions::AUTHENTICATION_TYPE_NONE == $authType) {
-			return _x ( 'no', 'as in "There is no Spoon"', Postman::TEXT_DOMAIN );
+			return _x ( 'no', 'as in "There is no Spoon"', 'post-smtp' );
 		} else {
 			switch ($authType) {
 				case PostmanOptions::AUTHENTICATION_TYPE_CRAMMD5 :
@@ -550,7 +550,7 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 					$authDescription = $authType;
 					break;
 			}
-			return sprintf ( '%s (%s)', __ ( 'Password', Postman::TEXT_DOMAIN ), $authDescription );
+			return sprintf ( '%s (%s)', __ ( 'Password', 'post-smtp' ), $authDescription );
 		}
 	}
 	
@@ -575,13 +575,13 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 		parent::validateTransportConfiguration ();
 		$messages = parent::validateTransportConfiguration ();
 		if (! $this->isSenderConfigured ()) {
-			array_push ( $messages, __ ( 'Message From Address can not be empty', Postman::TEXT_DOMAIN ) . '.' );
+			array_push ( $messages, __ ( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
 			$this->setNotConfiguredAndReady ();
 		}
 		if ($this->getAuthenticationType () == PostmanOptions::AUTHENTICATION_TYPE_OAUTH2) {
 			if (! $this->isOAuth2ClientIdAndClientSecretConfigured ()) {
 				/* translators: %1$s is the Client ID label, and %2$s is the Client Secret label (e.g. Warning: OAuth 2.0 authentication requires an OAuth 2.0-capable Outgoing Mail Server, Sender Email Address, Client ID, and Client Secret.) */
-				array_push ( $messages, sprintf ( __ ( 'OAuth 2.0 authentication requires a %1$s and %2$s.', Postman::TEXT_DOMAIN ), $this->getScribe ()->getClientIdLabel (), $this->getScribe ()->getClientSecretLabel () ) );
+				array_push ( $messages, sprintf ( __ ( 'OAuth 2.0 authentication requires a %1$s and %2$s.', 'post-smtp' ), $this->getScribe ()->getClientIdLabel (), $this->getScribe ()->getClientSecretLabel () ) );
 				$this->setNotConfiguredAndReady ();
 			}
 		}
@@ -703,21 +703,21 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 			if ($socket->auth_crammd5 || $socket->auth_login || $socket->authPlain) {
 				array_push ( $overrideAuthItems, array (
 						'selected' => $passwordMode,
-						'name' => __ ( 'Password (requires username and password)', Postman::TEXT_DOMAIN ),
+						'name' => __ ( 'Password (requires username and password)', 'post-smtp' ),
 						'value' => 'password' 
 				) );
 			}
 			if ($socket->auth_xoauth || $winningRecommendation ['auth'] == 'oauth2') {
 				array_push ( $overrideAuthItems, array (
 						'selected' => $oauth2Mode,
-						'name' => __ ( 'OAuth 2.0 (requires Client ID and Client Secret)', Postman::TEXT_DOMAIN ),
+						'name' => __ ( 'OAuth 2.0 (requires Client ID and Client Secret)', 'post-smtp' ),
 						'value' => 'oauth2' 
 				) );
 			}
 			if ($socket->auth_none) {
 				array_push ( $overrideAuthItems, array (
 						'selected' => $noAuthMode,
-						'name' => __ ( 'None', Postman::TEXT_DOMAIN ),
+						'name' => __ ( 'None', 'post-smtp' ),
 						'value' => 'none' 
 				) );
 			}
