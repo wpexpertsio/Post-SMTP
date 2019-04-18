@@ -41,6 +41,9 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// initialize for sending
 			$this->init();
 
+			// Apply critical headers
+			$headers = $this->apply_default_headers( (array)$headers );
+
 			// build the message
 			$postmanMessage = $this->processWpMailCall( $to, $subject, $message, $headers, $attachments );
 
@@ -54,6 +57,35 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// send the message and return the result
 			return $this->sendMessage( $postmanMessage, $log );
 		}
+
+        /**
+         * @param array $headers
+         * @return array $headers
+         */
+		private function apply_default_headers( $headers ) {
+
+            $headers[] = 'Message-ID: ' . $this->createMessageId();
+
+            return $headers;
+        }
+
+        /**
+         * Creates the Message-ID
+         *
+         * @return string
+         */
+        public function createMessageId() {
+
+            $id = md5(uniqid(time()));
+
+            if (isset($_SERVER["SERVER_NAME"])) {
+                $hostName = $_SERVER["SERVER_NAME"];
+            } else {
+                $hostName = php_uname('n');
+            }
+
+            return $id . '@' . $hostName;
+        }
 
 		/**
 		 * Builds a PostmanMessage based on the WordPress wp_mail parameters

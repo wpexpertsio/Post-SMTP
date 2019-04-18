@@ -1,5 +1,22 @@
 @CHARSET "UTF-8";
 
+.twitter-wrap {
+	display: flex;
+}
+
+.twitter-wrap #postman-main-menu {
+	flex: 1;
+	margin: 0;
+	margin-right: 10px;
+	overflow: hidden;
+	max-height: 300px;
+	border-radius: 5px;
+}
+
+.welcome-panel-content {
+	width: 100%;
+}
+
 #postman-main-menu.welcome-panel {
 	padding: 0px 10px 5px;
 }
