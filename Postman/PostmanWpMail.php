@@ -41,6 +41,10 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// initialize for sending
 			$this->init();
 
+            if ( ! is_array( $headers ) ) {
+                $headers = explode( "\n", str_replace( "\r\n", "\n", $headers ) );
+            }
+
 			// Apply critical headers
 			$headers = $this->apply_default_headers( (array)$headers );
 

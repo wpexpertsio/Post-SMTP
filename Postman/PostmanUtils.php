@@ -447,7 +447,7 @@ class PostmanUtils {
 	}
 
 	public static function getServerName() {
-        $host = 'localhost.localdomain';
+        $host = 'localhost';
         
         if (isset($_SERVER) and array_key_exists('SERVER_NAME', $_SERVER)) {
             $host = $_SERVER['SERVER_NAME'];
@@ -455,22 +455,6 @@ class PostmanUtils {
             $host = gethostname();
         } elseif (php_uname('n') !== false) {
             $host = php_uname('n');
-        }
-
-        // as final option - if ip returned or hostname without extension (not valid dns name)
-        $extension = pathinfo( $host, PATHINFO_EXTENSION );
-		if ( filter_var( $host, FILTER_VALIDATE_IP ) || empty( $extension ) ) {
-            $siteurl = get_bloginfo('url');
-            $temp_host = parse_url( $siteurl, PHP_URL_HOST);
-
-            $dnsr = dns_get_record( $temp_host, DNS_A );
-            $ip = gethostbyname( $temp_host );
-
-            foreach ( $dnsr as $record ) {
-                if ( $record['host'] == $temp_host && $record['ip'] == $ip ) {
-                    $host = $temp_host;
-                }
-            }
         }
 
         return str_replace('www.', '', $host );

@@ -1,5 +1,7 @@
 <?php
 
+require_once dirname(__DIR__) . '/PostmanEmailLogs.php';
+
 /**
  * See http://wpengineer.com/2426/wp_list_table-a-step-by-step-guide/
  */
@@ -92,7 +94,7 @@ class PostmanEmailLogView extends WP_List_Table {
 		$transcriptUrl = admin_url( sprintf( $iframeUri, 'transcript', $item ['ID'] ) );
 		$resendUrl = admin_url( sprintf( $iframeUri, 'resend', $item ['ID'] ) );
 
-		$meta_values = get_post_meta( $item ['ID'] );
+		$meta_values = PostmanEmailLogs::get_data( $item ['ID'] );
 
 		$actions = array(
 				'delete' => sprintf( '<a href="%s">%s</a>', $deleteUrl, _x( 'Delete', 'Delete an item from the email log', 'post-smtp' ) ),
@@ -365,7 +367,7 @@ class PostmanEmailLogView extends WP_List_Table {
 				/* Translators: where %s indicates the relative time from now */
 				$date = sprintf( _x( '%s ago', 'A relative time as in "five days ago"', 'post-smtp' ), $humanTime );
 			}
-			$meta_values = get_post_meta( $post->ID );
+			$meta_values = PostmanEmailLogs::get_data( $post->ID );
 			$sent_to = array_map( 'sanitize_email', explode( ',' , $meta_values ['to_header'] [0] ) );
 			$flattenedPost = array(
 					// the post title must be escaped as they are displayed in the HTML output

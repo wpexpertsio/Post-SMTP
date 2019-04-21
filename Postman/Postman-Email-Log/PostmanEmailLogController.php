@@ -1,4 +1,5 @@
 <?php
+require_once dirname(__DIR__) . '/PostmanEmailLogs.php';
 require_once 'PostmanEmailLogService.php';
 require_once 'PostmanEmailLogView.php';
 
@@ -78,7 +79,7 @@ class PostmanEmailLogController {
 		$postid = $this->getRequestParameter( 'email' );
 		if ( ! empty( $postid ) ) {
 			$post = get_post( $postid );
-			$meta_values = get_post_meta( $postid );
+			$meta_values = PostmanEmailLogs::get_data( $postid );
 
 			if ( isset( $_POST['mail_to'] ) && ! empty( $_POST['mail_to'] ) ) {
 				$emails = explode( ',', $_POST['mail_to'] );
@@ -87,7 +88,7 @@ class PostmanEmailLogController {
 				$to = $meta_values ['original_to'] [0];
 			}
 
-			$success = wp_mail( $to, $meta_values ['original_subject'] [0], $meta_values ['original_message'] [0], $meta_values ['original_headers'] [0] );
+			$success = wp_mail( $to, $meta_values ['original_subject'] [0], maybe_unserialize( $meta_values ['original_message'] [0] ), $meta_values ['original_headers'] [0] );
 
 			// Postman API: retrieve the result of sending this message from Postman
 			$result = apply_filters( 'postman_wp_mail_result', null );
@@ -202,7 +203,7 @@ class PostmanEmailLogController {
 			$this->logger->trace( 'handling view item' );
 			$postid = $_REQUEST ['email'];
 			$post = get_post( $postid );
-			$meta_values = get_post_meta( $postid );
+			$meta_values = PostmanEmailLogs::get_data( $postid );
 			// https://css-tricks.com/examples/hrs/
 			print '<html><head><style>body {font-family: monospace;} hr {
     border: 0;
@@ -260,7 +261,7 @@ class PostmanEmailLogController {
 			$this->logger->trace( 'handling view transcript item' );
 			$postid = $_REQUEST ['email'];
 			$post = get_post( $postid );
-			$meta_values = get_post_meta( $postid );
+			$meta_values = PostmanEmailLogs::get_data( $postid );
 			// https://css-tricks.com/examples/hrs/
 			print '<html><head><style>body {font-family: monospace;} hr {
     border: 0;
