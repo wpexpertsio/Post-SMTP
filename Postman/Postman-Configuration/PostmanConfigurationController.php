@@ -564,7 +564,7 @@ class PostmanConfigurationController {
                     <td>
                         <input type="checkbox" id="notification_use_chrome" name="postman_options[notification_use_chrome]">
                         <a target="_blank" class="" href="https://chrome.google.com/webstore/detail/npklmbkpbknkmbohdbpikeidiaekjoch">
-                            <?php _e( 'You can download the chrome extensiom here.', 'post-smtp' ); ?>
+                            <?php _e( 'You can download the chrome extension here.', 'post-smtp' ); ?>
                         </a>
                     </td>
                 </tr>
