@@ -40,6 +40,7 @@
 
 define( 'POST_BASE', __FILE__ );
 define( 'POST_PATH', __DIR__ );
+define( 'POST_SMTP_VER', '1.9.8' );
 
 $postman_smtp_exist = in_array( 'postman-smtp/postman-smtp.php', (array) get_option( 'active_plugins', array() ) );
 $required_php_version = version_compare( PHP_VERSION, '5.6.0', '<' );
@@ -126,5 +127,5 @@ function post_start( $startingMemory ) {
  */
 function post_setupPostman() {
 	require_once 'Postman/Postman.php';
-	$kevinCostner = new Postman( __FILE__, '1.9.8' );
+	$kevinCostner = new Postman( __FILE__, POST_SMTP_VER );
 }

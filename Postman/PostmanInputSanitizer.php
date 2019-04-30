@@ -40,6 +40,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$new_input [ PostmanOptions::ENVELOPE_SENDER ] = $new_input [ PostmanOptions::MESSAGE_SENDER_EMAIL ];
 			$this->sanitizeString( 'Sender Email', PostmanOptions::ENVELOPE_SENDER, $input, $new_input );
 			$this->sanitizeString( 'Transport Type', PostmanOptions::TRANSPORT_TYPE, $input, $new_input );
+            $this->sanitizeString( 'SMTP Mailers', 'smtp_mailers', $input, $new_input );
 			$this->sanitizeString( 'Authorization Type', PostmanOptions::AUTHENTICATION_TYPE, $input, $new_input );
 			$this->sanitizeString( 'From Name', PostmanOptions::MESSAGE_SENDER_NAME, $input, $new_input );
 			$this->sanitizeString( 'Client ID', PostmanOptions::CLIENT_ID, $input, $new_input );

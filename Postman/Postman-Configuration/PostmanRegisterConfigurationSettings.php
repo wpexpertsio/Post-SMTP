@@ -34,9 +34,9 @@ class PostmanSettingsRegistry {
 			), 'transport_options' );
 
 			add_settings_field( PostmanOptions::TRANSPORT_TYPE, _x( 'Type', '(i.e.) What kind is it?', 'post-smtp' ), array(
-					$this,
-					'transport_type_callback',
-			), 'transport_options', 'transport_section' );
+                $this,
+                'transport_type_callback',
+            ), 'transport_options', 'transport_section' );
 
 			// the Message From section
 			add_settings_section( PostmanAdminController::MESSAGE_FROM_SECTION, _x( 'From Address', 'The Message Sender Email Address', 'post-smtp' ), array(

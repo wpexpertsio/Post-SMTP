@@ -64,6 +64,7 @@ class Postman {
 		require_once 'Postman-Email-Log/PostmanEmailLogPostType.php';
 		require_once 'Postman-Mail/PostmanMyMailConnector.php';
 		require_once 'Postman-Mail/PostmanContactForm7.php';
+		require_once 'Phpmailer/PostsmtpMailer.php';
 		//require_once 'Postman-Mail/PostmanWooCommerce.php';
 
 		// get plugin metadata - alternative to get_plugin_data
@@ -91,13 +92,19 @@ class Postman {
 		// register the email transports
 		$this->registerTransports( $rootPluginFilenameAndPath );
 
-		// store an instance of the WpMailBinder
-		$this->wpMailBinder = PostmanWpMailBinder::getInstance();
+        // store an instance of the WpMailBinder
+        $this->wpMailBinder = PostmanWpMailBinder::getInstance();
 
-		// bind to wp_mail - this has to happen before the "init" action
-		// this design allows other plugins to register a Postman transport and call bind()
-		// bind may be called more than once
-		$this->wpMailBinder->bind();
+        $this->logger->trace( 'SMTP Mailer: ' . PostmanOptions::getInstance()->getSmtpMailer() );
+        PostmanWpMailBinder::getInstance()->bound = true;
+		if ( PostmanOptions::getInstance()->getTransportType() == 'smtp' &&
+            PostmanOptions::getInstance()->getSmtpMailer() !== 'phpmailer') {
+
+            // bind to wp_mail - this has to happen before the "init" action
+            // this design allows other plugins to register a Postman transport and call bind()
+            // bind may be called more than once
+            $this->wpMailBinder->bind();
+        }
 
 		// registers the custom post type for all callers
 		PostmanEmailLogPostType::automaticallyCreatePostType();

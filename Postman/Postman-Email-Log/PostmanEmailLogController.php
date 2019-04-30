@@ -78,7 +78,6 @@ class PostmanEmailLogController {
 		// get the email address of the recipient from the HTTP Request
 		$postid = $this->getRequestParameter( 'email' );
 		if ( ! empty( $postid ) ) {
-			$post = get_post( $postid );
 			$meta_values = PostmanEmailLogs::get_data( $postid );
 
 			if ( isset( $_POST['mail_to'] ) && ! empty( $_POST['mail_to'] ) ) {

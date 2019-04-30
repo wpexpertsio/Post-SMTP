@@ -19,6 +19,7 @@
 
 #postman-main-menu.welcome-panel {
 	padding: 0px 10px 5px;
+	overflow: hidden;
 }
 
 #postman-main-menu.advanced_config {
@@ -93,7 +94,8 @@ dt em {
 
 p#back_to_main_menu {
 	text-align: right;
-	margin-top: 10px
+	margin-top: 10px;
+	padding-right: 10px;
 }
 
 .welcome-panel-column welcome-panel-last {

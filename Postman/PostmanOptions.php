@@ -138,6 +138,11 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const DEFAULT_PLUGIN_MESSAGE_SENDER_EMAIL_ENFORCED = false;
 		const DEFAULT_TEMP_DIRECTORY = '/tmp';
 
+		const SMTP_MAILERS = [
+		    'phpmailer' => 'PHPMailer',
+            'postsmtp' => 'PostSMTP'
+        ];
+
 		public $is_fallback = false;
 
 		// options data
@@ -569,6 +574,15 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				$this->setSenderName( $senderName );
 			}
 		}
+
+		public function getSmtpMailer() {
+		    if ( empty($this->options [ 'smtp_mailers' ]) ) {
+		        return 'postsmtp';
+            }
+
+            return $this->options [ 'smtp_mailers' ];
+        }
+
 		public function isAuthTypePassword() {
 			return $this->isAuthTypeLogin() || $this->isAuthTypeCrammd5() || $this->isAuthTypePlain();
 		}

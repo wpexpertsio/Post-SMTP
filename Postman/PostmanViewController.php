@@ -38,6 +38,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			add_action( 'admin_init', array( $this, 'registerStylesAndScripts' ), 0 );
 			add_action( 'wp_ajax_delete_lock_file', array( $this, 'delete_lock_file' ) );
 			add_action( 'wp_ajax_dismiss_version_notify', array( $this, 'dismiss_version_notify' ) );
+			add_action( 'wp_ajax_dismiss_donation_notify', array( $this, 'dismiss_donation_notify' ) );
 
 			//add_action( 'admin_init', array( $this, 'do_activation_redirect' ) );
 
@@ -47,9 +48,14 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		function dismiss_version_notify() {
 			check_ajax_referer( 'postsmtp', 'security' );
 
-			$version = sanitize_text_field($_POST['version']);
 			$result = update_option('postman_release_version', true );
 		}
+
+        function dismiss_donation_notify() {
+            check_ajax_referer( 'postsmtp', 'security' );
+
+            $result = update_option('postman_dismiss_donation', true );
+        }
 
 		function delete_lock_file() {
 			check_ajax_referer( 'postman', 'security' );
@@ -213,7 +219,12 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				}
 				printf( '<p><span>%s :-)</span></p>', sprintf( __( 'Postman needs translators! Please take a moment to <a href="%s">translate a few sentences on-line</a>', 'post-smtp' ), 'https://translate.wordpress.org/projects/wp-plugins/post-smtp/stable' ) );
 			}
-			printf( '<p><span>%s</span></p>', __( '<b style="background-color:yellow">New for v1.7!</style></b> Send mail with the Mandrill or SendGrid APIs.', 'post-smtp' ) );
+			printf(
+			        '<p><span>%s</span>&nbsp;<a target="_blank" href="%s">%s</a></p>',
+                    __( '<b style="background-color:yellow">New for v1.9.8!</b> Fallback - setup a second delivery method when the first one is failing', 'post-smtp' ),
+                    'https://postmansmtp.com/post-smtp-1-9-7-the-smtp-fallback/',
+                    __( 'Check the detailes here', 'post-smtp')
+            );
 		}
 
 		/**
@@ -316,6 +327,9 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					</button>
 				</div>';
 			}
+
+            include_once POST_PATH . '/Postman/extra/donation.php';
+
             echo '<div class="twitter-wrap">';
 			    print '<div id="postman-main-menu" class="welcome-panel">';
                 print '<div class="welcome-panel-content">';
@@ -361,7 +375,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
                 printf( '<li><img class="align-middle" src="' . plugins_url( 'style/images/new.gif', dirname( __DIR__ ) . '/postman-smtp.php' ) . '"><a target="blank" class="align-middle" href="https://postmansmtp.com/category/guides/" class="welcome-icon postman_guides">%s</a></li>', __( 'Guides', 'post-smtp' ) );
                 print '</ul></div></div></div></div>';
                 ?>
-                <div class="twitter-iframe-wrap">
+                <div class="twitter-iframe-wrap" style="min-width: 300px;">
                     <a class="twitter-timeline" data-height="304" href="https://twitter.com/PostSMTP?ref_src=twsrc%5Etfw">Tweets by PostSMTP</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                 </div>
             </div>

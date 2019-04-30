@@ -1,4 +1,5 @@
 <?php
+
 if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 	/**
@@ -45,9 +46,6 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
                 $headers = explode( "\n", str_replace( "\r\n", "\n", $headers ) );
             }
 
-			// Apply critical headers
-			$headers = $this->apply_default_headers( (array)$headers );
-
 			// build the message
 			$postmanMessage = $this->processWpMailCall( $to, $subject, $message, $headers, $attachments );
 
@@ -63,14 +61,15 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		}
 
         /**
-         * @param array $headers
-         * @return array $headers
+         * @param PostmanMessage $message
+         * @return PostmanMessage
          */
-		private function apply_default_headers( $headers ) {
-
+		private function apply_default_headers( $message ) {
+		    $headers = $message->getHeaders();
             $headers[] = 'Message-ID: ' . $this->createMessageId();
+            $message->addHeaders($headers);
 
-            return $headers;
+            return $message;
         }
 
         /**
@@ -183,6 +182,8 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		 */
 		public function sendMessage( PostmanMessage $message, PostmanEmailLog $log ) {
 
+		    $message = $this->apply_default_headers( $message );
+
 			// get the Options and AuthToken
 			$options = PostmanOptions::getInstance();
 			$authorizationToken = PostmanOAuthToken::getInstance();
@@ -290,6 +291,9 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				do_action( 'wp_mail_failed', new WP_Error( 'wp_mail_failed', $e->getMessage(), $mail_error_data ) );
 
 				// return failure
+                if ( PostmanOptions::getInstance()->getSmtpMailer() == 'phpmailer' ) {
+                    throw new phpmailerException($e->getMessage(), $e->getCode());
+                }
 				return false;
 
 			}

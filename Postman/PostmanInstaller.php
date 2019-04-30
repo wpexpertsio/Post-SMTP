@@ -25,6 +25,8 @@ class PostmanInstaller {
 	 */
 	public function activatePostman() {
         delete_option( 'postman_release_version' );
+        delete_option( 'postman_dismiss_donation' );
+
 		$options = get_option( PostmanOptions::POSTMAN_OPTIONS );
 		$args = array(
 			'fallback_smtp_enabled' => 'no',

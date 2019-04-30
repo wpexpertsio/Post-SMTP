@@ -210,6 +210,7 @@ class PostmanGetDiagnosticsViaAjax {
 	public function getDiagnostics() {
 	    $curl = curl_version();
 		$transportRegistry = PostmanTransportRegistry::getInstance();
+        $this->addToDiagnostics( 'Mailer', PostmanOptions::getInstance()->getSmtpMailer() );
 		$this->addToDiagnostics( 'HostName', PostmanUtils::getServerName() );
 		$this->addToDiagnostics( 'cURL Version', $curl['version'] );
 		$this->addToDiagnostics( 'OpenSSL Version', $curl['ssl_version'] );
@@ -219,17 +220,15 @@ class PostmanGetDiagnosticsViaAjax {
 		$this->addToDiagnostics( 'WordPress', (is_multisite() ? 'Multisite ' : '') . get_bloginfo( 'version' ) . ' ' . get_locale() . ' ' . get_bloginfo( 'charset', 'display' ) );
 		$this->addToDiagnostics( 'WordPress Theme', wp_get_theme() );
 		$this->addToDiagnostics( 'WordPress Plugins', $this->getActivePlugins() );
-		{
-			$bindResult = apply_filters( 'postman_wp_mail_bind_status', null );
-			$wp_mail_file_name = 'n/a';
+
+        $bindResult = apply_filters( 'postman_wp_mail_bind_status', null );
+        $wp_mail_file_name = 'n/a';
 		if ( class_exists( 'ReflectionFunction' ) ) {
 			$wp_mail = new ReflectionFunction( 'wp_mail' );
 			$wp_mail_file_name = realpath( $wp_mail->getFileName() );
 		}
-		if ( ! $bindResult ['bound'] ) {
-			$this->addToDiagnostics( 'WordPress wp_mail Owner', $wp_mail_file_name );
-		}
-		}
+
+		$this->addToDiagnostics( 'WordPress wp_mail Owner', $wp_mail_file_name );
 		$this->addToDiagnostics( 'WordPress wp_mail Filter(s)', $this->getFilters( 'wp_mail' ) );
 		$this->addToDiagnostics( 'WordPress wp_mail_from Filter(s)', $this->getFilters( 'wp_mail_from' ) );
 		$this->addToDiagnostics( 'WordPress wp_mail_from_name Filter(s)', $this->getFilters( 'wp_mail_from_name' ) );

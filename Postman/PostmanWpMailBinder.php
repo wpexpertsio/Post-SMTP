@@ -2,7 +2,7 @@
 if (! class_exists ( 'PostmanWpMailBinder' )) {
 	class PostmanWpMailBinder {
 		private $logger;
-		private $bound;
+		public $bound;
 		private $bindError;
 		
 		/**

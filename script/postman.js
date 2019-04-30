@@ -14,6 +14,18 @@ jQuery(document).ready(function($) {
 		});
 	});
 
+	$('.post-smtp-donation .donation-dismiss').on('click', function() {
+		var $this = $(this);
+		var args = {
+			action: 'dismiss_donation_notify',
+			security: $this.data('security'),
+		};
+
+		$.post(ajaxurl, args, function() {
+			$this.parent().slideUp();
+		});
+	});
+
 	$('#postman_trash_all').on('click',function(e) {
 		if (confirm("Are You Sure?") == false) {
 		    e.preventDefault();
