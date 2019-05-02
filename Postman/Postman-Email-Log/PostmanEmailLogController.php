@@ -351,6 +351,8 @@ class PostmanEmailLogController {
 	/* Translators where (%s) is the name of the plugin */
 		echo sprintf( __( '%s Email Log', 'post-smtp' ), __( 'Post SMTP', 'post-smtp' ) )?></h2>
 
+    <?php include_once POST_PATH . '/Postman/extra/donation.php'; ?>
+
 	<div
 		style="background: #ECECEC; border: 1px solid #CCC; padding: 0 10px; margin-top: 5px; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;">
 		<p><?php

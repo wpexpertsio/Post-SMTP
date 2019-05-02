@@ -1,7 +1,7 @@
 <?php
 $postman_dismiss_donation = get_option('postman_dismiss_donation');
 
-if ( empty( $postman_dismiss_donation ) || $in_wizard ) : ?>
+if ( empty( $postman_dismiss_donation ) || isset( $in_wizard ) ) : ?>
     <div class="updated settings-error notice is-dismissible post-smtp-donation">
         <p style="font-size: 1.1em;">It is hard to continue development and support for this free plugin without contributions from users like you.<br>
             If you enjoy using <strong>Post SMTP</strong> and find it useful, please consider making a donation.<br>

@@ -96,7 +96,7 @@ class Postman {
         $this->wpMailBinder = PostmanWpMailBinder::getInstance();
 
         $this->logger->trace( 'SMTP Mailer: ' . PostmanOptions::getInstance()->getSmtpMailer() );
-        PostmanWpMailBinder::getInstance()->bound = true;
+
 		if ( PostmanOptions::getInstance()->getTransportType() == 'smtp' &&
             PostmanOptions::getInstance()->getSmtpMailer() !== 'phpmailer') {
 
@@ -104,6 +104,8 @@ class Postman {
             // this design allows other plugins to register a Postman transport and call bind()
             // bind may be called more than once
             $this->wpMailBinder->bind();
+        } else {
+            PostmanWpMailBinder::getInstance()->bound = true;
         }
 
 		// registers the custom post type for all callers
@@ -422,12 +424,16 @@ class Postman {
 	 * @param mixed $pluginData
 	 */
 	private function registerTransports( $rootPluginFilenameAndPath ) {
-		PostmanTransportRegistry::getInstance()->registerTransport( new PostmanDefaultModuleTransport( $rootPluginFilenameAndPath ) );
-		PostmanTransportRegistry::getInstance()->registerTransport( new PostmanSmtpModuleTransport( $rootPluginFilenameAndPath ) );
-		PostmanTransportRegistry::getInstance()->registerTransport( new PostmanGmailApiModuleTransport( $rootPluginFilenameAndPath ) );
-		PostmanTransportRegistry::getInstance()->registerTransport( new PostmanMandrillTransport( $rootPluginFilenameAndPath ) );
-		PostmanTransportRegistry::getInstance()->registerTransport( new PostmanSendGridTransport( $rootPluginFilenameAndPath ) );
-		PostmanTransportRegistry::getInstance()->registerTransport( new PostmanMailgunTransport( $rootPluginFilenameAndPath ) );
+	    $postman_transport_registry = PostmanTransportRegistry::getInstance();
+
+        $postman_transport_registry->registerTransport( new PostmanDefaultModuleTransport( $rootPluginFilenameAndPath ) );
+        $postman_transport_registry->registerTransport( new PostmanSmtpModuleTransport( $rootPluginFilenameAndPath ) );
+        $postman_transport_registry->registerTransport( new PostmanGmailApiModuleTransport( $rootPluginFilenameAndPath ) );
+        $postman_transport_registry->registerTransport( new PostmanMandrillTransport( $rootPluginFilenameAndPath ) );
+        $postman_transport_registry->registerTransport( new PostmanSendGridTransport( $rootPluginFilenameAndPath ) );
+        $postman_transport_registry->registerTransport( new PostmanMailgunTransport( $rootPluginFilenameAndPath ) );
+
+		do_action( 'postsmtp_register_transport', $postman_transport_registry );
 	}
 
 	/**

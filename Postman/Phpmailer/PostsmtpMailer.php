@@ -77,6 +77,7 @@ class PostsmtpMailer extends PHPMailer {
 
     public function postman_wp_mail_result() {
         $result = [
+            'time' => '',
             'exception' => $this->error,
             'transcript' => '',
         ];
