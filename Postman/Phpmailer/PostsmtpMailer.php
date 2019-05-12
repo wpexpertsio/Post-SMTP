@@ -33,13 +33,11 @@ class PostsmtpMailer extends PHPMailer {
         $senderEmail = $this->options->getMessageSenderEmail();
         $senderName = $this->options->getMessageSenderName();
 
-        $this->addCustomHeader('X-Mailer', 'PostSMTP/' . POST_SMTP_VER );
-
         // create a PostmanMessage instance
         $message = $postmanWpMail->createNewMessage();
 
         $message->setFrom( $senderEmail, $senderName );
-        $message->addHeaders( $this->getCustomHeaders() );
+        $message->addHeaders( $this->getHeaders() );
         $message->setBodyTextPart( $this->AltBody );
         $message->setBodyHtmlPart( $this->Body );
         $message->setBody( $this->Body );
@@ -73,6 +71,15 @@ class PostsmtpMailer extends PHPMailer {
             return false;
         }
 
+    }
+
+    private function getHeaders() {
+        $headers = array();
+        foreach ( $this->getCustomHeaders() as $header ) {
+            $headers[] = "{$header[0]}: {$header[1]}";
+        }
+
+        return $headers;
     }
 
     public function postman_wp_mail_result() {

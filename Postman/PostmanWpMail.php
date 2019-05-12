@@ -42,10 +42,6 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// initialize for sending
 			$this->init();
 
-            if ( ! is_array( $headers ) ) {
-                $headers = explode( "\n", str_replace( "\r\n", "\n", $headers ) );
-            }
-
 			// build the message
 			$postmanMessage = $this->processWpMailCall( $to, $subject, $message, $headers, $attachments );
 
@@ -65,11 +61,8 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
          * @return PostmanMessage
          */
 		private function apply_default_headers( $message ) {
-		    $headers = $message->getHeaders();
             $headers[] = 'Message-ID: ' . $this->createMessageId();
             $message->addHeaders($headers);
-
-            return $message;
         }
 
         /**
@@ -182,7 +175,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		 */
 		public function sendMessage( PostmanMessage $message, PostmanEmailLog $log ) {
 
-		    $message = $this->apply_default_headers( $message );
+		    $this->apply_default_headers( $message );
 
 			// get the Options and AuthToken
 			$options = PostmanOptions::getInstance();

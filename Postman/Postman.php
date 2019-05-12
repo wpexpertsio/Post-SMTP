@@ -97,8 +97,9 @@ class Postman {
 
         $this->logger->trace( 'SMTP Mailer: ' . PostmanOptions::getInstance()->getSmtpMailer() );
 
+        $mailer = PostmanOptions::getInstance()->getSmtpMailer();
 		if ( PostmanOptions::getInstance()->getTransportType() == 'smtp' &&
-            PostmanOptions::getInstance()->getSmtpMailer() !== 'phpmailer') {
+            $mailer && $mailer !== 'phpmailer') {
 
             // bind to wp_mail - this has to happen before the "init" action
             // this design allows other plugins to register a Postman transport and call bind()
