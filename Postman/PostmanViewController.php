@@ -320,7 +320,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				echo '
 				<div class="updated settings-error notice is-dismissible"> 
 					<p>
-					<strong>Version ' . $version . ' The SMTP Fallback ( A backup delivery SMTP ):</strong> <a target="_blank" href="https://postmansmtp.com/post-smtp-1-9-7-the-smtp-fallback/">Read Here</a>
+					<strong>Version ' . $version . ' Mailer Type:</strong> <a target="_blank" href="https://postmansmtp.com/post-smtp-2-0-mailer-type-and-much-more/">Read Here</a>
 					</p>
 					<button style="z-index: 100;" data-version="'. $version . '" data-security="' . wp_create_nonce('postsmtp') .'" type="button" class="notice-dismiss postman-release-message">
 						<span class="screen-reader-text">Dismiss this notice.</span>

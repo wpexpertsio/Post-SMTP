@@ -592,6 +592,9 @@ class PostmanConfigurationController {
 		printf( '<li>%s</li>', __( 'Send yourself a Test Email to make sure everything is working!', 'post-smtp' ) );
 		print '</ul>';
 
+		// Get PHPmailer recommendation
+		Postman::getMailerTypeRecommend();
+
 		$in_wizard = true;
 		include_once POST_PATH . '/Postman/extra/donation.php';
 

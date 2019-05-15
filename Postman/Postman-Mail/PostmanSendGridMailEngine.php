@@ -41,86 +41,62 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 		public function send( PostmanMessage $message ) {
 			$options = PostmanOptions::getInstance();
 
-			// add the From Header
+            $email = new \SendGrid\Mail\Mail();
+
+            // add the From Header
 			$sender = $message->getFromAddress();
 
 			$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
 			$senderName = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
 
-			$from = new SendGrid\Email( $senderName, $senderEmail );
+            $email->setFrom($senderEmail, $senderName);
 
-			// now log it
+            // now log it
 			$sender->log( $this->logger, 'From' );
 
-			// add the to recipients
-			$counter = 0;
-			$emails = array();
-			/**
-			 * @todo: Find a better approch.
-			 */
-			$duplicates = array();
+            // add the to recipients
 			foreach ( ( array ) $message->getToRecipients() as $recipient ) {
-				$recipient->log( $this->logger, 'To' );
-
-				$email = $recipient->getEmail();
-				if ( $counter == 0 ) {
-					$this->logger->debug( 'Adding to=' . $recipient->getEmail() );
-					$to = new SendGrid\Email($recipient->getName(), $recipient->getEmail() );
-					$duplicates[] = $email;
-				} else {
-					if ( ! in_array( $email, $duplicates ) ) {
-						$duplicates[] = $email;
-						$this->logger->debug( 'Adding personalization to=' . $recipient->getEmail() );
-						$emails[] = new SendGrid\Email($recipient->getName(), $recipient->getEmail() );
-					}
-				}
-
-				$counter++;
+                $emails[] = new \SendGrid\Mail\To($recipient->getEmail(), $recipient->getName() );
 			}
+
+			$email->addTos( $emails );
 
 			// add the subject
 			if ( null !== $message->getSubject() ) {
-				$subject = $message->getSubject();
-			}
+                $email->setSubject($message->getSubject());
+            }
 
 			// add the message content
 
 			$textPart = $message->getBodyTextPart();
 			if ( ! empty( $textPart ) ) {
 				$this->logger->debug( 'Adding body as text' );
-				$content = new SendGrid\Content("text/plain", $textPart);
-			}
+                $email->addContent("text/plain", $textPart);
+            }
 
 			$htmlPart = $message->getBodyHtmlPart();
 			if ( ! empty( $htmlPart ) ) {
 				$this->logger->debug( 'Adding body as html' );
-				$content = new SendGrid\Content("text/html", $htmlPart);
-			}
-
-			$mail = new SendGrid\Mail($from, $subject, $to, $content);
-
-			foreach ( $emails as $email) {
-				$mail->personalization[0]->addTo($email);
+                $email->addContent("text/html", $htmlPart);
 			}
 
 			// add the reply-to
 			$replyTo = $message->getReplyTo();
 			// $replyTo is null or a PostmanEmailAddress object
 			if ( isset( $replyTo ) ) {
-				$reply_to = new SendGrid\ReplyTo( $replyTo->getEmail(), $replyTo->getName() );
-				$mail->setReplyTo($reply_to);
+				$email->setReplyTo( $replyTo->getEmail(), $replyTo->getName() );
 			}
 
 			// add the Postman signature - append it to whatever the user may have set
 			if ( ! $options->isStealthModeEnabled() ) {
 				$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
-				$mail->personalization[0]->addHeader( 'X-Mailer', sprintf( 'Postman SMTP %s for WordPress (%s)', $pluginData ['version'], 'https://wordpress.org/plugins/post-smtp/' ) );
+                $email->addHeader( 'X-Mailer', sprintf( 'Postman SMTP %s for WordPress (%s)', $pluginData ['version'], 'https://wordpress.org/plugins/post-smtp/' ) );
 			}
 
 			// add the headers - see http://framework.zend.com/manual/1.12/en/zend.mail.additional-headers.html
 			foreach ( ( array ) $message->getHeaders() as $header ) {
 				$this->logger->debug( sprintf( 'Adding user header %s=%s', $header ['name'], $header ['content'] ) );
-				$mail->personalization[0]->addHeader( $header ['name'], $header ['content'] );
+                $email->addHeader( $header ['name'], $header ['content'] );
 			}
 
 			// if the caller set a Content-Type header, use it
@@ -130,28 +106,25 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 			}
 
 			// add the cc recipients
+            $ccEmails = array();
 			foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
-				if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
-					$recipient->log( $this->logger, 'Cc' );
-					$email = new SendGrid\Email( $recipient->getName(), $recipient->getEmail() );
-					$mail->personalization[0]->addCc( $email );
-				}
-
+                $recipient->log( $this->logger, 'Cc' );
+                $ccEmails[] = new \SendGrid\Mail\Cc( $recipient->getEmail(), $recipient->getName() );
 			}
+            $email->addCcs($ccEmails);
 
-			// add the bcc recipients
+            // add the bcc recipients
+            $bccEmails = array();
 			foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
-				if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
-					$recipient->log($this->logger, 'Bcc');
-					$email = new SendGrid\Email($recipient->getName(), $recipient->getEmail());
-					$mail->personalization[0]->addBcc($email);
-				}
+                $recipient->log($this->logger, 'Bcc');
+                $bccEmails[] = new \SendGrid\Mail\Cc( $recipient->getEmail(), $recipient->getName() );
 			}
+            $email->addBccs($bccEmails);
 
-			// add the messageId
+            // add the messageId
 			$messageId = $message->getMessageId();
 			if ( ! empty( $messageId ) ) {
-				$mail->personalization[0]->addHeader( 'message-id', $messageId );
+				$email->addHeader( 'message-id', $messageId );
 			}
 
 			// add attachments
@@ -160,13 +133,13 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 			$attachments = $this->addAttachmentsToMail( $message );
 
 			foreach ( $attachments as $index => $attachment ) {
-				$attach = new SendGrid\Attachment();
-				$attach->setContent($attachment['content']);
-				$attach->setType($attachment['type']);
-				$attach->setFilename($attachment['file_name']);
-				$attach->setDisposition("attachment");
-				$attach->setContentId($attachment['id']);
-				$mail->addAttachment($attach);
+
+                $email->addAttachment(
+                    $attachment['content'],
+                    $attachment['type'],
+                    $attachment['file_name'],
+                    "attachment"
+                );
 			}
 
 			try {
@@ -174,14 +147,14 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 				if ( $this->logger->isDebug() ) {
 					$this->logger->debug( 'Creating SendGrid service with apiKey=' . $this->apiKey );
 				}
-				$sendgrid = new SendGrid( $this->apiKey );
+				$sendgrid = new \SendGrid( $this->apiKey );
 
 				// send the message
 				if ( $this->logger->isDebug() ) {
 					$this->logger->debug( 'Sending mail' );
 				}
 
-				$response = $sendgrid->client->mail()->send()->post($mail);
+				$response = $sendgrid->send($email);
 				if ( $this->logger->isInfo() ) {
 					$this->logger->info( sprintf( 'Message %d accepted for delivery', PostmanState::getInstance()->getSuccessfulDeliveries() + 1 ) );
 				}
@@ -196,7 +169,7 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 					$e = ! $email_sent ? $this->errorCodesMap($response_code) : $response_body->errors[0]->message;
 					$this->transcript = $e;
 					$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-					$this->transcript .= print_r( $mail, true );
+					$this->transcript .= print_r( $email, true );
 
 					$this->logger->debug( 'Transcript=' . $this->transcript );
 
@@ -204,11 +177,11 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 				}
 				$this->transcript = print_r( $response->body(), true );
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-				$this->transcript .= print_r( $mail, true );
+				$this->transcript .= print_r( $email, true );
 			} catch ( SendGrid\Exception $e ) {
 				$this->transcript = $e->getMessage();
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-				$this->transcript .= print_r( $mail, true );
+				$this->transcript .= print_r( $email, true );
 				$this->logger->debug( 'Transcript=' . $this->transcript );
 
 				throw $e;

@@ -38,6 +38,11 @@ class PostmanSettingsRegistry {
                 'transport_type_callback',
             ), 'transport_options', 'transport_section' );
 
+            add_settings_field( 'smtp_mailers', __( 'Mailer Type', 'post-smtp' ), array(
+                $this,
+                'smtp_mailer_callback',
+            ), 'transport_options', 'transport_section'  );
+
 			// the Message From section
 			add_settings_section( PostmanAdminController::MESSAGE_FROM_SECTION, _x( 'From Address', 'The Message Sender Email Address', 'post-smtp' ), array(
 					$this,
@@ -296,6 +301,22 @@ class PostmanSettingsRegistry {
 		}
 		print '</select>';
 	}
+
+    /**
+     * Get the settings option array and print one of its values
+     */
+    public function smtp_mailer_callback() {
+        $smtp_mailers = PostmanOptions::SMTP_MAILERS;
+        $current_smtp_mailer = $this->options->getSmtpMailer();
+        printf( '<select id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]">', PostmanOptions::POSTMAN_OPTIONS, 'smtp_mailers' );
+        foreach ( $smtp_mailers as $key => $smtp_mailer ) {
+            printf( '<option class="input_tx_type_%1$s" value="%1$s" %3$s>%2$s</option>', $key, $smtp_mailer, $current_smtp_mailer == $key ? 'selected="selected"' : '' );
+        }
+        print '</select>';
+        ?>
+        <p class="description" id="mailer-type-description"><?php _e( 'Beta Feature: Change this to <strong>PHPMailer</strong> only if you see <code>wp_mail</code> conflict message, conflicts when another plugin is activated, and <strong><u>sometimes</u></strong> spam issues.', 'post-smtp' ); ?></p>
+        <?php
+    }
 
 	/**
 	 * Get the settings option array and print one of its values

@@ -95,11 +95,10 @@ class Postman {
         // store an instance of the WpMailBinder
         $this->wpMailBinder = PostmanWpMailBinder::getInstance();
 
-        $this->logger->trace( 'SMTP Mailer: ' . PostmanOptions::getInstance()->getSmtpMailer() );
-
         $mailer = PostmanOptions::getInstance()->getSmtpMailer();
-		if ( PostmanOptions::getInstance()->getTransportType() == 'smtp' &&
-            $mailer && $mailer !== 'phpmailer') {
+        $this->logger->trace( 'SMTP Mailer: ' . $mailer );
+
+		if ( $mailer && $mailer !== 'phpmailer') {
 
             // bind to wp_mail - this has to happen before the "init" action
             // this design allows other plugins to register a Postman transport and call bind()
@@ -324,6 +323,7 @@ class Postman {
 				$reflFunc = new ReflectionFunction( 'wp_mail' );
 
 				$message = __( 'Postman: wp_mail has been declared by another plugin or theme, so you won\'t be able to use Postman until the conflict is resolved.', 'post-smtp' );
+
 				$plugin_full_path = $reflFunc->getFileName();
 
 				if ( strpos( $plugin_full_path, 'plugins' ) !== false ) {
@@ -341,6 +341,12 @@ class Postman {
 				}
 
 				$message .= '<br><strong>More info that may help</strong> - ' . $reflFunc->getFileName() . ':' . $reflFunc->getStartLine();
+
+				// PHPmailer Recommandation
+				ob_start();
+                Postman::getMailerTypeRecommend();
+                $message .= ob_get_clean();
+
 				$this->messageHandler->addError( $message );
 			}
 		} else {
@@ -376,6 +382,25 @@ class Postman {
 			}
 		}
 	}
+
+	public static function getMailerTypeRecommend() {
+	    ?>
+        <div>
+            <p style="font-size: 18px; font-weight: bold;">Please notice</p>
+            <p style="font-size: 14px; line-height: 1.7;">
+                <?php _e('Post SMTP v2 includes and new feature called: <b>Mailer Type</b>.', 'post-smtp' ); ?><br>
+                <?php _e('I highly recommend to change and <strong>TEST</strong> Post SMTP with the value <code>PHPMailer</code>.', 'post-smtp' ); ?><br>
+                <?php _e('if it will not work properly you can change back to the default value: <code>PostSMTP</code>.', 'post-smtp' ); ?><br>
+                <a target="_blank" href="<?php echo POST_URL; ?>/style/images/mailer-type.gif">
+                    <figure>
+                        <img width="180" src="<?php echo POST_URL; ?>/style/images/mailer-type.gif" alt="how to set mailer type">
+                        <figcaption><?php _e('click to enlarge image.', 'post-smtp' ); ?></figcaption>
+                    </figure>
+                </a>
+            </p>
+        </div>
+        <?php
+    }
 
 	/**
 	 * Returns the plugin version number and name

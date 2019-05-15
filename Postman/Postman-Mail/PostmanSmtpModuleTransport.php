@@ -327,11 +327,6 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 				'printSmtpSectionInfo',
 		), PostmanAdminController::SMTP_OPTIONS );
 
-        add_settings_field( 'smtp_mailers', __( 'If you have any issues with the default, select PHPMailer', 'post-smtp' ), array(
-            $this,
-            'smtp_mailer_callback',
-        ), PostmanAdminController::SMTP_OPTIONS, PostmanAdminController::SMTP_SECTION  );
-
 		add_settings_field( PostmanOptions::HOSTNAME, __( 'Outgoing Mail Server Hostname', 'post-smtp' ), array(
 				$this,
 				'hostname_callback',
@@ -405,19 +400,6 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	public function printSmtpSectionInfo() {
 		print __( 'Configure the communication with the mail server.', 'post-smtp' );
 	}
-
-    /**
-     * Get the settings option array and print one of its values
-     */
-    public function smtp_mailer_callback() {
-        $smtp_mailers = PostmanOptions::SMTP_MAILERS;
-        $current_smtp_mailer = $this->options->getSmtpMailer();
-        printf( '<select id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]">', PostmanOptions::POSTMAN_OPTIONS, 'smtp_mailers' );
-        foreach ( $smtp_mailers as $key => $smtp_mailer ) {
-            printf( '<option class="input_tx_type_%1$s" value="%1$s" %3$s>%2$s</option>', $key, $smtp_mailer, $current_smtp_mailer == $key ? 'selected="selected"' : '' );
-        }
-        print '</select>';
-    }
 
 	/**
 	 * Get the settings option array and print one of its values
