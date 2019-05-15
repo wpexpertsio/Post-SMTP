@@ -73,6 +73,17 @@ class PostsmtpMailer extends PHPMailer {
 
     }
 
+    public function getAttachments() {
+        $attachments = parent::getAttachments();
+
+        $data = array();
+        foreach ( $attachments as $attachment ) {
+            $data[] = $attachment[0];
+        }
+
+        return $data;
+    }
+
     private function getHeaders() {
         $headers = array();
         foreach ( $this->getCustomHeaders() as $header ) {
