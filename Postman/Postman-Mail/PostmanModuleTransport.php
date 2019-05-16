@@ -503,6 +503,11 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 		$deliveryDetails ['transport_name'] = $this->getTransportDescription ( $this->getSecurityType () );
 		$deliveryDetails ['host'] = $this->getHostname () . ':' . $this->getPort ();
 		$deliveryDetails ['auth_desc'] = $this->getAuthenticationDescription ( $this->getAuthenticationType () );
+
+		if ( $deliveryDetails ['host'] == 'localhost:25' ) {
+            $deliveryDetails ['transport_name'] = __( 'Sendmail (server defualt - not SMTP)', 'post-smtp');
+        }
+
 		/* translators: where (1) is the transport type, (2) is the host, and (3) is the Authentication Type (e.g. Postman will send mail via smtp.gmail.com:465 using OAuth 2.0 authentication.) */
 		return sprintf ( __ ( 'Postman will send mail via %1$s to %2$s using %3$s authentication.', 'post-smtp' ), '<b>' . $deliveryDetails ['transport_name'] . '</b>', '<b>' . $deliveryDetails ['host'] . '</b>', '<b>' . $deliveryDetails ['auth_desc'] . '</b>' );
 	}

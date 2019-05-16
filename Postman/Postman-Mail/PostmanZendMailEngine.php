@@ -171,10 +171,12 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			$this->logger->debug( 'Create the Zend_Mail transport' );
 			$zendTransport = $this->transport->createZendMailTransport( $this->transport->getHostname(), array() );
 
+            $transport = $this->transport instanceof PostmanDefaultModuleTransport ? null : $zendTransport;
+
 			try {
 				// send the message
 				$this->logger->debug( 'Sending mail' );
-				$mail->send( $zendTransport );
+				$mail->send( $transport );
 				if ( $this->logger->isInfo() ) {
 					$this->logger->info( sprintf( 'Message %d accepted for delivery', PostmanState::getInstance()->getSuccessfulDeliveries() + 1 ) );
 				}
