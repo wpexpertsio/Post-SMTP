@@ -25,7 +25,7 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 	
 	/**
 	 *
-	 * @param unknown $data        	
+	 * @param mixed $data        	
 	 */
 	public function prepareOptionsForExport($data) {
 		$data = parent::prepareOptionsForExport ( $data );
@@ -41,7 +41,7 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 		return self::SLUG;
 	}
 	public function getName() {
-		return __ ( 'Mandrill API', Postman::TEXT_DOMAIN );
+		return __ ( 'Mandrill API', 'post-smtp' );
 	}
 	/**
 	 * v0.2.1
@@ -54,7 +54,7 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 	/**
 	 * v0.2.1
 	 *
-	 * @return string
+	 * @return int
 	 */
 	public function getPort() {
 		return self::PORT;
@@ -132,7 +132,7 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 	 */
 	public function getDeliveryDetails() {
 		/* translators: where (1) is the secure icon and (2) is the transport name */
-		return sprintf ( __ ( 'Postman will send mail via the <b>%1$s %2$s</b>.', Postman::TEXT_DOMAIN ), '🔐', $this->getName () );
+		return sprintf ( __ ( 'Postman will send mail via the <b>%1$s %2$s</b>.', 'post-smtp' ), '🔐', $this->getName () );
 	}
 	
 	/**
@@ -144,11 +144,11 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 		$messages = parent::validateTransportConfiguration ();
 		$apiKey = $this->options->getMandrillApiKey ();
 		if (empty ( $apiKey )) {
-			array_push ( $messages, __ ( 'API Key can not be empty', Postman::TEXT_DOMAIN ) . '.' );
+			array_push ( $messages, __ ( 'API Key can not be empty', 'post-smtp' ) . '.' );
 			$this->setNotConfiguredAndReady ();
 		}
 		if (! $this->isSenderConfigured ()) {
-			array_push ( $messages, __ ( 'Message From Address can not be empty', Postman::TEXT_DOMAIN ) . '.' );
+			array_push ( $messages, __ ( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
 			$this->setNotConfiguredAndReady ();
 		}
 		return $messages;
@@ -191,7 +191,7 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 		$overrideItem ['auth_items'] = array (
 				array (
 						'selected' => true,
-						'name' => __ ( 'API Key', Postman::TEXT_DOMAIN ),
+						'name' => __ ( 'API Key', 'post-smtp' ),
 						'value' => 'api_key' 
 				) 
 		);
@@ -220,12 +220,12 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 	 */
 	public function addSettings() {
 		// the Mandrill Auth section
-		add_settings_section ( PostmanMandrillTransport::MANDRILL_AUTH_SECTION, __ ( 'Authentication', Postman::TEXT_DOMAIN ), array (
+		add_settings_section ( PostmanMandrillTransport::MANDRILL_AUTH_SECTION, __ ( 'Authentication', 'post-smtp' ), array (
 				$this,
 				'printMandrillAuthSectionInfo' 
 		), PostmanMandrillTransport::MANDRILL_AUTH_OPTIONS );
 		
-		add_settings_field ( PostmanOptions::MANDRILL_API_KEY, __ ( 'API Key', Postman::TEXT_DOMAIN ), array (
+		add_settings_field ( PostmanOptions::MANDRILL_API_KEY, __ ( 'API Key', 'post-smtp' ), array (
 				$this,
 				'mandrill_api_key_callback' 
 		), PostmanMandrillTransport::MANDRILL_AUTH_OPTIONS, PostmanMandrillTransport::MANDRILL_AUTH_SECTION );
@@ -235,13 +235,13 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 	 */
 	public function printMandrillAuthSectionInfo() {
 		/* Translators: Where (1) is the service URL and (2) is the service name and (3) is a api key URL */
-		printf ( '<p id="wizard_mandrill_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', Postman::TEXT_DOMAIN ), 'https://mandrillapp.com', 'Mandrillapp.com', 'https://mandrillapp.com/settings' ) );
+		printf ( '<p id="wizard_mandrill_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ), 'https://mandrillapp.com', 'Mandrillapp.com', 'https://mandrillapp.com/settings' ) );
 	}
 	
 	/**
 	 */
 	public function mandrill_api_key_callback() {
-		printf ( '<input type="password" autocomplete="off" id="mandrill_api_key" name="postman_options[mandrill_api_key]" value="%s" size="60" class="required" placeholder="%s"/>', null !== $this->options->getMandrillApiKey () ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getMandrillApiKey () ) ) : '', __ ( 'Required', Postman::TEXT_DOMAIN ) );
+		printf ( '<input type="password" autocomplete="off" id="mandrill_api_key" name="postman_options[mandrill_api_key]" value="%s" size="60" class="required" placeholder="%s"/>', null !== $this->options->getMandrillApiKey () ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getMandrillApiKey () ) ) : '', __ ( 'Required', 'post-smtp' ) );
 		print ' <input type="button" id="toggleMandrillApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 	}
 	
@@ -268,7 +268,7 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 	public function printWizardAuthenticationStep() {
 		print '<section class="wizard_mandrill">';
 		$this->printMandrillAuthSectionInfo ();
-		printf ( '<label for="api_key">%s</label>', __ ( 'API Key', Postman::TEXT_DOMAIN ) );
+		printf ( '<label for="api_key">%s</label>', __ ( 'API Key', 'post-smtp' ) );
 		print '<br />';
 		print $this->mandrill_api_key_callback ();
 		print '</section>';

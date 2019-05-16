@@ -365,7 +365,7 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
         }
 
         $mp = new Postman_Zend_Mime_Part($txt);
-        $mp->encoding = $encoding;
+        $mp->encoding = apply_filters( 'post_smtp_content_transfer_encoding', $encoding, Postman_Zend_Mime::TYPE_TEXT);
         $mp->type = Postman_Zend_Mime::TYPE_TEXT;
         $mp->disposition = Postman_Zend_Mime::DISPOSITION_INLINE;
         $mp->charset = $charset;
@@ -406,7 +406,7 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
         }
 
         $mp = new Postman_Zend_Mime_Part($html);
-        $mp->encoding = $encoding;
+        $mp->encoding = apply_filters( 'post_smtp_content_transfer_encoding', $encoding, Postman_Zend_Mime::TYPE_HTML );
         $mp->type = Postman_Zend_Mime::TYPE_HTML;
         $mp->disposition = Postman_Zend_Mime::DISPOSITION_INLINE;
         $mp->charset = $charset;
@@ -1175,10 +1175,9 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
     {
         if ($transport === null) {
             if (! self::$_defaultTransport instanceof Postman_Zend_Mail_Transport_Abstract) {
-                require_once 'Zend/Mail/Transport/Sendmail.php';
-	            
-	            $replyTo = self::getDefaultReplyTo();
-                $transport = new Postman_Zend_Mail_Transport_Sendmail("-f{$replyTo['email']}");
+                require_once 'Mail/Transport/Sendmail.php';
+
+                $transport = new Postman_Zend_Mail_Transport_Sendmail("-f{$this->_from}");
             } else {
                 $transport = self::$_defaultTransport;
             }

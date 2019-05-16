@@ -112,7 +112,7 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 		 *
 		 * @param string $host
 		 *        	OPTIONAL (Default: 127.0.0.1)
-		 * @param array|null $config
+		 * @param array $config
 		 *        	OPTIONAL (Default: null)
 		 * @return void
 		 *
@@ -165,7 +165,7 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 		/**
 		 * Gets the connection protocol instance
 		 *
-		 * @return Postman_Zend_Mail_Protocol|null
+		 * @return Postman_Zend_Mail_Protocol_Abstract|null
 		 */
 		public function getConnection() {
 			return $this->_connection;

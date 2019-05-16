@@ -1,4 +1,5 @@
 <?php
+
 if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 	/**
@@ -29,11 +30,11 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		 * Exceptions are held for later inspection.
 		 * An instance of PostmanState updates the success/fail tally.
 		 *
-		 * @param unknown $to
-		 * @param unknown $subject
-		 * @param unknown $body
-		 * @param unknown $headers
-		 * @param unknown $attachments
+		 * @param mixed $to
+		 * @param mixed $subject
+		 * @param mixed $body
+		 * @param mixed $headers
+		 * @param mixed $attachments
 		 * @return boolean
 		 */
 		public function send( $to, $subject, $message, $headers = '', $attachments = array() ) {
@@ -55,14 +56,41 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			return $this->sendMessage( $postmanMessage, $log );
 		}
 
+        /**
+         * @param PostmanMessage $message
+         * @return PostmanMessage
+         */
+		private function apply_default_headers( $message ) {
+            $headers[] = 'Message-ID: ' . $this->createMessageId();
+            $message->addHeaders($headers);
+        }
+
+        /**
+         * Creates the Message-ID
+         *
+         * @return string
+         */
+        public function createMessageId() {
+
+            $id = md5(uniqid(time()));
+
+            if (isset($_SERVER["SERVER_NAME"])) {
+                $hostName = $_SERVER["SERVER_NAME"];
+            } else {
+                $hostName = php_uname('n');
+            }
+
+            return $id . '@' . $hostName;
+        }
+
 		/**
 		 * Builds a PostmanMessage based on the WordPress wp_mail parameters
 		 *
-		 * @param unknown $to
-		 * @param unknown $subject
-		 * @param unknown $message
-		 * @param unknown $headers
-		 * @param unknown $attachments
+		 * @param mixed $to
+		 * @param mixed $subject
+		 * @param mixed $message
+		 * @param mixed $headers
+		 * @param mixed $attachments
 		 */
 		private function processWpMailCall( $to, $subject, $message, $headers, $attachments ) {
 			$this->logger->trace( 'wp_mail parameters before applying WordPress wp_mail filter:' );
@@ -146,6 +174,8 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		 * @return boolean
 		 */
 		public function sendMessage( PostmanMessage $message, PostmanEmailLog $log ) {
+
+		    $this->apply_default_headers( $message );
 
 			// get the Options and AuthToken
 			$options = PostmanOptions::getInstance();
@@ -254,6 +284,9 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				do_action( 'wp_mail_failed', new WP_Error( 'wp_mail_failed', $e->getMessage(), $mail_error_data ) );
 
 				// return failure
+                if ( PostmanOptions::getInstance()->getSmtpMailer() == 'phpmailer' ) {
+                    throw new phpmailerException($e->getMessage(), $e->getCode());
+                }
 				return false;
 
 			}
@@ -282,7 +315,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		 * Clean up after sending the mail
 		 *
 		 * @param PostmanZendMailEngine $engine
-		 * @param unknown               $startTime
+		 * @param mixed               $startTime
 		 */
 		private function postSend( PostmanMailEngine $engine, $startTime, PostmanOptions $options, PostmanModuleTransport $transport ) {
 			// save the transcript
@@ -338,11 +371,11 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		/**
 		 * Aggregates all the content into a Message to be sent to the MailEngine
 		 *
-		 * @param unknown $to
-		 * @param unknown $subject
-		 * @param unknown $body
-		 * @param unknown $headers
-		 * @param unknown $attachments
+		 * @param mixed $to
+		 * @param mixed $subject
+		 * @param mixed $body
+		 * @param mixed $headers
+		 * @param mixed $attachments
 		 */
 		private function populateMessageFromWpMailParams( PostmanMessage $message, $to, $subject, $body, $headers, $attachments ) {
 			$message->addHeaders( $headers );
@@ -356,11 +389,11 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		/**
 		 * Trace the parameters to aid in debugging
 		 *
-		 * @param unknown $to
-		 * @param unknown $subject
-		 * @param unknown $body
-		 * @param unknown $headers
-		 * @param unknown $attachments
+		 * @param mixed $to
+		 * @param mixed $subject
+		 * @param mixed $body
+		 * @param mixed $headers
+		 * @param mixed $attachments
 		 */
 		private function traceParameters( $to, $subject, $message, $headers, $attachments ) {
 			$this->logger->trace( 'to:' );

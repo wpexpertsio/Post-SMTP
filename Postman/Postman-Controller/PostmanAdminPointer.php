@@ -13,7 +13,7 @@ if (! class_exists ( 'PostmanAdminPointer' )) {
 		
 		/**
 		 *
-		 * @param unknown $rootPluginFilenameAndPath        	
+		 * @param mixed $rootPluginFilenameAndPath        	
 		 */
 		function __construct($rootPluginFilenameAndPath) {
 			$this->logger = new PostmanLogger ( get_class ( $this ) );
@@ -35,7 +35,7 @@ if (! class_exists ( 'PostmanAdminPointer' )) {
 		
 		/**
 		 *
-		 * @param unknown $hook_suffix        	
+		 * @param mixed $hook_suffix        	
 		 */
 		function wptuts_pointer_load($hook_suffix) {
 			// only do this for administrators
