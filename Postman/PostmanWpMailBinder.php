@@ -2,7 +2,7 @@
 if (! class_exists ( 'PostmanWpMailBinder' )) {
 	class PostmanWpMailBinder {
 		private $logger;
-		private $bound;
+		public $bound;
 		private $bindError;
 		
 		/**
@@ -26,7 +26,7 @@ if (! class_exists ( 'PostmanWpMailBinder' )) {
 		/**
 		 * Return the Singleton instance
 		 *
-		 * @return Ambigous <NULL, PostmanWpMailBinder>
+		 * @return PostmanWpMailBinder
 		 */
 		public static function getInstance() {
 			static $inst = null;
@@ -90,8 +90,6 @@ if (! class_exists ( 'PostmanWpMailBinder' )) {
 		 *
 		 * If the function does not exist, then the replacement was successful
 		 * and we set a success flag.
-		 *
-		 * @return boolean
 		 */
 		private function replacePluggableFunctionWpMail() {
 			/**

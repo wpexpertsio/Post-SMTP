@@ -50,8 +50,8 @@ class PostmanPortTest {
 	/**
 	 * Wrap the regDomain/getRegisteredDomain function
 	 *
-	 * @param unknown $domain        	
-	 * @return unknown|Ambigous <NULL, string, unknown, mixed>
+	 * @param mixed $domain
+	 * @return mixed
 	 */
 	private function getRegisteredDomain($hostname) {
 		$registeredDomain = getRegisteredDomain ( $hostname );

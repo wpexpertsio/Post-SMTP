@@ -40,6 +40,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$new_input [ PostmanOptions::ENVELOPE_SENDER ] = $new_input [ PostmanOptions::MESSAGE_SENDER_EMAIL ];
 			$this->sanitizeString( 'Sender Email', PostmanOptions::ENVELOPE_SENDER, $input, $new_input );
 			$this->sanitizeString( 'Transport Type', PostmanOptions::TRANSPORT_TYPE, $input, $new_input );
+            $this->sanitizeString( 'SMTP Mailers', 'smtp_mailers', $input, $new_input );
 			$this->sanitizeString( 'Authorization Type', PostmanOptions::AUTHENTICATION_TYPE, $input, $new_input );
 			$this->sanitizeString( 'From Name', PostmanOptions::MESSAGE_SENDER_NAME, $input, $new_input );
 			$this->sanitizeString( 'Client ID', PostmanOptions::CLIENT_ID, $input, $new_input );
@@ -121,10 +122,10 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 		/**
 		 * Sanitize a Basic Auth password, and base64-encode it
 		 *
-		 * @param unknown $desc
-		 * @param unknown $key
-		 * @param unknown $input
-		 * @param unknown $new_input
+		 * @param mixed $desc
+		 * @param mixed $key
+		 * @param mixed $input
+		 * @param mixed $new_input
 		 */
 		private function sanitizePassword( $desc, $key, $input, &$new_input, $existingPassword ) {
 			// WordPress calling Sanitize twice is a known issue
@@ -157,7 +158,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 				if ( $value <= 0 ) {
 					$new_input [ $key ] = PostmanOptions::getInstance()->getMailLoggingMaxEntries();
 					$h = new PostmanMessageHandler();
-					$h->addError( sprintf( '%s %s', __( 'Maximum Log Entries', Postman::TEXT_DOMAIN ), __( 'must be greater than 0', Postman::TEXT_DOMAIN ) ) );
+					$h->addError( sprintf( '%s %s', __( 'Maximum Log Entries', 'post-smtp' ), __( 'must be greater than 0', 'post-smtp' ) ) );
 				} else {
 					$this->logSanitize( $desc, $input [ $key ] );
 					$new_input [ $key ] = $value;

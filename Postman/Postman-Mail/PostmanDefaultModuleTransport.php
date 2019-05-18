@@ -8,7 +8,7 @@ if (! class_exists ( 'PostmanSmtpModuleTransport' )) {
 		
 		/**
 		 *
-		 * @param unknown $rootPluginFilenameAndPath        	
+		 * @param mixed $rootPluginFilenameAndPath        	
 		 */
 		public function __construct($rootPluginFilenameAndPath) {
 			parent::__construct ( $rootPluginFilenameAndPath );
@@ -102,7 +102,7 @@ if (! class_exists ( 'PostmanSmtpModuleTransport' )) {
 			return self::SLUG;
 		}
 		public function getName() {
-			return __ ( 'Default', Postman::TEXT_DOMAIN );
+			return __ ( 'Default', 'post-smtp' );
 		}
 		public function getHostname() {
 			return 'localhost';

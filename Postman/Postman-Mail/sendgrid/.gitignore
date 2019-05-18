@@ -1,7 +1,7 @@
 test/coverage/*
 examples/*
-dist/
-composer.lock
-vendor
+vendor/**/test/*
+vendor/**/*.md
+vendor/**/*.sh
+vendor/**/*.yml
 .env*
-sendgrid-php.php

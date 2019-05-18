@@ -24,6 +24,9 @@ class PostmanInstaller {
 	 * Handle activation of the plugin
 	 */
 	public function activatePostman() {
+        delete_option( 'postman_release_version' );
+        delete_option( 'postman_dismiss_donation' );
+
 		$options = get_option( PostmanOptions::POSTMAN_OPTIONS );
 		$args = array(
 			'fallback_smtp_enabled' => 'no',
@@ -40,10 +43,6 @@ class PostmanInstaller {
 		}
 
 		if ( function_exists( 'is_multisite' ) && is_multisite() ) {
-
-/*            $role = get_role( Postman::ADMINISTRATOR_ROLE_NAME );
-            $role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
-            $role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );*/
 
             $options['post_smtp_allow_overwrite'] = '1';
             update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, $options );

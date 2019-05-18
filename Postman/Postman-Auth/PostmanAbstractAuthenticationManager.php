@@ -69,7 +69,7 @@ if (! class_exists ( "PostmanAbstractAuthenticationManager" )) {
 		 * Decoded the received token
 		 * This code is identical for Google and Hotmail
 		 *
-		 * @param unknown $response        	
+		 * @param mixed $response        	
 		 * @throws Exception
 		 */
 		protected function processResponse($response) {
@@ -99,7 +99,7 @@ if (! class_exists ( "PostmanAbstractAuthenticationManager" )) {
 		 *
 		 * This code is identical for Google and Hotmail
 		 *
-		 * @param unknown $client        	
+		 * @param mixed $client        	
 		 */
 		protected function decodeReceivedAuthorizationToken($newtoken) {
 			assert ( ! empty ( $newtoken ) );

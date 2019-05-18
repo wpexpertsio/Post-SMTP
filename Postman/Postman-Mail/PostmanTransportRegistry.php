@@ -39,7 +39,7 @@ class PostmanTransportRegistry {
 	 * B) when querying what a theoretical scenario involving this transport is like
 	 * (ie.for ajax in config screen)
 	 *
-	 * @param unknown $slug
+	 * @param mixed $slug
 	 */
 	public function getTransport( $slug ) {
 		$transports = $this->getTransports();
@@ -61,7 +61,7 @@ class PostmanTransportRegistry {
 	/**
 	 * Determine if a specific transport is registered in the directory.
 	 *
-	 * @param unknown $slug
+	 * @param mixed $slug
 	 */
 	public function isRegistered( $slug ) {
 		$transports = $this->getTransports();
@@ -71,7 +71,7 @@ class PostmanTransportRegistry {
 	/**
 	 * Retrieve the transport Postman is currently configured with.
 	 *
-	 * @return PostmanDummyTransport|PostmanModuleTransport
+	 * @return PostmanModuleTransport
 	 * @deprecated
 	 */
 	public function getCurrentTransport() {
@@ -105,7 +105,7 @@ class PostmanTransportRegistry {
 	/**
 	 * Retrieve the transport Postman is currently configured with.
 	 *
-	 * @return PostmanDummyTransport|PostmanModuleTransport
+	 * @return PostmanModuleTransport
 	 */
 	public function getSelectedTransport() {
 		$selectedTransport = PostmanOptions::getInstance()->getTransportType();
@@ -143,8 +143,8 @@ class PostmanTransportRegistry {
 	/**
 	 * Polls all the installed transports to get a complete list of sockets to probe for connectivity
 	 *
-	 * @param unknown $hostname
-	 * @param unknown $isGmail
+	 * @param mixed $hostname
+	 * @param mixed $isGmail
 	 * @return multitype:
 	 */
 	public function getSocketsForSetupWizardToProbe( $hostname = 'localhost', $smtpServerGuess = null ) {
@@ -178,7 +178,7 @@ class PostmanTransportRegistry {
 	 *
 	 * response should include ['success'], ['message'], ['priority']
 	 *
-	 * @param unknown $hostData
+	 * @param mixed $hostData
 	 */
 	public function getRecommendation( PostmanWizardSocket $hostData, $userAuthOverride, $originalSmtpServer ) {
 		$scrubbedUserAuthOverride = $this->scrubUserOverride( $hostData, $userAuthOverride );
@@ -193,7 +193,7 @@ class PostmanTransportRegistry {
 	/**
 	 *
 	 * @param PostmanWizardSocket $hostData
-	 * @param unknown             $userAuthOverride
+	 * @param mixed             $userAuthOverride
 	 * @return NULL
 	 */
 	private function scrubUserOverride( PostmanWizardSocket $hostData, $userAuthOverride ) {
@@ -231,18 +231,18 @@ class PostmanTransportRegistry {
 			if ( PostmanOptions::getInstance()->getRunMode() != PostmanOptions::RUN_MODE_PRODUCTION ) {
 				return array(
 					'error' => true,
-					'message' => __( 'Postman is in <em>non-Production</em> mode and is dumping all emails.', Postman::TEXT_DOMAIN ),
+					'message' => __( 'Postman is in <em>non-Production</em> mode and is dumping all emails.', 'post-smtp' ),
 				);
 			} else {
 				return array(
 					'error' => false,
-					'message' => __( 'Postman is configured.', Postman::TEXT_DOMAIN ),
+					'message' => __( 'Postman is configured.', 'post-smtp' ),
 				);
 			}
 		} else {
 			return array(
 				'error' => true,
-				'message' => __( 'Postman is <em>not</em> configured and is mimicking out-of-the-box WordPress email delivery.', Postman::TEXT_DOMAIN ),
+				'message' => __( 'Postman is <em>not</em> configured and is mimicking out-of-the-box WordPress email delivery.', 'post-smtp' ),
 			);
 		}
 	}

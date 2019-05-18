@@ -138,6 +138,11 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const DEFAULT_PLUGIN_MESSAGE_SENDER_EMAIL_ENFORCED = false;
 		const DEFAULT_TEMP_DIRECTORY = '/tmp';
 
+		const SMTP_MAILERS = [
+		    'phpmailer' => 'PHPMailer',
+            'postsmtp' => 'PostSMTP'
+        ];
+
 		public $is_fallback = false;
 
 		// options data
@@ -174,10 +179,9 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		    if ( is_multisite() ) {
                 $network_options = get_site_option( self::POSTMAN_NETWORK_OPTIONS );
 
+                $blog_id = get_current_blog_id();
                 if ( isset( $network_options['post_smtp_global_settings'] ) ) {
                     $blog_id = apply_filters( 'post_smtp_default_site_option', 1 );
-                } elseif ( $options && isset( $network_options['post_smtp_allow_overwrite'] ) ) {
-                    $blog_id = get_current_blog_id();
                 }
 
                 switch_to_blog($blog_id);
@@ -570,6 +574,15 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				$this->setSenderName( $senderName );
 			}
 		}
+
+		public function getSmtpMailer() {
+		    if ( empty($this->options [ 'smtp_mailers' ]) ) {
+		        return 'postsmtp';
+            }
+
+            return $this->options [ 'smtp_mailers' ];
+        }
+
 		public function isAuthTypePassword() {
 			return $this->isAuthTypeLogin() || $this->isAuthTypeCrammd5() || $this->isAuthTypePlain();
 		}
@@ -604,7 +617,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		 * @see PostmanOptionsInterface::getSenderEmail()
 		 */
 		public function getSenderName() {
-			return $this->getMessageNameEmail();
+			return $this->getMessageSenderName();
 		}
 
 		/**
@@ -625,7 +638,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		/**
 		 *
-		 * @param unknown $data
+		 * @param mixed $data
 		 */
 		public function import( $data ) {
 			if ( PostmanPreRequisitesCheck::checkZlibEncode() ) {
