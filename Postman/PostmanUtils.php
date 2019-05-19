@@ -175,26 +175,19 @@ class PostmanUtils {
 		return filter_var( $var, FILTER_VALIDATE_BOOLEAN );
 	}
 	static function logMemoryUse( $startingMemory, $description ) {
-		PostmanUtils::$logger->trace( sprintf( $description . ' memory used: %s', PostmanUtils::roundBytes( memory_get_usage() - $startingMemory ) ) );
+		PostmanUtils::$logger->trace( sprintf( $description . ' memory used: %s', size_format( memory_get_usage() - $startingMemory, 2 ) ) );
 	}
 
 	/**
-	 * Rounds the bytes returned from memory_get_usage to smaller amounts used IEC binary prefixes
-	 * See http://en.wikipedia.org/wiki/Binary_prefix
+	 * Alias for size_format($size, 2)
 	 *
+	 * @deprecated
 	 * @param mixed $size
 	 * @return string
 	 */
 	static function roundBytes( $size ) {
-		$unit = array(
-				'B',
-				'KiB',
-				'MiB',
-				'GiB',
-				'TiB',
-				'PiB',
-		);
-		return @round( $size / pow( 1024, ($i = floor( log( $size, 1024 ) )) ), 2 ) . ' ' . $unit [ $i ];
+		trigger_error('Method ' . __METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+		return size_format($size, 2);
 	}
 
 	/**
