@@ -862,6 +862,7 @@ class Postman_Zend_Validate_Hostname extends Postman_Zend_Validate_Abstract
 		'living',
 		'lixil',
 		'lk',
+		'llc',
 		'loan',
 		'loans',
 		'locker',
