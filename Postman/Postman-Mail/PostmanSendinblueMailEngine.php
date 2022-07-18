@@ -90,10 +90,10 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
         
         $sender = $message->getFromAddress();
         $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-        $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
+		$senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
         $headers = array();
         
-        $sender->log( $this->logger, 'From' );
+		$sender->log( $this->logger, 'From' );
 
         $sendSmtpEmail['sender'] = array(
             'name'  =>  $senderName, 
@@ -109,13 +109,9 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
             if ( !array_key_exists( $recipient->getEmail(), $duplicates ) ) {
 
                 $tos[] = array(
-                    'email' =>  $recipient->getEmail()
+                    'email' =>  $recipient->getEmail(),
+                    'name'  =>  '$recipient->getName()'
                 );
-                
-                if( !empty( $recipient->getName() ) ) {
-                    $tos['name'] = $recipient->getName();
-                }
-                
                 $duplicates[] = $recipient->getEmail();
 
             }
@@ -142,12 +138,9 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
         // $replyTo is null or a PostmanEmailAddress object
         if ( isset( $replyTo ) ) {
             $sendSmtpEmail['replyTo'] = array(
-                'email' => $replyTo->getEmail()
+                'email' => $replyTo->getEmail(), 
+                'name'  => '$replyTo->getName()'
             );
-            
-            if( !empty( $replyTo->getName() ) ) {
-                 $sendSmtpEmail['name'] = $replyTo->getName();
-            }
         }
 
         // add the Postman signature - append it to whatever the user may have set
@@ -183,20 +176,16 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
 
                 $recipient->log($this->logger, 'Cc');
                 $cc[] = array(
+                    'name'  =>  '$recipient->getName()',
                     'email' =>  $recipient->getEmail()
                 );
-                
-                if( !empty( $recipient->getName() ) ) {
-                    $cc['name'] = $recipient->getName();
-                }
-                
                 $duplicates[] = $recipient->getEmail();
 
             }
 
         }
         if( !empty( $cc ) )
-            $sendSmtpEmail['cc'] = $cc;
+       		$sendSmtpEmail['cc'] = $cc;
 
         $bcc = array();
         $duplicates = array();
@@ -216,7 +205,7 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
         }
         
         if( !empty( $bcc ) )
-            $sendSmtpEmail['bcc'] = $bcc;
+        	$sendSmtpEmail['bcc'] = $bcc;
 
         // add attachments
         $this->logger->debug( 'Adding attachments' );
@@ -248,12 +237,12 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
             }
 
             $response = $apiInstance->sendTransacEmail($sendSmtpEmail);
-            
-            $this->transcript = print_r( $response, true );
-            $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-            $this->transcript .= print_r( $sendSmtpEmail, true );
-            $this->logger->debug( 'Transcript=' . $this->transcript );
-            
+			
+			$this->transcript = print_r( $response, true );
+			$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
+			$this->transcript .= print_r( $sendSmtpEmail, true );
+			$this->logger->debug( 'Transcript=' . $this->transcript );
+			
         } catch (Exception $e) {
 
             $this->transcript = $e->getMessage();

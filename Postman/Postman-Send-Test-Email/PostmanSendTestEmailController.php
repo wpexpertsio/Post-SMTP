@@ -185,7 +185,12 @@ class PostmanSendTestEmailController {
 		printf( '<h5>%s</h5>', esc_html__( 'Session Transcript', 'post-smtp' ) );
 		print '<fieldset>';
 		printf( '<legend>%s</legend>', esc_html__( 'Examine the Session Transcript if you need to.', 'post-smtp' ) );
-		printf( '<p>%s</p>', esc_html__( 'This is the conversation between Postman and the mail server. It can be useful for diagnosing problems. <b>DO NOT</b> post it on-line, it may contain your account password.', 'post-smtp' ) );
+		printf( 
+			'<p>%s <b>%s</b> %s</p>', 
+			esc_html__( 'This is the conversation between Postman and the mail server. It can be useful for diagnosing problems.', 'post-smtp' ) ,
+			esc_html__( 'DO NOT', 'post-smtp' ),
+			esc_html__( 'post it on-line, it may contain your account password.', 'post-smtp' )
+		);
 		print '<section>';
 		printf( '<p><label for="postman_test_message_transcript">%s</label></p>', esc_html__( 'Session Transcript', 'post-smtp' ) );
 		print '<textarea readonly="readonly" id="postman_test_message_transcript" class="ps-textarea" cols="65" rows="8"></textarea>';

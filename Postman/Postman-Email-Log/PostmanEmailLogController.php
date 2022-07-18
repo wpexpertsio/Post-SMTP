@@ -88,6 +88,12 @@ class PostmanEmailLogController {
 		$this->handleCsvExport();
 	}
 
+	/**
+	* Handles CSV Export
+	*
+	* @since 2.1.1 used implode, to prevent email logs from being broken
+	* @version 1.0.1
+	*/
 	function handleCsvExport() {
 	    if ( ! isset( $_GET['postman_export_csv'] ) ) {
 	        return;
@@ -126,7 +132,7 @@ class PostmanEmailLogController {
                 $meta = PostmanLogFields::get_instance()->get($log->ID);
                 $data = [];
                 foreach ( $meta as $header => $line ) {
-                    $data[] = $line[0];
+                    $data[] = is_array( $line[0] ) ? implode( PostmanMessage::EOL, $line[0] ) : $line[0];
                 }
                 $data[] = date( "$date_format $time_format", strtotime( $log->post_date ) );
                 fputcsv($fp, $data);

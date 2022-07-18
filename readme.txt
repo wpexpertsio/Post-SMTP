@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 6.0
-Stable tag: 2.1.1.1
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,8 @@ Post SMTP is *not* another WP Mail SMTP clone like WP Bank or Easy SMTP. It repl
 = The Most Fast And Easy =
 See how fast and easy to setup Post SMTP with Google/Gsuite or any SMTP service.
 
+https://www.youtube.com/watch?v=z-x1DhcAN0o
+
 = Standard Features =
 * Easy-to-use, powerful Setup Wizard for perfect configuration
 * Commercial-grade Connectivity Tester to diagnose server issues
@@ -46,21 +48,18 @@ See how fast and easy to setup Post SMTP with Google/Gsuite or any SMTP service.
 * Gmail: By combining OAuth2 and the Gmail API, Post can deliver where other plugins can not
 
 = API (HTTPS) Email Support =
-* **Gmail API for sending Gmail and Google Apps email** (requires a [Google](https://accounts.google.com/signup) account)
+* Gmail API for sending Gmail and Google Apps email (requires a [Google](https://accounts.google.com/signup) account)
 Often bloggers and small business owners don't want to use third-party SMTP services. Well you can use your Gmail or G Suite account for SMTP emails.
 <a href="https://www.cloudways.com/blog/post-smtp-mailer-fork-of-wordpress-postman-smtp-plugin/" rel="friend">Check the guide I wrote</a>
 
-* **Mandrill API for sending any email** (requires a [Mandrill](http://www.mandrillapp.com) account)
+* Mandrill API for sending any email (requires a [Mandrill](http://www.mandrillapp.com) account)
 Mandrill is an email infrastructure service offered as an add-on for MailChimp that you can use to send personalized, one-to-one e-commerce emails, or automated transactional emails.
 
-* **Mailgun API for sending any email** (requires a [Mailgun](http://www.mailgun.com) account)
+* Mailgun API for sending any email (requires a [Mailgun](http://www.mailgun.com) account)
 Mailgun SMTP is a popular SMTP service provider that allows you to send large quantities of emails. They allow you to send your first 10,000 emails for free every month.
 
-* **SendGrid API for sending any email** (requires a [SendGrid](https://sendgrid.com) account and PHP 5.3)
+* SendGrid API for sending any email (requires a [SendGrid](https://sendgrid.com) account and PHP 5.3)
 SendGrid has a free SMTP plan that you can use to send up to 100 emails per day. With our native SendGrid SMTP integration, you can easily and securely set up SendGrid SMTP on your WordPress site.
-
-* **Sendinblue API for sending any email** (requires a [Sendinblue](https://www.sendinblue.com/) account and PHP 5.3)
-SendinBlue is an effective and great email software for Small to Medium businesses. You can build customer relationships with an all-in-one digital marketing toolbox. Their free plan allows you to send up to 300 emails per day.
 
 > Post SMTP needs [translators](https://translate.wordpress.org/projects/wp-plugins/post-smtp/stable)! If you are a non-English speaker, please get involved!
 
@@ -224,7 +223,7 @@ You've [forgotten to choose an email address in the consent screen](https://word
 
 == SMTP Error Messages ==
 
-= Communication Error [334] â€“ make sure the Envelope From Email is the same account used to create the Client ID. =
+= Communication Error [334] Ã¢â‚¬â€œ make sure the Envelope From Email is the same account used to create the Client ID. =
 
 * This is almost always caused by being logged in to Google/Microsoft/Yahoo with a different user than the one Post is configured to send mail with. Logout and try again with the correct user
 * Login to [Webmail](http://www.gmail.com) and see if there is an "Unusual Activity" warning waiting for your attention
@@ -282,9 +281,11 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
-= 2.1.1.1 - 2022-06-15 =
-**FIX**
-* Sendinblue email header
+= 2.1.2 - 2022-06-10 =
+**NEW**
+* Freemius SDK
+* Code Improvement
+* Extensions Support
 
 = 2.1.1 - 2022-06-09 =
 **FIX**
@@ -309,7 +310,7 @@ Add notice about Google Less Secure App.
 = 2.0.25 - 2022-04-06 =
 * **Bug Fixes**
 * WP 5.9 Compatibility Ballon UI issue.
-* Uncaught Error: Class â€˜PostmanAdminControllerâ€™ not found.
+* Uncaught Error: Class Ã¢â‚¬ËœPostmanAdminControllerÃ¢â‚¬â„¢ not found.
 * Ajax error appearing due to Google API depreciated function.
 
 * **Improvements**
@@ -330,7 +331,7 @@ Add notice about Google Less Secure App.
 
 = 2.0.21 - 2021-02-11
 * Fixed: Security issue - nonce validation.
-* Fixed: Class â€˜PostmanViewControllerâ€™ not found
+* Fixed: Class Ã¢â‚¬ËœPostmanViewControllerÃ¢â‚¬â„¢ not found
 * New: New wp-config.php constant to disable the email logger = `POST_SMTP_CORE_MAIL_LOG`.
 
 = 2.0.20 - 2021-01-19
