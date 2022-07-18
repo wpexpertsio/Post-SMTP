@@ -8,7 +8,15 @@ jQuery(document).ready(
 					'togglePasswordField');
 
 			// tabs
-			jQuery("#config_tabs").tabs();
+			jQuery("#config_tabs").tabs( { 
+
+				activate: function( event ,ui ) {
+
+					jQuery( ui.oldTab ).addClass( 'visited-config-ui-tab' );
+
+				} 
+
+			} );
 
 			// on first viewing, determine whether to show password or
 			// oauth section

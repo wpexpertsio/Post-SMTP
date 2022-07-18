@@ -29,6 +29,14 @@ if (! interface_exists ( 'PostmanTransport' )) {
 		public function getConfigurationRecommendation($hostData);
 		// @deprecated
 		public function getHostsToTest($hostname);
+
+		/**
+		 * Get Socket's logo	
+		 * 
+		 * @since 2.1
+		 * @version 1.0
+		 */
+		public function getLogoURL();
 	}
 }
 interface PostmanModuleTransport extends PostmanTransport {
@@ -115,8 +123,11 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	
 	/**
 	 * Creates a single socket for the Wizard to test
+	 * 
+	 * @since 2.1 added `logo_url`
 	 */
 	protected function createSocketDefinition($hostname, $port) {
+
 		$socket = array ();
 		$socket ['host'] = $hostname;
 		$socket ['port'] = $port;
@@ -124,7 +135,10 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 		$socket ['transport_id'] = $this->getSlug ();
 		$socket ['transport_name'] = $this->getName ();
 		$socket ['smtp'] = false;
+		$socket['logo_url'] = $this->getLogoURL();
+		
 		return $socket;
+
 	}
 	
 	/**
@@ -137,9 +151,12 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	}
 	
 	/**
+	 * Returns the Status of OAuth
+	 * 
+	 * @since 2.1 Removed HTML 
 	 */
 	public function printActionMenuItem() {
-		printf ( '<li><div class="welcome-icon send_test_email">%s</div></li>', $this->getScribe ()->getRequestPermissionLinkText () );
+		echo $this->getScribe ()->getRequestPermissionLinkText ();
 	}
 	
 	/**
@@ -308,6 +325,7 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	/**
 	 */
 	public function createOverrideMenu(PostmanWizardSocket $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride) {
+		
 		$overrideItem = array ();
 		$overrideItem ['secure'] = $socket->secure;
 		$overrideItem ['mitm'] = $socket->mitm;
@@ -316,6 +334,8 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 		$overrideItem ['value'] = $socket->id;
 		$overrideItem ['description'] = $socket->label;
 		$overrideItem ['selected'] = ($winningRecommendation ['id'] == $overrideItem ['value']);
+		$overrideItem['data'] = $socket->data;
+
 		return $overrideItem;
 	}
 	
@@ -449,10 +469,13 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 	}
 	
 	/**
+	 * Returns Link of OAuth
+	 * 
+	 * @since 2.1 Removed `li` tag
 	 */
 	public function printActionMenuItem() {
 		if ($this->readyForOAuthGrant && $this->getAuthenticationType () == PostmanOptions::AUTHENTICATION_TYPE_OAUTH2) {
-			printf ( '<li><a href="%s" class="welcome-icon send-test-email">%s</a></li>', PostmanUtils::getGrantOAuthPermissionUrl (), $this->getScribe ()->getRequestPermissionLinkText () );
+			echo '<a href="'.esc_attr( PostmanUtils::getGrantOAuthPermissionUrl () ).'" class="welcome-icon send-test-email">'.esc_html( $this->getScribe ()->getRequestPermissionLinkText () ).'</a>';
 		} else {
 			parent::printActionMenuItem ();
 		}
@@ -757,6 +780,18 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 			$overrideItem ['auth_items'] = $overrideAuthItems;
 		}
 		return $overrideItem;
+	}
+
+	/**
+	 * Get Socket's logo
+	 * 
+	 * @since 2.1
+	 * @version 1.0
+	 */
+	public function getLogoURL() {
+
+		return false;
+
 	}
 }
 

@@ -123,6 +123,8 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 		$recommendation ['transport'] = self::SLUG;
 		$recommendation ['hostname'] = null; // scribe looks this
 		$recommendation ['label'] = $this->getName ();
+		$recommendation['logo_url'] = $this->getLogoURL();
+		
 		if ($hostData->hostname == self::HOST && $hostData->port == self::PORT) {
 			$recommendation ['priority'] = self::PRIORITY;
 			/* translators: where variables are (1) transport name (2) host and (3) port */
@@ -196,7 +198,7 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 	/**
 	 */
 	public function sendgrid_api_key_callback() {
-		printf ( '<input type="password" autocomplete="off" id="sendgrid_api_key" name="postman_options[sendgrid_api_key]" value="%s" size="60" class="required" placeholder="%s"/>', null !== $this->options->getSendGridApiKey () ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getSendGridApiKey () ) ) : '', __ ( 'Required', 'post-smtp' ) );
+		printf ( '<input type="password" autocomplete="off" id="sendgrid_api_key" name="postman_options[sendgrid_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getSendGridApiKey () ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getSendGridApiKey () ) ) : '', __ ( 'Required', 'post-smtp' ) );
 		print ' <input type="button" id="toggleSendGridApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 	}
 	
@@ -227,5 +229,17 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 		print '<br />';
 		print $this->sendgrid_api_key_callback ();
 		print '</section>';
+	}
+
+	/**
+	 * Get Socket's logo
+	 * 
+	 * @since 2.1
+	 * @version 1.0
+	 */
+	public function getLogoURL() {
+
+		return POST_SMTP_ASSETS . "images/logos/sendgrid.png";
+
 	}
 }

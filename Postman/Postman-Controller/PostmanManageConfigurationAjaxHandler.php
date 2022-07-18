@@ -24,6 +24,13 @@ class PostmanWizardSocket {
 	public $try_smtps;
 	public $success;
 	public $transport;
+
+	/**
+	 * Extra Fields
+	 * 
+	 * @since 2.1
+	 */
+	public $data = false;
 	
 	// these variables are populated by The Transport Recommenders
 	public $label;
@@ -52,6 +59,8 @@ class PostmanWizardSocket {
 		$this->try_smtps = PostmanUtils::parseBoolean ( $queryHostData ['try_smtps'] );
 		$this->success = PostmanUtils::parseBoolean ( $queryHostData ['success'] );
 		$this->transport = $queryHostData ['transport'];
+		$this->data = $queryHostData['data'];
+		
 		assert ( ! empty ( $this->transport ) );
 		$this->id = sprintf ( '%s_%s', $this->hostname, $this->port );
 	}

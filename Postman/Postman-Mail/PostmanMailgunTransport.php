@@ -133,6 +133,8 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 		$recommendation ['transport'] = self::SLUG;
 		$recommendation ['hostname'] = null; // scribe looks this
 		$recommendation ['label'] = $this->getName();
+		$recommendation['logo_url'] = $this->getLogoURL();
+		
 		if ( $hostData->hostname == $this->getHostname() && $hostData->port == self::PORT ) {
 			$recommendation ['priority'] = self::PRIORITY;
 			/* translators: where variables are (1) transport name (2) host and (3) port */
@@ -216,12 +218,12 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	/**
 	 */
 	public function mailgun_api_key_callback() {
-		printf( '<input type="password" autocomplete="off" id="mailgun_api_key" name="postman_options[mailgun_api_key]" value="%s" size="60" class="required" placeholder="%s"/>', null !== $this->options->getMailgunApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getMailgunApiKey() ) ) : '', __( 'Required', 'post-smtp' ) );
+		printf( '<input type="password" autocomplete="off" id="mailgun_api_key" name="postman_options[mailgun_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailgunApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getMailgunApiKey() ) ) : '', __( 'Required', 'post-smtp' ) );
 		print '<input type="button" id="toggleMailgunApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 	}
 
 	function mailgun_domain_name_callback() {
-		printf( '<input type="text" autocomplete="off" id="mailgun_domain_name" name="postman_options[mailgun_domain_name]" value="%s" size="60" class="required" placeholder="%s"/>', null !== $this->options->getMailgunDomainName() ? esc_attr( $this->options->getMailgunDomainName() ) : '', __( 'Required', 'post-smtp' ) );
+		printf( '<input type="text" autocomplete="off" id="mailgun_domain_name" name="postman_options[mailgun_domain_name]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailgunDomainName() ? esc_attr( $this->options->getMailgunDomainName() ) : '', __( 'Required', 'post-smtp' ) );
 	}
 
 	function mailgun_region_callback() {
@@ -263,5 +265,17 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 		print '<br />';
 		print $this->mailgun_region_callback();
 		print '</section>';
+	}
+
+	/**
+	 * Get Socket's logo
+	 * 
+	 * @since 2.1
+	 * @version 1.0
+	 */
+	public function getLogoURL() {
+
+		return POST_SMTP_ASSETS . "images/logos/mailgun.png";
+
 	}
 }

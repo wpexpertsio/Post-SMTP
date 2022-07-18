@@ -21,12 +21,20 @@ jQuery(document).ready(
 									previous : post_smtp_localize.steps_previous,
 									loading : post_smtp_localize.steps_loading
 								},
-								onStepChanging : function(event, currentIndex,
-										newIndex) {
-									return handleStepChange(event,
-											currentIndex, newIndex,
-											jQuery(this));
+								onStepChanging : function( event, currentIndex, newIndex ) {
+									
+									var response;
+									
+									response = handleStepChange(event, currentIndex, newIndex, jQuery(this) );
 
+									if( response ) {
+										
+										if( !jQuery( `#postman_test_email_wizard-t-${currentIndex} span` ).hasClass( 'dashicons' ) )
+											jQuery( `#postman_test_email_wizard-t-${currentIndex}` ).append( '<span class="ps-right dashicons dashicons-yes-alt"></span>' );
+									
+									}
+							
+									return response;
 								},
 								onInit : function() {
 									jQuery(postman_email_test.recipient)

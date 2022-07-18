@@ -116,12 +116,26 @@ function initializeJQuerySteps() {
 					loading : post_smtp_localize.steps_loading
 				},
 				onStepChanging : function(event, currentIndex, newIndex) {
-					return handleStepChange(event, currentIndex, newIndex,
-							jQuery(this));
+
+					var response = handleStepChange( event, currentIndex, newIndex, jQuery( this ) );
+
+					if( response ) {
+										
+						if( !jQuery( `#postman_wizard-t-${currentIndex} span` ).hasClass( 'dashicons' ) )
+							jQuery( `#postman_wizard-t-${currentIndex}` ).append( '<span class="ps-right dashicons dashicons-yes-alt"></span>' );
+					
+					}
+
+					return response;
 
 				},
 				onInit : function() {
+					
+					if( !jQuery( `#postman_wizard-t-0 span` ).hasClass( 'dashicons' ) )
+						jQuery( '#postman_wizard-t-0' ).append( '<span class="ps-right dashicons dashicons-yes-alt"></span>' );
+
 					jQuery(post_smtp_localize.postman_input_sender_email).focus();
+
 				},
 				onStepChanged : function(event, currentIndex, priorIndex) {
 					return postHandleStepChange(event, currentIndex,
@@ -307,6 +321,7 @@ function handleHostsToCheckResponse(response) {
 		var hostname = response.hosts[x].host;
 		var port = response.hosts[x].port;
 		var transport = response.hosts[x].transport_id;
+		var logoURL = response.hosts[x].logo_url;
 		portsToCheck++;
 		show('#connectivity_test_status');
 		updateStatus(postman_port_test.in_progress + " " + portsToCheck);
@@ -315,6 +330,7 @@ function handleHostsToCheckResponse(response) {
 			'hostname' : hostname,
 			'port' : port,
 			'transport' : transport,
+			'logo_url': logoURL,
 			'security' : jQuery('#security').val(),
 		};
 		postThePortTest(hostname, port, data);
@@ -449,6 +465,10 @@ function postTheConfigurationRequest(data) {
 	});
 }
 function handleConfigurationResponse(response) {
+
+	var html = '';
+	var authHtml = '';
+
 	jQuery('#input_transport_type').val(response.configuration.transport_type);
 	transports.forEach(function(item) {
 		item.handleConfigurationResponse(response);
@@ -459,12 +479,33 @@ function handleConfigurationResponse(response) {
 	show('.user_override');
 	var el1 = jQuery('#user_socket_override');
 	el1.html('');
+
+	var  columns = 1;
+
 	for (i = 0; i < response.override_menu.length; i++) {
-		buildRadioButtonGroup(el1, 'user_socket_override',
+
+		response.override_menu[i].data = response.override_menu[i].data !== null ? response.override_menu[i].data : false;
+	
+		if( columns == 1 ) {
+			html += "<div class='ps-socket-wizad-row'>";
+		}
+
+		html += buildRadioButtonGroup(
+				'user_socket_override',
 				response.override_menu[i].selected,
 				response.override_menu[i].value,
 				response.override_menu[i].description,
-				response.override_menu[i].secure);
+				response.override_menu[i].secure,
+				response.override_menu[i].data
+			);
+
+		if( columns == 3 ) {
+			html += '</div>';
+			columns = 0;
+		}
+
+		columns++;
+
 		// populate user Auth Override menu
 		if (response.override_menu[i].selected) {
 			if (response.override_menu[i].mitm) {
@@ -482,23 +523,28 @@ function handleConfigurationResponse(response) {
 			el2.html('');
 			hide('#smtp_not_secure');
 			for (j = 0; j < response.override_menu[i].auth_items.length; j++) {
-				buildRadioButtonGroup(el2, 'user_auth_override',
+
+				authHtml += buildRadioButtonGroup(
+						'user_auth_override',
 						response.override_menu[i].auth_items[j].selected,
 						response.override_menu[i].auth_items[j].value,
-						response.override_menu[i].auth_items[j].name, false);
+						response.override_menu[i].auth_items[j].name,
+						false
+					);
+
 				if (response.override_menu[i].auth_items[j].selected
 						&& !response.override_menu[i].secure
 						&& response.override_menu[i].auth_items[j].value != 'none') {
 					show('#smtp_not_secure');
 				}
 			}
-			// add an event on the user port override field
-			jQuery('input.user_auth_override').change(function() {
-				userOverrideMenu();
-			});
 		}
 
+
 	}
+
+	el1.append( html );
+	el2.append( authHtml );
 
 	jQuery('select#input_notification_service').change(function() {
 		var selected = jQuery( this ).val();
@@ -521,27 +567,77 @@ function handleConfigurationResponse(response) {
 		Hook.call( 'post_smtp_notification_change', selected );
 	});
 
-	// add an event on the user port override field
-	jQuery('input.user_socket_override').change(function() {
+	// Add an event on Socket Selection/ Switching
+	jQuery( 'input.user_socket_override' ).change( function() {
 		userOverrideMenu();
-	});
+	} );
+
+	// Add an event on Socket's Auth Type Selection/ Switching
+	jQuery( 'input.user_auth_override' ).change( function() {
+		userOverrideMenu();
+	} );
 }
 
-function buildRadioButtonGroup(tableElement, radioGroupName, isSelected, value,
-		label, isSecure) {
+/**
+ * 
+ * @param {*} radioGroupName 
+ * @param {*} isSelected 
+ * @param {*} value 
+ * @param {*} label 
+ * @param {*} isSecure 
+ * @param {*} data 
+ * @returns 
+ * 
+ * @since 2.1 Returns html instead of appending
+ */
+function buildRadioButtonGroup( radioGroupName, isSelected, value, label, isSecure, data = '' ) {
+	
 	var radioInputValue = ' value="' + value + '"';
 	var radioInputChecked = '';
+	var secureIcon = '';
+	var logoTag = '';
+	var html = '';
+	var recommendedBlock = '';
+	var relativeClass = '';
+
 	if (isSelected) {
 		radioInputChecked = ' checked = "checked"';
 	}
-	var secureIcon = '';
+	
 	if (isSecure) {
-		secureIcon = '&#x1f512; ';
+		secureIcon = '&#x1f512;';
 	}
-	tableElement.append('<tr><td><input class="' + radioGroupName
-			+ '" type="radio" name="' + radioGroupName + '"'
-			+ radioInputChecked + radioInputValue + '/></td><td>' + secureIcon
-			+ label + '</td></tr>');
+
+	if( data.logo_url && data.logo_url !== undefined ) {
+
+		if( label == 'Sendinblue' ) {
+
+			relativeClass = 'ps-sib';
+			recommendedBlock = `
+			<img src="${postman.assets}images/icons/recommended.png" class="ps-sib-recommended" />
+			`;
+
+		}
+
+		logoTag = `
+		<div class='ps-single-socket-outer ${relativeClass}'>
+			${recommendedBlock}
+			<img src='${data.logo_url}' class='ps-wizard-socket-logo' width='165px' />
+		</div>
+		`;
+
+	}
+	
+	html = `
+	<label>
+		${logoTag}
+		<input class="${radioGroupName}" type="radio" name="${radioGroupName}"${radioInputChecked} ${radioInputValue} />
+		${secureIcon + label}
+	</label>
+	`;
+
+	return html;
+
 }
 
 /**

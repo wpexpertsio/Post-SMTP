@@ -204,6 +204,8 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		$recommendation ['hostname'] = null; // scribe looks this
 		$recommendation ['label'] = $this->getName ();
 		$recommendation ['display_auth'] = 'oauth2';
+		$recommendation['logo_url'] = $this->getLogoURL();
+		
 		if ($hostData->hostname == self::HOST && $hostData->port == self::PORT) {
 			/* translators: where variables are (1) transport name (2) host and (3) port */
 			$recommendation ['message'] = sprintf ( __ ( ('Postman recommends the %1$s to host %2$s on port %3$d.') ), $this->getName (), self::HOST, self::PORT );
@@ -257,5 +259,17 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	 */
 	public function enqueueScript() {
 		wp_enqueue_script ( 'postman_gmail_script' );
+	}
+
+	/**
+	 * Get Socket's logo
+	 * 
+	 * @since 2.1
+	 * @version 1.0
+	 */
+	public function getLogoURL() {
+
+		return POST_SMTP_ASSETS . "images/logos/gmail.png";
+
 	}
 }

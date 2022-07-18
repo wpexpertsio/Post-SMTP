@@ -16,6 +16,13 @@ if (! interface_exists ( 'PostmanPluginOptions' )) {
 		public function getEncryptionType();
 		public function getUsername();
 		public function getPassword();
+		/**
+		 * Get plugin's logo
+		 * 
+		 * @since 2.1
+		 * @version 1.0
+		 */
+		public function getPluginLogo();
 	}
 }
 if (! class_exists ( 'PostmanImportableConfiguration' )) {
@@ -182,6 +189,16 @@ if (! class_exists ( 'PostmanConfigureSmtpOptions' )) {
 				}
 			}
 		}
+		
+		/**
+		 * Get plugin's logo
+		 * 
+		 * @since 2.1
+		 * @version 1.0
+		 */
+		public function getPluginLogo() {
+			return POST_SMTP_ASSETS . "images/logos/configure-smtp.png";
+		}
 	}
 }
 
@@ -250,6 +267,16 @@ if (! class_exists ( 'PostmanCimySwiftSmtpOptions' )) {
 				}
 			}
 		}
+
+		/**
+		 * Get plugin's logo
+		 * 
+		 * @since 2.1
+		 * @version 1.0
+		 */
+		public function getPluginLogo() {
+			return POST_SMTP_ASSETS . "images/logos/php.png";
+		}
 	}
 }
 
@@ -307,7 +334,7 @@ if (! class_exists ( 'PostmanEasyWpSmtpOptions' )) {
 			if (isset ( $this->options [self::SMTP_SETTINGS] [self::PASSWORD] )) {
 				// wpecommerce screwed the pooch
 				$password = $this->options [self::SMTP_SETTINGS] [self::PASSWORD];
-				if (strlen ( $password ) % 4 != 0 || preg_match ( '/[^A-Za-z0-9]/', $password )) {
+				if ( strlen ( $password ) ) {
 					$decodedPw = base64_decode ( $password, true );
 					$reencodedPw = base64_encode ( $decodedPw );
 					if ($reencodedPw === $password) {
@@ -341,6 +368,16 @@ if (! class_exists ( 'PostmanEasyWpSmtpOptions' )) {
 						return PostmanOptions::SECURITY_TYPE_NONE;
 				}
 			}
+		}
+
+		/**
+		 * Get plugin's logo
+		 * 
+		 * @since 2.1
+		 * @version 1.0
+		 */
+		public function getPluginLogo() {
+			return POST_SMTP_ASSETS . "images/logos/easy-wp-smtp.png";
 		}
 	}
 }
@@ -421,6 +458,16 @@ if (! class_exists ( 'PostmanWpMailBankOptions' )) {
 					}
 				}
 			}
+		}
+
+		/**
+		 * Get plugin's logo
+		 * 
+		 * @since 2.1
+		 * @version 1.0
+		 */
+		public function getPluginLogo() {
+			return POST_SMTP_ASSETS . "images/logos/wp-mail-bank.png";
 		}
 	}
 }
@@ -504,6 +551,16 @@ if (! class_exists ( 'PostmanWpMailSmtpOptions' )) {
 				}
 			}
 		}
+
+		/**
+		 * Get plugin's logo
+		 * 
+		 * @since 2.1
+		 * @version 1.0
+		 */
+		public function getPluginLogo() {
+			return POST_SMTP_ASSETS . "images/logos/wp-mail-smtp.png";
+		}
 	}
 }
 
@@ -575,6 +632,16 @@ if (! class_exists ( 'PostmanWpSmtpOptions' )) {
 						return PostmanOptions::SECURITY_TYPE_NONE;
 				}
 			}
+		}
+
+		/**
+		 * Get plugin's logo
+		 * 
+		 * @since 2.1
+		 * @version 1.0
+		 */
+		public function getPluginLogo() {
+			return POST_SMTP_ASSETS . "images/logos/wp-smtp.png";
 		}
 	}
 }

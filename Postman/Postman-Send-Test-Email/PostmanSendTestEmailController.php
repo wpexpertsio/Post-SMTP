@@ -65,7 +65,11 @@ class PostmanSendTestEmailController {
 	 * Get the settings option array and print one of its values
 	 */
 	public function test_email_callback() {
-		printf( '<input type="text" id="%s" name="postman_test_options[test_email]" value="%s" class="required email" size="40"/>', self::RECIPIENT_EMAIL_FIELD_NAME, wp_get_current_user()->user_email );
+		printf( 
+			'<input type="text" id="%s" name="postman_test_options[test_email]" value="%s" class="ps-input required email" size="40"/>', 
+			esc_attr( self::RECIPIENT_EMAIL_FIELD_NAME ), 
+			esc_attr( wp_get_current_user()->user_email ) 
+		);
 	}
 
 	/**
@@ -94,7 +98,11 @@ class PostmanSendTestEmailController {
 	 * Register the Email Test screen
 	 */
 	public function addEmailTestSubmenu() {
-		$page = add_submenu_page( null, sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ), __( 'Postman SMTP', 'post-smtp' ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanSendTestEmailController::EMAIL_TEST_SLUG, array(
+		$page = add_submenu_page( 
+			null, 
+			sprintf( '%s', esc_html__( 'Postman SMTP Setup', 'post-smtp' ) ), 
+				esc_html__( 'Postman SMTP', 'post-smtp' ), 
+				Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanSendTestEmailController::EMAIL_TEST_SLUG, array(
 				$this,
 				'outputTestEmailContent',
 		) );
@@ -128,45 +136,59 @@ class PostmanSendTestEmailController {
 	public function outputTestEmailContent() {
 		print '<div class="wrap">';
 
-		PostmanViewController::outputChildPageHeader( __( 'Send a Test Email', 'post-smtp' ) );
+		PostmanViewController::outputChildPageHeader( __( 'Send Test Email', 'post-smtp' ) );
 
-		printf( '<form id="postman_test_email_wizard" method="post" action="%s">', PostmanUtils::getSettingsPageUrl() );
+		printf( 
+			'<form id="postman_test_email_wizard" method="post" action="%s">', 
+			esc_url( PostmanUtils::getSettingsPageUrl() ) 
+		);
 
 		wp_nonce_field('post-smtp', 'security' );
 
 		// Step 1
-		printf( '<h5>%s</h5>', __( 'Specify the Recipient', 'post-smtp' ) );
+		printf( '<h5>%s</h5>', esc_html__( 'Specify the Recipient', 'post-smtp' ) );
 		print '<fieldset>';
-		printf( '<legend>%s</legend>', __( 'Who is this message going to?', 'post-smtp' ) );
-		printf( '<p>%s', __( 'This utility allows you to send an email message for testing.', 'post-smtp' ) );
-		print ' ';
+		printf( '<legend>%s</legend>', esc_html__( 'Who is this message going to?', 'post-smtp' ) );
+		printf( '<p>%s', esc_html__( 'This utility allows you to send an email message for testing.', 'post-smtp' ) );
+
 		/* translators: where %d is an amount of time, in seconds */
-		printf( '%s</p>', sprintf( _n( 'If there is a problem, Postman will give up after %d second.', 'If there is a problem, Postman will give up after %d seconds.', $this->options->getReadTimeout(), 'post-smtp' ), $this->options->getReadTimeout() ) );
-		printf( '<label for="postman_test_options[test_email]">%s</label>', _x( 'Recipient Email Address', 'Configuration Input Field', 'post-smtp' ) );
-		print $this->test_email_callback();
+		printf( 
+			'%s</p>',
+			sprintf( 
+				wp_kses_post(
+					_n( 'If there is a problem, Postman will give up after %d second.', 
+						'If there is a problem, Postman will give up after %d seconds.', 
+						$this->options->getReadTimeout(), 'post-smtp' 
+					)
+				), 
+				esc_html( $this->options->getReadTimeout() ) 
+			) 
+		);
+		printf( '<label for="postman_test_options[test_email]">%s</label>', esc_attr_x( 'Recipient Email Address', 'Configuration Input Field', 'post-smtp' ) );
+		print wp_kses_post( $this->test_email_callback() );
 		print '</fieldset>';
 
 		// Step 2
-		printf( '<h5>%s</h5>', __( 'Send The Message', 'post-smtp' ) );
+		printf( '<h5>%s</h5>', esc_html__( 'Send The Message', 'post-smtp' ) );
 		print '<fieldset>';
 		print '<legend>';
-		print __( 'Sending the message:', 'post-smtp' );
-		printf( ' <span id="postman_test_message_status">%s</span>', _x( 'In Outbox', 'Email Test Status', 'post-smtp' ) );
+		print esc_html__( 'Sending the message:', 'post-smtp' );
+		printf( ' <span id="postman_test_message_status">%s</span>', esc_attr_x( 'In Outbox', 'Email Test Status', 'post-smtp' ) );
 		print '</legend>';
 		print '<section>';
-		printf( '<p><label>%s</label></p>', __( 'Status', 'post-smtp' ) );
-		print '<textarea id="postman_test_message_error_message" readonly="readonly" cols="65" rows="4"></textarea>';
+		printf( '<p><label>%s</label></p>', esc_html__( 'Status', 'post-smtp' ) );
+		print '<textarea id="postman_test_message_error_message" class="ps-textarea" readonly="readonly" cols="65" rows="4"></textarea>';
 		print '</section>';
 		print '</fieldset>';
 
 		// Step 3
-		printf( '<h5>%s</h5>', __( 'Session Transcript', 'post-smtp' ) );
+		printf( '<h5>%s</h5>', esc_html__( 'Session Transcript', 'post-smtp' ) );
 		print '<fieldset>';
-		printf( '<legend>%s</legend>', __( 'Examine the Session Transcript if you need to.', 'post-smtp' ) );
-		printf( '<p>%s</p>', __( 'This is the conversation between Postman and the mail server. It can be useful for diagnosing problems. <b>DO NOT</b> post it on-line, it may contain your account password.', 'post-smtp' ) );
+		printf( '<legend>%s</legend>', esc_html__( 'Examine the Session Transcript if you need to.', 'post-smtp' ) );
+		printf( '<p>%s</p>', esc_html__( 'This is the conversation between Postman and the mail server. It can be useful for diagnosing problems. <b>DO NOT</b> post it on-line, it may contain your account password.', 'post-smtp' ) );
 		print '<section>';
-		printf( '<p><label for="postman_test_message_transcript">%s</label></p>', __( 'Session Transcript', 'post-smtp' ) );
-		print '<textarea readonly="readonly" id="postman_test_message_transcript" cols="65" rows="8"></textarea>';
+		printf( '<p><label for="postman_test_message_transcript">%s</label></p>', esc_html__( 'Session Transcript', 'post-smtp' ) );
+		print '<textarea readonly="readonly" id="postman_test_message_transcript" class="ps-textarea" cols="65" rows="8"></textarea>';
 		print '</section>';
 		print '</fieldset>';
 

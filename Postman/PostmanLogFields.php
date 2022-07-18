@@ -17,6 +17,15 @@ class PostmanLogFields {
         'session_transcript' => '', // escaped when viewed
     );
 
+    /**
+     * Exclude from Getting and Setting in JSON fromat
+     * 
+     * @since 2.1
+     */
+    private $exclude_json = array(
+        'original_headers'
+    );
+
     private static $instance = null;
 
     public static function get_instance() {
@@ -35,8 +44,14 @@ class PostmanLogFields {
     public function get( $post_id ) {
         $data = [];
         foreach ( $this->fields as $key => $sanitize_callback ) {
+
             $meta = get_post_meta( $post_id, $key, true );
-            $data[$key][] = $this->maybe_json( $meta );
+
+            if( in_array( $key, $this->exclude_json ) )
+                $data[$key][] = $meta;
+            else
+                $data[$key][] = $this->maybe_json( $meta );
+
         }
 
         return $data;
@@ -46,31 +61,34 @@ class PostmanLogFields {
         return $this->fields;
     }
 
+    /**
+     * Update log entry
+     * 
+     * @since 2.1 removed `$this->encode()` was breaking data
+     */
     public function update( $post_id, $key, $value ) {
-        $sanitized = $this->sanitize( $key, $value );
-        $encode = $this->encode( $sanitized );
 
-        update_post_meta( $post_id, $key, $encode );
+        if( in_array( $key, $this->exclude_json ) ) 
+            $sanitized = $value;
+        else
+            $sanitized = $this->sanitize( $key, $value );
+
+        update_post_meta( $post_id, $key, $sanitized );
+
     }
 
+    /**
+     * If json return decoded json
+     * 
+     * @since 2.1 removed json_decode and maybe_serialize
+     */
     private function maybe_json( $json ) {
 
         if ( is_array( $json ) ) {
             return implode( ',', $json );
         }
 
-        if ( $this->isJson( $json ) ) {
-            return implode( ',', json_decode( $json, true ) );
-        }
-
-        // Fallback
-        return maybe_unserialize( $json );
-    }
-
-    private function isJson($string) {
-        $result = json_decode($string, true);
-        $error = json_last_error();
-        return ( $error == JSON_ERROR_NONE && ! is_null($result) && $result != $string );
+        return $json;
     }
 
     private function sanitize( $key, $value ) {
@@ -101,14 +119,6 @@ class PostmanLogFields {
 
 		return wp_kses( $value, $allowed_html );
 	}
-
-    private function encode( $value ) {
-        if ( is_array( $value ) ) {
-            return wp_json_encode( $value );
-        }
-
-        return $value;
-    }
 
     public function get_string_between($string, $start, $end){
         $string = ' ' . $string;
@@ -148,4 +158,3 @@ class PostmanLogFields {
         return filter_var( $email, FILTER_SANITIZE_EMAIL );
     }
 }
-

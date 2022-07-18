@@ -385,12 +385,18 @@ class PostmanEmailLogController {
 		}
 	}
 
+	/**
+	 * Enqueus Styles/ Scripts
+	 * 
+	 * @since 2.1 Changed stylesheet
+	 * @version 1.0
+	 */
 	function postman_email_log_enqueue_resources() {
-		$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
-		wp_register_style( 'postman_email_log', plugins_url( 'style/postman-email-log.css', $this->rootPluginFilenameAndPath ), null, $pluginData ['version'] );
-		wp_enqueue_style( 'postman_email_log' );
+
+		wp_enqueue_style( PostmanViewController::POSTMAN_STYLE );
 		wp_enqueue_script( 'postman_resend_email_script' );
 		wp_enqueue_script( 'sprintf' );
+
 	}
 
 	/**
@@ -423,8 +429,7 @@ class PostmanEmailLogController {
 
     <?php //include_once POST_SMTP_PATH . '/Postman/extra/donation.php'; ?>
 
-	<div
-		style="background: #ECECEC; border: 1px solid #CCC; padding: 0 10px; margin-top: 5px; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;">
+	<div class="ps-config-bar">
 		<p><?php
 
 		echo __( 'This is a record of deliveries made to the mail server. It does not neccessarily indicate sucessful delivery to the recipient.', 'post-smtp' )?></p>
@@ -469,15 +474,15 @@ class PostmanEmailLogController {
 			</div>
 
             <div class="form-control" style="padding: 0 5px 0 5px;">
-                <button type="submit" name="filter" class="button button-primary"><?php _e( 'Filter/Search', 'post-smtp' ); ?></button>
+                <button type="submit" name="filter" class="ps-btn-orange"><?php _e( 'Filter/Search', 'post-smtp' ); ?></button>
             </div>
 
             <div class="form-control" style="padding: 0 5px 0 0px;">
-                <button type="submit" id="postman_export_csv" name="postman_export_csv" class="button button-primary"><?php _e( 'Export To CSV', 'post-smtp' ); ?></button>
+                <button type="submit" id="postman_export_csv" name="postman_export_csv" class="ps-btn-orange"><?php _e( 'Export To CSV', 'post-smtp' ); ?></button>
             </div>
 
 			<div class="form-control">
-				<button type="submit" id="postman_trash_all" name="postman_trash_all" class="button button-primary"><?php _e( 'Trash All', 'post-smtp' ); ?></button>
+				<button type="submit" id="postman_trash_all" name="postman_trash_all" class="ps-btn-red"><?php _e( 'Trash All', 'post-smtp' ); ?></button>
 			</div>
 
         </div>
