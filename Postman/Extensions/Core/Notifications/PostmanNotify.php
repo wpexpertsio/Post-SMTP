@@ -15,9 +15,11 @@ class PostmanNotify {
     const NOTIFICATIONS_PUSHOVER_CRED = 'postman_pushover_cred';
     const NOTIFICATIONS_SLACK_CRED = 'postman_slack_cred';
 
+    private $options;
+
     public function __construct() {
 
-        $this->options = new PostmanNotifyOptions();
+        $this->options = PostmanNotifyOptions::getInstance();
 
         add_filter( 'post_smtp_admin_tabs', array( $this, 'tabs' ) );
         add_action( 'post_smtp_settings_menu', array( $this, 'menu' ) );

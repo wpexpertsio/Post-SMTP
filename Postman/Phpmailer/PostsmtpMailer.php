@@ -39,7 +39,7 @@ class PostsmtpMailer extends PHPMailer {
 
     public function hooks() {
         if ( $this->options->getTransportType() == 'smtp' ) {
-            add_action( 'phpmailer_init', array( $this, 'phpmailer_smtp_init' ) );
+            add_action( 'phpmailer_init', array( $this, 'phpmailer_smtp_init' ), 999 );
         }
     }
 

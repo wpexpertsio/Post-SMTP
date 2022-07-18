@@ -12,7 +12,18 @@ class PostmanNotifyOptions {
 
     private $options;
 
-    public function __construct()
+    private static $instance;
+
+    public static function getInstance()
+    {
+        if ( ! self::$instance ) {
+            self::$instance = new static;
+        }
+        
+        return self::$instance;
+    }
+
+    private function __construct()
     {
         $this->options = get_option( 'postman_options' );
     }
