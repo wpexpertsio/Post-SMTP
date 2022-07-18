@@ -450,7 +450,13 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 					break;
 				case 'reply-to' :
 					$this->logProcessHeader( 'Reply-To', $name, $content );
-					$this->setReplyTo( $content );
+                    $pattern = '/[a-z0-9_\-\+\.]+@[a-z0-9\-]+\.([a-z]{2,4})(?:\.[a-z]{2})?/i';
+                    preg_match_all($pattern, $content, $matches);
+
+                    if ( isset( $matches[0] ) && is_email( $matches[0] ) ) {
+                        $this->setReplyTo( $content );
+                    }
+
 					break;
 				case 'sender' :
 					$this->logProcessHeader( 'Sender', $name, $content );

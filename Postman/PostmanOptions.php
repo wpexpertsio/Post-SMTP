@@ -109,12 +109,6 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const TRANSCRIPT_SIZE = 'transcript_size';
 		const TEMPORARY_DIRECTORY = 'tmp_dir';
 		const DISABLE_EMAIL_VALIDAITON = 'disable_email_validation';
-		const NOTIFICATION_SERVICE = 'notification_service';
-        const NOTIFICATION_USE_CHROME = 'notification_use_chrome';
-        const NOTIFICATION_CHROME_UID = 'notification_chrome_uid';
-		const PUSHOVER_USER = 'pushover_user';
-		const PUSHOVER_TOKEN = 'pushover_token';
-		const SLACK_TOKEN = 'slack_token';
 
 		// Fallback
         const FALLBACK_SMTP_ENABLED = 'fallback_smtp_enabled';
@@ -133,7 +127,6 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const DEFAULT_MAIL_LOG_ENABLED = self::MAIL_LOG_ENABLED_OPTION_YES;
 		const DEFAULT_MAIL_LOG_ENTRIES = 250;
 		const DEFAULT_LOG_LEVEL = PostmanLogger::ERROR_INT;
-		const DEFAULT_NOTIFICATION_SERVICE = 'default';
 		const DEFAULT_TRANSPORT_TYPE = 'smtp'; // must match what's in PostmanSmtpModuleTransport
 		const DEFAULT_TCP_READ_TIMEOUT = 60;
 		const DEFAULT_TCP_CONNECTION_TIMEOUT = 10;
@@ -247,13 +240,6 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			} else { 				return self::DEFAULT_LOG_LEVEL; }
 		}
 
-		public function getNotificationService() {
-			if ( isset( $this->options [ PostmanOptions::NOTIFICATION_SERVICE ] ) ) {
-				return $this->options [ PostmanOptions::NOTIFICATION_SERVICE ];
-			} else {
-				return self::DEFAULT_NOTIFICATION_SERVICE;
-			}
-		}
 
 		public function getForcedToRecipients() {
 			if ( isset( $this->options [ self::FORCED_TO_RECIPIENTS ] ) ) {
@@ -481,36 +467,6 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				return $this->options [ PostmanOptions::MAILGUN_REGION ];
 			}
 		}
-
-		public function getPushoverUser() {
-			if ( isset( $this->options [ PostmanOptions::PUSHOVER_USER ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::PUSHOVER_USER ] );
-			}
-		}
-
-		public function getPushoverToken() {
-			if ( isset( $this->options [ PostmanOptions::PUSHOVER_TOKEN ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::PUSHOVER_TOKEN ] );
-			}
-		}
-
-		public function getSlackToken() {
-			if ( isset( $this->options [ PostmanOptions::SLACK_TOKEN ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::SLACK_TOKEN ] );
-			}
-		}
-
-        public function useChromeExtension() {
-            if ( isset( $this->options [ PostmanOptions::NOTIFICATION_USE_CHROME ] ) ) {
-                return $this->options [ PostmanOptions::NOTIFICATION_USE_CHROME ];
-            }
-        }
-
-        public function getNotificationChromeUid() {
-            if ( isset( $this->options [ PostmanOptions::NOTIFICATION_CHROME_UID ] ) ) {
-                return base64_decode( $this->options [ PostmanOptions::NOTIFICATION_CHROME_UID ] );
-            }
-        }
 		
 		public function getReplyTo() {
 			if ( isset( $this->options [ PostmanOptions::REPLY_TO ] ) ) {

@@ -2,8 +2,10 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
-require_once ABSPATH . WPINC . '/class-phpmailer.php';
-require_once ABSPATH . WPINC . '/class-smtp.php';
+
+if ( ! class_exists( 'PHPMailer', false ) ) {
+    require_once ABSPATH . WPINC . '/class-phpmailer.php';
+}
 
 add_action('plugins_loaded', function() {
     global $phpmailer;
@@ -17,12 +19,53 @@ class PostsmtpMailer extends PHPMailer {
 
     private $error;
 
+    private $transcript = '';
+
     public function __construct($exceptions = null)
     {
         parent::__construct($exceptions);
 
+        $this->set_vars();
+        $this->hooks();
+
+    }
+
+    public function set_vars() {
         $this->options = PostmanOptions::getInstance();
-        add_filter( 'postman_wp_mail_result', [ $this, 'postman_wp_mail_result' ] );
+        $this->Debugoutput = function($str, $level) {
+            $this->transcript .= $str;
+        };
+    }
+
+    public function hooks() {
+        if ( $this->options->getTransportType() == 'smtp' ) {
+            add_action( 'phpmailer_init', array( $this, 'phpmailer_smtp_init' ) );
+        }
+    }
+
+    /**
+     * @param PHPMailer $mail
+     */
+    public function phpmailer_smtp_init($mail) {
+        $mail->SMTPDebug = 3;
+        $mail->isSMTP();
+        $mail->Host = $this->options->getHostname();
+
+        if ( $this->options->getAuthenticationType() !== 'none' ) {
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $this->options->getUsername();
+            $mail->Password   = $this->options->getPassword();
+        }
+
+        if ( $this->options->getEncryptionType() !== 'none' ) {
+            $mail->SMTPSecure = $this->options->getEncryptionType();
+        }
+
+        $mail->Port = $this->options->getPort();
+
+        if ( $this->options->isPluginSenderEmailEnforced() ) {
+            $mail->setFrom( $this->options->getMessageSenderEmail() , $this->options->getMessageSenderName () );
+        }
     }
 
     public function send()
@@ -33,40 +76,46 @@ class PostsmtpMailer extends PHPMailer {
         $postmanWpMail = new PostmanWpMail();
         $postmanWpMail->init();
 
-        $senderEmail = $this->options->getMessageSenderEmail();
-        $senderName = $this->options->getMessageSenderName();
+        $backtrace = debug_backtrace();
 
-        // create a PostmanMessage instance
-        $message = $postmanWpMail->createNewMessage();
+        list($to, $subject, $body, $headers, $attachments) = array_pad( $backtrace[1]['args'], 5, null );
 
-        $message->setFrom( $senderEmail, $senderName );
-        $message->addHeaders( $this->getHeaders() );
-        $message->setBodyTextPart( $this->AltBody );
-        $message->setBodyHtmlPart( $this->Body );
-        $message->setBody( $this->Body );
-        $message->setSubject( $this->Subject );
-        $message->addTo( $this->flatArray($this->getToAddresses() ) );
-        $message->setReplyTo( $this->flatArray( $this->getReplyToAddresses() ) );
-        $message->addCc( $this->flatArray($this->getCcAddresses() ) );
-        $message->addBCc( $this->flatArray( $this->getBccAddresses() ) );
-        $message->setReplyTo( $this->flatArray( $this->getReplyToAddresses() ) );
-        $message->setAttachments( $this->getAttachments() );
+        // build the message
+        $postmanMessage = $postmanWpMail->processWpMailCall( $to, $subject, $body, $headers, $attachments );
 
-        // create a PostmanEmailLog instance
+        // build the email log entry
         $log = new PostmanEmailLog();
+        $log->originalTo = $to;
+        $log->originalSubject = $subject;
+        $log->originalMessage = $body;
+        $log->originalHeaders = $headers;
 
-        $log->originalTo = $this->flatArray($this->getToAddresses() );
-        $log->originalSubject = $this->Subject;
-        $log->originalMessage = $this->Body;
-        $log->originalHeaders = $this->getCustomHeaders();
+        // get the transport and create the transportConfig and engine
+        $transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
+
+        add_filter( 'postman_wp_mail_result', [ $this, 'postman_wp_mail_result' ] );
 
         try {
-            return $postmanWpMail->sendMessage( $message, $log );
+
+            if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) ) {
+                $result = $this->options->getTransportType() !== 'smtp' ?
+                    $postmanWpMail->send( $to, $subject, $body, $headers, $attachments ) :
+                    $this->sendSmtp();
+            }
+
+
+            do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport );
+
+            return $result;
+
         } catch (phpmailerException $exc) {
 
             $this->error = $exc;
 
             $this->mailHeader = '';
+
+            do_action( 'post_smtp_on_failed', $log, $postmanMessage, $this->transcript, $transport, $exc->getMessage() );
+
             $this->setError($exc->getMessage());
             if ($this->exceptions) {
                 throw $exc;
@@ -76,50 +125,20 @@ class PostsmtpMailer extends PHPMailer {
 
     }
 
-    public function getAttachments() {
-        $attachments = parent::getAttachments();
-
-        $data = array();
-        foreach ( $attachments as $attachment ) {
-            $data[] = $attachment[0];
+    public function sendSmtp() {
+        if (!$this->preSend()) {
+            return false;
         }
-
-        return $data;
+        return $this->postSend();
     }
 
-    private function getHeaders() {
-        $headers = array();
-        foreach ( $this->getCustomHeaders() as $header ) {
-            $headers[] = "{$header[0]}: {$header[1]}";
-        }
 
-        return $headers;
-    }
-
-    public function postman_wp_mail_result() {
+    public  function postman_wp_mail_result() {
         $result = [
             'time' => '',
             'exception' => $this->error,
-            'transcript' => '',
+            'transcript' => $this->transcript,
         ];
         return $result;
-    }
-
-    private function flatArray($arr) {
-        $result = [];
-        foreach ( $arr as $key => $value ) {
-            if ( is_array( $value ) ) {
-                foreach ($value as $k => $v ) {
-                    if ( empty( $v ) ) {
-                        continue;
-                    }
-                    $value = $v;
-                }
-            }
-
-            $result[] = $value;
-        }
-
-        return implode(',', $result );
     }
 }

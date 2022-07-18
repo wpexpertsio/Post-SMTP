@@ -3,17 +3,14 @@ Contributors: yehudah
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehuda@myinbox.in&item_name=Donation+for+PostSMTP
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
-Tested up to: 5.2.2
-Stable tag: 2.0.6
+Tested up to: 5.3.2
+Stable tag: 2.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Send, log and troubleshoot your Outgoing Email easily. Supports everything: SMTP, Gmail, Mailgun, Mandril, SendGrid, Elastic Email and OAuth 2.0!
 
 == Description ==
-
-= Version 2.0.6 released - bug fixes. =
-[See here](https://postmansmtp.com/post-smtp-2-0-6-bug-fixes/)
 
 = The Only SMTP plugin with chrome Notifications =
 Get notified if your emails are failing inside your Chrome browser. [Download here](https://chrome.google.com/webstore/detail/post-smtp-notifications/npklmbkpbknkmbohdbpikeidiaekjoch?hl=en-US)
@@ -288,6 +285,10 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 2.0.7 - 2020-01-12
+* Updated: Improve PHPMailer method.
+* Updated: Bug fixes.
 
 = 2.0.6 - 2019-10-08
 * Updated: Bug fixes.

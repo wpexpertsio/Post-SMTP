@@ -70,6 +70,8 @@ class Postman {
 		require_once 'Postman-Mail/PostmanMyMailConnector.php';
 		require_once 'Postman-Mail/PostmanContactForm7.php';
 		require_once 'Phpmailer/PostsmtpMailer.php';
+        require_once 'Extensions/License/PostmanLicenseManager.php';
+        require_once 'Extensions/Admin/PostmanAdmin.php';
 		//require_once 'Postman-Mail/PostmanWooCommerce.php';
 
 		// get plugin metadata - alternative to get_plugin_data
@@ -130,9 +132,6 @@ class Postman {
 		// MyMail integration
 		new PostmanMyMailConnector( $rootPluginFilenameAndPath );
 
-		// Contact form 7
-		new Postsmtp_ContactForm7;
-
 		// WooCommerce Integration
 		//new PostmanWoocommerce();
 
@@ -188,6 +187,9 @@ class Postman {
 	 * ref: http://codex.wordpress.org/Plugin_API/Action_Reference#Actions_Run_During_a_Typical_Request
 	 */
 	public function on_plugins_loaded() {
+
+        PostmanLicenseManager::get_instance()->init();
+
 		// load the text domain
 		$this->loadTextDomain();
 
@@ -215,6 +217,7 @@ class Postman {
 	 * ref: https://codex.wordpress.org/Function_Reference/register_activation_hook
 	 */
 	public function on_activation() {
+
 		if ( $this->logger->isInfo() ) {
 			$this->logger->info( 'Activating plugin' );
 		}
