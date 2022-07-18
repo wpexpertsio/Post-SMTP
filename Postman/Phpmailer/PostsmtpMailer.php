@@ -3,9 +3,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-if ( ! class_exists( 'PHPMailer', false ) ) {
-	require_once ABSPATH . WPINC . '/class-phpmailer.php';
+if ( version_compare( get_bloginfo( 'version' ), '5.5-alpha', '<' ) ) {
+	if ( ! class_exists( '\PHPMailer', false ) ) {
+		require_once ABSPATH . WPINC . '/class-phpmailer.php';
+	}
+
+} else {
+	if ( ! class_exists( '\PHPMailer\PHPMailer\PHPMailer', false ) ) {
+		require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
+	}
+
+	if ( ! class_exists( '\PHPMailer\PHPMailer\Exception', false ) ) {
+		require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
+	}
+
+	if ( ! class_exists( '\PHPMailer\PHPMailer\SMTP', false ) ) {
+		require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
+	}
+
+	class_alias( PHPMailer\PHPMailer\PHPMailer::class, 'PHPMailer' );
+	class_alias( PHPMailer\PHPMailer\SMTP::class, 'SMTP' );
+	class_alias( PHPMailer\PHPMailer\Exception::class, 'phpmailerException' );
 }
+
 
 add_action('plugins_loaded', function() {
 	global $phpmailer;
@@ -120,7 +140,7 @@ class PostsmtpMailer extends PHPMailer {
 
 			return $result;
 
-		} catch (phpmailerException $exc) {
+		} catch (Exception $exc) {
 
 			$this->error = $exc;
 
