@@ -28,8 +28,6 @@ class PostmanLicenseManager {
     {
         $this->includes();
         $this->rand_cache_interval = rand( 1, 24 );
-
-        add_filter( 'extra_plugin_headers', [ $this, 'add_extension_headers' ] );
     }
 
     public function includes() {
@@ -37,14 +35,6 @@ class PostmanLicenseManager {
 
         include_once ABSPATH . '/wp-admin/includes/plugin.php';
 
-    }
-
-
-    function add_extension_headers($headers) {
-        $headers[] = 'Class';
-        $headers[] = 'Slug';
-
-        return $headers;
     }
 
     /**

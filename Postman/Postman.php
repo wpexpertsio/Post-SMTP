@@ -146,6 +146,8 @@ class Postman {
 				'on_plugins_loaded',
 		) );
 
+        add_filter( 'extra_plugin_headers', [ $this, 'add_extension_headers' ] );
+
 		/**
 		 * @todo: WPML say they fix the issue in version 3.9
 		 * https://wordpress.org/support/topic/error-in-pluggable-php173/#post-10021301
@@ -178,6 +180,12 @@ class Postman {
 
 	}
 
+    function add_extension_headers($headers) {
+        $headers[] = 'Class';
+        $headers[] = 'Slug';
+
+        return $headers;
+    }
 
 	/**
 	 * Functions to execute on the plugins_loaded event

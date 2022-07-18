@@ -35,7 +35,11 @@ class StatusSolution {
 			$possible_solution[] = 'Two factor authentication is enabled, replace your password with app password.';
 			$possible_solution[] = $this->make_clickable( 'https://support.google.com/mail/?p=InvalidSecondFactor' );
 		} elseif ( $this->strExists( 'Username and Password not accepted' ) ||  $this->strExists( 'Authentication unsuccessful' ) ) {
-			$possible_solution[] = 'Check you credentials, wrong email or password.';
+            $possible_solution[] = 'Check you credentials, wrong email or password.';
+        } elseif ( $this->strExists( 'ErrorSendAsDenied' ) ) {
+            $possible_solution[] = 'Give the configured account "Send As" permissions on the "From" mailbox (admin.office365.com).';
+        } elseif ( $this->strExists( 'ErrorParticipantDoesntHaveAnEmailAddress' ) ) {
+		    $possible_solution[] = "Probably office 365 doesn't like shared mailbox in Reply-To field";
 		} else {
 			$possible_solution[] = 'Not found, check status column for more info.';
 		}

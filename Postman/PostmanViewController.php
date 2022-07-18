@@ -320,10 +320,11 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			printf( '<h2>%s</h2>', sprintf( __( '%s Setup', 'post-smtp' ), __( 'Post SMTP', 'post-smtp' ) ) );
 
 			if ( ! $show && POST_SMTP_SHOW_RELEASE_MESSAGE ) {
+			    $linkText = POST_SMTP_RELEASE_URL == '#' ? '' : '<a target="_blank" href="' . POST_SMTP_RELEASE_URL . '">Read Here</a>';
 				echo '
 				<div class="updated settings-error notice is-dismissible"> 
 					<p>
-					<strong>Version ' . $version . ' ' . POST_SMTP_RELEASE_MESSAGE . ':</strong> <a target="_blank" href="' . POST_SMTP_RELEASE_URL . '">Read Here</a>
+					<strong>Version ' . $version . ' ' . POST_SMTP_RELEASE_MESSAGE . ':</strong> ' . $linkText . '
 					</p>
 					<button style="z-index: 100;" data-version="'. $version . '" data-security="' . wp_create_nonce('postsmtp') .'" type="button" class="notice-dismiss postman-release-message">
 						<span class="screen-reader-text">Dismiss this notice.</span>
@@ -370,6 +371,9 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
                 $resetTitle = __( 'Reset Plugin', 'post-smtp' );
                 $importExportReset = sprintf( '%s/%s/%s', $importTitle, $exportTile, $resetTitle );
                 printf( $purgeLinkPattern, $this->getPageUrl( PostmanAdminController::MANAGE_OPTIONS_PAGE_SLUG ), sprintf( '%s', $importExportReset ) );
+
+                do_action( 'post_smtp_extension_reset_link' );
+
                 print '</ul>';
                 print '</div>';
                 ?>
@@ -378,6 +382,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
                     <h4><img class="align-middle" src="<?php echo plugins_url( 'style/images/new.gif', dirname( __DIR__ ) . '/postman-smtp.php' ); ?>"><a style="color: black;" target="_blank" href="https://postmansmtp.com/extensions/">Extensions</a></h4>
                     <ul>
                         <li><a target="_blank" href="https://postmansmtp.com/extensions/office-365-for-post-smtp-extension/">Office 365 API</a></li>
+                        <li><a target="_blank" href="https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/">Amazon SES</a></li>
                     </ul>
                 </div>
 
