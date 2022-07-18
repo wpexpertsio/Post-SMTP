@@ -435,11 +435,11 @@ class PostmanEmailLogController {
 				<input id="from_date" class="email-log-date" value="<?php echo esc_attr($from_date); ?>" type="text" name="from_date" placeholder="<?php _e( 'From Date', 'post-smtp' ); ?>">
 			</div>
 			<div class="form-control">
-				<label for="to_date"><?php _e( 'To Date', 'post-smtp' ); ?></label>		
+				<label for="to_date"><?php _e( 'To Date', 'post-smtp' ); ?></label>
 				<input id="to_date" class="email-log-date" value="<?php echo esc_attr($to_date); ?>" type="text" name="to_date" placeholder="<?php _e( 'To Date', 'post-smtp' ); ?>">
 			</div>
 			<div class="form-control">
-				<label for="search"><?php _e( 'Search', 'post-smtp' ); ?></label>		
+				<label for="search"><?php _e( 'Search', 'post-smtp' ); ?></label>
 				<input id="search" type="text" name="search" value="<?php echo esc_attr($search); ?>" placeholder="<?php _e( 'Search', 'post-smtp' ); ?>">
 			</div>
 			<div class="form-control">
@@ -451,7 +451,7 @@ class PostmanEmailLogController {
 						echo '<option value="' . $value . '"' . $selected . '>' . $value . '</option>';
 					}
 					?>
-				</select>	
+				</select>
 			</div>
 
             <div class="form-control" style="padding: 0 5px 0 5px;">
@@ -467,19 +467,22 @@ class PostmanEmailLogController {
 			</div>
 
         </div>
-		<div class="error">Please notice: when you select a date for example 11/20/2017, behind the scene the query select <b>11/20/2017 00:00:00</b>.<br>So if you searching for an email arrived that day at any hour you need to select 11/20/2017 as the <b>From Date</b> and 11/21/2017 as the <b>To Date</b>.</div>
+		<div class="error" style="padding: 20px; font-size: 16px;">
+            <strong>For more advanced, better performance and UI Email logger check our new extension:</strong><br><br>
+            <a style="font-weight: bold;" target="_blank" href="https://postmansmtp.com/extensions/better-email-logger-post-smtp-extension/">Better Email Logger</a>
+        </div>
 	</form>
-	
+
 	<!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions -->
 	<form id="movies-filter" method="get">
 		<!-- For plugins, we also need to ensure that the form posts back to our current page -->
 		<input type="hidden" name="page"
 			value="<?php echo filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING ); ?>" />
-			
+
 		<!-- Now we can render the completed list table -->
 			<?php $testListTable->display()?>
 		</form>
-		
+
 		<?php add_thickbox(); ?>
 
 </div>

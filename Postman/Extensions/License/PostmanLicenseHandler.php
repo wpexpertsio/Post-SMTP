@@ -328,7 +328,16 @@ class PostmanLicenseHandler {
         }
 
         $license_data = $this->license_data;
-        $expires = $license_data->expires == 'lifetime' ? '2500/12/12' : $license_data->expires;
+
+        if ( $license_data && isset( $license_data->expires ) ) {
+            if ( $license_data->expires == 'lifetime' ) {
+                $expires = '2500/12/12';
+            } else {
+                $expires = $license_data->expires;
+            }
+        } else {
+            return;
+        }
 
 		$datetime1 = new DateTime();
 

@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehudaha
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 5.6
-Stable tag: 2.0.19
+Stable tag: 2.0.20
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Send, log and troubleshoot your Outgoing Email easily. Supports everything: SMTP
 
 == Description ==
 
-= Looking for Office 365 API delivery? =
+= Looking for Office 365 OR Amazon SES API delivery? =
 Check this extensions page, it will update with more extensions so don't forget to follow:
 [https://postmansmtp.com/extensions/](https://postmansmtp.com/extensions/)
 
@@ -280,6 +280,11 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 2.0.20 - 2020-01-28
+* Fixed: Allow empty body.
+* Fixed: Few small bugs.
+* New: A new Email Logger extension
 
 = 2.0.19 - 2020-01-19
 * Fixed: All reported office 365 issues.

@@ -381,6 +381,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
                 <div class="ps-welcome-panel-column">
                     <h4><img class="align-middle" src="<?php echo plugins_url( 'style/images/new.gif', dirname( __DIR__ ) . '/postman-smtp.php' ); ?>"><a style="color: black;" target="_blank" href="https://postmansmtp.com/extensions/">Extensions</a></h4>
                     <ul>
+                        <li><a style="font-weight: bold;" target="_blank" href="https://postmansmtp.com/extensions/better-email-logger-post-smtp-extension/">Better Email Logger</a></li>
                         <li><a target="_blank" href="https://postmansmtp.com/extensions/office-365-for-post-smtp-extension/">Office 365 API</a></li>
                         <li><a target="_blank" href="https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/">Amazon SES</a></li>
                     </ul>
@@ -390,6 +391,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
                 print '<div class="ps-welcome-panel-column welcome-panel-last">';
                 printf( '<h4>%s</h4>', _x( 'Troubleshooting', 'Main Menu', 'post-smtp' ) );
                 print '<ul>';
+                printf( '<li><a target="blank" class="align-middle" href="https://postmansmtp.com/help-configure-post-smtp/" class="welcome-icon postman_guides">%s</a></li>', __( 'Need help setup everything? (paid)', 'post-smtp' ) );
                 printf( '<li><a href="%s" class="welcome-icon run-port-test">%s</a></li>', $this->getPageUrl( PostmanConnectivityTestController::PORT_TEST_SLUG ), __( 'Connectivity Test', 'post-smtp' ) );
                 printf( '<li><a href="%s" class="welcome-icon run-port-test">%s</a></li>', $this->getPageUrl( PostmanDiagnosticTestController::DIAGNOSTICS_SLUG ), __( 'Diagnostic Test', 'post-smtp' ) );
                 printf( '<li><a href="%s" data-security="%s" class="welcome-icon release-lock-file">%s</a></li>', '#', wp_create_nonce( "postman" ), __( 'Release Lock File Error', 'post-smtp' ) );
