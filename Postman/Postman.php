@@ -1,5 +1,7 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 /**
  * Postman execution begins here:
  * - the default Postman transports are loaded
@@ -35,6 +37,8 @@ class Postman {
 	private $pluginData;
 	private $rootPluginFilenameAndPath;
 
+	public static $rootPlugin;
+
 	/**
 	 * The constructor
 	 *
@@ -45,6 +49,7 @@ class Postman {
 		assert( ! empty( $rootPluginFilenameAndPath ) );
 		assert( ! empty( $version ) );
 		$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;
+		self::$rootPlugin = $rootPluginFilenameAndPath;
 
 		// load the dependencies
 		require_once 'PostmanOptions.php';
@@ -152,9 +157,6 @@ class Postman {
 			$active_plugins = (array)get_option('active_plugins', array());
 			if (in_array('sitepress-multilingual-cms/sitepress.php', $active_plugins) && !get_option('postman_wpml_fixed')) {
 				add_action('admin_notices', array($this, 'post_smtp_wpml_admin_notice'));
-
-				// Temp: Just a quick solution, need to find a better option.
-				add_action('admin_init', array($this, 'postman_fix_wpml'));
 			}
 		}
 
@@ -178,30 +180,6 @@ class Postman {
 
 	}
 
-	public function post_smtp_wpml_admin_notice() {
-		$class = 'notice notice-error';
-		$title =  __( 'Post SMTP notice!', 'post-smtp' );
-		$intro = __( 'WPML is installed and has a known bug with Post SMTP and few other plugins - you better upgrade, but we can try to fix it.', 'post-smtp' );
-		$text = __( 'Click here to fix', 'post-smtp' );
-		$message = '<br><a href="' . esc_url( add_query_arg( 'action', 'postman_fix_wpml', get_permalink() ) ) . '">' . $text . '</a>';
-
-		printf( '<div class="%1$s"><h2>%2$s</h2><p>%3$s</p><p>%4$s</p></div>', esc_attr( $class ), $title, $intro, $message );
-	}
-
-	public function postman_fix_wpml() {
-		if ( isset( $_GET['action'] ) && $_GET['action'] == 'postman_fix_wpml' ) {
-			$wpml_file_path = WP_PLUGIN_DIR . '/sitepress-multilingual-cms/inc/utilities/wpml-data-encryptor.class.php';
-
-			if ( file_exists( $wpml_file_path ) ) {
-				$content = file_get_contents( $wpml_file_path );
-				$content = str_replace( "require_once ABSPATH . '/wp-includes/pluggable.php';", "//require_once ABSPATH . '/wp-includes/pluggable.php';", $content );
-				file_put_contents( $wpml_file_path, $content );
-			}
-
-			update_option( 'postman_wpml_fixed', true );
-			wp_redirect( esc_url( remove_query_arg( 'action' ) ) );
-		}
-	}
 
 	/**
 	 * Functions to execute on the plugins_loaded event
@@ -433,7 +411,7 @@ class Postman {
 			$message .= (sprintf( ' %s | %s', $goToEmailLog, $goToSettings ));
 			$message .= '<input type="hidden" name="security" class="security" value="' . wp_create_nonce('postsmtp') . '">';
 			
-			$hide = get_option('postman_release_version_not_configured' );
+			$hide = get_option('postman_release_version' );
 
 			if ( $msg['error'] == true && ! $hide ) {
 				$this->messageHandler->printMessage( $message, 'postman-not-configured-notice notice notice-error is-dismissible' );

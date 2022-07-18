@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 require_once 'PostmanModuleTransport.php';
 /**
  * Postman Mailgun module
@@ -154,9 +158,9 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 		// push the authentication options into the $overrideItem structure
 		$overrideItem ['auth_items'] = array(
 				array(
-						'selected' => true,
-						'name' => __( 'API Key', 'post-smtp' ),
-						'value' => 'api_key',
+                    'selected' => true,
+                    'name' => __( 'API Key', 'post-smtp' ),
+                    'value' => 'api_key',
 				),
 		);
 		return $overrideItem;

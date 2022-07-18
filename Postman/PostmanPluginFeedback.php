@@ -1,5 +1,7 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 class PostmanPluginFeedback {
 	function __construct() {
 		add_filter( 'plugin_action_links_' . plugin_basename( POST_BASE ), array( $this, 'insert_deactivate_link_id' ) );
@@ -152,4 +154,4 @@ class PostmanPluginFeedback {
 	<?php
 	}
 }
-new PostmanPluginFeedback;
+//new PostmanPluginFeedback;

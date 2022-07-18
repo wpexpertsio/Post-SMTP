@@ -23,7 +23,8 @@ jQuery(document).ready(function() {
 		var hostname = jQuery(postman_hostname_element_name).val();
 		var data = {
 			'action' : 'postman_get_hosts_to_test',
-			'hostname' : hostname
+			'hostname' : hostname,
+			'security' : jQuery('#security').val(),
 		};
 
 		totalPortsTested = 0;
@@ -71,7 +72,8 @@ function portQuizTest(socket, hostname, port) {
 	var data = {
 		'action' : 'postman_port_quiz_test',
 		'hostname' : hostname,
-		'port' : port
+		'port' : port,
+		'_wpnonce' : jQuery('#_wpnonce').val(),
 	};
 	jQuery.post(
 			ajaxurl,
@@ -104,7 +106,8 @@ function firstServiceTest(socket, hostname, port, open) {
 	var data = {
 		'action' : 'postman_test_port',
 		'hostname' : hostname,
-		'port' : port
+		'port' : port,
+		'security' : jQuery('#security').val(),
 	};
 	jQuery
 			.post(
@@ -197,7 +200,8 @@ function portTest3(socket, hostname, port, open) {
 	var data = {
 		'action' : 'postman_test_smtps',
 		'hostname' : hostname,
-		'port' : port
+		'port' : port,
+		'_wpnonce' : jQuery('#_wpnonce').val(),
 	};
 	jQuery
 			.post(

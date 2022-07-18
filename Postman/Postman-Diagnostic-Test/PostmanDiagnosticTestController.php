@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 class PostmanDiagnosticTestController {
 	const DIAGNOSTICS_SLUG = 'postman/diagnostics';
 
@@ -99,6 +102,12 @@ class PostmanDiagnosticTestController {
 		print '<div class="wrap">';
 
 		PostmanViewController::outputChildPageHeader( __( 'Diagnostic Test', 'post-smtp' ) );
+
+		?>
+        <form>
+            <?php wp_nonce_field('post-smtp', 'security' ); ?>
+        </form>
+        <?php
 
 		printf( '<h4>%s</h4>', __( 'Are you having issues with Postman?', 'post-smtp' ) );
 		/* translators: where %1$s and %2$s are the URLs to the Troubleshooting and Support Forums on WordPress.org */
@@ -208,6 +217,9 @@ class PostmanGetDiagnosticsViaAjax {
 	/**
 	 */
 	public function getDiagnostics() {
+
+	    check_admin_referer('post-smtp', 'security');
+
 	    $curl = curl_version();
 		$transportRegistry = PostmanTransportRegistry::getInstance();
         $this->addToDiagnostics( 'Mailer', PostmanOptions::getInstance()->getSmtpMailer() );

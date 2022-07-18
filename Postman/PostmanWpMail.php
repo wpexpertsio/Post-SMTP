@@ -1,5 +1,7 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 	/**
@@ -75,7 +77,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
             $id = md5(uniqid(time()));
 
             if (isset($_SERVER["SERVER_NAME"])) {
-                $hostName = $_SERVER["SERVER_NAME"];
+                $hostName = sanitize_text_field($_SERVER["SERVER_NAME"]);
             } else {
                 $hostName = php_uname('n');
             }

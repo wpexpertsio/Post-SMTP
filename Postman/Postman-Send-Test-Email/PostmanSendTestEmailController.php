@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 class PostmanSendTestEmailController {
 	const EMAIL_TEST_SLUG = 'postman/email_test';
 	const RECIPIENT_EMAIL_FIELD_NAME = 'postman_recipient_email';
@@ -127,6 +131,8 @@ class PostmanSendTestEmailController {
 
 		printf( '<form id="postman_test_email_wizard" method="post" action="%s">', PostmanUtils::getSettingsPageUrl() );
 
+		wp_nonce_field('post-smtp', 'security' );
+
 		// Step 1
 		printf( '<h5>%s</h5>', __( 'Specify the Recipient', 'post-smtp' ) );
 		print '<fieldset>';
@@ -199,6 +205,9 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 	 * This Ajax sends a test email
 	 */
 	function sendTestEmailViaAjax() {
+
+	    check_admin_referer('post-smtp', 'security');
+
 		// get the email address of the recipient from the HTTP Request
 		$email = $this->getRequestParameter( 'email' );
 

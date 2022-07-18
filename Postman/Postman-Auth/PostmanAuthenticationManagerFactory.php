@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 if (! class_exists ( "PostmanAuthenticationManagerFactory" )) {
 	
 	require_once 'PostmanGoogleAuthenticationManager.php';

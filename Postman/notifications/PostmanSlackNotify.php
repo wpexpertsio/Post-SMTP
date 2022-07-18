@@ -1,5 +1,7 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 class PostmanSlackNotify implements Postman_Notify {
 
     public function send_message($message)

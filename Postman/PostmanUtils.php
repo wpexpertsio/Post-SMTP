@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 require_once 'PostmanLogger.php';
 require_once 'PostmanState.php';
 
@@ -368,9 +371,9 @@ class PostmanUtils {
 	 */
 	static function postmanGetServerName() {
 		if ( ! empty( $_SERVER ['SERVER_NAME'] ) ) {
-			$serverName = $_SERVER ['SERVER_NAME'];
+			$serverName = sanitize_text_field($_SERVER ['SERVER_NAME']);
 		} else if ( ! empty( $_SERVER ['HTTP_HOST'] ) ) {
-			$serverName = $_SERVER ['HTTP_HOST'];
+			$serverName = sanitize_text_field($_SERVER ['HTTP_HOST']);
 		} else {
 			$serverName = 'localhost.localdomain';
 		}
@@ -410,6 +413,7 @@ class PostmanUtils {
 	 * @param mixed $callbackName
 	 */
 	public static function registerAjaxHandler( $actionName, $class, $callbackName ) {
+
 		if ( is_admin() ) {
 			$fullname = 'wp_ajax_' . $actionName;
 			// $this->logger->debug ( 'Registering ' . 'wp_ajax_' . $fullname . ' Ajax handler' );

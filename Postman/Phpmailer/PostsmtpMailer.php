@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 require_once ABSPATH . WPINC . '/class-phpmailer.php';
 require_once ABSPATH . WPINC . '/class-smtp.php';
 

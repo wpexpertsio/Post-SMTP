@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 if (! interface_exists ( 'PostmanZendMailTransportConfigurationFactory' )) {
 	interface PostmanZendMailTransportConfigurationFactory {
 		static function createConfig(PostmanTransport $transport);

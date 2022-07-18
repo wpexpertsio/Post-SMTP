@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 /**
  * Keep the interface_exists check here for Postman Gmail API Extension users!
  * 
@@ -78,7 +82,7 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	
 	/**
 	 */
-	public function __construct($rootPluginFilenameAndPath) {
+	public function __construct($rootPluginFilenameAndPath = null) {
 		$this->logger = new PostmanLogger ( get_class ( $this ) );
 		$this->options = PostmanOptions::getInstance ();
 		$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;

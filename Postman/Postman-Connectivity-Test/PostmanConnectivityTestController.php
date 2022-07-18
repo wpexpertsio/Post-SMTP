@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 
 class PostmanConnectivityTestController {
 
@@ -137,6 +140,9 @@ class PostmanConnectivityTestController {
 		print '<p>';
 		print __( 'This test determines which well-known ports are available for Postman to use.', 'post-smtp' );
 		print '<form id="port_test_form_id" method="post">';
+
+		wp_nonce_field('post-smtp', 'security' );
+
 		printf( '<label for="hostname">%s</label>', __( 'Outgoing Mail Server Hostname', 'post-smtp' ) );
 		$this->port_test_hostname_callback();
 		submit_button( _x( 'Begin Test', 'Button Label', 'post-smtp' ), 'primary', 'begin-port-test', true );
@@ -205,6 +211,9 @@ class PostmanPortTestAjaxController {
 	 * combinations to run the connectivity test on
 	 */
 	function getPortsToTestViaAjax() {
+
+	    check_admin_referer('post-smtp', 'security');
+
 		$queryHostname = PostmanUtils::getRequestParameter( 'hostname' );
 		// originalSmtpServer is what SmtpDiscovery thinks the SMTP server should be, given an email address
 		$originalSmtpServer = PostmanUtils::getRequestParameter( 'original_smtp_server' );
@@ -222,6 +231,9 @@ class PostmanPortTestAjaxController {
 	 * This Ajax function retrieves whether a TCP port is open or not
 	 */
 	function runPortQuizTest() {
+
+	    check_admin_referer('post-smtp', 'security');
+
 		$hostname = 'portquiz.net';
 		$port = intval( PostmanUtils::getRequestParameter( 'port' ) );
 		$this->logger->debug( 'testing TCP port: hostname ' . $hostname . ' port ' . $port );
@@ -235,6 +247,9 @@ class PostmanPortTestAjaxController {
 	 * This is called by both the Wizard and Port Test
 	 */
 	function runSmtpTest() {
+
+	    check_admin_referer('post-smtp', 'security');
+
 		$hostname = trim( PostmanUtils::getRequestParameter( 'hostname' ) );
 		$port = intval( PostmanUtils::getRequestParameter( 'port' ) );
 		$transport = trim( PostmanUtils::getRequestParameter( 'transport' ) );
@@ -258,6 +273,9 @@ class PostmanPortTestAjaxController {
 	 * This Ajax function retrieves whether a TCP port is open or not
 	 */
 	function runSmtpsTest() {
+
+	    check_admin_referer('post-smtp', 'security');
+
 		$hostname = trim( PostmanUtils::getRequestParameter( 'hostname' ) );
 		$port = intval( PostmanUtils::getRequestParameter( 'port' ) );
 		$transport = trim( PostmanUtils::getRequestParameter( 'transport' ) );

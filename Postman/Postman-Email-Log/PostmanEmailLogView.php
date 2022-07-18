@@ -1,5 +1,7 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 require_once dirname(__DIR__) . '/PostmanEmailLogs.php';
 
 /**
@@ -260,8 +262,12 @@ class PostmanEmailLogView extends WP_List_Table {
 	 *       ************************************************************************
 	 */
 	function prepare_items() {
+	    if ( isset( $_POST['action'] ) && $_POST['action'] == 'post-smtp-filter' ) {
+            if ( ! wp_verify_nonce( $_REQUEST['post-smtp-log'], 'post-smtp' ) )
+                die( 'Security check' );
+        }
 
-		/**
+            /**
 		 * First, lets decide how many records per page to show
 		 */
 		$per_page = isset( $_POST['postman_page_records'] ) ? absint( $_POST['postman_page_records'] ) : 10;

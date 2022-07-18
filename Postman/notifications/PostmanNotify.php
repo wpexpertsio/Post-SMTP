@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 require_once 'INotify.php';
 require_once 'PostmanMailNotify.php';
 require_once 'PostmanPushoverNotify.php';

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 if ( ! interface_exists( 'PostmanOptionsInterface' ) ) {
 	interface PostmanOptionsInterface {
 		/**
@@ -172,7 +175,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			$this->load();
 		}
 
-		private function load() {
+		public function load() {
 
             $options = get_option( self::POSTMAN_OPTIONS );
 

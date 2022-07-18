@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 if (! class_exists ( 'PostmanAbstractAjaxHandler' )) {
 	
 	require_once ('PostmanPreRequisitesCheck.php');

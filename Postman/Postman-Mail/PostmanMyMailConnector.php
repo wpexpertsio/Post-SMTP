@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 define( 'MAILSTER_POSTMAN_REQUIRED_VERSION', '2.0' );
 define( 'MAILSTER_POSTMAN_ID', 'postman' );
 

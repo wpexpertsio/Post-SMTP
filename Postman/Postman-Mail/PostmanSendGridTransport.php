@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 require_once 'PostmanModuleTransport.php';
 /**
  * Postman SendGrid module
