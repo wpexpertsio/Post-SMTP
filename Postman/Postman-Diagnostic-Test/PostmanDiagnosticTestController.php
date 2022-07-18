@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 class PostmanDiagnosticTestController {
 	const DIAGNOSTICS_SLUG = 'postman/diagnostics';
 
@@ -100,6 +103,12 @@ class PostmanDiagnosticTestController {
 
 		PostmanViewController::outputChildPageHeader( __( 'Diagnostic Test', 'post-smtp' ) );
 
+		?>
+        <form>
+            <?php wp_nonce_field('post-smtp', 'security' ); ?>
+        </form>
+        <?php
+
 		printf( '<h4>%s</h4>', __( 'Are you having issues with Postman?', 'post-smtp' ) );
 		/* translators: where %1$s and %2$s are the URLs to the Troubleshooting and Support Forums on WordPress.org */
 		printf( '<p style="margin:0 10px">%s</p>', sprintf( __( 'Please check the <a href="%1$s">troubleshooting and error messages</a> page and the <a href="%2$s">support forum</a>.', 'post-smtp' ), 'https://wordpress.org/plugins/post-smtp/other_notes/', 'https://wordpress.org/support/plugin/post-smtp' ) );
@@ -195,19 +204,25 @@ class PostmanGetDiagnosticsViaAjax {
 			foreach ( $functions as $function ) {
 				$thing = $function ['function'];
 				if ( is_array( $thing ) ) {
-					$name = get_class( $thing [0] ) . '->' . $thing [1];
-					array_push( $functionArray, $name );
+                    $name = get_class($thing [0]) . '->' . $thing [1];
+                    array_push($functionArray, $name);
+                } elseif ( is_object( $thing ) ) {
+                    array_push( $functionArray, 'Anonymous Function' );
 				} else {
 					array_push( $functionArray, $thing );
 				}
 			}
 		}
+
 		return implode( ', ', $functionArray );
 	}
 
 	/**
 	 */
 	public function getDiagnostics() {
+
+	    check_admin_referer('post-smtp', 'security');
+
 	    $curl = curl_version();
 		$transportRegistry = PostmanTransportRegistry::getInstance();
         $this->addToDiagnostics( 'Mailer', PostmanOptions::getInstance()->getSmtpMailer() );

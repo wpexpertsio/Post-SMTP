@@ -1,7 +1,0 @@
-test/coverage/*
-examples/*
-vendor/**/test/*
-vendor/**/*.md
-vendor/**/*.sh
-vendor/**/*.yml
-.env*

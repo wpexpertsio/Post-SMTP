@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 require_once( 'PostmanOAuthToken.php' );
 require_once( 'PostmanOptions.php' );
 
@@ -73,7 +77,8 @@ class PostmanInstaller {
 
 		// Bail if activating from network, or bulk
 		if ( is_network_admin() || isset( $_GET['activate-multi'] ) ) {
-			return; }
+			return;
+		}
 
 		// Add the transient to redirect
 	    //set_transient( '_post_activation_redirect', true, 30 );

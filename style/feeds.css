@@ -1,0 +1,93 @@
+#post_smtp_feeds_widget.postbox .inside {
+    padding: 0;
+}
+
+#post-smtp-dashboard-overview .dashicons {
+    vertical-align: middle;
+    font-size: 17px; }
+
+#post-smtp-dashboard-overview .e-overview__header {
+    display: table;
+    width: 100%;
+    -webkit-box-shadow: 0 5px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.05);
+    margin: 0 -12px 8px;
+    padding: 0 12px 12px; }
+
+#post-smtp-dashboard-overview .e-overview__logo, #post-smtp-dashboard-overview .e-overview__versions, #post-smtp-dashboard-overview .e-overview__create {
+    display: table-cell;
+    vertical-align: middle; }
+
+#post-smtp-dashboard-overview .e-overview__logo {
+    width: 30px; }
+
+#post-smtp-dashboard-overview .e-overview__versions {
+    padding: 0 10px;
+    font-size: 0.9em;
+    line-height: 1.5; }
+
+#post-smtp-dashboard-overview .e-overview__version {
+    display: block; }
+
+#post-smtp-dashboard-overview .e-overview__create {
+    text-align: right; }
+
+#post-smtp-dashboard-overview .e-overview__post {
+    margin-top: 10px; }
+
+#post-smtp-dashboard-overview .e-overview__post-link {
+    display: inline-block; }
+
+#post-smtp-dashboard-overview .e-overview__badge {
+    background: #39b54a;
+    color: white;
+    font-size: 0.75em;
+    padding: 3px 6px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    text-transform: uppercase; }
+
+#post-smtp-dashboard-overview ul li {
+    padding: 5px 10px;
+}
+
+#post-smtp-dashboard-overview ul li:nth-child(even) {
+    background-color: #FAFAFA;
+}
+
+#post-smtp-dashboard-overview .e-overview__post-description {
+    margin: 0 0 1.5em; }
+
+#post-smtp-dashboard-overview .e-overview__recently-edited li {
+    color: #72777c; }
+
+#post-smtp-dashboard-overview .e-overview__feed {
+    font-size: 14px;
+    font-weight: 500; }
+#post-smtp-dashboard-overview .e-overview__feed .e-overview__post-link {
+    padding-bottom: 5px; }
+
+#post-smtp-dashboard-overview .e-overview__recently-edited .e-overview__heading, #post-smtp-dashboard-overview .e-overview__feed .e-overview__heading {
+    font-weight: 700;
+    border-bottom: 1px solid #eee;
+    margin: 0 -12px;
+    padding: 6px 12px; }
+
+#post-smtp-dashboard-overview .e-overview__footer {
+    margin: 0 -12px -12px;
+    padding: 12px;
+    border-top: 1px solid #eee; }
+#post-smtp-dashboard-overview .e-overview__footer ul {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0; }
+#post-smtp-dashboard-overview .e-overview__footer ul li {
+    padding: 0 10px;
+    margin: 0;
+    border-left: 1px solid #ddd; }
+#post-smtp-dashboard-overview .e-overview__footer ul li:first-child {
+    padding-left: 0;
+    border: none; }

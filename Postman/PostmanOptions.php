@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 if ( ! interface_exists( 'PostmanOptionsInterface' ) ) {
 	interface PostmanOptionsInterface {
 		/**
@@ -86,6 +89,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const BASIC_AUTH_PASSWORD = 'basic_auth_password';
 		const MANDRILL_API_KEY = 'mandrill_api_key';
 		const SENDGRID_API_KEY = 'sendgrid_api_key';
+		const SENDINBLUE_API_KEY = 'sendinblue_api_key';
 		const MAILGUN_API_KEY = 'mailgun_api_key';
 		const MAILGUN_DOMAIN_NAME = 'mailgun_domain_name';
 		const MAILGUN_REGION = 'mailgun_region';
@@ -106,12 +110,6 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const TRANSCRIPT_SIZE = 'transcript_size';
 		const TEMPORARY_DIRECTORY = 'tmp_dir';
 		const DISABLE_EMAIL_VALIDAITON = 'disable_email_validation';
-		const NOTIFICATION_SERVICE = 'notification_service';
-        const NOTIFICATION_USE_CHROME = 'notification_use_chrome';
-        const NOTIFICATION_CHROME_UID = 'notification_chrome_uid';
-		const PUSHOVER_USER = 'pushover_user';
-		const PUSHOVER_TOKEN = 'pushover_token';
-		const SLACK_TOKEN = 'slack_token';
 
 		// Fallback
         const FALLBACK_SMTP_ENABLED = 'fallback_smtp_enabled';
@@ -130,7 +128,6 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const DEFAULT_MAIL_LOG_ENABLED = self::MAIL_LOG_ENABLED_OPTION_YES;
 		const DEFAULT_MAIL_LOG_ENTRIES = 250;
 		const DEFAULT_LOG_LEVEL = PostmanLogger::ERROR_INT;
-		const DEFAULT_NOTIFICATION_SERVICE = 'default';
 		const DEFAULT_TRANSPORT_TYPE = 'smtp'; // must match what's in PostmanSmtpModuleTransport
 		const DEFAULT_TCP_READ_TIMEOUT = 60;
 		const DEFAULT_TCP_CONNECTION_TIMEOUT = 10;
@@ -172,7 +169,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			$this->load();
 		}
 
-		private function load() {
+		public function load() {
 
             $options = get_option( self::POSTMAN_OPTIONS );
 
@@ -196,6 +193,10 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			return ! isset( $this->options [ PostmanOptions::TRANSPORT_TYPE ] );
 		}
 		public function isMailLoggingEnabled() {
+            if ( defined( 'POST_SMTP_CORE_MAIL_LOG' ) ) {
+                return POST_SMTP_CORE_MAIL_LOG;
+            }
+
 			$allowed = $this->isMailLoggingAllowed();
 			$enabled = $this->getMailLoggingEnabled() == self::MAIL_LOG_ENABLED_OPTION_YES;
 			return $allowed && $enabled;
@@ -216,13 +217,15 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		public function getMailLoggingEnabled() {
 			if ( isset( $this->options [ PostmanOptions::MAIL_LOG_ENABLED_OPTION ] ) ) {
 				return $this->options [ PostmanOptions::MAIL_LOG_ENABLED_OPTION ];
-			} else { 				return self::DEFAULT_MAIL_LOG_ENABLED; }
+			} else {
+			    return self::DEFAULT_MAIL_LOG_ENABLED;
+			}
 		}
 		public function getRunMode() {
 			if ( defined( 'POST_SMTP_RUN_MODE' ) ) {
 				return POST_SMTP_RUN_MODE;
 			}
-			
+
 			if ( isset( $this->options [ self::RUN_MODE ] ) ) {
 				return $this->options [ self::RUN_MODE ];
 			} else { 				return self::DEFAULT_RUN_MODE; }
@@ -244,13 +247,6 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			} else { 				return self::DEFAULT_LOG_LEVEL; }
 		}
 
-		public function getNotificationService() {
-			if ( isset( $this->options [ PostmanOptions::NOTIFICATION_SERVICE ] ) ) {
-				return $this->options [ PostmanOptions::NOTIFICATION_SERVICE ];
-			} else {
-				return self::DEFAULT_NOTIFICATION_SERVICE;
-			}
-		}
 
 		public function getForcedToRecipients() {
 			if ( isset( $this->options [ self::FORCED_TO_RECIPIENTS ] ) ) {
@@ -447,7 +443,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			if ( defined( 'POST_SMTP_API_KEY' ) ) {
 				return POST_SMTP_API_KEY;
 			}
-			
+
 			if ( isset( $this->options [ PostmanOptions::MANDRILL_API_KEY ] ) ) {
 				return base64_decode( $this->options [ PostmanOptions::MANDRILL_API_KEY ] ); }
 		}
@@ -479,36 +475,6 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 		}
 
-		public function getPushoverUser() {
-			if ( isset( $this->options [ PostmanOptions::PUSHOVER_USER ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::PUSHOVER_USER ] );
-			}
-		}
-
-		public function getPushoverToken() {
-			if ( isset( $this->options [ PostmanOptions::PUSHOVER_TOKEN ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::PUSHOVER_TOKEN ] );
-			}
-		}
-
-		public function getSlackToken() {
-			if ( isset( $this->options [ PostmanOptions::SLACK_TOKEN ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::SLACK_TOKEN ] );
-			}
-		}
-
-        public function useChromeExtension() {
-            if ( isset( $this->options [ PostmanOptions::NOTIFICATION_USE_CHROME ] ) ) {
-                return $this->options [ PostmanOptions::NOTIFICATION_USE_CHROME ];
-            }
-        }
-
-        public function getNotificationChromeUid() {
-            if ( isset( $this->options [ PostmanOptions::NOTIFICATION_CHROME_UID ] ) ) {
-                return base64_decode( $this->options [ PostmanOptions::NOTIFICATION_CHROME_UID ] );
-            }
-        }
-		
 		public function getReplyTo() {
 			if ( isset( $this->options [ PostmanOptions::REPLY_TO ] ) ) {
 				return $this->options [ PostmanOptions::REPLY_TO ]; }
@@ -534,7 +500,23 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			if ( isset( $this->options [ PostmanOptions::DISABLE_EMAIL_VALIDAITON ] ) ) {
 				return $this->options [ PostmanOptions::DISABLE_EMAIL_VALIDAITON ]; }
 		}
-		
+
+        /**
+         * @since 2.1
+         * @version 2.1
+         */
+        public function getSendinblueApiKey() {
+
+            if ( defined( 'POST_SMTP_API_KEY' ) ) {
+                return POST_SMTP_API_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::SENDINBLUE_API_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::SENDINBLUE_API_KEY] );
+            }
+
+        }
+
 		/**
 		 * (non-PHPdoc)
 		 *

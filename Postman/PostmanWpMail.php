@@ -1,5 +1,7 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 	/**
@@ -23,6 +25,8 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			require_once 'Postman-Mail/PostmanMailEngine.php';
 			require_once 'Postman-Auth/PostmanAuthenticationManagerFactory.php';
 			require_once 'PostmanState.php';
+
+            PostmanEmailLogService::getInstance();
 		}
 
 		/**
@@ -75,12 +79,13 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
             $id = md5(uniqid(time()));
 
             if (isset($_SERVER["SERVER_NAME"])) {
-                $hostName = $_SERVER["SERVER_NAME"];
+                $hostName = sanitize_text_field($_SERVER["SERVER_NAME"]);
             } else {
                 $hostName = php_uname('n');
             }
 
-            return $id . '@' . $hostName;
+            return $id . '@' . str_replace('www.', '', $hostName);
+
         }
 
 		/**
@@ -92,7 +97,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		 * @param mixed $headers
 		 * @param mixed $attachments
 		 */
-		private function processWpMailCall( $to, $subject, $message, $headers, $attachments ) {
+		public function processWpMailCall( $to, $subject, $message, $headers, $attachments ) {
 			$this->logger->trace( 'wp_mail parameters before applying WordPress wp_mail filter:' );
 			$this->traceParameters( $to, $subject, $message, $headers, $attachments );
 
@@ -196,7 +201,6 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// apply the WordPress filters
 			// may impact the from address, from email, charset and content-type
 			$message->applyFilters();
-			//do_action_ref_array( 'phpmailer_init', array( &$message ) );
 
 			// create the body parts (if they are both missing)
 			if ( $message->isBodyPartsEmpty() ) {
@@ -226,8 +230,13 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 					}
 
 					$this->logger->debug( 'Sending mail' );
+
 					// may throw an exception attempting to contact the SMTP server
-					$engine->send( $message );
+                    if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) ) {
+                        $engine->send($message);
+                    } else {
+                        $this->transcript = 'Bypassed By MailControl For Post SMTP';
+                    }
 
 					// increment the success counter, unless we are just tesitng
 					if ( ! $testMode ) {
@@ -238,10 +247,10 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				// clean up
 				$this->postSend( $engine, $startTime, $options, $transport );
 
-				if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION || $options->getRunMode() == PostmanOptions::RUN_MODE_LOG_ONLY ) {
-					// log the successful delivery
-					PostmanEmailLogService::getInstance()->writeSuccessLog( $log, $message, $engine->getTranscript(), $transport );
-				}
+                /**
+                 * Do stuff after successful delivery
+                 */
+                do_action( 'post_smtp_on_success', $log, $message, $engine->getTranscript(), $transport );
 
 				// return successful
 				return true;
@@ -260,10 +269,11 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				// clean up
 				$this->postSend( $engine, $startTime, $options, $transport );
 
-				if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION || $options->getRunMode() == PostmanOptions::RUN_MODE_LOG_ONLY ) {
-					// log the failed delivery
-					PostmanEmailLogService::getInstance()->writeFailureLog( $log, $message, $engine->getTranscript(), $transport, $e->getMessage() );
-				}
+
+                /**
+                 * Do stuff after failed delivery
+                 */
+                do_action( 'post_smtp_on_failed', $log, $message, $engine->getTranscript(), $transport, $e->getMessage() );
 
                 // Fallback
                 if ( $this->fallback( $log, $message, $options ) ) {

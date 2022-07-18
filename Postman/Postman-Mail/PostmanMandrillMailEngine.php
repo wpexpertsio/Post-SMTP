@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 
 	require_once 'mailchimp-mandrill-api-php-da3adc10042e/src/Mandrill.php';

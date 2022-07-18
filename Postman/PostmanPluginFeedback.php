@@ -1,8 +1,10 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 class PostmanPluginFeedback {
 	function __construct() {
-		add_filter( 'plugin_action_links_' . plugin_basename( POST_BASE ), array( $this, 'insert_deactivate_link_id' ) );
+		add_filter( 'plugin_action_links_' . plugin_basename( POST_SMTP_BASE ), array( $this, 'insert_deactivate_link_id' ) );
 		add_action( 'wp_ajax_post_user_feedback', array( $this, 'post_user_feedback' ) );
 		global $pagenow;
 		if ( 'plugins.php' === $pagenow ) {
@@ -14,7 +16,7 @@ class PostmanPluginFeedback {
 
 	function load_scripts() {
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
-		wp_register_script( 'post-feedback', plugins_url( 'script/feedback/feedback.js', POST_BASE ), array( 'jquery', 'jquery-ui-core', 'jquery-ui-dialog' ), false, true );
+		wp_register_script( 'post-feedback', plugins_url( 'script/feedback/feedback.js', POST_SMTP_BASE ), array( 'jquery', 'jquery-ui-core', 'jquery-ui-dialog' ), false, true );
 		wp_localize_script( 'post-feedback', 'post_feedback', array( 'admin_ajax' => admin_url( 'admin-ajax.php' ) ) );
 		wp_enqueue_script( 'post-feedback' );
 	}
@@ -152,4 +154,4 @@ class PostmanPluginFeedback {
 	<?php
 	}
 }
-new PostmanPluginFeedback;
+//new PostmanPluginFeedback;

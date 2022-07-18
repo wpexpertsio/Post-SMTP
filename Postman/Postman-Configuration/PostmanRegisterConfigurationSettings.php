@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 class PostmanSettingsRegistry {
 
 	private $options;
@@ -11,7 +15,7 @@ class PostmanSettingsRegistry {
 	 * Fires on the admin_init method
 	 */
 	public function on_admin_init() {
-				$this->registerSettings();
+        $this->registerSettings();
 	}
 
 	/**
@@ -182,54 +186,7 @@ class PostmanSettingsRegistry {
 					'temporaryDirectoryCallback',
 			), PostmanAdminController::ADVANCED_OPTIONS, PostmanAdminController::ADVANCED_SECTION );
 
-			// Notifications
-			add_settings_section( PostmanAdminController::NOTIFICATIONS_SECTION, _x( 'Notifications Settings', 'Configuration Section Title', 'post-smtp' ), array(
-				$this,
-				'printNotificationsSectionInfo',
-			), PostmanAdminController::NOTIFICATIONS_OPTIONS );
-
-			add_settings_field( PostmanOptions::NOTIFICATION_SERVICE, _x( 'Notification Service', 'Configuration Input Field', 'post-smtp' ), array(
-				$this,
-				'notification_service_callback',
-			), PostmanAdminController::NOTIFICATIONS_OPTIONS, PostmanAdminController::NOTIFICATIONS_SECTION );
-
-			// Pushover
-			add_settings_section( 'pushover_credentials', _x( 'Pushover Credentials', 'Configuration Section Title', 'post-smtp' ), array(
-				$this,
-				'printNotificationsSectionInfo',
-			), PostmanAdminController::NOTIFICATIONS_PUSHOVER_CRED );
-
-			add_settings_field( PostmanOptions::PUSHOVER_USER, _x( 'Pushover User Key', 'Configuration Input Field', 'post-smtp' ), array(
-				$this,
-				'pushover_user_callback',
-			), PostmanAdminController::NOTIFICATIONS_PUSHOVER_CRED, 'pushover_credentials' );
-
-			add_settings_field( PostmanOptions::PUSHOVER_TOKEN, _x( 'Pushover App Token', 'Configuration Input Field', 'post-smtp' ), array(
-				$this,
-				'pushover_token_callback',
-			), PostmanAdminController::NOTIFICATIONS_PUSHOVER_CRED, 'pushover_credentials' );
-
-			// Slack
-			add_settings_section( 'slack_credentials', _x( 'Slack Credentials', 'Configuration Section Title', 'post-smtp' ), array(
-				$this,
-				'printNotificationsSectionInfo',
-			), PostmanAdminController::NOTIFICATIONS_SLACK_CRED );
-
-			add_settings_field( PostmanOptions::SLACK_TOKEN, _x( 'Slack Webhook', 'Configuration Input Field', 'post-smtp' ), array(
-				$this,
-				'slack_token_callback',
-			), PostmanAdminController::NOTIFICATIONS_SLACK_CRED, 'slack_credentials' );
-
-            add_settings_field( PostmanOptions::NOTIFICATION_USE_CHROME, _x( 'Push to chrome extension', 'Configuration Input Field', 'post-smtp' ), array(
-                $this,
-                'notification_use_chrome_callback',
-            ), PostmanAdminController::NOTIFICATIONS_OPTIONS, PostmanAdminController::NOTIFICATIONS_SECTION );
-
-            add_settings_field( PostmanOptions::NOTIFICATION_CHROME_UID, _x( 'Chrome Extension UID', 'Configuration Input Field', 'post-smtp' ), array(
-                $this,
-                'notification_chrome_uid_callback',
-            ), PostmanAdminController::NOTIFICATIONS_OPTIONS, PostmanAdminController::NOTIFICATIONS_SECTION );
-
+            do_action( 'post_smtp_settings_fields' );
 		}
 	}
 
@@ -314,7 +271,7 @@ class PostmanSettingsRegistry {
         }
         print '</select>';
         ?>
-        <p class="description" id="mailer-type-description"><?php _e( 'Beta Feature: Change this to <strong>PHPMailer</strong> only if you see <code>wp_mail</code> conflict message, conflicts when another plugin is activated, and <strong><u>sometimes</u></strong> spam issues.', 'post-smtp' ); ?></p>
+        <p class="description" id="mailer-type-description"><?php _e( 'Beta Feature: ONLY change this to <strong>PHPMailer</strong> only if you see <code>wp_mail</code> conflict message, conflicts when another plugin is activated, and <strong><u>sometimes</u></strong> your mail marked as spam.', 'post-smtp' ); ?></p>
         <?php
     }
 
@@ -322,7 +279,7 @@ class PostmanSettingsRegistry {
 	 * Get the settings option array and print one of its values
 	 */
 	public function sender_name_callback() {
-		printf( '<input type="text" id="input_sender_name" name="postman_options[sender_name]" value="%s" size="40" />', null !== $this->options->getMessageSenderName() ? esc_attr( $this->options->getMessageSenderName() ) : '' );
+		printf( '<input type="text" id="input_sender_name" class="ps-input ps-w-75" name="postman_options[sender_name]" value="%s" size="40" />', null !== $this->options->getMessageSenderName() ? esc_attr( $this->options->getMessageSenderName() ) : '' );
 	}
 
 	/**
@@ -336,7 +293,7 @@ class PostmanSettingsRegistry {
 	 * Get the settings option array and print one of its values
 	 */
 	public function from_email_callback() {
-		printf( '<input type="email" id="input_sender_email" name="postman_options[sender_email]" value="%s" size="40" class="required" placeholder="%s"/>', null !== $this->options->getMessageSenderEmail() ? esc_attr( $this->options->getMessageSenderEmail() ) : '', __( 'Required', 'post-smtp' ) );
+		printf( '<input type="email" id="input_sender_email" class="ps-input ps-w-75" name="postman_options[sender_email]" value="%s" size="40" class="required" placeholder="%s"/>', null !== $this->options->getMessageSenderEmail() ? esc_attr( $this->options->getMessageSenderEmail() ) : '', __( 'Required', 'post-smtp' ) );
 	}
 
 	/**
@@ -437,40 +394,6 @@ class PostmanSettingsRegistry {
 		printf( '</select><br/><span class="postman_input_description">%s</span>', $inputDescription );
 	}
 
-	public function notification_service_callback() {
-		$inputDescription =  __( 'Select the notification service you want to recieve alerts about failed emails.' );
-		printf( '<select id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]">', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::NOTIFICATION_SERVICE );
-		$currentKey = $this->options->getNotificationService();
-
-		$this->printSelectOption( __( 'Email', 'post-smtp' ), 'default', $currentKey );
-		$this->printSelectOption( __( 'Pushover', 'post-smtp' ), 'pushover', $currentKey );
-		$this->printSelectOption( __( 'Slack', 'post-smtp' ), 'slack', $currentKey );
-		printf( '</select><br/><span class="postman_input_description">%s</span>', $inputDescription );
-	}
-
-	public function notification_use_chrome_callback() {
-        $value = $this->options->useChromeExtension();
-        printf( '<input type="checkbox" id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]" %3$s />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::NOTIFICATION_USE_CHROME, $value ? 'checked="checked"' : '' );
-    }
-
-    public function notification_chrome_uid_callback() {
-        printf( '<input type="password" id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]" value="%3$s" />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::NOTIFICATION_CHROME_UID, PostmanUtils::obfuscatePassword( $this->options->getNotificationChromeUid() ) );
-    }
-
-	public function pushover_user_callback() {
-		printf( '<input type="password" id="pushover_user" name="%s[%s]" value="%s" />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::PUSHOVER_USER, $this->options->getPushoverUser() );
-	}
-
-	public function pushover_token_callback() {
-		printf( '<input type="password" id="pushover_token" name="%s[%s]" value="%s" />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::PUSHOVER_TOKEN, $this->options->getPushoverToken() );
-	}
-
-	public function slack_token_callback() {
-		printf( '<input type="password" id="slack_token" name="%s[%s]" value="%s" />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::SLACK_TOKEN, $this->options->getSlackToken() );
-		echo '<a target="_blank" href="https://slack.postmansmtp.com/">' . __( 'Get your webhook URL here', 'post-smtp' ) . '</a>';
-
-	}
-
 	private function printSelectOption( $label, $optionKey, $currentKey ) {
 		$optionPattern = '<option value="%1$s" %2$s>%3$s</option>';
 		printf( $optionPattern, $optionKey, $optionKey == $currentKey ? 'selected="selected"' : '', $label );
@@ -491,7 +414,13 @@ class PostmanSettingsRegistry {
 
 	public function temporaryDirectoryCallback() {
 		$inputDescription = __( 'Lockfiles are written here to prevent users from triggering an OAuth 2.0 token refresh at the same time.' );
-		printf( '<input type="text" id="input_%2$s" name="%1$s[%2$s]" value="%3$s" />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::TEMPORARY_DIRECTORY, $this->options->getTempDirectory() );
+		printf( 
+			'<input type="text" id="input_%2$s" name="%1$s[%2$s]" value="%3$s" />', 
+			PostmanOptions::POSTMAN_OPTIONS, 
+			PostmanOptions::TEMPORARY_DIRECTORY, 
+			esc_attr( $this->options->getTempDirectory() ) 
+		);
+
 		if ( PostmanState::getInstance()->isFileLockingEnabled() ) {
 			printf( ' <span style="color:green">%s</span></br><span class="postman_input_description">%s</span>', __( 'Valid', 'post-smtp' ), $inputDescription );
 		} else {

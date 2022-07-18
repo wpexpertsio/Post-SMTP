@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 
 class PostmanConnectivityTestController {
 
@@ -94,7 +97,15 @@ class PostmanConnectivityTestController {
 		wp_enqueue_style( PostmanViewController::POSTMAN_STYLE );
 		wp_enqueue_script( 'postman_port_test_script' );
 		$warning = __( 'Warning', 'post-smtp' );
-		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_hostname_element_name', '#input_' . PostmanOptions::HOSTNAME );
+
+        wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_email_test', array(
+            'recipient' => '#' . PostmanSendTestEmailController::RECIPIENT_EMAIL_FIELD_NAME,
+            'not_started' => _x( 'In Outbox', 'Email Test Status', 'post-smtp' ),
+            'sending' => _x( 'Sending...', 'Email Test Status', 'post-smtp' ),
+            'success' => _x( 'Success', 'Email Test Status', 'post-smtp' ),
+            'failed' => _x( 'Failed', 'Email Test Status', 'post-smtp' ),
+            'ajax_error' => __( 'Ajax Error', 'post-smtp' ),
+        ) );
 		PostmanConnectivityTestController::addLocalizeScriptForPortTest();
 	}
 	static function addLocalizeScriptForPortTest() {
@@ -132,11 +143,16 @@ class PostmanConnectivityTestController {
 	public function outputPortTestContent() {
 		print '<div class="wrap">';
 
+		wp_nonce_field('post-smtp', 'security');
+
 		PostmanViewController::outputChildPageHeader( __( 'Connectivity Test', 'post-smtp' ) );
 
 		print '<p>';
 		print __( 'This test determines which well-known ports are available for Postman to use.', 'post-smtp' );
 		print '<form id="port_test_form_id" method="post">';
+
+		wp_nonce_field('post-smtp', 'security' );
+
 		printf( '<label for="hostname">%s</label>', __( 'Outgoing Mail Server Hostname', 'post-smtp' ) );
 		$this->port_test_hostname_callback();
 		submit_button( _x( 'Begin Test', 'Button Label', 'post-smtp' ), 'primary', 'begin-port-test', true );
@@ -154,7 +170,7 @@ class PostmanConnectivityTestController {
 		}
 		print '</table>';
 		/* Translators: Where %s is the name of the service providing Internet connectivity test */
-		printf( '<p class="portquiz" style="display:none; font-size:0.8em">* %s</p>', sprintf( __( 'According to %s', 'post-smtp' ), '<a target="_blank" href="https://downor.me/portquiz.net">portquiz.net</a>' ) );
+		printf( '<p class="portquiz" style="display:none; font-size:0.8em">* %s</p>', sprintf( __( 'According to %s', 'post-smtp' ), '<a target="_blank" href="http://portquiz.net">portquiz.net</a>' ) );
 		printf( '<p class="ajax-loader" style="display:none"><img src="%s"/></p>', plugins_url( 'post-smtp/style/ajax-loader.gif' ) );
 		print '<section id="conclusion" style="display:none">';
 		print sprintf( '<h3>%s:</h3>', __( 'Summary', 'post-smtp' ) );
@@ -205,6 +221,9 @@ class PostmanPortTestAjaxController {
 	 * combinations to run the connectivity test on
 	 */
 	function getPortsToTestViaAjax() {
+
+	    check_admin_referer('post-smtp', 'security');
+
 		$queryHostname = PostmanUtils::getRequestParameter( 'hostname' );
 		// originalSmtpServer is what SmtpDiscovery thinks the SMTP server should be, given an email address
 		$originalSmtpServer = PostmanUtils::getRequestParameter( 'original_smtp_server' );
@@ -222,6 +241,9 @@ class PostmanPortTestAjaxController {
 	 * This Ajax function retrieves whether a TCP port is open or not
 	 */
 	function runPortQuizTest() {
+
+	    check_admin_referer('post-smtp', 'security');
+
 		$hostname = 'portquiz.net';
 		$port = intval( PostmanUtils::getRequestParameter( 'port' ) );
 		$this->logger->debug( 'testing TCP port: hostname ' . $hostname . ' port ' . $port );
@@ -235,10 +257,16 @@ class PostmanPortTestAjaxController {
 	 * This is called by both the Wizard and Port Test
 	 */
 	function runSmtpTest() {
+
+	    check_admin_referer('post-smtp', 'security');
+
 		$hostname = trim( PostmanUtils::getRequestParameter( 'hostname' ) );
 		$port = intval( PostmanUtils::getRequestParameter( 'port' ) );
 		$transport = trim( PostmanUtils::getRequestParameter( 'transport' ) );
 		$timeout = PostmanUtils::getRequestParameter( 'timeout' );
+		$logo_url = PostmanUtils::getRequestParameter( 'logo_url' );
+		$data['logo_url'] = $logo_url;
+
 		$this->logger->trace( $timeout );
 		$portTest = new PostmanPortTest( $hostname, $port );
 		if ( isset( $timeout ) ) {
@@ -252,21 +280,28 @@ class PostmanPortTestAjaxController {
 			$this->logger->debug( sprintf( 'testing HTTPS socket %s:%s (%s)', $hostname, $port, $transport ) );
 			$success = $portTest->testHttpPorts();
 		}
-		$this->buildResponse( $hostname, $port, $portTest, $success, $transport );
+
+		$this->buildResponse( $hostname, $port, $portTest, $success, $transport, $data );
 	}
 	/**
 	 * This Ajax function retrieves whether a TCP port is open or not
 	 */
 	function runSmtpsTest() {
+
+	    check_admin_referer('post-smtp', 'security');
+
 		$hostname = trim( PostmanUtils::getRequestParameter( 'hostname' ) );
 		$port = intval( PostmanUtils::getRequestParameter( 'port' ) );
 		$transport = trim( PostmanUtils::getRequestParameter( 'transport' ) );
 		$transportName = trim( PostmanUtils::getRequestParameter( 'transport_name' ) );
+		$logo_url = PostmanUtils::getRequestParameter( 'logo_url' );
+		$data['logo_url'] = $logo_url;
+
 		$this->logger->debug( sprintf( 'testing SMTPS socket %s:%s (%s)', $hostname, $port, $transport ) );
 		$portTest = new PostmanPortTest( $hostname, $port );
 		$portTest->transportName = $transportName;
 		$success = $portTest->testSmtpsPorts();
-		$this->buildResponse( $hostname, $port, $portTest, $success, $transport );
+		$this->buildResponse( $hostname, $port, $portTest, $success, $transport, $data );
 	}
 
 	/**
@@ -274,29 +309,32 @@ class PostmanPortTestAjaxController {
 	 * @param mixed $hostname
 	 * @param mixed $port
 	 * @param mixed $success
+	 * @since 2.1 @param mixed $data for extra fields
 	 */
-	private function buildResponse( $hostname, $port, PostmanPortTest $portTest, $success, $transport = '' ) {
+	private function buildResponse( $hostname, $port, PostmanPortTest $portTest, $success, $transport = '', $data = array() ) {
 		$this->logger->debug( sprintf( 'testing port result for %s:%s success=%s', $hostname, $port, $success ) );
 		$response = array(
-				'hostname' => $hostname,
-				'hostname_domain_only' => $portTest->hostnameDomainOnly,
-				'port' => $port,
-				'protocol' => $portTest->protocol,
-				'secure' => ($portTest->secure),
-				'mitm' => ($portTest->mitm),
-				'reported_hostname' => $portTest->reportedHostname,
+				'hostname'						=> $hostname,
+				'hostname_domain_only'			=> $portTest->hostnameDomainOnly,
+				'port'							=> $port,
+				'protocol'						=> $portTest->protocol,
+				'secure'						=> ($portTest->secure),
+				'mitm'							=> ($portTest->mitm),
+				'reported_hostname'				=> $portTest->reportedHostname,
 				'reported_hostname_domain_only' => $portTest->reportedHostnameDomainOnly,
-				'message' => $portTest->getErrorMessage(),
-				'start_tls' => $portTest->startTls,
-				'auth_plain' => $portTest->authPlain,
-				'auth_login' => $portTest->authLogin,
-				'auth_crammd5' => $portTest->authCrammd5,
-				'auth_xoauth' => $portTest->authXoauth,
-				'auth_none' => $portTest->authNone,
-				'try_smtps' => $portTest->trySmtps,
-				'success' => $success,
-				'transport' => $transport,
+				'message' 						=> $portTest->getErrorMessage(),
+				'start_tls' 					=> $portTest->startTls,
+				'auth_plain' 					=> $portTest->authPlain,
+				'auth_login' 					=> $portTest->authLogin,
+				'auth_crammd5' 					=> $portTest->authCrammd5,
+				'auth_xoauth' 					=> $portTest->authXoauth,
+				'auth_none' 					=> $portTest->authNone,
+				'try_smtps' 					=> $portTest->trySmtps,
+				'success' 						=> $success,
+				'transport' 					=> $transport,
+				'data'							=> $data
 		);
+
 		$this->logger->trace( 'Ajax response:' );
 		$this->logger->trace( $response );
 		if ( $success ) {

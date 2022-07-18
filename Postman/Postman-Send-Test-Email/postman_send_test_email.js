@@ -14,19 +14,27 @@ jQuery(document).ready(
 								stepsOrientation : "vertical",
 								autoFocus : true,
 								labels : {
-									current : steps_current_step,
-									pagination : steps_pagination,
-									finish : steps_finish,
-									next : steps_next,
-									previous : steps_previous,
-									loading : steps_loading
+									current : post_smtp_localize.steps_current_step,
+									pagination : post_smtp_localize.steps_pagination,
+									finish : post_smtp_localize.steps_finish,
+									next : post_smtp_localize.steps_next,
+									previous : post_smtp_localize.steps_previous,
+									loading : post_smtp_localize.steps_loading
 								},
-								onStepChanging : function(event, currentIndex,
-										newIndex) {
-									return handleStepChange(event,
-											currentIndex, newIndex,
-											jQuery(this));
+								onStepChanging : function( event, currentIndex, newIndex ) {
+									
+									var response;
+									
+									response = handleStepChange(event, currentIndex, newIndex, jQuery(this) );
 
+									if( response ) {
+										
+										if( !jQuery( `#postman_test_email_wizard-t-${currentIndex} span` ).hasClass( 'dashicons' ) )
+											jQuery( `#postman_test_email_wizard-t-${currentIndex}` ).append( '<span class="ps-right dashicons dashicons-yes-alt"></span>' );
+									
+									}
+							
+									return response;
 								},
 								onInit : function() {
 									jQuery(postman_email_test.recipient)
@@ -107,7 +115,8 @@ function postHandleStepChange(event, currentIndex, priorIndex, myself) {
 		jQuery('li').addClass('disabled');
 		var data = {
 			'action' : 'postman_send_test_email',
-			'email' : jQuery(postman_email_test.recipient).val()
+			'email' : jQuery(postman_email_test.recipient).val(),
+			'security' : jQuery('#security').val()
 		};
 		jQuery('#postman_test_message_status').html(postman_email_test.sending);
 		jQuery('#postman_test_message_status').css('color', 'blue');

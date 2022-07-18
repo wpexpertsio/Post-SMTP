@@ -1,10 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 /*
  * Plugin Name: Post SMTP
  * Plugin URI: https://wordpress.org/plugins/post-smtp/
  * Description: Email not reliable? Post SMTP is the first and only WordPress SMTP plugin to implement OAuth 2.0 for Gmail, Hotmail and Yahoo Mail. Setup is a breeze with the Configuration Wizard and integrated Port Tester. Enjoy worry-free delivery even if your password changes!
- * Version: 2.0.1
- * Author: Yehuda Hassine
+ * Version: 2.1.4-rc.1
+ * Author: Post SMTP
  * Text Domain: post-smtp
  * Author URI: https://postmansmtp.com
  * License: GPLv2 or later
@@ -23,25 +26,56 @@
 // filter print_postman_status: apply this filter to print the human-readable plugin state
 // filter postman_module: implement this filter and return the instance of the module
 // filter postman_register_modules: apply this filter to register the module
-// TODO v1.7
-// -- Postmark API http://plugins.svn.wordpress.org/postmark-approved-wordpress-plugin/trunk/postmark.php
-// -- Amazon SES API http://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-email-api.html
-// TODO v2.0
-// -- PHP7 compatibility
-// -- class autoloading
-// -- Add dismiss option for "unconfigured message" .. for multisites
-// -- customize sent-mail icon WordPress dashboard
-// -- multiple mailbox support
 
+/** 
+ * Freemius initialization
+ * 
+ * @since 2.1.1
+ * @version 1.0
+ */
+if ( ! function_exists( 'ps_fs' ) ) {
+    // Create a helper function for easy SDK access.
+    function ps_fs() {
+        global $ps_fs;
+
+        if ( ! isset( $ps_fs ) ) {
+            // Include Freemius SDK.
+            require_once dirname(__FILE__) . '/freemius/start.php';
+
+            $ps_fs = fs_dynamic_init( array(
+                'id'                  => '10461',
+                'slug'                => 'post-smtp',
+                'type'                => 'plugin',
+                'public_key'          => 'pk_28fcefa3d0ae86f8cdf6b7f71c0cc',
+                'is_premium'          => false,
+                'has_addons'          => true,
+                'has_paid_plans'      => false,
+                'menu'                => array(
+                    'slug'           => 'postman',
+                    'first-path'     => 'admin.php?page=postman',
+                    'account'        => false,
+                ),
+            ) );
+        }
+
+        return $ps_fs;
+    }
+
+    // Init Freemius.
+    ps_fs();
+    // Signal that SDK was initiated.
+    do_action( 'ps_fs_loaded' );
+}
 
 /**
  * DO some check and Start Postman
  */
 
-define( 'POST_BASE', __FILE__ );
-define( 'POST_PATH', __DIR__ );
-define( 'POST_URL', plugins_url('', POST_BASE ) );
-define( 'POST_SMTP_VER', '2.0.1' );
+define( 'POST_SMTP_BASE', __FILE__ );
+define( 'POST_SMTP_PATH', __DIR__ );
+define( 'POST_SMTP_URL', plugins_url('', POST_SMTP_BASE ) );
+define( 'POST_SMTP_VER', '2.1.4' );
+define( 'POST_SMTP_ASSETS', plugin_dir_url( __FILE__ ) . 'assets/' );
 
 $postman_smtp_exist = in_array( 'postman-smtp/postman-smtp.php', (array) get_option( 'active_plugins', array() ) );
 $required_php_version = version_compare( PHP_VERSION, '5.6.0', '<' );
@@ -57,7 +91,7 @@ if ( $postman_smtp_exist || $required_php_version ) {
 		add_action( 'admin_notices', 'post_smtp_plugin_admin_notice_version' );
 	}
 } else {
-	post_start( memory_get_usage() );
+	post_smtp_start( memory_get_usage() );
 }
 
 
@@ -113,12 +147,21 @@ function post_dismiss_not_configured() {
 }
 add_action( 'admin_footer', 'post_dismiss_not_configured' );
 
+function post_smtp_general_scripts() {
+    $localize = include( POST_SMTP_PATH . '/Postman/Localize.php' );
+    wp_register_script( 'post-smtp-localize', POST_SMTP_URL . '/script/localize.js', [], false );
+    wp_localize_script( 'post-smtp-localize', 'post_smtp_localize', $localize );
+    wp_enqueue_script( 'post-smtp-localize' );
+    wp_enqueue_script( 'post-smtp-hooks', POST_SMTP_URL . '/script/post-smtp-hooks.js', [], false );
+}
+add_action( 'admin_enqueue_scripts', 'post_smtp_general_scripts', 8 );
+
 /**
  * Create the main Postman class to start Postman
  *
  * @param mixed $startingMemory
  */
-function post_start( $startingMemory ) {
+function post_smtp_start( $startingMemory ) {
 	post_setupPostman();
 	PostmanUtils::logMemoryUse( $startingMemory, 'Postman' );
 }
@@ -129,4 +172,5 @@ function post_start( $startingMemory ) {
 function post_setupPostman() {
 	require_once 'Postman/Postman.php';
 	$kevinCostner = new Postman( __FILE__, POST_SMTP_VER );
+	do_action( 'post_smtp_init');
 }

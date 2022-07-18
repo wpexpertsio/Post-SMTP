@@ -42,7 +42,7 @@ function postmanSmtpInit() {
 			show('p#wizard_oauth2_help');
 			jQuery('p#wizard_oauth2_help').html(
 					response.configuration.help_text);
-			jQuery(postman_redirect_url_el).val(
+			jQuery(post_smtp_localize.postman_redirect_url_el).val(
 					response.configuration.redirect_url);
 			jQuery('#input_oauth_callback_domain').val(
 					response.configuration.callback_domain);

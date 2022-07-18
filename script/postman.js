@@ -1,6 +1,15 @@
 jQuery(document).ready(function($) {
 	$( ".email-log-date" ).datepicker();
 
+	$('.post-smtp-reset-options').on('submit', function(e) {
+		var result = confirm('Are you sure?');
+
+		if ( ! result ) {
+			e.preventDefault();
+			return false;
+		}
+	});
+
 	$('.notice-dismiss.postman-release-message').on('click', function() {
 		var $this = $(this);
 		var args = {
@@ -27,11 +36,21 @@ jQuery(document).ready(function($) {
 	});
 
 	$('#postman_trash_all').on('click',function(e) {
-		if (confirm("Are You Sure?") == false) {
-		    e.preventDefault();
+		e.preventDefault();
 
+		if (confirm("Are You Sure?") == false) {
 		    return false;
 		}
+
+		let security = $('#post-smtp-log-nonce').val();
+
+		$.post(ajaxurl, {action: 'post_smtp_log_trash_all', security: security}, function(result) {
+			if ( result.success ) {
+				location.reload();
+			} else {
+				alert(result.data);
+			}
+		}, 'json');
 	});
 
 	$('.release-lock-file').on('click', function(e) {
@@ -44,6 +63,28 @@ jQuery(document).ready(function($) {
 		});
 
 	});
+	
+	//Discard less secure notification
+	$( document ).on( 'click', '#discard-less-secure-notification', function( e ) {
+		e.preventDefault();
+
+		$.ajax( {
+			type: 'POST',
+			url: ajaxurl,
+			data: {
+				action: 'ps-discard-less-secure-notification',
+				_wp_nonce: postman_ajax.lessSecureNotice
+			},
+			success: function(data) {
+				$( '.ps-less-secure-notice .notice-dismiss' ).click();
+            },
+			error: function(data) {debugger
+                alert( data.responseJSON.data.message );
+            },
+		} )
+
+		$( '.ps-less-secure-notice .notice-dismiss' ).click();
+	} )
 });
 
 var redirectUrlWarning = false;
@@ -91,7 +132,7 @@ function handleConfigurationResponse(response) {
 	if (response.display_auth == 'oauth2') {
 		show('p#wizard_oauth2_help');
 		jQuery('p#wizard_oauth2_help').html(response.help_text);
-		jQuery(postman_redirect_url_el).val(response.redirect_url);
+		jQuery(post_smtp_localize.postman_redirect_url_el).val(response.redirect_url);
 		jQuery('#input_oauth_callback_domain').val(response.callback_domain);
 		jQuery('#client_id').html(response.client_id_label);
 		jQuery('#client_secret').html(response.client_secret_label);

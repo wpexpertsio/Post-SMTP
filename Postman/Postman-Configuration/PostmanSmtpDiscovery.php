@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 if (! class_exists ( 'PostmanSmtpMappings' )) {
 	class PostmanSmtpMappings {
 		// if an email is in this domain array, it is a known smtp server (easy lookup)

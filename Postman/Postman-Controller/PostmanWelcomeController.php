@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 
 class PostmanWelcomeController {
 
@@ -186,11 +189,6 @@ class PostmanWelcomeController {
 
 			<h4 class="wp-people-group"><?php esc_html_e( 'Project Leaders', 'post-smtp' ); ?></h4>
 			<ul class="wp-people-group " id="wp-people-group-project-leaders">
-				<li class="wp-person" id="wp-person-jasonhendriks">
-					<a href="https://profiles.wordpress.org/jasonhendriks"><img src="https://secure.gravatar.com/avatar/8692c7b6084517a592f6cad107f7bcb0?s=60&d=mm&r=g" class="gravatar" alt="Jason Hendriks " /></a>
-					<a class="web" href="http://profiles.wordpress.org/matt">Jason Hendriks</a>
-					<span class="title"><?php esc_html_e( 'Founding Developer (abandoned)', 'post-smtp' ); ?></span>
-				</li>
 				<li class="wp-person" id="wp-person-yehudah">
 					<a href="http://profiles.wordpress.org/yehudah"><img src="https://secure.gravatar.com/avatar/c561638d04ea8fef351f974dbb9ece39?s=60&d=mm&r=g" class="gravatar" alt="Yehuda Hassine" /></a>
 					<a class="web" href="http://profiles.wordpress.org/yehudah">Yehuda Hassine</a>

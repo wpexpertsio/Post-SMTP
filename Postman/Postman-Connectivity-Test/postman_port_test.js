@@ -2,7 +2,7 @@ postman_begin_test_button_id = 'input#begin-port-test';
 
 jQuery(document).ready(function() {
 	var elHostname = jQuery(postman_begin_test_button_id);
-	jQuery(postman_hostname_element_name).focus();
+	jQuery(post_smtp_localize.postman_hostname_element_name).focus();
 	elHostname.click(function() {
 		valid = jQuery('#port_test_form_id').valid();
 		if (!valid) {
@@ -20,10 +20,11 @@ jQuery(document).ready(function() {
 		$elTestingTable.show();
 		show('.portquiz');
 
-		var hostname = jQuery(postman_hostname_element_name).val();
+		var hostname = jQuery(post_smtp_localize.postman_hostname_element_name).val();
 		var data = {
 			'action' : 'postman_get_hosts_to_test',
-			'hostname' : hostname
+			'hostname' : hostname,
+			'security' : jQuery('#security').val(),
 		};
 
 		totalPortsTested = 0;
@@ -44,7 +45,7 @@ jQuery(document).ready(function() {
 
 /**
  * Handles the response from the server of the list of sockets to check.
- * 
+ *
  * @param hostname
  * @param response
  */
@@ -71,7 +72,8 @@ function portQuizTest(socket, hostname, port) {
 	var data = {
 		'action' : 'postman_port_quiz_test',
 		'hostname' : hostname,
-		'port' : port
+		'port' : port,
+		'security' : jQuery('#security').val(),
 	};
 	jQuery.post(
 			ajaxurl,
@@ -104,7 +106,8 @@ function firstServiceTest(socket, hostname, port, open) {
 	var data = {
 		'action' : 'postman_test_port',
 		'hostname' : hostname,
-		'port' : port
+		'port' : port,
+		'security' : jQuery('#security').val(),
 	};
 	jQuery
 			.post(
@@ -197,7 +200,8 @@ function portTest3(socket, hostname, port, open) {
 	var data = {
 		'action' : 'postman_test_smtps',
 		'hostname' : hostname,
-		'port' : port
+		'port' : port,
+		'security' : jQuery('#security').val(),
 	};
 	jQuery
 			.post(
@@ -258,7 +262,7 @@ function enableButtonCheck() {
 	if (totalPortsTested >= portsToBeTested) {
 		enable(postman_begin_test_button_id);
 		hideLoaderIcon();
-		jQuery(postman_hostname_element_name).focus();
+		jQuery(post_smtp_localize.postman_hostname_element_name).focus();
 	}
 }
 function inspectResponse(id, response, port) {

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
 if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 	class PostmanInputSanitizer {
 		private $logger;
@@ -17,6 +20,11 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 		 *        	Contains all settings fields as array keys
 		 */
 		public function sanitize( $input ) {
+			
+		    if ( array_key_exists( 'external_option', $input ) ) {
+		        return $input;
+            }
+
 			$this->logger->debug( 'Sanitizing data before storage' );
 
 			$new_input = array();
@@ -49,6 +57,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizePassword( 'Password', PostmanOptions::BASIC_AUTH_PASSWORD, $input, $new_input, $this->options->getPassword() );
 			$this->sanitizePassword( 'Mandrill API Key', PostmanOptions::MANDRILL_API_KEY, $input, $new_input, $this->options->getMandrillApiKey() );
 			$this->sanitizePassword( 'SendGrid API Key', PostmanOptions::SENDGRID_API_KEY, $input, $new_input, $this->options->getSendGridApiKey() );
+			$this->sanitizePassword( 'Sendinblue API Key', PostmanOptions::SENDINBLUE_API_KEY, $input, $new_input, $this->options->getSendinblueApiKey() );
 			$this->sanitizePassword( 'Mailgun API Key', PostmanOptions::MAILGUN_API_KEY, $input, $new_input, $this->options->getMailgunApiKey() );
 			$this->sanitizeString( 'Mailgun Domain Name', PostmanOptions::MAILGUN_DOMAIN_NAME, $input, $new_input );
 			$this->sanitizeString( 'Reply-To', PostmanOptions::REPLY_TO, $input, $new_input );
@@ -70,16 +79,6 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizeInt( 'Transcript Size', PostmanOptions::TRANSCRIPT_SIZE, $input, $new_input );
 			$this->sanitizeString( 'Temporary Directory', PostmanOptions::TEMPORARY_DIRECTORY, $input, $new_input );
 
-			// Notifications
-			$this->sanitizeString( 'Pushover Service', PostmanOptions::NOTIFICATION_SERVICE, $input, $new_input, $this->options->getNotificationService() );
-			$this->sanitizePassword( 'Pushover Username', PostmanOptions::PUSHOVER_USER, $input, $new_input, $this->options->getPushoverUser() );
-			$this->sanitizePassword( 'Pushover Token', PostmanOptions::PUSHOVER_TOKEN, $input, $new_input, $this->options->getPushoverToken() );
-			$this->sanitizePassword( 'Slack Token', PostmanOptions::SLACK_TOKEN, $input, $new_input, $this->options->getSlackToken() );
-
-			// Chrome extension
-            $this->sanitizeString( 'Push Chrome Extension', PostmanOptions::NOTIFICATION_USE_CHROME, $input, $new_input );
-            $this->sanitizePassword( 'Push Chrome Extension UID', PostmanOptions::NOTIFICATION_CHROME_UID, $input, $new_input, $this->options->getNotificationChromeUid() );
-
             // Fallback
             $this->sanitizeString( 'Use fallback', PostmanOptions::FALLBACK_SMTP_ENABLED, $input, $new_input );
             $this->sanitizeString( 'Fallback hostname', PostmanOptions::FALLBACK_SMTP_HOSTNAME, $input, $new_input );
@@ -89,6 +88,8 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizeString( 'Fallback username', PostmanOptions::FALLBACK_FROM_EMAIL, $input, $new_input );
             $this->sanitizeString( 'Fallback username', PostmanOptions::FALLBACK_SMTP_USERNAME, $input, $new_input );
             $this->sanitizePassword( 'Fallback password', PostmanOptions::FALLBACK_SMTP_PASSWORD, $input, $new_input, $this->options->getFallbackPassword() );
+
+            $new_input = apply_filters( 'post_smtp_sanitize', $new_input, $input, $this );
 
 			if ( $new_input [ PostmanOptions::CLIENT_ID ] != $this->options->getClientId() || $new_input [ PostmanOptions::CLIENT_SECRET ] != $this->options->getClientSecret() || $new_input [ PostmanOptions::HOSTNAME ] != $this->options->getHostname() ) {
 				$this->logger->debug( 'Recognized new Client ID' );
@@ -112,10 +113,11 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 
 			return $new_input;
 		}
-		private function sanitizeString( $desc, $key, $input, &$new_input ) {
+
+		public function sanitizeString( $desc, $key, $input, &$new_input ) {
 			if ( isset( $input [ $key ] ) ) {
 				$this->logSanitize( $desc, $input [ $key ] );
-				$new_input [ $key ] = trim( $input [ $key ] );
+				$new_input [ $key ] = sanitize_text_field( trim( $input [ $key ] ) );
 			}
 		}
 
@@ -127,7 +129,8 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 		 * @param mixed $input
 		 * @param mixed $new_input
 		 */
-		private function sanitizePassword( $desc, $key, $input, &$new_input, $existingPassword ) {
+		public function sanitizePassword( $desc, $key, $input, &$new_input, $existingPassword ) {
+
 			// WordPress calling Sanitize twice is a known issue
 			// https://core.trac.wordpress.org/ticket/21989
 			$action = PostmanSession::getInstance()->getAction();
@@ -143,7 +146,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 					$new_input [ $key ] = $existingPassword;
 				} else {
 					// otherwise the password is new, so trim it
-					$new_input [ $key ] = trim( $input [ $key ] );
+					$new_input [ $key ] = sanitize_text_field( trim( $input [ $key ] ) );
 				}
 				// log it
 				$this->logSanitize( $desc, $new_input [ $key ] );
@@ -152,6 +155,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			}
 			$this->logger->debug( sprintf( 'Encoding %s as %s', $desc, $new_input [ $key ] ) );
 		}
+
 		private function sanitizeLogMax( $desc, $key, $input, &$new_input ) {
 			if ( isset( $input [ $key ] ) ) {
 				$value = absint( $input [ $key ] );
@@ -161,10 +165,11 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 					$h->addError( sprintf( '%s %s', __( 'Maximum Log Entries', 'post-smtp' ), __( 'must be greater than 0', 'post-smtp' ) ) );
 				} else {
 					$this->logSanitize( $desc, $input [ $key ] );
-					$new_input [ $key ] = $value;
+					$new_input [ $key ] = absint($value);
 				}
 			}
 		}
+
 		private function sanitizeInt( $desc, $key, $input, &$new_input ) {
 			if ( isset( $input [ $key ] ) ) {
 				$this->logSanitize( $desc, $input [ $key ] );

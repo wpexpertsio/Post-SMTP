@@ -103,7 +103,7 @@ class OptionsResolver implements Options
      *
      * The closure will be evaluated when {@link resolve()} is called. The
      * closure has access to the resolved values of other options through the
-     * passed {@link Options} instance:
+     * passed {@link Admin} instance:
      *
      *     function (Options $options) {
      *         if (isset($options['port'])) {
@@ -120,7 +120,7 @@ class OptionsResolver implements Options
      *         // 'Default Name' === $previousValue
      *     });
      *
-     * This is mostly useful if the configuration of the {@link Options} object
+     * This is mostly useful if the configuration of the {@link Admin} object
      * is spread across different locations of your code, such as base and
      * sub-classes.
      *
@@ -361,7 +361,7 @@ class OptionsResolver implements Options
      *
      * The closure is invoked when {@link resolve()} is called. The closure
      * has access to the resolved values of other options through the passed
-     * {@link Options} instance.
+     * {@link Admin} instance.
      *
      * The second parameter passed to the closure is the value of
      * the option.

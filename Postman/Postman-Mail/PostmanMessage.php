@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 if ( ! class_exists( 'PostmanMessage' ) ) {
 
 	require_once 'PostmanEmailAddress.php';
@@ -446,7 +450,13 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 					break;
 				case 'reply-to' :
 					$this->logProcessHeader( 'Reply-To', $name, $content );
-					$this->setReplyTo( $content );
+                    $pattern = '/[a-z0-9_\-\+\.]+@[a-z0-9\-]+\.([a-z]{2,4})(?:\.[a-z]{2})?/i';
+                    preg_match_all($pattern, $content, $matches);
+
+                    if ( isset( $matches[0] ) && isset( $matches[0][0] ) && filter_var( $matches[0][0], FILTER_VALIDATE_EMAIL ) ) {
+                        $this->setReplyTo( $content );
+                    }
+
 					break;
 				case 'sender' :
 					$this->logProcessHeader( 'Sender', $name, $content );
