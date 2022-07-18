@@ -193,7 +193,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 			$message .= "\r\n" . __( 'The log to paste when you open a support issue:', 'post-smtp' ) . "\r\n";
 
 			if ( $log->statusMessage && ! empty( $log->statusMessage ) ) {
-				require_once POST_PATH . '/Postman/notifications/PostmanNotify.php';
+				require_once POST_SMTP_PATH . '/Postman/notifications/PostmanNotify.php';
 
 				$message = $message . $log->statusMessage;
 
@@ -211,6 +211,8 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 					default:
 						$notifyer = new PostmanMailNotify;
 				}
+
+				$notifyer = apply_filters( 'post_smtp_notifier', $notifyer, $notification_service );
 
                 // Notifications
 				$notify = new PostmanNotify( $notifyer );

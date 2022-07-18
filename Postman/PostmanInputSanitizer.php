@@ -121,7 +121,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 		public function sanitizeString( $desc, $key, $input, &$new_input ) {
 			if ( isset( $input [ $key ] ) ) {
 				$this->logSanitize( $desc, $input [ $key ] );
-				$new_input [ $key ] = trim( $input [ $key ] );
+				$new_input [ $key ] = sanitize_text_field( trim( $input [ $key ] ) );
 			}
 		}
 
@@ -149,7 +149,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 					$new_input [ $key ] = $existingPassword;
 				} else {
 					// otherwise the password is new, so trim it
-					$new_input [ $key ] = trim( $input [ $key ] );
+					$new_input [ $key ] = sanitize_text_field( trim( $input [ $key ] ) );
 				}
 				// log it
 				$this->logSanitize( $desc, $new_input [ $key ] );
@@ -158,6 +158,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			}
 			$this->logger->debug( sprintf( 'Encoding %s as %s', $desc, $new_input [ $key ] ) );
 		}
+
 		private function sanitizeLogMax( $desc, $key, $input, &$new_input ) {
 			if ( isset( $input [ $key ] ) ) {
 				$value = absint( $input [ $key ] );
@@ -167,10 +168,11 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 					$h->addError( sprintf( '%s %s', __( 'Maximum Log Entries', 'post-smtp' ), __( 'must be greater than 0', 'post-smtp' ) ) );
 				} else {
 					$this->logSanitize( $desc, $input [ $key ] );
-					$new_input [ $key ] = $value;
+					$new_input [ $key ] = absint($value);
 				}
 			}
 		}
+
 		private function sanitizeInt( $desc, $key, $input, &$new_input ) {
 			if ( isset( $input [ $key ] ) ) {
 				$this->logSanitize( $desc, $input [ $key ] );

@@ -110,9 +110,10 @@ class PostmanEmailLogView extends WP_List_Table {
 		}
 		if ( ! (empty( $meta_values ['original_to'] [0] ) && empty( $meta_values ['originalHeaders'] [0] )) ) {
 			// $actions ['resend'] = sprintf ( '<a href="%s">%s</a>', $resendUrl, __ ( 'Resend', 'post-smtp' ) );
-			$emails = maybe_unserialize( $meta_values ['original_to'] [0] );
-			$to = is_array( $emails ) ? implode( ',', $emails ) : $emails;
-			$actions ['resend'] = sprintf( '<span id="%3$s"><a class="postman-open-resend" href="#">%2$s</a></span><div style="display:none;"><input type="hidden" name="security" value="%6$s"><input type="text" name="mail_to" class="regular-text ltr" data-id="%1$s" value="%4$s"><button class="postman-resend button button-primary">%2$s</button><i style="color: black;">%5$s</i></div>', $item ['ID'], __( 'Resend', 'post-smtp' ), 'resend-' . $item ['ID'], esc_attr( $to ), __( 'comma-separated for multiple emails', 'post-smtp' ), wp_create_nonce( 'resend' ) );
+			$emails = $meta_values ['original_to'] [0];
+            $to = is_array( $emails ) ? implode( ',', array_walk($emails, 'sanitize_email') ) : sanitize_email( $emails );
+
+            $actions ['resend'] = sprintf( '<span id="%3$s"><a class="postman-open-resend" href="#">%2$s</a></span><div style="display:none;"><input type="hidden" name="security" value="%6$s"><input type="text" name="mail_to" class="regular-text ltr" data-id="%1$s" value="%4$s"><button class="postman-resend button button-primary">%2$s</button><i style="color: black;">%5$s</i></div>', $item ['ID'], __( 'Resend', 'post-smtp' ), 'resend-' . $item ['ID'], esc_attr( $to ), __( 'comma-separated for multiple emails', 'post-smtp' ), wp_create_nonce( 'resend' ) );
 		} else {
 			$actions ['resend'] = sprintf( '%2$s', $resendUrl, __( 'Resend', 'post-smtp' ) );
 		}
@@ -262,10 +263,8 @@ class PostmanEmailLogView extends WP_List_Table {
 	 *       ************************************************************************
 	 */
 	function prepare_items() {
-	    if ( isset( $_POST['action'] ) && $_POST['action'] == 'post-smtp-filter' ) {
-            if ( ! wp_verify_nonce( $_REQUEST['post-smtp-log'], 'post-smtp' ) )
-                die( 'Security check' );
-        }
+        if ( ! empty( $_POST ) && ! wp_verify_nonce( $_REQUEST['post-smtp-log'], 'post-smtp' ) )
+            die( 'Security check' );
 
             /**
 		 * First, lets decide how many records per page to show
@@ -396,8 +395,8 @@ class PostmanEmailLogView extends WP_List_Table {
 		 * sorting technique would be unnecessary.
 		 */
 		function usort_reorder( $a, $b ) {
-			$orderby = ( ! empty( $_REQUEST ['orderby'] )) ? $_REQUEST ['orderby'] : 'title'; // If no sort, default to title
-			$order = ( ! empty( $_REQUEST ['order'] )) ? $_REQUEST ['order'] : 'asc'; // If no order, default to asc
+			$orderby = ( ! empty( $_REQUEST ['orderby'] )) ? sanitize_text_field($_REQUEST ['orderby']) : 'title'; // If no sort, default to title
+			$order = ( ! empty( $_REQUEST ['order'] )) ? sanitize_text_field($_REQUEST ['order']) : 'asc'; // If no order, default to asc
 			$result = strcmp( $a [ $orderby ], $b [ $orderby ] ); // Determine sort order
 			return ($order === 'asc') ? $result : - $result; // Send final sort direction to usort
 		}

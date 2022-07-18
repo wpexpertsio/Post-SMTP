@@ -128,11 +128,13 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				$this->logger->debug( 'Looking for grant code' );
 				if ( isset( $_GET ['code'] ) ) {
 					$this->logger->debug( 'Found authorization grant code' );
+
 					// queue the function that processes the incoming grant code
 					$this->registerInitFunction( 'handleAuthorizationGrant' );
 					return;
 				}
 			}
+            do_action('post_smtp_handle_oauth', $this->messageHandler );
 
 			// continue to initialize the AdminController
 			add_action( 'init', array(
@@ -328,7 +330,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			$this->logger->debug( 'is wpnonce import-settings?' );
 			$success = true;
 			if ( wp_verify_nonce( $_REQUEST ['_wpnonce'], PostmanAdminController::IMPORT_SETTINGS_SLUG ) ) {
-				$success = PostmanOptions::getInstance()->import( $_POST ['settings'] );
+				$success = PostmanOptions::getInstance()->import( sanitize_textarea_field($_POST ['settings']) );
 			} else {
 				$success = false;
 			}

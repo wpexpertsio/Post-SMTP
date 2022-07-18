@@ -91,7 +91,7 @@ class Postman {
 		}
 
 		if ( isset( $_REQUEST ['page'] ) && $this->logger->isTrace() ) {
-			$this->logger->trace( 'Current page: ' . $_REQUEST ['page'] );
+			$this->logger->trace( 'Current page: ' . sanitize_text_field($_REQUEST ['page']) );
 		}
 
 		// register the email transports
@@ -369,9 +369,9 @@ class Postman {
                 <?php _e('Post SMTP v2 includes and new feature called: <b>Mailer Type</b>.', 'post-smtp' ); ?><br>
                 <?php _e('I highly recommend to change and <strong>TEST</strong> Post SMTP with the value <code>PHPMailer</code>.', 'post-smtp' ); ?><br>
                 <?php _e('if it will not work properly you can change back to the default value: <code>PostSMTP</code>.', 'post-smtp' ); ?><br>
-                <a target="_blank" href="<?php echo POST_URL; ?>/style/images/mailer-type.gif">
+                <a target="_blank" href="<?php echo POST_SMTP_URL; ?>/style/images/mailer-type.gif">
                     <figure>
-                        <img width="180" src="<?php echo POST_URL; ?>/style/images/mailer-type.gif" alt="how to set mailer type">
+                        <img width="180" src="<?php echo POST_SMTP_URL; ?>/style/images/mailer-type.gif" alt="how to set mailer type">
                         <figcaption><?php _e('click to enlarge image.', 'post-smtp' ); ?></figcaption>
                     </figure>
                 </a>

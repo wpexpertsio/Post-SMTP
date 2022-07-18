@@ -18,15 +18,16 @@ th#date {
 .postman-log-row {
     padding: 20px;
     display: flex;
-    justify-content: space-around;
     align-items: center;
-    border-bottom: 1px solid #ddd;    
+    border-bottom: 1px solid #ddd;
+    flex-wrap: wrap;
 }
 
 #postman_page_records {
 	padding: 10px;
 	line-height: normal;
 	height: auto;
+    margin-right: 10px;
 }
 
 #postman-log-actions {

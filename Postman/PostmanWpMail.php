@@ -82,7 +82,8 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
                 $hostName = php_uname('n');
             }
 
-            return $id . '@' . $hostName;
+            return $id . '@' . str_replace('www.', '', $hostName);
+
         }
 
 		/**

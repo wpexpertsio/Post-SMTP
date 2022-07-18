@@ -390,17 +390,19 @@ class PostmanConfigurationController {
 		print '<section id="notifications">';
 		do_settings_sections( PostmanAdminController::NOTIFICATIONS_OPTIONS );
 
-			$currentKey = $this->options->getNotificationService();
-			$pushover = $currentKey == 'pushover' ? 'block' : 'none';
-			$slack = $currentKey == 'slack' ? 'block' : 'none';
+        $currentKey = $this->options->getNotificationService();
+        $pushover = $currentKey == 'pushover' ? 'block' : 'none';
+        $slack = $currentKey == 'slack' ? 'block' : 'none';
 
-			echo '<div id="pushover_cred" style="display: ' . $pushover . ';">';
-			do_settings_sections( PostmanAdminController::NOTIFICATIONS_PUSHOVER_CRED );
-			echo '</div>';
+        echo '<div id="pushover_cred" style="display: ' . $pushover . ';">';
+        do_settings_sections( PostmanAdminController::NOTIFICATIONS_PUSHOVER_CRED );
+        echo '</div>';
 
-			echo '<div id="slack_cred" style="display: ' . $slack . ';">';
-			do_settings_sections( PostmanAdminController::NOTIFICATIONS_SLACK_CRED );
-			echo '</div>';
+        echo '<div id="slack_cred" style="display: ' . $slack . ';">';
+        do_settings_sections( PostmanAdminController::NOTIFICATIONS_SLACK_CRED );
+        echo '</div>';
+
+        do_action( 'post_smtp_notification_settings' );
 
 		print '</section>';
 
@@ -608,7 +610,7 @@ class PostmanConfigurationController {
 		Postman::getMailerTypeRecommend();
 
 		$in_wizard = true;
-		include_once POST_PATH . '/Postman/extra/donation.php';
+		include_once POST_SMTP_PATH . '/Postman/extra/donation.php';
 
 		print '</section>';
 		print '</fieldset>';

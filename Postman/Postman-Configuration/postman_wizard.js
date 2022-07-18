@@ -517,6 +517,8 @@ function handleConfigurationResponse(response) {
 			jQuery('#pushover_cred').fadeOut('fast');
 			jQuery('#slack_cred').fadeIn();
 		}
+
+		Hook.call( 'post_smtp_notification_change', selected );
 	});
 
 	// add an event on the user port override field

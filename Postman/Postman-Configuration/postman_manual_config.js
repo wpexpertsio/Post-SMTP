@@ -40,6 +40,9 @@ jQuery(document).ready(
 					$('#pushover_cred').fadeOut('fast');
 					$('#slack_cred').fadeIn();
 				}
+
+				Hook.call( 'post_smtp_notification_change', selected );
+
 			});
 			
 

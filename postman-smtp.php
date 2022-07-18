@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin Name: Post SMTP
  * Plugin URI: https://wordpress.org/plugins/post-smtp/
  * Description: Email not reliable? Post SMTP is the first and only WordPress SMTP plugin to implement OAuth 2.0 for Gmail, Hotmail and Yahoo Mail. Setup is a breeze with the Configuration Wizard and integrated Port Tester. Enjoy worry-free delivery even if your password changes!
- * Version: 2.0.4
+ * Version: 2.0.5
  * Author: Yehuda Hassine
  * Text Domain: post-smtp
  * Author URI: https://postmansmtp.com
@@ -41,10 +41,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * DO some check and Start Postman
  */
 
-define( 'POST_BASE', __FILE__ );
-define( 'POST_PATH', __DIR__ );
-define( 'POST_URL', plugins_url('', POST_BASE ) );
-define( 'POST_SMTP_VER', '2.0.4' );
+define( 'POST_SMTP_BASE', __FILE__ );
+define( 'POST_SMTP_PATH', __DIR__ );
+define( 'POST_SMTP_URL', plugins_url('', POST_SMTP_BASE ) );
+define( 'POST_SMTP_VER', '2.0.5' );
+define( 'POST_SMTP_SHOW_RELEASE_MESSAGE', false );
+define( 'POST_SMTP_RELEASE_MESSAGE', false );
+define( 'POST_SMTP_RELEASE_URL', '#' );
 
 $postman_smtp_exist = in_array( 'postman-smtp/postman-smtp.php', (array) get_option( 'active_plugins', array() ) );
 $required_php_version = version_compare( PHP_VERSION, '5.6.0', '<' );
@@ -60,7 +63,7 @@ if ( $postman_smtp_exist || $required_php_version ) {
 		add_action( 'admin_notices', 'post_smtp_plugin_admin_notice_version' );
 	}
 } else {
-	post_start( memory_get_usage() );
+	post_smtp_start( memory_get_usage() );
 }
 
 
@@ -116,12 +119,17 @@ function post_dismiss_not_configured() {
 }
 add_action( 'admin_footer', 'post_dismiss_not_configured' );
 
+function post_smtp_general_scripts() {
+    wp_enqueue_script( 'post-smtp-hooks', POST_SMTP_URL . '/script/post-smtp-hooks.js', [], false );
+}
+add_action( 'admin_enqueue_scripts', 'post_smtp_general_scripts', 8 );
+
 /**
  * Create the main Postman class to start Postman
  *
  * @param mixed $startingMemory
  */
-function post_start( $startingMemory ) {
+function post_smtp_start( $startingMemory ) {
 	post_setupPostman();
 	PostmanUtils::logMemoryUse( $startingMemory, 'Postman' );
 }

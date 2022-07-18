@@ -234,6 +234,7 @@ class PostmanSettingsRegistry {
                 'notification_chrome_uid_callback',
             ), PostmanAdminController::NOTIFICATIONS_OPTIONS, PostmanAdminController::NOTIFICATIONS_SECTION );
 
+            do_action( 'post_smtp_settings' );
 		}
 	}
 
@@ -443,12 +444,20 @@ class PostmanSettingsRegistry {
 
 	public function notification_service_callback() {
 		$inputDescription =  __( 'Select the notification service you want to recieve alerts about failed emails.' );
+
+		$options = apply_filters('post_smtp_notification_service', array(
+            'default' => __( 'WP Admin Email', 'post-smtp' ),
+            'pushover' => __( 'Pushover', 'post-smtp' ),
+            'slack' => __( 'Slack', 'post-smtp' ),
+        ));
+
 		printf( '<select id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]">', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::NOTIFICATION_SERVICE );
 		$currentKey = $this->options->getNotificationService();
 
-		$this->printSelectOption( __( 'Email', 'post-smtp' ), 'default', $currentKey );
-		$this->printSelectOption( __( 'Pushover', 'post-smtp' ), 'pushover', $currentKey );
-		$this->printSelectOption( __( 'Slack', 'post-smtp' ), 'slack', $currentKey );
+		foreach ( $options as $key => $label ) {
+            $this->printSelectOption( $label, $key, $currentKey );
+        }
+
 		printf( '</select><br/><span class="postman_input_description">%s</span>', $inputDescription );
 	}
 
