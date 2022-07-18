@@ -206,9 +206,13 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
 
                 $recipient->log($this->logger, 'Bcc');
                 $bcc[] = array(
-                    'email'  =>  $recipient->getEmail(),
-                    'name'   =>  '$recipient->getName()'
+                    'email'  =>  $recipient->getEmail()
                 );
+                
+                if( !empty( $recipient->getName() ) ) {
+                    $bcc['name'] = $recipient->getName();
+                }
+
                 $duplicates[] = $recipient->getEmail();
 
             }

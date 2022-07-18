@@ -63,6 +63,28 @@ jQuery(document).ready(function($) {
 		});
 
 	});
+	
+	//Discard less secure notification
+	$( document ).on( 'click', '#discard-less-secure-notification', function( e ) {
+		e.preventDefault();
+
+		$.ajax( {
+			type: 'POST',
+			url: ajaxurl,
+			data: {
+				action: 'ps-discard-less-secure-notification',
+				_wp_nonce: postman_ajax.lessSecureNotice
+			},
+			success: function(data) {
+				$( '.ps-less-secure-notice .notice-dismiss' ).click();
+            },
+			error: function(data) {debugger
+                alert( data.responseJSON.data.message );
+            },
+		} )
+
+		$( '.ps-less-secure-notice .notice-dismiss' ).click();
+	} )
 });
 
 var redirectUrlWarning = false;

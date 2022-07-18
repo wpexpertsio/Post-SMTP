@@ -1568,7 +1568,7 @@
                         add_filter( 'site_transient_update_plugins', array( 'Freemius', '_remove_fs_updates_from_plugin_install_page' ), 10, 2 );
                     } else if ( self::is_plugins_page() || self::is_updates_page() ) {
                         /**
-                         * On the "Plugins" and "Updates" admin pages, if there are premium or nonâ€“org-compliant plugins, modify their details dialog URLs (add a Freemius-specific param) so that the SDK can determine if the plugin information dialog should show information from Freemius.
+                         * On the "Plugins" and "Updates" admin pages, if there are premium or non–org-compliant plugins, modify their details dialog URLs (add a Freemius-specific param) so that the SDK can determine if the plugin information dialog should show information from Freemius.
                          *
                          * @author Leo Fajardo (@leorw)
                          * @since 2.2.3
@@ -19451,7 +19451,7 @@
         /**
          * Fetches active licenses that are enriched with product type if there's a context `bundle_id` and bundle
          * licenses enriched with product IDs if there are any. From the licenses, the `get_updated_account_addons`
-         * method filters out nonâ€“add-on product IDs and stores the add-on IDs.
+         * method filters out non–add-on product IDs and stores the add-on IDs.
          *
          * @author Leo Fajardo (@leorw)
          * @since 2.2.4
@@ -19512,7 +19512,7 @@
                 }
             }
 
-            // Filter out nonâ€“add-on IDs.
+            // Filter out non–add-on IDs.
             $new_account_addons = array_intersect( $addon_ids, $license_product_ids );
             if ( count( $new_account_addons ) !== count( $account_addons ) ) {
                 $this->_store_account_addons( array_unique( $new_account_addons ) );

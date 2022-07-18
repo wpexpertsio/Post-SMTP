@@ -33,6 +33,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			$this->adminController = $adminController;
 			$this->logger = new PostmanLogger( get_class( $this ) );
 			$hostname = PostmanOptions::getInstance()->getHostname();
+			$transportType = PostmanOptions::getInstance()->getTransportType();
 			$auth_type = PostmanOptions::getInstance()->getAuthenticationType();
 
 			PostmanUtils::registerAdminMenu( $this, 'generateDefaultContent' );
@@ -43,8 +44,11 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			add_action( 'wp_ajax_delete_lock_file', array( $this, 'delete_lock_file' ) );
 			add_action( 'wp_ajax_dismiss_version_notify', array( $this, 'dismiss_version_notify' ) );
 			add_action( 'wp_ajax_dismiss_donation_notify', array( $this, 'dismiss_donation_notify' ) );
-			
-			if( $hostname == 'smtp.gmail.com' && $auth_type == 'plain' ) {
+			add_action( 'wp_ajax_ps-discard-less-secure-notification', array( $this, 'discard_less_secure_notification' ) );
+
+			$show_less_secure_notification = get_option( 'ps_hide_less_secure' );
+
+			if( !$show_less_secure_notification && $transportType == 'smtp' && $hostname == 'smtp.gmail.com' && ( $auth_type == 'plain' || $auth_type == 'login' ) ) {
 				add_action( 'admin_notices', array( $this, 'google_less_secure_notice' ) );
 			}
 
@@ -177,9 +181,13 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			), '1.13.1' );
 
 			wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_ajax_msg', array(
-					'bad_response' => __( 'An unexpected error occurred', 'post-smtp' ),
-					'corrupt_response' => __( 'Unexpected PHP messages corrupted the Ajax response', 'post-smtp' ),
+					'bad_response' 			=>	__( 'An unexpected error occurred', 'post-smtp' ),
+					'corrupt_response' 		=>	__( 'Unexpected PHP messages corrupted the Ajax response', 'post-smtp' )
 			) );
+
+			wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_ajax', array(
+				'lessSecureNotice'	=>	wp_create_nonce( 'less-secure-security' )
+		) );
 		}
 
 		/**
@@ -236,8 +244,17 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					}
 				} else {
 					printf( 
-						'<div class="ps-config-bar"><span >%s</span><span style="color: red" class="dashicons dashicons-dismiss"></span></div>',
-						wp_kses_post( $statusMessage )	 
+						'<div class="ps-config-bar">
+							<span >%s</span>
+							<span style="color: red" class="dashicons dashicons-dismiss"></span>
+							<div class="ps-right">
+								%s <a href="%s" class="ps-btn-orange">%s</a>
+							</div>
+						</div>',
+						wp_kses_post( $statusMessage ),
+						esc_html__( 'Get Started by Setup Wizard!', 'post-smtp' ),
+						esc_attr( $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG ) ),
+						esc_html__( 'Start the Wizard', 'post-smtp' )
 					);
 				}
 
@@ -649,18 +666,47 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		public function google_less_secure_notice() {
 
 			?>
-			<div class="notice notice-error is-dismissible">
+			<div class="notice notice-error is-dismissible ps-less-secure-notice">
 			<?php 
 				printf(
-					'<p>%1$s <br />%2$s <a href="%3$s" target="_blank">%4$s</a></p>',
+					'<p>%1$s <br />%2$s <a href="%3$s" target="_blank">%4$s</a><br /><a href="" id="discard-less-secure-notification">%5$s</a></p>',
 					esc_html__( '"To help keep your account secure, starting May 30, 2022, ​​Google will no longer support the use of third-party apps or devices which ask you to sign in to your Google Account using only your username and password."', 'post-smtp' ),
 					esc_html__( 'You can switch to Auth 2.0 option to continue without any downtime.', 'post-smtp' ),
 					esc_url( 'https://postmansmtp.com/gmail-is-disabling-less-secure-apps' ),
-					esc_html__( 'Click here for more info', 'post-smtp' )
+					esc_html__( 'Click here for more info', 'post-smtp' ),
+					esc_html__( 'I understand and would like to discard this notice', 'post-smtp' ),
 				);
 			?>
 			</div>
 			<?php
+
+		}
+
+		/**
+		 * Discards less secure notification
+		 * 
+		 * @since 2.1.2
+		 * @version 1.0
+		 */
+		public function discard_less_secure_notification() {
+
+			if( !wp_verify_nonce( $_POST['_wp_nonce'], 'less-secure-security' ) ) {
+				die( 'Not Secure.' );
+			}
+
+			$result = update_option( 'ps_hide_less_secure', 1 );
+			
+			if( $result ) {
+				wp_send_json_success( 
+					array( 'message' => 'Success' ),
+					200 
+				);
+			}
+
+			wp_send_json_error( 
+				array( 'message' => 'Something went wrong' ),
+				500 
+			);
 
 		}
 	}

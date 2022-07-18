@@ -4,20 +4,13 @@ Contributors: wpexpertsio
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 6.0
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Send, log, and get notified when your emails are failing. Plus a unique option for secondary backup SMTP so your emails will never stop. Supports everything: SMTP, Gmail, Mailgun, office365, SendGrid, Elastic Email and OAuth 2.0!
 
 == Description ==
-
-= Looking for Office 365 API delivery? =
-Check this extensions page, it will update with more extensions so don't forget to follow:
-[https://postmansmtp.com/extensions/](https://postmansmtp.com/extensions/)
-
-= The Only SMTP plugin with chrome Notifications =
-Get notified if your emails are failing inside your Chrome browser. [Download here](https://chrome.google.com/webstore/detail/post-smtp-notifications/npklmbkpbknkmbohdbpikeidiaekjoch?hl=en-US)
 
 = WordPress Mail SMTP Plugin =
 
@@ -27,10 +20,10 @@ The **Connectivity Test** and intelligent **Setup Wizard** scan your SMTP server
 
 Post SMTP is *not* another WP Mail SMTP clone like WP Bank or Easy SMTP. It replaces the default WordPress SMTP library, PHPMailer, with the heavy-duty Zend_Mail. Never [lose an email to PHP mail()](http://www.jvfconsulting.com/blog/php-mail-function-vs-smtp-guaranteed-delivery/) again.
 
-= The Most Fast And Easy =
-See how fast and easy to setup Post SMTP with Google/Gsuite or any SMTP service.
+= The Only SMTP plugin with chrome Notifications =
+Get notified if your emails are failing inside your Chrome browser. [Download here](https://chrome.google.com/webstore/detail/post-smtp-notifications/npklmbkpbknkmbohdbpikeidiaekjoch?hl=en-US)
 
-https://www.youtube.com/watch?v=uN_8lNv7KBo
+https://www.youtube.com/watch?v=mXDEEE9jnfw
 
 = Standard Features =
 * Easy-to-use, powerful Setup Wizard for perfect configuration
@@ -42,24 +35,43 @@ https://www.youtube.com/watch?v=uN_8lNv7KBo
 * Security Support: [SMTPS](https://en.wikipedia.org/wiki/SMTPS) and [STARTTLS](https://en.wikipedia.org/wiki/STARTTLS) ([SSL/TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security))
 * Copy configuration to other instances of Post
 
+= Looking for Post SMTP Pro Extensions? = 
+Post SMTP's pro extensions are everything you need to enhance your WordPress email deliverability experience. Check our extensions for Amazon SES, Better Email Logger and Office365.
+[Post SMTP Pro Extensions](https://postmansmtp.com/extensions/) 
+
+= Looking for Office365 API delivery? =
+[Office365 Pro extension](https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/) allows you to connect PostSMTP with your Outlook and Microsoft 365 accounts to improve email deliverability.
+
+= Looking for Better Email Logger Pro Extension? =
+[Better Email Logger Pro extension](https://postmansmtp.com/extensions/the-better-email/) allows you to design email marketing campaigns and improve email deliverability for your WordPress site.
+
+= Looking for Amazon SES API delivery? =
+[Amazon SES Pro Extension](https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/) combines Amazon’s mail service provider with PostSMTP’s powerful and easy-to-use SMTP mailing features. 
+
 = OAuth 2.0 Features =
 * Supports the proprietary OAuth 2.0 implementations of Gmail, Hotmail and Yahoo
 * Fire-and-forget delivery continues even if your password changes
 * Gmail: By combining OAuth2 and the Gmail API, Post can deliver where other plugins can not
 
+= The Most Fast And Easy =
+See how fast and easy to setup Post SMTP with Google/Gsuite or any SMTP service including:
+
 = API (HTTPS) Email Support =
-* Gmail API for sending Gmail and Google Apps email (requires a [Google](https://accounts.google.com/signup) account)
+* **Gmail API for sending Gmail and Google Apps email** (requires a [Google](https://accounts.google.com/signup) account)
 Often bloggers and small business owners don't want to use third-party SMTP services. Well you can use your Gmail or G Suite account for SMTP emails.
 <a href="https://www.cloudways.com/blog/post-smtp-mailer-fork-of-wordpress-postman-smtp-plugin/" rel="friend">Check the guide I wrote</a>
 
-* Mandrill API for sending any email (requires a [Mandrill](http://www.mandrillapp.com) account)
+* **Mandrill API for sending any email** (requires a [Mandrill](http://www.mandrillapp.com) account)
 Mandrill is an email infrastructure service offered as an add-on for MailChimp that you can use to send personalized, one-to-one e-commerce emails, or automated transactional emails.
 
-* Mailgun API for sending any email (requires a [Mailgun](http://www.mailgun.com) account)
+* **Mailgun API for sending any email** (requires a [Mailgun](http://www.mailgun.com) account)
 Mailgun SMTP is a popular SMTP service provider that allows you to send large quantities of emails. They allow you to send your first 10,000 emails for free every month.
 
-* SendGrid API for sending any email (requires a [SendGrid](https://sendgrid.com) account and PHP 5.3)
+* **SendGrid API for sending any email** (requires a [SendGrid](https://sendgrid.com) account and PHP 5.3)
 SendGrid has a free SMTP plan that you can use to send up to 100 emails per day. With our native SendGrid SMTP integration, you can easily and securely set up SendGrid SMTP on your WordPress site.
+
+* **Sendinblue API for sending any email** (requires a [Sendinblue](https://www.sendinblue.com/) account and PHP 5.3)
+SendinBlue is an effective and great email software for Small to Medium businesses. You can build customer relationships with an all-in-one digital marketing toolbox. Their free plan allows you to send up to 300 emails per day.
 
 > Post SMTP needs [translators](https://translate.wordpress.org/projects/wp-plugins/post-smtp/stable)! If you are a non-English speaker, please get involved!
 
@@ -223,7 +235,7 @@ You've [forgotten to choose an email address in the consent screen](https://word
 
 == SMTP Error Messages ==
 
-= Communication Error [334] Ã¢â‚¬â€œ make sure the Envelope From Email is the same account used to create the Client ID. =
+= Communication Error [334] ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ make sure the Envelope From Email is the same account used to create the Client ID. =
 
 * This is almost always caused by being logged in to Google/Microsoft/Yahoo with a different user than the one Post is configured to send mail with. Logout and try again with the correct user
 * Login to [Webmail](http://www.gmail.com) and see if there is an "Unusual Activity" warning waiting for your attention
@@ -281,14 +293,24 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
-= 2.1.2 - 2022-06-10 =
-**NEW**
-* Freemius SDK
-* Code Improvement
-* Extensions Support
+= 2.1.2- 2022-06-30 =
+* **NEW**
+* Integrated SDK for Feedback and support.
+* Added "Start wizard" button in setup notification to optimize UX for the end-user.
+
+* **Improved**
+Removed unused code
+
+* **FIX**
+â€œLess secure Appâ€ Banner appearing in non-appropriate cases
+
+
+= 2.1.1.1 - 2022-06-15 =
+* **FIX**
+* Sendinblue email header
 
 = 2.1.1 - 2022-06-09 =
-**FIX**
+* **FIX**
 * PHP Version Compatibility.
 
 = 2.1 - 2022-06-09 =
@@ -310,7 +332,7 @@ Add notice about Google Less Secure App.
 = 2.0.25 - 2022-04-06 =
 * **Bug Fixes**
 * WP 5.9 Compatibility Ballon UI issue.
-* Uncaught Error: Class Ã¢â‚¬ËœPostmanAdminControllerÃ¢â‚¬â„¢ not found.
+* Uncaught Error: Class ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“PostmanAdminControllerÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ not found.
 * Ajax error appearing due to Google API depreciated function.
 
 * **Improvements**
@@ -331,7 +353,7 @@ Add notice about Google Less Secure App.
 
 = 2.0.21 - 2021-02-11
 * Fixed: Security issue - nonce validation.
-* Fixed: Class Ã¢â‚¬ËœPostmanViewControllerÃ¢â‚¬â„¢ not found
+* Fixed: Class ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“PostmanViewControllerÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ not found
 * New: New wp-config.php constant to disable the email logger = `POST_SMTP_CORE_MAIL_LOG`.
 
 = 2.0.20 - 2021-01-19
