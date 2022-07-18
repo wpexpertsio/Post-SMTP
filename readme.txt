@@ -1,10 +1,10 @@
 === Post SMTP Mailer/Email Log ===
 Contributors: yehudah
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehuda@myinbox.in&item_name=Donation+for+PostSMTP
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehudahas@gmail.com&item_name=Donation+for+PostSMTP
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
-Tested up to: 5.5
-Stable tag: 2.0.15
+Tested up to: 5.6
+Stable tag: 2.0.16
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -281,6 +281,9 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
+= 2.0.16 - 2020-12-13
+* Update: General Info
+
 = 2.0.15 - 2020-08-12
 * Fixed: WordPress 5.5 compatibility (stable)
 
@@ -465,7 +468,7 @@ Syntx stupid mistake
 * [[Ticket](https://wordpress.org/support/topic/cant-send-an-email-using-optimizepress?replies=8)] - the Optimizepress plugin calls wp_mail before the WordPress init hook, before Post is fully initialized, so I made a change to accomodate this behavior
 * [[Ticket](https://wordpress.org/support/topic/v17?replies=13)] - v1.7 admin screen may become inaccessible after upgrading. Fixed.
 * [[Ticket](https://wordpress.org/support/topic/inboundnow-html-e-mail-templates-are-not-being-recognized-with-170?replies=3)] - v1.7 breaks compatibility with [WordPress Leads](https://wordpress.org/plugins/leads/). Fixed.
- 
+
 = 1.7.0 "Iliana" - 2015-11-03 =
 * Happy Halowe'en! 30,000 installations! - 2015-10-31
 * Integrated Mandrill API
@@ -506,8 +509,8 @@ Syntx stupid mistake
 
 = 1.6.22 - 2015-06-14 =
 * Finally realized that for the last five months I've been relying on register_activation_hook to fire during plugin updates - [and it doesn't](https://make.wordpress.org/core/2010/10/27/plugin-activation-hooks-no-longer-fire-for-updates/). Lovely. Well this change should eliminate all the "update doesn't work!" bugs for good.
-* [[Ticket](https://wordpress.org/support/topic/latest-update-conflicting-with-theme?replies=3#post-7066897)] I enable Strict mode when I code Post to ensure it's error free and I forgot to turn it off. This was causing all plugins and themes to show their warnings. Fixed. 
-* [[Ticket](https://wordpress.org/support/topic/upgrade-to-1619-broke-contact-form?replies=2#post-7067673)] I didn't thoroughly test the Gmail API, causing "Catchable fatal error: Argument 1 passed to PostGmailApiModuleTransport::getAuthenticationType() must be an instance of PostOptions, none given." Fixed. 
+* [[Ticket](https://wordpress.org/support/topic/latest-update-conflicting-with-theme?replies=3#post-7066897)] I enable Strict mode when I code Post to ensure it's error free and I forgot to turn it off. This was causing all plugins and themes to show their warnings. Fixed.
+* [[Ticket](https://wordpress.org/support/topic/upgrade-to-1619-broke-contact-form?replies=2#post-7067673)] I didn't thoroughly test the Gmail API, causing "Catchable fatal error: Argument 1 passed to PostGmailApiModuleTransport::getAuthenticationType() must be an instance of PostOptions, none given." Fixed.
 * [[Ticket](https://wordpress.org/support/topic/gmail-api-assertion-failed-and-cannot-modify-header-information?replies=4#post-7068833)] I didn't thoroughly test the Gmail API, it wasn't warning the user if the Envelope Sender Address is missing. Fixed.
 * [[Ticket](https://wordpress.org/support/topic/password-corruption-issue?replies=1)][[Ticket](https://wordpress.org/support/topic/password-corruption-issue?replies=4#post-7068839)] Found a problem in the Activation Handler. It was re-encoding passwords when it shouldn't have been. Fixed.
 
@@ -549,7 +552,7 @@ Syntx stupid mistake
 
 = 1.6.11 - 2015-05-22 =
 * [[Ticket](https://wordpress.org/support/topic/call-to-undefined-function-spritnf?replies=2#post-6977557)] Fix for "Fatal error: Call to undefined function spritnf() in PostEmailLogController.php on line 284" - sometimes PHP really sucks compared to Java
-* Added a link to a HowTo Video for configuring Google OAuth 2.0 in the OAuth2 authentication section 
+* Added a link to a HowTo Video for configuring Google OAuth 2.0 in the OAuth2 authentication section
 
 = 1.6.10 - 2015-05-18 =
 * 5,000 installations!
@@ -622,7 +625,7 @@ Syntx stupid mistake
 * [[Ticket](https://wordpress.org/support/topic/help-mail-is-failing-in-test?replies=9)] PHP 5.2 users: fix test messages that show failures but still get delivered; fix Contact Form 7 submission freezes
 * Translated into Turkish, thank-you ercan yaris
 
-= 1.5.11 - 2015-04-05 = 
+= 1.5.11 - 2015-04-05 =
 * 2,000 installations! :D
 * Commercial-grade improvements to Connectivity Test and Setup Wizard. The new wizard prevents misconfiguration by interrogating the MTA for capabilities and intelligently suggests the best settings for the user. Steve Jobs would be proud.
 * Fixed Wizard's MSA hostname guess for GoDaddy addresses (smtp.secureserver.net is the MTA not the MSA)
@@ -638,7 +641,7 @@ Syntx stupid mistake
 * Added functionality to add custom headers to every message - useful for [Mandrill "SMTP" headers](http://help.mandrill.com/entries/21688056-Using-SMTP-Headers-to-customize-your-messages)
 * [[Ticket](https://wordpress.org/support/topic/invalid-redirect-uri?replies=7)] The Setup Wizard will check for IP addresses in the site URL and warn the user when they are about to configure OAuth 2.0 that this will fail.
 * [[Ticket](https://wordpress.org/support/topic/from-address-for-new-site-registration-email?replies=3)] Added functionality to prevent plugins and themes from overriding both the sender name and sender email address
-* [[Ticket](https://wordpress.org/support/topic/problem-with-responding?replies=7#post-6723830)] Hide PHP warnings from `stream_set_timeout()` in case the host has disabled this function. 
+* [[Ticket](https://wordpress.org/support/topic/problem-with-responding?replies=7#post-6723830)] Hide PHP warnings from `stream_set_timeout()` in case the host has disabled this function.
 
 = 1.5.8 - 2015-03-16 =
 * 1,000 installations! :D
@@ -691,7 +694,7 @@ Syntx stupid mistake
 * Translated into French, thank-you Etienne Provost
 
 = 1.4 - 2015-02-15 =
-* Happy Valentine's Day! Sending Yahoo email now supported with OAuth 2.0 authentication! If the Wizard detects that a Yahoo server has been entered, it automatically configures OAuth 2.0 
+* Happy Valentine's Day! Sending Yahoo email now supported with OAuth 2.0 authentication! If the Wizard detects that a Yahoo server has been entered, it automatically configures OAuth 2.0
 * First time users may choose to import settings from any of the Big Four WordPress SMTP plugins (five if you count Easy SMTP Mail, a clone of WP Mail SMTP): Easy WP SMTP, WP Mail Bank, WP Mail SMTP and WP SMTP
 * [[Ticket](https://wordpress.org/support/topic/display-error-on-plugin-activation?replies=33)] Suppressed warning messages generated by calls to fsockopen - they were causing the remote Ajax queries to hang
 * The wizard was resetting some settings by accident, namely Connection Timeout, Read Timeout and Reply-To
@@ -716,7 +719,7 @@ Syntx stupid mistake
 * Post now has a modest fatal error screen, rather than a dreaded white screen of death
 
 = 1.3 - 2015-02-09 =
-* Sending Hotmail/Windows Live/Outlook.com email now supported with OAuth 2.0 authentication! If Wizard detects that a Hotmail server has been entered, it automatically configures OAuth 2.0. 
+* Sending Hotmail/Windows Live/Outlook.com email now supported with OAuth 2.0 authentication! If Wizard detects that a Hotmail server has been entered, it automatically configures OAuth 2.0.
 * Separated Authentication input from Encryption input for finer configuration control
 * Added additional authentication types: plain and CRAM-MD5. 'basic' became 'login'
 * Added Ajax to manual config and wizard screens to allow dynamic OAuth2 redirect url + help text changes in response to hostname changes
@@ -740,7 +743,7 @@ Syntx stupid mistake
 = 1.0 - 2015-02-02 =
 * Overhaul of the UI - A navigation pane is shown at the top of each page and each major function has been separated into its own screen
 * Post now supports sending with basic auth and no auth just like the other SMTP plugins
-* Added a Port Test function so users can have peace of mind whether the plugin is failing (never!) or whether the host has firewalled them 
+* Added a Port Test function so users can have peace of mind whether the plugin is failing (never!) or whether the host has firewalled them
 * [[Ticket](https://wordpress.org/support/topic/emails-not-sending-in-html-format?replies=5)] Now supports email headers, such as a text/html content-type
 * Now supports email attachments
 * Added a warning if the user has configured OAuth but not requested permission from Google
