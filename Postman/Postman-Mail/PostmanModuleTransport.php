@@ -682,6 +682,9 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 	}
 	
 	/**
+	 * 
+	 * @since 2.0.27 OAuth 2.0 will be selected by default as Google is disabling less secure Apps.
+	 * @version 1.1
 	 */
 	public function createOverrideMenu(PostmanWizardSocket $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride) {
 		$overrideItem = parent::createOverrideMenu ( $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride );
@@ -709,19 +712,20 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 				$noAuthMode = true;
 			}
 		}
+
 		if ($selected) {
-			if ($socket->auth_crammd5 || $socket->auth_login || $socket->authPlain) {
-				array_push ( $overrideAuthItems, array (
-						'selected' => $passwordMode,
-						'name' => __ ( 'Password (requires username and password)', 'post-smtp' ),
-						'value' => 'password' 
-				) );
-			}
 			if ($socket->auth_xoauth || $winningRecommendation ['auth'] == 'oauth2') {
 				array_push ( $overrideAuthItems, array (
 						'selected' => $oauth2Mode,
 						'name' => __ ( 'OAuth 2.0 (requires Client ID and Client Secret)', 'post-smtp' ),
 						'value' => 'oauth2' 
+				) );
+			}
+			if ($socket->auth_crammd5 || $socket->auth_login || $socket->authPlain) {
+				array_push ( $overrideAuthItems, array (
+						'selected' => $passwordMode,
+						'name' => __ ( 'Password (requires username and password) <span class=\'ps-less-secure\'>Not recommended </span>(Starting May 30, 2022, ​​Google will no longer support the use of third-party apps or devices which ask you to sign in to your Google Account using only your username and password.) <a href=\'https://postmansmtp.com/gmail-is-disabling-less-secure-apps\' target="_blank">Learn More</a>', 'post-smtp' ),
+						'value' => 'password' 
 				) );
 			}
 			if ($socket->auth_none) {

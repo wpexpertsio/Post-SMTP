@@ -34,6 +34,9 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			$this->oauthScribe = $oauthScribe;
 			$this->adminController = $adminController;
 			$this->logger = new PostmanLogger( get_class( $this ) );
+			$hostname = PostmanOptions::getInstance()->getHostname();
+			$auth_type = PostmanOptions::getInstance()->getAuthenticationType();
+
 			PostmanUtils::registerAdminMenu( $this, 'generateDefaultContent' );
 			PostmanUtils::registerAdminMenu( $this, 'addPurgeDataSubmenu' );
 
@@ -42,6 +45,10 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			add_action( 'wp_ajax_delete_lock_file', array( $this, 'delete_lock_file' ) );
 			add_action( 'wp_ajax_dismiss_version_notify', array( $this, 'dismiss_version_notify' ) );
 			add_action( 'wp_ajax_dismiss_donation_notify', array( $this, 'dismiss_donation_notify' ) );
+			
+			if( $hostname == 'smtp.gmail.com' && $auth_type == 'plain' ) {
+				add_action( 'admin_notices', array( $this, 'google_less_secure_notice' ) );
+			}
 
 			//add_action( 'admin_init', array( $this, 'do_activation_redirect' ) );
 
@@ -395,6 +402,23 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
             </div>
             <?php
 		}
+
+		public function google_less_secure_notice() {
+
+			?>
+			<div class="notice notice-error is-dismissible">
+			<?php 
+				printf(
+					'<p>%1$s <br />%2$s <a href="%3$s" target="_blank">%4$s</a></p>',
+					esc_html__( '"To help keep your account secure, starting May 30, 2022, ​​Google will no longer support the use of third-party apps or devices which ask you to sign in to your Google Account using only your username and password."', 'post-smtp' ),
+					esc_html__( 'You can switch to Auth 2.0 option to continue without any downtime.', 'post-smtp' ),
+					esc_url( 'https://postmansmtp.com/gmail-is-disabling-less-secure-apps' ),
+					esc_html__( 'Click here for more info', 'post-smtp' )
+				);
+			?>
+			</div>
+			<?php
+
+		}
 	}
 }
-

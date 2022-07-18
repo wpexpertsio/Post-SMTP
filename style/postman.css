@@ -140,6 +140,14 @@ p#back_to_main_menu {
     background: #fff;
 }
 
+.ps-less-secure {
+    color: red;
+}
+
+#user_auth_override td {
+    padding-bottom: 15px;
+}
+
 
 @keyframes pulse {
 	0% {
