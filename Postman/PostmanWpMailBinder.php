@@ -108,13 +108,22 @@ if (! class_exists ( 'PostmanWpMailBinder' )) {
 			 *        	Optional. Additional headers.
 			 * @param string|array $attachments
 			 *        	Optional. Files to attach.
+			 * @since 2.0.25 @action `wp_mail_succeeded` added.
 			 * @return bool Whether the email contents were sent successfully.
 			 */
 			function wp_mail($to, $subject, $message, $headers = '', $attachments = array()) {
 				// create an instance of PostmanWpMail to send the message
 				$postmanWpMail = new PostmanWpMail ();
 				// send the mail
+				
+				$mail_data = compact( 'to', 'subject', 'message', 'headers', 'attachments' );
+				
 				$result = $postmanWpMail->send ( $to, $subject, $message, $headers, $attachments );
+				
+				if( $result ) {
+					do_action( 'wp_mail_succeeded', $mail_data );
+				} 
+
 				// return the result
 				return $result;
 			}

@@ -238,8 +238,8 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		 */
 		public static function outputChildPageHeader( $title, $slug = '' ) {
 			printf( '<h2>%s</h2>', sprintf( __( '%s Setup', 'post-smtp' ), __( 'Post SMTP', 'post-smtp' ) ) );
-			printf( '<div id="postman-main-menu" class="welcome-panel %s">', $slug );
-			print '<div class="welcome-panel-content">';
+			printf( '<div id="postman-main-menu" class="post-smtp-welcome-panel %s">', $slug );
+			print '<div class="post-smtp-welcome-panel-content">';
 			print '<div class="welcome-panel-column-container">';
 			print '<div class="welcome-panel-column welcome-panel-last">';
 			printf( '<h4>%s</h4>', $title );
@@ -328,8 +328,8 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
             //include_once POST_SMTP_PATH . '/Postman/extra/donation.php';
 
             echo '<div class="twitter-wrap">';
-			    print '<div id="postman-main-menu" class="welcome-panel">';
-                print '<div class="welcome-panel-content">';
+			    print '<div id="postman-main-menu" class="post-smtp-welcome-panel">';
+                print '<div class="post-smtp-welcome-panel-content">';
                 print '<div class="welcome-panel-column-container" style="display: flex; flex-wrap: wrap; justify-content: space-around; align-items: flex-start;">';
                 print '<div class="ps-welcome-panel-column">';
                 printf( '<h4>%s</h4>', __( 'Configuration', 'post-smtp' ) );

@@ -193,6 +193,7 @@ class Postman {
 		if ( PostmanUtils::isAdmin() && is_admin() ) {
 			$this->setup_admin();
 		}
+		
 	}
 
 	/**
@@ -425,10 +426,15 @@ class Postman {
 	 *
 	 * The Gmail API used to be a separate plugin which was registered when that plugin
 	 * was loaded. But now both the SMTP, Gmail API and other transports are registered here.
-	 *
+	 * @since 2.0.25 require `PostmanAdminController.php` if not exists.
 	 * @param mixed $pluginData
 	 */
 	private function registerTransports( $rootPluginFilenameAndPath ) {
+
+		if( !class_exists( 'PostmanAdminController' ) ) {
+			require_once 'PostmanAdminController.php';
+		}
+
 	    $postman_transport_registry = PostmanTransportRegistry::getInstance();
 
         $postman_transport_registry->registerTransport( new PostmanDefaultModuleTransport( $rootPluginFilenameAndPath ) );

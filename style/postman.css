@@ -12,8 +12,9 @@
 	border-radius: 5px;
 }
 
-.welcome-panel-content {
-	width: 100%;
+.post-smtp-welcome-panel-content {
+    width: 100%;
+    padding: 10px 0;
 }
 
 #postman-main-menu.welcome-panel {
@@ -133,6 +134,10 @@ p#back_to_main_menu {
     text-align: center;
     margin: 0 -5px;
     background: url(images/badge.png) no-repeat;
+}
+
+.post-smtp-welcome-panel {
+    background: #fff;
 }
 
 

@@ -204,6 +204,10 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 
 	/**
 	 * This Ajax sends a test email
+	 * 
+	 * @since 1.0
+	 * @since 2.0.25 @filter `postman_test_email_args`
+	 * @version 1.0
 	 */
 	function sendTestEmailViaAjax() {
 
@@ -225,11 +229,15 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		) );
 
 		// this header specifies that there are many parts (one text part, one html part)
-		$header = 'Content-Type: multipart/alternative;';
+		$header = 'Content-Type: multipart/alternative; \r\n';
+		$header .= 'MIME-Version: 1.0 \r\n';
 
 		// createt the message content
 		$message = $this->createMessageContent();
-
+		
+		$email_args = apply_filters( 'postman_test_email_args', compact( 'email', 'subject', 'message', 'header' ) );
+		extract( $email_args );
+		
 		// send the message
 		$success = wp_mail( $email, $subject, $message, $header );
 
@@ -339,7 +347,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 				'										<div style="max-width: 600px; height: 400px; margin: 0 auto; overflow: hidden;background-image:url(\'https://ps.w.org/postman-smtp/assets/email/poofytoo.png\');background-repeat: no-repeat;">',
 				sprintf( '											<div style="margin:50px 0 0 300px; width:300px; font-size:2em;">%s</div>', $greeting ),
 				sprintf( '											<div style="text-align:right;font-size: 1.4em; color:black;margin:150px 0 0 200px;">%s', $sentBy ),
-				'												<br/><span style="font-size: 0.8em"><a style="color:#3f73b9" href="https://wordpress.org/plugins/post-smtp/">https://wordpress.org/plugins/post-smtp/</a></span>',
+				'												<br/>',
 				'											</div>',
 				'										</div>',
 				'									</td>',

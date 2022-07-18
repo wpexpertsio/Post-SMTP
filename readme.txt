@@ -281,6 +281,18 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
+= 2.0.25 =
+* **Bug Fixes**
+* WP 5.9 Compatibility Ballon UI issue.
+* Uncaught Error: Class ‘PostmanAdminController’ not found.
+* Ajax error appearing due to Google API depreciated function.
+
+* **Improvements**
+* Code Optimization.
+* MIME version added to test mails to prevent emails from spam.
+* NEW Filter `postman_test_email_args` added to modify test email arguments.
+* NEW Action `wp_mail_succeeded` added to exectue on every success email delivery.
+
 = 2.0.24 - 2022-02-13
 * Update: THE FUTURE OF Post SMTP - https://postmansmtp.com/the-future-of-post-smtp/
 
