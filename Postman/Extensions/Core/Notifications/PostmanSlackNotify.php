@@ -6,7 +6,7 @@ class PostmanSlackNotify implements Postman_Notify {
 
     public function send_message($message)
     {
-        $options = PostmanOptions::getInstance();
+        $options = PostmanNotifyOptions::getInstance();
 
         $api_url = $options->getSlackToken();
 
