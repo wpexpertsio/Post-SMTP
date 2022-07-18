@@ -358,15 +358,21 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 						<h3 class="ps-ib ps-vm"><?php esc_html_e( 'Extensions', 'post-smtp' ); ?></h3>
 					</div> 
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/office-365-for-post-smtp-extension/' ); ?>">
+						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/office-365-for-post-smtp-extension/' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />
 							<?php echo esc_html( 'Office 365' ); ?>
 						</a>
 					</div>
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/' ); ?>">
+						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
 							<?php echo esc_html( 'Amazon SES' ); ?>
+						</a>
+					</div>
+					<div>
+						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/the-better-email/' ); ?>" target="_blank">
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
+							<?php echo esc_html( 'Better Email Logger' ); ?>
 						</a>
 					</div>
 				</div>
@@ -674,7 +680,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					esc_html__( 'You can switch to Auth 2.0 option to continue without any downtime.', 'post-smtp' ),
 					esc_url( 'https://postmansmtp.com/gmail-is-disabling-less-secure-apps' ),
 					esc_html__( 'Click here for more info', 'post-smtp' ),
-					esc_html__( 'I understand and would like to discard this notice', 'post-smtp' ),
+					esc_html__( 'I understand and would like to discard this notice', 'post-smtp' )
 				);
 			?>
 			</div>
