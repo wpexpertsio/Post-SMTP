@@ -453,7 +453,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
                     $pattern = '/[a-z0-9_\-\+\.]+@[a-z0-9\-]+\.([a-z]{2,4})(?:\.[a-z]{2})?/i';
                     preg_match_all($pattern, $content, $matches);
 
-                    if ( isset( $matches[0] ) && is_email( $matches[0] ) ) {
+                    if ( isset( $matches[0] ) && isset( $matches[0][0] ) && filter_var( $matches[0][0], FILTER_VALIDATE_EMAIL ) ) {
                         $this->setReplyTo( $content );
                     }
 
