@@ -3,8 +3,8 @@ Contributors: yehudah
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehuda@myinbox.in&item_name=Donation+for+PostSMTP
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
-Tested up to: 5.4.1
-Stable tag: 2.0.12
+Tested up to: 5.5
+Stable tag: 2.0.13
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -280,6 +280,12 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 2.0.13 - 2020-08-11
+* Fixed: WordPress 5.5 compatibility
+* Fixed: Email log filtering
+* Fixed: Pushover notifications
+* New: Suggest solution for email delivery errors
 
 = 2.0.12 - 2020-05-18
 * Updated: Readme file info

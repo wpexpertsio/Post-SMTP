@@ -543,7 +543,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		printf( '<p>%s</p>', __( 'This is the Outgoing (SMTP) Mail Server, or Mail Submission Agent (MSA), which Postman delegates mail delivery to. This server is specific to your email account, and if you don\'t know what to use, ask your email service provider.', 'post-smtp' ) );
 		printf( '<p>%s</p>', __( 'Note that many WordPress hosts, such as GoDaddy, Bluehost and Dreamhost, require that you use their mail accounts with their mail servers, and prevent you from using others.', 'post-smtp' ) );
 
-		printf( '<div><strong><u>%s</u></strong></div><br>', __( 'If you plan to use An API and not SMTP just type any value.', 'post-smtp' ) );
+		//printf( '<div><strong><u>%s</u></strong></div><br>', __( 'If you plan to use An API and not SMTP just type any value.', 'post-smtp' ) );
 		printf( '<label for="hostname">%s</label>', __( 'Outgoing Mail Server Hostname', 'post-smtp' ) );
 		print $this->hostname_callback();
 		printf( '<p class="ajax-loader" style="display:none"><img src="%s"/></p>', plugins_url( 'post-smtp/style/ajax-loader.gif' ) );

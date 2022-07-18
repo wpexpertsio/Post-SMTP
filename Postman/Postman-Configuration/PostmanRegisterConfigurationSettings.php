@@ -271,7 +271,7 @@ class PostmanSettingsRegistry {
         }
         print '</select>';
         ?>
-        <p class="description" id="mailer-type-description"><?php _e( 'Beta Feature: Change this to <strong>PHPMailer</strong> only if you see <code>wp_mail</code> conflict message, conflicts when another plugin is activated, and <strong><u>sometimes</u></strong> spam issues.', 'post-smtp' ); ?></p>
+        <p class="description" id="mailer-type-description"><?php _e( 'Beta Feature: ONLY change this to <strong>PHPMailer</strong> only if you see <code>wp_mail</code> conflict message, conflicts when another plugin is activated, and <strong><u>sometimes</u></strong> your mail marked as spam.', 'post-smtp' ); ?></p>
         <?php
     }
 

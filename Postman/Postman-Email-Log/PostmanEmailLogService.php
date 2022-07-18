@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once dirname(__DIR__ ) . '/PostmanLogFields.php';
 require_once POST_SMTP_PATH . '/Postman/Extensions/Core/Notifications/PostmanNotify.php';
+require_once POST_SMTP_PATH . '/Postman/Extensions/Core/StatusSolution.php';
 
 if ( ! class_exists( 'PostmanEmailLog' ) ) {
 	class PostmanEmailLog {
@@ -175,7 +176,10 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 			$this->logger->debug( sprintf( 'Saved message #%s to the database', $post_id ) );
 			$this->logger->trace( $log );
 
+			$solution = apply_filters( 'post_smtp_log_solution', null, $new_status, $log, $message );
+
 			// Write the meta data related to the email
+			PostmanLogFields::get_instance()->update( $post_id, 'solution', $solution );
 			PostmanLogFields::get_instance()->update( $post_id, 'success', $log->success );
 			PostmanLogFields::get_instance()->update( $post_id, 'from_header', $log->sender );
 			if ( ! empty( $log->toRecipients ) ) {

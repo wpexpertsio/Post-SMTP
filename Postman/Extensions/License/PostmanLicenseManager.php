@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class PostmanLicenseManager {
 
-    const ENDPOINT = 'https://postmansmtp.com';
+    const ENDPOINT = 'https://postmansmtpcom-staging.dxpsites.net';
 
     const CORE_EXTENSIONS = [ 'gmail_api', 'sendgrid_api', 'mandrill_api', 'mailgun_api' ];
 
@@ -68,11 +68,9 @@ class PostmanLicenseManager {
                 $this->extensions[$slug]['plugin_dir_and_filename'] = $plugin_dir_and_filename;
                 $this->extensions[$slug]['license_manager'] = new PostmanLicenseHandler(
                     $plugin_path, $plugin_data['Name'],
-                    $plugin_data['Version'], $plugin_data['Author']
+                    $plugin_data['Version'], $plugin_data['Author'], null, self::ENDPOINT
                 );
                 if ( $this->extensions[$slug]['license_manager']->is_licensed() ) {
-                    include_once $plugin_path;
-
                     $this->extensions[$slug]['instance'] = new $class;
                 }
             }

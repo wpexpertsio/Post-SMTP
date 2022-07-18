@@ -97,8 +97,7 @@ class Postman {
 		}
 
 		// register the email transports
-		$this->registerTransports( $rootPluginFilenameAndPath );
-
+		
         // store an instance of the WpMailBinder
         $this->wpMailBinder = PostmanWpMailBinder::getInstance();
 
@@ -188,7 +187,10 @@ class Postman {
 	 */
 	public function on_plugins_loaded() {
 
-        PostmanLicenseManager::get_instance()->init();
+		PostmanLicenseManager::get_instance()->init();
+
+		// register the email transports
+		$this->registerTransports( $this->rootPluginFilenameAndPath );
 
 		// load the text domain
 		$this->loadTextDomain();
@@ -370,8 +372,8 @@ class Postman {
             <p style="font-size: 18px; font-weight: bold;">Please notice</p>
             <p style="font-size: 14px; line-height: 1.7;">
                 <?php _e('Post SMTP v2 includes and new feature called: <b>Mailer Type</b>.', 'post-smtp' ); ?><br>
-                <?php _e('I highly recommend to change and <strong>TEST</strong> Post SMTP with the value <code>PHPMailer</code>.', 'post-smtp' ); ?><br>
-                <?php _e('if it will not work properly you can change back to the default value: <code>PostSMTP</code>.', 'post-smtp' ); ?><br>
+                <?php _e('I recommend to change it and <strong>TEST</strong> Post SMTP with the value <code>PHPMailer</code>.', 'post-smtp' ); ?><br>
+                <?php _e('<strong>ONLY</strong> if the default mailer type is not working for you.', 'post-smtp' ); ?><br>
                 <a target="_blank" href="<?php echo POST_SMTP_URL; ?>/style/images/mailer-type.gif">
                     <figure>
                         <img width="180" src="<?php echo POST_SMTP_URL; ?>/style/images/mailer-type.gif" alt="how to set mailer type">

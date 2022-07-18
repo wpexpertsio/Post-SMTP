@@ -75,6 +75,10 @@
                                 <button type="submit" name="post_smtp_extension[<?php echo $short_name; ?>_activate]" class="button button-primary">Activate</button>
                             <?php endif; ?>
 
+                            <?php if ( $license_data->license === 'expired' ) : ?>
+                                <a href="<?php echo $license_data->renew_url; ?>" target="_blank" class="button button-primary">Renew License</a>
+                            <?php endif; ?>
+
                             <button type="submit" name="post_smtp_extension[<?php echo $short_name; ?>_deactivate]" class="button button-secondary">Deactivate</button>
                         </div>
                     </div>

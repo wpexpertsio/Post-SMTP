@@ -117,7 +117,8 @@ class PostmanSendTestEmailController {
 				'not_started' => _x( 'In Outbox', 'Email Test Status', 'post-smtp' ),
 				'sending' => _x( 'Sending...', 'Email Test Status', 'post-smtp' ),
 				'success' => _x( 'Success', 'Email Test Status', 'post-smtp' ),
-				'failed' => _x( 'Failed', 'Email Test Status', 'post-smtp' ),
+				//'failed' => _x( 'Failed', 'Email Test Status', 'post-smtp' ),
+				'failed' => sprintf( 'Failed - Check the plugin email log for more info: %s', '<a href="' . esc_url( admin_url( 'admin.php?page=postman_email_log' ) ) . '">Here</a>' ),
 				'ajax_error' => __( 'Ajax Error', 'post-smtp' ),
 		) );
 	}

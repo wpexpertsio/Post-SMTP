@@ -3,6 +3,7 @@ class PostmanLogFields {
 
     private $fields = array(
         'success' => 'sanitize_text_field',
+        'solution' => [ 'PostmanLogFields', 'sanitize_message' ],
         'from_header' => [ 'PostmanLogFields', 'email_header_sanitize' ],
         'to_header' => [ 'PostmanLogFields', 'email_header_sanitize' ],
         'cc_header' => [ 'PostmanLogFields', 'email_header_sanitize' ],
@@ -89,6 +90,17 @@ class PostmanLogFields {
 
         return wp_kses( $message, $allowed_tags );
     }
+
+	private function sanitize_html( $value ) {
+		$allowed_html = array(
+			'a' => array(
+				'href' => array(),
+			),
+			'br' => array(),
+		);
+
+		return wp_kses( $value, $allowed_html );
+	}
 
     private function encode( $value ) {
         if ( is_array( $value ) ) {

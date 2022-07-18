@@ -76,10 +76,10 @@ class PostmanEmailLogController {
 	}
 
 	function handleCsvExport() {
-        if ( ! empty( $_POST ) && ! wp_verify_nonce( $_REQUEST['post-smtp-log'], 'post-smtp' ) )
+        if ( isset( $_REQUEST['post-smtp-log-nonce'] ) && ! wp_verify_nonce( $_REQUEST['post-smtp-log-nonce'], 'post-smtp' ) )
             die( 'Security check' );
 
-        if ( isset( $_POST['postman_export_csv'] ) && current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) ) {
+        if ( isset( $_GET['postman_export_csv'] ) && current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) ) {
             $args = array(
                 'post_type' => PostmanEmailLogPostType::POSTMAN_CUSTOM_POST_TYPE_SLUG,
                 'post_status' => PostmanEmailLogService::POSTMAN_CUSTOM_POST_STATUS_PRIVATE,
@@ -97,7 +97,12 @@ class PostmanEmailLogController {
             $fp = fopen('php://output', 'wb');
 
             $headers = array_keys( PostmanLogFields::get_instance()->get_fields() );
+            $headers[] = 'delivery_time';
+
             fputcsv($fp, $headers);
+
+	        $date_format = get_option( 'date_format' );
+	        $time_format = get_option( 'time_format' );
 
             foreach ( $logs->posts as $log ) {
                 $meta = PostmanLogFields::get_instance()->get($log->ID);
@@ -105,6 +110,7 @@ class PostmanEmailLogController {
                 foreach ( $meta as $header => $line ) {
                     $data[] = $line[0];
                 }
+                $data[] = date( "$date_format $time_format", strtotime( $log->post_date ) );
                 fputcsv($fp, $data);
             }
 
@@ -411,16 +417,17 @@ class PostmanEmailLogController {
 	</div>
 
 	<?php
-	$from_date = isset( $_POST['from_date'] ) ? sanitize_text_field( $_POST['from_date'] ) : '';
-	$to_date = isset( $_POST['to_date'] ) ? sanitize_text_field( $_POST['to_date'] ) : '';
-	$search = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
+	$from_date = isset( $_GET['from_date'] ) ? sanitize_text_field( $_GET['from_date'] ) : '';
+	$to_date = isset( $_GET['to_date'] ) ? sanitize_text_field( $_GET['to_date'] ) : '';
+	$search = isset( $_GET['search'] ) ? sanitize_text_field( $_GET['search'] ) : '';
 	$page_records = apply_filters( 'postman_log_per_page', array( 10, 15, 25, 50, 75, 100 ) );
-	$postman_page_records = isset( $_POST['postman_page_records'] ) ? absint( $_POST['postman_page_records'] ) : '';
+	$postman_page_records = isset( $_GET['postman_page_records'] ) ? absint( $_GET['postman_page_records'] ) : '';
 	?>
 
-	<form id="postman-email-log-filter" method="post">
-        <input type="hidden" action="post-smtp-filter" value="1">
-        <?php wp_nonce_field('post-smtp', 'post-smtp-log'); ?>
+	<form id="postman-email-log-filter" action="<?php echo admin_url( PostmanUtils::POSTMAN_EMAIL_LOG_PAGE_RELATIVE_URL ); ?>" method="get">
+        <input type="hidden" name="page" value="postman_email_log">
+        <input type="hidden" name="post-smtp-filter" value="1">
+        <?php wp_nonce_field('post-smtp', 'post-smtp-log-nonce'); ?>
 
 		<div id="email-log-filter" class="postman-log-row">
 			<div class="form-control">
@@ -447,13 +454,13 @@ class PostmanEmailLogController {
 				</select>	
 			</div>
 
-            <div class="form-control">
-                <button type="submit" id="postman_export_csv" name="postman_export_csv" class="button button-primary"><?php _e( 'Export To CSV', 'post-smtp' ); ?></button>
+            <div class="form-control" style="padding: 0 5px 0 5px;">
+                <button type="submit" name="filter" class="button button-primary"><?php _e( 'Filter/Search', 'post-smtp' ); ?></button>
             </div>
 
-			<div class="form-control" style="padding: 0 5px 0 5px; margin-right: 50px;">
-				<button type="submit" name="filter" class="button button-primary"><?php _e( 'Filter/Search', 'post-smtp' ); ?></button>
-			</div>
+            <div class="form-control" style="padding: 0 5px 0 0px;">
+                <button type="submit" id="postman_export_csv" name="postman_export_csv" class="button button-primary"><?php _e( 'Export To CSV', 'post-smtp' ); ?></button>
+            </div>
 
 			<div class="form-control">
 				<button type="submit" id="postman_trash_all" name="postman_trash_all" class="button button-primary"><?php _e( 'Trash All', 'post-smtp' ); ?></button>
