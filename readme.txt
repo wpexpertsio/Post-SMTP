@@ -30,7 +30,7 @@ Post SMTP is *not* another WP Mail SMTP clone like WP Bank or Easy SMTP. It repl
 = The Most Fast And Easy =
 See how fast and easy to setup Post SMTP with Google/Gsuite or any SMTP service.
 
-https://www.youtube.com/watch?v=z-x1DhcAN0o
+https://www.youtube.com/watch?v=uN_8lNv7KBo
 
 = Standard Features =
 * Easy-to-use, powerful Setup Wizard for perfect configuration
