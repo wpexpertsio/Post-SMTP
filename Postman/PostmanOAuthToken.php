@@ -45,10 +45,26 @@ if (! class_exists ( 'PostmanOAuthToken.php' )) {
 		 */
 		private function load() {
 			$a = get_option ( PostmanOAuthToken::OPTIONS_NAME );
-			$this->setAccessToken ( $a [PostmanOAuthToken::ACCESS_TOKEN] );
-			$this->setRefreshToken ( $a [PostmanOAuthToken::REFRESH_TOKEN] );
-			$this->setExpiryTime ( $a [PostmanOAuthToken::EXPIRY_TIME] );
-			$this->setVendorName ( $a [PostmanOAuthToken::VENDOR_NAME] );
+
+			if ( ! is_array( $a ) ) {
+			    return;
+            }
+
+			if ( isset( $a [PostmanOAuthToken::ACCESS_TOKEN] ) ) {
+                $this->setAccessToken ( $a [PostmanOAuthToken::ACCESS_TOKEN] );
+            }
+
+            if ( isset( $a [PostmanOAuthToken::REFRESH_TOKEN] ) ) {
+                $this->setRefreshToken($a [PostmanOAuthToken::REFRESH_TOKEN]);
+            }
+
+            if ( isset( $a [PostmanOAuthToken::EXPIRY_TIME] ) ) {
+                $this->setExpiryTime($a [PostmanOAuthToken::EXPIRY_TIME]);
+            }
+
+            if ( isset( $a [PostmanOAuthToken::VENDOR_NAME] ) ) {
+                $this->setVendorName($a [PostmanOAuthToken::VENDOR_NAME]);
+            }
 		}
 		
 		/**

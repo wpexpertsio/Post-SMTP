@@ -57,9 +57,14 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
             // now log it
 			$sender->log( $this->logger, 'From' );
 
+			$duplicates = array();
+
             // add the to recipients
 			foreach ( ( array ) $message->getToRecipients() as $recipient ) {
-                $emails[] = new \SendGrid\Mail\To($recipient->getEmail(), $recipient->getName() );
+			    if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
+                    $emails[] = new \SendGrid\Mail\To( $recipient->getEmail(), $recipient->getName() );
+			        $duplicates[] = $recipient->getEmail();
+                }
 			}
 
 			$email->addTos( $emails );
@@ -111,16 +116,22 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 			// add the cc recipients
             $ccEmails = array();
 			foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
-                $recipient->log( $this->logger, 'Cc' );
-                $ccEmails[] = new \SendGrid\Mail\Cc( $recipient->getEmail(), $recipient->getName() );
+                if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
+                    $recipient->log($this->logger, 'Cc');
+                    $ccEmails[] = new \SendGrid\Mail\Cc($recipient->getEmail(), $recipient->getName());
+                    $duplicates[] = $recipient->getEmail();
+                }
 			}
             $email->addCcs($ccEmails);
 
             // add the bcc recipients
             $bccEmails = array();
 			foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
-                $recipient->log($this->logger, 'Bcc');
-                $bccEmails[] = new \SendGrid\Mail\Bcc( $recipient->getEmail(), $recipient->getName() );
+                if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
+                    $recipient->log($this->logger, 'Bcc');
+                    $bccEmails[] = new \SendGrid\Mail\Bcc($recipient->getEmail(), $recipient->getName());
+                    $duplicates[] = $recipient->getEmail();
+                }
 			}
             $email->addBccs($bccEmails);
 

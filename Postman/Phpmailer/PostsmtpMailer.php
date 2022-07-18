@@ -15,6 +15,8 @@ add_action('plugins_loaded', function() {
 
 class PostsmtpMailer extends PHPMailer {
 
+    private $mail_args = array();
+
     private $options;
 
     private $error;
@@ -38,9 +40,21 @@ class PostsmtpMailer extends PHPMailer {
     }
 
     public function hooks() {
+        add_filter( 'wp_mail', array( $this, 'get_mail_args' ) );
         if ( $this->options->getTransportType() == 'smtp' ) {
             add_action( 'phpmailer_init', array( $this, 'phpmailer_smtp_init' ), 999 );
         }
+    }
+
+    public function get_mail_args( $atts ) {
+        $this->mail_args = array();
+        $this->mail_args[] = $atts['to'];
+        $this->mail_args[] = $atts['subject'];
+        $this->mail_args[] = $atts['message'];
+        $this->mail_args[] = $atts['headers'];
+        $this->mail_args[] = $atts['attachments'];
+
+        return $atts;
     }
 
     /**
@@ -76,9 +90,7 @@ class PostsmtpMailer extends PHPMailer {
         $postmanWpMail = new PostmanWpMail();
         $postmanWpMail->init();
 
-        $backtrace = debug_backtrace();
-
-        list($to, $subject, $body, $headers, $attachments) = array_pad( $backtrace[1]['args'], 5, null );
+        list($to, $subject, $body, $headers, $attachments) = array_pad( $this->mail_args, 5, null );
 
         // build the message
         $postmanMessage = $postmanWpMail->processWpMailCall( $to, $subject, $body, $headers, $attachments );
@@ -113,8 +125,6 @@ class PostsmtpMailer extends PHPMailer {
             $this->error = $exc;
 
             $this->mailHeader = '';
-
-            do_action( 'post_smtp_on_failed', $log, $postmanMessage, $this->transcript, $transport, $exc->getMessage() );
 
             $this->setError($exc->getMessage());
             if ($this->exceptions) {

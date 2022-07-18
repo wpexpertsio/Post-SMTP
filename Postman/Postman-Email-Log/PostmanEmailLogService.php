@@ -167,8 +167,9 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
                     $message = $post_id->get_error_message();
 
                     printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
-                    return;
                 });
+
+			    return;
             }
 
 			$this->logger->debug( sprintf( 'Saved message #%s to the database', $post_id ) );
