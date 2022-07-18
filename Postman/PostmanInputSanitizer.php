@@ -93,6 +93,8 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
             $this->sanitizeString( 'Fallback username', PostmanOptions::FALLBACK_SMTP_USERNAME, $input, $new_input );
             $this->sanitizePassword( 'Fallback password', PostmanOptions::FALLBACK_SMTP_PASSWORD, $input, $new_input, $this->options->getFallbackPassword() );
 
+            $new_input = apply_filters( 'post_smtp_sanitize', $new_input, $input, $this );
+
 			if ( $new_input [ PostmanOptions::CLIENT_ID ] != $this->options->getClientId() || $new_input [ PostmanOptions::CLIENT_SECRET ] != $this->options->getClientSecret() || $new_input [ PostmanOptions::HOSTNAME ] != $this->options->getHostname() ) {
 				$this->logger->debug( 'Recognized new Client ID' );
 				// the user entered a new client id and we should destroy the stored auth token
@@ -115,7 +117,8 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 
 			return $new_input;
 		}
-		private function sanitizeString( $desc, $key, $input, &$new_input ) {
+
+		public function sanitizeString( $desc, $key, $input, &$new_input ) {
 			if ( isset( $input [ $key ] ) ) {
 				$this->logSanitize( $desc, $input [ $key ] );
 				$new_input [ $key ] = trim( $input [ $key ] );
@@ -130,7 +133,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 		 * @param mixed $input
 		 * @param mixed $new_input
 		 */
-		private function sanitizePassword( $desc, $key, $input, &$new_input, $existingPassword ) {
+		public function sanitizePassword( $desc, $key, $input, &$new_input, $existingPassword ) {
 			// WordPress calling Sanitize twice is a known issue
 			// https://core.trac.wordpress.org/ticket/21989
 			$action = PostmanSession::getInstance()->getAction();

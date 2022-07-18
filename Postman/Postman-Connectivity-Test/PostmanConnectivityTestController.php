@@ -98,6 +98,14 @@ class PostmanConnectivityTestController {
 		wp_enqueue_script( 'postman_port_test_script' );
 		$warning = __( 'Warning', 'post-smtp' );
 		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_hostname_element_name', '#input_' . PostmanOptions::HOSTNAME );
+        wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_email_test', array(
+            'recipient' => '#' . PostmanSendTestEmailController::RECIPIENT_EMAIL_FIELD_NAME,
+            'not_started' => _x( 'In Outbox', 'Email Test Status', 'post-smtp' ),
+            'sending' => _x( 'Sending...', 'Email Test Status', 'post-smtp' ),
+            'success' => _x( 'Success', 'Email Test Status', 'post-smtp' ),
+            'failed' => _x( 'Failed', 'Email Test Status', 'post-smtp' ),
+            'ajax_error' => __( 'Ajax Error', 'post-smtp' ),
+        ) );
 		PostmanConnectivityTestController::addLocalizeScriptForPortTest();
 	}
 	static function addLocalizeScriptForPortTest() {
@@ -134,6 +142,8 @@ class PostmanConnectivityTestController {
 	 */
 	public function outputPortTestContent() {
 		print '<div class="wrap">';
+
+		wp_nonce_field('post-smtp', 'security');
 
 		PostmanViewController::outputChildPageHeader( __( 'Connectivity Test', 'post-smtp' ) );
 

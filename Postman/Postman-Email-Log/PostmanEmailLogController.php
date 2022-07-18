@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-require_once dirname(__DIR__) . '/PostmanEmailLogs.php';
+require_once dirname(__DIR__) . '/PostmanLogFields.php';
 require_once 'PostmanEmailLogService.php';
 require_once 'PostmanEmailLogView.php';
 
@@ -82,7 +82,7 @@ class PostmanEmailLogController {
 		// get the email address of the recipient from the HTTP Request
 		$postid = $this->getRequestParameter( 'email' );
 		if ( ! empty( $postid ) ) {
-			$meta_values = PostmanEmailLogs::get_data( $postid );
+			$meta_values = PostmanLogFields::get_instance()->get( $postid );
 
 			if ( isset( $_POST['mail_to'] ) && ! empty( $_POST['mail_to'] ) ) {
 				$emails = explode( ',', $_POST['mail_to'] );
@@ -211,7 +211,7 @@ class PostmanEmailLogController {
 			    return;
             }
 
-			$meta_values = PostmanEmailLogs::get_data( $postid );
+			$meta_values = PostmanLogFields::get_instance()->get( $postid );
 			// https://css-tricks.com/examples/hrs/
 			print '<html><head><style>body {font-family: monospace;} hr {
     border: 0;
@@ -269,7 +269,7 @@ class PostmanEmailLogController {
 			$this->logger->trace( 'handling view transcript item' );
 			$postid = $_REQUEST ['email'];
 			$post = get_post( $postid );
-			$meta_values = PostmanEmailLogs::get_data( $postid );
+			$meta_values = PostmanLogFields::get_instance()->get( $postid );
 			// https://css-tricks.com/examples/hrs/
 			print '<html><head><style>body {font-family: monospace;} hr {
     border: 0;

@@ -121,7 +121,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		}
 		function enqueueHomeScreenStylesheet() {
 			wp_enqueue_style( PostmanViewController::POSTMAN_STYLE );
-			wp_enqueue_script( 'postman_script' );
+			wp_enqueue_script( PostmanViewController::POSTMAN_SCRIPT );
 		}
 
 		/**

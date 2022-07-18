@@ -706,10 +706,21 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
             throw new Postman_Zend_Mail_Exception('Reply-To Header set twice');
         }
 
-        $email = $this->_filterEmail($email);
         $name  = $this->_filterName($name);
         $this->_replyTo = $email;
-        $this->_storeHeader('Reply-To', $this->_formatAddress($email, $name), true);
+
+        if ( strpos( $email, ',' ) !== false ) {
+            $emails = explode(',', $email );
+            foreach ( $emails as $email ) {
+                $email = $this->_filterEmail($email);
+                $replyToList[] = $this->_formatAddress($email, $name);
+            }
+        } else {
+            $email = $this->_filterEmail($email);
+            $replyToList[] = $this->_formatAddress($email, $name);
+        }
+
+        $this->_storeHeader('Reply-To', implode(',', $replyToList ), true);
 
         return $this;
     }

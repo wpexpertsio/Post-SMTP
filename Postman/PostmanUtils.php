@@ -345,6 +345,15 @@ class PostmanUtils {
 		if ( ! isset( PostmanUtils::$emailValidator ) ) {
 			PostmanUtils::$emailValidator = new Postman_Zend_Validate_EmailAddress();
 		}
+		if ( strpos( $email, ',' ) !== false ) {
+		    $emails = explode(',', $email);
+		    $result = [];
+		    foreach ( $emails as $email ) {
+		        $result[] = PostmanUtils::$emailValidator->isValid( $email );
+            }
+
+		    return ! in_array(false, $result );
+        }
 		return PostmanUtils::$emailValidator->isValid( $email );
 	}
 

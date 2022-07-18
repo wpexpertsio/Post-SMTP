@@ -73,7 +73,7 @@ function portQuizTest(socket, hostname, port) {
 		'action' : 'postman_port_quiz_test',
 		'hostname' : hostname,
 		'port' : port,
-		'_wpnonce' : jQuery('#_wpnonce').val(),
+		'security' : jQuery('#security').val(),
 	};
 	jQuery.post(
 			ajaxurl,
@@ -201,7 +201,7 @@ function portTest3(socket, hostname, port, open) {
 		'action' : 'postman_test_smtps',
 		'hostname' : hostname,
 		'port' : port,
-		'_wpnonce' : jQuery('#_wpnonce').val(),
+		'security' : jQuery('#security').val(),
 	};
 	jQuery
 			.post(
