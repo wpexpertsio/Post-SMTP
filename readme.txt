@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehuda@m
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 5.2
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,10 +12,10 @@ Send, log and troubleshoot your Outgoing Email easily. Supports everything: SMTP
 
 == Description ==
 
-= Version 2.0 released - Mailer Type =
-[Read the detailes here](https://postmansmtp.com/post-smtp-2-0-mailer-type-and-much-more/)
+= Version 2.0.2 released - Sendgrid code fix and default delivery changes =
+[Read the detailes here](https://postmansmtp.com/post-smtp-2-0-2-sendgrid-code-fix/)
 
-= The Only SMTP plugin with chrome Notifications = 
+= The Only SMTP plugin with chrome Notifications =
 Get notified if your emails are failing inside your Chrome browser. [Download here](https://chrome.google.com/webstore/detail/post-smtp-notifications/npklmbkpbknkmbohdbpikeidiaekjoch?hl=en-US)
 
 = WordPress Mail SMTP Plugin =
@@ -97,7 +97,7 @@ Post SMTP (aka Postman SMTP) plugin was originally created by Jason Hendriks.
 == Installation ==
 
 > To send email reliably, you must use the SMTP server assigned to that email. If Post is unable to connect to the right SMTP server, you may have to ask your host to open the ports, or create a new email account managed by your host, or switch hosts!
-> 
+>
 > The Connectivity Test utility will tell you which ports are open and the actions available to you.
 
 = Easy install and setup! (Recommended for all users) =
@@ -118,7 +118,7 @@ Post SMTP (aka Postman SMTP) plugin was originally created by Jason Hendriks.
 1. In 'Envelope From Address' enter your email address. This MUST be the same address you login to webmail with.
 1. In 'Message From Address' enter your email address. Or this can be an alias, mailing list, or group email if you wish.
 1. Choose the Save Changes button.
-1. Send yourself a test email. 
+1. Send yourself a test email.
 
 = To manually configure OAuth 2.0 Authentication (Advanced users only) =
 
@@ -135,13 +135,13 @@ Post SMTP (aka Postman SMTP) plugin was originally created by Jason Hendriks.
 1. In 'Message From Address' enter your email address. Or this can be an alias, mailing list, or group email if you wish.
 1. Choose the Save Changes button.
 1. Choose the 'Request OAuth2 Permission' link and follow the instructions.
-1. Send yourself a test email. 
+1. Send yourself a test email.
 
 > Post is developed on OS X with PHP 5.5.14 and Apache 2.4.9. Post is tested in a [Red Hat OpenShift](http://www.openshift.com/) environment with PHP 5.3.3 and Apache 2.2.15 with Gmail, Hotmail and Yahoo Mail (US). Post is tested with [mailtrap.io](http://mailtrap.io).
 
 
 
-== Frequently Asked Questions == 
+== Frequently Asked Questions ==
 
 = Where is Postman SMTP? =
 From 2015-11-08 more or less I can say that Jason the original author stoped maintain the plugin.
@@ -200,7 +200,7 @@ Go to [Configure Post SMTP with Gmail\Gsuite OAuth](https://postmansmtp.com/how-
 = How can I revoke Post's OAuth 2.0 access? =
 * If you have a Google Account, from the [Google Developer's Console](https://www.google.com/accounts/Logout?continue=https://console.developers.google.com) use the Delete button under the Client ID.
 * If you have a Microsoft Live account, from the [Microsoft account Developer Center](https://account.live.com/developers/applications/index), select the Application and choose Delete Application.
-* If you have a Yahoo Account, from the [Yahoo Developer Network My Apps](https://developer.yahoo.com/apps/), select the Application and choose Delete App. 
+* If you have a Yahoo Account, from the [Yahoo Developer Network My Apps](https://developer.yahoo.com/apps/), select the Application and choose Delete App.
 
 
 
@@ -274,7 +274,7 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 1. WordPress Dashboard showing both the Post widget and At a Glance widget
 1. Main Settings screen - shows Main Menu and current status (new installation)
 1. Setup Wizard (step 1) - Import data from other plugins
-1. Setup Wizard (step 4) - Connectivity Test 
+1. Setup Wizard (step 4) - Connectivity Test
 1. Manual Configuration - Account Settings: Password Authentication
 1. Manual Configuration - Account Settings: OAuth 2.0 Authentication
 1. Manual Configuration - Message Settings
@@ -288,6 +288,10 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 2.0.2 - 2019-05-19
+* Fixed: Sendgrid code fix.
+* Fixed: Default method (nothing configured) will use the default mail on the server and not SMTP.
 
 = 2.0.1 - 2019-05-15
 * New: Mailer Type - Added an option to send without overwrite the 'wp_mail' function, better compability to WordPress delivery. hopefully will be the default in the future.

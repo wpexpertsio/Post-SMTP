@@ -117,7 +117,7 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
             $bccEmails = array();
 			foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
                 $recipient->log($this->logger, 'Bcc');
-                $bccEmails[] = new \SendGrid\Mail\Cc( $recipient->getEmail(), $recipient->getName() );
+                $bccEmails[] = new \SendGrid\Mail\Bcc( $recipient->getEmail(), $recipient->getName() );
 			}
             $email->addBccs($bccEmails);
 
@@ -166,7 +166,7 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 				if ( isset( $response_body->errors[0]->message ) || ! $email_sent ) {
 
-					$e = ! $email_sent ? $this->errorCodesMap($response_code) : $response_body->errors[0]->message;
+					$e = ! isset( $response_body->errors[0]->message ) ? $this->errorCodesMap($response_code) : $response_body->errors[0]->message;
 					$this->transcript = $e;
 					$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 					$this->transcript .= print_r( $email, true );
