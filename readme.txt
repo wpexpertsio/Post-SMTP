@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 6.0
-Stable tag: 2.1
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -280,6 +280,10 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 2.1.1 - 2022-06-09 =
+**FIX**
+* PHP Version Compatibility.
 
 = 2.1 - 2022-06-09 =
 * **NEW**

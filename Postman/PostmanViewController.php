@@ -458,14 +458,11 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 						print '</br><hr width="70%"></br>';
 						/* translators: where %s is the URL to the WordPress.org review and ratings page */
 						printf( 
-							wp_kses_post( '%s</span></p>' ), 
-							sprintf( 
-								wp_kses_post( '%s <a href="%s">%s</a> %s', 'post-smtp' ), 
-								esc_html__( 'Please consider' ),
-								esc_url( 'https://wordpress.org/support/view/plugin-reviews/post-smtp?filter=5' ),
-								esc_html__( 'leaving a review' ),
-								esc_html__( 'to help spread the word! :D' ),
-							) 
+							'<p>%s <a href="%s">%s</a>%s</p>',
+							esc_html__( 'Please consider', 'post-smtp' ),
+							esc_url( 'https://wordpress.org/support/plugin/post-smtp/reviews/?filter=5' ),
+							esc_html__( 'leaving a review', 'post-smtp' ),
+							esc_html( 'to help spread the word! :D', 'post-smtp' )
 						);
 					}
 
