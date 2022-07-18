@@ -18,7 +18,7 @@ Post SMTP is a next-generation WP Mail SMTP plugin that assists in the delivery 
 
 The **Connectivity Test** and intelligent **Setup Wizard** scan your SMTP server to detect firewall blocks and eliminate configuration mistakes. The built-in **Email Log** is an invaluable resource for [diagnosing problems](https://wordpress.org/support/topic/ugly-e-mails-no-html-and-no-special-characters?replies=15) with emails. Even hosts that block the standard SMTP ports, like GoDaddy or Bluehost, can't stop your email as **Post SMTP can deliver via HTTPS** if it can't use SMTP.
 
-Post SMTP is *not* another WP Mail SMTP clone like WP Bank or Easy SMTP. It replaces the default WordPress SMTP library, PHPMailer, with the heavy-duty Zend_Mail. Never [lose an email to PHP mail()](http://www.jvfconsulting.com/blog/php-mail-function-vs-smtp-guaranteed-delivery/) again.
+Post SMTP is *not* another WP Mail SMTP clone like WP Bank or Easy SMTP. It replaces the default WordPress SMTP library, PHPMailer, with the heavy-duty Zend_Mail. Never lose an email to PHP mail() again.
 
 = The Only SMTP plugin with chrome Notifications =
 Get notified if your emails are failing inside your Chrome browser. [Download here](https://chrome.google.com/webstore/detail/post-smtp-notifications/npklmbkpbknkmbohdbpikeidiaekjoch?hl=en-US)
@@ -269,10 +269,6 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
-
-= 2.1.4-beta.1 - 2022-07-7 =
-* **FIX**
-* Compatibility with Php version 8.0+
 
 = 2.1.3- 2022-07-1 =
 * **FIX**

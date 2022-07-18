@@ -675,24 +675,9 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			<div class="notice notice-error is-dismissible ps-less-secure-notice">
 			<?php 
 				printf(
-					'<p>
-						%1$s
-						<a href="%2$s" target="blank">%3$s</a>
-						%4$s
-						<a href="%5$s" target="blank">%6$s</a>
-						%7$s
-						<br />
-						<a href="%8$s" target="_blank">%9$s</a>
-						<br />
-						<a href="" id="discard-less-secure-notification">%10$s</a>
-					</p>',
-					esc_html__( 'To help keep your account secure, Google will no longer support using third-party apps to sign in to your Google Account using only your username and primary password. You can ', 'post-smtp' ),
-					esc_url( 'https://postmansmtp.com/gmail-is-disabling-less-secure-apps-feature-soon/' ),
-					esc_html__( 'switch to the Auth 2.0', 'post-smtp' ),
-					esc_html__( 'alternative or use your ', 'post-smtp' ),
-					esc_url( 'https://postmansmtp.com/documentation/#setting-up-an-app-password-in-your-google-account' ),
-					esc_html__( 'App Password', 'post-smtp' ),
-					esc_html__( 'option to continue.	', 'post-smtp' ),
+					'<p>%1$s <br />%2$s <a href="%3$s" target="_blank">%4$s</a><br /><a href="" id="discard-less-secure-notification">%5$s</a></p>',
+					esc_html__( '"To help keep your account secure, starting May 30, 2022, ​​Google will no longer support the use of third-party apps or devices which ask you to sign in to your Google Account using only your username and password."', 'post-smtp' ),
+					esc_html__( 'You can switch to Auth 2.0 option to continue without any downtime.', 'post-smtp' ),
 					esc_url( 'https://postmansmtp.com/gmail-is-disabling-less-secure-apps' ),
 					esc_html__( 'Click here for more info', 'post-smtp' ),
 					esc_html__( 'I understand and would like to discard this notice', 'post-smtp' )
