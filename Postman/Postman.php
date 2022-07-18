@@ -70,7 +70,6 @@ class Postman {
 		require_once 'Postman-Mail/PostmanMyMailConnector.php';
 		require_once 'Postman-Mail/PostmanContactForm7.php';
 		require_once 'Phpmailer/PostsmtpMailer.php';
-        require_once 'Extensions/License/PostmanLicenseManager.php';
         require_once 'Extensions/Admin/PostmanAdmin.php';
 		//require_once 'Postman-Mail/PostmanWooCommerce.php';
 
@@ -198,8 +197,6 @@ class Postman {
 		// register the email transports
 		$this->registerTransports( $this->rootPluginFilenameAndPath );
 
-        PostmanLicenseManager::get_instance()->init();
-
 		// load the text domain
 		$this->loadTextDomain();
 
@@ -270,6 +267,9 @@ class Postman {
 		require_once 'Postman-Configuration/PostmanConfigurationController.php';
 		require_once 'Postman-Send-Test-Email/PostmanSendTestEmailController.php';
 		require_once 'Postman-Diagnostic-Test/PostmanDiagnosticTestController.php';
+        require_once 'Extensions/License/PostmanLicenseManager.php';
+
+        PostmanLicenseManager::get_instance()->init();
 
 		// create and store an instance of the MessageHandler
 		$this->messageHandler = new PostmanMessageHandler();

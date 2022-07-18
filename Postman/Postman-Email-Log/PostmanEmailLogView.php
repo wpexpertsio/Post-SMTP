@@ -265,10 +265,12 @@ class PostmanEmailLogView extends WP_List_Table {
 	 *       ************************************************************************
 	 */
 	function prepare_items() {
-        if ( isset( $_REQUEST['post-smtp-log-nonce'] ) && ! wp_verify_nonce( $_REQUEST['post-smtp-log-nonce'], 'post-smtp' ) )
-            die( 'Security check' );
 
-            /**
+        if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) ) {
+	        wp_die( sprintf( 'You need to add to this user the %s capability. You can try disable and enable the plugin or you can do it with a plugin like `user role editor`.', Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) );
+        }
+
+	    /**
 		 * First, lets decide how many records per page to show
 		 */
 		$per_page = isset( $_GET['postman_page_records'] ) ? absint( $_GET['postman_page_records'] ) : 10;
@@ -354,14 +356,6 @@ class PostmanEmailLogView extends WP_List_Table {
 			$args['posts_per_page'] = -1;
 		}
 		$posts = new WP_query( $args );
-
-		if ( isset( $_GET['postman_trash_all'] ) && current_user_can(Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) ) {
-			foreach ( $posts->posts as $post ) {
-				wp_delete_post( $post->ID, true );
-			}
-
-			$posts->posts = array();
-		}
 
 		$date_format = get_option( 'date_format' );
 		$time_format = get_option( 'time_format' );

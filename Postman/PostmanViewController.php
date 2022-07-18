@@ -381,7 +381,6 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
                 <div class="ps-welcome-panel-column">
                     <h4><img class="align-middle" src="<?php echo plugins_url( 'style/images/new.gif', dirname( __DIR__ ) . '/postman-smtp.php' ); ?>"><a style="color: black;" target="_blank" href="https://postmansmtp.com/extensions/">Extensions</a></h4>
                     <ul>
-                        <li><a style="font-weight: bold;" target="_blank" href="https://postmansmtp.com/extensions/better-email-logger-post-smtp-extension/">Better Email Logger</a></li>
                         <li><a target="_blank" href="https://postmansmtp.com/extensions/office-365-for-post-smtp-extension/">Office 365 API</a></li>
                         <li><a target="_blank" href="https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/">Amazon SES</a></li>
                     </ul>
@@ -397,7 +396,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
                 printf( '<li><a href="%s" data-security="%s" class="welcome-icon release-lock-file">%s</a></li>', '#', wp_create_nonce( "postman" ), __( 'Release Lock File Error', 'post-smtp' ) );
                 printf( '<li><a href="https://wordpress.org/support/plugin/post-smtp/" class="welcome-icon postman_support">%s</a></li>', __( 'Online Support', 'post-smtp' ) );
                 printf( '<li><a target="blank" class="align-middle" href="https://www.facebook.com/groups/post.smtp" class="welcome-icon postman_guides">%s</a></li>', __( 'Facebook Group', 'post-smtp' ) );
-			    printf( '<li><a target="blank" class="align-middle" href="https://postmansmtp.com/category/guides/" class="welcome-icon postman_guides">%s</a></li>', __( 'Guides', 'post-smtp' ) );
+                printf( '<li><a target="blank" class="align-middle" href="https://postmansmtp.com/category/guides/" class="welcome-icon postman_guides">%s</a></li>', __( 'Guides', 'post-smtp' ) );
                 print '</ul></div></div></div></div>';
                 ?>
             </div>

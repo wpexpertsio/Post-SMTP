@@ -36,11 +36,21 @@ jQuery(document).ready(function($) {
 	});
 
 	$('#postman_trash_all').on('click',function(e) {
-		if (confirm("Are You Sure?") == false) {
-		    e.preventDefault();
+		e.preventDefault();
 
+		if (confirm("Are You Sure?") == false) {
 		    return false;
 		}
+
+		let security = $('#post-smtp-log-nonce').val();
+
+		$.post(ajaxurl, {action: 'post_smtp_log_trash_all', security: security}, function(result) {
+			if ( result.success ) {
+				location.reload();
+			} else {
+				alert(result.data);
+			}
+		}, 'json');
 	});
 
 	$('.release-lock-file').on('click', function(e) {

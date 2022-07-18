@@ -48,9 +48,10 @@ class PostmanEmailLogController {
 					$this,
 					'on_admin_init',
 			) );
-
-
 		}
+
+        add_action( 'wp_ajax_post_smtp_log_trash_all', array( $this, 'post_smtp_log_trash_all' ) );
+
 		if ( is_admin() ) {
 			$actionName = self::RESEND_MAIL_AJAX_SLUG;
 			$fullname = 'wp_ajax_' . $actionName;
@@ -61,6 +62,18 @@ class PostmanEmailLogController {
 			) );
 		}
 	}
+
+	function post_smtp_log_trash_all() {
+	    check_admin_referer('post-smtp', 'security' );
+
+	    if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) ) {
+	        wp_send_json_error( 'No permissions to manage Post SMTP logs.');
+        }
+
+	    $purger = new PostmanEmailLogPurger();
+	    $purger->removeAll();
+	    wp_send_json_success();
+    }
 
 	/**
 	 */
@@ -76,10 +89,15 @@ class PostmanEmailLogController {
 	}
 
 	function handleCsvExport() {
-        if ( isset( $_REQUEST['post-smtp-log-nonce'] ) && ! wp_verify_nonce( $_REQUEST['post-smtp-log-nonce'], 'post-smtp' ) )
-            die( 'Security check' );
+	    if ( ! isset( $_GET['postman_export_csv'] ) ) {
+	        return;
+        }
 
-        if ( isset( $_GET['postman_export_csv'] ) && current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) ) {
+        if ( ! isset( $_REQUEST['post-smtp-log-nonce'] ) || ! wp_verify_nonce( $_REQUEST['post-smtp-log-nonce'], 'post-smtp' ) ) {
+            wp_die( 'Security check' );
+        }
+
+        if (  current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) ) {
             $args = array(
                 'post_type' => PostmanEmailLogPostType::POSTMAN_CUSTOM_POST_TYPE_SLUG,
                 'post_status' => PostmanEmailLogService::POSTMAN_CUSTOM_POST_STATUS_PRIVATE,
@@ -467,10 +485,7 @@ class PostmanEmailLogController {
 			</div>
 
         </div>
-		<div class="error" style="padding: 20px; font-size: 16px;">
-            <strong>For more advanced, better performance and UI Email logger check our new extension:</strong><br><br>
-            <a style="font-weight: bold;" target="_blank" href="https://postmansmtp.com/extensions/better-email-logger-post-smtp-extension/">Better Email Logger</a>
-        </div>
+		<div class="error">Please notice: when you select a date for example 11/20/2017, behind the scene the query select <b>11/20/2017 00:00:00</b>.<br>So if you searching for an email arrived that day at any hour you need to select 11/20/2017 as the <b>From Date</b> and 11/21/2017 as the <b>To Date</b>.</div>
 	</form>
 
 	<!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions -->

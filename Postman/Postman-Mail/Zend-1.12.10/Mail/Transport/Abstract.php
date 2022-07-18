@@ -277,7 +277,11 @@ abstract class Postman_Zend_Mail_Transport_Abstract
         }
 
         if (!$body) {
-            $body = '';
+            /**
+             * @see Postman_Zend_Mail_Transport_Exception
+             */
+            require_once 'Exception.php';
+            throw new Postman_Zend_Mail_Transport_Exception('This email has empty body');
         }
 
         // Get headers
