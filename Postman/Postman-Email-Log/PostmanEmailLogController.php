@@ -360,6 +360,7 @@ class PostmanEmailLogController {
 			) );
 		}
 	}
+
 	function postman_email_log_enqueue_resources() {
 		$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
 		wp_register_style( 'postman_email_log', plugins_url( 'style/postman-email-log.css', $this->rootPluginFilenameAndPath ), null, $pluginData ['version'] );

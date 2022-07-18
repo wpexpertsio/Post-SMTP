@@ -3,6 +3,8 @@
 <style>
     .form-table .row {
         display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
     }
 
     .form-table .row .flex > *:not(:last-child) {

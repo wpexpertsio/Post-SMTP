@@ -3,8 +3,8 @@ Contributors: yehudah
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehuda@myinbox.in&item_name=Donation+for+PostSMTP
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
-Tested up to: 5.3.2
-Stable tag: 2.0.11
+Tested up to: 5.4.1
+Stable tag: 2.0.12
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -139,19 +139,12 @@ Post SMTP (aka Postman SMTP) plugin was originally created by Jason Hendriks.
 1. Choose the 'Request OAuth2 Permission' link and follow the instructions.
 1. Send yourself a test email.
 
-> Post is developed on OS X with PHP 5.5.14 and Apache 2.4.9. Post is tested in a [Red Hat OpenShift](http://www.openshift.com/) environment with PHP 5.3.3 and Apache 2.2.15 with Gmail, Hotmail and Yahoo Mail (US). Post is tested with [mailtrap.io](http://mailtrap.io).
-
-
 
 == Frequently Asked Questions ==
 
 = Where is Postman SMTP? =
 From 2015-11-08 more or less I can say that Jason the original author stoped maintain the plugin.
 He may still answered some support tickets, but nothing more.
-
-You can read more about the "story" here:
-https://postmansmtp.com/#story
-
 
 = What is OAuth 2.0? =
 
@@ -203,7 +196,6 @@ Go to [Configure Post SMTP with Gmail\Gsuite OAuth](https://postmansmtp.com/how-
 * If you have a Google Account, from the [Google Developer's Console](https://www.google.com/accounts/Logout?continue=https://console.developers.google.com) use the Delete button under the Client ID.
 * If you have a Microsoft Live account, from the [Microsoft account Developer Center](https://account.live.com/developers/applications/index), select the Application and choose Delete Application.
 * If you have a Yahoo Account, from the [Yahoo Developer Network My Apps](https://developer.yahoo.com/apps/), select the Application and choose Delete App.
-
 
 
 == Grant OAuth permission error messages ==
@@ -269,8 +261,6 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 * If you use a custom domain name for email, add a DKIM record to your DNS zone file and upload your Domain Key (a digital signature) to, for example [Google]((https://support.google.com/a/answer/174124?hl=en))
 
 
-
-
 == Screenshots ==
 
 1. WordPress Dashboard showing both the Post widget and At a Glance widget
@@ -290,6 +280,9 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 2.0.12 - 2020-05-18
+* Updated: Readme file info
 
 = 2.0.11 - 2020-02-25
 * Fixed: Slack notifications
