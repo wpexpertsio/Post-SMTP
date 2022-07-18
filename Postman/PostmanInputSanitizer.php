@@ -21,6 +21,10 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 		 */
 		public function sanitize( $input ) {
 
+		    if ( array_key_exists( 'external_option', $input ) ) {
+		        return $input;
+            }
+
 			$this->logger->debug( 'Sanitizing data before storage' );
 
 			$new_input = array();

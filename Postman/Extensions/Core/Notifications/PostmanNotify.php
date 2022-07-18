@@ -224,7 +224,7 @@ class PostmanNotify {
                 return;
             }
 
-            $url = 'https://postmansmtp.com/chrome/' . $uid;
+            $url = 'https://chrome.postmansmtp.com/' . $uid;
 
             $args = array(
                 'body' => array(
@@ -233,6 +233,14 @@ class PostmanNotify {
             );
 
             $response = wp_remote_post( $url , $args );
+
+            if ( is_wp_error( $response ) ) {
+                error_log( 'Chrome notification error: ' . $response->get_error_message() );
+            }
+
+            if ( wp_remote_retrieve_response_code( $response ) !== 200 ) {
+                error_log( 'Chrome notification error HTTP Error:' . wp_remote_retrieve_response_code( $response ) );
+            }
         }
     }
 
