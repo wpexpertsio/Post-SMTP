@@ -23,9 +23,9 @@ class Postman {
 	const MANAGE_POSTMAN_CAPABILITY_LOGS = 'manage_postman_logs';
 
 	/**
-	 * Use the text domain directly instead of this constant, as it 
+	 * Use the text domain directly instead of this constant, as it
 	 * causes issues with https://translate.wordpress.org.
-	 * 
+	 *
 	 * @deprecated
 	 * @see https://github.com/yehudah/Post-SMTP/issues/1#issuecomment-421940923
 	 */
@@ -97,7 +97,7 @@ class Postman {
 		}
 
 		// register the email transports
-		
+
         // store an instance of the WpMailBinder
         $this->wpMailBinder = PostmanWpMailBinder::getInstance();
 
@@ -187,10 +187,10 @@ class Postman {
 	 */
 	public function on_plugins_loaded() {
 
-		PostmanLicenseManager::get_instance()->init();
-
 		// register the email transports
 		$this->registerTransports( $this->rootPluginFilenameAndPath );
+
+        PostmanLicenseManager::get_instance()->init();
 
 		// load the text domain
 		$this->loadTextDomain();
@@ -415,7 +415,7 @@ class Postman {
 			}
 			$message .= (sprintf( ' %s | %s', $goToEmailLog, $goToSettings ));
 			$message .= '<input type="hidden" name="security" class="security" value="' . wp_create_nonce('postsmtp') . '">';
-			
+
 			$hide = get_option('postman_release_version' );
 
 			if ( $msg['error'] == true && ! $hide ) {

@@ -336,13 +336,13 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
             echo '<div class="twitter-wrap">';
 			    print '<div id="postman-main-menu" class="welcome-panel">';
                 print '<div class="welcome-panel-content">';
-                print '<div class="welcome-panel-column-container">';
-                print '<div class="welcome-panel-column">';
+                print '<div class="welcome-panel-column-container" style="display: flex; flex-wrap: wrap; justify-content: space-around; align-items: flex-start;">';
+                print '<div class="ps-welcome-panel-column">';
                 printf( '<h4>%s</h4>', __( 'Configuration', 'post-smtp' ) );
                 printf( '<a class="button button-primary button-hero" href="%s">%s</a>', $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG ), __( 'Start the Wizard', 'post-smtp' ) );
                 printf( '<p class="">%s <a href="%s" class="configure_manually">%s</a></p>', __( 'or', 'post-smtp' ), $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_SLUG ), __( 'Show All Settings', 'post-smtp' ) );
                 print '</div>';
-                print '<div class="welcome-panel-column">';
+                print '<div class="ps-welcome-panel-column">';
                 printf( '<h4>%s</h4>', _x( 'Actions', 'Main Menu', 'post-smtp' ) );
                 print '<ul>';
 
@@ -372,15 +372,25 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
                 printf( $purgeLinkPattern, $this->getPageUrl( PostmanAdminController::MANAGE_OPTIONS_PAGE_SLUG ), sprintf( '%s', $importExportReset ) );
                 print '</ul>';
                 print '</div>';
-                print '<div class="welcome-panel-column welcome-panel-last">';
+                ?>
+
+                <div class="ps-welcome-panel-column">
+                    <h4><img class="align-middle" src="<?php echo plugins_url( 'style/images/new.gif', dirname( __DIR__ ) . '/postman-smtp.php' ); ?>"><a style="color: black;" target="_blank" href="https://postmansmtp.com/extensions/">Extensions</a></h4>
+                    <ul>
+                        <li><a target="_blank" href="https://postmansmtp.com/extensions/office-365-for-post-smtp-extension/">Office 365 API</a></li>
+                    </ul>
+                </div>
+
+                <?php
+                print '<div class="ps-welcome-panel-column welcome-panel-last">';
                 printf( '<h4>%s</h4>', _x( 'Troubleshooting', 'Main Menu', 'post-smtp' ) );
                 print '<ul>';
                 printf( '<li><a href="%s" class="welcome-icon run-port-test">%s</a></li>', $this->getPageUrl( PostmanConnectivityTestController::PORT_TEST_SLUG ), __( 'Connectivity Test', 'post-smtp' ) );
                 printf( '<li><a href="%s" class="welcome-icon run-port-test">%s</a></li>', $this->getPageUrl( PostmanDiagnosticTestController::DIAGNOSTICS_SLUG ), __( 'Diagnostic Test', 'post-smtp' ) );
                 printf( '<li><a href="%s" data-security="%s" class="welcome-icon release-lock-file">%s</a></li>', '#', wp_create_nonce( "postman" ), __( 'Release Lock File Error', 'post-smtp' ) );
                 printf( '<li><a href="https://wordpress.org/support/plugin/post-smtp/" class="welcome-icon postman_support">%s</a></li>', __( 'Online Support', 'post-smtp' ) );
-			printf( '<li><a target="blank" class="align-middle" href="https://postmansmtp.com/category/guides/" class="welcome-icon postman_guides">%s</a></li>', __( 'Guides', 'post-smtp' ) );
-                printf( '<li><img class="align-middle" src="' . plugins_url( 'style/images/new.gif', dirname( __DIR__ ) . '/postman-smtp.php' ) . '"><a target="blank" class="align-middle" href="https://www.facebook.com/groups/post.smtp" class="welcome-icon postman_guides">%s</a></li>', __( 'Facebook Group', 'post-smtp' ) );
+                printf( '<li><a target="blank" class="align-middle" href="https://www.facebook.com/groups/post.smtp" class="welcome-icon postman_guides">%s</a></li>', __( 'Facebook Group', 'post-smtp' ) );
+			    printf( '<li><a target="blank" class="align-middle" href="https://postmansmtp.com/category/guides/" class="welcome-icon postman_guides">%s</a></li>', __( 'Guides', 'post-smtp' ) );
                 print '</ul></div></div></div></div>';
                 ?>
             </div>

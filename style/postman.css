@@ -9,7 +9,6 @@
 	margin: 0;
 	margin-right: 10px;
 	overflow: hidden;
-	max-height: 300px;
 	border-radius: 5px;
 }
 
@@ -98,7 +97,7 @@ p#back_to_main_menu {
 	padding-right: 10px;
 }
 
-.welcome-panel-column welcome-panel-last {
+.welcome-panel-column.welcome-panel-last {
 	padding-bottom: 10px;
 }
 
@@ -124,7 +123,7 @@ p#back_to_main_menu {
 .post-badge {
     position: absolute;
     top: 0;
-    right: 0;	
+    right: 0;
     padding-top: 142px;
     height: 50px;
     width: 173px;
@@ -133,7 +132,7 @@ p#back_to_main_menu {
     font-size: 14px;
     text-align: center;
     margin: 0 -5px;
-    background: url(images/badge.png) no-repeat;	
+    background: url(images/badge.png) no-repeat;
 }
 
 

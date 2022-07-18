@@ -4,17 +4,17 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehudaha
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 5.6
-Stable tag: 2.0.16
+Stable tag: 2.0.17
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Send, log and troubleshoot your Outgoing Email easily. Supports everything: SMTP, Gmail, Mailgun, Mandril, SendGrid, Elastic Email and OAuth 2.0!
+Send, log and troubleshoot your Outgoing Email easily. Supports everything: SMTP, Gmail, Mailgun, office365, SendGrid, Elastic Email and OAuth 2.0!
 
 == Description ==
 
-= Looking for Google Analytics AIO plugin? =
-If you used the good and old Google Analytics Dashboard For WP, I have forked the original plugin here:
-[https://wordpress.org/plugins/metrics-query/](https://wordpress.org/plugins/metrics-query/)
+= Looking for Office 365 API delivery? =
+Check this extensions page, it will update with more extensions so don't forget to follow:
+[https://postmansmtp.com/extensions/](https://postmansmtp.com/extensions/)
 
 = The Only SMTP plugin with chrome Notifications =
 Get notified if your emails are failing inside your Chrome browser. [Download here](https://chrome.google.com/webstore/detail/post-smtp-notifications/npklmbkpbknkmbohdbpikeidiaekjoch?hl=en-US)
@@ -280,6 +280,9 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 2.0.17 - 2020-01-17
+* New: Plugin Extensions
 
 = 2.0.16 - 2020-12-13
 * Update: General Info
