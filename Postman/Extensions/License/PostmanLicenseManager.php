@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class PostmanLicenseManager {
 
-    const ENDPOINT = 'https://postmansmtpcom-staging.dxpsites.net';
+    const ENDPOINT = 'https://postmansmtp.com';
 
     const CORE_EXTENSIONS = [ 'gmail_api', 'sendgrid_api', 'mandrill_api', 'mailgun_api' ];
 

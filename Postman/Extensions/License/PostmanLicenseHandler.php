@@ -18,7 +18,7 @@ class PostmanLicenseHandler {
     private $item_shortname;
     private $version;
     private $author;
-	private $api_url = 'http://localhost/psp/';
+	private $api_url = 'https://postmansmtp.com';
 
 
 	function __construct( $_file, $_item_name, $_version, $_author, $_optname = null, $_api_url = null, $_item_id = null ) {
