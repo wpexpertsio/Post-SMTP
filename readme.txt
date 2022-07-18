@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 6.0
-Stable tag: 2.1.1
+Stable tag: 2.1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,8 +30,6 @@ Post SMTP is *not* another WP Mail SMTP clone like WP Bank or Easy SMTP. It repl
 = The Most Fast And Easy =
 See how fast and easy to setup Post SMTP with Google/Gsuite or any SMTP service.
 
-https://www.youtube.com/watch?v=z-x1DhcAN0o
-
 = Standard Features =
 * Easy-to-use, powerful Setup Wizard for perfect configuration
 * Commercial-grade Connectivity Tester to diagnose server issues
@@ -48,18 +46,21 @@ https://www.youtube.com/watch?v=z-x1DhcAN0o
 * Gmail: By combining OAuth2 and the Gmail API, Post can deliver where other plugins can not
 
 = API (HTTPS) Email Support =
-* Gmail API for sending Gmail and Google Apps email (requires a [Google](https://accounts.google.com/signup) account)
+* **Gmail API for sending Gmail and Google Apps email** (requires a [Google](https://accounts.google.com/signup) account)
 Often bloggers and small business owners don't want to use third-party SMTP services. Well you can use your Gmail or G Suite account for SMTP emails.
 <a href="https://www.cloudways.com/blog/post-smtp-mailer-fork-of-wordpress-postman-smtp-plugin/" rel="friend">Check the guide I wrote</a>
 
-* Mandrill API for sending any email (requires a [Mandrill](http://www.mandrillapp.com) account)
+* **Mandrill API for sending any email** (requires a [Mandrill](http://www.mandrillapp.com) account)
 Mandrill is an email infrastructure service offered as an add-on for MailChimp that you can use to send personalized, one-to-one e-commerce emails, or automated transactional emails.
 
-* Mailgun API for sending any email (requires a [Mailgun](http://www.mailgun.com) account)
+* **Mailgun API for sending any email** (requires a [Mailgun](http://www.mailgun.com) account)
 Mailgun SMTP is a popular SMTP service provider that allows you to send large quantities of emails. They allow you to send your first 10,000 emails for free every month.
 
-* SendGrid API for sending any email (requires a [SendGrid](https://sendgrid.com) account and PHP 5.3)
+* **SendGrid API for sending any email** (requires a [SendGrid](https://sendgrid.com) account and PHP 5.3)
 SendGrid has a free SMTP plan that you can use to send up to 100 emails per day. With our native SendGrid SMTP integration, you can easily and securely set up SendGrid SMTP on your WordPress site.
+
+* **Sendinblue API for sending any email** (requires a [Sendinblue](https://www.sendinblue.com/) account and PHP 5.3)
+SendinBlue is an effective and great email software for Small to Medium businesses. You can build customer relationships with an all-in-one digital marketing toolbox. Their free plan allows you to send up to 300 emails per day.
 
 > Post SMTP needs [translators](https://translate.wordpress.org/projects/wp-plugins/post-smtp/stable)! If you are a non-English speaker, please get involved!
 
@@ -280,6 +281,10 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 2.1.1.1 - 2022-06-15 =
+**FIX**
+* Sendinblue email header
 
 = 2.1.1 - 2022-06-09 =
 **FIX**
