@@ -1,9 +1,10 @@
 === Post SMTP Mailer/Email Log ===
-Contributors: yehudah
+Plugin URI: https://wpexperts.io/
+Contributors: wpexpertsio
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
-Tested up to: 5.7.1
-Stable tag: 2.0.23
+Tested up to: 5.9
+Stable tag: 2.0.24
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -279,6 +280,9 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 2.0.24 - 2022-02-13
+* Update: THE FUTURE OF Post SMTP - https://postmansmtp.com/the-future-of-post-smtp/
 
 = 2.0.23 - 2021-04-22
 * Fixed: `WP_Scripts::localize called incorrectly` message.
