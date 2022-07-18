@@ -147,18 +147,6 @@ class Postman {
 
         add_filter( 'extra_plugin_headers', [ $this, 'add_extension_headers' ] );
 
-		/**
-		 * @todo: WPML say they fix the issue in version 3.9
-		 * https://wordpress.org/support/topic/error-in-pluggable-php173/#post-10021301
-		 */
-		if ( get_option( 'icl_sitepress_version' ) && version_compare( get_option( 'icl_sitepress_version' ), '3.9', '<' ) ) {
-
-			$active_plugins = (array)get_option('active_plugins', array());
-			if (in_array('sitepress-multilingual-cms/sitepress.php', $active_plugins) && !get_option('postman_wpml_fixed')) {
-				add_action('admin_notices', array($this, 'post_smtp_wpml_admin_notice'));
-			}
-		}
-
 		// hook on the wp_loaded event
 		add_action( 'wp_loaded', array(
 				$this,

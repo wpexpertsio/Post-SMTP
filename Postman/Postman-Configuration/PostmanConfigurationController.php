@@ -100,28 +100,6 @@ class PostmanConfigurationController {
 	/**
 	 */
 	private function addLocalizeScriptsToPage() {
-		$warning = __( 'Warning', 'post-smtp' );
-		/* translators: where %s is the name of the SMTP server */
-		wp_localize_script( 'postman_wizard_script', 'postman_smtp_mitm', sprintf( '%s: %s', $warning, __( 'connected to %1$s instead of %2$s.', 'post-smtp' ) ) );
-		/* translators: where %d is a port number */
-		wp_localize_script( 'postman_wizard_script', 'postman_wizard_bad_redirect_url', __( 'You are about to configure OAuth 2.0 with an IP address instead of a domain name. This is not permitted. Either assign a real domain name to your site or add a fake one in your local host file.', 'post-smtp' ) );
-
-		// user input
-		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_input_sender_email', '#input_' . PostmanOptions::MESSAGE_SENDER_EMAIL );
-		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_input_sender_name', '#input_' . PostmanOptions::MESSAGE_SENDER_NAME );
-		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_port_element_name', '#input_' . PostmanOptions::PORT );
-		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_hostname_element_name', '#input_' . PostmanOptions::HOSTNAME );
-
-		// the enc input
-		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_enc_for_password_el', '#input_enc_type_password' );
-		// these are the ids for the <option>s in the encryption <select>
-		// the password inputs
-		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_input_basic_username', '#input_' . PostmanOptions::BASIC_AUTH_USERNAME );
-		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_input_basic_password', '#input_' . PostmanOptions::BASIC_AUTH_PASSWORD );
-
-		// the auth input
-		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_redirect_url_el', '#input_oauth_redirect_url' );
-		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_input_auth_type', '#input_' . PostmanOptions::AUTHENTICATION_TYPE );
 
 		// the transport modules scripts
 		foreach ( PostmanTransportRegistry::getInstance()->getTransports() as $transport ) {
@@ -187,7 +165,7 @@ class PostmanConfigurationController {
 		wp_enqueue_style( 'jquery_steps_style' );
 		wp_enqueue_style( PostmanViewController::POSTMAN_STYLE );
 		wp_enqueue_script( 'postman_wizard_script' );
-		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, '$jq', 'jQuery.noConflict(true)' );
+		//wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, '$jq', 'jQuery.noConflict(true)' );
 		$shortLocale = substr( get_locale(), 0, 2 );
 		if ( $shortLocale != 'en' ) {
 			$url = plugins_url( sprintf( 'script/jquery-validate/localization/messages_%s.js', $shortLocale ), $this->rootPluginFilenameAndPath );
@@ -601,7 +579,7 @@ class PostmanConfigurationController {
 		Postman::getMailerTypeRecommend();
 
 		$in_wizard = true;
-		include_once POST_SMTP_PATH . '/Postman/extra/donation.php';
+		//include_once POST_SMTP_PATH . '/Postman/extra/donation.php';
 
 		print '</section>';
 		print '</fieldset>';

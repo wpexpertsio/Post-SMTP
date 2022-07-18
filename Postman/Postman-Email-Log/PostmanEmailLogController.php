@@ -391,10 +391,6 @@ class PostmanEmailLogController {
 		wp_enqueue_style( 'postman_email_log' );
 		wp_enqueue_script( 'postman_resend_email_script' );
 		wp_enqueue_script( 'sprintf' );
-		wp_localize_script( 'postman_resend_email_script', 'postman_js_email_was_resent', __( 'Email was successfully resent (but without attachments)', 'post-smtp' ) );
-		/* Translators: Where %s is an error message */
-		wp_localize_script( 'postman_resend_email_script', 'postman_js_email_not_resent', __( 'Email could not be resent. Error: %s', 'post-smtp' ) );
-		wp_localize_script( 'postman_resend_email_script', 'postman_js_resend_label', __( 'Resend', 'post-smtp' ) );
 	}
 
 	/**
@@ -425,7 +421,7 @@ class PostmanEmailLogController {
 	/* Translators where (%s) is the name of the plugin */
 		echo sprintf( __( '%s Email Log', 'post-smtp' ), __( 'Post SMTP', 'post-smtp' ) )?></h2>
 
-    <?php include_once POST_SMTP_PATH . '/Postman/extra/donation.php'; ?>
+    <?php //include_once POST_SMTP_PATH . '/Postman/extra/donation.php'; ?>
 
 	<div
 		style="background: #ECECEC; border: 1px solid #CCC; padding: 0 10px; margin-top: 5px; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;">

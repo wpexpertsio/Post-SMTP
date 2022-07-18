@@ -14,12 +14,12 @@ jQuery(document).ready(
 								stepsOrientation : "vertical",
 								autoFocus : true,
 								labels : {
-									current : steps_current_step,
-									pagination : steps_pagination,
-									finish : steps_finish,
-									next : steps_next,
-									previous : steps_previous,
-									loading : steps_loading
+									current : post_smtp_localize.steps_current_step,
+									pagination : post_smtp_localize.steps_pagination,
+									finish : post_smtp_localize.steps_finish,
+									next : post_smtp_localize.steps_next,
+									previous : post_smtp_localize.steps_previous,
+									loading : post_smtp_localize.steps_loading
 								},
 								onStepChanging : function(event, currentIndex,
 										newIndex) {

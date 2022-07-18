@@ -204,13 +204,16 @@ class PostmanGetDiagnosticsViaAjax {
 			foreach ( $functions as $function ) {
 				$thing = $function ['function'];
 				if ( is_array( $thing ) ) {
-					$name = get_class( $thing [0] ) . '->' . $thing [1];
-					array_push( $functionArray, $name );
+                    $name = get_class($thing [0]) . '->' . $thing [1];
+                    array_push($functionArray, $name);
+                } elseif ( is_object( $thing ) ) {
+                    array_push( $functionArray, 'Anonymous Function' );
 				} else {
 					array_push( $functionArray, $thing );
 				}
 			}
 		}
+
 		return implode( ', ', $functionArray );
 	}
 

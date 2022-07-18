@@ -1,10 +1,9 @@
 === Post SMTP Mailer/Email Log ===
 Contributors: yehudah
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehudahas@gmail.com&item_name=Donation+for+PostSMTP
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
-Tested up to: 5.6
-Stable tag: 2.0.22
+Tested up to: 5.7.1
+Stable tag: 2.0.23
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -280,6 +279,9 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 2.0.23 - 2021-04-22
+* Fixed: `WP_Scripts::localize called incorrectly` message.
 
 = 2.0.22 - 2021-02-14
 * Update: Chrome extension URL change

@@ -97,7 +97,7 @@ class PostmanConnectivityTestController {
 		wp_enqueue_style( PostmanViewController::POSTMAN_STYLE );
 		wp_enqueue_script( 'postman_port_test_script' );
 		$warning = __( 'Warning', 'post-smtp' );
-		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_hostname_element_name', '#input_' . PostmanOptions::HOSTNAME );
+
         wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_email_test', array(
             'recipient' => '#' . PostmanSendTestEmailController::RECIPIENT_EMAIL_FIELD_NAME,
             'not_started' => _x( 'In Outbox', 'Email Test Status', 'post-smtp' ),

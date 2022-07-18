@@ -44,7 +44,7 @@ jQuery(document).ready(
 				Hook.call( 'post_smtp_notification_change', selected );
 
 			});
-			
+
 
 			// add an event on the authentication input field
 			// on user changing the auth type, determine whether to show
@@ -61,23 +61,23 @@ jQuery(document).ready(
 
 			// add an event on the hostname input field
 			// on keyup, start the countdown
-			jQuery(postman_hostname_element_name).keyup(function() {
+			jQuery(post_smtp_localize.postman_hostname_element_name).keyup(function() {
 				clearTimeout(typingTimer);
-				if (jQuery(postman_hostname_element_name).val) {
+				if (jQuery(post_smtp_localize.postman_hostname_element_name).val) {
 					typingTimer = setTimeout(doneTyping, doneTypingInterval);
 				}
 			});
 
 			// user is "finished typing," do something
 			function doneTyping() {
-				if (jQuery(postman_input_auth_type).val() == 'oauth2') {
+				if (jQuery(post_smtp_localize.postman_input_auth_type).val() == 'oauth2') {
 					reloadOauthSection();
 				}
 			}
 		});
 
 function reloadOauthSection() {
-	var hostname = jQuery(postman_hostname_element_name).val();
+	var hostname = jQuery(post_smtp_localize.postman_hostname_element_name).val();
 	var transport = jQuery('#input_transport_type').val();
 	var authtype = jQuery('select#input_auth_type').val();
 	var security = jQuery('#security').val();

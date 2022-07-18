@@ -301,7 +301,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			// only administrators should be able to trigger this
 			if ( PostmanUtils::isAdmin() ) {
 				$mylinks = array(
-                        sprintf( '<a href="%s" target="_blank" class="postman_settings">%s</a>', 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehudahas@gmail.com&item_name=Donation+for+PostSMTP', __( 'Donate', 'post-smtp' ) ),
+                        //sprintf( '<a href="%s" target="_blank" class="postman_settings">%s</a>', 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehudahas@gmail.com&item_name=Donation+for+PostSMTP', __( 'Donate', 'post-smtp' ) ),
 						sprintf( '<a href="%s" class="postman_settings">%s</a>', PostmanUtils::getSettingsPageUrl(), __( 'Settings', 'post-smtp' ) ),
 						sprintf( '<a href="%s" class="postman_settings">%s</a>', 'https://postmansmtp.com', __( 'Visit us', 'post-smtp' ) ),
 				);

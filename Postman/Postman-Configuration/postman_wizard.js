@@ -7,7 +7,7 @@ portTestInProgress = false;
  * Functions to run on document load
  */
 jQuery(document).ready(function() {
-	jQuery(postman_input_sender_email).focus();
+	jQuery(post_smtp_localize.postman_input_sender_email).focus();
 	initializeJQuerySteps();
 	// add an event on the plugin selection
 	jQuery('input[name="input_plugin"]').click(function() {
@@ -63,7 +63,7 @@ function checkEmail(goDaddyHostDetected, email) {
 					smtpDiscovery = response.data;
 					if (response.data.hostname != null
 							&& response.data.hostname) {
-						jQuery(postman_hostname_element_name).val(
+						jQuery(post_smtp_localize.postman_hostname_element_name).val(
 								response.data.hostname);
 					}
 					enableSmtpHostnameInput(goDaddyHostDetected);
@@ -108,12 +108,12 @@ function initializeJQuerySteps() {
 				autoFocus : true,
 				startIndex : parseInt(postman_setup_wizard.start_page),
 				labels : {
-					current : steps_current_step,
-					pagination : steps_pagination,
-					finish : steps_finish,
-					next : steps_next,
-					previous : steps_previous,
-					loading : steps_loading
+					current : post_smtp_localize.steps_current_step,
+					pagination : post_smtp_localize.steps_pagination,
+					finish : post_smtp_localize.steps_finish,
+					next : post_smtp_localize.steps_next,
+					previous : post_smtp_localize.steps_previous,
+					loading : post_smtp_localize.steps_loading
 				},
 				onStepChanging : function(event, currentIndex, newIndex) {
 					return handleStepChange(event, currentIndex, newIndex,
@@ -121,7 +121,7 @@ function initializeJQuerySteps() {
 
 				},
 				onInit : function() {
-					jQuery(postman_input_sender_email).focus();
+					jQuery(post_smtp_localize.postman_input_sender_email).focus();
 				},
 				onStepChanged : function(event, currentIndex, priorIndex) {
 					return postHandleStepChange(event, currentIndex,
@@ -191,7 +191,7 @@ function handleStepChange(event, currentIndex, newIndex, form) {
 	if (currentIndex === 1) {
 		// page 1 : look-up the email
 		// address for the smtp server
-		checkGoDaddyAndCheckEmail(jQuery(postman_input_sender_email).val());
+		checkGoDaddyAndCheckEmail(jQuery(post_smtp_localize.postman_input_sender_email).val());
 
 	} else if (currentIndex === 2) {
 
@@ -203,7 +203,7 @@ function handleStepChange(event, currentIndex, newIndex, form) {
 		portsToCheck = 0;
 		totalAvail = 0;
 
-		getHostsToCheck(jQuery(postman_hostname_element_name).val());
+		getHostsToCheck(jQuery(post_smtp_localize.postman_hostname_element_name).val());
 
 	} else if (currentIndex === 3) {
 
@@ -219,9 +219,9 @@ function handleStepChange(event, currentIndex, newIndex, form) {
 		if (!valid) {
 			return false;
 		}
-		var chosenPort = jQuery(postman_port_element_name).val();
-		var hostname = jQuery(postman_hostname_element_name).val();
-		var authType = jQuery(postman_input_auth_type).val()
+		var chosenPort = jQuery(post_smtp_localize.postman_port_element_name).val();
+		var hostname = jQuery(post_smtp_localize.postman_hostname_element_name).val();
+		var authType = jQuery(post_smtp_localize.postman_input_auth_type).val()
 
 	}
 
@@ -234,7 +234,7 @@ function postHandleStepChange(event, currentIndex, priorIndex, myself) {
 	// the user is old enough and wants
 	// to the previous step.
 	if (currentIndex === 2) {
-		jQuery(postman_hostname_element_name).focus();
+		jQuery(post_smtp_localize.postman_hostname_element_name).focus();
 		// this is the second place i disable the next button but Steps
 		// re-enables it after the screen slides
 		if (priorIndex === 1) {
@@ -253,7 +253,7 @@ function postHandleStepChange(event, currentIndex, priorIndex, myself) {
 	}
 	if (currentIndex === 4) {
 		if (redirectUrlWarning) {
-			alert(postman_wizard_bad_redirect_url);
+			alert(post_smtp_localize.postman_wizard_bad_redirect_url);
 		}
 		if (chosenPort == 'none') {
 			if (priorIndex === 5) {
@@ -269,7 +269,7 @@ function postHandleStepChange(event, currentIndex, priorIndex, myself) {
 
 /**
  * Asks the server for a List of sockets to perform port checks upon.
- * 
+ *
  * @param hostname
  */
 function getHostsToCheck(hostname) {
@@ -298,7 +298,7 @@ function getHostsToCheck(hostname) {
 
 /**
  * Handles the response from the server of the list of sockets to check.
- * 
+ *
  * @param hostname
  * @param response
  */
@@ -323,7 +323,7 @@ function handleHostsToCheckResponse(response) {
 
 /**
  * Asks the server to run a connectivity test on the given port
- * 
+ *
  * @param hostname
  * @param port
  * @param data
@@ -342,7 +342,7 @@ function postThePortTest(hostname, port, data) {
 
 /**
  * Handles the result of the port test
- * 
+ *
  * @param hostname
  * @param port
  * @param data
@@ -368,7 +368,7 @@ function handlePortTestResponse(hostname, port, data, response) {
 }
 
 /**
- * 
+ *
  * @param message
  */
 function updateStatus(message) {
@@ -502,7 +502,7 @@ function handleConfigurationResponse(response) {
 
 	jQuery('select#input_notification_service').change(function() {
 		var selected = jQuery( this ).val();
-		
+
 		if ( selected == 'default' ) {
 			jQuery('#slack_cred').fadeOut('fast');
 			jQuery('#pushover_cred').fadeOut('fast');
@@ -554,7 +554,7 @@ function getConfiguration() {
 		var data = {
 			'action' : 'import_configuration',
 			'plugin' : plugin,
-			'_wpnonce' : jQuery('#_wpnonce').val(),
+			'security' : jQuery('#security').val(),
 		};
 		jQuery
 				.post(
@@ -564,21 +564,21 @@ function getConfiguration() {
 							if (response.success) {
 								jQuery('select#input_transport_type').val(
 										'smtp');
-								jQuery(postman_input_sender_email).val(
+								jQuery(post_smtp_localize.postman_input_sender_email).val(
 										response.sender_email);
-								jQuery(postman_input_sender_name).val(
+								jQuery(post_smtp_localize.postman_input_sender_name).val(
 										response.sender_name);
-								jQuery(postman_hostname_element_name).val(
+								jQuery(post_smtp_localize.postman_hostname_element_name).val(
 										response.hostname);
-								jQuery(postman_port_element_name).val(
+								jQuery(post_smtp_localize.postman_port_element_name).val(
 										response.port);
-								jQuery(postman_input_auth_type).val(
+								jQuery(post_smtp_localize.postman_input_auth_type).val(
 										response.auth_type);
 								jQuery('#input_enc_type')
 										.val(response.enc_type);
-								jQuery(postman_input_basic_username).val(
+								jQuery(post_smtp_localize.postman_input_basic_username).val(
 										response.basic_auth_username);
-								jQuery(postman_input_basic_password).val(
+								jQuery(post_smtp_localize.postman_input_basic_password).val(
 										response.basic_auth_password);
 								switchBetweenPasswordAndOAuth();
 							}
@@ -586,14 +586,14 @@ function getConfiguration() {
 					ajaxFailed(response);
 				});
 	} else {
-		jQuery(postman_input_sender_email).val('');
-		jQuery(postman_input_sender_name).val('');
-		jQuery(postman_input_basic_username).val('');
-		jQuery(postman_input_basic_password).val('');
-		jQuery(postman_hostname_element_name).val('');
-		jQuery(postman_port_element_name).val('');
-		jQuery(postman_input_auth_type).val('none');
-		jQuery(postman_enc_for_password_el).val('none');
+		jQuery(post_smtp_localize.postman_input_sender_email).val('');
+		jQuery(post_smtp_localize.postman_input_sender_name).val('');
+		jQuery(post_smtp_localize.postman_input_basic_username).val('');
+		jQuery(post_smtp_localize.postman_input_basic_password).val('');
+		jQuery(post_smtp_localize.postman_hostname_element_name).val('');
+		jQuery(post_smtp_localize.postman_port_element_name).val('');
+		jQuery(post_smtp_localize.postman_input_auth_type).val('none');
+		jQuery(post_smtp_localize.postman_enc_for_password_el).val('none');
 		switchBetweenPasswordAndOAuth();
 	}
 }

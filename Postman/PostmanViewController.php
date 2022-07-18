@@ -169,13 +169,6 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					'bad_response' => __( 'An unexpected error occurred', 'post-smtp' ),
 					'corrupt_response' => __( 'Unexpected PHP messages corrupted the Ajax response', 'post-smtp' ),
 			) );
-
-			wp_localize_script( 'jquery_steps_script', 'steps_current_step', 'steps_current_step' );
-			wp_localize_script( 'jquery_steps_script', 'steps_pagination', 'steps_pagination' );
-			wp_localize_script( 'jquery_steps_script', 'steps_finish', _x( 'Finish', 'Press this button to Finish this task', 'post-smtp' ) );
-			wp_localize_script( 'jquery_steps_script', 'steps_next', _x( 'Next', 'Press this button to go to the next step', 'post-smtp' ) );
-			wp_localize_script( 'jquery_steps_script', 'steps_previous', _x( 'Previous', 'Press this button to go to the previous step', 'post-smtp' ) );
-			wp_localize_script( 'jquery_steps_script', 'steps_loading', 'steps_loading' );
 		}
 
 		/**
@@ -332,7 +325,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				</div>';
 			}
 
-            include_once POST_SMTP_PATH . '/Postman/extra/donation.php';
+            //include_once POST_SMTP_PATH . '/Postman/extra/donation.php';
 
             echo '<div class="twitter-wrap">';
 			    print '<div id="postman-main-menu" class="welcome-panel">';
