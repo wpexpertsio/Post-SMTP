@@ -3,8 +3,8 @@ Plugin URI: https://wpexperts.io/
 Contributors: wpexpertsio
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
-Tested up to: 5.9
-Stable tag: 2.0.24
+Tested up to: 5.9.3
+Stable tag: 2.0.26
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -281,7 +281,15 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
-= 2.0.25 =
+= 2.0.26 - 2022-04-22 =
+* **Bug Fixes**
+* Email header was broken in some cases.
+
+* **Improvements**
+* Minor UI improvement.
+* `llc` Hostname added in ZendMail.
+
+= 2.0.25 - 2022-04-06 =
 * **Bug Fixes**
 * WP 5.9 Compatibility Ballon UI issue.
 * Uncaught Error: Class ‘PostmanAdminController’ not found.

@@ -229,8 +229,8 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		) );
 
 		// this header specifies that there are many parts (one text part, one html part)
-		$header = 'Content-Type: multipart/alternative; \r\n';
-		$header .= 'MIME-Version: 1.0 \r\n';
+		$header = 'Content-Type: multipart/alternative;' . "\r\n";
+		$header .= 'MIME-Version: 1.0' . "\r\n";
 
 		// createt the message content
 		$message = $this->createMessageContent();

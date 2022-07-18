@@ -113,6 +113,7 @@ class Postman_Zend_Validate_Hostname extends Postman_Zend_Validate_Abstract
 	 * @see http://data.iana.org/TLD/tlds-alpha-by-domain.txt  List of all TLDs by domain
 	 * @see http://www.iana.org/domains/root/db/ Official list of supported TLDs
 	 * @var array
+	 * @since 2.0.26 added `llc`
 	 */
 	protected $_validTlds = array(
 		'aaa',
@@ -862,6 +863,7 @@ class Postman_Zend_Validate_Hostname extends Postman_Zend_Validate_Abstract
 		'living',
 		'lixil',
 		'lk',
+		'llc',
 		'loan',
 		'loans',
 		'locker',

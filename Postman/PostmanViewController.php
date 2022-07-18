@@ -241,7 +241,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			printf( '<div id="postman-main-menu" class="post-smtp-welcome-panel %s">', $slug );
 			print '<div class="post-smtp-welcome-panel-content">';
 			print '<div class="welcome-panel-column-container">';
-			print '<div class="welcome-panel-column welcome-panel-last">';
+			print '<div class="welcome-panel-last">';
 			printf( '<h4>%s</h4>', $title );
 			print '</div>';
 			printf( '<p id="back_to_main_menu">%s <a id="back_to_menu_link" href="%s">%s</a></p>', self::BACK_ARROW_SYMBOL, PostmanUtils::getSettingsPageUrl(), _x( 'Back To Main Menu', 'Return to main menu link', 'post-smtp' ) );
