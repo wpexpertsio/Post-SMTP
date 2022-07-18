@@ -414,7 +414,13 @@ class PostmanSettingsRegistry {
 
 	public function temporaryDirectoryCallback() {
 		$inputDescription = __( 'Lockfiles are written here to prevent users from triggering an OAuth 2.0 token refresh at the same time.' );
-		printf( '<input type="text" id="input_%2$s" name="%1$s[%2$s]" value="%3$s" />', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::TEMPORARY_DIRECTORY, $this->options->getTempDirectory() );
+		printf( 
+			'<input type="text" id="input_%2$s" name="%1$s[%2$s]" value="%3$s" />', 
+			PostmanOptions::POSTMAN_OPTIONS, 
+			PostmanOptions::TEMPORARY_DIRECTORY, 
+			esc_attr( $this->options->getTempDirectory() ) 
+		);
+
 		if ( PostmanState::getInstance()->isFileLockingEnabled() ) {
 			printf( ' <span style="color:green">%s</span></br><span class="postman_input_description">%s</span>', __( 'Valid', 'post-smtp' ), $inputDescription );
 		} else {
