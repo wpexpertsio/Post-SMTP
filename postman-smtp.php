@@ -52,7 +52,7 @@ if ( ! function_exists( 'ps_fs' ) ) {
                 'has_paid_plans'      => false,
                 'menu'                => array(
                     'slug'           => 'postman',
-                    'first-path'     => 'admin.php?page=postman',
+                    'first-path'     => 'admin.php?page=postman/configuration_wizard',
                     'account'        => false,
                 ),
             ) );
