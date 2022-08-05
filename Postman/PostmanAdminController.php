@@ -342,6 +342,14 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		public function handlePurgeDataAction() {
 			$this->logger->debug( 'is wpnonce purge-data?' );
 			if ( wp_verify_nonce( $_REQUEST ['_wpnonce'], PostmanAdminController::PURGE_DATA_SLUG ) ) {
+				
+				/**
+				 * Fires before resetting pluign
+				 * 
+				 * @since 2.1.4
+				 */
+				do_action( 'post_smtp_before_reset_plugin' );
+				
 				$this->logger->debug( 'Purging stored data' );
 				delete_option( PostmanOptions::POSTMAN_OPTIONS );
 				delete_option( PostmanOAuthToken::OPTIONS_NAME );
@@ -349,6 +357,14 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				$logPurger = new PostmanEmailLogPurger();
 				$logPurger->removeAll();
 				$this->messageHandler->addMessage( __( 'Plugin data was removed.', 'post-smtp' ) );
+
+				/**
+				 * Fires after resetting pluign
+				 * 
+				 * @since 2.1.4
+				 */
+				do_action( 'post_smtp_after_reset_plugin' );
+
 				PostmanUtils::redirect( PostmanUtils::POSTMAN_HOME_PAGE_RELATIVE_URL );
 			}
 		}
