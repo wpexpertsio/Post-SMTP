@@ -77,7 +77,7 @@ SendinBlue is an effective and great email software for Small to Medium business
 * [Gravity Forms](http://www.gravityforms.com)
 * [Login Designer](https://wordpress.org/plugins/login-designer/)
 * [Visual Forms Builder](https://wordpress.org/plugins/visual-form-builder/)
-* [MyMail Newsletter](http://revaxarts-themes.com/?t=mymail)
+* [Mailster Newsletter plugin](https://mailster.co)
 * [SendPress Newsletters](https://wordpress.org/plugins/sendpress/)
 * [WP HTML Mail](https://wordpress.org/plugins/wp-html-mail/)
 * [Email Templates](https://wordpress.org/plugins/email-templates/)
