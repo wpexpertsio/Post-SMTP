@@ -220,6 +220,8 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				$ready_messsage = PostmanTransportRegistry::getInstance()->getReadyMessage();
 				$statusMessage = $ready_messsage['message'];
 
+				$transport = PostmanTransportRegistry::getInstance()->getSelectedTransport();
+
 				if ( PostmanTransportRegistry::getInstance()->getActiveTransport()->isConfiguredAndReady() ) {
 
 					if ( $this->options->getRunMode() != PostmanOptions::RUN_MODE_PRODUCTION ) {
@@ -229,7 +231,8 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 							</div>', 
 							wp_kses_post( $statusMessage ) 
 						);
-					} else {
+					} 
+					else {
 						printf( 
 							'<div class="ps-config-bar">
 								<span>%s</span><span style="color: green" class="dashicons dashicons-yes-alt"></span>
@@ -242,7 +245,27 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 							esc_url( $this->getPageUrl( PostmanSendTestEmailController::EMAIL_TEST_SLUG ) )
 						);
 					}
-				} else {
+				}
+				elseif ( !$transport->has_granted() ) {
+
+					$notice = $transport->get_not_granted_notice();
+
+					printf( 
+						'<div class="ps-config-bar">
+							<span >%s</span>
+							<span style="color: red" class="dashicons dashicons-dismiss"></span>
+							<div class="ps-right">
+								%s <a href="%s" class="ps-btn-orange">%s</a>
+							</div>
+						</div>',
+						esc_html( $notice['message'] ),
+						esc_html__( 'Just a step away!', 'post-smtp' ),
+						esc_attr( $notice['url'] ),
+						esc_html(  $notice['url_text'] )
+					);
+
+				}
+				else {
 					printf( 
 						'<div class="ps-config-bar">
 							<span >%s</span>
