@@ -298,7 +298,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	public function get_not_granted_notice() {
 
 		return array(
-			'message'	=> __( 'You have configured OAuth 2.0 authentication, but have not received permission to use it.', 'post-smtp' ),
+			'message'	=> __( ' You are just a step away to get started', 'post-smtp' ),
 			'url_text'	=> $this->getScribe()->getRequestPermissionLinkText(),
 			'url'		=> PostmanUtils::getGrantOAuthPermissionUrl() 
 		);
