@@ -712,6 +712,16 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 	public function createOverrideMenu(PostmanWizardSocket $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride) {
 		$overrideItem = parent::createOverrideMenu ( $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride );
 		$selected = $overrideItem ['selected'];
+		$password_field = __( 'Password', 'post-smtp' );
+
+		if( $winningRecommendation['hostname'] == 'smtp.gmail.com' ) {
+			$password_field = sprintf(
+				'%s <a href="%s" target="_blank">%s</a>',
+				__( 'App Password', 'post-smtp' ),
+				esc_url( 'https://postmansmtp.com/documentation/#setting-up-an-app-password-in-your-google-account' ),
+				__( 'How to Setup an App Password', 'post-smtp' )
+			);
+		}
 		
 		// only smtp can have multiple auth options
 		$overrideAuthItems = array ();
@@ -747,7 +757,7 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 			if ($socket->auth_crammd5 || $socket->auth_login || $socket->authPlain) {
 				array_push ( $overrideAuthItems, array (
 						'selected' => $passwordMode,
-						'name' => __ ( 'Password (requires username and password) <span class=\'ps-less-secure\'>Not recommended </span>(Starting May 30, 2022, ​​Google will no longer support the use of third-party apps or devices which ask you to sign in to your Google Account using only your username and password.) <a href=\'https://postmansmtp.com/gmail-is-disabling-less-secure-apps\' target="_blank">Learn More</a>', 'post-smtp' ),
+						'name' => $password_field,
 						'value' => 'password' 
 				) );
 			}
