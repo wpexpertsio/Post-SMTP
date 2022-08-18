@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 6.0
-Stable tag: 2.1.3
+Stable tag: 2.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -212,7 +212,7 @@ You've [forgotten to choose an email address in the consent screen](https://word
 
 == SMTP Error Messages ==
 
-= Communication Error [334] ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ make sure the Envelope From Email is the same account used to create the Client ID. =
+= Communication Error [334] ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ make sure the Envelope From Email is the same account used to create the Client ID. =
 
 * This is almost always caused by being logged in to Google/Microsoft/Yahoo with a different user than the one Post is configured to send mail with. Logout and try again with the correct user
 * Login to [Webmail](http://www.gmail.com) and see if there is an "Unusual Activity" warning waiting for your attention
@@ -270,9 +270,23 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
-= 2.1.4-beta.1 - 2022-07-7 =
-* **FIX**
-* Compatibility with Php version 8.0+
+= 2.1.4 - 2022-08-18 =
+* **NEW**
+* Added Twilio on Post SMTP Dashboard
+* Redirect user to wizard right after activation Plugin
+* Action Added post_smtp_before_reset_plugin Fires before resetting plugin
+* Action Added post_smtp_after_reset_plugin Fires after resetting plugin
+* Display a message to Grant Access.
+
+* **FIXES**
+* Updated freemius due to PHP Version 8+ compatibility
+* Freemius Language FIX
+* Security Fix XSS from admin settings
+* MyMail to Mailster typo FIX
+* defualt to default typo FIX
+
+* **TWEAK**
+* Improved Message-ID to prevent email from being SPAM
 
 = 2.1.3- 2022-07-1 =
 * **FIX**
@@ -287,7 +301,7 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 Removed unused code
 
 * **FIX**
-ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œLess secure AppÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Banner appearing in non-appropriate cases
+ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“Less secure AppÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â Banner appearing in non-appropriate cases
 
 
 = 2.1.1.1 - 2022-06-15 =
@@ -317,7 +331,7 @@ Add notice about Google Less Secure App.
 = 2.0.25 - 2022-04-06 =
 * **Bug Fixes**
 * WP 5.9 Compatibility Ballon UI issue.
-* Uncaught Error: Class ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“PostmanAdminControllerÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ not found.
+* Uncaught Error: Class ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œPostmanAdminControllerÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ not found.
 * Ajax error appearing due to Google API depreciated function.
 
 * **Improvements**
@@ -338,7 +352,7 @@ Add notice about Google Less Secure App.
 
 = 2.0.21 - 2021-02-11
 * Fixed: Security issue - nonce validation.
-* Fixed: Class ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“PostmanViewControllerÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ not found
+* Fixed: Class ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œPostmanViewControllerÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ not found
 * New: New wp-config.php constant to disable the email logger = `POST_SMTP_CORE_MAIL_LOG`.
 
 = 2.0.20 - 2021-01-19
@@ -853,8 +867,6 @@ Syntx stupid mistake
 
 = 0.1 - 2015-01-19 =
 * First release. Happy Fig Newton Day! It was a grueling week-end, studying PHP and OAuth and Googling like a Boss, but it's done and it works!
-
-
 
 == Upgrade Notice ==
 
