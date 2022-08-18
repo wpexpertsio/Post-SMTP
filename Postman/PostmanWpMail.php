@@ -71,6 +71,8 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 
         /**
          * Creates the Message-ID
+		 * 
+		 * @since 2.1.4 Added '< >' to prevent from being spam
          *
          * @return string
          */
@@ -84,7 +86,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
                 $hostName = php_uname('n');
             }
 
-            return $id . '@' . str_replace('www.', '', $hostName);
+            return '<' . $id . '@' . str_replace('www.', '', $hostName) . '>';
 
         }
 

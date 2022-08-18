@@ -594,6 +594,18 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	}
 
 	/**
+	 * Returns true, to prevent from errors because it's default Module Transport.
+	 * 
+	 * @since 2.1.4
+	 * @version 1.0
+	 */
+	public function has_granted() {
+
+		return true;
+
+	}
+
+	/**
 	 * Get Socket's logo
 	 * 
 	 * @since 2.1

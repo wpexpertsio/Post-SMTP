@@ -272,4 +272,36 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		return POST_SMTP_ASSETS . "images/logos/gmail.png";
 
 	}
+
+	/**
+	 * Checks is granted or not
+	 * 
+	 * @since 2.1.4
+	 * @version 1.0
+	 */
+	public function has_granted() {
+
+		if( $this->isPermissionNeeded() ) {
+			return false;
+		}
+
+		return true;
+
+	}
+
+	/**
+	 * Returns the HTML of not granted
+	 * 
+	 * @since 2.1.4
+	 * @version 1.0
+	 */
+	public function get_not_granted_notice() {
+
+		return array(
+			'message'	=> __( ' You are just a step away to get started', 'post-smtp' ),
+			'url_text'	=> $this->getScribe()->getRequestPermissionLinkText(),
+			'url'		=> PostmanUtils::getGrantOAuthPermissionUrl() 
+		);
+
+	}
 }

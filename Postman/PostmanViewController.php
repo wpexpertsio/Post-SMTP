@@ -220,6 +220,8 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				$ready_messsage = PostmanTransportRegistry::getInstance()->getReadyMessage();
 				$statusMessage = $ready_messsage['message'];
 
+				$transport = PostmanTransportRegistry::getInstance()->getSelectedTransport();
+
 				if ( PostmanTransportRegistry::getInstance()->getActiveTransport()->isConfiguredAndReady() ) {
 
 					if ( $this->options->getRunMode() != PostmanOptions::RUN_MODE_PRODUCTION ) {
@@ -229,7 +231,8 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 							</div>', 
 							wp_kses_post( $statusMessage ) 
 						);
-					} else {
+					} 
+					else {
 						printf( 
 							'<div class="ps-config-bar">
 								<span>%s</span><span style="color: green" class="dashicons dashicons-yes-alt"></span>
@@ -242,7 +245,27 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 							esc_url( $this->getPageUrl( PostmanSendTestEmailController::EMAIL_TEST_SLUG ) )
 						);
 					}
-				} else {
+				}
+				elseif ( !$transport->has_granted() ) {
+
+					$notice = $transport->get_not_granted_notice();
+
+					printf( 
+						'<div class="ps-config-bar">
+							<span >%s</span>
+							<div class="ps-right">
+								<img src="%s" style="vertical-align: middle;width: 30px;" />
+								<a href="%s" class="ps-btn-orange">%s</a>
+							</div>
+						</div>',
+						esc_html( $notice['message'] ),
+						esc_url( POST_SMTP_ASSETS . 'images/icons/hand.png' ),
+						esc_attr( $notice['url'] ),
+						esc_html(  $notice['url_text'] )
+					);
+
+				}
+				else {
 					printf( 
 						'<div class="ps-config-bar">
 							<span >%s</span>
@@ -373,6 +396,12 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/the-better-email/' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
 							<?php echo esc_html( 'Better Email Logger' ); ?>
+						</a>
+					</div>
+					<div>
+						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/twilio-extension-pro/' ); ?>" target="_blank">
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
+							<?php echo esc_html( 'Twilio Notifications' ); ?>
 						</a>
 					</div>
 				</div>

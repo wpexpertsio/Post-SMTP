@@ -162,5 +162,18 @@ if (! class_exists ( 'PostmanSmtpModuleTransport' )) {
 		public function getSocketsForSetupWizardToProbe($hostname, $smtpServerGuess) {
 			return array ();
 		}
+
+
+		/**
+		 * Returns true, to prevent from errors because it's default Module Transport.
+		 * 
+		 * @since 2.1.4
+		 * @version 1.0
+		 */
+		public function has_granted() {
+
+			return true;
+	
+		}
 	}
 }
