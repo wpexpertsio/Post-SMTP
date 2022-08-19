@@ -712,7 +712,7 @@ class PostmanGetHostnameByEmailAjaxController extends PostmanAbstractAjaxHandler
 
 	    check_admin_referer('post-smtp', 'security');
 
-		if( !current_user_can( 'manage_options' ) ) {
+		if( !current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
 			wp_send_json_error( 
 				array(
 					'Message'	=>	'Unauthorized.'
@@ -758,7 +758,7 @@ class PostmanManageConfigurationAjaxHandler extends PostmanAbstractAjaxHandler {
 
 	    check_admin_referer('post-smtp', 'security');
 		
-		if( !current_user_can( 'manage_options' ) ) {
+		if( !current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
 			wp_send_json_error( 
 				array(
 					'Message'	=>	'Unauthorized.'
@@ -800,7 +800,7 @@ class PostmanManageConfigurationAjaxHandler extends PostmanAbstractAjaxHandler {
 
 	    check_admin_referer('post-smtp', 'security');
 
-		if( !current_user_can( 'manage_options' ) ) {
+		if( !current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
 			wp_send_json_error( 
 				array(
 					'Message'	=>	'Unauthorized.'
@@ -1025,7 +1025,7 @@ class PostmanImportConfigurationAjaxController extends PostmanAbstractAjaxHandle
 
         check_admin_referer('post-smtp', 'security');
 
-		if( !current_user_can( 'manage_options' ) ) {
+		if( !current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
 			wp_send_json_error( 
 				array(
 					'Message'	=>	'Unauthorized.'
