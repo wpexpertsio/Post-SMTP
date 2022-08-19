@@ -240,6 +240,15 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 
 	    check_admin_referer('post-smtp', 'security');
 
+		if( !current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 
+				array(
+					'Message'	=>	'Unauthorized.'
+				), 
+				401
+			);
+		}
+
 		// get the email address of the recipient from the HTTP Request
 		$email = $this->getRequestParameter( 'email' );
 

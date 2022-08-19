@@ -712,6 +712,15 @@ class PostmanGetHostnameByEmailAjaxController extends PostmanAbstractAjaxHandler
 
 	    check_admin_referer('post-smtp', 'security');
 
+		if( !current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 
+				array(
+					'Message'	=>	'Unauthorized.'
+				), 
+				401
+			);
+		}
+
 		$goDaddyHostDetected = $this->getBooleanRequestParameter( 'go_daddy' );
 		$email = $this->getRequestParameter( 'email' );
 		$d = new PostmanSmtpDiscovery( $email );
@@ -748,6 +757,15 @@ class PostmanManageConfigurationAjaxHandler extends PostmanAbstractAjaxHandler {
 	function getManualConfigurationViaAjax() {
 
 	    check_admin_referer('post-smtp', 'security');
+		
+		if( !current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 
+				array(
+					'Message'	=>	'Unauthorized.'
+				), 
+				401
+			);
+		}
 
 		$queryTransportType = $this->getTransportTypeFromRequest();
 		$queryAuthType = $this->getAuthenticationTypeFromRequest();
@@ -781,6 +799,15 @@ class PostmanManageConfigurationAjaxHandler extends PostmanAbstractAjaxHandler {
 	function getWizardConfigurationViaAjax() {
 
 	    check_admin_referer('post-smtp', 'security');
+
+		if( !current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 
+				array(
+					'Message'	=>	'Unauthorized.'
+				), 
+				401
+			);
+		}
 
 		$this->logger->debug( 'in getWizardConfiguration' );
 		$originalSmtpServer = $this->getRequestParameter( 'original_smtp_server' );
@@ -997,6 +1024,15 @@ class PostmanImportConfigurationAjaxController extends PostmanAbstractAjaxHandle
 	function getConfigurationFromExternalPluginViaAjax() {
 
         check_admin_referer('post-smtp', 'security');
+
+		if( !current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 
+				array(
+					'Message'	=>	'Unauthorized.'
+				), 
+				401
+			);
+		}
 
 		$importableConfiguration = new PostmanImportableConfiguration();
 		$plugin = $this->getRequestParameter( 'plugin' );

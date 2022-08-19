@@ -224,6 +224,15 @@ class PostmanPortTestAjaxController {
 
 	    check_admin_referer('post-smtp', 'security');
 
+		if( !current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 
+				array(
+					'Message'	=>	'Unauthorized.'
+				), 
+				401
+			);
+		}
+
 		$queryHostname = PostmanUtils::getRequestParameter( 'hostname' );
 		// originalSmtpServer is what SmtpDiscovery thinks the SMTP server should be, given an email address
 		$originalSmtpServer = PostmanUtils::getRequestParameter( 'original_smtp_server' );
@@ -244,6 +253,15 @@ class PostmanPortTestAjaxController {
 
 	    check_admin_referer('post-smtp', 'security');
 
+		if( !current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 
+				array(
+					'Message'	=>	'Unauthorized.'
+				), 
+				401
+			);
+		}
+
 		$hostname = 'portquiz.net';
 		$port = intval( PostmanUtils::getRequestParameter( 'port' ) );
 		$this->logger->debug( 'testing TCP port: hostname ' . $hostname . ' port ' . $port );
@@ -259,6 +277,15 @@ class PostmanPortTestAjaxController {
 	function runSmtpTest() {
 
 	    check_admin_referer('post-smtp', 'security');
+
+		if( !current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 
+				array(
+					'Message'	=>	'Unauthorized.'
+				), 
+				401
+			);
+		}
 
 		$hostname = trim( PostmanUtils::getRequestParameter( 'hostname' ) );
 		$port = intval( PostmanUtils::getRequestParameter( 'port' ) );
@@ -289,6 +316,15 @@ class PostmanPortTestAjaxController {
 	function runSmtpsTest() {
 
 	    check_admin_referer('post-smtp', 'security');
+
+		if( !current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 
+				array(
+					'Message'	=>	'Unauthorized.'
+				), 
+				401
+			);
+		}
 
 		$hostname = trim( PostmanUtils::getRequestParameter( 'hostname' ) );
 		$port = intval( PostmanUtils::getRequestParameter( 'port' ) );
