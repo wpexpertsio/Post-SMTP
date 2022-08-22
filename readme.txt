@@ -20,9 +20,6 @@ The **Connectivity Test** and intelligent **Setup Wizard** scan your SMTP server
 
 Post SMTP is *not* another WP Mail SMTP clone like WP Bank or Easy SMTP. It replaces the default WordPress SMTP library, PHPMailer, with the heavy-duty Zend_Mail. Never [lose an email to PHP mail()](http://www.jvfconsulting.com/blog/php-mail-function-vs-smtp-guaranteed-delivery/) again.
 
-= The Only SMTP plugin with chrome Notifications =
-Get notified if your emails are failing inside your Chrome browser. [Download here](https://chrome.google.com/webstore/detail/post-smtp-notifications/npklmbkpbknkmbohdbpikeidiaekjoch?hl=en-US)
-
 https://www.youtube.com/watch?v=mXDEEE9jnfw
 
 = Post SMTP Features =
@@ -212,7 +209,7 @@ You've [forgotten to choose an email address in the consent screen](https://word
 
 == SMTP Error Messages ==
 
-= Communication Error [334] ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ make sure the Envelope From Email is the same account used to create the Client ID. =
+= Communication Error [334] make sure the Envelope From Email is the same account used to create the Client ID. =
 
 * This is almost always caused by being logged in to Google/Microsoft/Yahoo with a different user than the one Post is configured to send mail with. Logout and try again with the correct user
 * Login to [Webmail](http://www.gmail.com) and see if there is an "Unusual Activity" warning waiting for your attention
@@ -272,21 +269,19 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 = 2.1.4 - 2022-08-18 =
 * **NEW**
-* Added Twilio on Post SMTP Dashboard
-* Redirect user to wizard right after activation Plugin
-* Action Added post_smtp_before_reset_plugin Fires before resetting plugin
-* Action Added post_smtp_after_reset_plugin Fires after resetting plugin
-* Display a message to Grant Access.
+* Redirect the user to the setup wizard on activating the Plugin
+* Added action hook, "post_smtp_before_reset_plugin" to add an event before resetting plugin
+* Added action hook, "post_smtp_after_reset_plugin" to add an event after resetting plugin
+* Added notice to Grant Access after getting done with the wizard step to improve the UX
 
 * **FIXES**
-* Updated freemius due to PHP Version 8+ compatibility
+* Tweaks for PHP Version 8+ compatibility
 * Freemius Language FIX
-* Security Fix XSS from admin settings
-* MyMail to Mailster typo FIX
-* defualt to default typo FIX
+* Security Fix to avoid XSS from admin settings
+* Mailster support updated for the latest version (thanks to @evrpress)
+* Typo fix: defualt to default (thanks to @jsilvermist)
+* Updated email header to prevent email from being SPAM
 
-* **TWEAK**
-* Improved Message-ID to prevent email from being SPAM
 
 = 2.1.3- 2022-07-1 =
 * **FIX**
@@ -301,7 +296,7 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 Removed unused code
 
 * **FIX**
-ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“Less secure AppÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â Banner appearing in non-appropriate cases
+Less secure App Banner appearing in non-appropriate cases
 
 
 = 2.1.1.1 - 2022-06-15 =
@@ -326,12 +321,12 @@ Add notice about Google Less Secure App.
 
 * **Improvements**
 * Minor UI improvement.
-* `llc` Hostname added in ZendMail.
+* "llc" Hostname added in ZendMail.
 
 = 2.0.25 - 2022-04-06 =
 * **Bug Fixes**
 * WP 5.9 Compatibility Ballon UI issue.
-* Uncaught Error: Class ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œPostmanAdminControllerÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ not found.
+* Uncaught Error: Class "PostmanAdminController" not found.
 * Ajax error appearing due to Google API depreciated function.
 
 * **Improvements**
@@ -352,7 +347,7 @@ Add notice about Google Less Secure App.
 
 = 2.0.21 - 2021-02-11
 * Fixed: Security issue - nonce validation.
-* Fixed: Class ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œPostmanViewControllerÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ not found
+* Fixed: Class "PostmanViewController" not found
 * New: New wp-config.php constant to disable the email logger = `POST_SMTP_CORE_MAIL_LOG`.
 
 = 2.0.20 - 2021-01-19
