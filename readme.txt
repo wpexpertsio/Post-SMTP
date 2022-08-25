@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: postman smtp, postman, smtp, email, mail, mailer, email log, oauth2, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 6.0
-Stable tag: 2.1.4
+Stable tag: 2.1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,7 +18,7 @@ Post SMTP is a next-generation WP Mail SMTP plugin that assists in the delivery 
 
 The **Connectivity Test** and intelligent **Setup Wizard** scan your SMTP server to detect firewall blocks and eliminate configuration mistakes. The built-in **Email Log** is an invaluable resource for [diagnosing problems](https://wordpress.org/support/topic/ugly-e-mails-no-html-and-no-special-characters?replies=15) with emails. Even hosts that block the standard SMTP ports, like GoDaddy or Bluehost, can't stop your email as **Post SMTP can deliver via HTTPS** if it can't use SMTP.
 
-Post SMTP is *not* another WP Mail SMTP clone like WP Bank or Easy SMTP. It replaces the default WordPress SMTP library, PHPMailer, with the heavy-duty Zend_Mail. Never [lose an email to PHP mail()](http://www.jvfconsulting.com/blog/php-mail-function-vs-smtp-guaranteed-delivery/) again.
+Post SMTP is *not* another WP Mail SMTP clone like WP Bank or Easy SMTP. It replaces the default WordPress SMTP library, PHPMailer, with the heavy-duty Zend_Mail. Never lose an email to PHP mail() again.
 
 https://www.youtube.com/watch?v=mXDEEE9jnfw
 
@@ -40,13 +40,22 @@ Post SMTP's pro extensions are everything you need to enhance your WordPress ema
 [Post SMTP Pro Extensions](https://postmansmtp.com/extensions/) 
 
 = Office365 API delivery =
-[Office365 Pro extension](https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/) allows you to connect PostSMTP with your Outlook and Microsoft 365 accounts to improve email deliverability.
+[Office365 Pro Extension](https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/) allows you to connect PostSMTP with your Outlook and Microsoft 365 accounts to improve email deliverability.
 
-= Amazon SES API delivery? =
+= Amazon SES API delivery =
 [Amazon SES Pro Extension](https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/) combines Amazon's mail service provider with PostSMTP's powerful and easy-to-use SMTP mailing features. 
 
-= Better Email Logger Extension? =
-[Better Email Logger Pro extension](https://postmansmtp.com/extensions/the-better-email/) allows you to design email marketing campaigns and improve email deliverability for your WordPress site.
+= Twilio Pro Extension =
+[Twilio Extension](https://postmansmtp.com/extensions/twilio-extension-pro/) allows you to add your phone number so that you can receive SMS notifications and alerts when emails are not delivered to your recipients.
+
+= Better Email Logger Pro Extension =
+[Better Email Logger Pro Extension](https://postmansmtp.com/extensions/the-better-email/) allows you to design email marketing campaigns and improve email deliverability for your WordPress site.
+
+= Mail Control Pro Extension = 
+[Mail Control Pro Extension](https://postmansmtp.com/extensions/post-smtp-mail-control/) allows you to control Post SMTPâ€™s email actions like sending email alerts to authors, webmasters, and new users. 
+
+= Post SMTP Membership Plans = 
+[Post SMTP membership plans](https://postmansmtp.com/membership-plan/) offer access to all pro extensions along with other benefits including 1-year extension updates and support, Email Reporting, Logging, and Tracking, all other SMTP Services and a 30-day money-back guarantee.
 
 = API (HTTPS) Email Support =
 * **Gmail API for sending Gmail and Google Apps email** (requires a [Google](https://accounts.google.com/signup) account)
@@ -209,7 +218,7 @@ You've [forgotten to choose an email address in the consent screen](https://word
 
 == SMTP Error Messages ==
 
-= Communication Error [334] make sure the Envelope From Email is the same account used to create the Client ID. =
+= Communication Error [334] ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ make sure the Envelope From Email is the same account used to create the Client ID. =
 
 * This is almost always caused by being logged in to Google/Microsoft/Yahoo with a different user than the one Post is configured to send mail with. Logout and try again with the correct user
 * Login to [Webmail](http://www.gmail.com) and see if there is an "Unusual Activity" warning waiting for your attention
@@ -267,6 +276,10 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
+= 2.1.5 - 2022-08-25 =
+* **FIX**
+* Updated email header to prevent email from being SPAM
+
 = 2.1.4 - 2022-08-18 =
 * **NEW**
 * Redirect the user to the setup wizard on activating the Plugin
@@ -281,7 +294,6 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 * Mailster support updated for the latest version (thanks to @evrpress)
 * Typo fix: defualt to default (thanks to @jsilvermist)
 * Updated email header to prevent email from being SPAM
-
 
 = 2.1.3- 2022-07-1 =
 * **FIX**
@@ -321,12 +333,12 @@ Add notice about Google Less Secure App.
 
 * **Improvements**
 * Minor UI improvement.
-* "llc" Hostname added in ZendMail.
+* `llc` Hostname added in ZendMail.
 
 = 2.0.25 - 2022-04-06 =
 * **Bug Fixes**
 * WP 5.9 Compatibility Ballon UI issue.
-* Uncaught Error: Class "PostmanAdminController" not found.
+* Uncaught Error: Class PostmanAdminController not found.
 * Ajax error appearing due to Google API depreciated function.
 
 * **Improvements**
@@ -347,7 +359,7 @@ Add notice about Google Less Secure App.
 
 = 2.0.21 - 2021-02-11
 * Fixed: Security issue - nonce validation.
-* Fixed: Class "PostmanViewController" not found
+* Fixed: Class PostmanViewController not found
 * New: New wp-config.php constant to disable the email logger = `POST_SMTP_CORE_MAIL_LOG`.
 
 = 2.0.20 - 2021-01-19
@@ -862,6 +874,8 @@ Syntx stupid mistake
 
 = 0.1 - 2015-01-19 =
 * First release. Happy Fig Newton Day! It was a grueling week-end, studying PHP and OAuth and Googling like a Boss, but it's done and it works!
+
+
 
 == Upgrade Notice ==
 
