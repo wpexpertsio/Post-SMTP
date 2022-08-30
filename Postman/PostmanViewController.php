@@ -404,6 +404,12 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 							<?php echo esc_html( 'Twilio Notifications' ); ?>
 						</a>
 					</div>
+					<div>
+						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/post-smtp-mail-control/' ); ?>" target="_blank">
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
+							<?php echo esc_html( 'Mail Control' ); ?>
+						</a>
+					</div>
 				</div>
 				<div class="ps-setting-box">
 					<div>
