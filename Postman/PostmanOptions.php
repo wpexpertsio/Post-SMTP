@@ -90,6 +90,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const MANDRILL_API_KEY = 'mandrill_api_key';
 		const SENDGRID_API_KEY = 'sendgrid_api_key';
 		const SENDINBLUE_API_KEY = 'sendinblue_api_key';
+		const SPARKPOST_API_KEY = 'sparkpost_api_key';
 		const MAILGUN_API_KEY = 'mailgun_api_key';
 		const MAILGUN_DOMAIN_NAME = 'mailgun_domain_name';
 		const MAILGUN_REGION = 'mailgun_region';
@@ -503,9 +504,25 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
         /**
          * @since 2.1
-         * @version 2.1
+         * @version 1.0
          */
         public function getSendinblueApiKey() {
+
+            if ( defined( 'POST_SMTP_API_KEY' ) ) {
+                return POST_SMTP_API_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::SPARKPOST_API_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::SPARKPOST_API_KEY] );
+            }
+
+        }
+
+		/**
+         * @since 2.2
+         * @version 1.0
+         */
+        public function getSparkPostApiKey() {
 
             if ( defined( 'POST_SMTP_API_KEY' ) ) {
                 return POST_SMTP_API_KEY;
