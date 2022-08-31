@@ -1,10 +1,13 @@
 <?php
+
+use SparkPost\SparkPostException;
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
 if( !class_exists( 'PostmanSparkPostMailEngine' ) ):
-    
+
 require 'sparkpost/vendor/autoload.php'; 
 
 class PostmanSparkPostMailEngine implements PostmanMailEngine {
@@ -15,13 +18,11 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
 
     private $api_key;
 
-
     /**
      * @since 2.2
      * @version 1.0
      */
     public function __construct( $api_key ) {
-        
         assert( !empty( $api_key ) );
         $this->api_key = $api_key;
 
@@ -30,17 +31,14 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
         
     }
 
-    /**
-     * @since 2.2
-     * @version 1.0
-     */
     public function getTranscript() {
         return $this->transcript;
     }
 
     private function addAttachmentsToMail( PostmanMessage $message ) {
-
+        
         $attachments = $message->getAttachments();
+        
         if ( ! is_array( $attachments ) ) {
             // WordPress may a single filename or a newline-delimited string list of multiple filenames
             $attArray = explode( PHP_EOL, $attachments );
@@ -70,36 +68,28 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
 
     }
 
-    /**
-     * @since 2.2
-     * @version 1.0
-     */
     public function send( PostmanMessage $message ) { 
 
         $options = PostmanOptions::getInstance();
-        //Sendinblue preparation
+
         if ( $this->logger->isDebug() ) {
-        $this->logger->debug( 'Creating SendGrid service with apiKey=' . $this->apiKey );
+            $this->logger->debug( 'Creating SparkPost service with apiKey=' . $this->apiKey );
         }
-        $config = SendinBlue\Client\Configuration::getDefaultConfiguration()->setApiKey('api-key', $this->api_key);
-        $sendSmtpEmail = new \SendinBlue\Client\Model\SendSmtpEmail();
-        $apiInstance = new SendinBlue\Client\Api\TransactionalEmailsApi(
-        new GuzzleHttp\Client(),
-        $config
-        );
+
+        $postmarkClient = new PostmarkClient($this->api_key);
         
         $sender = $message->getFromAddress();
         $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
         $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
         $headers = array();
-        
+
         $sender->log( $this->logger, 'From' );
 
         $sendSmtpEmail['sender'] = array(
             'name'  =>  $senderName, 
             'email' =>  $senderEmail
         );
-        
+
         $tos = array();
         $duplicates = array();
 
@@ -108,23 +98,18 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
                     
             if ( !array_key_exists( $recipient->getEmail(), $duplicates ) ) {
 
-                $tos[] = array(
-                    'email' =>  $recipient->getEmail()
-                );
-                
-                if( !empty( $recipient->getName() ) ) {
-                    $tos['name'] = $recipient->getName();
-                }
+                $tos[] = $recipient->getEmail();
                 
                 $duplicates[] = $recipient->getEmail();
 
             }
 
         }
-        $sendSmtpEmail['to'] = $tos;
+
+        $sendSmtpEmail['to'] = implode( ",", $tos );
         
         $sendSmtpEmail['subject'] = $message->getSubject();
-  
+
         $textPart = $message->getBodyTextPart();
         if ( ! empty( $textPart ) ) {
             $this->logger->debug( 'Adding body as text' );
@@ -136,18 +121,15 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
             $this->logger->debug( 'Adding body as html' );
             $sendSmtpEmail['htmlContent'] = $htmlPart;
         }
-        
+
         // add the reply-to
         $replyTo = $message->getReplyTo();
         // $replyTo is null or a PostmanEmailAddress object
         if ( isset( $replyTo ) ) {
-            $sendSmtpEmail['replyTo'] = array(
-                'email' => $replyTo->getEmail()
-            );
-            
-            if( !empty( $replyTo->getName() ) ) {
-                 $sendSmtpEmail['name'] = $replyTo->getName();
-            }
+            $sendSmtpEmail['replyTo'] = $replyTo->getEmail();
+
+        } else {
+            $sendSmtpEmail['replyTo'] = "";
         }
 
         // add the Postman signature - append it to whatever the user may have set
@@ -182,21 +164,20 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
             if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 
                 $recipient->log($this->logger, 'Cc');
-                $cc[] = array(
-                    'email' =>  $recipient->getEmail()
-                );
-                
-                if( !empty( $recipient->getName() ) ) {
-                    $cc['name'] = $recipient->getName();
-                }
+
+                $cc[] = $recipient->getEmail();
                 
                 $duplicates[] = $recipient->getEmail();
 
             }
 
         }
-        if( !empty( $cc ) )
-            $sendSmtpEmail['cc'] = $cc;
+
+        if( !empty( $cc ) ) {
+            $sendSmtpEmail['cc'] = implode( ",", $cc );
+        } else {
+            $sendSmtpEmail['cc'] = "";
+        }
 
         $bcc = array();
         $duplicates = array();
@@ -205,13 +186,7 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
             if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 
                 $recipient->log($this->logger, 'Bcc');
-                $bcc[] = array(
-                    'email'  =>  $recipient->getEmail()
-                );
-                
-                if( !empty( $recipient->getName() ) ) {
-                    $bcc['name'] = $recipient->getName();
-                }
+                $bcc[] = $recipient->getEmail();
 
                 $duplicates[] = $recipient->getEmail();
 
@@ -219,8 +194,11 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
 
         }
         
-        if( !empty( $bcc ) )
-            $sendSmtpEmail['bcc'] = $bcc;
+        if( !empty( $bcc ) ) {
+            $sendSmtpEmail['bcc'] = implode( ",", $bcc );
+        } else {
+            $sendSmtpEmail['bcc'] = "";
+        }
 
         // add attachments
         $this->logger->debug( 'Adding attachments' );
@@ -228,22 +206,22 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
         $attachments = $this->addAttachmentsToMail( $message );
 
         $email_attachments = array();
-        
+        $sendSmtpEmail['attachment'] = array();
         if( !empty( $attachments ) ) {
         
             foreach ( $attachments as $index => $attachment ) {
 
                 $email_attachments[] = array(
-                    'name'      =>  $attachment['file_name'],
-                    'content'   =>  $attachment['content']
+                    'name'          =>  $attachment['file_name'],
+                    'content'       =>  $attachment['content'],
+                    'ContentType'   =>  $attachment['type']
                 );
             }
 
             $sendSmtpEmail['attachment'] = $email_attachments;
         
         }
-        
-         
+            
         try {
 
             // send the message
@@ -251,62 +229,54 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
                 $this->logger->debug( 'Sending mail' );
             }
 
-            $response = $apiInstance->sendTransacEmail($sendSmtpEmail);
-            
+            $response = $postmarkClient->sendEmail(
+                // form
+                $sendSmtpEmail['sender']['email'],
+                // to
+                $sendSmtpEmail['to'],
+                // subject
+                $message->getSubject(),
+                // htmlbody
+                $message->getBodyHtmlPart(),
+                // textbody
+                $message->getBodyTextPart(),
+                // tag
+                null,
+                // trackopens
+                null,
+                // replyto
+                $sendSmtpEmail['replyTo'],
+                // cc
+                $sendSmtpEmail['cc'],
+                // bcc
+                $sendSmtpEmail['bcc'],
+                // headers
+                $sendSmtpEmail['headers'],
+                // attachments
+                $sendSmtpEmail['attachment'],
+                // tracklinks
+                null,
+                // metadata
+                null,
+                // messagestram
+                "outbound"
+            );
+
             $this->transcript = print_r( $response, true );
             $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
             $this->transcript .= print_r( $sendSmtpEmail, true );
             $this->logger->debug( 'Transcript=' . $this->transcript );
-            
-        } catch (Exception $e) {
 
-            $this->transcript = $e->getMessage();
+        } catch(SparkPostException $exception) {
+
+            $this->transcript = $exception->getMessage();
             $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
             $this->transcript .= print_r( $sendSmtpEmail, true );
             $this->logger->debug( 'Transcript=' . $this->transcript );
 
-            throw $e;
-    
+            throw $exception;
         }
-
     }
-
-    /**
-     * @since 2.2
-     * @version 1.0
-     */
-    private function errorCodesMap( $error_code ) {
-        switch ( $error_code ) {
-            case 400:
-                $message = sprintf( __( 'ERROR: Request is invalid. Check the error code in JSON. Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            case 401:
-                $message = sprintf( __( 'ERROR: You have not been authenticated. Make sure the provided api-key is correct. Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            case 402:
-                $message = sprintf( __( 'ERROR: Make sure you\'re account is activated and that you\'ve sufficient credits. Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            case 403:
-                $message = sprintf( __( 'ERROR: You do not have the rights to access the resource. Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            case 404:
-                $message =  sprintf( __( 'ERROR: Make sure your calling an existing endpoint and that the parameters (object id etc.) in the path are correct. Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            case 405:
-                $message =  sprintf( __( 'ERROR: The verb you\'re using is not allowed for this endpoint. Make sure you\'re using the correct method (GET, POST, PUT, DELETE). Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            case 406:
-                $message =  sprintf( __( 'ERROR: The value of contentType for PUT or POST request in request headers is not application/json. Make sure the value is application/json only and not empty. Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            case 429:
-                $message =  sprintf( __( 'ERROR: The expected rate limit is exceeded. Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            default:
-                $message = sprintf( __( 'ERROR: Status code is %1$s', 'post-smtp' ), $error_code );
-        }
-
-        return $message;
-    }
-
 }
+
 endif;

@@ -512,27 +512,29 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
                 return POST_SMTP_API_KEY;
             }
 
-            if ( isset( $this->options[PostmanOptions::SPARKPOST_API_KEY] ) ) {
-                return base64_decode( $this->options[PostmanOptions::SPARKPOST_API_KEY] );
-            }
-
-        }
-
-		/**
-         * @since 2.2
-         * @version 1.0
-         */
-        public function getSparkPostApiKey() {
-
-            if ( defined( 'POST_SMTP_API_KEY' ) ) {
-                return POST_SMTP_API_KEY;
-            }
-
             if ( isset( $this->options[PostmanOptions::SENDINBLUE_API_KEY] ) ) {
                 return base64_decode( $this->options[PostmanOptions::SENDINBLUE_API_KEY] );
             }
 
         }
+
+		/**
+		 * Gets SparkPost API key
+		 * 
+         * @since 2.2
+         * @version 1.0
+         */
+		public function getSparkPostApiKey() {
+
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+				return POST_SMTP_API_KEY;
+			}
+		
+			if ( isset( $this->options[PostmanOptions::SPARKPOST_API_KEY] ) ) {
+				return base64_decode( $this->options[PostmanOptions::SPARKPOST_API_KEY] );
+			}
+		
+		}
 
 		/**
 		 * (non-PHPdoc)
