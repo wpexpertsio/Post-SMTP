@@ -278,4 +278,16 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 		return POST_SMTP_ASSETS . "images/logos/mailgun.png";
 
 	}
+
+	/**
+	 * Returns true, to prevent from errors because it's default Module Transport.
+	 * 
+	 * @since 2.1.8
+	 * @version 1.0
+	 */
+	public function has_granted() {
+
+		return true;
+
+	}
 }
