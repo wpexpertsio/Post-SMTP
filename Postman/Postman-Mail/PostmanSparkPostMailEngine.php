@@ -1,5 +1,8 @@
 <?php
 
+use SparkPost\SparkPost;
+use GuzzleHttp\Client;
+use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 use SparkPost\SparkPostException;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -52,14 +55,11 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
                 $this->logger->debug( 'Adding attachment: ' . $file );
 
                 $file_name = basename( $file );
-                $file_parts = explode( '.', $file_name );
                 $file_type = wp_check_filetype( $file );
                 $attachments[] = array(
-                    'content' => base64_encode( file_get_contents( $file ) ),
+                    'name' => $file_name,
                     'type' => $file_type['type'],
-                    'file_name' => $file_name,
-                    'disposition' => 'attachment',
-                    'id' => $file_parts[0],
+                    'data' => base64_encode( file_get_contents( $file ) )
                 );
             }
         }
@@ -76,19 +76,48 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
             $this->logger->debug( 'Creating SparkPost service with apiKey=' . $this->apiKey );
         }
 
-        $postmarkClient = new PostmarkClient($this->api_key);
-        
+        $httpClient = new GuzzleAdapter( new Client() );
+        $sparky = new SparkPost( 
+            $httpClient, 
+            array( 
+                'key'    =>  $this->api_key 
+            )
+        );
+
         $sender = $message->getFromAddress();
         $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
         $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
-        $headers = array();
 
         $sender->log( $this->logger, 'From' );
 
-        $sendSmtpEmail['sender'] = array(
-            'name'  =>  $senderName, 
-            'email' =>  $senderEmail
-        );
+        $body = [
+            'content' => [
+                'from' => [
+                    'name' => $senderName,
+                    'email' => $senderEmail,
+                ]
+            ]
+        ];
+
+        $body['content']['subject'] =  $message->getSubject();
+
+        $htmlPart = $message->getBodyHtmlPart();
+        if ( ! empty( $htmlPart ) ) {
+            $this->logger->debug( 'Adding body as html' );
+            $body['content']['html'] = $htmlPart;
+        }
+
+        $textPart = $message->getBodyTextPart();
+        if ( ! empty( $textPart ) ) {
+            $this->logger->debug( 'Adding body as text' );
+            $body['content']['text'] = $textPart;
+        }
+
+        // add attachments
+        $this->logger->debug( 'Adding attachments' );
+
+        $attachments = $this->addAttachmentsToMail( $message );
+        $body['content']['attachments'] = $attachments;
 
         $tos = array();
         $duplicates = array();
@@ -98,7 +127,11 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
                     
             if ( !array_key_exists( $recipient->getEmail(), $duplicates ) ) {
 
-                $tos[] = $recipient->getEmail();
+                $tos[] = array(
+                    'address' => array(
+                        'email' =>  $recipient->getEmail()
+                    ),
+                );
                 
                 $duplicates[] = $recipient->getEmail();
 
@@ -106,30 +139,61 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
 
         }
 
-        $sendSmtpEmail['to'] = implode( ",", $tos );
-        
-        $sendSmtpEmail['subject'] = $message->getSubject();
+        $body['recipients'] = $tos;
 
-        $textPart = $message->getBodyTextPart();
-        if ( ! empty( $textPart ) ) {
-            $this->logger->debug( 'Adding body as text' );
-            $sendSmtpEmail['textContent'] = $textPart;
+        //Add cc
+        $cc = array();
+        $duplicates = array();
+        foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
+
+            if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
+
+                $recipient->log($this->logger, 'Cc');
+
+                $cc[] = array(
+                    'address' => array(
+                        'email' =>  $recipient->getEmail()
+                    ),
+                );
+                
+                $duplicates[] = $recipient->getEmail();
+
+            }
+
+        }
+        if( !empty( $cc ) ) {
+            $body['cc'] = $cc;
+        }
+
+        //Add bcc
+        $bcc = array();
+        $duplicates = array();
+        foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
+
+            if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
+
+                $recipient->log($this->logger, 'Bcc');
+                $cc[] = array(
+                    'address' => array(
+                        'email' =>  $recipient->getEmail()
+                    ),
+                );
+
+                $duplicates[] = $recipient->getEmail();
+
+            }
+
         }
         
-        $htmlPart = $message->getBodyHtmlPart();
-        if ( ! empty( $htmlPart ) ) {
-            $this->logger->debug( 'Adding body as html' );
-            $sendSmtpEmail['htmlContent'] = $htmlPart;
+        if( !empty( $bcc ) ) {
+            $body['bcc'] = $bcc;
         }
 
         // add the reply-to
         $replyTo = $message->getReplyTo();
         // $replyTo is null or a PostmanEmailAddress object
         if ( isset( $replyTo ) ) {
-            $sendSmtpEmail['replyTo'] = $replyTo->getEmail();
-
-        } else {
-            $sendSmtpEmail['replyTo'] = "";
+            $body['content']['reply_to'] = $replyTo;
         }
 
         // add the Postman signature - append it to whatever the user may have set
@@ -149,133 +213,39 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
             $headers['message-id'] = $messageId;
         }
 
-        $sendSmtpEmail['headers'] = $headers;
+        $body['headers'] = $headers;
 
         // if the caller set a Content-Type header, use it
         $contentType = $message->getContentType();
         if ( ! empty( $contentType ) ) {
             $this->logger->debug( 'Some header keys are reserved. You may not include any of the following reserved headers: x-sg-id, x-sg-eid, received, dkim-signature, Content-Type, Content-Transfer-Encoding, To, From, Subject, Reply-To, CC, BCC.' );
         }
-
-        $cc = array();
-        $duplicates = array();
-        foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
-
-            if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
-
-                $recipient->log($this->logger, 'Cc');
-
-                $cc[] = $recipient->getEmail();
-                
-                $duplicates[] = $recipient->getEmail();
-
-            }
-
-        }
-
-        if( !empty( $cc ) ) {
-            $sendSmtpEmail['cc'] = implode( ",", $cc );
-        } else {
-            $sendSmtpEmail['cc'] = "";
-        }
-
-        $bcc = array();
-        $duplicates = array();
-        foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
-
-            if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
-
-                $recipient->log($this->logger, 'Bcc');
-                $bcc[] = $recipient->getEmail();
-
-                $duplicates[] = $recipient->getEmail();
-
-            }
-
-        }
         
-        if( !empty( $bcc ) ) {
-            $sendSmtpEmail['bcc'] = implode( ",", $bcc );
-        } else {
-            $sendSmtpEmail['bcc'] = "";
-        }
-
-        // add attachments
-        $this->logger->debug( 'Adding attachments' );
-
-        $attachments = $this->addAttachmentsToMail( $message );
-
-        $email_attachments = array();
-        $sendSmtpEmail['attachment'] = array();
-        if( !empty( $attachments ) ) {
-        
-            foreach ( $attachments as $index => $attachment ) {
-
-                $email_attachments[] = array(
-                    'name'          =>  $attachment['file_name'],
-                    'content'       =>  $attachment['content'],
-                    'ContentType'   =>  $attachment['type']
-                );
-            }
-
-            $sendSmtpEmail['attachment'] = $email_attachments;
-        
-        }
-            
+        //Send Email
         try {
 
-            // send the message
+            $promise = $sparky->transmissions->post( $body );
+
             if ( $this->logger->isDebug() ) {
                 $this->logger->debug( 'Sending mail' );
             }
 
-            $response = $postmarkClient->sendEmail(
-                // form
-                $sendSmtpEmail['sender']['email'],
-                // to
-                $sendSmtpEmail['to'],
-                // subject
-                $message->getSubject(),
-                // htmlbody
-                $message->getBodyHtmlPart(),
-                // textbody
-                $message->getBodyTextPart(),
-                // tag
-                null,
-                // trackopens
-                null,
-                // replyto
-                $sendSmtpEmail['replyTo'],
-                // cc
-                $sendSmtpEmail['cc'],
-                // bcc
-                $sendSmtpEmail['bcc'],
-                // headers
-                $sendSmtpEmail['headers'],
-                // attachments
-                $sendSmtpEmail['attachment'],
-                // tracklinks
-                null,
-                // metadata
-                null,
-                // messagestram
-                "outbound"
-            );
+            $response = $promise->wait();
 
             $this->transcript = print_r( $response, true );
             $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-            $this->transcript .= print_r( $sendSmtpEmail, true );
+            $this->transcript .= print_r( $body, true );
             $this->logger->debug( 'Transcript=' . $this->transcript );
 
-        } catch(SparkPostException $exception) {
+        } catch (\Exception $e) {
 
-            $this->transcript = $exception->getMessage();
+            $this->transcript = $e->getMessage();
             $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-            $this->transcript .= print_r( $sendSmtpEmail, true );
+            $this->transcript .= print_r( $body, true );
             $this->logger->debug( 'Transcript=' . $this->transcript );
 
-            throw $exception;
         }
+
     }
 }
 
