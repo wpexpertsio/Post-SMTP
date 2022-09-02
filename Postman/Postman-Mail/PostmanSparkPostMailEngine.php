@@ -173,7 +173,7 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
             if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 
                 $recipient->log($this->logger, 'Bcc');
-                $cc[] = array(
+                $bcc[] = array(
                     'address' => array(
                         'email' =>  $recipient->getEmail()
                     ),
@@ -188,12 +188,11 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
         if( !empty( $bcc ) ) {
             $body['bcc'] = $bcc;
         }
-
         // add the reply-to
         $replyTo = $message->getReplyTo();
         // $replyTo is null or a PostmanEmailAddress object
         if ( isset( $replyTo ) ) {
-            $body['content']['reply_to'] = $replyTo;
+            $body['content']['reply_to'] = $replyTo->getEmail();
         }
 
         // add the Postman signature - append it to whatever the user may have set
@@ -231,13 +230,13 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
             }
 
             $response = $promise->wait();
-
+            
             $this->transcript = print_r( $response, true );
             $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
             $this->transcript .= print_r( $body, true );
             $this->logger->debug( 'Transcript=' . $this->transcript );
 
-        } catch (\Exception $e) {
+        } catch (\SparkPostException $e) {
 
             $this->transcript = $e->getMessage();
             $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
@@ -250,3 +249,4 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
 }
 
 endif;
+
