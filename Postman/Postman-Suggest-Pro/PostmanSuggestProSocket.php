@@ -37,6 +37,7 @@ class PostmanSuggestProSocket {
             $this->data[] = array(
                 'extenstion'    =>  'Office365 API (Pro)',
                 'logo'          =>  POST_SMTP_ASSETS . 'images/logos/office365.png',
+                'pro'          =>  POST_SMTP_ASSETS . 'images/icons/pro.png',
                 'url'           =>  'https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/'
             );
         }
@@ -45,6 +46,7 @@ class PostmanSuggestProSocket {
             $this->data[] = array(
                 'extenstion'    =>  'Amazon SES (Pro)',
                 'logo'          =>  POST_SMTP_ASSETS . 'images/logos/amazonses.png',
+                'pro'          =>  POST_SMTP_ASSETS . 'images/icons/pro.png',
                 'url'           =>  'https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/'
             );
         }
