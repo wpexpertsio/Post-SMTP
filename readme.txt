@@ -3,8 +3,8 @@ Plugin URI: https://wpexperts.io/
 Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
-Tested up to: 6.0.1
-Stable tag: 2.1.7
+Tested up to: 6.0.2
+Stable tag: 2.1.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,7 +28,7 @@ Post SMTP replaces the default WordPress SMTP library, PHPMailer, with the heavy
 * The built-in Email log is an invaluable resource for diagnosing problems with emails.
 * OAuth 2.0 increase the security and protection of email password by discouraging the idea of storing your email password in the WordPress database where it might be found.
 
-Even hosts that block the standard SMTP ports, like GoDaddy or Bluehost, canâ€™t stop your email as Post SMTP can deliver via HTTPS if it canâ€™t use SMTP.
+Even hosts that block the standard SMTP ports, like GoDaddy or Bluehost, can not stop your email as Post SMTP can deliver via HTTPS if it can not use SMTP.
 
 https://www.youtube.com/watch?v=mXDEEE9jnfw
 
@@ -76,7 +76,7 @@ In essence, SMTP is a set of commands that authenticates and directs the transfe
 [Better Email Logger Pro extension](https://postmansmtp.com/extensions/the-better-email/) allows you to design email marketing campaigns and improve email deliverability for your WordPress site.
 
 **Mail Control Pro Extension**
-[Mail Control Pro Extension](https://postmansmtp.com/extensions/post-smtp-mail-control/) allows you to control Post SMTPâ€™s email actions like sending email alerts to authors, webmasters, and new users. 
+[Mail Control Pro Extension](https://postmansmtp.com/extensions/post-smtp-mail-control/) allows you to control Post SMTP email actions like sending email alerts to authors, webmasters, and new users. 
 
 = Post SMTP Membership Plans = 
 [Post SMTP membership plans](https://postmansmtp.com/membership-plan/) offer access to all pro extensions along with other benefits including 1-year extension updates and support, Email Reporting, Logging, and Tracking, all other SMTP Services and a 30-day money-back guarantee.
@@ -284,6 +284,10 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 2.1.8 - 2022-09-5 =
+* **FIX**
+* Php warnings
 
 = 2.1.7 - 2022-08-30 =
 * **FIX**
