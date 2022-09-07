@@ -393,14 +393,41 @@ if (! class_exists ( 'PostmanWpMailBankOptions' )) {
 	class PostmanWpMailBankOptions extends PostmanAbstractPluginOptions implements PostmanPluginOptions {
 		const SLUG = 'wp_mail_bank';
 		const PLUGIN_NAME = 'WP Mail Bank';
+		const MESSAGE_SENDER_EMAIL = 'sender_email';
+		const MESSAGE_SENDER_NAME = 'sender_name';
+		const HOSTNAME = 'hostname';
+		const PORT = 'port';
+		const ENCRYPTION_TYPE = 'enc_type';
+		const AUTHENTICATION_TYPE = 'auth_type';
+		const USERNAME = 'username';
+		const PASSWORD = 'password';
+		const MAILER_TYPE = 'mailer_type';
 		public function __construct() {
 			parent::__construct ();
-			// data is stored in table wp_mail_bank
+			// data is stored in table wp_mail_meta
 			// fields are id, from_name, from_email, mailer_type, return_path, return_email, smtp_host, smtp_port, word_wrap, encryption, smtp_keep_alive, authentication, smtp_username, smtp_password
-			global $wpdb;
-			$wpdb->show_errors ();
-			$wpdb->suppress_errors ();
-			$this->options = @$wpdb->get_row ( "SELECT from_name, from_email, mailer_type, smtp_host, smtp_port, encryption, authentication, smtp_username, smtp_password FROM " . $wpdb->prefix . "mail_bank" );
+			if( array_key_exists ( 'wp-mail-bank/wp-mail-bank.php', get_plugins () ) ) {
+				global $wpdb;
+				$wpdb->show_errors ();
+				$wpdb->suppress_errors ();
+				$mb_email_configuration_data =  $wpdb->get_row(
+					$wpdb->prepare(
+						'SELECT meta_value FROM ' . $wpdb->prefix . 'mail_bank_meta WHERE meta_key = %s', 'email_configuration'
+					), ARRAY_A
+				);
+				$mb_email_configuration_data = unserialize( $mb_email_configuration_data['meta_value'] );
+				
+				$this->options [self::MESSAGE_SENDER_EMAIL] = $mb_email_configuration_data[ self::MESSAGE_SENDER_EMAIL ];
+				$this->options [self::MESSAGE_SENDER_NAME] = $mb_email_configuration_data[ self::MESSAGE_SENDER_NAME ];
+				$this->options [self::HOSTNAME] = $mb_email_configuration_data[ self::HOSTNAME ];
+				$this->options [self::PORT] = $mb_email_configuration_data[ self::PORT ];
+				$this->options [self::ENCRYPTION_TYPE] = $mb_email_configuration_data[ self::ENCRYPTION_TYPE ];
+				$this->options [self::AUTHENTICATION_TYPE] = $mb_email_configuration_data[ self::AUTHENTICATION_TYPE ];
+				$this->options [self::USERNAME] = $mb_email_configuration_data[ self::USERNAME ];
+				$this->options [self::PASSWORD] = $mb_email_configuration_data[ self::PASSWORD ];
+				$this->options [self::MAILER_TYPE] = $mb_email_configuration_data[ self::MAILER_TYPE ];
+			}
+			
 		}
 		public function getPluginSlug() {
 			return self::SLUG;
@@ -409,51 +436,51 @@ if (! class_exists ( 'PostmanWpMailBankOptions' )) {
 			return self::PLUGIN_NAME;
 		}
 		public function getMessageSenderEmail() {
-			if (isset ( $this->options->from_email ))
-				return $this->options->from_email;
+			if (isset ( $this->options [self::MESSAGE_SENDER_EMAIL] ))
+				return $this->options [self::MESSAGE_SENDER_EMAIL];
 		}
 		public function getMessageSenderName() {
-			if (isset ( $this->options->from_name )) {
-				return stripslashes ( htmlspecialchars_decode ( $this->options->from_name, ENT_QUOTES ) );
+			if (isset ( $this->options [self::MESSAGE_SENDER_NAME] )) {
+				return stripslashes ( htmlspecialchars_decode ( $this->options [self::MESSAGE_SENDER_NAME], ENT_QUOTES ) );
 			}
 		}
 		public function getHostname() {
-			if (isset ( $this->options->smtp_host ))
-				return $this->options->smtp_host;
+			if (isset ( $this->options [self::HOSTNAME] ))
+				return $this->options [self::HOSTNAME];
 		}
 		public function getPort() {
-			if (isset ( $this->options->smtp_port ))
-				return $this->options->smtp_port;
+			if (isset ( $this->options [self::PORT] ))
+				return $this->options [self::PORT];
 		}
 		public function getUsername() {
-			if (isset ( $this->options->authentication ) && isset ( $this->options->smtp_username ))
-				if ($this->options->authentication == 1)
-					return $this->options->smtp_username;
+			if (isset ( $this->options [self::AUTHENTICATION_TYPE] ) && isset ( $this->options [self::USERNAME] ))
+				if ($this->options[self::AUTHENTICATION_TYPE] != 'none' )
+					return $this->options [self::USERNAME];
 		}
 		public function getPassword() {
-			if (isset ( $this->options->authentication ) && isset ( $this->options->smtp_password )) {
-				if ($this->options->authentication == 1)
-					return $this->options->smtp_password;
+			if (isset ( $this->options [self::AUTHENTICATION_TYPE] ) && isset ( $this->options [self::PASSWORD] )) {
+				if ($this->options [self::AUTHENTICATION_TYPE] != 'none' )
+					return $this->options [self::PASSWORD];
 			}
 		}
 		public function getAuthenticationType() {
-			if (isset ( $this->options->authentication )) {
-				if ($this->options->authentication == 1) {
+			if (isset ( $this->options [self::AUTHENTICATION_TYPE] )) {
+				if ($this->options [self::AUTHENTICATION_TYPE] != 'none' ) {
 					return PostmanOptions::AUTHENTICATION_TYPE_PLAIN;
-				} else if ($this->options->authentication == 0) {
+				} else if ($this->options [self::AUTHENTICATION_TYPE] == 'none' ) {
 					return PostmanOptions::AUTHENTICATION_TYPE_NONE;
 				}
 			}
 		}
 		public function getEncryptionType() {
-			if (isset ( $this->options->mailer_type )) {
-				if ($this->options->mailer_type == 0) {
-					switch ($this->options->encryption) {
-						case 0 :
+			if (isset ( $this->options [self::MAILER_TYPE] )) {
+				if ($this->options[self::MAILER_TYPE] == 'smtp') {
+					switch ($this->options [self::ENCRYPTION_TYPE]) {
+						case 'none' :
 							return PostmanOptions::SECURITY_TYPE_NONE;
-						case 1 :
+						case 'ssl' :
 							return PostmanOptions::SECURITY_TYPE_SMTPS;
-						case 2 :
+						case 'tls' :
 							return PostmanOptions::SECURITY_TYPE_STARTTLS;
 					}
 				}
