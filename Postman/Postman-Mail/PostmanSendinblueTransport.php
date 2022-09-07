@@ -16,7 +16,7 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
     const SLUG = 'sendinblue_api';
     const PORT = 587;
     const HOST = 'smtp-relay.sendinblue.com';
-    const PRIORITY = 8000;
+    const PRIORITY = 31000;
     const SENDINBLUE_AUTH_OPTIONS = 'postman_sendinblue_auth_options';
     const SENDINBLUE_AUTH_SECTION = 'postman_sendinblue_auth_section';
 
