@@ -56,14 +56,14 @@ final class Cookie
     /**
      * @param string         $name
      * @param string|null    $value
-     * @param int            $maxAge
+     * @param int|null       $maxAge
      * @param string|null    $domain
      * @param string|null    $path
      * @param bool           $secure
      * @param bool           $httpOnly
      * @param \DateTime|null $expires  Expires attribute is HTTP 1.0 only and should be avoided.
      *
-     * @throws \InvalidArgumentException If name, value or max age is not valid.
+     * @throws \InvalidArgumentException if name, value or max age is not valid
      */
     public function __construct(
         $name,
@@ -226,8 +226,6 @@ final class Cookie
     /**
      * Sets the expires.
      *
-     * @param \DateTime|null $expires
-     *
      * @return Cookie
      */
     public function withExpires(\DateTime $expires = null)
@@ -295,7 +293,7 @@ final class Cookie
     public function matchDomain($domain)
     {
         // Domain is not set or exact match
-        if (!$this->hasDomain() || strcasecmp($domain, $this->domain) === 0) {
+        if (!$this->hasDomain() || 0 === strcasecmp($domain, $this->domain)) {
             return true;
         }
 
@@ -343,7 +341,7 @@ final class Cookie
      */
     public function matchPath($path)
     {
-        return $this->path === $path || (strpos($path, rtrim($this->path, '/').'/') === 0);
+        return $this->path === $path || (0 === strpos($path, rtrim($this->path, '/').'/'));
     }
 
     /**
@@ -405,7 +403,7 @@ final class Cookie
      *
      * @return bool
      */
-    public function match(Cookie $cookie)
+    public function match(self $cookie)
     {
         return $this->name === $cookie->name && $this->domain === $cookie->domain and $this->path === $cookie->path;
     }
@@ -435,7 +433,7 @@ final class Cookie
      *
      * @param string $name
      *
-     * @throws \InvalidArgumentException If the name is empty or contains invalid characters.
+     * @throws \InvalidArgumentException if the name is empty or contains invalid characters
      */
     private function validateName($name)
     {
@@ -456,7 +454,7 @@ final class Cookie
      *
      * @param string|null $value
      *
-     * @throws \InvalidArgumentException If the value contains invalid characters.
+     * @throws \InvalidArgumentException if the value contains invalid characters
      */
     private function validateValue($value)
     {
@@ -472,7 +470,7 @@ final class Cookie
      *
      * @param int|null $maxAge
      *
-     * @throws \InvalidArgumentException If the Max-Age is not an empty or integer value.
+     * @throws \InvalidArgumentException if the Max-Age is not an empty or integer value
      */
     private function validateMaxAge($maxAge)
     {
@@ -517,7 +515,7 @@ final class Cookie
     {
         $path = rtrim($path, '/');
 
-        if (empty($path) or substr($path, 0, 1) !== '/') {
+        if (empty($path) or '/' !== substr($path, 0, 1)) {
             $path = '/';
         }
 

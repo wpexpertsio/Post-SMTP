@@ -4,6 +4,7 @@ namespace Http\Discovery;
 
 use Http\Discovery\Exception\ClassInstantiationFailedException;
 use Http\Discovery\Exception\DiscoveryFailedException;
+use Http\Discovery\Exception\NoCandidateFoundException;
 use Http\Discovery\Exception\StrategyUnavailableException;
 
 /**
@@ -21,8 +22,13 @@ abstract class ClassDiscovery
      * @var array
      */
     private static $strategies = [
-        Strategy\PuliBetaStrategy::class,
         Strategy\CommonClassesStrategy::class,
+        Strategy\CommonPsr17ClassesStrategy::class,
+        Strategy\PuliBetaStrategy::class,
+    ];
+
+    private static $deprecatedStrategies = [
+        Strategy\PuliBetaStrategy::class => true,
     ];
 
     /**
@@ -53,7 +59,10 @@ abstract class ClassDiscovery
             try {
                 $candidates = call_user_func($strategy.'::getCandidates', $type);
             } catch (StrategyUnavailableException $e) {
-                $exceptions[] = $e;
+                if (!isset(self::$deprecatedStrategies[$strategy])) {
+                    $exceptions[] = $e;
+                }
+
                 continue;
             }
 
@@ -69,6 +78,8 @@ abstract class ClassDiscovery
 
                 return $candidate['class'];
             }
+
+            $exceptions[] = new NoCandidateFoundException($strategy, $candidates);
         }
 
         throw DiscoveryFailedException::create($exceptions);
@@ -120,6 +131,16 @@ abstract class ClassDiscovery
     }
 
     /**
+     * Returns the currently configured discovery strategies as fully qualified class names.
+     *
+     * @return string[]
+     */
+    public static function getStrategies(): iterable
+    {
+        return self::$strategies;
+    }
+
+    /**
      * Append a strategy at the end of the strategy queue.
      *
      * @param string $strategy Fully qualified class name to a DiscoveryStrategy
@@ -160,20 +181,23 @@ abstract class ClassDiscovery
     {
         if (is_string($condition)) {
             // Should be extended for functions, extensions???
-            return class_exists($condition);
-        } elseif (is_callable($condition)) {
-            return $condition();
-        } elseif (is_bool($condition)) {
+            return self::safeClassExists($condition);
+        }
+        if (is_callable($condition)) {
+            return (bool) $condition();
+        }
+        if (is_bool($condition)) {
             return $condition;
-        } elseif (is_array($condition)) {
-            $evaluatedCondition = true;
-
-            // Immediately stop execution if the condition is false
-            for ($i = 0; $i < count($condition) && false !== $evaluatedCondition; ++$i) {
-                $evaluatedCondition &= static::evaluateCondition($condition[$i]);
+        }
+        if (is_array($condition)) {
+            foreach ($condition as $c) {
+                if (false === static::evaluateCondition($c)) {
+                    // Immediately stop execution if the condition is false
+                    return false;
+                }
             }
 
-            return $evaluatedCondition;
+            return true;
         }
 
         return false;
@@ -182,7 +206,7 @@ abstract class ClassDiscovery
     /**
      * Get an instance of the $class.
      *
-     * @param string|\Closure $class A FQCN of a class or a closure that instantiate the class.
+     * @param string|\Closure $class a FQCN of a class or a closure that instantiate the class
      *
      * @return object
      *
@@ -203,5 +227,26 @@ abstract class ClassDiscovery
         }
 
         throw new ClassInstantiationFailedException('Could not instantiate class because parameter is neither a callable nor a string');
+    }
+
+    /**
+     * We want to do a "safe" version of PHP's "class_exists" because Magento has a bug
+     * (or they call it a "feature"). Magento is throwing an exception if you do class_exists()
+     * on a class that ends with "Factory" and if that file does not exits.
+     *
+     * This function will catch all potential exceptions and make sure it returns a boolean.
+     *
+     * @param string $class
+     * @param bool   $autoload
+     *
+     * @return bool
+     */
+    public static function safeClassExists($class)
+    {
+        try {
+            return class_exists($class) || interface_exists($class);
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }
