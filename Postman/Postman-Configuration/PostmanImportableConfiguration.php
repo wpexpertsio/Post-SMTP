@@ -424,7 +424,7 @@ if (! class_exists ( 'PostmanWpMailBankOptions' )) {
 				$this->options [self::ENCRYPTION_TYPE] = $mb_email_configuration_data[ self::ENCRYPTION_TYPE ];
 				$this->options [self::AUTHENTICATION_TYPE] = $mb_email_configuration_data[ self::AUTHENTICATION_TYPE ];
 				$this->options [self::USERNAME] = $mb_email_configuration_data[ self::USERNAME ];
-				$this->options [self::PASSWORD] = $mb_email_configuration_data[ self::PASSWORD ];
+				$this->options [self::PASSWORD] = base64_decode( $mb_email_configuration_data[ self::PASSWORD ] );
 				$this->options [self::MAILER_TYPE] = $mb_email_configuration_data[ self::MAILER_TYPE ];
 			}
 			
@@ -465,10 +465,22 @@ if (! class_exists ( 'PostmanWpMailBankOptions' )) {
 		}
 		public function getAuthenticationType() {
 			if (isset ( $this->options [self::AUTHENTICATION_TYPE] )) {
-				if ($this->options [self::AUTHENTICATION_TYPE] != 'none' ) {
-					return PostmanOptions::AUTHENTICATION_TYPE_PLAIN;
-				} else if ($this->options [self::AUTHENTICATION_TYPE] == 'none' ) {
-					return PostmanOptions::AUTHENTICATION_TYPE_NONE;
+				
+				switch( $this->options [self::AUTHENTICATION_TYPE] ) {
+					case 'none':
+						return PostmanOptions::AUTHENTICATION_TYPE_NONE;
+
+					case 'plain':
+						return PostmanOptions::AUTHENTICATION_TYPE_PLAIN;
+
+					case 'login':
+						return PostmanOptions::AUTHENTICATION_TYPE_LOGIN;
+
+					case 'crammd5':
+						return PostmanOptions::AUTHENTICATION_TYPE_CRAMMD5;
+
+					case 'oauth2':
+						return PostmanOptions::AUTHENTICATION_TYPE_OAUTH2;
 				}
 			}
 		}
