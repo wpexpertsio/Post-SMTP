@@ -546,6 +546,8 @@ function handleConfigurationResponse(response) {
 	el1.append( html );
 	el2.append( authHtml );
 
+	jQuery.fn.suggestPro();
+
 	jQuery('select#input_notification_service').change(function() {
 		var selected = jQuery( this ).val();
 

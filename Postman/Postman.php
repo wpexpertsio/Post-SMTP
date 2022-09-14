@@ -64,6 +64,7 @@ class Postman {
 		require_once 'Postman-Mail/PostmanSendGridTransport.php';
 		require_once 'Postman-Mail/PostmanMailgunTransport.php';
         require_once 'Postman-Mail/PostmanSendinblueTransport.php';
+		require_once 'Postman-Suggest-Pro/PostmanSuggestProSocket.php';
         require_once 'PostmanOAuthToken.php';
 		require_once 'PostmanWpMailBinder.php';
 		require_once 'PostmanConfigTextHelper.php';
