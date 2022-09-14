@@ -1,6 +1,35 @@
 CHANGELOG
 =========
 
+5.3
+---
+
+ * Add prototype definition for nested options
+
+5.1.0
+-----
+
+ * added fluent configuration of options using `OptionResolver::define()`
+ * added `setInfo()` and `getInfo()` methods
+ * updated the signature of method `OptionsResolver::setDeprecated()` to `OptionsResolver::setDeprecation(string $option, string $package, string $version, $message)`
+ * deprecated `OptionsResolverIntrospector::getDeprecationMessage()`, use `OptionsResolverIntrospector::getDeprecation()` instead
+
+5.0.0
+-----
+
+ * added argument `$triggerDeprecation` to `OptionsResolver::offsetGet()`
+
+4.3.0
+-----
+
+ * added `OptionsResolver::addNormalizer` method
+
+4.2.0
+-----
+
+ * added support for nested options definition
+ * added `setDeprecated` and `isDeprecated` methods
+
 3.4.0
 -----
 
@@ -31,7 +60,7 @@ CHANGELOG
  * deprecated OptionsResolver::isKnown() in favor of isDefined()
  * [BC BREAK] OptionsResolver::isRequired() returns true now if a required
    option has a default value set
- * [BC BREAK] merged Options into OptionsResolver and turned Options into an 
+ * [BC BREAK] merged Options into OptionsResolver and turned Options into an
    interface
  * deprecated Options::overload() (now in OptionsResolver)
  * deprecated Options::set() (now in OptionsResolver)
@@ -42,7 +71,7 @@ CHANGELOG
    lazy option/normalizer closures now
  * [BC BREAK] removed Traversable interface from Options since using within
    lazy option/normalizer closures resulted in exceptions
- * [BC BREAK] removed Options::all() since using within lazy option/normalizer 
+ * [BC BREAK] removed Options::all() since using within lazy option/normalizer
    closures resulted in exceptions
  * [BC BREAK] OptionDefinitionException now extends LogicException instead of
    RuntimeException

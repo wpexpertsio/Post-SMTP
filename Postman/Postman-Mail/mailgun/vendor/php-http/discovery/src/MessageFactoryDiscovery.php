@@ -9,6 +9,8 @@ use Http\Message\MessageFactory;
  * Finds a Message Factory.
  *
  * @author Márk Sági-Kazár <mark.sagikazar@gmail.com>
+ *
+ * @deprecated This will be removed in 2.0. Consider using Psr17FactoryDiscovery.
  */
 final class MessageFactoryDiscovery extends ClassDiscovery
 {
@@ -24,11 +26,7 @@ final class MessageFactoryDiscovery extends ClassDiscovery
         try {
             $messageFactory = static::findOneByType(MessageFactory::class);
         } catch (DiscoveryFailedException $e) {
-            throw new NotFoundException(
-                'No message factories found. To use Guzzle, Diactoros or Slim Framework factories install php-http/message and the chosen message implementation.',
-                0,
-                $e
-            );
+            throw new NotFoundException('No message factories found. To use Guzzle, Diactoros or Slim Framework factories install php-http/message and the chosen message implementation.', 0, $e);
         }
 
         return static::instantiateClass($messageFactory);

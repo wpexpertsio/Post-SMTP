@@ -6,7 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once 'mailgun/mailgun.php';
 
 use Mailgun\Mailgun;
-use Mailgun\HttpClientConfigurator;
+use Mailgun\HttpClient\HttpClientConfigurator;
+use Mailgun\Hydrator\NoopHydrator;
+
 
 if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 
@@ -172,7 +174,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 				$configurator = new HttpClientConfigurator();
 				$configurator->setEndpoint( $this->api_endpoint . '/v3/'. $this->domainName .'/messages');
 				$configurator->setApiKey($this->apiKey);
-				$mg = Mailgun::configure($configurator);
+				$mg = new Mailgun($configurator, new NoopHydrator());
 
 				// Make the call to the client.
 				$result = $this->processSend( $mg );

@@ -2,8 +2,11 @@
 
 namespace Http\Message\MultipartStream;
 
+use Http\Discovery\Exception\NotFoundException;
+use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Discovery\StreamFactoryDiscovery;
-use Http\Message\StreamFactory;
+use Http\Message\StreamFactory as HttplugStreamFactory;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -16,7 +19,7 @@ use Psr\Http\Message\StreamInterface;
 class MultipartStreamBuilder
 {
     /**
-     * @var StreamFactory
+     * @var HttplugStreamFactory|StreamFactoryInterface
      */
     private $streamFactory;
 
@@ -31,16 +34,58 @@ class MultipartStreamBuilder
     private $boundary;
 
     /**
-     * @var array Element where each Element is an array with keys ['contents', 'headers', 'filename']
+     * @var array Element where each Element is an array with keys ['contents', 'headers']
      */
     private $data = [];
 
     /**
-     * @param StreamFactory|null $streamFactory
+     * @param HttplugStreamFactory|StreamFactoryInterface|null $streamFactory
      */
-    public function __construct(StreamFactory $streamFactory = null)
+    public function __construct($streamFactory = null)
     {
-        $this->streamFactory = $streamFactory ?: StreamFactoryDiscovery::find();
+        if ($streamFactory instanceof StreamFactoryInterface || $streamFactory instanceof HttplugStreamFactory) {
+            $this->streamFactory = $streamFactory;
+
+            return;
+        }
+
+        if (null !== $streamFactory) {
+            throw new \LogicException(sprintf(
+                'First arguemnt to the constructor of "%s" must be of type "%s", "%s" or null. Got %s',
+                __CLASS__,
+                StreamFactoryInterface::class,
+                HttplugStreamFactory::class,
+                \is_object($streamFactory) ? \get_class($streamFactory) : \gettype($streamFactory)
+            ));
+        }
+
+        // Try to find a stream factory.
+        try {
+            $this->streamFactory = Psr17FactoryDiscovery::findStreamFactory();
+        } catch (NotFoundException $psr17Exception) {
+            try {
+                $this->streamFactory = StreamFactoryDiscovery::find();
+            } catch (NotFoundException $httplugException) {
+                // we could not find any factory.
+                throw $psr17Exception;
+            }
+        }
+    }
+
+    /**
+     * Add a resource to the Multipart Stream.
+     *
+     * @param string|resource|\Psr\Http\Message\StreamInterface $resource the filepath, resource or StreamInterface of the data
+     * @param array                                             $headers  additional headers array: ['header-name' => 'header-value']
+     *
+     * @return MultipartStreamBuilder
+     */
+    public function addData($resource, array $headers = [])
+    {
+        $stream = $this->createStream($resource);
+        $this->data[] = ['contents' => $stream, 'headers' => $headers];
+
+        return $this;
     }
 
     /**
@@ -58,7 +103,7 @@ class MultipartStreamBuilder
      */
     public function addResource($name, $resource, array $options = [])
     {
-        $stream = $this->streamFactory->createStream($resource);
+        $stream = $this->createStream($resource);
 
         // validate options['headers'] exists
         if (!isset($options['headers'])) {
@@ -69,15 +114,14 @@ class MultipartStreamBuilder
         if (empty($options['filename'])) {
             $options['filename'] = null;
             $uri = $stream->getMetadata('uri');
-            if (substr($uri, 0, 6) !== 'php://') {
+            if ('php://' !== substr($uri, 0, 6)) {
                 $options['filename'] = $uri;
             }
         }
 
         $this->prepareHeaders($name, $stream, $options['filename'], $options['headers']);
-        $this->data[] = ['contents' => $stream, 'headers' => $options['headers'], 'filename' => $options['filename']];
 
-        return $this;
+        return $this->addData($stream, $options['headers']);
     }
 
     /**
@@ -87,41 +131,52 @@ class MultipartStreamBuilder
      */
     public function build()
     {
-        $streams = '';
+        // Open a temporary read-write stream as buffer.
+        // If the size is less than predefined limit, things will stay in memory.
+        // If the size is more than that, things will be stored in temp file.
+        $buffer = fopen('php://temp', 'r+');
         foreach ($this->data as $data) {
             // Add start and headers
-            $streams .= "--{$this->getBoundary()}\r\n".
-                $this->getHeaders($data['headers'])."\r\n";
+            fwrite($buffer, "--{$this->getBoundary()}\r\n".
+                $this->getHeaders($data['headers'])."\r\n");
 
-            // Convert the stream to string
-            /* @var $contentStream StreamInterface */
+            /** @var $contentStream StreamInterface */
             $contentStream = $data['contents'];
-            if ($contentStream->isSeekable()) {
-                $streams .= $contentStream->__toString();
-            } else {
-                $streams .= $contentStream->getContents();
-            }
 
-            $streams .= "\r\n";
+            // Read stream into buffer
+            if ($contentStream->isSeekable()) {
+                $contentStream->rewind(); // rewind to beginning.
+            }
+            if ($contentStream->isReadable()) {
+                while (!$contentStream->eof()) {
+                    // Read 1MB chunk into buffer until reached EOF.
+                    fwrite($buffer, $contentStream->read(1048576));
+                }
+            } else {
+                fwrite($buffer, $contentStream->__toString());
+            }
+            fwrite($buffer, "\r\n");
         }
 
         // Append end
-        $streams .= "--{$this->getBoundary()}--\r\n";
+        fwrite($buffer, "--{$this->getBoundary()}--\r\n");
 
-        return $this->streamFactory->createStream($streams);
+        // Rewind to starting position for reading.
+        fseek($buffer, 0);
+
+        return $this->createStream($buffer);
     }
 
     /**
      * Add extra headers if they are missing.
      *
-     * @param string          $name
-     * @param StreamInterface $stream
-     * @param string          $filename
-     * @param array           &$headers
+     * @param string $name
+     * @param string $filename
+     * @param array  &$headers
      */
     private function prepareHeaders($name, StreamInterface $stream, $filename, array &$headers)
     {
-        $hasFilename = $filename === '0' || $filename;
+        $hasFilename = '0' === $filename || $filename;
 
         // Set a default content-disposition header if one was not provided
         if (!$this->hasHeader($headers, 'content-disposition')) {
@@ -149,8 +204,6 @@ class MultipartStreamBuilder
     /**
      * Get the headers formatted for the HTTP message.
      *
-     * @param array $headers
-     *
      * @return string
      */
     private function getHeaders(array $headers)
@@ -166,8 +219,7 @@ class MultipartStreamBuilder
     /**
      * Check if header exist.
      *
-     * @param array  $headers
-     * @param string $key     case insensitive
+     * @param string $key case insensitive
      *
      * @return bool
      */
@@ -190,7 +242,7 @@ class MultipartStreamBuilder
      */
     public function getBoundary()
     {
-        if ($this->boundary === null) {
+        if (null === $this->boundary) {
             $this->boundary = uniqid('', true);
         }
 
@@ -214,7 +266,7 @@ class MultipartStreamBuilder
      */
     private function getMimetypeHelper()
     {
-        if ($this->mimetypeHelper === null) {
+        if (null === $this->mimetypeHelper) {
             $this->mimetypeHelper = new ApacheMimetypeHelper();
         }
 
@@ -223,8 +275,6 @@ class MultipartStreamBuilder
 
     /**
      * If you have custom file extension you may overwrite the default MimetypeHelper with your own.
-     *
-     * @param MimetypeHelper $mimetypeHelper
      *
      * @return MultipartStreamBuilder
      */
@@ -274,5 +324,32 @@ class MultipartStreamBuilder
         $filename = preg_match('@[^'.preg_quote($separators, '@').']+$@', $path, $matches) ? $matches[0] : '';
 
         return $filename;
+    }
+
+    /**
+     * @param string|resource|StreamInterface $resource
+     *
+     * @return StreamInterface
+     */
+    private function createStream($resource)
+    {
+        if ($resource instanceof StreamInterface) {
+            return $resource;
+        }
+
+        if ($this->streamFactory instanceof HttplugStreamFactory) {
+            return $this->streamFactory->createStream($resource);
+        }
+
+        // Assert: We are using a PSR17 stream factory.
+        if (\is_string($resource)) {
+            return $this->streamFactory->createStream($resource);
+        }
+
+        if (\is_resource($resource)) {
+            return $this->streamFactory->createStreamFromResource($resource);
+        }
+
+        throw new \InvalidArgumentException(sprintf('First argument to "%s::createStream()" must be a string, resource or StreamInterface.', __CLASS__));
     }
 }
