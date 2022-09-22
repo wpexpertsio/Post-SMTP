@@ -278,7 +278,7 @@ class PostmanPortTestAjaxController {
 
 	    check_admin_referer('post-smtp', 'security');
 
-		if( !current_user_can( 'edit_plugins' ) ) {
+		if( !current_user_can( 'delete_users' ) ) {
 			wp_send_json_error( 
 				array(
 					'Message'	=>	'Unauthorized.'
@@ -317,7 +317,7 @@ class PostmanPortTestAjaxController {
 
 	    check_admin_referer('post-smtp', 'security');
 
-		if( !current_user_can( 'edit_plugins' ) ) {
+		if( !current_user_can( 'delete_users' ) ) {
 			wp_send_json_error( 
 				array(
 					'Message'	=>	'Unauthorized.'
