@@ -47,6 +47,12 @@ class PostmanInstaller {
 		}
 
 		if ( function_exists( 'is_multisite' ) && is_multisite() ) {
+			
+			$network_options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS );
+
+			if( isset( $network_options['post_smtp_global_settings']) ) {
+				$options['post_smtp_global_settings'] = '1';	
+			}
 
             $options['post_smtp_allow_overwrite'] = '1';
             update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, $options );
