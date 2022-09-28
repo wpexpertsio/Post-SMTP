@@ -441,7 +441,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 						</a>
 					</div>
 					<div>
-						<a href="<?php echo esc_url( 'https://wordpress.org/support/plugin/post-smtp/' ); ?>" target="_blank">
+						<a href="<?php echo esc_url( 'https://postmansmtp.com/forums/' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
 							<?php echo esc_html( 'Online Support' ); ?>
 						</a>
