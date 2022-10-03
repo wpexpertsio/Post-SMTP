@@ -70,7 +70,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizeString( 'Forced To Recipients', PostmanOptions::FORCED_TO_RECIPIENTS, $input, $new_input );
 			$this->sanitizeString( 'Forced CC Recipients', PostmanOptions::FORCED_CC_RECIPIENTS, $input, $new_input );
 			$this->sanitizeString( 'Forced BCC Recipients', PostmanOptions::FORCED_BCC_RECIPIENTS, $input, $new_input );
-			$this->sanitizeString( 'Additional Headers', PostmanOptions::ADDITIONAL_HEADERS, $input, $new_input );
+			$this->sanitizeTextarea( 'Additional Headers', PostmanOptions::ADDITIONAL_HEADERS, $input, $new_input );
 			$this->sanitizeInt( 'Read Timeout', PostmanOptions::READ_TIMEOUT, $input, $new_input );
 			$this->sanitizeInt( 'Conenction Timeout', PostmanOptions::CONNECTION_TIMEOUT, $input, $new_input );
 			$this->sanitizeInt( 'Log Level', PostmanOptions::LOG_LEVEL, $input, $new_input );
@@ -120,6 +120,13 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			if ( isset( $input [ $key ] ) ) {
 				$this->logSanitize( $desc, $input [ $key ] );
 				$new_input [ $key ] = sanitize_text_field( trim( $input [ $key ] ) );
+			}
+		}
+
+		public function sanitizeTextarea( $desc, $key, $input, &$new_input ) {
+			if ( isset( $input [ $key ] ) ) {
+				$this->logSanitize( $desc, $input [ $key ] );
+				$new_input [ $key ] = sanitize_textarea_field( trim( $input [ $key ] ) );
 			}
 		}
 
