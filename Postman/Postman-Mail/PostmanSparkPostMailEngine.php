@@ -1,17 +1,12 @@
 <?php
 
-use SparkPost\SparkPost;
-use GuzzleHttp\Client;
-use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
-use SparkPost\SparkPostException;
-
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
 if( !class_exists( 'PostmanSparkPostMailEngine' ) ):
 
-require 'sparkpost/vendor/autoload.php'; 
+require_once 'Services/SparkPost/Handler.php'; 
 
 class PostmanSparkPostMailEngine implements PostmanMailEngine {
 
@@ -73,16 +68,10 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
         $options = PostmanOptions::getInstance();
 
         if ( $this->logger->isDebug() ) {
-            $this->logger->debug( 'Creating SparkPost service with apiKey=' . $this->apiKey );
+            $this->logger->debug( 'Creating SparkPost service with api_key=' . $this->api_key );
         }
 
-        $httpClient = new GuzzleAdapter( new Client() );
-        $sparky = new SparkPost( 
-            $httpClient, 
-            array( 
-                'key'    =>  $this->api_key 
-            )
-        );
+        $spark_post = new PostmanSparkPost( $this->api_key );
 
         $sender = $message->getFromAddress();
         $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
@@ -219,29 +208,32 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
         if ( ! empty( $contentType ) ) {
             $this->logger->debug( 'Some header keys are reserved. You may not include any of the following reserved headers: x-sg-id, x-sg-eid, received, dkim-signature, Content-Type, Content-Transfer-Encoding, To, From, Subject, Reply-To, CC, BCC.' );
         }
-        
+
         //Send Email
         try {
 
-            $promise = $sparky->transmissions->post( $body );
+            $response = $spark_post->send( $body );
 
             if ( $this->logger->isDebug() ) {
-                $this->logger->debug( 'Sending mail' );
-            }
 
-            $response = $promise->wait();
+                $this->logger->debug( 'Sending mail' );
+
+            }
+            
             
             $this->transcript = print_r( $response, true );
             $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
             $this->transcript .= print_r( $body, true );
             $this->logger->debug( 'Transcript=' . $this->transcript );
 
-        } catch (\SparkPostException $e) {
+        } catch ( Exception $e ) {
 
             $this->transcript = $e->getMessage();
             $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
             $this->transcript .= print_r( $body, true );
             $this->logger->debug( 'Transcript=' . $this->transcript );
+
+            throw $e;
 
         }
 
@@ -249,4 +241,3 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
 }
 
 endif;
-
