@@ -460,7 +460,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$inputValue = (null !== $this->options->getUsername() ? esc_attr( $this->options->getUsername() ) : '');
 		$inputDescription = __( 'The Username is usually the same as the Envelope-From Email Address.', 'post-smtp' );
 		print ('<input tabindex="99" id="fake_user_name" name="fake_user[name]" style="position:absolute; top:-500px;" type="text" value="Safari Autofill Me">') ;
-		printf( '<input type="text" id="input_basic_auth_username" name="postman_options[basic_auth_username]" value="%s" size="40" class="required ps-input ps-w-75" placeholder="%s"/><br/><span class="postman_input_description ps-input ps-w-75">%s</span>', $inputValue, __( 'Required', 'post-smtp' ), $inputDescription );
+		printf( '<input type="text" id="input_basic_auth_username" name="postman_options[basic_auth_username]" value="%s" size="40" class="required ps-w-75" placeholder="%s"/><br/><span class="postman_input_description ps-input ps-w-75">%s</span>', $inputValue, __( 'Required', 'post-smtp' ), $inputDescription );
 	}
 
 	/**
@@ -468,7 +468,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	 */
 	public function basic_auth_password_callback() {
 		print ('<input tabindex="99" id="fake_password" name="fake[password]" style="position:absolute; top:-500px;" type="password" class="ps-input ps-w-75" value="Safari Autofill Me">') ;
-		printf( '<input type="password" id="input_basic_auth_password" name="postman_options[basic_auth_password]" value="%s" size="40" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getPassword() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getPassword() ) ) : '', __( 'Required', 'post-smtp' ) );
+		printf( '<input type="password" id="input_basic_auth_password" name="postman_options[basic_auth_password]" value="%s" size="40" class="required ps-w-75" placeholder="%s"/>', null !== $this->options->getPassword() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getPassword() ) ) : '', __( 'Required', 'post-smtp' ) );
 		print ' <input type="button" id="togglePasswordField" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 	}
 
