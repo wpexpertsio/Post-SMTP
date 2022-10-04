@@ -541,6 +541,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	 */
 	public function printWizardMailServerHostnameStep() {
 		printf( '<legend>%s</legend>', _x( 'Which host will relay the mail?', 'Wizard Step Title', 'post-smtp' ) );
+		printf( '<p><label>%s</label></p>', __( 'If you want to use SendinBlue, Mandrill, Mailgun, SendGrid or other (API), You can skip this step by pressing next.', 'post-smtp' ) );
 		printf( '<p>%s</p>', __( 'This is the Outgoing (SMTP) Mail Server, or Mail Submission Agent (MSA), which Postman delegates mail delivery to. This server is specific to your email account, and if you don\'t know what to use, ask your email service provider.', 'post-smtp' ) );
 		printf( '<p><label>%s<label></p>', __( 'Note that many WordPress hosts, such as GoDaddy, Bluehost and Dreamhost, require that you use their mail accounts with their mail servers, and prevent you from using others.', 'post-smtp' ) );
 
@@ -555,7 +556,8 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		printf( '<p id="godaddy_block"><span style="background-color:yellow"><b>%s</b>: %s</span></p>', $warning, $nonGodaddyDomainMessage );
 		/* Translators: Where (%1$s) is the SPF-info URL and (%2$s) is the name of the web host */
 		$godaddyCustomDomainMessage = sprintf( __( 'If you own this domain, make sure it has an <a href="%1$s">SPF record authorizing %2$s</a> as a relay, or you will have delivery problems.', 'post-smtp' ), 'http://www.mail-tester.com/spf/godaddy', 'GoDaddy' );
-		printf( '<p id="godaddy_spf_required"><span style="background-color:yellow"><b>%s</b>: %s</span></p>', $warning, $godaddyCustomDomainMessage );
+		$godaddy_note = __( 'Note: You may have delivery problems if you continue using the default outgoing mail server hostname.', 'post-smtp' );
+		printf( '<div id="godaddy_spf_required"><p><span style="background-color:yellow"><b>%s</b>: %s</span></p><p class="ps-default-host-name"><label>%s<label></p></div>', $warning, $godaddyCustomDomainMessage, $godaddy_note );
 	}
 
 	/**
