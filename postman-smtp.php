@@ -69,6 +69,32 @@ if ( ! function_exists( 'ps_fs' ) ) {
     do_action( 'ps_fs_loaded' );
 }
 
+function ps_fs_custom_connect_message_on_update(
+    $message,
+    $user_first_name,
+    $product_title,
+    $user_login,
+    $site_link,
+    $freemius_link
+) {
+    return sprintf(
+		'<div class="ps-optin-popup">' .
+        '<h1>' . __( 'Stay on the safe side', 'post-smtp' ) . '</h1>' .
+		'<p>'.__( 'Receive our plugin\'s alert in case of critical security and feature updates and allow non-sensitive diagnositic tracking.', 'post-smtp' ).'</p>' .
+		'</div>' . 
+		'<div style="clear: both;"></div>'
+    );
+}
+ 
+ps_fs()->add_filter('connect_message', 'ps_fs_custom_connect_message_on_update', 10, 6);
+
+function ps_fs_custom_icon() {
+    return dirname( __FILE__ ) . '/assets/images/icons/optin.png';
+}
+ 
+ps_fs()->add_filter( 'plugin_icon' , 'ps_fs_custom_icon' );
+
+
 /**
  * DO some check and Start Postman
  */

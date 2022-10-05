@@ -1,5 +1,86 @@
 @CHARSET "UTF-8";
 
+/* Opt-in popup Styling Starts */
+
+.toplevel_page_postman #fs_connect .fs-actions .button.button-primary {
+    background-color: #66AF3A;
+    border: #66AF3A;
+    font-weight: bold;
+    width: 240px;
+}
+
+.toplevel_page_postman #fs_connect .fs-terms, 
+.toplevel_page_postman #fs_connect .fs-actions,
+.toplevel_page_postman #fs_connect .fs-visual {
+    background: #fff;
+}
+
+.toplevel_page_postman #fs_connect {
+    box-shadow: 1px 5px 10px #b5b598;
+}
+
+.ps-optin-popup h1 {
+    color: #3A5EAF;
+    font-weight: bold;
+}
+
+.toplevel_page_postman .fs-site-icon,
+.toplevel_page_postman .fs-first, 
+.toplevel_page_postman .fs-second,
+.toplevel_page_postman .fs-connect-logo {
+    display: none;
+}
+
+.toplevel_page_postman .fs-plugin-icon {
+    border: none!important;
+}
+
+.toplevel_page_postman #skip_activation {
+    background: #fff;
+    border: none;
+    font-size: 15px!important;
+    color: #999;
+}
+
+.toplevel_page_postman .fs-visual {
+    float: left;
+    vertical-align: middle;
+}
+
+.toplevel_page_postman .ps-optin-popup {
+    float: left;
+    width: 315px;
+}
+
+.toplevel_page_postman #fs_connect .fs-visual .fs-plugin-icon {
+    position: unset;
+    top: 0px;
+    left: unset;
+    margin-left: 0px;
+    padding: 15px 10px;
+    text-align: center;
+}
+
+.toplevel_page_postman #fs_connect .fs-visual {
+    padding: 12px;
+    line-height: 0;
+    background: #fff;
+    height: 0px;
+    position: unset;
+}
+
+.toplevel_page_postman #fs_connect .fs-actions {
+    padding: 15px 40px;
+}
+
+.toplevel_page_postman #fs_connect .fs-actions .button.button-secondary {
+    float: right;
+    width: 145px;
+}
+
+
+/* Opt-in popup Styling Ends */
+
 /* Post SMTP Global Classes Starts */
 
 body.admin_page_postman-configuration_wizard,
