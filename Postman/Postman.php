@@ -145,7 +145,8 @@ class Postman {
 				'on_plugins_loaded',
 		) );
 
-        add_filter( 'extra_plugin_headers', [ $this, 'add_extension_headers' ] );
+		//Conflicting with backupbuddy, will be removed soon 
+        //add_filter( 'extra_plugin_headers', [ $this, 'add_extension_headers' ] );
 
 		// hook on the wp_loaded event
 		add_action( 'wp_loaded', array(
