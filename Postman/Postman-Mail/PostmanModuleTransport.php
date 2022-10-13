@@ -747,9 +747,9 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 		if ($selected) {
 			if ($socket->auth_crammd5 || $socket->auth_login || $socket->authPlain) {
 				array_push ( $overrideAuthItems, array (
-						'selected' => $passwordMode,
-						'name' => __ ( 'Password (requires username and password)', 'post-smtp' ),
-						'name' => $password_field,
+						'selected'	=> $passwordMode,
+						'name' 		=> $password_field,
+						'value'		=> 'password'
 				) );
 			}
 			if ($socket->auth_xoauth || $winningRecommendation ['auth'] == 'oauth2') {
