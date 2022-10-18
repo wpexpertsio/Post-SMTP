@@ -60,13 +60,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 			$config = PostmanOAuth2ConfigurationFactory::createConfig ( $this );
 		} else {
 			$config = PostmanBasicAuthConfigurationFactory::createConfig ( $this );
-		}
-		
-		// Google's autoloader will try and load this so we list it first
-		require_once 'PostmanGmailApiModuleZendMailTransport.php';
-		
-		// Gmail Client includes
-		require_once 'google-api-client/vendor/autoload.php';
+		}	
 		
 		// build the Gmail Client
 		$authToken = PostmanOAuthToken::getInstance ();
