@@ -220,10 +220,12 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	public function mailgun_api_key_callback() {
 		printf( '<input type="password" autocomplete="off" id="mailgun_api_key" name="postman_options[mailgun_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailgunApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getMailgunApiKey() ) ) : '', __( 'Required', 'post-smtp' ) );
 		print '<input type="button" id="toggleMailgunApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
+		print '<p><span class="postman_input_description">Follow this link to get an API Key from Mailgun: <a target="_blank" href="https://app.mailgun.com/app/account/security/api_keys">Get a Private API Key.</a></span></p>';
 	}
 
 	function mailgun_domain_name_callback() {
 		printf( '<input type="text" autocomplete="off" id="mailgun_domain_name" name="postman_options[mailgun_domain_name]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailgunDomainName() ? esc_attr( $this->options->getMailgunDomainName() ) : '', __( 'Required', 'post-smtp' ) );
+		print '<p><span class="postman_input_description"> Follow this link to get a Domain Name from Mailgun:<a target="_blank" href="https://app.mailgun.com/app/domains"> Get a Domain Name.</a></span></p>';
 	}
 
 	function mailgun_region_callback() {

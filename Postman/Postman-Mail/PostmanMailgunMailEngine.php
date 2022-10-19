@@ -3,12 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-require_once 'mailgun/mailgun.php';
-
-use Mailgun\Mailgun;
-use Mailgun\HttpClient\HttpClientConfigurator;
-use Mailgun\Hydrator\NoopHydrator;
-
+require_once 'Services/MailGun/Handler.php';
 
 if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 
@@ -26,7 +21,6 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		// the result
 		private $transcript;
 
-		private $api_endpoint;
 		private $apiKey;
 		private $domainName;
 		private $mailgunMessage;
@@ -56,128 +50,25 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		 * @see PostmanSmtpEngine::send()
 		 */
 		public function send( PostmanMessage $message ) {
+
+			if ( $this->logger->isDebug() ) {
+				$this->logger->debug( 'Creating Mailgun service with apiKey=' . $this->apiKey );
+			}
+
 			$options = PostmanOptions::getInstance();
-			$this->api_endpoint = ! is_null( $options->getMailgunRegion() ) ? 'https://api.eu.mailgun.net' : 'https://api.mailgun.net';
-
-			// add the Postman signature - append it to whatever the user may have set
-			if ( ! $options->isStealthModeEnabled() ) {
-				$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
-				$this->addHeader( 'X-Mailer', sprintf( 'Postman SMTP %s for WordPress (%s)', $pluginData ['version'], 'https://wordpress.org/plugins/post-smtp/' ) );
-			}
-
-			// add the headers - see http://framework.zend.com/manual/1.12/en/zend.mail.additional-headers.html
-			foreach ( ( array ) $message->getHeaders() as $header ) {
-				$this->logger->debug( sprintf( 'Adding user header %s=%s', $header ['name'], $header ['content'] ) );
-				$this->addHeader( $header ['name'], $header ['content'], true );
-			}
-
-			// if the caller set a Content-Type header, use it
-			$contentType = $message->getContentType();
-			if ( ! empty( $contentType ) ) {
-				$this->logger->debug( 'Adding content-type ' . $contentType );
-				$this->addHeader( 'Content-Type', $contentType );
-			}
-
-			// add the From Header
-			$sender = $message->getFromAddress();
-			{
-				$senderEmail = PostmanOptions::getInstance()->getMessageSenderEmail();
-				$senderName = $sender->getName();
-				assert( ! empty( $senderEmail ) );
-
-				$senderText = ! empty( $senderName ) ? $senderName : $senderEmail;
-				$this->mailgunMessage ['from'] = "{$senderText} <{$senderEmail}>";
-				// now log it
-				$sender->log( $this->logger, 'From' );
-			}
-
-			// add the Sender Header, overriding what the user may have set
-			$this->addHeader( 'Sender', $options->getEnvelopeSender() );
-
-			// add the to recipients
-			$recipients = array();
-			foreach ( ( array ) $message->getToRecipients() as $recipient ) {
-				$recipient->log( $this->logger, 'To' );
-				$recipients[] = $recipient->getEmail();
-			}
-			$this->mailgunMessage['to'] = $recipients;
-
-			// add the cc recipients
-			$recipients = array();
-			foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
-				$recipient->log( $this->logger, 'Cc' );
-				$recipients[] = $recipient->getEmail();
-			}
-			$this->mailgunMessage['cc'] = implode( ',', $recipients );
-
-			// add the bcc recipients
-			$recipients = array();
-			foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
-				$recipient->log( $this->logger, 'Bcc' );
-				$recipients[] = $recipient->getEmail();
-			}
-			$this->mailgunMessage['bcc'] = implode( ',', $recipients );
-
-			// add the reply-to
-			$replyTo = $message->getReplyTo();
-			// $replyTo is null or a PostmanEmailAddress object
-			if ( isset( $replyTo ) ) {
-				$this->addHeader( 'reply-to', $replyTo->format() );
-			}
-
-			// add the date
-			$date = $message->getDate();
-			if ( ! empty( $date ) ) {
-				$this->addHeader( 'date', $message->getDate() );
-			}
-
-			// add the messageId
-			$messageId = $message->getMessageId();
-			if ( ! empty( $messageId ) ) {
-				$this->addHeader( 'message-id', $messageId );
-			}
-
-			// add the subject
-			if ( null !== $message->getSubject() ) {
-				$this->mailgunMessage ['subject'] = $message->getSubject();
-			}
-
-			// add the message content
-			{
-				$textPart = $message->getBodyTextPart();
-			if ( ! empty( $textPart ) ) {
-				$this->logger->debug( 'Adding body as text' );
-				$this->mailgunMessage ['text'] = $textPart;
-			}
-					$htmlPart = $message->getBodyHtmlPart();
-			if ( ! empty( $htmlPart ) ) {
-				$this->logger->debug( 'Adding body as html' );
-				$this->mailgunMessage ['html'] = $htmlPart;
-			}
-			}
-
-			// add attachments
-			$this->logger->debug( 'Adding attachments' );
-			$this->addAttachmentsToMail( $message );
+			$region = $options->getMailgunRegion();
+			
+			$mailgun  = new PostmanMailGun( $this->apiKey, $region, $this->domainName );
+			$this->get_email_body( $message );
+			$body       = $this->mailgunMessage;
 
 			$result = array();
 			try {
-				if ( $this->logger->isDebug() ) {
-					$this->logger->debug( 'Creating Mailgun service with apiKey=' . $this->apiKey );
-				}
-
+				$response = $mailgun->send( $body );
 				// send the message
 				if ( $this->logger->isDebug() ) {
 					$this->logger->debug( 'Sending mail' );
 				}
-
-				$configurator = new HttpClientConfigurator();
-				$configurator->setEndpoint( $this->api_endpoint . '/v3/'. $this->domainName .'/messages');
-				$configurator->setApiKey($this->apiKey);
-				$mg = new Mailgun($configurator, new NoopHydrator());
-
-				// Make the call to the client.
-				$result = $this->processSend( $mg );
 
 				if ( $this->logger->isInfo() ) {
 					$this->logger->info( sprintf( 'Message %d accepted for delivery', PostmanState::getInstance()->getSuccessfulDeliveries() + 1 ) );
@@ -191,31 +82,6 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 				$this->transcript .= print_r( $this->mailgunMessage, true );
 				throw $e;
-			}
-		}
-
-
-		private function processSend( $mg ) {
-
-			if ( count( $this->mailgunMessage['to'] ) <= 1 ) {
-
-				return $mg->messages()->send( $this->domainName, array_filter( $this->mailgunMessage ) );
-			} else {
-				$chunks = array_chunk( $this->mailgunMessage['to'], 1000, true );
-
-				$result = array();
-				foreach ( $chunks as $key => $emails ) {
-					$this->mailgunMessage['to'] = $emails;
-					$recipient_variables = $this->getRecipientVariables( $emails );
-					$this->mailgunMessage['recipient-variables'] = $recipient_variables;
-
-					$result[] = $mg->messages()->send( $this->domainName, array_filter( $this->mailgunMessage ) );
-
-					// Don't have a reason just wait a bit before sending the next chunk
-					sleep(2);
-				}
-
-				return $result;
 			}
 		}
 
@@ -267,6 +133,114 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		// return the SMTP session transcript
 		public function getTranscript() {
 			return $this->transcript;
+		}
+
+		private function get_email_body( $message ) {
+
+			if( is_a( $message, 'PostmanMessage' ) ) {
+				$options = PostmanOptions::getInstance();
+
+				// add the From Header
+				$sender = $message->getFromAddress();
+				{
+					$senderEmail = $options->getMessageSenderEmail();
+					$senderName = $sender->getName();
+					assert( ! empty( $senderEmail ) );
+
+					$senderText = ! empty( $senderName ) ? $senderName : $senderEmail;
+					$this->mailgunMessage ['from'] = "{$senderText} <{$senderEmail}>";
+					// now log it
+					$sender->log( $this->logger, 'From' );
+				}
+
+				// add the to recipients
+				$recipients = array();
+				foreach ( ( array ) $message->getToRecipients() as $recipient ) {
+					$recipient->log( $this->logger, 'To' );
+					$recipients[] = $recipient->getEmail();
+				}
+				$this->mailgunMessage['to'] = $recipients;
+
+				// add the subject
+				if ( null !== $message->getSubject() ) {
+					$this->mailgunMessage ['subject'] = $message->getSubject();
+				}
+
+				{ // add the message content
+					$textPart = $message->getBodyTextPart();
+					if ( ! empty( $textPart ) ) {
+						$this->logger->debug( 'Adding body as text' );
+						$this->mailgunMessage ['text'] = $textPart;
+					}
+					
+					$htmlPart = $message->getBodyHtmlPart();
+					if ( ! empty( $htmlPart ) ) {
+						$this->logger->debug( 'Adding body as html' );
+						$this->mailgunMessage ['html'] = $htmlPart;
+					}
+				}
+
+				// add the reply-to
+				$replyTo = $message->getReplyTo();
+				// $replyTo is null or a PostmanEmailAddress object
+				if ( isset( $replyTo ) ) {
+					$this->addHeader( 'reply-to', $replyTo->format() );
+				}
+
+				// add the Postman signature - append it to whatever the user may have set
+				if ( ! $options->isStealthModeEnabled() ) {
+					$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
+					$this->addHeader( 'X-Mailer', sprintf( 'Postman SMTP %s for WordPress (%s)', $pluginData ['version'], 'https://wordpress.org/plugins/post-smtp/' ) );
+				}
+
+				// add the headers - see http://framework.zend.com/manual/1.12/en/zend.mail.additional-headers.html
+				foreach ( ( array ) $message->getHeaders() as $header ) {
+					$this->logger->debug( sprintf( 'Adding user header %s=%s', $header ['name'], $header ['content'] ) );
+					$this->addHeader( $header ['name'], $header ['content'], true );
+				}
+
+				// add the messageId
+				$messageId = $message->getMessageId();
+				if ( ! empty( $messageId ) ) {
+					$this->addHeader( 'message-id', $messageId );
+				}
+
+				// if the caller set a Content-Type header, use it
+				$contentType = $message->getContentType();
+				if ( ! empty( $contentType ) ) {
+					$this->logger->debug( 'Adding content-type ' . $contentType );
+					$this->addHeader( 'Content-Type', $contentType );
+				}
+
+				// add the cc recipients
+				$recipients = array();
+				foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
+					$recipient->log( $this->logger, 'Cc' );
+					$recipients[] = $recipient->getEmail();
+				}
+				$this->mailgunMessage['cc'] = implode( ',', $recipients );
+
+				// add the bcc recipients
+				$recipients = array();
+				foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
+					$recipient->log( $this->logger, 'Bcc' );
+					$recipients[] = $recipient->getEmail();
+				}
+				$this->mailgunMessage['bcc'] = implode( ',', $recipients );
+				
+				// add attachments
+				$this->logger->debug( 'Adding attachments' );
+				$this->addAttachmentsToMail( $message );
+
+				// add the date
+				$date = $message->getDate();
+				if ( ! empty( $date ) ) {
+					$this->addHeader( 'date', $message->getDate() );
+				}
+
+				// add the Sender Header, overriding what the user may have set
+				$this->addHeader( 'Sender', $options->getEnvelopeSender() );
+			}
 		}
 	}
 }

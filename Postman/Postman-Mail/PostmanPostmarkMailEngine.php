@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if( !class_exists( 'PostmanPostmarkMailEngine' ) ):
 
-require_once 'Services/PostMark/Handler.php'; 
+require_once 'Services/PostMark/Handler.php';
 
 class PostmanPostmarkMailEngine implements PostmanMailEngine {
 
