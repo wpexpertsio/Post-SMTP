@@ -126,7 +126,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			$mainPostmanSettingsPage = add_menu_page( $pageTitle, $pluginName, Postman::MANAGE_POSTMAN_CAPABILITY_NAME, $uniqueId, $pageOptions, 'dashicons-email' );
 			
 			//To change the text of top level menu
-			add_submenu_page( $uniqueId, $pageTitle, 'Dashboard', Postman::MANAGE_POSTMAN_CAPABILITY_NAME, $uniqueId, $pageOptions );
+			add_submenu_page( $uniqueId, $pageTitle, __( 'Dashboard', 'post-smtp' ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, $uniqueId, $pageOptions );
 
 			// When the plugin options page is loaded, also load the stylesheet
 			add_action( 'admin_print_styles-' . $mainPostmanSettingsPage, array(
