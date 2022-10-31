@@ -91,7 +91,6 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
         $client->setIncludeGrantedScopes( true );
         $client->setScopes( array( Gmail::MAIL_GOOGLE_COM ) );
         $client->setRedirectUri( $this->getScribe()->getCallbackUrl() );
-		$client->setState( 'https://webhook.site/a59c76b3-4713-4cb5-a75d-1aee076fd2a8' );
 		
 		try {
 			
