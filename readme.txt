@@ -290,6 +290,21 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
+= 2.2-beta.1 - 2022-10-31 =
+* **NEW**
+* Added New Socket/ Email Service Postmark
+* Added New Socket/ Email Service SparkPost
+* **IMPROVEMENTS**
+* SSRF Prevention 
+* PHP 8.0+ Compatibility Added
+* SQL Warning Removed
+* MailGun SDK Updated to Latest Version
+* Compatibility with BackupBuddy added
+* **FIXES**
+* Multisite Plugin Update
+* Additional Headers were not saved properly in some cases
+
+
 = 2.1.10 - 2022-10-10 =
 * **FIXES**
 * Avoid redirection to wizard on activation
