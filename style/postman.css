@@ -1118,3 +1118,7 @@ th#date {
     background: #5fb37c;
     color: #fff;
 }
+
+#fs_connect .fs-box-container {
+    background: white !important;
+}
