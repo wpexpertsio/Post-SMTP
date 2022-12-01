@@ -254,6 +254,15 @@ if( !class_exists( 'PostmanSparkPostTransport' ) ):
             printf ( '<label for="api_key">%s</label>', __ ( 'API Key', 'post-smtp' ) );
             print '<br />';
             print $this->sparkpost_api_key_callback();
+            print '
+            <div class="sparkpost-documentation">
+                <div>
+                <iframe width="300" height="200" src="https://www.youtube.com/embed/-uVVGvsAZ_E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div>
+                    <a href="https://postmansmtp.com/documentation/#configure-sparkpost-integration" target="_blank">Stuck in Setup?</a>
+                </div>
+            </div>';
             print '</section>';
         }
 
