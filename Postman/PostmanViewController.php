@@ -342,23 +342,12 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					</div>
 					<div>
 						<?php
-							if ( ! $this->options->isNew() ) {
-
-								$purgeLinkPattern = '
-								<a href="%1$s">
-									<img src="'.esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ).'" width="15" />
-									%2$s
-								</a>';
 							
-							} 
-							else {
-
-								$purgeLinkPattern = '
+							$purgeLinkPattern = '
+							<a href="%1$s">
 								<img src="'.esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ).'" width="15" />
 								%2$s
-								';
-
-							}
+							</a>';
 
 							$importTitle = __( 'Import', 'post-smtp' );
 							$exportTile = __( 'Export', 'post-smtp' );
