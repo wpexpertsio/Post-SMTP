@@ -245,6 +245,27 @@ if( !class_exists( 'PostmanPostmarkTransport' ) ):
         }
 
         /**
+         * (non-PHPdoc)
+         *
+         * @see PostmanTransport::getMisconfigurationMessage()
+         * @since 2.2
+         * @version 1.0
+         */
+        protected function validateTransportConfiguration() {
+            $messages = parent::validateTransportConfiguration ();
+            $apiKey = $this->options->getPostmarkApiKey ();
+            if (empty ( $apiKey )) {
+                array_push ( $messages, __ ( 'API Key can not be empty', 'post-smtp' ) . '.' );
+                $this->setNotConfiguredAndReady ();
+            }
+            if (! $this->isSenderConfigured ()) {
+                array_push ( $messages, __ ( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
+                $this->setNotConfiguredAndReady ();
+            }
+            return $messages;
+        }
+
+        /**
          * @since 2.2
          * @version 1.0
          */
@@ -255,6 +276,18 @@ if( !class_exists( 'PostmanPostmarkTransport' ) ):
             print '<br />';
             print $this->postmark_api_key_callback();
             print '</section>';
+        }
+
+        /**
+         * Returns true, to prevent from errors because it's default Module Transport.
+         * 
+         * @since 2.1.8
+         * @version 1.0
+         */
+        public function has_granted() {
+
+            return true;
+
         }
 
         /**

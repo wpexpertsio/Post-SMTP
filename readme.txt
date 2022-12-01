@@ -1,10 +1,10 @@
-=== Post SMTP Mailer/Email Log ===
+=== Post SMTP Mailer/Email Log - Best Mail SMTP For WP ===
 Plugin URI: https://wpexperts.io/
 Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 6.0.2
-Stable tag: 2.1.9
+Stable tag: 2.1.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,7 +28,7 @@ Post SMTP replaces the default WordPress SMTP library, PHPMailer, with the heavy
 * The built-in Email log is an invaluable resource for diagnosing problems with emails.
 * OAuth 2.0 increase the security and protection of email password by discouraging the idea of storing your email password in the WordPress database where it might be found.
 
-Even hosts that block the standard SMTP ports, like GoDaddy or Bluehost, canÃ¢â‚¬â„¢t stop your email as Post SMTP can deliver via HTTPS if it canÃ¢â‚¬â„¢t use SMTP.
+Even hosts that block the standard SMTP ports, like GoDaddy or Bluehost, can't stop your email as Post SMTP can deliver via HTTPS if it can't use SMTP.
 
 https://www.youtube.com/watch?v=mXDEEE9jnfw
 
@@ -44,6 +44,12 @@ https://www.youtube.com/watch?v=mXDEEE9jnfw
 * Supports the proprietary OAuth 2.0 implementations of Gmail, Hotmail and Yahoo
 * Fire-and-forget delivery continues even if you change your password.
 * [Set up an app password](https://youtu.be/OX2g6QB6LWI) in your Google account.
+
+= Slack notifications =
+Receive Post SMTP notifications on your Slack app. If you approve ["Post SMTP Notifications" app for Slack](https://slack.postmansmtp.com/), you will be notified on any selected workplace about your failed emails.
+
+= Post SMTP Notification Chrome Extension =
+[Post SMTP Notification Chrome Extension](https://chrome.google.com/webstore/detail/post-smtp-notifications/npklmbkpbknkmbohdbpikeidiaekjoch?hl=en) - Install Post SMTP's official Chrome Extension to receive notifications of failed emails on your WordPress website. 
 
 = Technical Documentation =
 You can read our [Post SMTP technical documentation](https://postmansmtp.com/documentation/) for more details including setting up the plugin and configuring other SMTP options. Also, stay up-to-date on new plugin updates, changes, modifications, and related news by subscribing to the [Post SMTP blog](https://postmansmtp.com/blog/).
@@ -76,7 +82,7 @@ In essence, SMTP is a set of commands that authenticates and directs the transfe
 [Better Email Logger Pro extension](https://postmansmtp.com/extensions/the-better-email/) allows you to design email marketing campaigns and improve email deliverability for your WordPress site.
 
 **Mail Control Pro Extension**
-[Mail Control Pro Extension](https://postmansmtp.com/extensions/post-smtp-mail-control/) allows you to control Post SMTPÃ¢â‚¬â„¢s email actions like sending email alerts to authors, webmasters, and new users. 
+[Mail Control Pro Extension](https://postmansmtp.com/extensions/post-smtp-mail-control/) allows you to control Post SMTP's email actions like sending email alerts to authors, webmasters, and new users. 
 
 = Post SMTP Membership Plans = 
 [Post SMTP membership plans](https://postmansmtp.com/membership-plan/) offer access to all pro extensions along with other benefits including 1-year extension updates and support, Email Reporting, Logging, and Tracking, all other SMTP Services and a 30-day money-back guarantee.
@@ -110,7 +116,6 @@ SendinBlue is an effective and great email software for Small to Medium business
 * [SendPress Newsletters](https://wordpress.org/plugins/sendpress/)
 * [WP HTML Mail](https://wordpress.org/plugins/wp-html-mail/)
 * [Email Templates](https://wordpress.org/plugins/email-templates/)
-* [WordPress Leads](https://wordpress.org/plugins/leads/)
 * .. and every other plugin that uses the WordPress API [wp_mail](https://codex.wordpress.org/Function_Reference/wp_mail) to send mail!
 
 = Requirements =
@@ -284,6 +289,30 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 
 == Changelog ==
+
+= 2.2-beta.1 - 2022-10-31 =
+* **NEW**
+* Added New Socket/ Email Service Postmark
+* Added New Socket/ Email Service SparkPost
+* **IMPROVEMENTS**
+* SSRF Prevention 
+* PHP 8.0+ Compatibility Added
+* SQL Warning Removed
+* MailGun SDK Updated to Latest Version
+* Compatibility with BackupBuddy added
+* **FIXES**
+* Multisite Plugin Update
+* Additional Headers were not saved properly in some cases
+
+
+= 2.1.10 - 2022-10-10 =
+* **FIXES**
+* Avoid redirection to wizard on activation
+* Issue in resend emails 
+* Made backend setting fields visible
+* **IMPROVEMENTS**
+* Email host message
+* Sendgrid message id to prevent spam emails
 
 = 2.1.9 - 2022-09-9 =
 * **FIX**

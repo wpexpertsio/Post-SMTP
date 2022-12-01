@@ -136,7 +136,7 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
             $email->addBccs($bccEmails);
 
             // add the messageId
-			$messageId = $message->getMessageId();
+			$messageId = '<' . $message->getMessageId() . '>';
 			if ( ! empty( $messageId ) ) {
 				$email->addHeader( 'message-id', $messageId );
 			}
