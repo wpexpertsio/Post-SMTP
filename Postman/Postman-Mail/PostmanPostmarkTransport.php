@@ -257,7 +257,7 @@ if( !class_exists( 'PostmanPostmarkTransport' ) ):
             print '
             <div class="postmark-documentation">
                 <div>
-                <iframe width="300" height="200" src="https://www.youtube.com/embed/-uVVGvsAZ_E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe width="300" height="200" src="https://www.youtube.com/embed/TBQbO1Te210" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
                 <div>
                     <a href="https://postmansmtp.com/documentation/#configure-postmark-integration" target="_blank">Stuck in Setup?</a>
