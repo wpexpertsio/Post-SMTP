@@ -403,8 +403,8 @@ class PostmanSettingsRegistry {
 		printf( '<select id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]">', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::RUN_MODE );
 		$currentKey = $this->options->getRunMode();
 		$this->printSelectOption( _x( 'Log Email and Send', 'When the server is online to the public, this is "Production" mode', 'post-smtp' ), PostmanOptions::RUN_MODE_PRODUCTION, $currentKey );
-		$this->printSelectOption( __( 'Log Email and Delete', 'post-smtp' ), PostmanOptions::RUN_MODE_LOG_ONLY, $currentKey );
-		$this->printSelectOption( __( 'Delete All Emails', 'post-smtp' ), PostmanOptions::RUN_MODE_IGNORE, $currentKey );
+		$this->printSelectOption( __( 'Log only', 'post-smtp' ), PostmanOptions::RUN_MODE_LOG_ONLY, $currentKey );
+		$this->printSelectOption( __( 'No Action', 'post-smtp' ), PostmanOptions::RUN_MODE_IGNORE, $currentKey );
 		printf( '</select><br/><span class="postman_input_description">%s</span>', $inputDescription );
 	}
 
