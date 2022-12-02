@@ -111,24 +111,47 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			 *        	subject, message, headers, and attachments values.
 			 */
 			$atts = apply_filters( 'wp_mail', compact( 'to', 'subject', 'message', 'headers', 'attachments' ) );
-			if ( isset( $atts ['to'] ) ) {
-				$to = $atts ['to'];
+
+			/**
+			 * Filters whether to preempt sending an email.
+			 *
+			 * Returning a non-null value will short-circuit {@see wp_mail()}, returning
+			 * that value instead. A boolean return value should be used to indicate whether
+			 * the email was successfully sent.
+			 *
+			 * @since 2.2.1
+			 *
+			 * @param null|bool $return Short-circuit return value.
+			 * @param array     $atts {
+			 *     Array of the `wp_mail()` arguments.
+			 *
+			 *     @type string|string[] $to          Array or comma-separated list of email addresses to send message.
+			 *     @type string          $subject     Email subject.
+			 *     @type string          $message     Message contents.
+			 *     @type string|string[] $headers     Additional headers.
+			 *     @type string|string[] $attachments Paths to files to attach.
+			 * }
+			 */
+			$pre_wp_mail = apply_filters( 'pre_wp_mail', null, $atts );
+
+			if ( isset( $pre_wp_mail ['to'] ) ) {
+				$to = $pre_wp_mail ['to'];
 			}
 
-			if ( isset( $atts ['subject'] ) ) {
-				$subject = $atts ['subject'];
+			if ( isset( $pre_wp_mail ['subject'] ) ) {
+				$subject = $pre_wp_mail ['subject'];
 			}
 
-			if ( isset( $atts ['message'] ) ) {
-				$message = $atts ['message'];
+			if ( isset( $pre_wp_mail ['message'] ) ) {
+				$message = $pre_wp_mail ['message'];
 			}
 
-			if ( isset( $atts ['headers'] ) ) {
-				$headers = $atts ['headers'];
+			if ( isset( $pre_wp_mail ['headers'] ) ) {
+				$headers = $pre_wp_mail ['headers'];
 			}
 
-			if ( isset( $atts ['attachments'] ) ) {
-				$attachments = $atts ['attachments'];
+			if ( isset( $pre_wp_mail ['attachments'] ) ) {
+				$attachments = $pre_wp_mail ['attachments'];
 			}
 
 			if ( ! is_array( $attachments ) ) {
