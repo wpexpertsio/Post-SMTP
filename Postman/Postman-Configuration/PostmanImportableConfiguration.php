@@ -415,17 +415,23 @@ if (! class_exists ( 'PostmanWpMailBankOptions' )) {
 						'SELECT meta_value FROM ' . $wpdb->prefix . 'mail_bank_meta WHERE meta_key = %s', 'email_configuration'
 					), ARRAY_A
 				);
-				$mb_email_configuration_data = unserialize( $mb_email_configuration_data['meta_value'] );
+
+				if( isset( $mb_email_configuration_data['meta_value'] ) ) {
+
+					$mb_email_configuration_data = unserialize( $mb_email_configuration_data['meta_value'] );
 				
-				$this->options [self::MESSAGE_SENDER_EMAIL] = $mb_email_configuration_data[ self::MESSAGE_SENDER_EMAIL ];
-				$this->options [self::MESSAGE_SENDER_NAME] = $mb_email_configuration_data[ self::MESSAGE_SENDER_NAME ];
-				$this->options [self::HOSTNAME] = $mb_email_configuration_data[ self::HOSTNAME ];
-				$this->options [self::PORT] = $mb_email_configuration_data[ self::PORT ];
-				$this->options [self::ENCRYPTION_TYPE] = $mb_email_configuration_data[ self::ENCRYPTION_TYPE ];
-				$this->options [self::AUTHENTICATION_TYPE] = $mb_email_configuration_data[ self::AUTHENTICATION_TYPE ];
-				$this->options [self::USERNAME] = $mb_email_configuration_data[ self::USERNAME ];
-				$this->options [self::PASSWORD] = base64_decode( $mb_email_configuration_data[ self::PASSWORD ] );
-				$this->options [self::MAILER_TYPE] = $mb_email_configuration_data[ self::MAILER_TYPE ];
+					$this->options [self::MESSAGE_SENDER_EMAIL] = $mb_email_configuration_data[ self::MESSAGE_SENDER_EMAIL ];
+					$this->options [self::MESSAGE_SENDER_NAME] = $mb_email_configuration_data[ self::MESSAGE_SENDER_NAME ];
+					$this->options [self::HOSTNAME] = $mb_email_configuration_data[ self::HOSTNAME ];
+					$this->options [self::PORT] = $mb_email_configuration_data[ self::PORT ];
+					$this->options [self::ENCRYPTION_TYPE] = $mb_email_configuration_data[ self::ENCRYPTION_TYPE ];
+					$this->options [self::AUTHENTICATION_TYPE] = $mb_email_configuration_data[ self::AUTHENTICATION_TYPE ];
+					$this->options [self::USERNAME] = $mb_email_configuration_data[ self::USERNAME ];
+					$this->options [self::PASSWORD] = base64_decode( $mb_email_configuration_data[ self::PASSWORD ] );
+					$this->options [self::MAILER_TYPE] = $mb_email_configuration_data[ self::MAILER_TYPE ];
+
+				}
+
 			}
 			
 		}
