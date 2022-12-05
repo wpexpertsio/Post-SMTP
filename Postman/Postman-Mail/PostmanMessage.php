@@ -395,6 +395,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		 * Add the headers that were processed in processHeaders()
 		 * Zend requires that several headers are specially handled.
 		 *
+		 * @since 
 		 * @param mixed           $name
 		 * @param mixed           $value
 		 * @param Postman_Zend_Mail $mail
@@ -449,11 +450,10 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 					$this->setSubject( $content );
 					break;
 				case 'reply-to' :
+					
 					$this->logProcessHeader( 'Reply-To', $name, $content );
-                    $pattern = '/[a-z0-9_\-\+\.]+@[a-z0-9\-]+\.([a-z]{2,4})(?:\.[a-z]{2})?/i';
-                    preg_match_all($pattern, $content, $matches);
 
-                    if ( isset( $matches[0] ) && isset( $matches[0][0] ) && filter_var( $matches[0][0], FILTER_VALIDATE_EMAIL ) ) {
+                    if ( filter_var( $content, FILTER_VALIDATE_EMAIL ) ) {
                         $this->setReplyTo( $content );
                     }
 
