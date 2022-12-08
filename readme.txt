@@ -3,14 +3,16 @@ Plugin URI: https://wpexperts.io/
 Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
-Tested up to: 6.0.2
-Stable tag: 2.1.10
+Tested up to: 6.1.1
+Stable tag: 2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Send, log, and get notified when your emails are failing. Plus a unique option for secondary backup SMTP so your emails will never stop. Supports everything: SMTP, Gmail, Mailgun, office365, SendGrid, Elastic Email and OAuth 2.0!
 
 == Description ==
+
+[Live Demo](https://www.tastewp.com/plugins/post-smtp) | [Extensions](https://postmansmtp.com/extension/)
 
 = WordPress Mail SMTP Plugin =
 
@@ -102,6 +104,12 @@ SendGrid has a free SMTP plan that you can use to send up to 100 emails per day.
 
 * **Sendinblue API for sending any email** (requires a [Sendinblue](https://www.sendinblue.com/) account and PHP 5.3)
 SendinBlue is an effective and great email software for Small to Medium businesses. You can build customer relationships with an all-in-one digital marketing toolbox. Their free plan allows you to send up to 300 emails per day.
+
+* **PostMark API for sending any email** (requires a [PostMark](https://postmarkapp.com/) account and PHP 5.3)
+Postmark is a cloud-based email management software designed to help businesses handle and streamline the delivery of emails.
+
+* **SparkPost API for sending any email** (requires a [SparkPost](https://www.sparkpost.com/) account and PHP 5.3)
+SparkPost is a cloud-based email analytics solution designed to help businesses of all sizes optimize email performance, deliverability, engagement, and more.
 
 = Compatibility & Support =
 * [Contact Form 7](https://wordpress.org/plugins/contact-form-7/)
@@ -286,26 +294,21 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 1. Diagnostic Information screen
 1. Email Log Filter
 
-
-
 == Changelog ==
 
-= 2.2-beta.2 - 2022-11-02 =
- *NEW**
+= 2.2 - 2022-12-08 =
+* **NEW**
 * Added New Socket/ Email Service Postmark
 * Added New Socket/ Email Service SparkPost
- *IMPROVEMENTS**
-* SSRF Prevention 
-* PHP 8.0+ Compatibility Added
+* **IMPROVEMENTS**
+* SSRF Prevention
 * SQL Warning Removed
 * MailGun SDK Updated to Latest Version
 * Compatibility with BackupBuddy added
-* Freemius SDK Updated
- *FIXES**
+* **FIXES**
 * Multisite Plugin Update
 * Additional Headers were not saved properly in some cases
 * Import Button was not working in some cases
-
 
 = 2.1.10 - 2022-10-10 =
 * **FIXES**
