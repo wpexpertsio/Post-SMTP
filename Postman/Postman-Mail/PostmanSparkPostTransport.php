@@ -16,7 +16,7 @@ if( !class_exists( 'PostmanSparkPostTransport' ) ):
         const SLUG = 'sparkpost_api';
         const PORT = 587;
         const HOST = 'smtp.sparkpostmail.com';
-        const PRIORITY = 8000;
+        const PRIORITY = 45000;
         const SPARKPOST_AUTH_OPTIONS = 'postman_sparkpost_auth_options';
         const SPARKPOST_AUTH_SECTION = 'postman_sparkpost_auth_section';
 
