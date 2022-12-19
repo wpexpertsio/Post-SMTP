@@ -736,9 +736,9 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 				$noAuthMode = true;
 			}
 		} else {
-			if ($winningRecommendation ['display_auth'] == 'password') {
+			if ( isset( $winningRecommendation ['display_auth'] ) && $winningRecommendation ['display_auth'] == 'password') {
 				$passwordMode = true;
-			} elseif ($winningRecommendation ['display_auth'] == 'oauth2') {
+			} elseif ( isset( $winningRecommendation ['display_auth'] ) && $winningRecommendation ['display_auth'] == 'oauth2') {
 				$oauth2Mode = true;
 			} else {
 				$noAuthMode = true;
