@@ -16,7 +16,7 @@ if( !class_exists( 'PostmanPostmarkTransport' ) ):
         const SLUG = 'postmark_api';
         const PORT = 587;
         const HOST = 'smtp.postmarkapp.com';
-        const PRIORITY = 587;
+        const PRIORITY = 44000;
         const POSTMARK_AUTH_OPTIONS = 'postman_postmark_auth_options';
         const POSTMARK_AUTH_SECTION = 'postman_postmark_auth_section';
 

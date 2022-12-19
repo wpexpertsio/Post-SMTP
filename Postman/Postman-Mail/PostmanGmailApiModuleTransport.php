@@ -17,7 +17,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	const PORT = 443;
 	const HOST = 'www.googleapis.com';
 	const ENCRYPTION_TYPE = 'ssl';
-	const PRIORITY = 27000;
+	const PRIORITY = 49000;
 	public function __construct($rootPluginFilenameAndPath) {
 		parent::__construct ( $rootPluginFilenameAndPath );
 		

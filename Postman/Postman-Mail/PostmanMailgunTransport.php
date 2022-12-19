@@ -14,7 +14,7 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	const PORT = 443;
 	const HOST = 'api.mailgun.net';
 	const EU_REGION = 'api.eu.mailgun.net';
-	const PRIORITY = 8000;
+	const PRIORITY = 47000;
 	const MAILGUN_AUTH_OPTIONS = 'postman_mailgun_auth_options';
 	const MAILGUN_AUTH_SECTION = 'postman_mailgun_auth_section';
 
