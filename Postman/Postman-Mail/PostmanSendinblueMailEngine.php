@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if( !class_exists( 'PostmanSendinblueMailEngine' ) ):
     
-require 'sendinblue/vendor/autoload.php'; 
+require 'Services/Sendinblue/Handler.php'; 
 
 class PostmanSendinblueMailEngine implements PostmanMailEngine {
 
@@ -79,15 +79,12 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
         $options = PostmanOptions::getInstance();
         //Sendinblue preparation
         if ( $this->logger->isDebug() ) {
-        $this->logger->debug( 'Creating SendGrid service with apiKey=' . $this->apiKey );
+
+            $this->logger->debug( 'Creating SendGrid service with apiKey=' . $this->apiKey );
+
         }
-        $config = SendinBlue\Client\Configuration::getDefaultConfiguration()->setApiKey('api-key', $this->api_key);
-        $sendSmtpEmail = new \SendinBlue\Client\Model\SendSmtpEmail();
-        $apiInstance = new SendinBlue\Client\Api\TransactionalEmailsApi(
-        new GuzzleHttp\Client(),
-        $config
-        );
-        
+
+        $sendinblue = new PostmanSendinblue( $this->api_key );
         $sender = $message->getFromAddress();
         $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
         $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
@@ -251,7 +248,7 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
                 $this->logger->debug( 'Sending mail' );
             }
 
-            $response = $apiInstance->sendTransacEmail($sendSmtpEmail);
+            $response = $sendinblue->send( $sendSmtpEmail );
             
             $this->transcript = print_r( $response, true );
             $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
