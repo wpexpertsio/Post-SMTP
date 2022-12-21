@@ -103,8 +103,22 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			$fromHeader = $this->addFrom( $message, $mail );
 			$fromHeader->log( $this->logger, 'From' );
 
-			// add the Sender Header, overriding what the user may have set
-			$mail->addHeader( 'Sender', $this->transport->getFromEmailAddress(), false );
+			$sender = $this->transport->getFromEmailAddress();
+
+			/**
+			 * If Sender and From are not same thn ADD Sender, otherwise do not add Sender
+			 * From RFC 2822 Section 3.6.2: https://www.rfc-editor.org/rfc/rfc2822#section-3.6.2
+			 * 
+			 * @since 2.3.0
+			 */
+			if( !$this->is_from_and_sender_same( $message, $sender ) ) {
+
+				// add the Sender Header, overriding what the user may have set
+				$mail->addHeader( 'Sender', $sender, false );
+
+			} 
+
+			
 			// from RFC 5321: http://tools.ietf.org/html/rfc5321#section-4.4
 			// A message-originating SMTP system SHOULD NOT send a message that
 			// already contains a Return-path header field.
@@ -243,6 +257,31 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 		// return the SMTP session transcript
 		public function getTranscript() {
 			return $this->transcript;
+		}
+
+
+		/**
+		 * Check Whather, From And Sender Are Same
+		 * 
+		 * @param PostmanMessage $message
+		 * @param String $sender
+		 * @since 2.3.0
+		 * @version 1.0.0
+		 */
+		public function is_from_and_sender_same( PostmanMessage $message, $sender = '' ) {
+
+			$sender = empty( $sender ) ? $this->transport->getEnvelopeFromEmailAddress() : $sender;
+			$from = $message->getFromAddress();
+			$from_email = $from->getEmail();
+
+			if( $sender == $from_email ) {
+
+				return true;
+
+			}
+
+			return false;
+
 		}
 	}
 }
