@@ -3,6 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
+use \PostSMTP\Vendor\Google_Client;
+use \PostSMTP\Vendor\Google\Service\Gmail;
+
 require_once 'PostmanModuleTransport.php';
 
 /**
@@ -64,28 +67,62 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		
 		// Google's autoloader will try and load this so we list it first
 		require_once 'PostmanGmailApiModuleZendMailTransport.php';
-		
-		// Gmail Client includes
-		require_once 'google-api-client/vendor/autoload.php';
+
+		//Load Google Client API
+        require_once 'libs/vendor/autoload.php';
 		
 		// build the Gmail Client
 		$authToken = PostmanOAuthToken::getInstance ();
-		$client = new Google_Client ();
-		$client->setClientId ( $this->options->getClientId () );
-		$client->setClientSecret ( $this->options->getClientSecret () );
-		$client->setRedirectUri ( '' );
+		$client = new Google_Client(
+            array(
+                'client_id'     => $this->options->getClientId(),
+                'client_secret' => $this->options->getClientSecret(),
+                'redirect_uris' => array(
+                    $this->getScribe()->getCallbackUrl(),
+                ),
+            )
+        );
+		
 		// rebuild the google access token
 		$token = new stdClass ();
-		$token->access_token = $authToken->getAccessToken ();
-		$token->refresh_token = $authToken->getRefreshToken ();
+        $client->setApplicationName( 'Post SMTP ' . POST_SMTP_VER );
+        $client->setAccessType( 'offline' );
+        $client->setApprovalPrompt( 'force' );
+        $client->setIncludeGrantedScopes( true );
+        $client->setScopes( array( Gmail::MAIL_GOOGLE_COM ) );
+        $client->setRedirectUri( $this->getScribe()->getCallbackUrl() );
+		
+		try {
+			
+			//If Access Token Expired, get new one
+			if( $client->isAccessTokenExpired() ) {
+				
+				$client->fetchAccessTokenWithRefreshToken( $authToken->getRefreshToken() );
+				
+			}
+			//Lets go with the old one
+			else {
+				
+				$client->setAccessToken( $authToken->getAccessToken() );
+				$client->setRefreshToken( $authToken->getRefreshToken() );
+				
+			}
+			
+			
+		} catch( Exception $e ) {
+			
+			print_r( $e );
+			die;
+			
+		}
+		
+		$token->access_token = $client->getAccessToken();
+		$token->refresh_token = $client->getRefreshToken();
 		$token->token_type = 'Bearer';
 		$token->expires_in = 3600;
 		$token->id_token = null;
 		$token->created = 0;
-		$client->setAccessToken ( json_encode ( $token ) );
-		// We only need permissions to compose and send emails
-		$client->addScope ( "https://www.googleapis.com/auth/gmail.compose" );
-		$service = new Google_Service_Gmail ( $client );
+		$service = new Gmail( $client );
 		$config [PostmanGmailApiModuleZendMailTransport::SERVICE_OPTION] = $service;
 		
 		return new PostmanGmailApiModuleZendMailTransport ( self::HOST, $config );

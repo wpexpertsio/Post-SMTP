@@ -3,6 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
+use \PostSMTP\Vendor\Google\Service\Gmail\Message;
+use \PostSMTP\Vendor\Google\Http\MediaFileUpload;
+
 /**
  * Zend Framework
  *
@@ -192,7 +195,7 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 
 			// The message needs to be encoded in Base64URL
 			$encodedMessage = rtrim ( strtr ( base64_encode ( $message ), '+/', '-_' ), '=' );
-			$googleApiMessage = new Google_Service_Gmail_Message ();
+			$googleApiMessage = new Message ();
 			$googleService = $this->_config [self::SERVICE_OPTION];
 			$googleClient = $googleService->getClient();
 
@@ -206,7 +209,7 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 				$chunkSizeBytes = 1 * 1024 * 1024;
 
 				// create mediafile upload
-				$media = new Google_Http_MediaFileUpload(
+				$media = new MediaFileUpload(
 					$googleClient,
 					$result,
 					'message/rfc822',
