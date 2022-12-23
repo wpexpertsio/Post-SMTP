@@ -1536,13 +1536,17 @@
             add_action( 'admin_enqueue_scripts', array( &$this, '_enqueue_common_css' ) );
 
             /**
-             * Handle request to reset anonymous mode for `get_reconnect_url()`.
+             * Handle request to reset anonymous mode for `get_reconnect_url()` or reset the pending activation mode.
              *
              * @author Vova Feldman (@svovaf)
              * @since  1.2.1.5
              */
-            if ( fs_request_is_action( 'reset_anonymous_mode' ) &&
-                 $this->get_unique_affix() === fs_request_get( 'fs_unique_affix' )
+            if (
+                (
+                    fs_request_is_action( 'reset_anonymous_mode' ) ||
+                    fs_request_is_action( 'reset_pending_activation_mode' )
+                ) &&
+                $this->get_unique_affix() === fs_request_get( 'fs_unique_affix' )
             ) {
                 add_action( 'admin_init', array( &$this, 'connect_again' ) );
             }
@@ -3648,7 +3652,7 @@
             } else {
                 // Add hidden debug page.
                 $hook = FS_Admin_Menu_Manager::add_subpage(
-                    null,
+                    '',
                     $title,
                     $title,
                     'manage_options',
@@ -4966,6 +4970,36 @@
 
             $this->register_after_settings_parse_hooks();
 
+            /**
+             * If anonymous but there's already a user entity and the user's site is associated with a valid license or trial period, update the anonymous mode accordingly.
+             *
+             * @todo Remove this entire `if` block after several releases as starting from this version, the anonymous mode will already be updated accordingly after a purchase.
+             */
+            if ( $this->is_anonymous() ) {
+                $is_network_level = ( $this->_is_network_active && fs_is_network_admin() );
+
+                if (
+                    ! $is_network_level ||
+                    FS_Site::is_valid_id( $this->_storage->network_install_blog_id )
+                 ) {
+                    if ( $this->is_paying_or_trial() ) {
+                        $this->reset_anonymous_mode( $is_network_level );
+                    }
+                } else {
+                    $network = get_network();
+
+                    if ( is_object( $network ) ) {
+                        $main_blog_id  = $network->site_id;
+                        $first_install = $this->get_install_by_blog_id( $main_blog_id );
+
+                        if ( is_object( $first_install ) ) {
+                            $this->_storage->network_install_blog_id = $main_blog_id;
+                            $this->_storage->network_user_id         = $first_install->user_id;
+                        }
+                    }
+                }
+            }
+
             if ( $this->should_stop_execution() ) {
                 return;
             }
@@ -6021,14 +6055,13 @@
                 $this->do_action( 'after_free_version_reactivation' );
 
                 if ( $this->is_paying() && ! $this->is_premium() ) {
-                    $this->_admin_notices->add_sticky(
+                    $this->add_complete_upgrade_instructions_notice(
                         sprintf(
                         /* translators: %s: License type (e.g. you have a professional license) */
                             $this->get_text_inline( 'You have a %s license.', 'you-have-x-license' ),
                             $this->get_plan_title()
-                        ) . $this->get_complete_upgrade_instructions(),
-                        'plan_upgraded',
-                        $this->get_text_x_inline( 'Yee-haw', 'interjection expressing joy or exuberance', 'yee-haw' ) . '!'
+                        ),
+                        'plan_upgraded'
                     );
                 }
             }
@@ -7299,31 +7332,87 @@
          * @author Vova Feldman (@svovaf)
          * @since  1.0.7
          *
-         * @param bool|string $email
+         * @param bool|string $email_address
          * @param bool        $is_pending_trial Since 1.2.1.5
          * @param bool        $is_suspicious_email Since 2.5.0 Set to true when there's an indication that email address the user opted in with is fake/dummy/placeholder.
+         * @param bool        $has_upgrade_context Since 2.5.3
+         * @param bool        $support_email_address Since 2.5.3
          */
         function _add_pending_activation_notice(
-            $email = false,
+            $email_address = false,
             $is_pending_trial = false,
-            $is_suspicious_email = false
+            $is_suspicious_email = false,
+            $has_upgrade_context = false,
+            $support_email_address = false
         ) {
-            if ( ! is_string( $email ) ) {
-                $current_user = self::_get_current_wp_user();
-                $email        = $current_user->user_email;
+            if ( ! is_string( $email_address ) ) {
+                $current_user  = self::_get_current_wp_user();
+                $email_address = $current_user->user_email;
+            }
+
+            $formatted_message_args = array(
+                "<b>{$this->get_plugin_name()}</b>",
+                "<b>{$email_address}</b>",
+            );
+
+            if ( ! $has_upgrade_context || ! fs_is_network_admin() ) {
+                /* translators: %3$s: action (e.g.: "start the trial" or "complete the opt-in") */
+                $formatted_message = $this->get_text_inline( 'You should receive a confirmation email for %1$s to your mailbox at %2$s. Please make sure you click the button in that email to %3$s.', 'pending-activation-message' );
+
+                $formatted_message_args[] = $is_pending_trial ?
+                    $this->get_text_inline( 'start the trial', 'start-the-trial' ) :
+                    $this->get_text_inline( 'complete the opt-in', 'complete-the-opt-in' );
+
+                $notice_title = $this->get_text_inline( 'Thanks!', 'thanks' );
+            } else {
+                /* translators: %3$s: What the user is expected to receive via email (e.g.: "the installation instructions" or "a license key") */
+                $formatted_message = $this->get_text_inline( 'You should receive %3$s for %1$s to your mailbox at %2$s in the next 5 minutes.' );
+
+                if ( $this->has_release_on_freemius() ) {
+                    $formatted_message_args[] = $this->get_text_x_inline(
+                        'the installation instructions',
+                        'Part of the message telling the user what they should receive via email.',
+                        'the-installation-instructions-phrase'
+                    );
+                } else {
+                    $formatted_message_args[] = $this->get_text_x_inline(
+                        'a license key',
+                        'Part of the message telling the user what they should receive via email.',
+                        'a-license-key-phrase'
+                    );
+
+                    $formatted_message .= ( ' ' . sprintf(
+                        /* translators: %s: activation link (e.g.: <a>Click here</a>) */
+                        $this->get_text_inline( '%s to activate the license once you get it.', 'license-activation-link-message' ),
+                        sprintf(
+                            '<b><a href="%s">%s</a></b>',
+                            $this->get_activation_url( array(
+                                'fs_action'       => 'reset_pending_activation_mode',
+                                'require_license' => 'true',
+                                'fs_unique_affix' => $this->get_unique_affix(),
+                            ) ),
+                            $this->get_text_x_inline( 'Click here', 'Part of an activation link message.', 'click-here' )
+                        )
+                    ) );
+                }
+
+                $formatted_message_args[] = ( ! empty( $support_email_address ) ) ?
+                    ( "<b>{$support_email_address}</b>" ) :
+                    $this->get_text_x_inline(
+                        "the product's support email address",
+                        'Part of the message that tells the user to check their spam folder for a specific email.',
+                        'product-support-email-address-phrase'
+                    );
+
+                $formatted_message .= ( ' ' . $this->get_text_inline( 'If you didn\'t get the email, try checking your spam folder or search for emails from %4$s.', 'check-spam-folder-message' ) );
+
+                $notice_title = $this->get_text_inline( 'Thanks for upgrading.', 'after-upgrade-thank-you-message' );
             }
 
             $this->_admin_notices->add_sticky(
-                sprintf(
-                    $this->get_text_inline( 'You should receive an activation email for %s to your mailbox at %s. Please make sure you click the activation button in that email to %s.', 'pending-activation-message' ),
-                    '<b>' . $this->get_plugin_name() . '</b>',
-                    '<b>' . $email . '</b>',
-                    ( $is_pending_trial ?
-                        $this->get_text_inline( 'start the trial', 'start-the-trial' ) :
-                        $this->get_text_inline( 'complete the install', 'complete-the-install' ) )
-                ),
+                vsprintf( $formatted_message, $formatted_message_args ),
                 'activation_pending',
-                'Thanks!'
+                $notice_title
             );
         }
 
@@ -9031,6 +9120,26 @@
         }
 
         /**
+         * @author Leo Fajardo (@leorw)
+         * @since 2.5.3
+         */
+        private function update_license_required_permissions_if_anonymous() {
+            if ( ! $this->is_anonymous() ) {
+                return;
+            }
+
+            $this->reset_anonymous_mode( fs_is_network_admin() );
+
+            FS_Permission_Manager::instance( $this )->update_permissions_tracking_flag( array(
+                'essentials' => true,
+                'events'     => true,
+                'diagnostic' => false,
+                'extensions' => false,
+                'site'       => false,
+            ) );
+        }
+
+        /**
          * This is used to ensure that before redirecting to the opt-in page after resetting the anonymous mode or
          * deleting the account in the network level, the URL of the page to redirect to is correct.
          *
@@ -9054,15 +9163,27 @@
          * @since  1.1.7
          */
         function connect_again() {
-            if ( ! $this->is_anonymous() ) {
+            if ( ! $this->is_anonymous() && ! $this->is_pending_activation() ) {
                 return;
             }
 
-            $this->reset_anonymous_mode( fs_is_network_admin() );
+            if ( $this->is_anonymous() ) {
+                $this->reset_anonymous_mode( fs_is_network_admin() );
+            }
+
+            $activation_url_params = array();
+
+            if ( $this->is_pending_activation() ) {
+                $this->clear_pending_activation_mode();
+
+                if ( fs_request_get_bool( 'require_license' ) ) {
+                    $activation_url_params['require_license'] = true;
+                }
+            }
 
             $this->maybe_set_slug_and_network_menu_exists_flag();
 
-            fs_redirect( $this->get_activation_url() );
+            fs_redirect( $this->get_activation_url( $activation_url_params ) );
         }
 
         /**
@@ -11770,7 +11891,7 @@
         function is_trial() {
             $this->_logger->entrance();
 
-            if ( ! $this->is_registered() || ! is_object( $this->_site ) ) {
+            if ( ! $this->is_registered( true ) || ! is_object( $this->_site ) ) {
                 return false;
             }
 
@@ -11884,7 +12005,7 @@
         function is_paying() {
             $this->_logger->entrance();
 
-            if ( ! $this->is_registered() ) {
+            if ( ! $this->is_registered( true ) ) {
                 return false;
             }
 
@@ -17880,24 +18001,23 @@
                      ! $this->has_settings_menu()
                 ) {
                     if ( $this->is_paying() ) {
-                        $this->_admin_notices->add_sticky(
+                        $this->add_complete_upgrade_instructions_notice(
                             sprintf(
                                 $this->get_text_inline( 'Your account was successfully activated with the %s plan.', 'activation-with-plan-x-message' ),
                                 $this->get_plan_title()
-                            ) . $this->get_complete_upgrade_instructions(),
-                            'plan_upgraded',
-                            $this->get_text_x_inline( 'Yee-haw', 'interjection expressing joy or exuberance', 'yee-haw' ) . '!'
+                            ),
+                            'plan_upgraded'
                         );
                     } else {
                         $trial_plan = $this->get_trial_plan();
 
-                        $this->_admin_notices->add_sticky(
+                        $this->add_complete_upgrade_instructions_notice(
                             sprintf(
                                 $this->get_text_inline( 'Your trial has been successfully started.', 'trial-started-message' ),
                                 '<i>' . $this->get_plugin_name() . '</i>'
-                            ) . $this->get_complete_upgrade_instructions( $trial_plan->title ),
+                            ),
                             'trial_started',
-                            $this->get_text_x_inline( 'Yee-haw', 'interjection expressing joy or exuberance', 'yee-haw' ) . '!'
+                            $trial_plan->title
                         );
                     }
                 }
@@ -17974,6 +18094,10 @@
                 return;
             }
 
+            $has_pending_activation_confirmation_param = fs_request_has( 'pending_activation' );
+
+            $this->update_license_required_permissions_if_anonymous();
+
             if ( ( $this->is_plugin() && fs_request_is_action( $this->get_unique_affix() . '_activate_new' ) ) ||
                  // @todo This logic should be improved because it's executed on every load of a theme.
                  $this->is_theme()
@@ -18010,13 +18134,15 @@
                             fs_request_get_bool( 'auto_install' )
                         );
                     }
-                } else if ( fs_request_has( 'pending_activation' ) ) {
+                } else if ( $has_pending_activation_confirmation_param ) {
                     $this->set_pending_confirmation(
                         fs_request_get( 'user_email' ),
                         true,
                         false,
                         false,
-                        fs_request_get_bool( 'is_suspicious_email' )
+                        fs_request_get_bool( 'is_suspicious_email' ),
+                        fs_request_get_bool( 'has_upgrade_context' ),
+                        fs_request_get( 'support_email_address' )
                     );
                 }
             }
@@ -18269,6 +18395,9 @@
          * @param bool        $redirect
          * @param string|bool $license_key      Since 1.2.1.5
          * @param bool        $is_pending_trial Since 1.2.1.5
+         * @param bool        $is_suspicious_email Since 2.5.0
+         * @param bool        $has_upgrade_context Since 2.5.3
+         * @param bool|string $support_email_address Since 2.5.3
          *
          * @return string Since 1.2.1.5 if $redirect is `false`, return the pending activation page.
          */
@@ -18277,22 +18406,32 @@
             $redirect = true,
             $license_key = false,
             $is_pending_trial = false,
-            $is_suspicious_email = false
+            $is_suspicious_email = false,
+            $has_upgrade_context = false,
+            $support_email_address = false
         ) {
-            if ( $this->_ignore_pending_mode ) {
+            $is_network_admin = fs_is_network_admin();
+
+            if ( $this->_ignore_pending_mode && ! $has_upgrade_context ) {
                 /**
                  * If explicitly asked to ignore pending mode, set to anonymous mode
-                 * if require confirmation before finalizing the opt-in.
+                 * if require confirmation before finalizing the opt-in except after completing a purchase (otherwise, in this case, they wouldn't see any notice telling them that they should receive their license key via email).
                  *
                  * @author Vova Feldman
                  * @since  1.2.1.6
                  */
-                $this->skip_connection( fs_is_network_admin() );
+                $this->skip_connection( $is_network_admin );
             } else {
                 // Install must be activated via email since
                 // user with the same email already exist.
                 $this->_storage->is_pending_activation = true;
-                $this->_add_pending_activation_notice( $email, $is_pending_trial, $is_suspicious_email );
+                $this->_add_pending_activation_notice(
+                    $email,
+                    $is_pending_trial,
+                    $is_suspicious_email,
+                    $has_upgrade_context,
+                    $support_email_address
+                );
             }
 
             if ( ! empty( $license_key ) ) {
@@ -18555,6 +18694,14 @@
                 return;
             }
 
+            $permission_ids = FS_Permission_Manager::get_all_permission_ids();
+            $permissions = array();
+            foreach ( $permission_ids as $permission_id ) {
+                $permissions[ $permission_id ] = FS_Permission_Manager::instance( $parent_fs )->is_permission( $permission_id, true );
+            }
+
+            FS_Permission_Manager::instance( $this )->update_permissions_tracking_flag( $permissions );
+
             /**
              * Do not override the `uid` if network-level opt-in since the call to `get_sites_for_network_level_optin()`
              * already returns the data for the current blog.
@@ -18816,6 +18963,8 @@
             // Sync add-on plans.
             $parent_fs->_sync_plans();
 
+            $parent_fs->update_license_required_permissions_if_anonymous();
+
             $parent_fs->_set_account( $user, $parent_fs->_site );
         }
 
@@ -18975,7 +19124,7 @@
             if ( ! $this->has_settings_menu() ) {
                 // Add the opt-in page without a menu item.
                 $hook = FS_Admin_Menu_Manager::add_subpage(
-                    null,
+                    '',
                     $this->get_plugin_name(),
                     $this->get_plugin_name(),
                     'manage_options',
@@ -19407,7 +19556,7 @@
                         $hook = FS_Admin_Menu_Manager::add_subpage(
                             $item['show_submenu'] ?
                                 $top_level_menu_slug :
-                                null,
+                                '',
                             $item['page_title'],
                             $menu_item,
                             $capability,
@@ -19422,7 +19571,7 @@
                         FS_Admin_Menu_Manager::add_subpage(
                             $item['show_submenu'] ?
                                 $top_level_menu_slug :
-                                null,
+                                '',
                             $item['page_title'],
                             $menu_item,
                             $capability,
@@ -21729,14 +21878,7 @@
                         break;
                     case 'upgraded':
                     case 'activated':
-                        $this->_admin_notices->add_sticky(
-                            ( 'activated' === $plan_change ) ?
-                                $this->get_text_inline( 'Your plan was successfully activated.', 'plan-activated-message' ) :
-                                $this->get_text_inline( 'Your plan was successfully upgraded.', 'plan-upgraded-message' ) .
-                            $this->get_complete_upgrade_instructions(),
-                            'plan_upgraded',
-                            $this->get_text_x_inline( 'Yee-haw', 'interjection expressing joy or exuberance', 'yee-haw' ) . '!'
-                        );
+                        $this->add_after_plan_activation_or_upgrade_instructions_notice( 'upgraded' === $plan_change );
 
                         $this->_admin_notices->remove_sticky( array(
                             'trial_started',
@@ -21798,13 +21940,13 @@
                         $this->_admin_notices->remove_sticky( 'plan_upgraded' );
                         break;
                     case 'trial_started':
-                        $this->_admin_notices->add_sticky(
+                        $this->add_complete_upgrade_instructions_notice(
                             sprintf(
                                 $this->get_text_inline( 'Your trial has been successfully started.', 'trial-started-message' ),
                                 '<i>' . $this->get_plugin_name() . '</i>'
-                            ) . $this->get_complete_upgrade_instructions( $this->get_trial_plan()->title ),
+                            ),
                             'trial_started',
-                            $this->get_text_x_inline( 'Yee-haw', 'interjection expressing joy or exuberance', 'yee-haw' ) . '!'
+                            $this->get_trial_plan()->title
                         );
 
                         $this->_admin_notices->remove_sticky( array(
@@ -21972,11 +22114,9 @@
             }
 
             if ( ! $background ) {
-                $this->_admin_notices->add_sticky(
-                    $this->get_text_inline( 'Your license was successfully activated.', 'license-activated-message' ) .
-                    $this->get_complete_upgrade_instructions(),
-                    'license_activated',
-                    $this->get_text_x_inline( 'Yee-haw', 'interjection expressing joy or exuberance', 'yee-haw' ) . '!'
+                $this->add_complete_upgrade_instructions_notice(
+                    $this->get_text_inline( 'Your license was successfully activated.', 'license-activated-message' ),
+                    'license_activated'
                 );
             }
 
@@ -24964,6 +25104,42 @@
                     $this->get_text_inline( 'How to upload and activate?', 'howto-upload-activate' )
                 );
             }
+        }
+
+        /**
+         * @author Leo Fajardo (@leorw)
+         * @since 2.5.3
+         *
+         * @param string $message_before_the_instructions
+         * @param string $message_id
+         * @param string $plan_title
+         */
+        private function add_complete_upgrade_instructions_notice(
+            $message_before_the_instructions,
+            $message_id,
+            $plan_title = ''
+        ) {
+            $this->_admin_notices->add_sticky(
+                $message_before_the_instructions .
+                $this->get_complete_upgrade_instructions( $plan_title ),
+                $message_id,
+                $this->get_text_x_inline( 'Yee-haw', 'interjection expressing joy or exuberance', 'yee-haw' ) . '!'
+            );
+        }
+
+        /**
+         * @author Leo Fajardo (@leorw)
+         * @since 2.5.3
+         *
+         * @param bool $is_upgrade
+         */
+        private function add_after_plan_activation_or_upgrade_instructions_notice( $is_upgrade = true ) {
+            $this->add_complete_upgrade_instructions_notice(
+                $is_upgrade ?
+                    $this->get_text_inline( 'Your plan was successfully upgraded.', 'plan-upgraded-message' ) :
+                    $this->get_text_inline( 'Your plan was successfully activated.', 'plan-activated-message' ),
+                'plan_upgraded'
+            );
         }
 
         /**
