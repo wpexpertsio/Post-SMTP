@@ -129,11 +129,10 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 				$mail->addBcc( $recipient->getEmail(), $recipient->getName() );
 			}
 
-			// add the reply-to
-			$replyTo = $message->getReplyTo();
-			// $replyTo is null or a PostmanEmailAddress object
-			if ( isset( $replyTo ) ) {
-				$mail->setReplyTo( $replyTo->getEmail(), $replyTo->getName() );
+			// add reply to recipients
+			foreach ( ( array ) $message->getReplyTo() as $recipient ) {
+				$recipient->log( $this->logger, 'Reply-To' );
+				$mail->setReplyTo( $recipient->getEmail(), $recipient->getName() );
 			}
 
 			// add the date

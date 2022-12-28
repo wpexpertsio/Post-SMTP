@@ -230,8 +230,8 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				$log->bccRecipients = $this->flattenEmails( $message->getBccRecipients() );
 				$log->subject = $message->getSubject();
 				$log->body = $message->getBody();
-				if ( null !== $message->getReplyTo() ) {
-					$log->replyTo = $message->getReplyTo()->format();
+				if ( $message->getReplyTo() ) {
+					$log->replyTo = $this->flattenEmails( $message->getReplyTo() );
 				}
 			}
 			$log->success = $success;

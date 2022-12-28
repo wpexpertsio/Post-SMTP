@@ -698,13 +698,6 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
      */
     public function setReplyTo($email, $name = null)
     {
-        if (null !== $this->_replyTo) {
-            /**
-             * @see Postman_Zend_Mail_Exception
-             */
-//             require_once 'Zend/Mail/Exception.php';
-            throw new Postman_Zend_Mail_Exception('Reply-To Header set twice');
-        }
 
         $name  = $this->_filterName($name);
         $this->_replyTo = $email;

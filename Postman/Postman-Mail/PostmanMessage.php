@@ -53,6 +53,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			$this->toRecipients = array();
 			$this->ccRecipients = array();
 			$this->bccRecipients = array();
+			$this->replyTo = array();
 		}
 
 		function __get( $name ) {
@@ -251,10 +252,6 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		 * Throw an exception if an error is found
 		 */
 		private function internalValidate() {
-			// check the reply-to address for errors
-			if ( isset( $this->replyTo ) ) {
-				$this->getReplyTo()->validate( 'Reply-To' );
-			}
 
 			// check the from address for errors
 			$this->getFromAddress()->validate( 'From' );
@@ -273,6 +270,12 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			foreach ( ( array ) $this->getBccRecipients() as $bccRecipient ) {
 				$bccRecipient->validate( 'Bcc' );
 			}
+
+			// validate the Reply To recipients
+			foreach ( ( array ) $this->getReplyTo() as $reply_to ) {
+				$reply_to->validate( 'Reply-To' );
+			}
+
 		}
 
 		/**
@@ -338,6 +341,19 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		 */
 		public function addBcc( $bcc ) {
 			$this->addRecipients( $this->bccRecipients, $bcc );
+		}
+
+
+		/**
+		 * Add Reply Tos
+		 * 
+		 * @since 2.3.0
+		 * @version 1.0.0
+		 */
+		public function add_reply_to( $replyTo ) {
+
+			$this->addRecipients( $this->replyTo, $replyTo );
+
 		}
 		/**
 		 *
@@ -450,13 +466,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 					break;
 				case 'reply-to' :
 					$this->logProcessHeader( 'Reply-To', $name, $content );
-                    $pattern = '/[a-z0-9_\-\+\.]+@[a-z0-9\-]+\.([a-z]{2,4})(?:\.[a-z]{2})?/i';
-                    preg_match_all($pattern, $content, $matches);
-
-                    if ( isset( $matches[0] ) && isset( $matches[0][0] ) && filter_var( $matches[0][0], FILTER_VALIDATE_EMAIL ) ) {
-                        $this->setReplyTo( $content );
-                    }
-
+                    $this->setReplyTo( $content );
 					break;
 				case 'sender' :
 					$this->logProcessHeader( 'Sender', $name, $content );
@@ -543,7 +553,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		}
 		function setReplyTo( $replyTo ) {
 			if ( ! empty( $replyTo ) ) {
-				$this->replyTo = new PostmanEmailAddress( $replyTo );
+				$this->add_reply_to( $replyTo );
 			}
 		}
 		function setMessageId( $messageId ) {
