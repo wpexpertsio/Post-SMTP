@@ -4,7 +4,7 @@ class PostmanLogFields {
     private $fields = array(
         'success' => 'sanitize_text_field',
         'solution' => [ 'PostmanLogFields', 'sanitize_message' ],
-        'from_header' => [ 'PostmanLogFields', 'from_header_sanitize' ],
+        'from_header' => [ 'PostmanLogFields', 'email_header_sanitize' ],
         'to_header' => [ 'PostmanLogFields', 'email_header_sanitize' ],
         'cc_header' => [ 'PostmanLogFields', 'email_header_sanitize' ],
         'bcc_header' => [ 'PostmanLogFields', 'email_header_sanitize' ],
@@ -156,31 +156,5 @@ class PostmanLogFields {
 
     public function sanitize_email( $email ) {
         return filter_var( $email, FILTER_SANITIZE_EMAIL );
-    }
-
-
-    /**
-     * Sanitize From Header
-     * 
-     * @since 2.3.0
-     * @version 1.0.0
-     */
-    public function from_header_sanitize( $value ) {
-
-        $sanitized = '';
-
-        if ( strpos( $value, '<' ) !== false ) {
-
-            $email = $this->get_string_between( $value, '<', '>' );
-            $clean_email  = $this->sanitize_email( $email );
-            preg_match( '/(.*)</', $value, $output_array );
-            $name = filter_var( trim( $output_array[1] ), FILTER_SANITIZE_STRING );
-
-            $sanitized = "{$name} <{$clean_email}>";
-
-        }
-    
-        return ! empty( $sanitized ) ? $sanitized : implode( ',', array_map( [ $this, 'sanitize_email'], $value ) );
-
     }
 }
