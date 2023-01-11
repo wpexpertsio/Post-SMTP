@@ -8,7 +8,8 @@ class PostmanEmailLogs {
 
     public $db_name = 'post_smtp_logs';
 
-    private static $fields = array(
+    private $fields = array(
+        'solution',
         'success',
         'from_header',
         'to_header',
@@ -20,42 +21,90 @@ class PostmanEmailLogs {
         'original_subject',
         'original_message',
         'original_headers',
-        'session_transcript'
+        'session_transcript',
+        'time'
     );
 
     private static $instance;
 
     public static function get_instance() {
         if ( ! self::$instance ) {
-            self::$instanc = new static();
+            self::$instance = new static();
         }
 
         return self::$instance;
     }
 
-    private function __construct() {
+    public function __construct() {
+
         global $wpdb;
 
         $this->db = $wpdb;
+
     }
 
-    function install_table() {
 
-        global $wpdb;
+    /**
+     * Installs the Table | Creates the Table
+     * 
+     * @since 2.4.0
+     * @version 1.0.0
+     */
+    public function install_table() {
 
-        $sql = "CREATE TABLE `{$wpdb->prefix}_{$this->db_name}` ( 
-                `id` bigint(20) NOT NULL AUTO_INCREMENT, ";
+        $indexed = array(
+            'success',
+            'to_header',
+            'cc_header',
+            'bcc_header',
+            'reply_to_header',
+            'transport_uri',
+            'original_log',
+            'original_subject',
+            'time'
+        );
+        
+        if( !function_exists( 'dbDelta' ) ) {
+
+            require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+        }
+
+        $sql = "CREATE TABLE IF NOT EXISTS `{$this->db->prefix}{$this->db_name}` (
+                `id` bigint(20) NOT NULL AUTO_INCREMENT,";
 
         foreach ($this->fields as $field ) {
+
+            if( in_array( $field, $indexed ) ) {
+
+                $sql .= "INDEX ".$field." (".$field.")";
+
+            }
+
             if ( $field == 'original_message' || $field == 'session_transcript' ) {
+
                 $sql .= "`" . $field . "` longtext DEFAULT NULL,";
                 continue;
+
             }
+
+            if( $field == 'time' ) {
+
+                $sql .= "`" . $field . "` BIGINT(20) DEFAULT NULL,";
+                continue; 
+
+            } 
+
             $sql .= "`" . $field . "` varchar(255) DEFAULT NULL,";
+            
         }
-        $sql .=  "PRIMARY KEY (`id`)) ENGINE=InnoDB CHARSET={$wpdb->charset} COLLATE={$wpdb->collate}; ";
+
+        $sql .=  "PRIMARY KEY (`id`)) ENGINE=InnoDB CHARSET={$this->db->charset} COLLATE={$this->db->collate};";
 
         dbDelta( $sql );
+
+        update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
+
     }
 
     public static function get_data( $post_id ) {
@@ -94,20 +143,78 @@ class PostmanEmailLogs {
         }
     }
 
-    function load() {
-        $this->db->select();
-    }
 
     /**
-     * @param array $data
+     * Get Logs
+     * 
+     * @since 2.4.0
+     * @version 1.0.0
      */
-    function save( $data ) {
-        $this->db->query( $this->db->prepare(
-            "
-		INSERT INTO $this->db_name 
-		( " . implode( ',', array_keys( $data ) ) . " )
-		VALUES ( " . str_repeat( '%s', count( $data ) ) . " )", array_values( $data )
-        ) );
+    public function get_logs() {
+
+        return $this->db->get_results(
+            "SELECT * FROM `{$this->db->prefix}{$this->db_name}`"
+        );
+
+    }
+
+
+    /**
+     * Delete Log Items, But Keeps recent $keep
+     * 
+     * @since 2.4.0
+     * @version 1.0.0
+     */
+    public function truncate_log_items( $keep ) {
+
+        return $this->db->get_results(
+            $this->db->prepare(
+                "DELETE logs FROM `{$this->db->prefix}{$this->db_name}` logs
+                LEFT JOIN 
+                (SELECT id 
+                FROM `{$this->db->prefix}{$this->db_name}` 
+                ORDER BY id DESC
+                LIMIT %d) logs2 USING(id) 
+                WHERE logs2.id IS NULL;",
+                $keep
+            )
+        );
+
+    }
+
+
+    /**
+     * Insert Log Into table
+     * 
+     * @param array $data
+     * @since 2.4.0
+     * @version 1.0.0
+     */
+    public function save( $data ) {
+
+        return $this->db->insert(
+            $this->db->prefix . $this->db_name,
+            $data  
+        );
+
+    }
+
+
+    /**
+     * Get Logs
+     * 
+     * @since 2.4.0
+     * @version 1.0
+     */
+    public function get_logs_ajax() {
+
+        $logs = $this->get_logs();
+
+        return wp_send_json_success( 
+            $logs, 
+            200 
+        );
+
     }
 
 }

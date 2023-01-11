@@ -39,5 +39,28 @@ jQuery(document).ready(function($) {
 		});
 	}
 
+	$('#ps-email-log').DataTable( {
+		ajax: {
+			url: `${ajaxurl}?action=ps-get-email-logs`
+		},
+		columns: [
+			{ data: 'id' },
+			{ data: 'original_subject' },
+			{ data: 'original_to' },
+			{ data: 'status' },
+			{ data: 'solution' },
+			{ data: 'delivery_time' }
+		]
+	} );
+
 })
 
+
+// columns: [
+// 	{ data: 'id' },
+// 	{ data: 'subject' },
+// 	{ data: 'sent_to' },
+// 	{ data: 'status' },
+// 	{ data: 'solution' },
+// 	{ data: 'delivery_time' }
+// ]

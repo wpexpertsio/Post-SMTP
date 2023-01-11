@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once( 'PostmanOAuthToken.php' );
 require_once( 'PostmanOptions.php' );
+require 'PostmanEmailLogs.php';
 
 /**
  * If required, database upgrades are made during activation
@@ -31,6 +32,22 @@ class PostmanInstaller {
 		
         delete_option( 'postman_release_version' );
         delete_option( 'postman_dismiss_donation' );
+
+		$table_version = get_option( 'postman_db_version' );
+
+		//If no logs in _posts table
+		$recent_posts = wp_get_recent_posts( array(
+			'numberposts' 	=> 	1,
+			'post_type'		=>	PostmanEmailLogPostType::POSTMAN_CUSTOM_POST_TYPE_SLUG
+		) );
+
+		//Lets Install New Fresh Logs Table
+		if( empty( $recent_posts ) && !$table_version ) {
+
+			$email_logs = new PostmanEmailLogs();
+			$email_logs->install_table();
+
+		}
 
 		$options = get_option( PostmanOptions::POSTMAN_OPTIONS );
 		$args = array(
@@ -261,4 +278,5 @@ class PostmanInstaller {
 		PostmanState::getInstance()->reload();
 		PostmanOptions::getInstance()->reload();
 	}
+
 }
