@@ -5,7 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once( 'PostmanOAuthToken.php' );
 require_once( 'PostmanOptions.php' );
-require 'PostmanEmailLogs.php';
 
 /**
  * If required, database upgrades are made during activation
@@ -43,6 +42,12 @@ class PostmanInstaller {
 
 		//Lets Install New Fresh Logs Table
 		if( empty( $recent_posts ) && !$table_version ) {
+
+			if( !class_exists( 'PostmanEmailLogs' ) ) {
+
+				require 'PostmanEmailLogs.php';
+
+			}
 
 			$email_logs = new PostmanEmailLogs();
 			$email_logs->install_table();

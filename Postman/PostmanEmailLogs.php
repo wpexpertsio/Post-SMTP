@@ -51,18 +51,6 @@ class PostmanEmailLogs {
      * @version 1.0.0
      */
     public function install_table() {
-
-        $indexed = array(
-            'success',
-            'to_header',
-            'cc_header',
-            'bcc_header',
-            'reply_to_header',
-            'transport_uri',
-            'original_log',
-            'original_subject',
-            'time'
-        );
         
         if( !function_exists( 'dbDelta' ) ) {
 
@@ -74,12 +62,6 @@ class PostmanEmailLogs {
                 `id` bigint(20) NOT NULL AUTO_INCREMENT,";
 
         foreach ($this->fields as $field ) {
-
-            if( in_array( $field, $indexed ) ) {
-
-                $sql .= "INDEX ".$field." (".$field.")";
-
-            }
 
             if ( $field == 'original_message' || $field == 'session_transcript' ) {
 
@@ -191,6 +173,8 @@ class PostmanEmailLogs {
      * @version 1.0.0
      */
     public function save( $data ) {
+
+        $data['time'] = !isset( $data['time'] ) ? current_time( 'timestamp' ) : $data['time'];
 
         return $this->db->insert(
             $this->db->prefix . $this->db_name,
