@@ -548,7 +548,7 @@ function handleConfigurationResponse(response) {
 
 	jQuery.fn.suggestPro();
 
-	jQuery('select#input_notification_service').change(function() {
+	jQuery( '.input_notification_service' ).change(function() {
 		var selected = jQuery( this ).val();
 
 		if ( selected == 'default' ) {
