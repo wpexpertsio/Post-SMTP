@@ -609,46 +609,75 @@ class PostmanConfigurationController {
 		printf( '<h5>%s</h5>', esc_html__( 'Notifications', 'post-smtp' ) );
 		print '<fieldset>';
 		$logs_url = admin_url( 'admin.php?page=postman_email_log' );
+		
+		$notification_emails = PostmanNotifyOptions::getInstance()->get_notification_email();
+		
 		?>
 		<h2><?php esc_html_e( 'Select notification service', 'post-smtp' ); ?></h2>
 		<p><?php printf( esc_html( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %s if required.', 'post-smtp' ), '<a href="'.$logs_url.'" target="_blank">log section</a>' ) ?></p>
 		<div class="ps-notify-radios">
-			<div class="ps-notify-radio">
-				<input type="radio" value="none" name="postman_options[notification_service]" id="ps-notify-none" class="input_notification_service" />
-				<label for="ps-notify-none">
-					<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/silent.png' ) ?>" />
-					<div class="ps-notify-tick-container">
-						<div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
-					</div>
-				</label>
+			<div class="ps-notify-radio-outer">
+				<div class="ps-notify-radio">
+					<input type="radio" value="none" name="postman_options[notification_service]" id="ps-notify-none" class="input_notification_service" />
+					<label for="ps-notify-none">
+						<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/silent.png' ) ?>" />
+						<div class="ps-notify-tick-container">
+							<div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
+						</div>
+					</label>
+				</div>
+				<h4>Disable</h4>
 			</div>
-			<div class="ps-notify-radio">
-				<input type="radio" value="default" name="postman_options[notification_service]" id="ps-notify-default" class="input_notification_service" />
-				<label for="ps-notify-default">
-					<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/envelope.png' ) ?>" />
-					<div class="ps-notify-tick-container">
-						<div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
-					</div>
-				</label>
+			<div class="ps-notify-radio-outer">
+				<div class="ps-notify-radio">
+					<input type="radio" value="default" name="postman_options[notification_service]" id="ps-notify-default" class="input_notification_service" />
+					<label for="ps-notify-default">
+						<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/envelope.png' ) ?>" />
+						<div class="ps-notify-tick-container">
+							<div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
+						</div>
+					</label>
+				</div>
+				<h4>Admin Email</h4>
 			</div>
-			<div class="ps-notify-radio">
-				<input type="radio" value="slack" name="postman_options[notification_service]" id="ps-notify-slack" class="input_notification_service" />
-				<label for="ps-notify-slack">
-					<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/slack.png' ) ?>" />
-					<div class="ps-notify-tick-container">
-						<div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
-					</div>
-				</label>
+			<div class="ps-notify-radio-outer">
+				<div class="ps-notify-radio">
+					<input type="radio" value="slack" name="postman_options[notification_service]" id="ps-notify-slack" class="input_notification_service" />
+					<label for="ps-notify-slack">
+						<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/slack.png' ) ?>" />
+						<div class="ps-notify-tick-container">
+							<div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
+						</div>
+					</label>
+				</div>
+				<h4>Slack</h4>
 			</div>
-			<div class="ps-notify-radio">
-				<input type="radio" value="pushover" name="postman_options[notification_service]" id="ps-notify-pushover" class="input_notification_service" />
-				<label for="ps-notify-pushover">
-					<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/pushover.png' ) ?>" />
-					<div class="ps-notify-tick-container">
-						<div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
-					</div>
-				</label>
+			<div class="ps-notify-radio-outer">
+				<div class="ps-notify-radio">
+					<input type="radio" value="pushover" name="postman_options[notification_service]" id="ps-notify-pushover" class="input_notification_service" />
+					<label for="ps-notify-pushover">
+						<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/pushover.png' ) ?>" />
+						<div class="ps-notify-tick-container">
+							<div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
+						</div>
+					</label>
+				</div>
+				<h4>Pushover</h4>
 			</div>
+			<a href="https://postmansmtp.com/extensions/twilio-extension-pro/" target="_blank">
+				<div class="ps-notify-radio-outer">
+					<div class="ps-notify-radio pro-container">
+						<label for="ps-notify-twillio-pro">
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/pro.png' ) ?>" class="pro-icon" />
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/twillio.png' ) ?>" />
+						</label>
+					</div>
+					<h4>Twilio(SMS)</h4>
+				</div>
+			</a>
+		</div>
+		<div id="email_notify" style="display: none;">
+			<input type="text" name="postman_options[notification_email]" value="<?php echo esc_attr( $notification_emails ); ?>" />
 		</div>
 		<div id="pushover_cred" style="display: none;">
 			<h2><?php esc_html_e( 'Pushover Credentials', 'post-smtp' ); ?></h2>

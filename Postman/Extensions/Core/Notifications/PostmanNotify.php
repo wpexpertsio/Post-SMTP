@@ -61,6 +61,9 @@ class PostmanNotify {
         $sanitizer->sanitizeString( 'Push Chrome Extension', PostmanNotifyOptions::NOTIFICATION_USE_CHROME, $input, $new_input );
         $sanitizer->sanitizePassword( 'Push Chrome Extension UID', PostmanNotifyOptions::NOTIFICATION_CHROME_UID, $input, $new_input, $this->options->getNotificationChromeUid() );
 
+        //Email Notification
+        $sanitizer->sanitizeString( 'Email Notification', PostmanNotifyOptions::NOTIFICATION_EMAIL, $input, $new_input, $this->options->get_notification_email() );
+
         return $new_input;
     }
 

@@ -552,6 +552,7 @@ function handleConfigurationResponse(response) {
 		var selected = jQuery( this ).val();
 
 		if ( selected == 'default' ) {
+			jQuery('#email_notify').fadeIn();
 			jQuery('#slack_cred').fadeOut('fast');
 			jQuery('#pushover_cred').fadeOut('fast');
 		}
@@ -559,11 +560,21 @@ function handleConfigurationResponse(response) {
 		if ( selected == 'pushover' ) {
 			jQuery('#slack_cred').fadeOut('fast');
 			jQuery('#pushover_cred').fadeIn();
+			jQuery('#email_notify').fadeOut('fast');
 		}
 
 		if ( selected == 'slack' ) {
 			jQuery('#pushover_cred').fadeOut('fast');
 			jQuery('#slack_cred').fadeIn();
+			jQuery('#email_notify').fadeOut('fast');
+		}
+
+		if ( selected == 'none' ) {
+
+			jQuery('#email_notify').fadeOut('fast');
+			jQuery('#slack_cred').fadeOut('fast');
+			jQuery('#pushover_cred').fadeOut('fast');
+
 		}
 
 		Hook.call( 'post_smtp_notification_change', selected );

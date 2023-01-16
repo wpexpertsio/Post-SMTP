@@ -1200,3 +1200,31 @@ th#date {
     width: 16px;
     border: 2px solid #fff;
 }
+
+#postman_wizard-p-5 td {
+    padding: 11px;
+}
+
+.ps-notify-radio-outer {
+    text-align: center;
+}
+
+.ps-notify-radio-outer h4 {
+    margin: 10px;
+    font-weight: normal;
+}
+
+.pro-container {
+    position: relative;
+}
+
+.pro-icon {
+    position: absolute;
+    left: -4px;
+    top: 0;
+    padding: 0!important;
+}
+
+.pro-container label {
+    position: initial;
+}
