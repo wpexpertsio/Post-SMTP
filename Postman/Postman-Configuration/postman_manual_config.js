@@ -31,29 +31,6 @@ jQuery(document).ready(
 				switchBetweenPasswordAndOAuth();
 			});
 
-			jQuery('select#input_notification_service').change(function() {
-				var selected = $( this ).val();
-
-				if ( selected == 'default' ) {
-					$('#slack_cred').fadeOut('fast');
-					$('#pushover_cred').fadeOut('fast');
-				}
-
-				if ( selected == 'pushover' ) {
-					$('#slack_cred').fadeOut('fast');
-					$('#pushover_cred').fadeIn();
-				}
-
-				if ( selected == 'slack' ) {
-					$('#pushover_cred').fadeOut('fast');
-					$('#slack_cred').fadeIn();
-				}
-
-				Hook.call( 'post_smtp_notification_change', selected );
-
-			});
-
-
 			// add an event on the authentication input field
 			// on user changing the auth type, determine whether to show
 			// password or oauth section

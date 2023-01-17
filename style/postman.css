@@ -1189,6 +1189,7 @@ th#date {
 
 .ps-notify-radio label {
     margin: 0!important;
+    display: inline-block;
 }
 
 .ps-notify-tick span {
@@ -1202,7 +1203,7 @@ th#date {
 }
 
 #postman_wizard-p-5 td {
-    padding: 11px;
+    padding: 5px;
 }
 
 .ps-notify-radio-outer {
@@ -1228,3 +1229,75 @@ th#date {
 .pro-container label {
     position: initial;
 }
+
+#use-chrome-extension table {
+    margin-top: 10px;
+}
+
+.ps-chrome-extension {
+    line-height: 50px;
+    margin: 30px 0 15px 0;
+}
+
+.ps-switch-1 {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 21px;
+}
+
+.ps-switch-1 input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.ps-switch-1 input:checked + .slider {
+    background-color: #4db556;
+}
+
+.ps-switch-1 .slider.round {
+    border-radius: 34px;
+}
+
+.ps-switch-1 .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+.ps-switch-1 input:checked + .slider:before {
+    -webkit-transform: translateX(13px);
+    -ms-transform: translateX(13px);
+    transform: translateX(13px);
+}
+
+.ps-switch-1 .slider.round:before {
+    
+    border-radius: 50%;
+}
+.ps-switch-1 .slider:before {
+    position: absolute;
+    content: "";
+    height: 17px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #fff;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+/*
+Sample Code
+<label class="ps-switch-1">
+    <input type="checkbox" name="" id="">
+    <span class="slider round"></span>
+</label> 
+*/

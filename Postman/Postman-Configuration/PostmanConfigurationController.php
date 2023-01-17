@@ -620,7 +620,7 @@ class PostmanConfigurationController {
 				<div class="ps-notify-radio">
 					<input type="radio" value="none" name="postman_options[notification_service]" id="ps-notify-none" class="input_notification_service" />
 					<label for="ps-notify-none">
-						<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/silent.png' ) ?>" />
+						<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/none.png' ) ?>" />
 						<div class="ps-notify-tick-container">
 							<div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
 						</div>
@@ -632,7 +632,7 @@ class PostmanConfigurationController {
 				<div class="ps-notify-radio">
 					<input type="radio" value="default" name="postman_options[notification_service]" id="ps-notify-default" class="input_notification_service" />
 					<label for="ps-notify-default">
-						<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/envelope.png' ) ?>" />
+						<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/default.png' ) ?>" />
 						<div class="ps-notify-tick-container">
 							<div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
 						</div>

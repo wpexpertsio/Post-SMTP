@@ -15,6 +15,8 @@ class PostmanNotify {
     const NOTIFICATIONS_SECTION = 'postman_notifications_section';
     const NOTIFICATIONS_PUSHOVER_CRED = 'postman_pushover_cred';
     const NOTIFICATIONS_SLACK_CRED = 'postman_slack_cred';
+    const CHROME_EXTENSION = 'postman_chrome_extension';
+    const NOTIFICATION_EMAIL = 'notification_email';
 
     private $options;
 
@@ -31,11 +33,17 @@ class PostmanNotify {
 
     public function menu() {
         print '<section id="notifications">';
+
         do_settings_sections( self::NOTIFICATIONS_OPTIONS );
 
         $currentKey = $this->options->getNotificationService();
         $pushover = $currentKey == 'pushover' ? 'block' : 'none';
         $slack = $currentKey == 'slack' ? 'block' : 'none';
+        $notification_email = $currentKey == 'email_notify' ? 'block' : 'none';
+
+        echo '<div id="email_notify" style="display: '.$notification_email.';">';
+        do_settings_sections( self::NOTIFICATION_EMAIL );
+        echo '</div>';
 
         echo '<div id="pushover_cred" style="display: ' . $pushover . ';">';
         do_settings_sections( self::NOTIFICATIONS_PUSHOVER_CRED );
@@ -44,6 +52,8 @@ class PostmanNotify {
         echo '<div id="slack_cred" style="display: ' . $slack . ';">';
         do_settings_sections( self::NOTIFICATIONS_SLACK_CRED );
         echo '</div>';
+
+        do_settings_sections( self::CHROME_EXTENSION );
 
         do_action( 'post_smtp_notification_settings' );
 
@@ -77,18 +87,13 @@ class PostmanNotify {
         // Notifications
         add_settings_section( self::NOTIFICATIONS_SECTION, _x( 'Notifications Settings', 'Configuration Section Title', 'post-smtp' ), array(
             $this,
-            'printNotificationsSectionInfo',
+            'notification_selection',
         ), self::NOTIFICATIONS_OPTIONS );
-
-        add_settings_field( PostmanNotifyOptions::NOTIFICATION_SERVICE, _x( 'Notification Service', 'Configuration Input Field', 'post-smtp' ), array(
-            $this,
-            'notification_service_callback',
-        ), self::NOTIFICATIONS_OPTIONS, self::NOTIFICATIONS_SECTION );
 
         // Pushover
         add_settings_section( 'pushover_credentials', _x( 'Pushover Credentials', 'Configuration Section Title', 'post-smtp' ), array(
             $this,
-            'printNotificationsSectionInfo',
+            'section',
         ), self::NOTIFICATIONS_PUSHOVER_CRED );
 
         add_settings_field( PostmanNotifyOptions::PUSHOVER_USER, _x( 'Pushover User Key', 'Configuration Input Field', 'post-smtp' ), array(
@@ -104,7 +109,7 @@ class PostmanNotify {
         // Slack
         add_settings_section( 'slack_credentials', _x( 'Slack Credentials', 'Configuration Section Title', 'post-smtp' ), array(
             $this,
-            'printNotificationsSectionInfo',
+            'section',
         ), self::NOTIFICATIONS_SLACK_CRED );
 
         add_settings_field( PostmanNotifyOptions::SLACK_TOKEN, _x( 'Slack Webhook', 'Configuration Input Field', 'post-smtp' ), array(
@@ -112,41 +117,30 @@ class PostmanNotify {
             'slack_token_callback',
         ), self::NOTIFICATIONS_SLACK_CRED, 'slack_credentials' );
 
+        //Email Notification
+        add_settings_section( 
+            'email_notification', 
+            '', 
+            array( $this, 'email_notification' ), 
+            self::NOTIFICATION_EMAIL
+        );
+
+        add_settings_section( 
+            'chrome_notification', 
+            'Setup Chrome extension (optional)', 
+            array( $this, 'chrome_extension' ), 
+            self::CHROME_EXTENSION, 
+        );
+
         add_settings_field( PostmanNotifyOptions::NOTIFICATION_USE_CHROME, _x( 'Push to chrome extension', 'Configuration Input Field', 'post-smtp' ), array(
             $this,
             'notification_use_chrome_callback',
-        ), self::NOTIFICATIONS_OPTIONS, self::NOTIFICATIONS_SECTION );
+        ), self::CHROME_EXTENSION, 'chrome_notification' );
 
         add_settings_field( 'notification_chrome_uid', _x( 'Chrome Extension UID', 'Configuration Input Field', 'post-smtp' ), array(
             $this,
             'notification_chrome_uid_callback',
-        ), self::NOTIFICATIONS_OPTIONS, self::NOTIFICATIONS_SECTION );
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function printNotificationsSectionInfo() {
-    }
-
-    public function notification_service_callback() {
-        $inputDescription =  __( 'Select the notification service you want to recieve alerts about failed emails.' );
-
-        $options = apply_filters('post_smtp_notification_service', array(
-            'none' => __( 'None', 'post-smtp' ),
-            'default' => __( 'WP Admin Email', 'post-smtp' ),
-            'pushover' => __( 'Pushover', 'post-smtp' ),
-            'slack' => __( 'Slack', 'post-smtp' ),
-        ));
-
-        printf( '<select id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]">', 'postman_options', PostmanNotifyOptions::NOTIFICATION_SERVICE );
-        $currentKey = $this->options->getNotificationService();
-
-        foreach ( $options as $key => $label ) {
-            $this->printSelectOption( $label, $key, $currentKey );
-        }
-
-        printf( '</select><br/><span class="postman_input_description">%s</span>', $inputDescription );
+        ), self::CHROME_EXTENSION, 'chrome_notification' );
     }
 
     public function notification_use_chrome_callback() {
@@ -247,9 +241,123 @@ class PostmanNotify {
         }
     }
 
-    private function printSelectOption( $label, $optionKey, $currentKey ) {
-        $optionPattern = '<option value="%1$s" %2$s>%3$s</option>';
-        printf( $optionPattern, $optionKey, $optionKey == $currentKey ? 'selected="selected"' : '', $label );
+    /**
+     * Section 
+     * 
+     * @since 2.4.0
+     * @version 1.0.0
+     */
+    public function section() {
+        
+
+
     }
+
+    /**
+     * Notification Selection
+     * 
+     * @since 2.4.0
+     * @version 1.0.0
+     */
+    public function notification_selection() {
+
+        $options = apply_filters( 'post_smtp_notification_service', array(
+            'none'      => __( 'None', 'post-smtp' ),
+            'default'   => __( 'Admin Email', 'post-smtp' ),
+            'slack'     => __( 'Slack', 'post-smtp' ),
+            'pushover'  => __( 'Pushover', 'post-smtp' )
+        ) );
+        $currentKey = $this->options->getNotificationService();
+        $logs_url = admin_url( 'admin.php?page=postman_email_log' );
+        
+        echo '<p>' . sprintf( 
+            esc_html( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %s if required.', 'post-smtp' ), 
+            '<a href="'.$logs_url.'" target="_blank">log section</a>' 
+        ) . '</p>';
+
+        ?>
+
+        <div class="ps-notify-radios">
+			<?php
+            foreach( $options as $key => $value ) {
+
+                ?>
+                <div class="ps-notify-radio-outer">
+                    <div class="ps-notify-radio">
+                        <input type="radio" value="<?php echo esc_attr( $key ); ?>" name="postman_options[notification_service]" id="ps-notify-<?php echo esc_attr( $key ); ?>" class="input_notification_service" />
+                        <label for="ps-notify-<?php echo esc_attr( $key ); ?>">
+                            <img src="<?php echo esc_url( POST_SMTP_ASSETS . "images/icons/{$key}.png" ) ?>" />
+                            <div class="ps-notify-tick-container">
+                                <div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
+                            </div>
+                        </label>
+                    </div>
+                    <h4><?php echo esc_html( $value ); ?></h4>
+                </div>
+                <?php
+
+            }
+            
+            if( !class_exists( 'PostSMTPTwilio' ) ) {
+
+                ?>
+                <a href="https://postmansmtp.com/extensions/twilio-extension-pro/" target="_blank">
+                    <div class="ps-notify-radio-outer">
+                        <div class="ps-notify-radio pro-container">
+                            <label for="ps-notify-twillio-pro">
+                                <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/pro.png' ) ?>" class="pro-icon" />
+                                <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/twillio.png' ) ?>" />
+                            </label>
+                        </div>
+                        <h4>Twilio(SMS)</h4>
+                    </div>
+                </a>
+                <?php
+
+            }
+            ?>
+		</div>
+        <?php
+
+    }
+
+    /**
+     * Email Notification | Section call-back
+     * 
+     * @since 2.4.0
+     * @version 1.0.0
+     */
+    public function email_notification() {
+        
+		$notification_emails = PostmanNotifyOptions::getInstance()->get_notification_email();
+
+        ?>
+        <input type="text" name="postman_options[notification_email]" value="<?php echo esc_attr( $notification_emails ); ?>" />
+        <?php
+
+    }
+
+
+    /**
+     * Chrome Extenstion | Section call-back
+     * 
+     * @since 2.4.0
+     * @version 1.0.0
+     */
+    public function chrome_extension() {
+
+        ?>
+        <div class="ps-chrome-extension">
+            <p><?php _e( 'You can also get notifications in chrome for Post SMTP in case of email delivery failure.', 'post-smtp' ) ?></p>
+            <a target="_blank" class="ps-chrome-download" href="https://chrome.google.com/webstore/detail/npklmbkpbknkmbohdbpikeidiaekjoch">
+                <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/logos/chrome-24x24.png' ) ?>" />
+                <?php esc_html_e( 'Download Chrome extension', 'post-smtp' ); ?>
+            </a>
+            <a href="https://postmansmtp.com/post-smtp-1-9-6-new-chrome-extension/" target="_blank"><?php _e( 'Detailed Documentation.', 'post-smtp' ) ?></a>
+        </div>
+        <?php
+
+    }
+
 }
 new PostmanNotify();
