@@ -664,6 +664,7 @@ class PostmanConfigurationController {
 				</div>
 				<h4>Pushover</h4>
 			</div>
+			<?php if( !class_exists( 'PostSMTPTwilio' ) ): ?>
 			<a href="https://postmansmtp.com/extensions/twilio-extension-pro/" target="_blank">
 				<div class="ps-notify-radio-outer">
 					<div class="ps-notify-radio pro-container">
@@ -675,6 +676,7 @@ class PostmanConfigurationController {
 					<h4>Twilio(SMS)</h4>
 				</div>
 			</a>
+			<?php endif; ?>
 		</div>
 		<div id="email_notify" style="display: none;">
 			<input type="text" name="postman_options[notification_email]" value="<?php echo esc_attr( $notification_emails ); ?>" />
@@ -729,7 +731,10 @@ class PostmanConfigurationController {
 							<?php _e( 'Enable chrome extension', 'post-smtp' ) ?>
 						</td>
 						<td>
-							<input type="checkbox" id="notification_use_chrome" name="postman_options[notification_use_chrome]">
+							<label class="ps-switch-1">
+								<input type="checkbox" name="postman_options[notification_use_chrome]" id="notification_use_chrome">
+								<span class="slider round"></span>
+							</label> 
 						</td>
 					</tr>
 					<tr>

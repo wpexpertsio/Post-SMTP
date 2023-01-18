@@ -1239,6 +1239,10 @@ th#date {
     margin: 30px 0 15px 0;
 }
 
+.ps-notify-radio:has(.input_notification_service:checked) {
+    border: 1px solid #4db556;
+}
+
 .ps-switch-1 {
     position: relative;
     display: inline-block;

@@ -39,7 +39,7 @@ class PostmanNotify {
         $currentKey = $this->options->getNotificationService();
         $pushover = $currentKey == 'pushover' ? 'block' : 'none';
         $slack = $currentKey == 'slack' ? 'block' : 'none';
-        $notification_email = $currentKey == 'email_notify' ? 'block' : 'none';
+        $notification_email = $currentKey == 'default' ? 'block' : 'none';
 
         echo '<div id="email_notify" style="display: '.$notification_email.';">';
         do_settings_sections( self::NOTIFICATION_EMAIL );
@@ -144,8 +144,16 @@ class PostmanNotify {
     }
 
     public function notification_use_chrome_callback() {
-        $value = $this->options->useChromeExtension();
-        printf( '<input type="checkbox" id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]" %3$s />', 'postman_options', PostmanNotifyOptions::NOTIFICATION_USE_CHROME, $value ? 'checked="checked"' : '' );
+
+        $value = $this->options->useChromeExtension() ? 'checked="checked"' : '' ;
+        $id = PostmanNotifyOptions::NOTIFICATION_USE_CHROME;
+        ?>
+        <label class="ps-switch-1"> 
+            <input type="checkbox" name="<?php echo 'postman_options[' . esc_attr( $id ) . ']'; ?>" id="<?php echo 'input_' . esc_attr( $id ); ?>" class="<?php echo 'input_' . esc_attr( $id ); ?>" <?php echo esc_attr( $value ); ?> />
+            <span class="slider round"></span>
+        </label> 
+        <?php
+    
     }
 
     public function notification_chrome_uid_callback() {
@@ -274,17 +282,19 @@ class PostmanNotify {
             esc_html( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %s if required.', 'post-smtp' ), 
             '<a href="'.$logs_url.'" target="_blank">log section</a>' 
         ) . '</p>';
-
+        
         ?>
 
         <div class="ps-notify-radios">
 			<?php
             foreach( $options as $key => $value ) {
 
+                $checked = $currentKey == $key ? 'checked' : '';
+
                 ?>
                 <div class="ps-notify-radio-outer">
                     <div class="ps-notify-radio">
-                        <input type="radio" value="<?php echo esc_attr( $key ); ?>" name="postman_options[notification_service]" id="ps-notify-<?php echo esc_attr( $key ); ?>" class="input_notification_service" />
+                        <input type="radio" value="<?php echo esc_attr( $key ); ?>" name="postman_options[notification_service]" id="ps-notify-<?php echo esc_attr( $key ); ?>" class="input_notification_service" <?php echo esc_attr( $checked ); ?> />
                         <label for="ps-notify-<?php echo esc_attr( $key ); ?>">
                             <img src="<?php echo esc_url( POST_SMTP_ASSETS . "images/icons/{$key}.png" ) ?>" />
                             <div class="ps-notify-tick-container">
