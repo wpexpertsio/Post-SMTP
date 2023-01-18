@@ -299,6 +299,12 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
+= 2.4 - 2023-01-18 =
+**Improvements**
+
+* Replaced Mandrill SDK with Endpoints
+* Replaced SendGrid SDK with Endpoints
+
 = 2.3.2 - 2023-01-06 =
 **Bug Fixes**
 
@@ -321,7 +327,7 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 * Updated sender header as per RFC-2822
 * Added PHP 8 Compatibility
-* Replaced Google API SDK with endpoints
+* Updated Google API SDK
 * Replaced MailGun SDK with endpoints
 * Replaced SendInBlue SDK with Endpoints
 
