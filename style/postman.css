@@ -92,7 +92,7 @@ body.post-smtp_page_postman_email_log {
 }
 
 .ps-home-main a {
-    text-decoration: none;
+    font-size: 16px;
 }
 
 .ps-main-header.post-smtp-welcome-panel {
@@ -106,6 +106,15 @@ body.post-smtp_page_postman_email_log {
     padding: 25px;
     font-size: 18px;
     font-weight: bold;
+    line-height: 30px;
+}
+
+.ps-config-bar span {
+    vertical-align: middle;
+}
+
+.ps-config-bar a {
+    margin-left: 15px!important;
 }
 
 .ps-left {
@@ -333,10 +342,6 @@ body.post-smtp_page_postman_email_log {
 
 .ps-config-bar .ps-right {
     color: #817d7d;
-}
-
-.ps-config-bar a {
-    margin-left: 15px;
 }
 
 .ps-home-middle {
@@ -579,10 +584,6 @@ p#back_to_main_menu {
 
 .wizard > .steps .done a, .wizard > .steps .done a:hover, .wizard > .steps .done a:active {
     padding: 12px;
-}
-
-.wizard > .actions a, .wizard > .actions a:hover, .wizard > .actions a:active {
-    background: #faaa39;
 }
 
 legend#wizard_recommendation span {
@@ -1305,3 +1306,7 @@ Sample Code
     <span class="slider round"></span>
 </label> 
 */
+
+.welcome-panel-last h1 {
+    line-height: 34px;
+}

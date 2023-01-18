@@ -53,9 +53,10 @@ class PostmanNotify {
         do_settings_sections( self::NOTIFICATIONS_SLACK_CRED );
         echo '</div>';
 
-        do_settings_sections( self::CHROME_EXTENSION );
-
         do_action( 'post_smtp_notification_settings' );
+        
+
+        do_settings_sections( self::CHROME_EXTENSION );
 
         print '</section>';
     }

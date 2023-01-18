@@ -237,7 +237,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 							'<div class="ps-config-bar">
 								<span>%s</span><span style="color: green" class="dashicons dashicons-yes-alt"></span>
 								<div class="ps-right">
-									What\'s Next? Get Started by Sending a Test Email! <a href="%s" class="ps-btn-orange"> Send a Test Email</a>
+									What\'s Next? Get Started by Sending a Test Email! <a href="%s" class="button button-primary"> Send a Test Email</a>
 								</div>
 								<div class="clear"></div>
 							</div>', 
@@ -255,7 +255,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 							<span >%s</span>
 							<div class="ps-right">
 								<img src="%s" style="vertical-align: middle;width: 30px;" />
-								<a href="%s" class="ps-btn-orange">%s</a>
+								<a href="%s" class="button button-primary">%s</a>
 							</div>
 						</div>',
 						esc_html( $notice['message'] ),
@@ -271,7 +271,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 							<span >%s</span>
 							<span style="color: red" class="dashicons dashicons-dismiss"></span>
 							<div class="ps-right">
-								%s <a href="%s" class="ps-btn-orange">%s</a>
+								%s <a href="%s" class="button button-primary">%s</a>
 							</div>
 						</div>',
 						wp_kses_post( $statusMessage ),
@@ -292,7 +292,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 						<h3 class="ps-ib ps-vm"><?php esc_html_e( 'Configuration', 'post-smtp' ); ?></h3>
 					</div> 
 					<div class="ps-wizard">
-						<a href="<?php esc_attr_e( $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG ) ) ?>" class="ps-btn-orange"><?php esc_html_e( 'Start the Wizard', 'post-smtp' ); ?></a>
+						<a href="<?php esc_attr_e( $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG ) ) ?>" class="button button-primary"><?php esc_html_e( 'Start the Wizard', 'post-smtp' ); ?></a>
 						<h4><?php esc_html_e( 'OR', 'post-smtp' ); ?></h4>
 						<div>
 							<a href="<?php echo esc_url( $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_SLUG ) ) ?>">
@@ -305,17 +305,20 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				<div class="ps-setting-box">
 					<img src="<?php echo esc_attr( POST_SMTP_ASSETS . 'images/icons/action.png' ) ?>" />
 					<h3 class="ps-ib ps-vm"><?php esc_html_e( 'Actions', 'post-smtp' ); ?></h3>
-					<div>
-						<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />
 						<?php
 							// Grant permission with Google
 							ob_start();
 							PostmanTransportRegistry::getInstance()->getSelectedTransport()->printActionMenuItem();
 							$oauth_link = ob_get_clean();
 							$oauth_link = apply_filters( 'post_smtp_oauth_actions', $oauth_link ); 
-							echo wp_kses_post( $oauth_link );
-						?>
-					</div>
+							$has_link =  preg_match('/<\s?[^\>]*\/?\s?>/i', $oauth_link );
+
+							if( $has_link ): ?>
+								<div>
+									<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />
+									<?php echo wp_kses_post( $oauth_link ); ?>
+								</div>
+							<?php endif; ?>
 					<div>
 						<?php
 							if ( PostmanWpMailBinder::getInstance()->isBound() ) {
@@ -604,7 +607,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 							<div class='ps-left'>
 								<h1>{$title}<h1/>
 							</div>";
-			$content .= sprintf( '<div class="ps-right"><div class="back-to-menu-link"><a href="%s" class="ps-btn-orange" >%s</a></div></div>', PostmanUtils::getSettingsPageUrl(), _x( 'Back To Main Menu', 'Return to main menu link', 'post-smtp' ) );
+			$content .= sprintf( '<div class="ps-right"><div class="back-to-menu-link"><a href="%s" class="button button-primary" >%s</a></div></div>', PostmanUtils::getSettingsPageUrl(), _x( 'Back To Main Menu', 'Return to main menu link', 'post-smtp' ) );
 			$content .= '
 							<div class="clear"></div>
 						</div>
@@ -669,7 +672,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				'<textarea cols="80" rows="10" class="ps-textarea" name="settings" %s></textarea>', 
 				esc_textarea( $extraDeleteButtonAttributes ) 
 			);
-			submit_button( __( 'Import', 'post-smtp' ), 'ps-btn-orange', 'import', true, $extraDeleteButtonAttributes );
+			submit_button( __( 'Import', 'post-smtp' ), 'button button-primary', 'import', true, $extraDeleteButtonAttributes );
 			print '</form>';
 			print '</section>';
 			print '<div class="clear"></div>';
@@ -687,7 +690,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				esc_html__( 'Are you sure?', 'post-smtp' ) 
 			);
 
-			submit_button( $resetTitle, 'delete ps-btn-red', 'submit', true );
+			submit_button( $resetTitle, 'delete button button-secondary', 'submit', true );
 			print '</form>';
 			print '</section>';
 			print '</div>';

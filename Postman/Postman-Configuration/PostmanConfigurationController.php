@@ -416,7 +416,7 @@ class PostmanConfigurationController {
 
 		do_action( 'post_smtp_settings_menu' );
 
-		submit_button( 'Save Changes', 'ps-btn-orange' );
+		submit_button( 'Save Changes', 'button button-primary' );
 		print '</form>';
 		print '</div>';
 		print '</div>';
