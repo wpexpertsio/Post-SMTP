@@ -314,9 +314,9 @@ class PostmanNotify {
                 <a href="https://postmansmtp.com/extensions/twilio-extension-pro/" target="_blank">
                     <div class="ps-notify-radio-outer">
                         <div class="ps-notify-radio pro-container">
-                            <label for="ps-notify-twillio-pro">
+                            <label for="ps-notify-twilio-pro">
                                 <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/pro.png' ) ?>" class="pro-icon" />
-                                <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/twillio.png' ) ?>" />
+                                <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/twilio.png' ) ?>" />
                             </label>
                         </div>
                         <h4>Twilio(SMS)</h4>
