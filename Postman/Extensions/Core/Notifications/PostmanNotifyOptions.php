@@ -9,6 +9,7 @@ class PostmanNotifyOptions {
     const PUSHOVER_USER = 'pushover_user';
     const PUSHOVER_TOKEN = 'pushover_token';
     const SLACK_TOKEN = 'slack_token';
+    const NOTIFICATION_EMAIL = 'notification_email';
 
     private $options;
 
@@ -64,5 +65,24 @@ class PostmanNotifyOptions {
         if ( isset( $this->options [ self::NOTIFICATION_CHROME_UID ] ) ) {
             return base64_decode( $this->options [ self::NOTIFICATION_CHROME_UID ] );
         }
+    }
+
+
+    /**
+     * Get Notification Email
+     * 
+     * @since 2.4.0
+     * @version 1.0.0
+     */
+    public function get_notification_email() {
+
+        if ( isset( $this->options[self::NOTIFICATION_EMAIL] ) ) {
+
+            return $this->options[self::NOTIFICATION_EMAIL];
+
+        }
+
+        return get_bloginfo( 'admin_email' );
+
     }
 }

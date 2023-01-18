@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 6.1.1
-Stable tag: 2.3.1
+Stable tag: 2.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -74,13 +74,16 @@ In essence, SMTP is a set of commands that authenticates and directs the transfe
 **Office365 API delivery**
 [Office365 Pro extension](https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/) allows you to connect PostSMTP with your Outlook and Microsoft 365 accounts to improve email deliverability.
 
-**Amazon SES API delivery?**
+**Amazon SES API delivery**
 [Amazon SES Pro Extension](https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/) combines Amazon's mail service provider with PostSMTP's powerful and easy-to-use SMTP mailing features. 
+
+**Zoho Mail API delivery**
+[Zoho Mail Pro Extension](https://postmansmtp.com/extensions/zoho-mail-pro-extension/) gives you the power to connect PostSMTP with your Zoho Mail account to improve email deliverability of your WordPress site.
 
 **Twilio Pro Extension**
 [Twilio Extension](https://postmansmtp.com/extensions/twilio-extension-pro/) allows you to add your phone number so that you can receive SMS notifications and alerts when emails are not delivered to your recipients.
 
-**Better Email Logger Extension?**
+**Better Email Logger Extension**
 [Better Email Logger Pro extension](https://postmansmtp.com/extensions/the-better-email/) allows you to design email marketing campaigns and improve email deliverability for your WordPress site.
 
 **Mail Control Pro Extension**
@@ -296,13 +299,18 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
-= 2.3.1 - 2022-01-05 =
+= 2.3.2 - 2023-01-06 =
+**Bug Fixes**
+
+* Fixed error related to Reply-To appearing in some cases.
+
+= 2.3.1 - 2023-01-05 =
 **Bug Fixes**
 
 * Fixed issues appearing in PostmanLogFields.php
 * Emails were getting broken in some cases
 
-= 2.3 - 2022-01-03 =
+= 2.3 - 2023-01-03 =
 **Bug Fixes**
 
 * PHP errors appear in ajax requests in some cases.

@@ -92,7 +92,7 @@ body.post-smtp_page_postman_email_log {
 }
 
 .ps-home-main a {
-    text-decoration: none;
+    font-size: 16px;
 }
 
 .ps-main-header.post-smtp-welcome-panel {
@@ -106,6 +106,15 @@ body.post-smtp_page_postman_email_log {
     padding: 25px;
     font-size: 18px;
     font-weight: bold;
+    line-height: 30px;
+}
+
+.ps-config-bar span {
+    vertical-align: middle;
+}
+
+.ps-config-bar a {
+    margin-left: 15px!important;
 }
 
 .ps-left {
@@ -333,10 +342,6 @@ body.post-smtp_page_postman_email_log {
 
 .ps-config-bar .ps-right {
     color: #817d7d;
-}
-
-.ps-config-bar a {
-    margin-left: 15px;
 }
 
 .ps-home-middle {
@@ -579,10 +584,6 @@ p#back_to_main_menu {
 
 .wizard > .steps .done a, .wizard > .steps .done a:hover, .wizard > .steps .done a:active {
     padding: 12px;
-}
-
-.wizard > .actions a, .wizard > .actions a:hover, .wizard > .actions a:active {
-    background: #faaa39;
 }
 
 legend#wizard_recommendation span {
@@ -1121,4 +1122,191 @@ th#date {
 
 #fs_connect .fs-box-container {
     background: white !important;
+}
+
+.ps-chrome-download {
+    border: 1px solid #000;
+    padding: 5px 35px 9px 25px;
+    border-radius: 7px;
+    box-shadow: 1px 4px 10px #979797;
+    margin-right: 20px;
+    background-color: #f9f9f9;
+    text-decoration: none;
+    color: #000;
+}
+
+.ps-chrome-download img {
+    margin-right: 15px;
+    vertical-align: middle;
+}
+
+.ps-use-chrome-extension {
+    margin-top: 25px;
+    line-height: 40px;
+}
+
+.ps-notify-radios {
+    display: flex;
+    margin: 30px 0;
+}
+
+.ps-notify-radio label {
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.ps-notify-radio img {
+    width: 30px;
+    cursor: pointer;
+    transition: transform 1s;
+    object-fit: cover;
+    padding: 8px 20px 3px 20px;
+}
+
+.ps-notify-tick-container {
+    transition: .5s ease;
+    opacity: 0;
+    position: absolute;
+    top: 29%;
+    left: 29%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+.input_notification_service:checked + label > .ps-notify-tick-container{
+    opacity: 1;
+}
+
+.ps-notify-radio {
+    margin: 0px 15px;
+    border: 1px solid #000;
+}
+
+.ps-notify-radio input {
+    display: none!important;
+}
+
+.ps-notify-radio label {
+    margin: 0!important;
+    display: inline-block;
+}
+
+.ps-notify-tick span {
+    font-size: 15px;
+    background-color: #4caf50;
+    color: #fff;
+    border-radius: 100%;
+    height: 15px;
+    width: 16px;
+    border: 2px solid #fff;
+}
+
+#postman_wizard-p-5 td {
+    padding: 5px;
+}
+
+.ps-notify-radio-outer {
+    text-align: center;
+}
+
+.ps-notify-radio-outer h4 {
+    margin: 10px;
+    font-weight: normal;
+}
+
+.pro-container {
+    position: relative;
+}
+
+.pro-icon {
+    position: absolute;
+    left: -4px;
+    top: 0;
+    padding: 0!important;
+}
+
+.pro-container label {
+    position: initial;
+}
+
+#use-chrome-extension table {
+    margin-top: 10px;
+}
+
+.ps-chrome-extension {
+    line-height: 50px;
+    margin: 30px 0 15px 0;
+}
+
+.ps-notify-radio:has(.input_notification_service:checked) {
+    border: 1px solid #4db556;
+}
+
+.ps-switch-1 {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 21px;
+}
+
+.ps-switch-1 input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.ps-switch-1 input:checked + .slider {
+    background-color: #4db556;
+}
+
+.ps-switch-1 .slider.round {
+    border-radius: 34px;
+}
+
+.ps-switch-1 .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+.ps-switch-1 input:checked + .slider:before {
+    -webkit-transform: translateX(13px);
+    -ms-transform: translateX(13px);
+    transform: translateX(13px);
+}
+
+.ps-switch-1 .slider.round:before {
+    
+    border-radius: 50%;
+}
+.ps-switch-1 .slider:before {
+    position: absolute;
+    content: "";
+    height: 17px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #fff;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+/*
+Sample Code
+<label class="ps-switch-1">
+    <input type="checkbox" name="" id="">
+    <span class="slider round"></span>
+</label> 
+*/
+
+.welcome-panel-last h1 {
+    line-height: 34px;
 }

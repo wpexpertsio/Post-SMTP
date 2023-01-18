@@ -416,7 +416,7 @@ class PostmanConfigurationController {
 
 		do_action( 'post_smtp_settings_menu' );
 
-		submit_button( 'Save Changes', 'ps-btn-orange' );
+		submit_button( 'Save Changes', 'button button-primary' );
 		print '</form>';
 		print '</div>';
 		print '</div>';
@@ -608,14 +608,79 @@ class PostmanConfigurationController {
 		// Wizard Step 5 - Notificiations
 		printf( '<h5>%s</h5>', esc_html__( 'Notifications', 'post-smtp' ) );
 		print '<fieldset>';
-		printf( '<legend>%s</legend>', esc_html__( 'Select a notify service to notify you when an email is failed to delivered.', 'post-smtp' ) );
-
+		$logs_url = admin_url( 'admin.php?page=postman_email_log' );
+		
+		$notification_emails = PostmanNotifyOptions::getInstance()->get_notification_email();
+		
 		?>
-		<select id="input_notification_service" class="input_notification_service" name="postman_options[notification_service]">
-			<option value="default">Email</option>
-			<option value="pushover">Pushover</option>
-			<option value="slack">Slack</option>
-		</select>
+		<h2><?php esc_html_e( 'Select notification service', 'post-smtp' ); ?></h2>
+		<p><?php printf( esc_html( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %s if required.', 'post-smtp' ), '<a href="'.$logs_url.'" target="_blank">log section</a>' ) ?></p>
+		<div class="ps-notify-radios">
+			<div class="ps-notify-radio-outer">
+				<div class="ps-notify-radio">
+					<input type="radio" value="none" name="postman_options[notification_service]" id="ps-notify-none" class="input_notification_service" />
+					<label for="ps-notify-none">
+						<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/none.png' ) ?>" />
+						<div class="ps-notify-tick-container">
+							<div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
+						</div>
+					</label>
+				</div>
+				<h4>Disable</h4>
+			</div>
+			<div class="ps-notify-radio-outer">
+				<div class="ps-notify-radio">
+					<input type="radio" value="default" name="postman_options[notification_service]" id="ps-notify-default" class="input_notification_service" />
+					<label for="ps-notify-default">
+						<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/default.png' ) ?>" />
+						<div class="ps-notify-tick-container">
+							<div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
+						</div>
+					</label>
+				</div>
+				<h4>Admin Email</h4>
+			</div>
+			<div class="ps-notify-radio-outer">
+				<div class="ps-notify-radio">
+					<input type="radio" value="slack" name="postman_options[notification_service]" id="ps-notify-slack" class="input_notification_service" />
+					<label for="ps-notify-slack">
+						<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/slack.png' ) ?>" />
+						<div class="ps-notify-tick-container">
+							<div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
+						</div>
+					</label>
+				</div>
+				<h4>Slack</h4>
+			</div>
+			<div class="ps-notify-radio-outer">
+				<div class="ps-notify-radio">
+					<input type="radio" value="pushover" name="postman_options[notification_service]" id="ps-notify-pushover" class="input_notification_service" />
+					<label for="ps-notify-pushover">
+						<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/pushover.png' ) ?>" />
+						<div class="ps-notify-tick-container">
+							<div class="ps-notify-tick"><span class="dashicons dashicons-yes"></span></div>
+						</div>
+					</label>
+				</div>
+				<h4>Pushover</h4>
+			</div>
+			<?php if( !class_exists( 'PostSMTPTwilio' ) ): ?>
+			<a href="https://postmansmtp.com/extensions/twilio-extension-pro/" target="_blank">
+				<div class="ps-notify-radio-outer">
+					<div class="ps-notify-radio pro-container">
+						<label for="ps-notify-twilio-pro">
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/pro.png' ) ?>" class="pro-icon" />
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/twilio.png' ) ?>" />
+						</label>
+					</div>
+					<h4>Twilio(SMS)</h4>
+				</div>
+			</a>
+			<?php endif; ?>
+		</div>
+		<div id="email_notify" style="display: none;">
+			<input type="text" name="postman_options[notification_email]" value="<?php echo esc_attr( $notification_emails ); ?>" />
+		</div>
 		<div id="pushover_cred" style="display: none;">
 			<h2><?php esc_html_e( 'Pushover Credentials', 'post-smtp' ); ?></h2>
 			<table class="form-table">
@@ -651,28 +716,37 @@ class PostmanConfigurationController {
 				</tbody>
 			</table>
 		</div>
-
-        <div id="use-chrome-extension">
-            <h2><?php esc_html_e( 'Push To Chrome Extension', 'post-smtp' ); ?></h2>
-            <table class="form-table">
-                <tbody>
-                <tr>
-                    <th scope="row"><?php esc_html_e( 'This is an extra notification to the selection above', 'post-smtp' ); ?></th>
-                    <td>
-                        <input type="checkbox" id="notification_use_chrome" name="postman_options[notification_use_chrome]">
-                        <a target="_blank" class="" href="https://chrome.google.com/webstore/detail/npklmbkpbknkmbohdbpikeidiaekjoch">
-                            <?php esc_html_e( 'You can download the chrome extension here (if link not available, check later).', 'post-smtp' ); ?>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row"><?php esc_html_e( 'Your UID as you see in the extension.', 'post-smtp' ); ?></th>
-                    <td>
-                        <input type="password" id="notification_chrome_uid" name="postman_options[notification_chrome_uid]" value="">
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        <div id="use-chrome-extension" class="ps-use-chrome-extension">
+            <h2><?php esc_html_e( 'Setup Chrome extension (optional)', 'post-smtp' ); ?></h2>
+			<p><?php _e( 'You can also get notifications in chrome for Post SMTP in case of email delivery failure.', 'post-smtp' ) ?></p>
+            <a target="_blank" class="ps-chrome-download" href="https://chrome.google.com/webstore/detail/npklmbkpbknkmbohdbpikeidiaekjoch">
+				<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/logos/chrome-24x24.png' ) ?>" />
+				<?php esc_html_e( 'Download Chrome extension', 'post-smtp' ); ?>
+			</a>
+			<a href="https://postmansmtp.com/post-smtp-1-9-6-new-chrome-extension/" target="_blank"><?php _e( 'Detailed Documentation.', 'post-smtp' ) ?></a>
+			<div>
+				<table>
+					<tr>
+						<td>
+							<?php _e( 'Enable chrome extension', 'post-smtp' ) ?>
+						</td>
+						<td>
+							<label class="ps-switch-1">
+								<input type="checkbox" name="postman_options[notification_use_chrome]" id="notification_use_chrome">
+								<span class="slider round"></span>
+							</label> 
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<?php _e( 'Your UID', 'post-smtp' ) ?>
+						</td>
+						<td>
+							<input type="password" id="notification_chrome_uid" name="postman_options[notification_chrome_uid]" value="">
+						</td>
+					</tr>
+				</table>
+			</div>
         </div>
 
 		<?php
