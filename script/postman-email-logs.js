@@ -40,17 +40,21 @@ jQuery(document).ready(function($) {
 	}
 
 	$('#ps-email-log').DataTable( {
+		
+		processing: true,
+        serverSide: true,
 		ajax: {
-			url: `${ajaxurl}?action=ps-get-email-logs`
+			url: `${ajaxurl}?action=ps-get-email-logs`,
 		},
 		columns: [
 			{ data: 'id' },
 			{ data: 'original_subject' },
 			{ data: 'original_to' },
-			{ data: 'status' },
+			{ data: 'success' },
 			{ data: 'solution' },
-			{ data: 'delivery_time' }
+			{ data: 'time' }
 		]
+		
 	} );
 
 })

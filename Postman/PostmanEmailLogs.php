@@ -2,6 +2,9 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
+
+require 'Postman-Email-Log/PostmanEmailQueryLog.php';
+
 class PostmanEmailLogs {
 
     private $db;
@@ -47,7 +50,7 @@ class PostmanEmailLogs {
     /**
      * Installs the Table | Creates the Table
      * 
-     * @since 2.4.0
+     * @since 2.5.0
      * @version 1.0.0
      */
     public function install_table() {
@@ -127,24 +130,9 @@ class PostmanEmailLogs {
 
 
     /**
-     * Get Logs
-     * 
-     * @since 2.4.0
-     * @version 1.0.0
-     */
-    public function get_logs() {
-
-        return $this->db->get_results(
-            "SELECT * FROM `{$this->db->prefix}{$this->db_name}`"
-        );
-
-    }
-
-
-    /**
      * Delete Log Items, But Keeps recent $keep
      * 
-     * @since 2.4.0
+     * @since 2.5.0
      * @version 1.0.0
      */
     public function truncate_log_items( $keep ) {
@@ -169,7 +157,7 @@ class PostmanEmailLogs {
      * Insert Log Into table
      * 
      * @param array $data
-     * @since 2.4.0
+     * @since 2.5.0
      * @version 1.0.0
      */
     public function save( $data ) {
@@ -187,17 +175,33 @@ class PostmanEmailLogs {
     /**
      * Get Logs
      * 
-     * @since 2.4.0
+     * @since 2.5.0
      * @version 1.0
      */
     public function get_logs_ajax() {
 
-        $logs = $this->get_logs();
+        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-get-email-logs' ) {
 
-        return wp_send_json_success( 
-            $logs, 
-            200 
-        );
+            $logs_query = new PostmanEmailQueryLog;
+
+            $query = array();
+            $query['start'] = sanitize_text_field( $_GET['start'] );
+            $query['end'] = sanitize_text_field( $_GET['length'] );
+            $query['search'] = sanitize_text_field( $_GET['search']['value'] );
+            $query['order'] = sanitize_text_field( $_GET['order'][0]['dir'] );
+            //Column Name
+            $query['order_by'] = sanitize_text_field( $_GET['columns'][$_GET['order'][0]['column']]['data'] );
+            $total_rows = ( is_array( $logs_query->get_row_count() ) && !empty( $logs_query->get_row_count() ) ) ? $logs_query->get_row_count()[0] : '';
+            $total_rows = isset( $total_rows->count ) ? (int)$total_rows->count : '';
+
+            $logs['data'] = $logs_query->get_logs( $query );
+            $logs['recordsTotal'] = $total_rows;
+            $logs['recordsFiltered'] = count( $logs_query->get_logs() );
+            
+            echo json_encode( $logs );
+            die;
+
+        }
 
     }
 

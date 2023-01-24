@@ -327,7 +327,7 @@ if ( ! class_exists( 'PostmanEmailLogPurger' ) ) {
 		/**
 		 * Get Logs
 		 * 
-		 * @since 2.4.0
+		 * @since 2.5.0
 		 * @version 1.0.0
 		 */
 		public function get_logs() {
@@ -344,7 +344,7 @@ if ( ! class_exists( 'PostmanEmailLogPurger' ) ) {
 		/**
 		 * Gets Logs From _posts table
 		 * 
-		 * @since 2.4.0
+		 * @since 2.5.0
 		 * @version 1.0.0
 		 */
 		public function get_old_logs() {
@@ -377,7 +377,7 @@ if ( ! class_exists( 'PostmanEmailLogPurger' ) ) {
 		/**
 		 * Get logs from _post_smtp_logs table
 		 * 
-		 * @since 2.4.0
+		 * @since 2.5.0
 		 * @version 1.0.0
 		 */
 		public function get_new_logs() {

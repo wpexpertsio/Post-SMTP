@@ -35,7 +35,7 @@
 //     /**
 //      * Single-ton Class Starter
 //      * 
-//      * @since 2.4.0
+//      * @since 2.5.0
 //      * @version 1.0.0
 //      */
 //     public static function get_instance() {
@@ -54,7 +54,7 @@
 //     /**
 //      * PostmanEmailLogTable
 //      * 
-//      * @since 2.4.0
+//      * @since 2.5.0
 //      * @version 1.0.0
 //      */
 //     public function __construct() {
