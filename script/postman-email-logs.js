@@ -46,6 +46,7 @@ jQuery(document).ready(function($) {
 		ajax: {
 			url: `${ajaxurl}?action=ps-get-email-logs`,
 		},
+		"lengthMenu": [25, 50, 100, 500],
 		columns: [
 			{ data: 'id' },
 			{ data: 'original_subject' },
@@ -58,13 +59,3 @@ jQuery(document).ready(function($) {
 	} );
 
 })
-
-
-// columns: [
-// 	{ data: 'id' },
-// 	{ data: 'subject' },
-// 	{ data: 'sent_to' },
-// 	{ data: 'status' },
-// 	{ data: 'solution' },
-// 	{ data: 'delivery_time' }
-// ]

@@ -189,10 +189,23 @@ class PostmanEmailLogs {
             $query['end'] = sanitize_text_field( $_GET['length'] );
             $query['search'] = sanitize_text_field( $_GET['search']['value'] );
             $query['order'] = sanitize_text_field( $_GET['order'][0]['dir'] );
+
             //Column Name
             $query['order_by'] = sanitize_text_field( $_GET['columns'][$_GET['order'][0]['column']]['data'] );
 
             $data = $logs_query->get_logs( $query );
+
+            //WordPress Date, Time Format
+            $date_format = get_option( 'date_format' );
+		    $time_format = get_option( 'time_format' );
+
+            //Lets manage the Date format :)
+            foreach( $data as $row ) {
+
+                $row->time = date( "{$date_format} {$time_format}", $row->time );
+                $row->success = $row->success == 1 ? 'Sent' : $row->success;
+
+            }
 
             $total_rows = $logs_query->get_total_row_count();
             $total_rows = ( is_array( $total_rows ) && !empty( $total_rows ) ) ? $total_rows[0] : '';
