@@ -191,12 +191,21 @@ class PostmanEmailLogs {
             $query['order'] = sanitize_text_field( $_GET['order'][0]['dir'] );
             //Column Name
             $query['order_by'] = sanitize_text_field( $_GET['columns'][$_GET['order'][0]['column']]['data'] );
-            $total_rows = ( is_array( $logs_query->get_row_count() ) && !empty( $logs_query->get_row_count() ) ) ? $logs_query->get_row_count()[0] : '';
+
+            $data = $logs_query->get_logs( $query );
+
+            $total_rows = $logs_query->get_total_row_count();
+            $total_rows = ( is_array( $total_rows ) && !empty( $total_rows ) ) ? $total_rows[0] : '';
             $total_rows = isset( $total_rows->count ) ? (int)$total_rows->count : '';
 
-            $logs['data'] = $logs_query->get_logs( $query );
+            $filtered_rows = $logs_query->get_filtered_rows_count();
+            $filtered_rows = ( is_array( $filtered_rows ) && !empty( $filtered_rows ) ) ? $filtered_rows[0] : '';
+            $filtered_rows = isset( $filtered_rows->count ) ? (int)$filtered_rows->count : '';
+
+            $logs['data'] = $data;
             $logs['recordsTotal'] = $total_rows;
-            $logs['recordsFiltered'] = count( $logs_query->get_logs() );
+            $logs['recordsFiltered'] = $filtered_rows;
+            $logs['draw'] = sanitize_text_field( $_GET['draw'] );
             
             echo json_encode( $logs );
             die;
