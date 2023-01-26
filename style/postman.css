@@ -1122,3 +1122,8 @@ th#date {
 #fs_connect .fs-box-container {
     background: white !important;
 }
+
+.ps-db-update-notice {
+    border: 1px solid #2271b1;
+    border-left-width: 4px;
+}

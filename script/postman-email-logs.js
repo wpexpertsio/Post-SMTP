@@ -72,4 +72,21 @@ jQuery(document).ready(function($) {
 		}
 	} );
 
+	//Update Database
+	jQuery( document ).on( 'click', '#ps-migrate-logs', function( e ){
+
+		e.preventDefault();
+		var security = jQuery( '#ps-migrate-logs' ).data( 'security' );
+
+		jQuery.ajax({
+			type: 'POST',
+			url: ajaxurl,
+			data: {
+				security: security,
+				action: 'ps-migrate-logs',
+			}
+		});
+
+	} );
+
 })

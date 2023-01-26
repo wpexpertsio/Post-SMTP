@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once dirname(__DIR__) . '/PostmanLogFields.php';
 require_once 'PostmanEmailLogService.php';
 require_once 'PostmanEmailLogView.php';
+require_once 'PostmanEmailLogMigration.php';
 
 /**
  *
@@ -49,7 +50,7 @@ class PostmanEmailLogController {
 					'on_admin_init',
 			) );
 		}
-
+		
 		$email_logs = new PostmanEmailLogs;
 
         add_action( 'wp_ajax_post_smtp_log_trash_all', array( $this, 'post_smtp_log_trash_all' ) );
