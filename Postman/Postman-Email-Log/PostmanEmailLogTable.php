@@ -1,10 +1,10 @@
 <div class="wrap">
     <h1>Post SMTP Email Logs</h1>
-    <input type="hidden" id="ps-email-log-nonce" />
+    <input type="hidden" id="ps-email-log-nonce" value="<?php echo wp_create_nonce( 'security' ) ?>" />
     <table width="100%" id="ps-email-log">
         <thead>
             <tr>
-                <th><input type="checkbox" /></th>
+                <th><input type="checkbox" class="ps-email-log-select-all" /></th>
                 <th>Subject</th>
                 <th>Sent To</th>
                 <th>Status</th>
@@ -14,7 +14,7 @@
         </thead>
         <tfoot>
             <tr>
-                <th><input type="checkbox" /></th>
+                <th><input type="checkbox" class="ps-email-log-select-all" /></th>
                 <th>Subject</th>
                 <th>Sent To</th>
                 <th>Status</th>
@@ -24,47 +24,3 @@
         </tfoot>
     </table>
 </div>
-<?php
-
-// if( !class_exists( 'PostmanEmailLogTable' ) ):
-// class PostmanEmailLogTable {
-
-//     private static $_instance = null;
-
-
-//     /**
-//      * Single-ton Class Starter
-//      * 
-//      * @since 2.5.0
-//      * @version 1.0.0
-//      */
-//     public static function get_instance() {
-
-//         if( self::$_instance === null ) {
-
-//             self::$_instance = new self();
-
-//         }
-
-//         return self::$_instance;
-
-//     }
-
-
-//     /**
-//      * PostmanEmailLogTable
-//      * 
-//      * @since 2.5.0
-//      * @version 1.0.0
-//      */
-//     public function __construct() {
-
-//         echo 'asd';die;
-        
-//     }
-
-// }
-
-// PostmanEmailLogTable::get_instance();
-
-// endif;

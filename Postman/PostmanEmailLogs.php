@@ -180,6 +180,8 @@ class PostmanEmailLogs {
      */
     public function get_logs_ajax() {
 
+        wp_verify_nonce( $_GET['security'], 'security' );
+
         if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-get-email-logs' ) {
 
             $logs_query = new PostmanEmailQueryLog;

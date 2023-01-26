@@ -39,12 +39,14 @@ jQuery(document).ready(function($) {
 		});
 	}
 
-	$('#ps-email-log').DataTable( {
-		
+	var logsDTSecirity = jQuery( '#ps-email-log-nonce' ).val();
+
+	var logsDT = $('#ps-email-log').DataTable( {
+
 		processing: true,
         serverSide: true,
 		ajax: {
-			url: `${ajaxurl}?action=ps-get-email-logs`,
+			url: `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}`,
 		},
 		"lengthMenu": [25, 50, 100, 500],
 		columns: [
@@ -54,8 +56,20 @@ jQuery(document).ready(function($) {
 			{ data: 'success' },
 			{ data: 'solution' },
 			{ data: 'time' }
-		]
-		
+		],
+		columnDefs: [
+			{ orderable: false, targets: 0 }
+		],
+		order: [
+			[1, 'asc']
+		],
+		"createdRow": function ( row, data, index ) {
+
+			jQuery( row  ).find( 'td' ).first().html( 
+				`<input type="checkbox" value="${data['id']}" class="ps-email-log-cb" />`
+			);
+
+		}
 	} );
 
 })
