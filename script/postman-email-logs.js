@@ -84,6 +84,13 @@ jQuery(document).ready(function($) {
 			data: {
 				security: security,
 				action: 'ps-migrate-logs',
+			},
+
+			success: function( data ) {
+				
+				jQuery( '.ps-db-update-notice' ).find( '.notice-dismiss' ).click();
+				location.reload();
+
 			}
 		});
 
