@@ -35,13 +35,14 @@ class PostmanInstaller {
 		$table_version = get_option( 'postman_db_version' );
 
 		//If no logs in _posts table
-		$recent_posts = wp_get_recent_posts( array(
-			'numberposts' 	=> 	1,
-			'post_type'		=>	PostmanEmailLogPostType::POSTMAN_CUSTOM_POST_TYPE_SLUG
-		) );
+		global $wpdb;
+
+        $have_old_logs = $wpdb->get_results(
+            "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'postman_sent_mail' LIMIT 1;"
+        );
 
 		//Lets Install New Fresh Logs Table
-		if( empty( $recent_posts ) && !$table_version ) {
+		if( empty( $have_old_logs ) && !$table_version ) {
 
 			if( !class_exists( 'PostmanEmailLogs' ) ) {
 

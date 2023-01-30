@@ -18,35 +18,29 @@ class PostmanEmailLogsMigration {
         $this->new_logging = get_option( 'postman_db_version' );
         $this->migrating = get_option( 'ps_migrate_logs' );
         $this->have_old_logs = $this->have_old_logs();
-
+        
         //Show DB Update Notice
-        if( $this->have_old_logs && !$this->migrating ) {
+        if( $this->have_old_logs  ) {
 
             add_action( 'admin_notices', array( $this, 'notice' ) );
-            add_action( 'wp_ajax_ps-migrate-logs', array( $this, 'update_database' ) );
 
         }
 
-        add_filter( 'cron_schedules', array( $this, 'ps_fifteen_minutes' ) );
+        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-migrate-logs' ) {
+
+            $this->update_database();
+
+        }
         
         //Add Hook of Migration, Schedule Migration
-        if( $this->migrating ) {
+        if( $this->migrating && ( isset( $_GET['page'] ) && $_GET['page'] == 'postman_email_log' ) ) {
 
-            add_action( 'ps_migrate_logs', array( $this, 'migrate_logs' ) );
-
-            if ( ! wp_next_scheduled( 'ps_migrate_logs' ) ) {
-                wp_schedule_event( time(), 'fifteen_minutes', 'ps_migrate_logs' );
-            }
+            add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_script' ) );
 
         }
-        //Unschedule Migration, because no old logs left :)
-        if( !$this->have_old_logs ) {
 
-            $timestamp = wp_next_scheduled( 'ps_migrate_logs' );
-            wp_unschedule_event( $timestamp, 'ps_migrate_logs' );
+        add_action( 'wp_ajax_ps-migrate-logs', array( $this, 'migrate_logs' ) );
 
-        }
-        
     }
 
 
@@ -58,12 +52,13 @@ class PostmanEmailLogsMigration {
      */
     public function have_old_logs() {
 
-        $recent_posts = wp_get_recent_posts( array(
-			'numberposts' 	=> 	1,
-			'post_type'		=>	PostmanEmailLogPostType::POSTMAN_CUSTOM_POST_TYPE_SLUG
-		) );
+        global $wpdb;
 
-        if( !empty( $recent_posts ) ) {
+        $data = $wpdb->get_results(
+            "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'postman_sent_mail' LIMIT 1;"
+        );
+        
+        if( !empty( $data ) ) {
 
             return true;
             
@@ -82,68 +77,73 @@ class PostmanEmailLogsMigration {
      */
     public function notice() {
 
+        $security = wp_create_nonce( 'ps-migrate-logs' );
+        $migration_url = admin_url( 'admin.php?page=postman_email_log' ) . '&security=' . $security . '&action=ps-migrate-logs';
+        $status_url = admin_url( 'admin.php?page=postman_email_log' );
+        $total_old_logs = wp_count_posts( 'postman_sent_mail' );
+
         ?>
-        <div class="notice ps-db-update-notice is-dismissible">
+        <div class="notice ps-db-update-notice is-dismissible" style="border: 1px solid #2271b1; border-left-width: 4px;">
+            <input type="hidden" value="<?php echo esc_attr( $security ); ?>" class="ps-security">
             <p><b><?php _e( 'Post SMTP database update required', 'post-smtp' ); ?></b></p>
             <p><?php 
                 _e( 'Post SMTP has been updated! To keep things running smoothly, we have to update your database to the newest version, migrate email logs to new system. The database update process runs in the background and may take a little while, so please be patient.', 'post-smtp' ); 
             ?></p>
             <p>
-                <button class="button button-primary" data-security="<?php echo wp_create_nonce( 'ps-migrate-logs' ); ?>" id="ps-migrate-logs">Update and Migrate Logs</button>
+                <?php if( $this->have_old_logs && !$this->migrating ): ?>
+                    <a href="<?php echo esc_url( $migration_url ) ?>" class="button button-primary">Update and Migrate Logs</a>
+                <?php endif; ?>
+                <?php if(  
+                    $this->migrating
+                    &&
+                    ( isset( $_GET['page'] ) && $_GET['page'] !== 'postman_email_log' )
+                ): ?>
+                    <a href="<?php echo esc_url( $status_url ); ?>" class="button button-secondary">View Progress →</a>
+                <?php endif; ?>
                 <a href="" target="__blank" class="button button-secondary">Learn about migration</a>
             </p>
         </div>
         <?php
 
-    }
-
-
-    /**
-     * Updates Database | AJAX call-back
-     * 
-     * @since 2.5.0
-     * @version 1.0.0
-     */
-    public function update_database() {
-
-        wp_verify_nonce( $_POST['security'], 'ps-migrate-logs' );
-
-        //Let's start migration 
-        if( $_POST['action'] == 'ps-migrate-logs' ) {
-
-            $email_logs = new PostmanEmailLogs;
-            $email_logs->install_table();
-
-            //Have old logs, setup cronjob for migration
-            if( $this->have_old_logs ) {
-
-                update_option( 'ps_migrate_logs', 1 );
-
-            }
-
-            wp_send_json_success( array(), 200 );
-
+        if(
+            $this->have_old_logs 
+            && 
+            $this->migrating 
+            && 
+            ( isset( $_GET['page'] ) && $_GET['page'] == 'postman_email_log' )
+        ) {
+            ?>
+            <div>
+                <progress id="ps-migration-progress" value="32" max="<?php echo esc_attr( $total_old_logs->private ); ?>"></progress>
+            </div>
+            <?php
         }
 
     }
 
 
     /**
-     * Every thirty minutes Cron Interval
+     * Updates Database 
      * 
      * @since 2.5.0
      * @version 1.0.0
      */
-    public function ps_fifteen_minutes( $schedules ) {
+    public function update_database() {
 
-        $schedules['fifteen_minutes'] = array(
-            //'interval' => 900,
-            'interval' => 5,
-            'display'  => esc_html__( 'Every Fifteen Minutes' ) 
-        );
+        wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' );
 
-        return $schedules;
+        //Let's start migration 
 
+        $email_logs = new PostmanEmailLogs;
+        $email_logs->install_table();
+
+        //Have old logs, setup cronjob for migration
+        if( $this->have_old_logs && !$this->migrating ) {
+
+            update_option( 'ps_migrate_logs', 1 );
+
+        }
+        
     }
 
     
@@ -165,28 +165,82 @@ class PostmanEmailLogsMigration {
 
 
     /**
-     * Migrate Logs
+     * Migrate Logs | AJAX call-back
      * 
      * @since 2.5.0
      * @version 1.0.0
      */
     public function migrate_logs() {
-        
-        if( $this->have_old_logs ) {
 
-            $last_log = $this->get_last_old_log();
+        wp_verify_nonce( $_POST['security'], 'ps-migrate-logs' );
 
+        if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-migrate-logs' ) {
 
-            var_dump( $last_log );die;
+            if( $this->have_old_logs ) {
+
+                $last_log = $this->get_old_logs();
+    
+    
+                var_dump( $last_log );die;
+    
+            }
 
         }
+
+        wp_send_json_success( array( 'left' => 10 ), 200 );
+
+    }
+
+
+    /**
+     * Enqueue Scripts | Action call-back
+     * 
+     * @since 2.5.0
+     * @version 1.0.0
+     */
+    public function enqueue_script() {
+
+        wp_enqueue_script( 'ps-migrate', POST_SMTP_URL . '/script/logs-migration.js', array( 'jquery' ), array(), true );
+
+    }
+
+    
+    /**
+     * Gets old logs
+     * 
+     * @param $limit String
+     * @since 2.5.0
+     * @version 1.0.0
+     */
+    public function get_old_logs( $limit = 100 ) {
+
+        global $wpdb;
+
+        $log_ids = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT p.ID FROM {$wpdb->posts} AS p WHERE p.post_type = 'postman_sent_mail' && p.pinged != 1 LIMIT %d;",
+                $limit
+            ),
+            OBJECT_K
+        );
+        $log_ids = array_keys( $log_ids );
+
+        $logs = $wpdb->get_results(
+                "SELECT * FROM {$wpdb->postmeta} WHERE post_id IN {$log_ids};"
+        );
+var_dump( $logs );die;
+        if( $log_ids ) {
+
+
+
+        }
+
+        //Wind up, all migrated
 
     }
 
 }
 
-$woo = new PostmanEmailLogsMigration;
-
-$woo->migrate_logs();
+new PostmanEmailLogsMigration;
 
 endif;

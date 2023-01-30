@@ -64,7 +64,7 @@ class PostmanEmailLogs {
         $sql = "CREATE TABLE IF NOT EXISTS `{$this->db->prefix}{$this->db_name}` (
                 `id` bigint(20) NOT NULL AUTO_INCREMENT,";
 
-        foreach ($this->fields as $field ) {
+        foreach ( $this->fields as $field ) {
 
             if ( $field == 'original_message' || $field == 'session_transcript' ) {
 

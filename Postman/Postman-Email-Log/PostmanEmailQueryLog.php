@@ -3,12 +3,6 @@
 if( !class_exists( 'PostmanEmailQueryLog' ) ):
 class PostmanEmailQueryLog {
 
-    private $start = '';
-    private $end = '';
-    private $search = '';
-    private $order = '';
-    private $order_by = '';
-    private $search_by = '';
     private $db = '';
     private $table = 'post_smtp_logs';
     private $query = ''; 
