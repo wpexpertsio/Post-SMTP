@@ -1122,3 +1122,22 @@ th#date {
 #fs_connect .fs-box-container {
     background: white !important;
 }
+
+
+progress#ps-migration-progress::-moz-progress-bar {
+    background: #2271b1;
+}
+
+/* For Chrome or Safari */
+progress#ps-migration-progress::-webkit-progress-value {
+    background: #2271b1;
+}
+
+/* For IE10 */
+progress#ps-migration-progress {
+    background: #2271b1;
+}
+
+h5#ps-progress {
+    margin: 5px;
+}
