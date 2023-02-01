@@ -84,10 +84,12 @@ class PostmanEmailLogsMigration {
     public function notice() {
 
         $security = wp_create_nonce( 'ps-migrate-logs' );
-        $migration_url = admin_url( 'admin.php?page=postman_email_log' ) . '&security=' . $security . '&action=ps-migrate-logs';
+        $migration_url = admin_url( 'admin.php?page=postman' ) . '&security=' . $security . '&action=ps-migrate-logs';
         $delete_url = admin_url( 'admin.php?page=postman_email_log' ) . '&security=' . $security . '&action=ps-delete-old-logs';
         $status_url = admin_url( 'admin.php?page=postman_email_log' );
         $total_old_logs = wp_count_posts( 'postman_sent_mail' );
+        $this->migrating = get_option( 'ps_migrate_logs' );
+        $migrated_logs = $this->get_migrated_count();
 
         ?>
         <div class="notice ps-db-update-notice is-dismissible" style="border: 1px solid #2271b1; border-left-width: 4px;">
@@ -130,8 +132,8 @@ class PostmanEmailLogsMigration {
 
                 ?>
                 <div class="ps-migration-box" style="text-align: center; width: 100%; margin: 10px 0;">
-                    <progress style="width: 100%;" id="ps-migration-progress"  value="500" max="<?php echo esc_attr( $total_old_logs->private ); ?>"></progress>
-                    <h5 id="ps-progress"></h5>
+                    <progress style="width: 100%;" id="ps-migration-progress"  value="<?php echo esc_attr( $migrated_logs ); ?>" max="<?php echo esc_attr( $total_old_logs->private ); ?>"></progress>
+                    <h5 id="ps-progress"><?php echo esc_attr( "{$migrated_logs}/ {$total_old_logs->private}" ); ?></h5>
                 </div>
                 <?php
 

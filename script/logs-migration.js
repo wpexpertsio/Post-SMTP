@@ -15,13 +15,13 @@ jQuery( document ).ready( function() {
             },
             success: function( response ) {
 
-                var max = Number( jQuery( '#ps-migration-progress' ).attr( 'max' ) );
-                var migrated = Number( response.data.migrated );
+                var max = jQuery( '#ps-migration-progress' ).attr( 'max' );
+                var migrated = response.data.migrated;
 
-                jQuery( '#ps-migration-progress' ).val( response.data.migrated );
+                jQuery( '#ps-migration-progress' ).val( migrated );
                 jQuery( '#ps-progress' ).html( `${migrated}/ ${max}` );
 
-                if( response.data.migrated == 'all' ) {
+                if( max == migrated || response.data.migrated == 'all' ) {
 
                     jQuery( '#ps-migration-progress' ).val( max );
                     jQuery( '.ps-migration-box' ).slideUp();
@@ -29,7 +29,7 @@ jQuery( document ).ready( function() {
 
                 }
 
-                if( response.data.migrated ) {
+                else if( response.data.migrated ) {
 
                     jQuery('#ps-email-log').DataTable().ajax.reload();
 
