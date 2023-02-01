@@ -113,7 +113,7 @@ class PostmanEmailLogsMigration {
                 <?php endif; ?>
                 <?php
                 if(  
-                    $this->have_old_logs
+                    $this->have_old_logs()
                     &&
                     $this->is_migrated()
                     &&
@@ -416,12 +416,6 @@ class PostmanEmailLogsMigration {
             ON p.ID = pm.post_id
             WHERE p.post_type = 'postman_sent_mail' && p.ID IN ({$log_ids});"
         );
-
-        // foreach( $log_ids as $ID ) {
-
-        //     $result = wp_delete_post( $ID, true );
-
-        // }
 
         return $result;
 

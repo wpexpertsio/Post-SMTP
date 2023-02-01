@@ -61,7 +61,7 @@ jQuery(document).ready(function($) {
 			{ orderable: false, targets: 0 }
 		],
 		order: [
-			[1, 'asc']
+			[0, 'desc']
 		],
 		"createdRow": function ( row, data, index ) {
 
