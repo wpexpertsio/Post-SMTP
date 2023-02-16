@@ -34,7 +34,8 @@ class PostmanEmailQueryLog {
      */
     public function get_logs( $args = array() ) {
 
-        $data = '';
+        $clause_for_date = empty( $args['search'] ) ? $this->query .= " WHERE" : $this->query .= " AND";
+
         $args['search_by'] = array(
             'original_subject',
             'success',
@@ -77,6 +78,21 @@ class PostmanEmailQueryLog {
                 $counter++;
 
             }
+
+        }
+
+        //Date Filter :)
+        if( isset( $args['from'] ) ) {
+                
+            $this->query .= " {$clause_for_date} time >= {$args['from']}";
+
+        }
+
+        if( isset( $args['to'] ) ) {
+
+            $clause_for_date = ( empty( $args['search'] ) && !isset( $args['from'] ) ) ? " WHERE" : " AND";
+
+            $this->query .= " {$clause_for_date} time <= {$args['to']}";
 
         }
 

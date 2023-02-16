@@ -7,9 +7,10 @@
                 <th><input type="checkbox" class="ps-email-log-select-all" /></th>
                 <th>Subject</th>
                 <th>Sent To</th>
-                <th>Status</th>
-                <th>Solution</th>
                 <th>Delivery Time</th>
+                <th>Solution</th>
+                <th>Status</th>
+                <th class="ps-email-log-actions">Actions</th>
             </tr>
         </thead>
         <tfoot>
@@ -17,9 +18,10 @@
                 <th><input type="checkbox" class="ps-email-log-select-all" /></th>
                 <th>Subject</th>
                 <th>Sent To</th>
-                <th>Status</th>
-                <th>Solution</th>
                 <th>Delivery Time</th>
+                <th>Solution</th>
+                <th>Status</th>
+                <th class="ps-email-log-actions">Actions</th>
             </tr>
         </tfoot>
     </table>

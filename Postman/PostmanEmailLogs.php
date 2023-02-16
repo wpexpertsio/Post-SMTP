@@ -195,6 +195,19 @@ class PostmanEmailLogs {
             //Column Name
             $query['order_by'] = sanitize_text_field( $_GET['columns'][$_GET['order'][0]['column']]['data'] );
 
+            //Date Filter :)
+            if( isset( $_GET['from'] ) ) {
+
+                $query['from'] = strtotime( sanitize_text_field( $_GET['from'] ) );
+
+            }
+
+            if( isset( $_GET['to'] ) ) {
+
+                $query['to'] = strtotime( sanitize_text_field( $_GET['to'] ) ) + 86400;
+
+            }
+
             $data = $logs_query->get_logs( $query );
 
             //WordPress Date, Time Format
@@ -205,7 +218,8 @@ class PostmanEmailLogs {
             foreach( $data as $row ) {
 
                 $row->time = date( "{$date_format} {$time_format}", $row->time );
-                $row->success = $row->success == 1 ? 'Sent' : $row->success;
+                $row->success = $row->success == 1 ? '<span>Success</span>' : '<span>Failed</span>';
+                $row->actions = '';
 
             }
 
