@@ -94,6 +94,13 @@ class PostmanUtils {
 		if ( $length == 0 ) {
 			return true;
 		}
+		
+		if( $haystack == null ) {
+		    
+		    return false;
+		    
+		}
+		
 		return (substr( $haystack, - $length ) === $needle);
 	}
 	public static function obfuscatePassword( $password ) {
