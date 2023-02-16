@@ -12,7 +12,7 @@ class PostmanEmailQueryLog {
     /**
      * The Construct PostmanEmailQueryLog
      * 
-     * @since 2.5.0
+      * @since 2.5.0
      * @version 1.0.0
      */
     public function __construct() {
@@ -129,6 +129,21 @@ class PostmanEmailQueryLog {
 
         return $this->db->get_results(
             "SELECT COUNT(*) as count FROM `{$this->table}`;"
+        );
+
+    }
+
+
+    /**
+     * Get Last Log ID
+     * 
+     * @since 2.5.0
+     * @version 1.0.0
+     */
+    public function get_last_log_id() {
+
+        return $this->db->get_results(
+            "SELECT id FROM `{$this->table}` ORDER BY id DESC LIMIT 1;"
         );
 
     }
