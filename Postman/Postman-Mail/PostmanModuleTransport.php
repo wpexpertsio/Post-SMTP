@@ -350,7 +350,15 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 		return PostmanUtils::endsWith ( $hostname, 'live.com' );
 	}
 	public function isServiceProviderYahoo($hostname) {
+	    
+	    if( $hostname == null ) {
+	        
+	        return false;
+	        
+	    } 
+	    
 		return strpos ( $hostname, 'yahoo' );
+		
 	}
 	
 	/*
