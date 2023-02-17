@@ -57,6 +57,8 @@ class PostmanEmailLogController {
 
 		add_action( 'wp_ajax_ps-get-email-logs', array( $email_logs, 'get_logs_ajax' ) );
 
+		add_action( 'wp_ajax_ps-delete-email-logs', array( $email_logs, 'delete_logs_ajax' ) );
+
 		if ( is_admin() ) {
 			$actionName = self::RESEND_MAIL_AJAX_SLUG;
 			$fullname = 'wp_ajax_' . $actionName;
@@ -443,6 +445,42 @@ class PostmanEmailLogController {
 		else {
 
 			require 'PostmanEmailLogLegacy.php';
+
+		}
+
+	}
+
+
+	/**
+	 * Delete Logs | AJAX callback
+	 * 
+	 * @since 2.5.0
+	 * @version 1.0.0
+	 */
+	public function delete_logs_ajax() {
+		
+		if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-delete-email-logs' ) {
+
+			$delete = $this->delete_logs();
+
+			if( $delete ) {
+
+				$response = array(
+					'success' => true,
+					'message' => __( 'Logs deleted successfully', 'post-smtp' )
+				);
+
+			}
+			else {
+
+				$response = array(
+					'success' => false,
+					'message' => __( 'Error deleting logs', 'post-smtp' )
+				);
+
+			}
+
+			wp_send_json( $response );
 
 		}
 

@@ -124,6 +124,7 @@ jQuery(document).ready(function($) {
 		<div class="clear"></div>
 	` );
 
+	//Date Filter
 	jQuery( document ).on( 'change', '.ps-email-log-from, .ps-email-log-to', function() {
 
 		var from = jQuery( '.ps-email-log-from' ).val();
@@ -149,6 +150,126 @@ jQuery(document).ready(function($) {
 			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}` ).load();
 
 		}
+
+	} );
+
+	//Check All
+	jQuery( document ).on( 'click', '.ps-email-log-select-all', function( e ) {
+
+		var selectedValue = jQuery('#ps-email-log_length').find( 'select' ).find(":selected").text();
+
+		if( this.checked ) {
+
+			jQuery( '.ps-email-log-cb' ).prop( 'checked', true );
+			jQuery( '.ps-email-log-select-all' ).prop( 'checked', true );
+
+			jQuery( '.ps-email-log-export-btn .ps-btn-text' ).text( `Export Selected (${selectedValue})` );
+			jQuery( '.ps-email-log-delete-btn .ps-btn-text' ).text( `Delete Selected (${selectedValue})` );
+			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn' ).addClass( 'ps-selected' );
+
+		}
+		else {
+
+			jQuery( '.ps-email-log-cb' ).prop( 'checked', false );
+			jQuery( '.ps-email-log-select-all' ).prop( 'checked', false );
+
+			jQuery( '.ps-email-log-export-btn .ps-btn-text' ).text( `Export All` );
+			jQuery( '.ps-email-log-delete-btn .ps-btn-text' ).text( `Delete All` );
+			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn' ).removeClass( 'ps-selected' );
+
+		}
+		
+
+	} );
+
+	//Check Individual
+	jQuery( document ).on( 'click', '.ps-email-log-cb', function( e ) {
+
+		var totalCheckboxes = jQuery( '.ps-email-log-cb' ).length;
+		var checkboxes = jQuery( '.ps-email-log-cb' );
+		var checkedCounter = 0;
+
+		if( !this.checked ) {
+
+			jQuery( '.ps-email-log-select-all' ).prop( 'checked', false );
+
+		}
+
+		for( var i = 0; i < totalCheckboxes; i++ ) {
+
+			if( jQuery( checkboxes )[i].checked ) {
+
+				checkedCounter = checkedCounter + 1;
+
+			}
+
+		}
+
+		if( checkedCounter == totalCheckboxes ) {
+
+			jQuery( '.ps-email-log-select-all' ).prop( 'checked', true );
+
+		}
+
+		jQuery( '.ps-email-log-export-btn .ps-btn-text' ).text( `Export Selected (${checkedCounter})` );
+		jQuery( '.ps-email-log-delete-btn .ps-btn-text' ).text( `Delete Selected (${checkedCounter})` );
+		jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn' ).addClass( 'ps-selected' );
+		
+		if( checkedCounter == 0 ) {
+
+			jQuery( '.ps-email-log-export-btn .ps-btn-text' ).text( `Export All` );
+			jQuery( '.ps-email-log-delete-btn .ps-btn-text' ).text( `Delete All` );
+			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn' ).removeClass( 'ps-selected' );
+
+		}
+
+	} );
+
+	//Export
+	jQuery( document ).on( 'click', '.ps-email-log-export-btn', function( e ) { 
+
+		console.log( 'export' );
+
+	} );
+
+	//Delete
+	jQuery( document ).on( 'click', '.ps-email-log-delete-btn', function( e ) { 
+
+		var selected = [];
+
+		if( jQuery( this ).hasClass( 'ps-selected' ) ) {
+
+			jQuery( '.ps-email-log-cb' ).each( function( i, el ) {
+
+				if( jQuery( el ).is( ':checked' ) ) {
+
+					selected.push( jQuery( el ).val() );
+
+				}
+
+			} );
+
+		}
+
+
+		jQuery.ajax( {
+
+			url: ajaxurl,
+			type: 'POST',
+			data: {
+				action: 'ps-delete-email-logs',
+				security: logsDTSecirity,
+				selected: selected
+			},
+			success: function( response ) {
+
+				logsDT.ajax.reload();
+
+			}
+
+		} );
+
+		
 
 	} );
 
