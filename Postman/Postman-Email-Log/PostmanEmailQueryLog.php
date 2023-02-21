@@ -164,5 +164,65 @@ class PostmanEmailQueryLog {
 
     }
 
+
+    /**
+     * Delete Logs
+     * 
+     * @param $ids Array
+     * @since 2.5.0
+     * @version 1.0.0
+     */
+    public function delete_logs( $ids = array() ) {
+        
+        $ids = implode( ',', $ids );
+        $ids = $ids == -1 ? '' : "WHERE id IN ({$ids});";
+
+        return $this->db->query(
+            "DELETE FROM `{$this->table}` {$ids}"
+        );
+
+    }
+
+
+    /**
+     * Get All Logs
+     * 
+     * @param $ids Array
+     * @since 2.5.0
+     * @version 1.0.0
+     */
+    public function get_all_logs( $ids = array() ) {
+
+        $ids = implode( ',', $ids );
+        $ids = $ids == -1 ? '' : "WHERE id IN ({$ids});";
+
+        return $this->db->get_results(
+            "SELECT * FROM `{$this->table}` {$ids}"
+        );
+
+
+    }
+
+
+    /**
+     * Get Log
+     * 
+     * @param $id Int
+     * @param $columns Array
+     * @since 2.5.0
+     * @version 1.0.0
+     */
+    public function get_log( $id, $columns = array() ) {
+
+        $columns = empty( $columns ) ? '*' : implode( ',', $columns );
+
+        return $this->db->get_row(
+            "SELECT {$columns} FROM `{$this->table}` WHERE id = {$id};",
+            ARRAY_A
+        );
+
+
+    }
+
 }
 endif;

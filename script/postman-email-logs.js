@@ -87,11 +87,11 @@ jQuery(document).ready(function($) {
 				`<input type="checkbox" value="${data['id']}" class="ps-email-log-cb" />`
 			);
 
-			jQuery( row ).find( 'td' ).last().html( `
+			jQuery( row ).find( 'td:nth-child(7)' ).html( `
 				<div class="ps-email-log-actions">
-					<a href="#" class="ps-email-log-view">View</a>
+					<a href="#" class="ps-email-log-view ps-popup-btn">View</a>
 					<a href="#" class="ps-email-log-resend">Resend</a>
-					<a href="#" class="ps-email-log-transcript">Transcript</a>
+					<a href="#" class="ps-email-log-transcript ps-popup-btn">Transcript</a>
 					<a href="#" class="ps-email-log-delete">Delete</a>
 				</div>
 			` );
@@ -228,12 +228,66 @@ jQuery(document).ready(function($) {
 	//Export
 	jQuery( document ).on( 'click', '.ps-email-log-export-btn', function( e ) { 
 
-		console.log( 'export' );
+		var selected = [];
+
+		if( jQuery( this ).hasClass( 'ps-selected' ) ) {
+
+			jQuery( '.ps-email-log-cb' ).each( function( i, el ) {
+
+				if( jQuery( el ).is( ':checked' ) ) {
+
+					selected.push( jQuery( el ).val() );
+
+				}
+
+			} );
+
+		}
+
+		jQuery.ajax( {
+
+			url: ajaxurl,
+			type: 'POST',
+			data: {
+				action: 'ps-export-email-logs',
+				security: logsDTSecirity,
+				selected: selected
+			},
+			success: function( response ) {
+
+				/*
+					* Make CSV downloadable
+					*/
+				var downloadLink = document.createElement( 'a' );
+				var fileData = [response];
+				var blobObject = new Blob( fileData, { type: 'text/csv;charset=utf-8' } );
+				var url = URL.createObjectURL( blobObject );
+				downloadLink.href = url;
+				downloadLink.download = 'email-logs';
+
+				/*
+					* Actually download CSV
+					*/
+				document.body.appendChild(downloadLink);
+				downloadLink.click();
+				document.body.removeChild(downloadLink);
+
+			}
+
+		} );
 
 	} );
 
 	//Delete
 	jQuery( document ).on( 'click', '.ps-email-log-delete-btn', function( e ) { 
+
+		var confirmation = ( jQuery( this ).hasClass( 'ps-selected' ) ) ? confirm( 'Are you sure you want to delete the selected email logs?' ) : confirm( 'Are you sure you want to delete all email logs?' );
+
+		if( confirmation === false ) {
+
+			return;
+
+		}
 
 		var selected = [];
 
@@ -251,7 +305,6 @@ jQuery(document).ready(function($) {
 
 		}
 
-
 		jQuery.ajax( {
 
 			url: ajaxurl,
@@ -263,13 +316,221 @@ jQuery(document).ready(function($) {
 			},
 			success: function( response ) {
 
-				logsDT.ajax.reload();
+				if( response.success === true ) {
+
+					logsDT.ajax.reload();
+
+				}
+				else {
+
+					alert( response.message );
+
+				}
 
 			}
 
 		} );
 
 		
+
+	} );
+
+	//View
+	jQuery( document ).on( 'click', '.ps-email-log-view, .ps-email-log-transcript', function( e ) {
+
+		e.preventDefault();
+
+		var id = jQuery( this ).closest( 'tr' ).find( '.ps-email-log-cb' ).val();
+		var toDo = jQuery( this ).hasClass( 'ps-email-log-view' );
+		toDo = ( toDo ) ? 'original_message' : 'session_transcript';
+		var heading = ( toDo == 'original_message' ) ? 'Email Message' : 'Session Transcript';
+		jQuery( '.ps-popup-container' ).html( `
+			<h1>${heading}</h1>
+			<h4>Loading...</h4>
+		` );
+
+		jQuery.ajax( {
+
+			url: ajaxurl,
+			type: 'POST',
+			data: {
+				action: 'ps-view-log',
+				security: logsDTSecirity,
+				id: id,
+				type: toDo
+			},
+			success: function( response ) {
+
+				if( response.success === true ) {
+
+					jQuery( 'h4' ).hide();
+
+					if( toDo == 'session_transcript' ) {
+
+						jQuery( '.ps-popup-container' ).find( 'h1' ).after( `
+							${response.data[toDo]}
+						` );
+
+					}
+					else {
+
+						jQuery( '.ps-popup-container' ).find( 'h1' ).after( `
+							<table>
+								<tr>
+									<td><strong>From:</strong></td>
+									<td>${response.data.from_header}</td>
+								</tr>
+								<tr>
+									<td><strong>To:</strong></td>
+									<td>${response.data.original_to}</td>
+								</tr>
+								<tr>
+									<td><strong>Date:</strong></td>
+									<td>${response.data.time}</td>
+								</tr>
+								<tr>
+									<td><strong>Subject:</strong></td>
+									<td>${response.data.original_subject}</td>
+								</tr>
+								<tr>
+									<td><strong>Delivery-URI:</strong></td>
+									<td>${response.data.transport_uri}</td>
+								</tr>
+							</table>
+							<hr />
+							<div>
+								${response.data.original_message}
+							</div>
+						` );
+
+					}
+
+				}
+				else {
+
+					alert( response.message );
+
+				}
+
+
+			}
+
+		} );
+
+	} );
+
+	//View And Session Transcript Popup
+	jQuery( document ).on( 'click', '.ps-popup-btn', function( e ) {
+
+		jQuery( '.ps-popup-wrap' ).fadeIn( 500 );
+		jQuery( '.ps-popup-box' ).removeClass( 'transform-out' ).addClass( 'transform-in' );
+	
+		e.preventDefault();
+
+	  } );
+	
+	  jQuery( document ).on( 'click', '.ps-popup-close', function( e ) {
+
+		jQuery( '.ps-popup-wrap' ).fadeOut( 500 );
+		jQuery( '.ps-popup-box' ).removeClass( 'transform-in' ).addClass( 'transform-out' );
+	
+		e.preventDefault();
+
+	});
+
+	//Delete Log
+	jQuery( document ).on( 'click', '.ps-email-log-delete', function( e ) {
+
+	e.preventDefault();
+	var id = jQuery( this ).closest( 'tr' ).find( '.ps-email-log-cb' ).val();
+	var confirmation = confirm( 'Are you sure you want to delete this email log?' );
+	var selected = [];
+	selected.push( id );
+
+	if( confirmation === false ) {
+
+		return;
+
+	}
+
+	jQuery( this ).closest( 'tr' ).fadeOut();
+
+		jQuery.ajax( {
+			url: ajaxurl,
+			type: 'POST',
+			data: {
+				action: 'ps-delete-email-logs',
+				security: logsDTSecirity,
+				selected: selected
+			},
+			success: function( response ) {
+				
+				if( response.success === true ) {
+
+
+
+				}
+				else {
+
+					alert( response.message );
+					logsDT.ajax.reload();
+
+				}
+
+			}
+		} );
+
+
+	} );
+
+	//Resend
+	jQuery( document ).on( 'click', '.ps-email-log-resend', function( e ) {
+
+		e.preventDefault();
+		var sendTo = jQuery( this ).closest( 'tr' ).find( 'td:nth-child(3)' ).text();
+
+		jQuery( this ).closest( '.ps-email-log-actions' ).append( `
+			<div>
+				<input type="text" class="ps-email-log-resend-to" value="${sendTo}" />
+				<button class="button button-primary ps-email-resend-btn"><span class="ps-btn-text">Resend</span> <span class="dashicons dashicons-email"></span></button>
+				<p>For multiple recipients, separate them with a comma.</p>
+			</div>
+		` );
+
+	} );
+
+	//Resend
+	jQuery( document ).on( 'click', '.ps-email-resend-btn', function( e ) {
+
+		e.preventDefault();
+		var id = jQuery( this ).closest( 'tr' ).find( '.ps-email-log-cb' ).val();
+		var to = jQuery( this ).closest( '.ps-email-log-actions' ).find( '.ps-email-log-resend-to' ).val();
+
+		jQuery.ajax( {
+			url: ajaxurl,
+			type: 'POST',
+			data: {
+				action: 'ps-resend-email',
+				security: logsDTSecirity,
+				id: id,
+				to: to
+			},
+			success: function( response ) {
+				
+				if( response.success === true ) {
+
+					alert( response.message );
+
+				}
+				else {
+
+					alert( response.message );
+
+				}
+
+			}
+		} );
+
 
 	} );
 

@@ -25,4 +25,11 @@
             </tr>
         </tfoot>
     </table>
+
+    <div class="ps-popup-wrap">
+        <div class="ps-popup-box">
+            <a class="ps-popup-close-btn ps-popup-close" href="#"><span class="dashicons dashicons-no-alt"></span></a>
+            <div class="ps-popup-container"></div>
+        </div>
+    </div>
 </div>

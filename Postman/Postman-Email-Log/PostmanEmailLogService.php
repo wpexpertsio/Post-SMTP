@@ -167,6 +167,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				$data['reply_to_header'] = !empty( $log->replyTo ) ? $log->replyTo : '';
 				$data['transport_uri'] = !empty( $log->transportUri ) ? $log->transportUri : '';
 				$data['original_to'] = !empty( $log->originalTo ) ? $log->originalTo : '';
+				$data['original_to'] = is_array( $log->originalTo ) ? implode( ',', $log->originalTo ) : $log->originalTo;
 				$data['original_subject'] = !empty( $log->originalSubject ) ? $log->originalSubject : '';
 				$data['original_message'] = $log->originalMessage;
 				$data['original_headers'] = $log->originalHeaders;
