@@ -34,6 +34,14 @@ class PostmanMailGun extends PostmanServiceRequest {
     private $base_url_eu = 'https://api.eu.mailgun.net/v3/';
 
     /**
+     * Content
+     * 
+     * @since 2.2
+     * @version 1.0
+     */
+    private $content = array();
+
+    /**
      * constructor PostmanMailGun
      * 
      * @param $api_key
@@ -57,10 +65,72 @@ class PostmanMailGun extends PostmanServiceRequest {
      */
     private function get_headers() {
 
-        return array(
-            'Authorization'             => 'Basic ' . base64_encode('api:' . $this->api_key),
-            'Content-Type'              => 'application/x-www-form-urlencoded',
-        );
+        $headers = array();
+        $headers['Authorization'] = 'Basic ' . base64_encode('api:' . $this->api_key);
+
+
+        if( isset( $this->content['attachment'] ) ) {
+
+            //Remove attachment from content, to manage it separately
+            $attachments = $this->content['attachment'];
+            unset( $this->content['attachment'] );
+
+            //Let's create the boundary string. It must be unique
+            //so we use the MD5 algorithm to generate a random hash
+            $boundary = md5( date( 'r', time() ) );
+            $headers['Content-Type'] = 'multipart/form-data; boundary=' . $boundary;
+            $payload = '';
+
+            foreach( $this->content as $key => $value ) {
+               
+                if ( is_array( $value ) ) {
+
+					foreach ( $value as $child_value ) {
+
+						$payload .= '--' . $boundary;
+						$payload .= "\r\n";
+						$payload .= 'Content-Disposition: form-data; name="' . $key . "\"\r\n\r\n";
+						$payload .= $child_value;
+						$payload .= "\r\n";
+
+					}
+
+				} else {
+
+					$payload .= '--' . $boundary;
+					$payload .= "\r\n";
+					$payload .= 'Content-Disposition: form-data; name="' . $key . '"' . "\r\n\r\n";
+					$payload .= $value;
+					$payload .= "\r\n";
+
+				}
+                
+            }
+
+            //Add attachments
+            foreach( $attachments as $key => $attachment ) { var_dump(  $attachments );die;
+
+                $payload .= '--' . $boundary;
+				$payload .= "\r\n";
+				$payload .= 'Content-Disposition: form-data; name="attachment[' . $key . ']"; filename="' . $attachment['filePath'] . '"' . "\r\n\r\n";
+				$payload .= file_get_contents( $attachment['filePath'] );
+				$payload .= "\r\n";
+
+            }
+
+            $payload .= '--' . $boundary . '--';
+
+            //Overwrite body with payload
+            $this->content = $payload;
+
+        }
+        else {
+
+            $headers['Content-Type'] = 'application/x-www-form-urlencoded';
+
+        }
+
+        return $headers;
 
     }
 
@@ -72,13 +142,14 @@ class PostmanMailGun extends PostmanServiceRequest {
      * @version 1.0
      */
     public function send( $content ) {
-        // $content = json_encode( $content );
+
+        $this->content = $content;
          
         return $this->request(
             'POST',
             '/messages',
             $this->get_headers(),
-            $content,
+            $this->content,
             $this->email_sent_code
         );
 
