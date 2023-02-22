@@ -130,7 +130,7 @@ class PostmanNotify {
             'chrome_notification', 
             'Setup Chrome extension (optional)', 
             array( $this, 'chrome_extension' ), 
-            self::CHROME_EXTENSION, 
+            self::CHROME_EXTENSION 
         );
 
         add_settings_field( PostmanNotifyOptions::NOTIFICATION_USE_CHROME, _x( 'Push to chrome extension', 'Configuration Input Field', 'post-smtp' ), array(
