@@ -299,6 +299,16 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
+= 2.4.2-beta.2 - 2023-02-22 =
+**Bug Fixes**
+
+* Emails not sending through MailGun & SendGrid in some cases
+
+= 2.4.1 - 2023-02-22 =
+**Bug Fixes**
+
+* Fixed parse error on Php 7.2
+
 = 2.4 - 2023-02-21 =
 **Improvements**
 
