@@ -199,18 +199,8 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 			// add attachments
 			$this->logger->debug( 'Adding attachments' );
 
-			$attachments = $this->addAttachmentsToMail( $message );
-
-			foreach ( $attachments as $index => $attachment ) {
-
-                $email->addAttachment(
-                    $attachment['content'],
-                    $attachment['type'],
-                    $attachment['file_name'],
-                    "attachment"
-                );
-			}
-
+			$content['attachments'] = $this->addAttachmentsToMail( $message );
+		
 			try {
 				
 				// send the message
@@ -260,9 +250,9 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 					$attachments[] = array(
 						'content' => base64_encode( file_get_contents( $file ) ),
 						'type' => $file_type['type'],
-						'file_name' => $file_name,
+						'filename' => $file_name,
 						'disposition' => 'attachment',
-						'id' => $file_parts[0],
+						'name' => $file_parts[0],
 					);
 				}
 			}
