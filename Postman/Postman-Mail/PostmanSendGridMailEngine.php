@@ -198,9 +198,15 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 			// add attachments
 			$this->logger->debug( 'Adding attachments' );
+			
+			$attachments = $this->addAttachmentsToMail( $message );
+			
+			if( !empty( $attachments ) ) {
+				
+				$content['attachments'] = $this->addAttachmentsToMail( $message );	
+				
+			}
 
-			$content['attachments'] = $this->addAttachmentsToMail( $message );
-		
 			try {
 				
 				// send the message
