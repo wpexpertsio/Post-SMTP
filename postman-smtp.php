@@ -80,7 +80,7 @@ function ps_fs_custom_connect_message_on_update(
     return sprintf(
 		'<div class="ps-optin-popup">' .
         '<h1>' . __( 'Stay on the safe side', 'post-smtp' ) . '</h1>' .
-		'<p>'.__( 'Receive our plugin\'s alert in case of critical security and feature updates and allow non-sensitive diagnositic tracking.', 'post-smtp' ).'</p>' .
+		'<p>'.__( 'Receive our plugin\'s alert in case of critical security and feature updates and allow non-sensitive diagnostic tracking.', 'post-smtp' ).'</p>' .
 		'</div>' . 
 		'<div style="clear: both;"></div>'
     );
