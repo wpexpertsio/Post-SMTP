@@ -108,8 +108,8 @@ class PostmanMailGun extends PostmanServiceRequest {
             }
 
             //Add attachments
-            foreach( $attachments as $key => $attachment ) { var_dump(  $attachments );die;
-
+            foreach( $attachments as $key => $attachment ) { 
+ 
                 $payload .= '--' . $boundary;
 				$payload .= "\r\n";
 				$payload .= 'Content-Disposition: form-data; name="attachment[' . $key . ']"; filename="' . $attachment['filePath'] . '"' . "\r\n\r\n";
