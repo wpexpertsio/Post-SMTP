@@ -107,6 +107,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		 */
 		private function addAttachmentsToMail( PostmanMessage $message ) {
 			$attachments = $message->getAttachments();
+			
 			if ( ! is_array( $attachments ) ) {
 				// WordPress may a single filename or a newline-delimited string list of multiple filenames
 				$attArray[] = explode( PHP_EOL, $attachments );
