@@ -95,41 +95,39 @@ class PostmanEmailLogsMigration {
         <div class="notice ps-db-update-notice is-dismissible" style="border: 1px solid #2271b1; border-left-width: 4px;">
             <input type="hidden" value="<?php echo esc_attr( $security ); ?>" class="ps-security">
             <p><b><?php _e( 'Post SMTP database update required', 'post-smtp' ); ?></b></p>
-            <p><?php 
-                _e( 'Post SMTP has been updated! To keep things running smoothly, we have to update your database to the newest version, migrate email logs to new system. The database update process runs in the background and may take a little while, so please be patient.', 'post-smtp' ); 
-            ?></p>
-            <p>
-                <?php if( $this->have_old_logs && !$this->migrating && !$this->is_migrated() ): ?>
-                    <a href="<?php echo esc_url( $migration_url ) ?>" class="button button-primary">Update and Migrate Logs</a>
-                <?php endif; ?>
-                <?php if(  
-                    ( $this->is_migrated() && isset( $_GET['page'] ) && $_GET['page'] !== 'postman_email_log' )
-                    ||
-                    ( $this->migrating )
-                    &&
-                    ( isset( $_GET['page'] ) && $_GET['page'] !== 'postman_email_log' )
-                ): ?>
-                    <a href="<?php echo esc_url( $status_url ); ?>" class="button button-secondary">View Progress →</a>
-                <?php endif; ?>
-                <?php
-                if(  
-                    $this->have_old_logs()
-                    &&
-                    $this->is_migrated()
-                    &&
-                    ( isset( $_GET['page'] ) && $_GET['page'] == 'postman_email_log' )
-                ): ?>
-                    <a href="<?php echo esc_url( $delete_url ); ?>" class="button button-primary">Delete old Logs</a>
-                <?php endif; ?>
-                <a href="" target="__blank" class="button button-secondary">Learn about migration</a>
-            </p>
+            <?php if( $this->have_old_logs && !$this->migrating && !$this->is_migrated() ): ?>
+                <p><?php echo _e( 'Post SMTP has been updated! To keep things running smoothly, we have to update your database to the newest version, migrate email logs to new system. The database update process runs in the background and may take a little while, so please be patient.', 'post-smtp' ); ?></p>
+                <a href="<?php echo esc_url( $migration_url ) ?>" class="button button-primary">Update and Migrate Logs</a>
+            <?php endif; ?>
+            <?php if(  
+                ( $this->is_migrated() && isset( $_GET['page'] ) && $_GET['page'] !== 'postman_email_log' )
+                ||
+                ( $this->migrating )
+                &&
+                ( isset( $_GET['page'] ) && $_GET['page'] !== 'postman_email_log' )
+            ): ?>
+                <p><?php echo _e( 'Post SMTP is migrating logs to new system.', 'post-smtp' ); ?></p>
+                <a href="<?php echo esc_url( $status_url ); ?>" class="button button-secondary">View Progress →</a>
+            <?php endif; ?>
+            <?php
+            if(  
+                $this->have_old_logs()
+                &&
+                $this->is_migrated()
+                &&
+                ( isset( $_GET['page'] ) && $_GET['page'] == 'postman_email_log' )
+            ): ?>
+                <p><?php echo _e( 'Great! Logs successfully migrated, please verify and Delete logs from old system by clicking <b>Delete old Logs</b>, to keep system smooth.', 'post-smtp' ); ?></p>
+                <a href="<?php echo esc_url( $delete_url ); ?>" class="button button-primary">Delete old Logs</a>
+            <?php endif; ?>
+            <a href="" target="__blank" class="button button-secondary">Learn about migration</a>
+            <div style="margin: 10px 0;"></div>
             <?php
             if( 
                 $this->migrating 
                 && 
                 ( isset( $_GET['page'] ) && $_GET['page'] == 'postman_email_log' ) 
             ) {
-
                 ?>
                 <div class="ps-migration-box" style="text-align: center; width: 100%; margin: 10px 0;">
                     <progress style="width: 100%;" id="ps-migration-progress"  value="<?php echo esc_attr( $migrated_logs ); ?>" max="<?php echo esc_attr( $total_old_logs->private ); ?>"></progress>

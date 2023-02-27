@@ -76,7 +76,7 @@ jQuery(document).ready(function($) {
 			{ orderable: false, targets: 6 },
 		],
 		order: [
-			[0, 'desc']
+			[3, 'desc']
 		],
 		"createdRow": function ( row, data, index ) {
 			
@@ -88,12 +88,13 @@ jQuery(document).ready(function($) {
 			);
 
 			jQuery( row ).find( 'td:nth-child(7)' ).html( `
-				<div class="ps-email-log-actions">
+				<div class="ps-email-log-actions-container">
 					<a href="#" class="ps-email-log-view ps-popup-btn">View</a>
 					<a href="#" class="ps-email-log-resend">Resend</a>
 					<a href="#" class="ps-email-log-transcript ps-popup-btn">Transcript</a>
 					<a href="#" class="ps-email-log-delete">Delete</a>
 				</div>
+				<div class="ps-email-log-resend-container"></div>
 			` );
 
 			if( data['success'] == '<span>Success</span>' ) {
@@ -488,8 +489,9 @@ jQuery(document).ready(function($) {
 
 		e.preventDefault();
 		var sendTo = jQuery( this ).closest( 'tr' ).find( 'td:nth-child(3)' ).text();
+		var currentRow = jQuery( this ).closest( 'tr' );
 
-		jQuery( this ).closest( '.ps-email-log-actions' ).append( `
+		jQuery( currentRow ).find( '.ps-email-log-resend-container' ).html( `
 			<div>
 				<input type="text" class="ps-email-log-resend-to" value="${sendTo}" />
 				<button class="button button-primary ps-email-resend-btn"><span class="ps-btn-text">Resend</span> <span class="dashicons dashicons-email"></span></button>
