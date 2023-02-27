@@ -159,12 +159,10 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
                 if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 					
                     $recipient->log($this->logger, 'Cc');
-					$content['personalizations'][] = array(
-						'cc'	=>	array(
-							array(
-								'email'	=>	$recipient->getEmail(),
-								'name'	=>	$recipient->getName()
-							)
+					$content['personalizations'][0]['cc'] = array(
+						array(
+							'email'	=>	$recipient->getEmail(),
+							'name'	=>	$recipient->getName()
 						)
 					);
 					
@@ -182,8 +180,13 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
                 if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 					
                     $recipient->log($this->logger, 'Bcc');
-					$content['personalizations']['cc']['name'] = $recipient->getName();
-					$content['personalizations']['cc']['email'] = $recipient->getEmail();
+					$content['personalizations'][0]['bcc'] = array(
+						array(
+							'email'	=>	$recipient->getEmail(),
+							'name'	=>	$recipient->getName()
+						)
+					);
+					
                     $duplicates[] = $recipient->getEmail();
 					
                 }
@@ -213,7 +216,7 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 				if ( $this->logger->isDebug() ) {
 					$this->logger->debug( 'Sending mail' );
 				}
-				
+
 				$response = $sendgrid->send( $content );
 				$this->transcript = print_r( $response, true );
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
