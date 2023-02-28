@@ -159,11 +159,9 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
                 if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 					
                     $recipient->log($this->logger, 'Cc');
-					$content['personalizations'][0]['cc'] = array(
-						array(
-							'email'	=>	$recipient->getEmail(),
-							'name'	=>	$recipient->getName()
-						)
+					$content['personalizations'][0]['cc'][] = array(
+						'email'	=>	$recipient->getEmail(),
+						'name'	=>	$recipient->getName()
 					);
 					
                     $duplicates[] = $recipient->getEmail();
@@ -180,11 +178,9 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
                 if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 					
                     $recipient->log($this->logger, 'Bcc');
-					$content['personalizations'][0]['bcc'] = array(
-						array(
-							'email'	=>	$recipient->getEmail(),
-							'name'	=>	$recipient->getName()
-						)
+					$content['personalizations'][0]['bcc'][] = array(
+						'email'	=>	$recipient->getEmail(),
+						'name'	=>	$recipient->getName()	
 					);
 					
                     $duplicates[] = $recipient->getEmail();
