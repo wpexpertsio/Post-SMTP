@@ -69,13 +69,9 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 				
 			    if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 
-			        $content['personalizations'][] = array(
-						'to'	=>	array(
-							array(
-								'email'	=>	$recipient->getEmail(),
-								'name'	=>	$recipient->getName()
-							)
-						)
+			        $content['personalizations'][0]['to'][] = array(
+						'email'	=>	$recipient->getEmail(),
+						'name'	=>	$recipient->getName()
 					);
 					
 					$duplicates[] = $recipient->getEmail();
