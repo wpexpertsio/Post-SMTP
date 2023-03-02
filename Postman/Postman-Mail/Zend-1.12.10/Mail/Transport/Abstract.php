@@ -180,6 +180,7 @@ abstract class Postman_Zend_Mail_Transport_Abstract
      */
     protected function _prepareHeaders($headers)
     {
+        $eol = "\r\n";
         if (!$this->_mail) {
             /**
              * @see Postman_Zend_Mail_Transport_Exception
@@ -193,17 +194,17 @@ abstract class Postman_Zend_Mail_Transport_Abstract
         foreach ($headers as $header => $content) {
             if (isset($content['append'])) {
                 unset($content['append']);
-                $value = implode(',' . $this->EOL . ' ', $content);
-                $this->header .= $header . ': ' . $value . $this->EOL;
+                $value = implode(',' . $eol . ' ', $content);
+                $this->header .= $header . ': ' . $value . $eol;
             } else {
                 array_walk($content, array(get_class($this), '_formatHeader'), $header);
-                $this->header .= implode($this->EOL, $content) . $this->EOL;
+                $this->header .= implode($eol, $content) . $eol;
             }
         }
 
         // Sanity check on headers -- should not be > 998 characters
         $sane = true;
-        foreach (explode($this->EOL, $this->header) as $line) {
+        foreach (explode($eol, $this->header) as $line) {
             if (strlen(trim($line)) > 998) {
                 $sane = false;
                 break;
