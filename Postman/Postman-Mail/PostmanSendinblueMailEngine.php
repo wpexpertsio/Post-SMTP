@@ -101,16 +101,18 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
         $duplicates = array();
 
         // add the to recipients
-        foreach ( (array)$message->getToRecipients() as $recipient ) {
+        foreach ( (array)$message->getToRecipients() as $key => $recipient ) {
                     
             if ( !array_key_exists( $recipient->getEmail(), $duplicates ) ) {
 
                 $tos[] = array(
                     'email' =>  $recipient->getEmail()
                 );
-                
+
                 if( !empty( $recipient->getName() ) ) {
-                    $tos['name'] = $recipient->getName();
+
+                    $tos[$key]['name'] = $recipient->getName();
+
                 }
                 
                 $duplicates[] = $recipient->getEmail();
