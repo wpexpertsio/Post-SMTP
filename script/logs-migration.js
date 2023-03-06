@@ -21,7 +21,7 @@ jQuery( document ).ready( function() {
                 jQuery( '#ps-migration-progress' ).val( migrated );
                 jQuery( '#ps-progress' ).html( `${migrated}/ ${max}` );
 
-                if( max == migrated || response.data.migrated == 'all' ) {
+                if( max == migrated ) {
 
                     jQuery( '#ps-migration-progress' ).val( max );
                     jQuery( '.ps-migration-box' ).slideUp();
