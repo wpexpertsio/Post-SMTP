@@ -1142,25 +1142,24 @@ h5#ps-progress {
     margin: 5px;
 }
 
-.ps-email-log-status-success, 
-.ps-email-log-status-failed {
-    text-align: center;
+.ps-email-log-status-success span, 
+.ps-email-log-status-failed span {
+    color: #fff;
+    font-weight: 600;
+    height: 9px;
+    width: 9px;
+    border-radius: 50px;
+    display: inline-block;
+    margin-right: 5px;
 }
+
 
 .ps-email-log-status-success span {
     background: #3FA500;
-    color: #fff;
-    padding: 4px 9px;
-    border-radius: 50px;
-    font-weight: 600;
 }
 
 .ps-email-log-status-failed span {
     background: #DC3545;
-    color: #fff;
-    padding: 4px 9px;
-    border-radius: 50px;
-    font-weight: 600;
 }
 
 .ps-email-log-view,

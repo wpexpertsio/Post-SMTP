@@ -8,7 +8,6 @@
                 <th>Subject</th>
                 <th>Sent To</th>
                 <th>Delivery Time</th>
-                <th>Solution</th>
                 <th>Status</th>
                 <th class="ps-email-log-actions">Actions</th>
             </tr>
@@ -19,7 +18,6 @@
                 <th>Subject</th>
                 <th>Sent To</th>
                 <th>Delivery Time</th>
-                <th>Solution</th>
                 <th>Status</th>
                 <th class="ps-email-log-actions">Actions</th>
             </tr>

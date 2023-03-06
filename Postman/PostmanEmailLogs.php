@@ -219,7 +219,7 @@ class PostmanEmailLogs {
             foreach( $data as $row ) {
 
                 $row->time = date( "{$date_format} {$time_format}", $row->time );
-                $row->success = $row->success == 1 ? '<span>Success</span>' : '<span>Failed</span>';
+                $row->success = $row->success == 1 ? '<span></span>' : '<span></span>' . $row->success;
                 $row->actions = '';
 
             }

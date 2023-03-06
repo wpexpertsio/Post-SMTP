@@ -39,7 +39,6 @@ class PostmanEmailQueryLog {
         $args['search_by'] = array(
             'original_subject',
             'success',
-            'solution',
             'to_header'
         );
 
@@ -50,7 +49,6 @@ class PostmanEmailQueryLog {
                 'original_subject',
                 'original_to',
                 'success',
-                'solution',
                 'time'
             );
 

@@ -67,13 +67,12 @@ jQuery(document).ready(function($) {
 			{ data: 'original_subject' },
 			{ data: 'original_to' },
 			{ data: 'time' },
-			{ data: 'solution' },
 			{ data: 'success' },
 			{ data: 'actions' }
 		],
 		columnDefs: [
 			{ orderable: false, targets: 0 },
-			{ orderable: false, targets: 6 },
+			{ orderable: false, targets: 5 },
 		],
 		order: [
 			[3, 'desc']
@@ -81,13 +80,13 @@ jQuery(document).ready(function($) {
 		"createdRow": function ( row, data, index ) {
 			
 			var id = data['id'];
-			var status = jQuery( row ).find( 'td' )[5];
+			var status = jQuery( row ).find( 'td' )[4];
 
 			jQuery( row ).find( 'td' ).first().html( 
 				`<input type="checkbox" value="${data['id']}" class="ps-email-log-cb" />`
 			);
 
-			jQuery( row ).find( 'td:nth-child(7)' ).html( `
+			jQuery( row ).find( 'td:nth-child(6)' ).html( `
 				<div class="ps-email-log-actions-container">
 					<a href="#" class="ps-email-log-view ps-popup-btn">View</a>
 					<a href="#" class="ps-email-log-resend">Resend</a>
@@ -97,7 +96,7 @@ jQuery(document).ready(function($) {
 				<div class="ps-email-log-resend-container"></div>
 			` );
 
-			if( data['success'] == '<span>Success</span>' ) {
+			if( data['success'] == '<span></span>' ) {
 
 				jQuery( status ).addClass( 'ps-email-log-status-success' );
 
