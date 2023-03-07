@@ -73,7 +73,7 @@ class PostmanSuggestProSocket {
 
         $pluginData = apply_filters( 'postman_get_plugin_metadata', null );
 
-        wp_register_script( 'postman-suggest-pro-sockets', POST_SMTP_ASSETS . 'js/postman-admin.js', array( 'jquery' ), $pluginData, true );
+        wp_register_script( 'postman-suggest-pro-sockets', POST_SMTP_ASSETS . 'js/postman-admin.js', array( 'jquery' ), $pluginData['version'], true );
 
         wp_enqueue_script( 'postman-suggest-pro-sockets' );
 
