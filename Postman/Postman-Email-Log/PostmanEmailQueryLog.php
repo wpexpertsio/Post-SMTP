@@ -156,9 +156,11 @@ class PostmanEmailQueryLog {
      */
     public function get_last_log_id() {
 
-        return $this->db->get_results(
+        $result = $this->db->get_results(
             "SELECT id FROM `{$this->table}` ORDER BY id DESC LIMIT 1;"
         );
+
+        return empty( $result ) ? false : $result[0]->id;
 
     }
 
