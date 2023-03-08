@@ -28,8 +28,32 @@ class PostmanInstaller {
 	 * Handle activation of the plugin
 	 */
 	public function activatePostman() {
+		
         delete_option( 'postman_release_version' );
         delete_option( 'postman_dismiss_donation' );
+
+		$table_version = get_option( 'postman_db_version' );
+
+		//If no logs in _posts table
+		global $wpdb;
+
+        $have_old_logs = $wpdb->get_results(
+            "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'postman_sent_mail' LIMIT 1;"
+        );
+
+		//Lets Install New Fresh Logs Table
+		if( empty( $have_old_logs ) && !$table_version ) {
+
+			if( !class_exists( 'PostmanEmailLogs' ) ) {
+
+				require 'PostmanEmailLogs.php';
+
+			}
+
+			$email_logs = new PostmanEmailLogs();
+			$email_logs->install_table();
+
+		}
 
 		$options = get_option( PostmanOptions::POSTMAN_OPTIONS );
 		$args = array(
@@ -76,19 +100,8 @@ class PostmanInstaller {
 			$this->addCapability();
 		}
 
-		//$this->add_activation_redirect();
 	}
 
-	function add_activation_redirect() {
-
-		// Bail if activating from network, or bulk
-		if ( is_network_admin() || isset( $_GET['activate-multi'] ) ) {
-			return;
-		}
-
-		// Add the transient to redirect
-	    //set_transient( '_post_activation_redirect', true, 30 );
-	}
 
 	/**
 	 * Handle deactivation of the plugin
@@ -271,4 +284,5 @@ class PostmanInstaller {
 		PostmanState::getInstance()->reload();
 		PostmanOptions::getInstance()->reload();
 	}
+
 }
