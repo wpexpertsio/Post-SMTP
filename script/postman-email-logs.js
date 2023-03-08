@@ -156,7 +156,7 @@ jQuery(document).ready(function($) {
 	//Check All
 	jQuery( document ).on( 'click', '.ps-email-log-select-all', function( e ) {
 
-		var selectedValue = jQuery('#ps-email-log_length').find( 'select' ).find(":selected").text();
+		var selectedValue = jQuery( '.ps-email-log-cb' ).length;
 
 		if( this.checked ) {
 
