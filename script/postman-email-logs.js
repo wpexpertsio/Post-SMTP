@@ -65,7 +65,7 @@ jQuery(document).ready(function($) {
 		columns: [
 			{ data: 'id' },
 			{ data: 'original_subject' },
-			{ data: 'original_to' },
+			{ data: 'to_header' },
 			{ data: 'time' },
 			{ data: 'success' },
 			{ data: 'actions' }
@@ -374,16 +374,41 @@ jQuery(document).ready(function($) {
 					}
 					else {
 
-						jQuery( '.ps-popup-container' ).find( 'h1' ).after( `
-							<table>
-								<tr>
-									<td><strong>From:</strong></td>
-									<td>${response.data.from_header}</td>
-								</tr>
-								<tr>
-									<td><strong>To:</strong></td>
-									<td>${response.data.original_to}</td>
-								</tr>
+						var popupContent;
+						popupContent = `
+						<table>
+							<tr>
+								<td><strong>From:</strong></td>
+								<td>${response.data.from_header}</td>
+							</tr>
+							<tr>
+								<td><strong>To:</strong></td>
+								<td>${response.data.to_header}</td>
+							</tr>`;
+
+							if( response.data.cc_header != null ) {
+
+								popupContent += `
+									<tr>
+										<td><strong>Cc:</strong></td>
+										<td>${response.data.cc_header}</td>
+									</tr>
+								`;
+
+							}
+
+							if( response.data.bcc_header != null ) {
+
+								popupContent += `
+									<tr>
+										<td><strong>Bcc:</strong></td>
+										<td>${response.data.bcc_header}</td>
+									</tr>
+								`;
+
+							}
+
+							popupContent += `
 								<tr>
 									<td><strong>Date:</strong></td>
 									<td>${response.data.time}</td>
@@ -401,7 +426,9 @@ jQuery(document).ready(function($) {
 							<div>
 								${response.data.original_message}
 							</div>
-						` );
+						`;
+
+						jQuery( '.ps-popup-container' ).find( 'h1' ).after( popupContent );
 
 					}
 

@@ -47,7 +47,7 @@ class PostmanEmailQueryLog {
             $this->columns = array(
                 'id',
                 'original_subject',
-                'original_to',
+                'to_header',
                 'success',
                 'time'
             );
