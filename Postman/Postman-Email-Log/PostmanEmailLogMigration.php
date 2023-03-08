@@ -325,7 +325,7 @@ class PostmanEmailLogsMigration {
      * @since 2.5.0
      * @version 1.0.0
      */
-    public function get_old_logs( $limit = 2500 ) {
+    public function get_old_logs( $limit = 500 ) {
 
         global $wpdb;
 
