@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 6.1.1
-Stable tag: 2.4.1
+Stable tag: 2.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -299,10 +299,25 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
-= 2.4.2-beta.2 - 2023-02-22 =
+= 2.4.4 - 2023-03-08 =
 **Bug Fixes**
 
-* Emails not sending through MailGun & SendGrid in some cases
+* Resolved an issue where warnings were generated due to an array to string conversion.
+* Fixed a problem where CC and BCC recipients were not properly added when using SendInBlue.
+* Addressed an issue where multiple recipients using SendInBlue were receiving emails individually instead of as a group.
+* Fixed an email formatting issue that occurred in certain PHP versions.
+* Corrected an issue where the friendly name feature was not functioning properly with SendInBlue.
+
+= 2.4.3 - 2023-02-27 =
+**Bug Fixes**
+
+* Fix - Code 400 error appearing in some cases for SendGrid with cc headers
+
+= 2.4.2 - 2023-02-24 =
+**Bug Fixes**
+
+* Email header request issue fixed for MailGun
+* Email attachment issue is fixed in SendGrid
 
 = 2.4.1 - 2023-02-22 =
 **Bug Fixes**
