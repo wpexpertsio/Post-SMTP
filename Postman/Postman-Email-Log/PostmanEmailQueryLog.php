@@ -4,7 +4,7 @@ if( !class_exists( 'PostmanEmailQueryLog' ) ):
 class PostmanEmailQueryLog {
 
     private $db = '';
-    private $table = 'post_smtp_logs';
+    public $table = 'post_smtp_logs';
     private $query = ''; 
     private $columns = array();
 
