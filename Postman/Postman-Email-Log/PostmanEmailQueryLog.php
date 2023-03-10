@@ -34,6 +34,15 @@ class PostmanEmailQueryLog {
      */
     public function get_logs( $args = array() ) {
 
+        /**
+         * Filter the query arguments
+         * 
+         * @param $args Array
+         * @since 2.5.0
+         * @version 1.0.0
+         */
+        $args = apply_filters( 'post_smtp_get_logs_args', $args );
+
         $clause_for_date = empty( $args['search'] ) ? $this->query .= " WHERE" : $this->query .= " AND";
 
         $args['search_by'] = array(
@@ -59,9 +68,33 @@ class PostmanEmailQueryLog {
 
         }
 
+        $this->columns = array_map( function( $column ) {
+            return "pl.`{$column}`";
+        }, $this->columns );
+
         $this->columns = implode( ',', $this->columns );
 
-        $this->query = "SELECT {$this->columns} FROM `{$this->table}`";
+        /**
+         * Filter the query columns
+         * 
+         * @param $query String
+         * @param $args Array
+         * @since 2.5.0
+         * @version 1.0.0
+         */
+        $this->columns = apply_filters( 'post_smtp_get_logs_query_cols', $this->columns, $args );
+
+        $this->query = "SELECT {$this->columns} FROM `{$this->table}` AS pl";
+
+        /**
+         * Filter the query after the table name
+         * 
+         * @param $query String
+         * @param $args Array
+         * @since 2.5.0
+         * @version 1.0.0
+         */
+        $this->query = apply_filters( 'post_smtp_get_logs_query_after_table', $this->query, $args );
 
         //Search
         if( !empty( $args['search'] ) ) {
@@ -82,7 +115,7 @@ class PostmanEmailQueryLog {
         //Date Filter :)
         if( isset( $args['from'] ) ) {
                 
-            $this->query .= " {$clause_for_date} time >= {$args['from']}";
+            $this->query .= " {$clause_for_date} pl.`time` >= {$args['from']}";
 
         }
 
@@ -90,12 +123,19 @@ class PostmanEmailQueryLog {
 
             $clause_for_date = ( empty( $args['search'] ) && !isset( $args['from'] ) ) ? " WHERE" : " AND";
 
-            $this->query .= " {$clause_for_date} time <= {$args['to']}";
+            $this->query .= " {$clause_for_date} pl.`time` <= {$args['to']}";
 
         }
 
         //Order By
         if( !empty( $args['order'] ) && !empty( $args['order_by'] ) ) {
+            
+            //If no alias added, add one
+            if( !strpos( $args['order_by'], '.' ) ) {
+                    
+                $args['order_by'] = "pl.`{$args['order_by']}`";
+
+            }
 
             $this->query .= " ORDER BY {$args['order_by']} {$args['order']}";
 
@@ -107,7 +147,7 @@ class PostmanEmailQueryLog {
             $this->query .= " LIMIT {$args['start']}, {$args['end']}";
 
         }
-
+        
         return $this->db->get_results( $this->query );
 
     }

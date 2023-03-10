@@ -1,7 +1,7 @@
 <?php
 // Create an instance of our package class...
 $testListTable = new PostmanEmailLogView();
-wp_enqueue_script( 'postman_resend_email_script' );
+wp_enqueue_script( 'postman-email-logs-script' );
 // Fetch, prepare, sort, and filter our data...
 $testListTable->prepare_items();
 ?>

@@ -99,11 +99,37 @@ class PostmanEmailLogController {
 		
 		wp_register_style( 'postman-datatable', plugins_url( 'assets/css/dataTable.min.css', $this->rootPluginFilenameAndPath ), array(), $pluginData ['version'] );
 
-		wp_register_script( 'postman_resend_email_script', plugins_url( 'script/postman-email-logs.js', $this->rootPluginFilenameAndPath ), array(
+		wp_register_script( 'postman-email-logs-script', plugins_url( 'script/postman-email-logs.js', $this->rootPluginFilenameAndPath ), array(
 				PostmanViewController::JQUERY_SCRIPT,
 				PostmanViewController::POSTMAN_SCRIPT,
 				'postman-datatable'
 		), $pluginData ['version'] );
+
+		$localize = array(
+			'DTCols'	=>	array(
+				array( 'data'	=>	'id' ),
+				array( 'data'	=>	'original_subject' ),
+				array( 'data'	=>	'to_header' ),
+				array( 'data'	=>	'time' ),
+				array( 'data'	=>	'success' ),
+				array( 'data'	=>	'actions' )
+			)
+		);
+
+		/**
+		 * Filters JS localize
+		 * 
+		 * @param array $localize
+		 * @since 2.5.0
+		 * @version 1.0.0 
+		 */
+		$localize = apply_filters( 'post_smtp_email_logs_localize', $localize );
+
+		wp_localize_script( 
+			'postman-email-logs-script', 
+			'PSEmailLogs', 
+			$localize
+		);
 
 		$this->handleCsvExport();
 	}
@@ -422,7 +448,7 @@ class PostmanEmailLogController {
 		wp_enqueue_style( PostmanViewController::POSTMAN_STYLE );
 		wp_enqueue_script( 'postman-datatable' );
 		wp_enqueue_style( 'postman-datatable' );
-		wp_enqueue_script( 'postman_resend_email_script' );
+		wp_enqueue_script( 'postman-email-logs-script' );
 		wp_enqueue_script( 'sprintf' );
 
 	}

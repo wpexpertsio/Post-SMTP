@@ -62,14 +62,7 @@ jQuery(document).ready(function($) {
 			url: `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}`,
 		},
 		"lengthMenu": [25, 50, 100, 500],
-		columns: [
-			{ data: 'id' },
-			{ data: 'original_subject' },
-			{ data: 'to_header' },
-			{ data: 'time' },
-			{ data: 'success' },
-			{ data: 'actions' }
-		],
+		columns: PSEmailLogs.DTCols,
 		columnDefs: [
 			{ orderable: false, targets: 0 },
 			{ orderable: false, targets: 5 },
