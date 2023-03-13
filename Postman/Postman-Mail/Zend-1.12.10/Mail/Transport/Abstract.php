@@ -100,7 +100,7 @@ abstract class Postman_Zend_Mail_Transport_Abstract
      * @var string
      * @access public
      */
-    public $ps_end_of_line = "\r\n";
+    public $EOL = "\r\n";
 
     /**
      * Send an email independent from the used transport
@@ -141,7 +141,7 @@ abstract class Postman_Zend_Mail_Transport_Abstract
 
             $this->_headers['Content-Type'] = array(
                 $type . ';'
-                . $this->ps_end_of_line
+                . $this->EOL
                 . " " . 'boundary="' . $boundary . '"'
             );
             $this->boundary = $boundary;
@@ -180,7 +180,6 @@ abstract class Postman_Zend_Mail_Transport_Abstract
      */
     protected function _prepareHeaders($headers)
     {
-        $eol = "\r\n";
         if (!$this->_mail) {
             /**
              * @see Postman_Zend_Mail_Transport_Exception
@@ -189,22 +188,32 @@ abstract class Postman_Zend_Mail_Transport_Abstract
             throw new Postman_Zend_Mail_Transport_Exception('Missing Postman_Zend_Mail object in _mail property');
         }
 
+        /**
+         * Filter to manage \r\n compalibility issues with some PHP versions 
+         * 
+         * @since 2.4.5
+         * @version 1.0.0
+         */
+        $incompatible_php = apply_filters( 'post_smtp_incompatible_php', false );
+
         $this->header = '';
 
         foreach ($headers as $header => $content) {
             if (isset($content['append'])) {
                 unset($content['append']);
-                $value = implode(',' . $eol . ' ', $content);
-                $this->header .= $header . ': ' . $value . $eol;
+                $value = implode(',' . $this->EOL . ' ', $content);
+                $this->header .= $header . ': ' . $value . $this->EOL;
             } else {
+
                 array_walk($content, array(get_class($this), '_formatHeader'), $header);
-                $this->header .= implode($eol, $content) . $eol;
+                $this->header .= $incompatible_php ? implode($this->EOL, $content) . "\r\n" : implode($this->EOL, $content) . $this->EOL;
+
             }
         }
 
         // Sanity check on headers -- should not be > 998 characters
         $sane = true;
-        foreach (explode($eol, $this->header) as $line) {
+        foreach (explode($this->EOL, $this->header) as $line) {
             if (strlen(trim($line)) > 998) {
                 $sane = false;
                 break;
@@ -238,22 +247,22 @@ abstract class Postman_Zend_Mail_Transport_Abstract
         {
             // Generate unique boundary for multipart/alternative
             $mime = new Postman_Zend_Mime(null);
-            $boundaryLine = $mime->boundaryLine($this->ps_end_of_line);
-            $boundaryEnd  = $mime->mimeEnd($this->ps_end_of_line);
+            $boundaryLine = $mime->boundaryLine($this->EOL);
+            $boundaryEnd  = $mime->mimeEnd($this->EOL);
 
             $text->disposition = false;
             $html->disposition = false;
 
             $body = $boundaryLine
-                  . $text->getHeaders($this->ps_end_of_line)
-                  . $this->ps_end_of_line
-                  . $text->getContent($this->ps_end_of_line)
-                  . $this->ps_end_of_line
+                  . $text->getHeaders($this->EOL)
+                  . $this->EOL
+                  . $text->getContent($this->EOL)
+                  . $this->EOL
                   . $boundaryLine
-                  . $html->getHeaders($this->ps_end_of_line)
-                  . $this->ps_end_of_line
-                  . $html->getContent($this->ps_end_of_line)
-                  . $this->ps_end_of_line
+                  . $html->getHeaders($this->EOL)
+                  . $this->EOL
+                  . $html->getContent($this->EOL)
+                  . $this->EOL
                   . $boundaryEnd;
 
             $mp           = new Postman_Zend_Mime_Part($body);
@@ -287,7 +296,7 @@ abstract class Postman_Zend_Mail_Transport_Abstract
 
         // Get headers
         $this->_headers = $this->_mail->getHeaders();
-        $headers = $body->getHeadersArray($this->ps_end_of_line);
+        $headers = $body->getHeadersArray($this->EOL);
         foreach ($headers as $header) {
             // Headers in Postman_Zend_Mime_Part are kept as arrays with two elements, a
             // key and a value
@@ -343,7 +352,7 @@ abstract class Postman_Zend_Mail_Transport_Abstract
         $message = new Postman_Zend_Mime_Message();
         $message->setParts($this->_parts);
         $message->setMime($mime);
-        $this->body = $message->generateMessage($this->ps_end_of_line);
+        $this->body = $message->generateMessage($this->EOL);
 
         // Send to transport!
         $this->_sendMail();
