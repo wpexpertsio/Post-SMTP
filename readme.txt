@@ -302,7 +302,8 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 = 2.4.5 - 2023-03-13 =
 **Bug Fixes**
 
-* NEW Filter `post_smtp_incompatible_php` added to to enhance the compatibility of PHP versions.
+* Reverted the fix to support minor PHP versions, impacting some other PHP versions.
+* NEW Filter post_smtp_incompatible_php added to fix the compatibility of minor PHP versions.
 
 = 2.4.4 - 2023-03-08 =
 **Bug Fixes**
