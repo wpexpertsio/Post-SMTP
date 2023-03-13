@@ -10,6 +10,7 @@
                 <th>Delivery Time</th>
                 <th>Status</th>
                 <th class="ps-email-log-actions">Actions</th>
+                <?php do_action( 'post_smtp_email_logs_table_header' ); ?>
             </tr>
         </thead>
         <tfoot>
@@ -20,6 +21,7 @@
                 <th>Delivery Time</th>
                 <th>Status</th>
                 <th class="ps-email-log-actions">Actions</th>
+                <?php do_action( 'post_smtp_email_logs_table_header' ); ?>
             </tr>
         </tfoot>
     </table>

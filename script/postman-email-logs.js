@@ -62,14 +62,7 @@ jQuery(document).ready(function($) {
 			url: `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}`,
 		},
 		"lengthMenu": [25, 50, 100, 500],
-		columns: [
-			{ data: 'id' },
-			{ data: 'original_subject' },
-			{ data: 'to_header' },
-			{ data: 'time' },
-			{ data: 'success' },
-			{ data: 'actions' }
-		],
+		columns: PSEmailLogs.DTCols,
 		columnDefs: [
 			{ orderable: false, targets: 0 },
 			{ orderable: false, targets: 5 },
@@ -386,7 +379,11 @@ jQuery(document).ready(function($) {
 								<td>${response.data.to_header}</td>
 							</tr>`;
 
-							if( response.data.cc_header != null ) {
+							if( 
+								response.data.cc_header != null 
+								&& 
+								response.data.cc_header != '' 
+							) {
 
 								popupContent += `
 									<tr>
@@ -397,7 +394,11 @@ jQuery(document).ready(function($) {
 
 							}
 
-							if( response.data.bcc_header != null ) {
+							if( 
+								response.data.bcc_header != null 
+								&& 
+								response.data.bcc_header != '' 
+							) {
 
 								popupContent += `
 									<tr>
@@ -532,7 +533,7 @@ jQuery(document).ready(function($) {
 
 		e.preventDefault();
 		var id = jQuery( this ).closest( 'tr' ).find( '.ps-email-log-cb' ).val();
-		var to = jQuery( this ).closest( '.ps-email-log-actions' ).find( '.ps-email-log-resend-to' ).val();
+		var to = jQuery( this ).closest( 'tr' ).find( '.ps-email-log-resend-to' ).val();
 
 		jQuery.ajax( {
 			url: ajaxurl,
@@ -548,11 +549,13 @@ jQuery(document).ready(function($) {
 				if( response.success === true ) {
 
 					alert( response.message );
+					logsDT.ajax.reload();
 
 				}
 				else {
 
 					alert( response.message );
+					logsDT.ajax.reload();
 
 				}
 

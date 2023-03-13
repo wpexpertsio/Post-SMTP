@@ -158,16 +158,45 @@ class PostmanEmailLogs {
      * Insert Log Into table
      * 
      * @param array $data
+     * @param int $id (Update Existing Record)
      * @since 2.5.0
      * @version 1.0.0
      */
-    public function save( $data ) {
+    public function save( $data, $id = '' ) {
 
         $data['time'] = !isset( $data['time'] ) ? current_time( 'timestamp' ) : $data['time'];
 
-        return $this->db->insert(
+        if( !empty( $id ) ) {
+
+            return $this->update( $data, $id );
+
+        }
+        else {
+
+            return $this->db->insert(
+                $this->db->prefix . $this->db_name,
+                $data  
+            ) ? $this->db->insert_id : false;
+
+        }
+
+    }
+
+    
+    /**
+     * Update Log
+     * 
+     * @param array $data
+     * @param int $id
+     * @since 2.5.0
+     * @version 1.0.0
+     */
+    public function update( $data, $id ) {
+
+        return $this->db->update(
             $this->db->prefix . $this->db_name,
-            $data  
+            $data,
+            array( 'id' => $id )
         );
 
     }

@@ -174,7 +174,17 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				$data['session_transcript'] = $log->sessionTranscript;
 
 				$email_logs = new PostmanEmailLogs();
-				$log_id = $email_logs->save( $data );
+
+				/**
+				 * Filter the email log id
+				 * 
+				 * @param string $email_id
+				 * @since 2.5.0
+				 * @version 1.0.0
+				 */
+				$email_id = apply_filters( 'post_smtp_update_email_log_id', '' );
+
+				$log_id = $email_logs->save( $data, $email_id );
 
 				$this->logger->debug( sprintf( 'Saved message #%s to the database', $log_id ) );
 				$this->logger->trace( $log );
