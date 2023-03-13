@@ -180,7 +180,6 @@ abstract class Postman_Zend_Mail_Transport_Abstract
      */
     protected function _prepareHeaders($headers)
     {
-        $eol = "\r\n";
         if (!$this->_mail) {
             /**
              * @see Postman_Zend_Mail_Transport_Exception
@@ -189,22 +188,32 @@ abstract class Postman_Zend_Mail_Transport_Abstract
             throw new Postman_Zend_Mail_Transport_Exception('Missing Postman_Zend_Mail object in _mail property');
         }
 
+        /**
+         * Filter to manage \r\n compalibility issues with some PHP versions 
+         * 
+         * @since 2.4.5
+         * @version 1.0.0
+         */
+        $incompatible_php = apply_filters( 'post_smtp_incompatible_php', false );
+
         $this->header = '';
 
         foreach ($headers as $header => $content) {
             if (isset($content['append'])) {
                 unset($content['append']);
-                $value = implode(',' . $eol . ' ', $content);
-                $this->header .= $header . ': ' . $value . $eol;
+                $value = implode(',' . $this->EOL . ' ', $content);
+                $this->header .= $header . ': ' . $value . $this->EOL;
             } else {
+
                 array_walk($content, array(get_class($this), '_formatHeader'), $header);
-                $this->header .= implode($eol, $content) . $eol;
+                $this->header .= $incompatible_php ? implode($this->EOL, $content) . "\r\n" : implode($this->EOL, $content) . $this->EOL;
+
             }
         }
 
         // Sanity check on headers -- should not be > 998 characters
         $sane = true;
-        foreach (explode($eol, $this->header) as $line) {
+        foreach (explode($this->EOL, $this->header) as $line) {
             if (strlen(trim($line)) > 998) {
                 $sane = false;
                 break;

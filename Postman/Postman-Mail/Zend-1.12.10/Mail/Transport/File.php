@@ -113,7 +113,7 @@ class Postman_Zend_Mail_Transport_File extends Postman_Zend_Mail_Transport_Abstr
             ));
         }
 
-        $email = $this->header . $this->EOL . $this->body;
+        $email = $this->header . $this->ps_end_of_line . $this->body;
 
         if (!file_put_contents($file, $email)) {
             require_once 'Zend/Mail/Transport/Exception.php';
