@@ -1,4 +1,4 @@
-=== Post SMTP Mailer/Email Log - Best Mail SMTP For WP ===
+=== POST SMTP Mailer - Email log, Delivery Failure Notifications, Chrome and Slack Support ===
 Plugin URI: https://wpexperts.io/
 Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
@@ -8,13 +8,15 @@ Stable tag: 2.4.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Send, log, and get notified when your emails are failing. Plus a unique option for secondary backup SMTP so your emails will never stop. Supports everything: SMTP, Gmail, Mailgun, office365, SendGrid, Elastic Email and OAuth 2.0!
+Connect with any SMTP, including Gmail, Outlook, SendinBlue, Sendgrid, Mailgun, Zoho, SES, and More.
 
 == Description ==
 
 [Live Demo](https://www.tastewp.com/plugins/post-smtp) | [Extensions](https://postmansmtp.com/extension/)
 
 = WordPress Mail SMTP Plugin =
+
+https://www.youtube.com/watch?v=UDmwPG-RmDc
 
 Post SMTP is a next-generation WP Mail SMTP plugin that assists and improves the email deliverability process of your WordPress website. 
 
@@ -299,7 +301,7 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
-= 2.4.5 - 2023-03-13 =
+= 2.4.5 - 2023-03-14 =
 **Bug Fixes**
 
 * Reverted the fix to support minor PHP versions, impacting some other PHP versions.
