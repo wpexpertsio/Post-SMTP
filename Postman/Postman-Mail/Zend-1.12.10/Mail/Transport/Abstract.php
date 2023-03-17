@@ -202,7 +202,7 @@ abstract class Postman_Zend_Mail_Transport_Abstract
             if (isset($content['append'])) {
                 unset($content['append']);
                 $value = implode(',' . $this->EOL . ' ', $content);
-                $this->header .= $header . ': ' . $value . $this->EOL;
+                $this->header .= $incompatible_php ? $header . ': ' . $value . "\r\n" : $header . ': ' . $value . $this->EOL;
             } else {
 
                 array_walk($content, array(get_class($this), '_formatHeader'), $header);
