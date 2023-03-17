@@ -196,13 +196,19 @@ abstract class Postman_Zend_Mail_Transport_Abstract
          */
         $incompatible_php = apply_filters( 'post_smtp_incompatible_php', false );
 
+        if( PostmanOptions::getInstance()->is_php_compatibility_enabled() ) {
+
+            add_filter( 'post_smtp_incompatible_php', '__return_true' );
+
+        }
+
         $this->header = '';
 
         foreach ($headers as $header => $content) {
             if (isset($content['append'])) {
                 unset($content['append']);
                 $value = implode(',' . $this->EOL . ' ', $content);
-                $this->header .= $header . ': ' . $value . $this->EOL;
+                $this->header .= $incompatible_php ? $header . ': ' . $value . "\r\n" : $header . ': ' . $value . $this->EOL;
             } else {
 
                 array_walk($content, array(get_class($this), '_formatHeader'), $header);
