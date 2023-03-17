@@ -78,6 +78,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizeLogMax( 'Email Log Max Entries', PostmanOptions::MAIL_LOG_MAX_ENTRIES, $input, $new_input );
 			$this->sanitizeString( 'Run Mode', PostmanOptions::RUN_MODE, $input, $new_input );
 			$this->sanitizeString( 'Stealth Mode', PostmanOptions::STEALTH_MODE, $input, $new_input );
+			$this->sanitizeString( 'Broken Email Fix', PostmanOptions::INCOMPATIBLE_PHP_VERSION, $input, $new_input );
 			$this->sanitizeInt( 'Transcript Size', PostmanOptions::TRANSCRIPT_SIZE, $input, $new_input );
 			$this->sanitizeString( 'Temporary Directory', PostmanOptions::TEMPORARY_DIRECTORY, $input, $new_input );
 

@@ -186,6 +186,11 @@ class PostmanSettingsRegistry {
 					'temporaryDirectoryCallback',
 			), PostmanAdminController::ADVANCED_OPTIONS, PostmanAdminController::ADVANCED_SECTION );
 
+			add_settings_field( PostmanOptions::INCOMPATIBLE_PHP_VERSION, __( 'Broken Email Fix', 'post-smtp' ), array(
+					$this,
+					'incompatible_php_version_callback',
+			), PostmanAdminController::ADVANCED_OPTIONS, PostmanAdminController::ADVANCED_SECTION );
+
             do_action( 'post_smtp_settings_fields' );
 		}
 	}
@@ -447,5 +452,18 @@ class PostmanSettingsRegistry {
 	 */
 	public function port_callback( $args ) {
 		printf( '<input type="text" id="input_port" name="postman_options[port]" value="%s" %s placeholder="%s"/>', null !== $this->options->getPort() ? esc_attr( $this->options->getPort() ) : '', isset( $args ['style'] ) ? $args ['style'] : '', __( 'Required', 'post-smtp' ) );
+	}
+
+
+	/**
+	 * Incompatible PHP Version Callback
+	 * 
+	 * @since 2.5.0
+	 * @version 1.0.0
+	 */
+	public function incompatible_php_version_callback() {
+
+		printf( '<input type="checkbox" id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]" %3$s /> %4$s', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::INCOMPATIBLE_PHP_VERSION, $this->options->is_php_compatibility_enabled() ? 'checked="checked"' : '', __( 'Only enable this option, if the email\'s header or body seems broken.', 'post-smtp' ) );
+
 	}
 }

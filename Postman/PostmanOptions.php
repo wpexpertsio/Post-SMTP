@@ -112,6 +112,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const TRANSCRIPT_SIZE = 'transcript_size';
 		const TEMPORARY_DIRECTORY = 'tmp_dir';
 		const DISABLE_EMAIL_VALIDAITON = 'disable_email_validation';
+		const INCOMPATIBLE_PHP_VERSION = 'incompatible_php_version';
 
 		// Fallback
         const FALLBACK_SMTP_ENABLED = 'fallback_smtp_enabled';
@@ -136,6 +137,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const DEFAULT_PLUGIN_MESSAGE_SENDER_NAME_ENFORCED = false;
 		const DEFAULT_PLUGIN_MESSAGE_SENDER_EMAIL_ENFORCED = false;
 		const DEFAULT_TEMP_DIRECTORY = '/tmp';
+		const DEFAULT_PHP_COMPATIBILITY_MODE = false;
 
 		const SMTP_MAILERS = [
 		    'phpmailer' => 'PHPMailer',
@@ -686,5 +688,27 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
 
         }
+
+
+		/**
+		 * Is the PHP Compatibility Mode enabled?
+		 * 
+		 * @since 2.5.0
+		 * @version 1.0.0
+		 */
+		public function is_php_compatibility_enabled() {
+
+			if ( isset( $this->options [ PostmanOptions::INCOMPATIBLE_PHP_VERSION ] ) ) {
+
+				return $this->options [ PostmanOptions::INCOMPATIBLE_PHP_VERSION ];
+
+			} 
+			else {
+
+				return self::DEFAULT_PHP_COMPATIBILITY_MODE; 
+
+			}
+
+		}
 	}
 }
