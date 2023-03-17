@@ -188,6 +188,12 @@ abstract class Postman_Zend_Mail_Transport_Abstract
             throw new Postman_Zend_Mail_Transport_Exception('Missing Postman_Zend_Mail object in _mail property');
         }
 
+        if( PostmanOptions::getInstance()->is_php_compatibility_enabled() ) {
+
+            add_filter( 'post_smtp_incompatible_php', '__return_true' );
+
+        }
+
         /**
          * Filter to manage \r\n compalibility issues with some PHP versions 
          * 
@@ -195,12 +201,6 @@ abstract class Postman_Zend_Mail_Transport_Abstract
          * @version 1.0.0
          */
         $incompatible_php = apply_filters( 'post_smtp_incompatible_php', false );
-
-        if( PostmanOptions::getInstance()->is_php_compatibility_enabled() ) {
-
-            add_filter( 'post_smtp_incompatible_php', '__return_true' );
-
-        }
 
         $this->header = '';
 
