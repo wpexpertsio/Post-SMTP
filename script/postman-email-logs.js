@@ -99,7 +99,15 @@ jQuery(document).ready(function($) {
 				jQuery( status ).addClass( 'ps-email-log-status-failed' );
 
 			}
-		}
+		},
+
+		drawCallback: function () {
+
+            var event = new Event('postSMTPEmailLogsDTDrawn');
+            document.dispatchEvent(event);
+
+        }
+		
 	} );
 
 	jQuery( '#ps-email-log_filter' ).after( `
@@ -248,9 +256,9 @@ jQuery(document).ready(function($) {
 			},
 			success: function( response ) {
 
-				/*
-					* Make CSV downloadable
-					*/
+				/**
+				 * Make CSV downloadable
+				 */
 				var downloadLink = document.createElement( 'a' );
 				var fileData = [response];
 				var blobObject = new Blob( fileData, { type: 'text/csv;charset=utf-8' } );
