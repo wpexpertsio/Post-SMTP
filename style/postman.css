@@ -1368,7 +1368,7 @@ div#ps-email-log_length{
     margin-right: 25px;
 }
 
-#ps-email-log_filter #searchBox {
+#ps-email-log_filter input {
     background: #F8F9FA;
     border: none;
     border-radius: 50px;
@@ -1376,7 +1376,8 @@ div#ps-email-log_length{
     padding-left: 12px;
 }
 
-#ps-email-log {
+#ps-email-log,
+#ps-email-reporting-logs {
     padding-top: 15px;
 }
 
@@ -1384,7 +1385,8 @@ div#ps-email-log_length{
     margin-bottom: 15px;
 }
 
-.dataTables_wrapper #ps-email-log_length select {
+.dataTables_wrapper #ps-email-log_length select, 
+.dataTables_wrapper #ps-email-reporting-logs_length select {
     border: none;
     padding: 0px 20px 0px 8px;
     font-size: 13px;
@@ -1503,4 +1505,8 @@ div#ps-email-log_length{
     border: #b8daff;
     color: #004085;
     border-radius: 9px;
+}
+
+#ps-email-reporting-logs_wrapper {
+    padding-top: 15px;
 }
