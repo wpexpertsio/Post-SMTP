@@ -306,6 +306,15 @@ class PostmanEmailLogs {
 
 			if( $delete ) {
 
+                /**
+                 * Fires after deleting logs
+                 * 
+                 * @param array $args
+                 * @since 2.5.0
+                 * @version 1.0.0
+                 */
+                do_action( 'postman_delete_logs_successfully', $args );
+
 				$response = array(
 					'success' => true,
 					'message' => __( 'Logs deleted successfully', 'post-smtp' )
