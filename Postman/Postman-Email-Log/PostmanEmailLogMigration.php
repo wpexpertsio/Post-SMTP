@@ -255,6 +255,8 @@ class PostmanEmailLogsMigration {
     
                         //Migrating Logs
                         foreach( $old_logs as $ID => $log ) {
+
+                            $log = $this->remove_extra_keys( $log );
                 
                             $result = PostmanEmailLogs::get_instance()->save( $log );
             
@@ -344,6 +346,27 @@ class PostmanEmailLogsMigration {
             $logs_meta = $wpdb->get_results(
                 "SELECT post_id as ID, meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id IN ({$log_ids});"
             );
+
+            /**
+             * Filter to delete incomplete logs, force migration
+             * 
+             * @param bool
+             * @since 2.5.0
+             * @version 1.0.0
+             */
+            if( apply_filters( 'postman_delete_incomplete_logs', false ) && empty( $logs_meta ) ) {
+
+                $log_ids = explode( ',', $log_ids );
+
+                foreach( $log_ids as $ID ) {
+
+                    wp_delete_post( $ID, true );
+
+                }
+
+                return true;
+
+            }
             
             if( $logs_meta ) {
     
@@ -497,6 +520,46 @@ class PostmanEmailLogsMigration {
             wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
 
         } 
+
+    }
+
+
+    /**
+     * Remove Extra Keys
+     * 
+     * @param array $array
+     * @since 2.5.0
+     * @version 1.0.0
+     */
+    public function remove_extra_keys( $array ) {
+
+        $allowedKeys = array(
+            'solution',
+            'success',
+            'from_header',
+            'to_header',
+            'cc_header',
+            'bcc_header',
+            'reply_to_header',
+            'transport_uri',
+            'original_to',
+            'original_subject',
+            'original_message',
+            'original_headers',
+            'session_transcript'
+        );
+
+        foreach ( $array as $key => $value ) {
+
+            if ( !in_array( $key, $allowedKeys ) ) {
+
+                unset( $array[$key] );
+
+            }
+
+        }
+
+        return $array;
 
     }
 
