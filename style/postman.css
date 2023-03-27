@@ -1510,3 +1510,30 @@ div#ps-email-log_length{
 #ps-email-reporting-logs_wrapper {
     padding-top: 15px;
 }
+
+#ps-email-log_paginate .paginate_button.current {
+    background: #dc3545;
+    color: #fff!important;
+    border-radius: 5px;
+}
+
+#ps-email-log_paginate .paginate_button:hover {
+    background: #0086fd;
+    border-radius: 5px;
+    border: none;
+}
+
+#ps-email-log_paginate .paginate_button {
+    border: none;
+}
+
+#ps-email-log_next,
+#ps-email-log_previous {
+    background: #dfdfdf;
+    color: #000;
+    border-radius: 5px;
+}
+
+#ps-email-log_paginate a {
+    margin: 0 4px;
+}
