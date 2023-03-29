@@ -12,6 +12,16 @@ class PostmanConfigurationController {
 	private $logger;
 	private $options;
 	private $settingsRegistry;
+	private $allowed_tags = array( 
+		'input'			=>	array(
+		'type'			=>	array(),
+		'id'			=>	array(),
+		'name'			=>	array(),
+		'value'			=>	array(),
+		'class'			=>	array(),
+		'placeholder'	=>	array(),
+		'size'			=>	array(),
+	) );
 
 	// Holds the values to be used in the fields callbacks
 	private $rootPluginFilenameAndPath;
@@ -158,7 +168,7 @@ class PostmanConfigurationController {
 	 * Register the Setup Wizard screen
 	 */
 	public function addSetupWizardSubmenu() {
-		$page = add_submenu_page( null, sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ), __( 'Postman SMTP', 'post-smtp' ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG, array(
+		$page = add_submenu_page( '', sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ), __( 'Postman SMTP', 'post-smtp' ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG, array(
 				$this,
 				'outputWizardContent',
 		) );
@@ -551,12 +561,12 @@ class PostmanConfigurationController {
 		
 		print( '<div class="ps-ib ps-w-50">' );
 		printf( '<label for="postman_options[sender_name]">%s</label>', esc_html__( 'Name', 'post-smtp' ) );
-		print wp_kses_post( $this->settingsRegistry->sender_name_callback() );
+		print wp_kses( $this->settingsRegistry->sender_name_callback(), $this->allowed_tags );
 		print( '</div>' );
 
 		print( '<div class="ps-ib ps-w-50">' );
 		printf( '<label for="postman_options[sender_email]">%s</label>', esc_html__( 'Email Address', 'post-smtp' ) );
-		print wp_kses_post( $this->settingsRegistry->from_email_callback() );
+		print wp_kses( $this->settingsRegistry->from_email_callback(), $this->allowed_tags );
 		print( '</div>' );
 
 		print( '<div class="clear"></div>' );
