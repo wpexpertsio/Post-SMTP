@@ -457,7 +457,7 @@ class PostmanUtils {
 	public static function getRequestParameter( $parameterName ) {
 		$logger = PostmanUtils::$logger;
 		if ( isset( $_POST [ $parameterName ] ) ) {
-			$value = filter_var( $_POST [ $parameterName ], FILTER_SANITIZE_STRING );
+			$value = sanitize_text_field( $_POST [ $parameterName ] );
 			if ( $logger->isTrace() ) {
 				$logger->trace( sprintf( 'Found parameter "%s"', $parameterName ) );
 				$logger->trace( $value );

@@ -14,14 +14,15 @@ class PostmanConfigurationController {
 	private $settingsRegistry;
 	private $allowed_tags = array( 
 		'input'			=>	array(
-		'type'			=>	array(),
-		'id'			=>	array(),
-		'name'			=>	array(),
-		'value'			=>	array(),
-		'class'			=>	array(),
-		'placeholder'	=>	array(),
-		'size'			=>	array(),
-	) );
+			'type'			=>	array(),
+			'id'			=>	array(),
+			'name'			=>	array(),
+			'value'			=>	array(),
+			'class'			=>	array(),
+			'placeholder'	=>	array(),
+			'size'			=>	array(),
+		)
+	);
 
 	// Holds the values to be used in the fields callbacks
 	private $rootPluginFilenameAndPath;

@@ -10,6 +10,17 @@ class PostmanSendTestEmailController {
 	// logging
 	private $logger;
 	private $options;
+	private $allowed_tags = array( 
+		'input'			=>	array(
+			'type'			=>	array(),
+			'id'			=>	array(),
+			'name'			=>	array(),
+			'value'			=>	array(),
+			'class'			=>	array(),
+			'placeholder'	=>	array(),
+			'size'			=>	array(),
+		)
+	);
 
 	// Holds the values to be used in the fields callbacks
 	private $rootPluginFilenameAndPath;
@@ -65,7 +76,7 @@ class PostmanSendTestEmailController {
 	 * Get the settings option array and print one of its values
 	 */
 	public function test_email_callback() {
-		printf( 
+		return sprintf( 
 			'<input type="text" id="%s" name="postman_test_options[test_email]" value="%s" class="ps-input required email" size="40"/>', 
 			esc_attr( self::RECIPIENT_EMAIL_FIELD_NAME ), 
 			esc_attr( wp_get_current_user()->user_email ) 
@@ -165,7 +176,7 @@ class PostmanSendTestEmailController {
 			) 
 		);
 		printf( '<label for="postman_test_options[test_email]">%s</label>', esc_attr_x( 'Recipient Email Address', 'Configuration Input Field', 'post-smtp' ) );
-		print wp_kses_post( $this->test_email_callback() );
+		print wp_kses( $this->test_email_callback(), $this->allowed_tags );
 		print '</fieldset>';
 
 		// Step 2
