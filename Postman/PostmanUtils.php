@@ -104,7 +104,15 @@ class PostmanUtils {
 		return (substr( $haystack, - $length ) === $needle);
 	}
 	public static function obfuscatePassword( $password ) {
+
+		if( empty( $password ) ) {
+
+			return '';
+
+		}
+
 		return str_repeat( '*', strlen( $password ) );
+
 	}
 	/**
 	 * Detect if the host is NOT a domain name
