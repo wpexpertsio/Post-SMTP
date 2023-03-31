@@ -6,7 +6,8 @@ class PostmanEmailLogsMigration {
     private $new_logging = false;
     private $migrating = false;
     private $have_old_logs = false;
-    private $logging_file = POST_SMTP_PATH . '\assets\migration.log';
+    private $logging_file = '';
+    private $logging_file_url = '';
 
     /**
      *  Constructor PostmanEmailLogsMigration
@@ -15,6 +16,19 @@ class PostmanEmailLogsMigration {
      * @version 1.0.0
      */
     public function __construct() {
+
+        if( is_multisite() ) {
+
+            $this->logging_file = WP_CONTENT_DIR . '/post-smtp-migration-' . get_current_blog_id() . '.log';
+            $this->logging_file_url = WP_CONTENT_URL . '/post-smtp-migration-' . get_current_blog_id() . '.log';
+
+        }
+        else {
+
+            $this->logging_file = WP_CONTENT_DIR . '/post-smtp-migration.log';
+            $this->logging_file_url = WP_CONTENT_URL . '/post-smtp-migration.log';
+            
+        }
 
         $this->new_logging = get_option( 'postman_db_version' );
         $this->migrating = get_option( 'ps_migrate_logs' );
@@ -139,7 +153,7 @@ class PostmanEmailLogsMigration {
                 &&
                 $new_logging
             ): ?>
-                <p><?php echo _e( 'Great! Logs successfully migrated, please verify and Delete logs from old system by clicking <b>Delete old Logs</b>, to keep system smooth', 'post-smtp' ); ?> <a href="<?php echo POST_SMTP_ASSETS . '/migration.log' ?>" target="_blank">View Migration Log</a></p>
+                <p><?php echo _e( 'Great! Logs successfully migrated, please verify and Delete logs from old system by clicking <b>Delete old Logs</b>, to keep system smooth', 'post-smtp' ); ?> <a href="<?php echo esc_attr( $this->logging_file_url ) ?>" target="_blank">View Migration Log</a></p>
                 <a href="<?php echo esc_url( $switch_back ); ?>" class="button button-primary">Switch to old System</a>
                 <a href="<?php echo esc_url( $delete_url ); ?>" class="button button-primary">Delete old Logs</a>
             <?php endif; ?>
@@ -524,6 +538,13 @@ class PostmanEmailLogsMigration {
 
             $this->log( 'Info: `trash_all_old_logs` Delete result: ' . print_r( $result, true ) );
 
+            //Delete log file
+            if( file_exists( $this->logging_file ) ) {
+
+                unlink( $this->logging_file );
+
+            }
+
             wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
 
         }
@@ -624,8 +645,9 @@ class PostmanEmailLogsMigration {
 
         if( !file_exists( $this->logging_file ) ) {
 
+            $site_url = site_url();
             $logging = fopen( $this->logging_file, 'w' );
-            fwrite( $logging, 'Migration log' . PHP_EOL );
+            fwrite( $logging, 'Migration log: ' . $site_url . PHP_EOL );
             fclose( $logging );
 
         }
