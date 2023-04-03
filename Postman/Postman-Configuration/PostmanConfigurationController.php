@@ -562,12 +562,12 @@ class PostmanConfigurationController {
 		
 		print( '<div class="ps-ib ps-w-50">' );
 		printf( '<label for="postman_options[sender_name]">%s</label>', esc_html__( 'Name', 'post-smtp' ) );
-		print wp_kses( $this->settingsRegistry->sender_name_callback(), $this->allowed_tags );
+		print wp_kses( $this->settingsRegistry->sender_name_callback( false ), $this->allowed_tags );
 		print( '</div>' );
 
 		print( '<div class="ps-ib ps-w-50">' );
 		printf( '<label for="postman_options[sender_email]">%s</label>', esc_html__( 'Email Address', 'post-smtp' ) );
-		print wp_kses( $this->settingsRegistry->from_email_callback(), $this->allowed_tags );
+		print wp_kses( $this->settingsRegistry->from_email_callback( false ), $this->allowed_tags );
 		print( '</div>' );
 
 		print( '<div class="clear"></div>' );

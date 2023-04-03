@@ -56,7 +56,7 @@ class PostmanSettingsRegistry {
 			add_settings_field( PostmanOptions::MESSAGE_SENDER_EMAIL, __( 'Email Address', 'post-smtp' ), array(
 					$this,
 					'from_email_callback',
-			), PostmanAdminController::MESSAGE_FROM_OPTIONS, PostmanAdminController::MESSAGE_FROM_SECTION );
+			), PostmanAdminController::MESSAGE_FROM_OPTIONS, PostmanAdminController::MESSAGE_FROM_SECTION, array( true ) );
 
 			add_settings_field( PostmanOptions::PREVENT_MESSAGE_SENDER_EMAIL_OVERRIDE, '', array(
 					$this,
@@ -66,7 +66,7 @@ class PostmanSettingsRegistry {
 			add_settings_field( PostmanOptions::MESSAGE_SENDER_NAME, __( 'Name', 'post-smtp' ), array(
 					$this,
 					'sender_name_callback',
-			), PostmanAdminController::MESSAGE_FROM_OPTIONS, PostmanAdminController::MESSAGE_FROM_SECTION );
+			), PostmanAdminController::MESSAGE_FROM_OPTIONS, PostmanAdminController::MESSAGE_FROM_SECTION, array( true ) );
 
 			add_settings_field( PostmanOptions::PREVENT_MESSAGE_SENDER_NAME_OVERRIDE, '', array(
 					$this,
@@ -283,8 +283,19 @@ class PostmanSettingsRegistry {
 	/**
 	 * Get the settings option array and print one of its values
 	 */
-	public function sender_name_callback() {
-		return sprintf( '<input type="text" id="input_sender_name" class="ps-input ps-w-75" name="postman_options[sender_name]" value="%s" size="40" />', null !== $this->options->getMessageSenderName() ? esc_attr( $this->options->getMessageSenderName() ) : '' );
+	public function sender_name_callback( $_echo = true ) {
+
+		if( $_echo ) {
+
+			printf( '<input type="text" id="input_sender_name" class="ps-input ps-w-75" name="postman_options[sender_name]" value="%s" size="40" />', null !== $this->options->getMessageSenderName() ? esc_attr( $this->options->getMessageSenderName() ) : '' );
+
+		}
+		else {
+
+			return sprintf( '<input type="text" id="input_sender_name" class="ps-input ps-w-75" name="postman_options[sender_name]" value="%s" size="40" />', null !== $this->options->getMessageSenderName() ? esc_attr( $this->options->getMessageSenderName() ) : '' );
+			
+		}
+
 	}
 
 	/**
@@ -297,8 +308,19 @@ class PostmanSettingsRegistry {
 	/**
 	 * Get the settings option array and print one of its values
 	 */
-	public function from_email_callback() {
-		return sprintf( '<input type="email" id="input_sender_email" class="ps-input ps-w-75" name="postman_options[sender_email]" value="%s" size="40" class="required" placeholder="%s"/>', null !== $this->options->getMessageSenderEmail() ? esc_attr( $this->options->getMessageSenderEmail() ) : '', __( 'Required', 'post-smtp' ) );
+	public function from_email_callback( $_echo = true ) {
+
+		if( $_echo ) {
+
+			printf( '<input type="email" id="input_sender_email" class="ps-input ps-w-75" name="postman_options[sender_email]" value="%s" size="40" class="required" placeholder="%s"/>', null !== $this->options->getMessageSenderEmail() ? esc_attr( $this->options->getMessageSenderEmail() ) : '', __( 'Required', 'post-smtp' ) );
+	
+		}
+		else {
+
+			return sprintf( '<input type="email" id="input_sender_email" class="ps-input ps-w-75" name="postman_options[sender_email]" value="%s" size="40" class="required" placeholder="%s"/>', null !== $this->options->getMessageSenderEmail() ? esc_attr( $this->options->getMessageSenderEmail() ) : '', __( 'Required', 'post-smtp' ) );
+
+		}
+
 	}
 
 	/**
