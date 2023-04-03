@@ -80,7 +80,7 @@ class PostmanConnectivityTestController {
 	 * Register the Email Test screen
 	 */
 	public function addPortTestSubmenu() {
-		$page = add_submenu_page( null, sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ), __( 'Postman SMTP', 'post-smtp' ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanConnectivityTestController::PORT_TEST_SLUG, array(
+		$page = add_submenu_page( '', sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ), __( 'Postman SMTP', 'post-smtp' ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanConnectivityTestController::PORT_TEST_SLUG, array(
 				$this,
 				'outputPortTestContent',
 		) );
@@ -289,7 +289,7 @@ class PostmanPortTestAjaxController {
 
 		$hostname = trim( PostmanUtils::getRequestParameter( 'hostname' ) );
 		$port = intval( PostmanUtils::getRequestParameter( 'port' ) );
-		$transport = trim( PostmanUtils::getRequestParameter( 'transport' ) );
+		$transport = empty( PostmanUtils::getRequestParameter( 'transport' ) ) ? '' : trim( PostmanUtils::getRequestParameter( 'transport' ) );
 		$timeout = PostmanUtils::getRequestParameter( 'timeout' );
 		$logo_url = PostmanUtils::getRequestParameter( 'logo_url' );
 		$data['logo_url'] = $logo_url;
@@ -328,8 +328,8 @@ class PostmanPortTestAjaxController {
 
 		$hostname = trim( PostmanUtils::getRequestParameter( 'hostname' ) );
 		$port = intval( PostmanUtils::getRequestParameter( 'port' ) );
-		$transport = trim( PostmanUtils::getRequestParameter( 'transport' ) );
-		$transportName = trim( PostmanUtils::getRequestParameter( 'transport_name' ) );
+		$transport = empty( PostmanUtils::getRequestParameter( 'transport' ) ) ? '' : trim( PostmanUtils::getRequestParameter( 'transport' ) );
+		$transportName = empty( PostmanUtils::getRequestParameter( 'transport_name' ) ) ? '' : trim( PostmanUtils::getRequestParameter( 'transport_name' ) );
 		$logo_url = PostmanUtils::getRequestParameter( 'logo_url' );
 		$data['logo_url'] = $logo_url;
 

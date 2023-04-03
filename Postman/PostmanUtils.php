@@ -104,7 +104,15 @@ class PostmanUtils {
 		return (substr( $haystack, - $length ) === $needle);
 	}
 	public static function obfuscatePassword( $password ) {
+
+		if( empty( $password ) ) {
+
+			return '';
+
+		}
+
 		return str_repeat( '*', strlen( $password ) );
+
 	}
 	/**
 	 * Detect if the host is NOT a domain name
@@ -457,7 +465,7 @@ class PostmanUtils {
 	public static function getRequestParameter( $parameterName ) {
 		$logger = PostmanUtils::$logger;
 		if ( isset( $_POST [ $parameterName ] ) ) {
-			$value = filter_var( $_POST [ $parameterName ], FILTER_SANITIZE_STRING );
+			$value = sanitize_text_field( $_POST [ $parameterName ] );
 			if ( $logger->isTrace() ) {
 				$logger->trace( sprintf( 'Found parameter "%s"', $parameterName ) );
 				$logger->trace( $value );
