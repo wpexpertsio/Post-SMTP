@@ -6,6 +6,8 @@ class PostmanEmailLogsMigration {
     private $new_logging = false;
     private $migrating = false;
     private $have_old_logs = false;
+    private $logging_file = '';
+    private $logging_file_url = '';
 
     /**
      *  Constructor PostmanEmailLogsMigration
@@ -15,10 +17,22 @@ class PostmanEmailLogsMigration {
      */
     public function __construct() {
 
+        if( is_multisite() ) {
+
+            $this->logging_file = WP_CONTENT_DIR . '/post-smtp-migration-' . get_current_blog_id() . '.log';
+            $this->logging_file_url = WP_CONTENT_URL . '/post-smtp-migration-' . get_current_blog_id() . '.log';
+
+        }
+        else {
+
+            $this->logging_file = WP_CONTENT_DIR . '/post-smtp-migration.log';
+            $this->logging_file_url = WP_CONTENT_URL . '/post-smtp-migration.log';
+            
+        }
+
         $this->new_logging = get_option( 'postman_db_version' );
         $this->migrating = get_option( 'ps_migrate_logs' );
         $this->have_old_logs = $this->have_old_logs();
-        
         //Show DB Update Notice
         if( $this->have_old_logs  ) {
 
@@ -33,6 +47,8 @@ class PostmanEmailLogsMigration {
         }
 
         if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-delete-old-logs' ) {
+
+            $this->log( 'Info: Delete old logs' );
 
             $this->trash_all_old_logs();
 
@@ -137,7 +153,7 @@ class PostmanEmailLogsMigration {
                 &&
                 $new_logging
             ): ?>
-                <p><?php echo _e( 'Great! Logs successfully migrated, please verify and Delete logs from old system by clicking <b>Delete old Logs</b>, to keep system smooth.', 'post-smtp' ); ?></p>
+                <p><?php echo _e( 'Great! Logs successfully migrated, please verify and Delete logs from old system by clicking <b>Delete old Logs</b>, to keep system smooth', 'post-smtp' ); ?> <a href="<?php echo esc_attr( $this->logging_file_url ) ?>" target="_blank">View Migration Log</a></p>
                 <a href="<?php echo esc_url( $switch_back ); ?>" class="button button-primary">Switch to old System</a>
                 <a href="<?php echo esc_url( $delete_url ); ?>" class="button button-primary">Delete old Logs</a>
             <?php endif; ?>
@@ -202,12 +218,16 @@ class PostmanEmailLogsMigration {
      */
     public function update_database() {
 
+        $this->log( 'Info: Creating table' );
+
         wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' );
 
         //Let's start migration 
 
         $email_logs = new PostmanEmailLogs;
         $email_logs->install_table();
+
+        $this->log( 'Info: Table created' );
 
         if( $this->have_old_logs && !$this->migrating ) {
 
@@ -248,6 +268,8 @@ class PostmanEmailLogsMigration {
             if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-migrate-logs' ) {
     
                 if( $this->have_old_logs ) {
+
+                    $this->log( 'Info: `migrate_logs` Have old logs' );
     
                     $old_logs = $this->get_old_logs();
         
@@ -256,11 +278,17 @@ class PostmanEmailLogsMigration {
                         //Migrating Logs
                         foreach( $old_logs as $ID => $log ) {
 
+                            $this->log( 'Info: `migrate_logs` Remove extra keys if contains: ' . print_r( array_keys( $log ), true ) );
+
                             $log = $this->remove_extra_keys( $log );
+
+                            $this->log( 'Info: `migrate_logs` Migrating Log: ' . print_r( array_keys( $log ), true ) );
                 
                             $result = PostmanEmailLogs::get_instance()->save( $log );
             
                             if( $result ) {
+
+                                $this->log( 'Info: `migrate_logs` Log migrated' );
     
                                 $result = wp_update_post( 
                                     array( 
@@ -270,11 +298,18 @@ class PostmanEmailLogsMigration {
                                 );
     
                             }
+                            else {
+
+                                $this->log( 'Error: `migrate_logs` Log not migrated: ID: ' . $ID . print_r( array_keys( $log ), true ) );
+
+                            }
     
                         }
 
                         //If all migrated
                         if( $this->get_migrated_count() ==  wp_count_posts( 'postman_sent_mail' )->private ) {
+
+                            $this->log( 'Info: `migrate_logs` All logs migrated' );
 
                             delete_option( 'ps_migrate_logs' );
     
@@ -287,6 +322,8 @@ class PostmanEmailLogsMigration {
                             );  
 
                         }
+
+                        $this->log( 'Info: `migrate_logs` Logs migrated: ' . $this->get_migrated_count(). ' Out of ' . wp_count_posts( 'postman_sent_mail' )->private );
     
                         wp_send_json_success( 
                             array( 
@@ -341,11 +378,15 @@ class PostmanEmailLogsMigration {
         $log_ids = array_keys( $logs );
         $log_ids = implode( ',', $log_ids );
 
+        $this->log( 'Info: `get_old_logs` Log IDs: ' . $log_ids );
+
         if( $log_ids ) {
 
             $logs_meta = $wpdb->get_results(
                 "SELECT post_id as ID, meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id IN ({$log_ids});"
             );
+
+            $this->log( 'Info: `get_old_logs` Logs Meta ' );
 
             /**
              * Filter to delete incomplete logs, force migration
@@ -354,13 +395,23 @@ class PostmanEmailLogsMigration {
              * @since 2.5.0
              * @version 1.0.0
              */
-            if( apply_filters( 'postman_delete_incomplete_logs', false ) && empty( $logs_meta ) ) {
+            if( empty( $logs_meta ) ) {
+
+                $this->log( 'Error: `get_old_logs` No logs meta found: ', $logs_meta );
 
                 $log_ids = explode( ',', $log_ids );
 
                 foreach( $log_ids as $ID ) {
 
+                    $this->log( 'Error: `get_old_logs` Marking as pinged: ' . $ID );
+
                     wp_delete_post( $ID, true );
+                    // $result = wp_update_post( 
+                    //     array( 
+                    //         'ID'        =>  $ID,
+                    //         'pinged'    =>  1 
+                    //     )
+                    // );
 
                 }
 
@@ -388,6 +439,8 @@ class PostmanEmailLogsMigration {
                     }
     
                 }
+
+                $this->log( 'Info: `get_old_logs` Prepared Logs' );
 
                 return $prepared_logs;
 
@@ -470,6 +523,8 @@ class PostmanEmailLogsMigration {
             $log_ids = array_keys( $result );
             $log_ids = implode( ',', $log_ids );
 
+            $this->log( 'Info: `trash_all_old_logs` Delete log IDs: ' . $log_ids );
+
             $result = $wpdb->get_results(
                 "DELETE p.*, pm.*
                 FROM {$wpdb->posts} AS p
@@ -478,6 +533,17 @@ class PostmanEmailLogsMigration {
                 ON p.ID = pm.post_id
                 WHERE p.post_type = 'postman_sent_mail' && p.ID IN ({$log_ids});"
             );
+
+            $result = $result ? 'Successfully deleted' : 'Failed';
+
+            $this->log( 'Info: `trash_all_old_logs` Delete result: ' . print_r( $result, true ) );
+
+            //Delete log file
+            if( file_exists( $this->logging_file ) ) {
+
+                unlink( $this->logging_file );
+
+            }
 
             wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
 
@@ -495,6 +561,8 @@ class PostmanEmailLogsMigration {
     public function switch_back() {
 
         if( wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
+
+            $this->log( 'Info: `switch_back` Switching to old system' );
 
             delete_option( 'postman_db_version' );
 
@@ -514,6 +582,8 @@ class PostmanEmailLogsMigration {
     public function switch_to_new() {
 
         if( wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
+
+            $this->log( 'Info: `switch_to_new` Switching to new system' );
 
             update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
 
@@ -546,7 +616,8 @@ class PostmanEmailLogsMigration {
             'original_subject',
             'original_message',
             'original_headers',
-            'session_transcript'
+            'session_transcript',
+            'time'
         );
 
         foreach ( $array as $key => $value ) {
@@ -563,6 +634,50 @@ class PostmanEmailLogsMigration {
 
     }
 
+
+    /**
+     * Create log file
+     * 
+     * @since 2.5.0
+     * @version 1.0.0
+     */
+    public function create_log_file() {
+
+        if( !file_exists( $this->logging_file ) ) {
+
+            $site_url = site_url();
+            $logging = fopen( $this->logging_file, 'w' );
+            fwrite( $logging, 'Migration log: ' . $site_url . PHP_EOL );
+            fclose( $logging );
+
+        }
+
+    }
+
+
+    /**
+     * Write to log file | Info and Error, only two types
+     * 
+     * @param string $message
+     * @since 2.5.0
+     * @version 1.0.0
+     */
+    public function log( $message ) {
+
+        if( !file_exists( $this->logging_file ) ) {
+
+            $this->create_log_file();
+
+        }
+        if( file_exists( $this->logging_file ) ) {
+
+            $logging = fopen( $this->logging_file, 'a' );
+            fwrite( $logging, '->' . $message . PHP_EOL );
+            fclose( $logging );
+
+        }
+
+    }
 }
 
 new PostmanEmailLogsMigration;
