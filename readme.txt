@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 3.9
 Tested up to: 6.1.1
-Stable tag: 2.4.6
+Stable tag: 2.4.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -300,6 +300,12 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 1. Email Log Filter
 
 == Changelog ==
+
+= 2.4.7 - 2023-04-10 =
+**Improvements**
+
+* Updated feedback SDK to latest version
+* Added PHP 8.1 compatibility
 
 = 2.4.6 - 2023-03-27 =
 **Bug Fixes**
