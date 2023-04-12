@@ -447,6 +447,7 @@ class PostmanEmailLogController {
 	$search = isset( $_GET['search'] ) ? sanitize_text_field( $_GET['search'] ) : '';
 	$page_records = apply_filters( 'postman_log_per_page', array( 10, 15, 25, 50, 75, 100 ) );
 	$postman_page_records = isset( $_GET['postman_page_records'] ) ? absint( $_GET['postman_page_records'] ) : '';
+	$page = isset( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : '';
 	?>
 
 	<form id="postman-email-log-filter" action="<?php echo admin_url( PostmanUtils::POSTMAN_EMAIL_LOG_PAGE_RELATIVE_URL ); ?>" method="get">
@@ -499,7 +500,7 @@ class PostmanEmailLogController {
 	<form id="movies-filter" method="get">
 		<!-- For plugins, we also need to ensure that the form posts back to our current page -->
 		<input type="hidden" name="page"
-			value="<?php echo filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING ); ?>" />
+			value="<?php echo esc_attr( $page ); ?>" />
 
 		<!-- Now we can render the completed list table -->
 			<?php $testListTable->display()?>
