@@ -1,0 +1,18 @@
+.post-smtp-mainwp {
+    width: 94%;
+    margin: 0 auto;
+    padding: 10px 0;
+}
+
+.post-smtp-mainwp-site table tr td {
+    padding: 5px 0;
+    padding-right: 10px;
+}
+
+.post-smtp-mainwp-site input[type="checkbox"] {
+	vertical-align: middle!important;
+}
+
+.post-smtp-mainwp-site {
+    margin-bottom: 20px;
+}
