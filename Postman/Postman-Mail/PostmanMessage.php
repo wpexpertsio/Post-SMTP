@@ -364,7 +364,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			if ( ! is_array( $headers ) ) {
 				// WordPress may send a string where "each header line (beginning with From:, Cc:, etc.) is delimited with a newline ("\r\n") (advanced)"
 				// this converts that string to an array
-				$headers = explode( "\n", str_replace( "\r\n", "\n", $headers ) );
+				$headers = empty( $headers ) ? explode( "\n", str_replace( "\r\n", "\n", '' ) ) : explode( "\n", str_replace( "\r\n", "\n", $headers ) );
 				// $headers = explode ( PHP_EOL, $headers );
 			}
 			// otherwise WordPress sends an array
