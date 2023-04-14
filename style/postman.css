@@ -651,7 +651,7 @@ section#delete_settings {
 
 .ui-tabs .ui-tabs-nav li a {
     padding: 0.8em 1.8em;
-    font-size: 19px;
+    font-size: 15px;
     font-weight: bold;
 }
 
@@ -1311,6 +1311,191 @@ Sample Code
     line-height: 34px;
 }
 
+progress#ps-migration-progress::-moz-progress-bar {
+    background: #2271b1;
+}
+
+/* For Chrome or Safari */
+progress#ps-migration-progress::-webkit-progress-value {
+    background: #2271b1;
+}
+
+/* For IE10 */
+progress#ps-migration-progress {
+    background: #2271b1;
+}
+
+h5#ps-progress {
+    margin: 5px;
+}
+
+.ps-email-log-status-success span, 
+.ps-email-log-status-failed span {
+    color: #fff;
+    font-weight: 600;
+    height: 9px;
+    width: 9px;
+    border-radius: 50px;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+
+.ps-email-log-status-success span {
+    background: #3FA500;
+}
+
+.ps-email-log-status-failed span {
+    background: #DC3545;
+}
+
+.ps-email-log-view,
+.ps-email-log-resend,
+.ps-email-log-transcript {
+    color: #0086FD;
+}
+
+.ps-email-log-delete {
+    color: #DC3545;
+}
+
+.dataTables_wrapper #ps-email-log_filter {
+    float: left;
+    text-align: initial;
+}
+
+div#ps-email-log_length{
+    margin-right: 25px;
+}
+
+#ps-email-log_filter input {
+    background: #F8F9FA;
+    border: none;
+    border-radius: 50px;
+    font-size: 13px;
+    padding-left: 12px;
+}
+
+#ps-email-log,
+#ps-email-reporting-logs {
+    padding-top: 15px;
+}
+
+.post-smtp_page_postman_email_log h1 {
+    margin-bottom: 15px;
+}
+
+.dataTables_wrapper #ps-email-log_length select, 
+.dataTables_wrapper #ps-email-reporting-logs_length select {
+    border: none;
+    padding: 0px 20px 0px 8px;
+    font-size: 13px;
+}
+
+.ps-email-log-date-filter {
+    float: left;
+}
+
+.ps-email-log-date-filter input {
+    border-radius: 50px;
+    border: none;
+    background: #f8f9fa;
+    padding: 5px;
+    padding-left: 12px;
+    font-size: 13px;
+}
+
+.ps-email-log-date-filter label {
+    margin-left: 20px;
+}
+
+.ps-email-log-top-buttons span {
+    vertical-align: middle;
+}
+
+.ps-email-log-top-buttons {
+    float: right;
+}
+
+.ps-email-log-export-btn {
+    background: #0086FD!important;
+    border: none!important;
+    border-radius: 50px!important;
+}
+
+.ps-email-log-delete-btn {
+    background: #DC3545!important;
+    border: none!important;
+    border-radius: 50px!important;
+}
+
+/* View And Session Transcript Popup */
+.ps-popup-wrap {
+    width: 100%;
+    height: 100%;
+    display: none;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    bottom: 0;
+    right: 0;
+    content: '';
+}
+
+.ps-popup-box {
+    width: 700px;
+    height: 500px;
+    padding: 20px;
+    transform: translate(-50%, -50%) scale(0.5);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    box-shadow: 0px 2px 16px rgb(0 0 0 / 50%);
+    border-radius: 3px;
+    background: #fff;
+    overflow: auto;
+}
+  
+.ps-popup-close-btn {
+    text-align: center;
+    width: 19px;
+    height: 19px;
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border-radius: 1000px;
+    background: #dc3545;
+    font-weight: bold;
+    text-decoration: none;
+    color: #fff;
+    line-height: 190%;
+}
+
+.transform-in, .transform-out {
+    display:block;
+    -webkit-transition:all ease 0.5s;
+    transition:all ease 0.5s;
+}
+
+.transform-in {
+	-webkit-transform:translate(-50%, -50%) scale(1);
+	transform:translate(-50%, -50%) scale(1);
+}
+
+.transform-out {
+	-webkit-transform:translate(-50%, -50%) scale(0.5);
+	transform:translate(-50%, -50%) scale(0.5);
+}
+
+.ps-email-log-actions span{
+    vertical-align: middle;
+}
+
+.ps-email-resend-btn span {
+    vertical-align: middle;
+}
+
 .ps-broken-mail-notice {
     margin: 20px 0;
     padding: 10px;
@@ -1320,4 +1505,35 @@ Sample Code
     border: #b8daff;
     color: #004085;
     border-radius: 9px;
+}
+
+#ps-email-reporting-logs_wrapper {
+    padding-top: 15px;
+}
+
+#ps-email-log_paginate .paginate_button.current {
+    background: #dc3545;
+    color: #fff!important;
+    border-radius: 5px;
+}
+
+#ps-email-log_paginate .paginate_button:hover {
+    background: #0086fd;
+    border-radius: 5px;
+    border: none;
+}
+
+#ps-email-log_paginate .paginate_button {
+    border: none;
+}
+
+#ps-email-log_next,
+#ps-email-log_previous {
+    background: #dfdfdf;
+    color: #000;
+    border-radius: 5px;
+}
+
+#ps-email-log_paginate a {
+    margin: 0 4px;
 }
