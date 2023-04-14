@@ -46,6 +46,7 @@ class Post_SMTP_MWP_Page {
 		$site_ids = array();
 		$is_staging = 'no';
 		$staging_view = get_user_option( 'mainwp_staging_options_updates_view' ) == 'staging' ? true : false;
+		$saved_sites = get_option( 'postman_mainwp_sites' );
 		
 		if ( $staging_view ) {
 			
@@ -92,30 +93,37 @@ class Post_SMTP_MWP_Page {
 		<div class="post-smtp-mainwp ui form">
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="post_smtp_mwp_save_sites" />
+				<input type="hidden" name="psmwp_security" value="<?php echo esc_attr( wp_create_nonce( 'psmwp-security' ) ); ?>" />
 		<?php
 
-		foreach( $site_ids as $id ){
+		foreach( $site_ids as $id ) {
 			
 			$website = MainWP_DB::instance()->get_website_by_id( $id );
+			$email_address = $this->get_option( $saved_sites, $id, 'email_address' ); 
+			$name = $this->get_option( $saved_sites, $id, 'name' );
+			$reply_to = $this->get_option( $saved_sites, $id, 'reply_to' );
+			$checked = checked( $this->get_option( $saved_sites, $id, 'enabled' ), 1, false );
+			
 			?>
 			<div class="post-smtp-mainwp-site">
 				<h3><?php echo esc_attr( $website->name ); ?></h3>
 				<table>
 					<tr>
+						<input type="hidden" name="site_id[]" value="<?php echo esc_attr( $id ); ?>" />
 						<td><label>Enable Individual Settings</label></td>
-						<td><input type="checkbox" name="<?php echo 'enable[' . esc_attr( $id ) . ']'; ?>" /></td>
+						<td><input type="checkbox" <?php echo esc_attr( $checked ); ?> value="1" name="<?php echo 'enable['.esc_attr( $id ).']'; ?>" /></td>
 					</tr>
 					<tr>
 						<td><label>Email Address</label></td>
-						<td><input type="text" name="<?php echo 'email_address[' . esc_attr( $id ) . ']'; ?>" /></td>
+						<td><input type="text" value="<?php echo esc_attr( $email_address ); ?>" name="<?php echo 'email_address[]'; ?>" /></td>
 					</tr>
 					<tr>
 						<td><label>Name</label></td>
-						<td><input type="text" name="<?php echo 'name[' . esc_attr( $id ) . ']'; ?>" /></td>
+						<td><input type="text" value="<?php echo esc_attr( $name ); ?>" name="<?php echo 'name[]'; ?>" /></td>
 					</tr>
 					<tr>
 						<td><label>Reply-To</label></td>
-						<td><input type="text" name="<?php echo 'reply_to[' . esc_attr( $id ) . ']'; ?>" /></td>
+						<td><input type="text" value="<?php echo esc_attr( $reply_to ); ?>" name="<?php echo 'reply_to[]'; ?>" /></td>
 					</tr>
 				</table>
 			</div>
@@ -144,7 +152,78 @@ class Post_SMTP_MWP_Page {
 	 */
 	public function save_sites() {
 		
-		var_dump( '<pre>', $_POST );die;
+		//Security Check
+		if( 
+			isset( $_POST['action'] ) 
+			&& 
+			$_POST['action'] == 'post_smtp_mwp_save_sites' 
+			&& 
+			wp_verify_nonce( $_POST['psmwp_security'], 'psmwp-security' ) 
+		) {
+			
+			$site_ids = $this->sanitize_array( $_POST['site_id'] );
+			$email_addresses = $this->sanitize_array( $_POST['email_address'] );
+			$names = $this->sanitize_array( $_POST['name'] );
+			$reply_tos = $this->sanitize_array( $_POST['reply_to'] );
+			$enables = $this->sanitize_array( $_POST['enable'] );
+			$sites = array();
+				
+			foreach( $site_ids as $key => $id ) {
+				
+				$sites[$id] = array(
+					'enabled'		=>	isset( $enables[$id] ) ? 1 : '',
+					'email_address'	=>	$email_addresses[$key],
+					'name'			=>	$names[$key],
+					'reply_to'		=>	$reply_tos[$key]
+				);
+				
+			}
+			
+			update_option( 'postman_mainwp_sites', $sites );
+			
+			wp_redirect( admin_url( 'admin.php?page=Extensions-Post-Smtp/Postman/Extensions/Core/MainWP' ) );
+			
+		}
+		
+	}
+	
+	
+	/**
+	 * Sanitizes the Array
+	 * 
+	 * @since 2.6.0
+	 * @version 1.0.0
+	 */
+	public function sanitize_array( $args ) {
+		
+		$sanitized = array();
+		
+		foreach( $args as $key => $value ) {
+			
+			$sanitized[$key] = sanitize_text_field( $value );
+			
+		}
+			
+		return $sanitized;
+		
+	}
+	
+	
+	/**
+	 * Gets option value by key
+	 * 
+	 * @since 2.6.0
+	 * @version 1.0.0
+	 */
+	public function get_option( $option, $site_id, $key ) {
+		
+		if( $option && isset( $option[$site_id] ) && $option[$site_id][$key] ) {
+			
+			return $option[$site_id][$key];
+			
+		}
+		
+		return '';
 		
 	}
 	
