@@ -144,6 +144,7 @@ class Post_SMTP_MainWP {
 
         require_once 'includes/rest-api/v1/class-psmp-rest-api.php';
         require_once 'includes/ps-mainwp-page.php';
+        require_once 'includes/ps-mainwp-table.php';
 
     }
 
