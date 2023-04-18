@@ -9,6 +9,7 @@ class PostmanEmailLogs {
 
     private $db;
     public $db_name = 'post_smtp_logs';
+    public $meta_table = 'post_smtp_logmeta';
     private $logger;
 
     private $fields = array(
@@ -86,6 +87,17 @@ class PostmanEmailLogs {
         }
 
         $sql .=  "PRIMARY KEY (`id`)) ENGINE=InnoDB CHARSET={$this->db->charset} COLLATE={$this->db->collate};";
+
+        dbDelta( $sql );
+
+        $sql = "
+        CREATE TABLE IF NOT EXISTS `{$this->db->prefix}{$this->meta_table}` (
+            `id` bigint(20) NOT NULL AUTO_INCREMENT,
+            `log_id` bigint(20) NOT NULL,
+            `meta_key` varchar(255) DEFAULT NULL,
+            `meta_value` varchar(255) DEFAULT NULL,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB CHARSET={$this->db->charset} COLLATE={$this->db->collate};";
 
         dbDelta( $sql );
 
