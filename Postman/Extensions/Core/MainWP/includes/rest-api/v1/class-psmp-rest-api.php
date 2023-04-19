@@ -5,9 +5,12 @@ use MainWP\Dashboard\MainWP_DB;
 if( !class_exists( 'Post_SMTP_MWP_Rest_API' ) ):
 class Post_SMTP_MWP_Rest_API {
 	
+	private $site_id = false;
+	
 	public function __construct() {
 		
 		add_action( 'rest_api_init', array( $this, 'rest_api_init' ) );
+		add_action( 'post_smtp_after_email_log_saved', array( $this, 'update_log_meta' ) );
 		
 	} 
 	
@@ -69,6 +72,7 @@ class Post_SMTP_MWP_Rest_API {
 			md5( $site_data[0]->pubkey ) == $api_key
 		) {
 			
+			$this->site_id = $site_data[0]->id;
 			return true;
 			
 		}
@@ -87,6 +91,7 @@ class Post_SMTP_MWP_Rest_API {
 		//Lets Validate :D
 		if( $this->validate( $api_key, $site_url ) ) {
 			
+			$this->site_url = $site_url;
 			$to = isset( $params['to'] ) ? $params['to'] : '';
 			$subject = isset( $params['subject'] ) ? $params['subject'] : '';
 			$message = isset( $params['message'] ) ? $params['message'] : '';
@@ -144,6 +149,18 @@ class Post_SMTP_MWP_Rest_API {
         return $result;
         
     }
+	
+	
+	public function update_log_meta( $log_id ) {
+		
+		//Store Site ID, if log has been created :)
+		if( $this->site_id ) {
+			
+			postman_add_log_meta( $log_id, 'mainwp_child_site_id', $this->site_id );
+			
+		}
+		
+	}
 	
 }
 

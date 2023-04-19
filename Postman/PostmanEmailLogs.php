@@ -262,6 +262,14 @@ class PostmanEmailLogs {
                 $row->time = date( "{$date_format} {$time_format}", $row->time );
                 $row->success = $row->success == 1 ? '<span></span>' : '<span></span>' . $row->success;
                 $row->actions = '';
+				
+				/**
+                 * Filter the row data
+                 * 
+                 * @since 2.5.0
+                 * @version 1.0.0
+                 */
+                $row = apply_filters( 'ps_email_logs_row', $row );
 
             }
 

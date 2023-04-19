@@ -9,7 +9,15 @@ class Post_SMTP_MWP_Page {
 	
     public function __construct() {
     
-    	if( isset( $_GET['page'] ) && $_GET['page'] == 'Extensions-Post-Smtp/Postman/Extensions/Core/MainWP' ) {
+    	if( 
+			isset( $_GET['page'] ) 
+			&& 
+			( 
+				$_GET['page'] == 'Extensions-Post-Smtp/Postman/Extensions/Core/MainWP' 
+			 	|| 
+			 	$_GET['page'] =='postman_email_log' 
+			)
+		) {
         
         	add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
         
@@ -94,6 +102,12 @@ class Post_SMTP_MWP_Page {
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="post_smtp_mwp_save_sites" />
 				<input type="hidden" name="psmwp_security" value="<?php echo esc_attr( wp_create_nonce( 'psmwp-security' ) ); ?>" />
+				<div id="mainwp-select-sites-filters">
+					<div class="ui mini fluid icon input">
+						<input type="text" id="post-smtp-select-sites-filter" value="" placeholder="Type to filter your sites">
+						<i class="filter icon"></i>
+					</div>
+				</div>
 		<?php
 
 		foreach( $site_ids as $id ) {
@@ -105,27 +119,32 @@ class Post_SMTP_MWP_Page {
 			$checked = checked( $this->get_option( $saved_sites, $id, 'enabled' ), 1, false );
 			
 			?>
+
 			<div class="post-smtp-mainwp-site">
-				<h3><?php echo esc_attr( $website->name ); ?></h3>
-				<table>
-					<tr>
-						<input type="hidden" name="site_id[]" value="<?php echo esc_attr( $id ); ?>" />
-						<td><label>Enable Individual Settings</label></td>
-						<td><input type="checkbox" <?php echo esc_attr( $checked ); ?> value="1" name="<?php echo 'enable['.esc_attr( $id ).']'; ?>" /></td>
-					</tr>
-					<tr>
-						<td><label>Email Address</label></td>
-						<td><input type="text" value="<?php echo esc_attr( $email_address ); ?>" name="<?php echo 'email_address[]'; ?>" /></td>
-					</tr>
-					<tr>
-						<td><label>Name</label></td>
-						<td><input type="text" value="<?php echo esc_attr( $name ); ?>" name="<?php echo 'name[]'; ?>" /></td>
-					</tr>
-					<tr>
-						<td><label>Reply-To</label></td>
-						<td><input type="text" value="<?php echo esc_attr( $reply_to ); ?>" name="<?php echo 'reply_to[]'; ?>" /></td>
-					</tr>
-				</table>
+				<div class="mainwp-search-options ui accordion mainwp-sidebar-accordion">
+					<div class="title"><i class="dropdown icon"></i> <?php echo esc_attr( $website->name ); ?></div>
+					<div class="content">
+						<table>
+							<tr>
+								<input type="hidden" name="site_id[]" value="<?php echo esc_attr( $id ); ?>" />
+								<td><label>Enable Individual Settings</label></td>
+								<td><input type="checkbox" <?php echo esc_attr( $checked ); ?> value="1" name="<?php echo 'enable['.esc_attr( $id ).']'; ?>" /></td>
+							</tr>
+							<tr>
+								<td><label>Email Address</label></td>
+								<td><input type="text" value="<?php echo esc_attr( $email_address ); ?>" name="<?php echo 'email_address[]'; ?>" /></td>
+							</tr>
+							<tr>
+								<td><label>Name</label></td>
+								<td><input type="text" value="<?php echo esc_attr( $name ); ?>" name="<?php echo 'name[]'; ?>" /></td>
+							</tr>
+							<tr>
+								<td><label>Reply-To</label></td>
+								<td><input type="text" value="<?php echo esc_attr( $reply_to ); ?>" name="<?php echo 'reply_to[]'; ?>" /></td>
+							</tr>
+						</table>
+					</div>
+				</div>
 			</div>
 			<?php
 			
