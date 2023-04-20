@@ -17,15 +17,30 @@ jQuery(document).ready(function() {
 		});
 	});
 	
+	//Render Child Sites on Log Page
+	var _options = `<option value='-1'>${PSMainWP.allSites}</option>`;
+	_options += `<option value='main_site'>${PSMainWP.mainSite}</option>`;
+	jQuery.each( PSMainWP.childSites, function( key, value ) {
+		
+		_options += `<option value='${key}'>${value}</option>`;
+		
+	} )
 	jQuery( '.ps-email-log-date-filter' ).after( `
 		<div class="ps-mainwp-site-filter">
 			<label>Site 
-				<select>
-					<option>aasdasdsdasdasd</option>
+				<select class="ps-mainwp-site-selector">
+					${_options}
 				</select>
 			</label>
 		</div>
 	` );
+	
+	//Lets do somthing on changing site
+	jQuery( document ).on( 'change', '.ps-mainwp-site-selector', function() {
+		
+		debugger;
+		
+	} )
 	
 });
 

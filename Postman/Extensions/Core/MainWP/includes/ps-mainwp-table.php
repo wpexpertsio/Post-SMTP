@@ -15,9 +15,6 @@ class Post_SMTP_MWP_Table {
 		add_filter( 'post_smtp_email_logs_localize', array( $this, 'email_logs_localize' ) );
 		add_filter( 'ps_email_logs_row', array( $this, 'filter_row' ) );
 		add_filter( 'post_smtp_get_logs_args', array( $this, 'logs_args' ) );
-
-		//$message = new PostmanMessage();
-		//$message->setReplyTo( 'yayyy@gmail.com' );
 	
 	}
 	
@@ -32,8 +29,10 @@ class Post_SMTP_MWP_Table {
 
         wp_enqueue_script( 'post-smtp-mainwp', plugin_dir_url( __DIR__ ) . 'assets/js/admin.js', array(), '1.0.0', true );
 
-        wp_localize_script( 'post-smtp-mainwp', 'psrat', array(
-            'ajax_url' => admin_url( 'admin-ajax.php' ),
+        wp_localize_script( 'post-smtp-mainwp', 'PSMainWP', array(
+            'childSites' 	=> 	$this->get_sites(),
+			'mainSite'		=>	get_bloginfo( 'name' ) ? get_bloginfo( 'name' ) : __( 'Main Site', 'post-smtp' ),
+			'allSites'		=>	__( 'All Sites', 'post-smtp' )
             ),
         );
 
@@ -149,6 +148,111 @@ class Post_SMTP_MWP_Table {
         return $args;
 
     }
+	
+	
+	/**
+	 * Gets MainWP's Child Sites
+	 * 
+	 * @since 2.5.0
+	 * @version 1.0.0
+	 */
+	public function get_sites() {
+		
+		$site_ids = array();
+		$is_staging = 'no';
+		$staging_view = $this->is_staging_view();
+		$saved_sites = get_option( 'postman_mainwp_sites' );
+		
+		if ( $staging_view ) {
+			
+			$is_staging = 'yes';
+			
+		}
+		
+		$websites = MainWP_DB::instance()->query( MainWP_DB::instance()->get_sql_websites_for_current_user( false, null, 'wp_sync.dtsSync DESC, wp.url ASC', false, false, null, false, array(), $is_staging ) );
+		
+      $cntr = 0;
+		if ( is_array( $websites ) ) {
+			
+			$count = count( $websites );
+			
+			for ( $i = 0; $i < $count; $i ++ ) {
+				
+				$website = $websites[ $i ];
+				
+				if ( '' == $website->sync_errors ) {
+					
+					$cntr ++;
+					$site_ids[$website->id] = $website->name;
+					
+				}
+			}
+		} 
+		elseif ( false !== $websites ) {
+			
+			while ( $website = MainWP_DB::fetch_object( $websites ) ) {
+				
+				if ( '' == $website->sync_errors ) {
+					
+					$cntr ++;
+					$site_ids[$website->id] = $website->name;
+				
+				}
+				
+			}
+			
+		}
+		
+		return empty( $site_ids ) ? false : $site_ids;
+		
+	}
+	
+	
+	public function is_staging_view() {
+		
+		$user = get_current_user_id();
+
+		$userdata = WP_User::get_data_by( 'id', $user );
+
+		if ( ! $userdata ) {
+
+			return false;
+
+		}
+
+		$user = new WP_User();
+
+		$user->init( $userdata );
+
+		if ( ! $user ) {
+
+			return false;
+
+		}
+
+		global $wpdb;
+
+		$prefix = $wpdb->get_blog_prefix();
+
+		if ( $user->has_prop( $prefix . 'mainwp_staging_options_updates_view' ) ) { // Blog-specific.
+
+			$result = $user->get( $prefix . 'mainwp_staging_options_updates_view' );
+
+		} 
+		elseif ( $user->has_prop( 'mainwp_staging_options_updates_view' ) ) { // User-specific and cross-blog.
+
+			$result = $user->get( 'mainwp_staging_options_updates_view' );
+
+		} 
+		else {
+
+			$result = false;
+
+		}
+
+		return $result;
+		
+	}
 	
 }
 
