@@ -189,11 +189,23 @@ class PostmanSendTestEmailController {
 		print '<section>';
 		printf( '<p><label>%s</label></p>', esc_html__( 'Status', 'post-smtp' ) );
 		print '<textarea id="postman_test_message_error_message" class="ps-textarea" readonly="readonly" cols="65" rows="4"></textarea>';
-		print '
-		<div class="ps-broken-mail-notice">
-			<span class="dashicons dashicons-info"></span> Is your email\'s Header or Body broken? <a href="https://postmansmtp.com/fix-for-broken-emails/" target="_blank">Learn how to fix</a>.
-		</div>
-		';
+		
+		$transport = PostmanOptions::getInstance()->getTransportType();
+
+		if( 
+			version_compare( '8.0.0', phpversion(), '<=' ) 
+			&&
+			( $transport == 'smtp' || $transport == 'default' )
+		) {
+
+			print '
+			<div class="ps-broken-mail-notice">
+				<span class="dashicons dashicons-info"></span> Is your email\'s Header or Body broken? <a href="https://postmansmtp.com/fix-for-broken-emails/" target="_blank">Learn how to fix</a>.
+			</div>
+			';
+
+		}  
+
 		print '</section>';
 		print '</fieldset>';
 
