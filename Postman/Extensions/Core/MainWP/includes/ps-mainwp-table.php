@@ -120,14 +120,14 @@ class Post_SMTP_MWP_Table {
 		
 			$url .= "&site_id={$row->site_id}";
 			$website = MainWP_DB::instance()->get_website_by_id( $row->site_id );
-			$row->site_id = "<a href='{$url}'>{$website->name}</a>";
+			$row->site_id = "<a href='{$url}' class='ps-mainwp-site'>{$website->name}</a>";
 		}
 		
 		if( $row->site_id == 'main_site' ) {
 			
 			$url .= "&site_id=main_site";
 			$row->site_id = get_bloginfo( 'name' ) ? get_bloginfo( 'name' ) : 'Main Site';
-			$row->site_id = "<a href='{$url}'>{$row->site_id}</a>";
+			$row->site_id = "<a href='{$url}' class='ps-mainwp-site'>{$row->site_id}</a>";
 			
 		}
 		

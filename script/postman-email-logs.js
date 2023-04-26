@@ -528,13 +528,23 @@ jQuery(document).ready(function($) {
 	} );
 	
 	//If site already selected
-	var currentURL = window.location.href;
-	var siteID = PostSMTPGetParameterByName( 'site_id', currentURL );
-	if( siteID != null && siteID != -1 ) {
+	jQuery( document ).on( 'click', '.ps-mainwp-site', function( e ) {
 		
-		logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&site_id=${siteID}` ).load();
+		e.preventDefault();
+		var href = $(this).attr('href');
+	
+		var siteID = PostSMTPGetParameterByName( 'site_id', href );
 		
-	}
+		jQuery( `.ps-mainwp-site-selector option[value="${siteID}"]` ).prop( 'selected', true )
+
+		if( siteID != null && siteID != -1 ) {
+
+			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&site_id=${siteID}` ).load();
+
+		}
+		
+	} )
+	
 
 	//Resend
 	jQuery( document ).on( 'click', '.ps-email-log-resend', function( e ) {
