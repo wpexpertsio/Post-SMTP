@@ -519,6 +519,23 @@ jQuery(document).ready(function($) {
 
 	} );
 
+	//MainWP | Lets do somthing on changing site
+	jQuery( document ).on( 'change', '.ps-mainwp-site-selector', function() {
+		
+		var siteID = this.value;
+		logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&site_id=${siteID}` ).load();
+		
+	} );
+	
+	//If site already selected
+	var currentURL = window.location.href;
+	var siteID = PostSMTPGetParameterByName( 'site_id', currentURL );
+	if( siteID != null && siteID != -1 ) {
+		
+		logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&site_id=${siteID}` ).load();
+		
+	}
+
 	//Resend
 	jQuery( document ).on( 'click', '.ps-email-log-resend', function( e ) {
 
@@ -574,3 +591,22 @@ jQuery(document).ready(function($) {
 	} );
 
 })
+
+
+/**
+ * Get Parameter value by key
+ * 
+ * @since 2.5.0
+ * @version 1.0.0
+ */
+function PostSMTPGetParameterByName( name, url ) {
+
+    if ( !url ) url = window.location.href;
+    name = name.replace( /[\[\]]/g, "\\$&" );
+    var regex = new RegExp( "[?&]" + name + "(=([^&#]*)|&|#|$)" ),
+    results = regex.exec( url );
+    if ( !results ) return null;
+    if ( !results[2] ) return '';
+    return decodeURIComponent( results[2].replace( /\+/g, " " ) );
+
+}

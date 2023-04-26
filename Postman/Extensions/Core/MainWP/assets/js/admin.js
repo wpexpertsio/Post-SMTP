@@ -17,12 +17,23 @@ jQuery(document).ready(function() {
 		});
 	});
 	
+	var currentURL = window.location.href;
+	var site_id = PostSMTPGetParameterByName( 'site_id', currentURL );
 	//Render Child Sites on Log Page
 	var _options = `<option value='-1'>${PSMainWP.allSites}</option>`;
-	_options += `<option value='main_site'>${PSMainWP.mainSite}</option>`;
+	PSMainWP.childSites['main_site'] = PSMainWP.mainSite;
+
 	jQuery.each( PSMainWP.childSites, function( key, value ) {
 		
-		_options += `<option value='${key}'>${value}</option>`;
+		var _selected = '';
+		
+		if( currentURL !== null && key == site_id ) {
+			
+			_selected = 'selected';
+			
+		}
+		
+		_options += `<option value='${key}' ${_selected}>${value}</option>`;
 		
 	} )
 	jQuery( '.ps-email-log-date-filter' ).after( `
@@ -35,12 +46,7 @@ jQuery(document).ready(function() {
 		</div>
 	` );
 	
-	//Lets do somthing on changing site
-	jQuery( document ).on( 'change', '.ps-mainwp-site-selector', function() {
-		
-		debugger;
-		
-	} )
+	//Code written in scripts/postman-email-logs.js
 	
 });
 

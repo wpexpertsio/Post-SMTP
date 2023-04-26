@@ -158,6 +158,10 @@ class Post_SMTP_MWP_Rest_API {
 			
 			postman_add_log_meta( $log_id, 'mainwp_child_site_id', $this->site_id );
 			
+		} else {
+			
+			postman_add_log_meta( $log_id, 'mainwp_child_site_id', 'main_site' );
+			
 		}
 		
 	}

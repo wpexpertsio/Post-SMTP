@@ -233,6 +233,13 @@ class PostmanEmailLogs {
             $query['end'] = sanitize_text_field( $_GET['length'] );
             $query['search'] = sanitize_text_field( $_GET['search']['value'] );
             $query['order'] = sanitize_text_field( $_GET['order'][0]['dir'] );
+            
+			//MainWP | Get Sites
+            if( isset( $_GET['site_id'] ) ) {
+
+                $query['site_id'] = sanitize_text_field( $_GET['site_id'] );
+
+            }
 
             //Column Name
             $query['order_by'] = sanitize_text_field( $_GET['columns'][$_GET['order'][0]['column']]['data'] );

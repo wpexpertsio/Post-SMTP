@@ -15,6 +15,7 @@ class Post_SMTP_MWP_Table {
 		add_filter( 'post_smtp_email_logs_localize', array( $this, 'email_logs_localize' ) );
 		add_filter( 'ps_email_logs_row', array( $this, 'filter_row' ) );
 		add_filter( 'post_smtp_get_logs_args', array( $this, 'logs_args' ) );
+		add_action( 'postman_delete_logs_successfully', array( $this, 'delete_logs' ) );
 	
 	}
 	
@@ -113,14 +114,20 @@ class Post_SMTP_MWP_Table {
 	 */
 	public function filter_row( $row ) {
 		
-		if( $row->site_id ) {
+		$url = admin_url( 'admin.php?page=postman_email_log' );
+
+		if( $row->site_id && $row->site_id != 'main_site' ) {
 		
+			$url .= "&site_id={$row->site_id}";
 			$website = MainWP_DB::instance()->get_website_by_id( $row->site_id );
-			$row->site_id = "<a href='{$website->url}' target='_blank'>{$website->name}</a>";
+			$row->site_id = "<a href='{$url}'>{$website->name}</a>";
 		}
-		if( empty( $row->site_id ) ) {
+		
+		if( $row->site_id == 'main_site' ) {
 			
+			$url .= "&site_id=main_site";
 			$row->site_id = get_bloginfo( 'name' ) ? get_bloginfo( 'name' ) : 'Main Site';
+			$row->site_id = "<a href='{$url}'>{$row->site_id}</a>";
 			
 		}
 		
@@ -251,6 +258,28 @@ class Post_SMTP_MWP_Table {
 		}
 
 		return $result;
+		
+	}
+	
+	
+	 /**
+     * Delete logs
+     * 
+     * @param array $ids
+     * @since 2.5.0
+     * @version 1.0.0
+     */
+	public function delete_logs( $ids ) {
+		
+		$ids = implode( ',', $ids );
+        $ids = $ids == -1 ? '' : "WHERE log_id IN ({$ids});";
+		
+		global $wpdb;
+		$email_logs = new PostmanEmailLogs();
+
+        return $wpdb->query(
+            "DELETE FROM `{$wpdb->prefix}{$email_logs->meta_table}` {$ids}"
+        );
 		
 	}
 	
