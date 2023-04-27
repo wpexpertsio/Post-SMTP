@@ -249,6 +249,9 @@ class Postman {
 		$authToken = PostmanOAuthToken::getInstance();
 		$rootPluginFilenameAndPath = $this->rootPluginFilenameAndPath;
 
+		//Load helper functions file :D
+		require_once POST_SMTP_PATH . '/includes/postman-functions.php';
+
 		// load the dependencies
 		require_once 'PostmanMessageHandler.php';
 		require_once 'PostmanAdminController.php';
