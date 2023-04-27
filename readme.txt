@@ -1,4 +1,4 @@
-=== POST SMTP Mailer – Email log, Delivery Failure Notifications and Best Mail SMTP for WordPress ===
+=== POST SMTP Mailer - Email log, Delivery Failure Notifications and Best Mail SMTP for WordPress ===
 Plugin URI: https://wpexperts.io/
 Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
@@ -74,19 +74,19 @@ In essence, SMTP is a set of commands that authenticates and directs the transfe
 [Post SMTP Pro Extensions](https://postmansmtp.com/extensions/) are everything you need to enhance your WordPress email deliverability experience. Check our extensions for Amazon SES, Better Email Logger and Office365.
 
 **Office365 API delivery**
-[Office365 Pro extension](https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/) allows you to connect PostSMTP with your Outlook and Microsoft 365 accounts to improve email deliverability.
+[Office365 Pro Extension](https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/) allows you to connect PostSMTP with your Outlook and Microsoft 365 accounts to improve email deliverability.
 
 **Amazon SES API delivery**
 [Amazon SES Pro Extension](https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/) combines Amazon's mail service provider with PostSMTP's powerful and easy-to-use SMTP mailing features. 
+
+**Report & Tracking Pro Extension**
+[Report and Tracking Pro Extension](https://postmansmtp.com/extensions/reporting-and-tracking-extension/) gives you detailed reports and statistics of your website's email performance. You can filter email statistics by day/week/month and track who viewed your emails. You can also view your email's open rate in a pop-up window.
 
 **Zoho Mail API delivery**
 [Zoho Mail Pro Extension](https://postmansmtp.com/extensions/zoho-mail-pro-extension/) gives you the power to connect PostSMTP with your Zoho Mail account to improve email deliverability of your WordPress site.
 
 **Twilio Pro Extension**
 [Twilio Extension](https://postmansmtp.com/extensions/twilio-extension-pro/) allows you to add your phone number so that you can receive SMS notifications and alerts when emails are not delivered to your recipients.
-
-**Better Email Logger Extension**
-[Better Email Logger Pro extension](https://postmansmtp.com/extensions/the-better-email/) allows you to design email marketing campaigns and improve email deliverability for your WordPress site.
 
 **Mail Control Pro Extension**
 [Mail Control Pro Extension](https://postmansmtp.com/extensions/post-smtp-mail-control/) allows you to control Post SMTP's email actions like sending email alerts to authors, webmasters, and new users. 
