@@ -1,4 +1,4 @@
-=== POST SMTP Mailer - Email log, Delivery Failure Notifications, Chrome and Slack Support ===
+=== POST SMTP Mailer – Email log, Delivery Failure Notifications and Best Mail SMTP for WordPress ===
 Plugin URI: https://wpexperts.io/
 Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
