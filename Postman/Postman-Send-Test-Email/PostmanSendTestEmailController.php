@@ -198,9 +198,9 @@ class PostmanSendTestEmailController {
 			( $transport == 'smtp' || $transport == 'default' )
 		) {
 
-			print '
+			echo '
 			<div class="ps-broken-mail-notice">
-				<span class="dashicons dashicons-info"></span> Is your email\'s Header or Body broken? <a href="https://postmansmtp.com/fix-for-broken-emails/" target="_blank">Learn how to fix</a>.
+				<span class="dashicons dashicons-info"></span>'.esc_html__( 'Is your email\'s Header or Body broken?', 'post-smtp' ).'<a href="https://postmansmtp.com/fix-for-broken-emails/" target="_blank">'.esc_html__( ' Learn how to fix', 'post-smtp' ).'</a>.
 			</div>
 			';
 
