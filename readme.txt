@@ -80,7 +80,7 @@ In essence, SMTP is a set of commands that authenticates and directs the transfe
 [Amazon SES Pro Extension](https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/) combines Amazon's mail service provider with PostSMTP's powerful and easy-to-use SMTP mailing features. 
 
 **Report & Tracking Pro Extension**
-[Report and Tracking Pro Extension](https://postmansmtp.com/extensions/reporting-and-tracking-extension/) gives you detailed reports and statistics of your website's email performance. You can filter email statistics by day/week/month and track who viewed your emails. You can also view your email's open rate in a pop-up window.
+[Report and Tracking Pro Extension](https://postmansmtp.com/extensions/reporting-and-tracking-extension/) gives you detailed reports and statistics of your website's email performance. You can filter email statistics by day/week/month and track who viewed your emails. You can also view your email's open rate. Also, the addon sends you daily, weekly or monthly email reports directly in your inbox to make sure you are aware of your email performance.
 
 **Zoho Mail API delivery**
 [Zoho Mail Pro Extension](https://postmansmtp.com/extensions/zoho-mail-pro-extension/) gives you the power to connect PostSMTP with your Zoho Mail account to improve email deliverability of your WordPress site.
