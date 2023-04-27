@@ -145,7 +145,7 @@ class PostmanLogFields {
                 $email = $this->get_string_between( $part, '<', '>' );
                 $clean_email  = $this->sanitize_email($email);
                 preg_match('/(.*)</', $part, $output_array);
-                $name = filter_var( trim( $output_array[1] ), FILTER_SANITIZE_STRING );
+                $name = sanitize_text_field( trim( $output_array[1] ) );
 
                 $sanitized[] = "{$name} <{$clean_email}>";
             }
