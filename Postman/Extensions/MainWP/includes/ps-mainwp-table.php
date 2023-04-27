@@ -6,6 +6,13 @@ if( !class_exists( 'Post_SMTP_MWP_Table' ) ):
 
 class Post_SMTP_MWP_Table {
 	
+
+	/**
+	 * Constructor
+	 * 
+	 * @since 2.5.0
+	 * @version 1.0.0
+	 */
 	public function __construct() {
 	
 		add_action( 'post_smtp_email_logs_table_header', array( $this, 'email_logs_table_header' ) );
@@ -215,6 +222,12 @@ class Post_SMTP_MWP_Table {
 	}
 	
 	
+	/**
+	 * Checks if the current view is staging view
+	 * 
+	 * @since 2.5.0
+	 * @version 1.0.0
+	 */
 	public function is_staging_view() {
 		
 		$user = get_current_user_id();

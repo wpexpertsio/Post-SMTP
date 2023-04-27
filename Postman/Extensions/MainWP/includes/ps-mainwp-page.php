@@ -7,6 +7,12 @@ if( !class_exists( 'Post_SMTP_MWP_Page' ) ):
 class Post_SMTP_MWP_Page {
 
 	
+	/**
+	 * Constructor
+	 * 
+	 * @since 2.5.0
+	 * @version 1.0.0
+	 */
     public function __construct() {
     
     	if( 
