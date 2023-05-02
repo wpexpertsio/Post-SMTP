@@ -135,9 +135,6 @@ class PostsmtpMailer extends PHPMailer {
 					$this->sendSmtp();
 			}
 
-
-			do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport );
-
 			return $result;
 
 		} catch (Exception $exc) {
