@@ -1330,7 +1330,8 @@ h5#ps-progress {
 }
 
 .ps-email-log-status-success span, 
-.ps-email-log-status-failed span {
+.ps-email-log-status-failed span,
+.ps-email-log-status-queued span {
     color: #fff;
     font-weight: 600;
     height: 9px;
@@ -1347,6 +1348,10 @@ h5#ps-progress {
 
 .ps-email-log-status-failed span {
     background: #DC3545;
+}
+
+.ps-email-log-status-queued span {
+    background: #ffa500;
 }
 
 .ps-email-log-view,
