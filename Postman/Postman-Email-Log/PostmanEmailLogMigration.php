@@ -154,7 +154,7 @@ class PostmanEmailLogsMigration {
                 $new_logging
             ): ?>
                 <p><?php echo _e( 'Great! Logs successfully migrated, please verify and Delete logs from old system by clicking <b>Delete old Logs</b>, to keep system smooth', 'post-smtp' ); ?> <a href="<?php echo esc_attr( $this->logging_file_url ) ?>" target="_blank">View Migration Log</a></p>
-                <a href="<?php echo esc_url( $switch_back ); ?>" class="button button-primary">Switch to old System</a>
+                <a href="<?php echo esc_url( $switch_back ); ?>" class="button button-primary">View old logs</a>
                 <a href="<?php echo esc_url( $delete_url ); ?>" class="button button-primary">Delete old Logs</a>
             <?php endif; ?>
             <?php if( 
@@ -168,6 +168,29 @@ class PostmanEmailLogsMigration {
                 !$new_logging
                 &&
                 $this->is_migrated()
+                && 
+                $this->have_old_logs() 
+                &&
+                $current_page == 'postman_email_log' 
+            ): ?>
+                <a href="<?php echo esc_url( $switch_to_new ); ?>" class="button button-primary">Switch to new System</a>
+            <?php endif; ?>
+            <?php
+                if(  
+                    $this->have_old_logs()
+                    &&
+                    $this->migrating 
+                    &&
+                    ( $current_page == 'postman_email_log' )
+                    &&
+                    $new_logging
+                ): ?>
+                    <a href="<?php echo esc_url( $switch_back ); ?>" class="button button-primary">View old logs</a>
+                <?php endif; ?>
+                <?php if( 
+                !$new_logging
+                &&
+                $this->migrating 
                 && 
                 $this->have_old_logs() 
                 &&
