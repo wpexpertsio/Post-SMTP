@@ -185,15 +185,6 @@ class PostmanEmailLogs {
         }
         else {
 
-            /**
-             * Filter the data before inserting into the database
-             * 
-             * @param array $data
-             * @since 2.5.0
-             * @version 1.0.0
-             */
-            $data = apply_filters( 'post_smtp_insert_log_args', $data );
-
             return $this->db->insert(
                 $this->db->prefix . $this->db_name,
                 $data  
@@ -269,23 +260,7 @@ class PostmanEmailLogs {
             foreach( $data as $row ) {
 
                 $row->time = date( "{$date_format} {$time_format}", $row->time );
-
-                if( $row->success == 1 ) {
-
-                    $row->success = '<span></span>';
-
-                }
-                elseif( $row->success == 'In Queue' ) {
-
-                    $row->success = '<span></span>' . $row->success;
-
-                }
-                else {
-
-                    $row->success = '<span></span>' . $row->success;
-                    
-                }
-
+                $row->success = $row->success == 1 ? '<span></span>' : '<span></span>' . $row->success;
                 $row->actions = '';
 
             }
