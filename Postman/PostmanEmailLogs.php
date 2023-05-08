@@ -260,7 +260,23 @@ class PostmanEmailLogs {
             foreach( $data as $row ) {
 
                 $row->time = date( "{$date_format} {$time_format}", $row->time );
-                $row->success = $row->success == 1 ? '<span></span>' : '<span></span>' . $row->success;
+
+                if( $row->success == 1 ) {
+
+                    $row->success = '<span></span>';
+
+                }
+                elseif( $row->success == 'In Queue' ) {
+
+                    $row->success = '<span></span>' . $row->success;
+
+                }
+                else {
+
+                    $row->success = '<span></span>' . $row->success;
+                    
+                }
+                
                 $row->actions = '';
 
             }
