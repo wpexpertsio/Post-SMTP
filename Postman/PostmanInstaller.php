@@ -54,6 +54,19 @@ class PostmanInstaller {
 			$email_logs->install_table();
 
 		}
+		//Need to Update Table?
+		elseif( $table_version && version_compare( POST_SMTP_DB_VERSION, $table_version, '>' ) ) {
+
+			if( !class_exists( 'PostmanEmailLogs' ) ) {
+
+				require 'PostmanEmailLogs.php';
+
+			}
+
+			$email_logs = new PostmanEmailLogs();
+			$email_logs->update_table();
+
+		}
 
 		$options = get_option( PostmanOptions::POSTMAN_OPTIONS );
 		$args = array(
