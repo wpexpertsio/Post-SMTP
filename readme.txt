@@ -301,7 +301,7 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
-= 2.5.0 - 2023-05-08 =
+= 2.5.0 - 2023-05-09 =
 **NEW**
 
 * Introducing a new log section that is both lightweight and optimized, capable of accommodating millions of entries.
