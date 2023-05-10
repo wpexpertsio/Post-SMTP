@@ -41,29 +41,29 @@ class PostmanInstaller {
             "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'postman_sent_mail' LIMIT 1;"
         );
 
+		if( !class_exists( 'PostmanEmailLogs' ) ) {
+
+			require 'PostmanEmailLogs.php';
+
+		}
+
+		$email_logs = new PostmanEmailLogs();
+		$logs_table = $wpdb->prefix . $logs->db_name;
+		$meta_table = $wpdb->prefix . $logs->meta_table;
+		// Check if the table exists
+		$logs_table = $wpdb->get_var( "SHOW TABLES LIKE '$logs_table'" );
+		$meta_table = $wpdb->get_var( "SHOW TABLES LIKE '$meta_table'" );
+
 		//Lets Install New Fresh Logs Table
-		if( empty( $have_old_logs ) && !$table_version ) {
+		//Doesn't have table? but wp_options has postman_db_version
+		if( ( empty( $have_old_logs ) && !$table_version ) || ( !$logs_table || !$meta_table ) ) {
 
-			if( !class_exists( 'PostmanEmailLogs' ) ) {
-
-				require 'PostmanEmailLogs.php';
-
-			}
-
-			$email_logs = new PostmanEmailLogs();
 			$email_logs->install_table();
 
 		}
 		//Need to Update Table?
 		elseif( $table_version && version_compare( POST_SMTP_DB_VERSION, $table_version, '>' ) ) {
-
-			if( !class_exists( 'PostmanEmailLogs' ) ) {
-
-				require 'PostmanEmailLogs.php';
-
-			}
-
-			$email_logs = new PostmanEmailLogs();
+			
 			$email_logs->update_table();
 
 		}

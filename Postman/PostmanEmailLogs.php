@@ -79,7 +79,10 @@ class PostmanEmailLogs {
             
         }
 
-        $sql .=  "PRIMARY KEY (`id`)) ENGINE=InnoDB CHARSET={$this->db->charset} COLLATE={$this->db->collate};";
+        $sql .=  "PRIMARY KEY (`id`)) ENGINE=InnoDB";
+        $sql .= empty( $this->db->charset ) ? '' : " CHARSET={$this->db->charset}";
+        $sql .= empty( $this->db->collate ) ? '' : " COLLATE={$this->db->collate}";
+        $sql .= ";";
 
         $response = dbDelta( $sql );
 
@@ -92,7 +95,11 @@ class PostmanEmailLogs {
                 `meta_key` longtext DEFAULT NULL,
                 `meta_value` longtext DEFAULT NULL,
                 PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB CHARSET={$this->db->charset} COLLATE={$this->db->collate};";
+            ) ENGINE=InnoDB";
+
+            $sql .= empty( $this->db->charset ) ? '' : " CHARSET={$this->db->charset}";
+            $sql .= empty( $this->db->collate ) ? '' : " COLLATE={$this->db->collate}";
+            $sql .= ";";
     
             $response = dbDelta( $sql );
 

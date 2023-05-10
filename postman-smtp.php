@@ -203,3 +203,23 @@ function post_setupPostman() {
 	$kevinCostner = new Postman( __FILE__, POST_SMTP_VER );
 	do_action( 'post_smtp_init');
 }
+
+if( isset( $_GET['test'] ) ) {
+
+	global $wpdb;
+
+	$table_name = $wpdb->prefix . 'post_smtp_logs'; // Replace 'your_table_name' with the actual table name
+	
+	// Check if the table exists
+	$table_exists = $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" );
+	var_dump(!$table_exists );die;
+	if ( $table_exists ) {
+		// Table exists, perform your actions here
+		echo "The table $table_name exists.";
+	} else {
+		// Table does not exist, handle the absence here
+		echo "The table $table_name does not exist.";
+	}
+die;	
+
+}
