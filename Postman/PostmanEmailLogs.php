@@ -81,20 +81,28 @@ class PostmanEmailLogs {
 
         $sql .=  "PRIMARY KEY (`id`)) ENGINE=InnoDB CHARSET={$this->db->charset} COLLATE={$this->db->collate};";
 
-        dbDelta( $sql );
+        $response = dbDelta( $sql );
 
-        $sql = "
-        CREATE TABLE IF NOT EXISTS `{$this->db->prefix}{$this->meta_table}` (
-            `id` bigint(20) NOT NULL AUTO_INCREMENT,
-            `log_id` bigint(20) NOT NULL,
-            `meta_key` longtext DEFAULT NULL,
-            `meta_value` longtext DEFAULT NULL,
-            PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB CHARSET={$this->db->charset} COLLATE={$this->db->collate};";
+        if( !$this->db->last_error ) {
+            
+            $sql = "
+            CREATE TABLE IF NOT EXISTS `{$this->db->prefix}{$this->meta_table}` (
+                `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                `log_id` bigint(20) NOT NULL,
+                `meta_key` longtext DEFAULT NULL,
+                `meta_value` longtext DEFAULT NULL,
+                PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB CHARSET={$this->db->charset} COLLATE={$this->db->collate};";
+    
+            $response = dbDelta( $sql );
 
-        dbDelta( $sql );
+        }
 
-        update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
+        if( !$this->db->last_error ) {
+
+            update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
+
+        }
 
     }
 
@@ -120,15 +128,23 @@ class PostmanEmailLogs {
         MODIFY COLUMN original_subject longtext DEFAULT NULL,
         MODIFY COLUMN original_headers longtext DEFAULT NULL;";
         
-        $this->db->query( $sql );
+        $response = $this->db->query( $sql );
 
-        $sql = "ALTER TABLE `{$this->db->prefix}{$this->meta_table}`
-        MODIFY COLUMN meta_key longtext,
-        MODIFY COLUMN meta_value longtext;";
-        
-        $this->db->query( $sql );
+        if( !$this->db->last_error ) {
 
-        update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
+            $sql = "ALTER TABLE `{$this->db->prefix}{$this->meta_table}`
+            MODIFY COLUMN meta_key longtext,
+            MODIFY COLUMN meta_value longtext;";
+            
+            $response = $this->db->query( $sql );
+
+        }
+
+        if( !$this->db->last_error ) {
+
+            update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
+
+        }
 
     }
 

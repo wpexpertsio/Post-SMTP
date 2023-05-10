@@ -198,7 +198,7 @@ class PostmanEmailLogsMigration {
             ): ?>
                 <a href="<?php echo esc_url( $switch_to_new ); ?>" class="button button-primary">Switch to new System</a>
             <?php endif; ?>
-            <a href="" target="__blank" class="button button-secondary">Learn about migration</a>
+            <a href="https://postmansmtp.com/new-and-better-email-log-post-smtp-feature-update/" target="__blank" class="button button-secondary">Learn about migration</a>
             <div style="margin: 10px 0;"></div>
             <?php
             if( 
