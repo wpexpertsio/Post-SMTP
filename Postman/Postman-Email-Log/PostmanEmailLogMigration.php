@@ -33,9 +33,12 @@ class PostmanEmailLogsMigration {
         $this->new_logging = get_option( 'postman_db_version' );
         $this->migrating = get_option( 'ps_migrate_logs' );
         $this->have_old_logs = $this->have_old_logs();
+        $hide_notice = get_transient( 'ps_dismiss_update_notice' );
 
         //Show DB Update Notice
         if( 
+            !$hide_notice 
+            &&
             ( $this->have_old_logs && !$this->has_migrated() ) 
             || 
             ( $this->has_migrated() && $this->have_old_logs && $this->new_logging && isset( $_GET['page'] ) && $_GET['page'] == 'postman_email_log' ) 
@@ -81,6 +84,7 @@ class PostmanEmailLogsMigration {
         }
 
         add_action( 'wp_ajax_ps-migrate-logs', array( $this, 'migrate_logs' ) );
+        add_action( 'wp_ajax_ps-db-update-notice-dismiss', array( $this, 'dismiss_update_notice' ) );
 
     }
 
@@ -702,7 +706,7 @@ class PostmanEmailLogsMigration {
 
     }
 
-    /**l
+    /**
      * Checks if logs migrated or not | Same as is_migrated() but used custom query
      * 
      * @since 2.5.2
@@ -730,6 +734,23 @@ class PostmanEmailLogsMigration {
         }
 
         return  false;
+
+    }
+
+
+    /**
+     * Dismiss update notice | AJAX call-back
+     * 
+     * @since 2.5.2
+     * @version 1.0.0
+     */
+    public function dismiss_update_notice() {
+
+        if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-db-update-notice-dismiss' && wp_verify_nonce( $_POST['security'], 'ps-migrate-logs' ) ) {
+
+            set_transient( 'ps_dismiss_update_notice', 1, WEEK_IN_SECONDS );
+
+        }
 
     }
 
