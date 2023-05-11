@@ -33,8 +33,13 @@ class PostmanEmailLogsMigration {
         $this->new_logging = get_option( 'postman_db_version' );
         $this->migrating = get_option( 'ps_migrate_logs' );
         $this->have_old_logs = $this->have_old_logs();
+
         //Show DB Update Notice
-        if( $this->have_old_logs  ) {
+        if( 
+            ( $this->have_old_logs && !$this->has_migrated() ) 
+            || 
+            ( $this->has_migrated() && $this->have_old_logs && $this->new_logging && isset( $_GET['page'] ) && $_GET['page'] == 'postman_email_log' ) 
+        ) {
 
             add_action( 'admin_notices', array( $this, 'notice' ) );
 
@@ -124,9 +129,9 @@ class PostmanEmailLogsMigration {
         $migrated_logs = $this->get_migrated_count();
         $current_page = isset( $_GET['page'] ) ?  $_GET['page'] : '';
         $new_logging = get_option( 'postman_db_version' );
-
+        $dismissible = ( $this->have_old_logs() && !$this->has_migrated() && !$this->migrating ) ? 'is-dismissible' : '';
         ?>
-        <div class="notice ps-db-update-notice is-dismissible" style="border: 1px solid #2271b1; border-left-width: 4px;">
+        <div class="notice ps-db-update-notice <?php echo esc_attr( $dismissible ); ?>" style="border: 1px solid #2271b1; border-left-width: 4px;">
             <input type="hidden" value="<?php echo esc_attr( $security ); ?>" class="ps-security">
             <p><b><?php _e( 'Post SMTP database update required', 'post-smtp' ); ?></b></p>
             <?php if( $this->have_old_logs && !$this->migrating && !$this->is_migrated() ): ?>
@@ -696,6 +701,38 @@ class PostmanEmailLogsMigration {
         }
 
     }
+
+    /**l
+     * Checks if logs migrated or not | Same as is_migrated() but used custom query
+     * 
+     * @since 2.5.2
+     * @version 1.0.0
+     */
+    public function has_migrated() {
+
+        global $wpdb;
+
+        $response =  $wpdb->get_results(
+            "SELECT 
+            count(*) AS count
+            FROM 
+            {$wpdb->posts}
+            WHERE 
+            post_type = 'postman_sent_mail'"
+        );
+        
+        $total_old_logs = empty( $response ) ? 0 : (int)$response[0]->count;
+
+        if( $this->get_migrated_count() >= (int)$total_old_logs ) {
+
+            return true;
+
+        }
+
+        return  false;
+
+    }
+
 }
 
 new PostmanEmailLogsMigration;
