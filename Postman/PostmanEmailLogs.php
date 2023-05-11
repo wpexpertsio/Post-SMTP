@@ -628,4 +628,35 @@ class PostmanEmailLogs {
 
     }
 
+
+    /**
+     * Drop Tables
+     * 
+     * @since 2.5.2
+     * @version 1.0.0
+     */
+    public function uninstall_tables() {
+
+        $sql = "DROP TABLE IF EXISTS `{$this->db->prefix}{$this->db_name}`;";
+        $response = $this->db->query( $sql );
+
+        if( !$this->db->last_error ) {
+
+            $sql = "DROP TABLE IF EXISTS `{$this->db->prefix}{$this->meta_table}`;";
+            $response = $this->db->query( $sql );
+
+        }
+
+        if( !$this->db->last_error ) {
+
+            delete_option( 'postman_db_version' );
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
 }

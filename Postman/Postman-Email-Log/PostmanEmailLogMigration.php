@@ -34,14 +34,14 @@ class PostmanEmailLogsMigration {
         $this->migrating = get_option( 'ps_migrate_logs' );
         $this->have_old_logs = $this->have_old_logs();
         $hide_notice = get_transient( 'ps_dismiss_update_notice' );
-
+        
         //Show DB Update Notice
         if( 
-            !$hide_notice 
+            ( !$hide_notice ) 
             &&
             ( $this->have_old_logs && !$this->has_migrated() ) 
             || 
-            ( $this->has_migrated() && $this->have_old_logs && $this->new_logging && isset( $_GET['page'] ) && $_GET['page'] == 'postman_email_log' ) 
+            ( $this->has_migrated() && $this->have_old_logs && isset( $_GET['page'] ) && $_GET['page'] == 'postman_email_log' ) 
         ) {
 
             add_action( 'admin_notices', array( $this, 'notice' ) );
@@ -80,6 +80,20 @@ class PostmanEmailLogsMigration {
         if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-switch-to-new' ) {
 
             $this->switch_to_new();
+
+        }
+
+        //Revert Migration
+        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-revert-migration' ) {
+
+            $this->revert_migration();
+
+        }
+
+        //Skip Migration
+        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-skip-migration' ) {
+
+            $this->skip_migration();
 
         }
 
@@ -134,6 +148,9 @@ class PostmanEmailLogsMigration {
         $current_page = isset( $_GET['page'] ) ?  $_GET['page'] : '';
         $new_logging = get_option( 'postman_db_version' );
         $dismissible = ( $this->have_old_logs() && !$this->has_migrated() && !$this->migrating ) ? 'is-dismissible' : '';
+        $revert_url = admin_url( 'admin.php?page=postman_email_log' ) . '&security=' . $security . '&action=ps-revert-migration';
+        $skip_migration_url = admin_url( 'admin.php?page=postman_email_log' ) . '&security=' . $security . '&action=ps-skip-migration';
+
         ?>
         <div class="notice ps-db-update-notice <?php echo esc_attr( $dismissible ); ?>" style="border: 1px solid #2271b1; border-left-width: 4px;">
             <input type="hidden" value="<?php echo esc_attr( $security ); ?>" class="ps-security">
@@ -162,7 +179,7 @@ class PostmanEmailLogsMigration {
                 &&
                 $new_logging
             ): ?>
-                <p><?php echo _e( 'Great! Logs successfully migrated, please verify and Delete logs from old system by clicking <b>Delete old Logs</b>, to keep system smooth', 'post-smtp' ); ?> <a href="<?php echo esc_attr( $this->logging_file_url ) ?>" target="_blank">View Migration Log</a></p>
+                <p><?php echo _e( 'Great! You have successfully migrated to new logs.', 'post-smtp' ); ?> <a href="<?php echo esc_attr( $this->logging_file_url ) ?>" target="_blank">View Migration Log</a></p>
                 <a href="<?php echo esc_url( $switch_back ); ?>" class="button button-primary">View old logs</a>
                 <a href="<?php echo esc_url( $delete_url ); ?>" class="button button-primary">Delete old Logs</a>
             <?php endif; ?>
@@ -208,6 +225,27 @@ class PostmanEmailLogsMigration {
                 <a href="<?php echo esc_url( $switch_to_new ); ?>" class="button button-primary">Switch to new System</a>
             <?php endif; ?>
             <a href="https://postmansmtp.com/new-and-better-email-log-post-smtp-feature-update/" target="__blank" class="button button-secondary">Learn about migration</a>
+            <div style="float: right">
+            <?php
+            //Revert Migration
+            if( $this->have_old_logs() && $new_logging ) {
+
+                ?>
+                <a href="<?php echo esc_url( $revert_url ); ?>" style="font-size: 13px;">Revert Migration</a>
+                <br>
+                <?php
+
+            }
+            if( $this->have_old_logs() ) {
+
+                ?>
+                <a href="<?php echo esc_url( $skip_migration_url ); ?>" style="font-size: 13px;">Switch to new logs without migration</a>
+                <?php
+
+            }
+            ?>
+            </div>
+            <div style="clear: both;"></div>
             <div style="margin: 10px 0;"></div>
             <?php
             if( 
@@ -519,6 +557,7 @@ class PostmanEmailLogsMigration {
 
         if( $this->get_migrated_count() == (int)$total_old_logs ) {
 
+            delete_option( 'ps_migrate_logs' );
             return true;
 
         }
@@ -749,6 +788,99 @@ class PostmanEmailLogsMigration {
         if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-db-update-notice-dismiss' && wp_verify_nonce( $_POST['security'], 'ps-migrate-logs' ) ) {
 
             set_transient( 'ps_dismiss_update_notice', 1, WEEK_IN_SECONDS );
+
+        }
+
+    }
+
+
+    /**
+     * Revert migration
+     * 
+     * @since 2.5.2
+     * @version 1.0.0
+     */
+    public function revert_migration() {
+
+        if( wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
+
+            $this->log( 'Info: `revert_migration` Reverting Migration' );
+            $email_logs = new PostmanEmailLogs;
+
+            delete_option( 'ps_migrate_logs' );
+            $this->log( 'Info: `revert_migration` Deleted option ps_migrate_logs' );
+
+            if( $email_logs->uninstall_tables() ) {
+
+                $this->log( 'Info: `revert_migration` Tables Uninstalled' );
+            
+                global $wpdb;
+                $response = $wpdb->query(
+                    "UPDATE {$wpdb->posts} SET pinged = '' WHERE post_type = 'postman_sent_mail';"                
+                );
+
+                if( $response ) {
+
+                    $this->log( 'Info: `revert_migration` pinged unset' );
+
+                }
+
+            }
+
+            wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+
+        }
+
+    }
+
+
+    /**
+     * Skip migration
+     * 
+     * @since 2.5.2
+     * @version 1.0.0
+     */
+    public function skip_migration() {
+
+        if( wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
+
+            $this->log( 'Info: `skip_migration` Skipping Migration' );
+
+            delete_option( 'ps_migrate_logs' );
+            $this->log( 'Info: `skip_migration` Deleted option ps_migrate_logs' );
+
+            $email_logs = new PostmanEmailLogs;
+            $email_logs->install_table();
+    
+            $this->log( 'Info: Table created' );
+            
+            global $wpdb;
+
+            $result = $wpdb->get_results(
+                "SELECT ID 
+                FROM {$wpdb->posts} 
+                WHERE post_type = 'postman_sent_mail';",
+                OBJECT_K
+            );
+            $log_ids = array_keys( $result );
+            $log_ids = implode( ',', $log_ids );
+
+            $this->log( 'Info: `trash_all_old_logs` Delete log IDs: ' . $log_ids );
+
+            $result = $wpdb->get_results(
+                "DELETE p.*, pm.*
+                FROM {$wpdb->posts} AS p
+                INNER JOIN 
+                {$wpdb->postmeta} AS pm
+                ON p.ID = pm.post_id
+                WHERE p.post_type = 'postman_sent_mail' && p.ID IN ({$log_ids});"
+            );
+
+            $result = $result ? 'Successfully deleted' : 'Failed';
+
+            $this->log( 'Info: `trash_all_old_logs` Delete result: ' . print_r( $result, true ) );
+
+            wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
 
         }
 
