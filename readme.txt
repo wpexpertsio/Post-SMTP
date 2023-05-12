@@ -312,6 +312,7 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 * Added an option to disable migration notifications for seven days on clicking the cross icon on notice.
 * Added a new feature that allows users to revert a migration. This way, they can retry the migration process or switch back to the old logs interface if required.
 * Added an option to skip the migration process for those who do not wish to transfer their old logs and want to switch to the new interface.
+* Added permission check before creating/writing error log during migration.
 
 = 2.5.1 - 2023-05-10 =
 **NEW**

@@ -179,7 +179,9 @@ class PostmanEmailLogsMigration {
                 &&
                 $new_logging
             ): ?>
-                <p><?php echo _e( 'Great! You have successfully migrated to new logs.', 'post-smtp' ); ?> <a href="<?php echo esc_attr( $this->logging_file_url ) ?>" target="_blank">View Migration Log</a></p>
+                <p><?php echo _e( 'Great! You have successfully migrated to new logs.', 'post-smtp' ); ?> 
+                    <?php echo file_exists( $this->logging_file ) ? '<a href="'.$this->logging_file_url.'" target="_blank">View Migration Log</a>' : ''; ?>
+                </p>
                 <a href="<?php echo esc_url( $switch_back ); ?>" class="button button-primary">View old logs</a>
                 <a href="<?php echo esc_url( $delete_url ); ?>" class="button button-primary">Delete old Logs</a>
             <?php endif; ?>
@@ -712,9 +714,10 @@ class PostmanEmailLogsMigration {
 
             $site_url = site_url();
             $logging = fopen( $this->logging_file, 'w' );
-            fwrite( $logging, 'Migration log: ' . $site_url . PHP_EOL );
+            
             if( $logging ) {
 
+                fwrite( $logging, 'Migration log: ' . $site_url . PHP_EOL );
                 fwrite( $logging, 'Info, Error' . PHP_EOL );
                 fclose( $logging );
 
