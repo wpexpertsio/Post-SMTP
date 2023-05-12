@@ -713,8 +713,12 @@ class PostmanEmailLogsMigration {
             $site_url = site_url();
             $logging = fopen( $this->logging_file, 'w' );
             fwrite( $logging, 'Migration log: ' . $site_url . PHP_EOL );
-            fwrite( $logging, 'Info, Error' . PHP_EOL );
-            fclose( $logging );
+            if( $logging ) {
+
+                fwrite( $logging, 'Info, Error' . PHP_EOL );
+                fclose( $logging );
+
+            }
 
         }
 
@@ -738,8 +742,12 @@ class PostmanEmailLogsMigration {
         if( file_exists( $this->logging_file ) ) {
 
             $logging = fopen( $this->logging_file, 'a' );
-            fwrite( $logging, '[' . date( 'd-m-Y h:i:s' ) . '] ->' . $message . PHP_EOL );
-            fclose( $logging );
+            if( $logging ) {
+
+                fwrite( $logging, '[' . date( 'd-m-Y h:i:s' ) . '] ->' . $message . PHP_EOL );
+                fclose( $logging );
+
+            }
 
         }
 
