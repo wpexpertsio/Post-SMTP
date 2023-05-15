@@ -48,8 +48,8 @@ class PostmanInstaller {
 		}
 
 		$email_logs = new PostmanEmailLogs();
-		$logs_table = $wpdb->prefix . $logs->db_name;
-		$meta_table = $wpdb->prefix . $logs->meta_table;
+		$logs_table = $wpdb->prefix . $email_logs->db_name;
+		$meta_table = $wpdb->prefix . $email_logs->meta_table;
 		// Check if the table exists
 		$logs_table = $wpdb->get_var( "SHOW TABLES LIKE '$logs_table'" );
 		$meta_table = $wpdb->get_var( "SHOW TABLES LIKE '$meta_table'" );
