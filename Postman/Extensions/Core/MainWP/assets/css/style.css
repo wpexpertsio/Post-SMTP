@@ -1,0 +1,69 @@
+.post-smtp-mainwp {
+    width: 94%;
+    margin: 0 auto;
+    padding: 10px 0;
+}
+
+.post-smtp-mainwp-site table tr td {
+    padding: 5px 0;
+    padding-right: 10px;
+}
+
+.post-smtp-mainwp-site input[type="checkbox"] {
+	vertical-align: middle!important;
+}
+
+.post-smtp-mainwp-site {
+    margin-bottom: 5px;
+}
+
+.post-smtp-mainwp-site .title {
+    font-size: 15px!important;
+}
+
+.post-smtp-mainwp-site .content {
+    width: 95%;
+    margin: 0 auto;
+}
+
+.post-smtp-mainwp-site .mainwp-sidebar-accordion {
+    border: 1px solid #e7eef6;
+}
+
+.post-smtp-mainwp #post-smtp-select-sites-filter {
+    margin: 10px 0;
+}
+
+.ps-mainwp-site-filter {
+	float: left;
+}
+
+.ps-mainwp-site-filter label {
+	margin-left: 20px;
+}
+
+.ps-mainwp-site-filter select {
+    border-radius: 50px;
+    border: none;
+    background: #f8f9fa;
+    padding: 5px 15px;
+    font-size: 13px;
+}
+
+.post-smtp-mainwp button {
+	float: left;
+}
+
+#mainwp-select-sites-filters {
+	width: 70%;	
+	float: left;
+}
+
+.post-smtp-mainwp .ps-error {
+    font-size: 13px;
+    font-weight: normal;
+    color: #fff;
+    background: #ad0000;
+    border-radius: 5px;
+    margin-left: 10px;
+}
