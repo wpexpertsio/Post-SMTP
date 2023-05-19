@@ -133,6 +133,7 @@ class Post_SMTP_MWP_Page {
 			<div class="post-smtp-mainwp-site">
 				<div class="mainwp-search-options ui accordion mainwp-sidebar-accordion">
 					<div class="title"><i class="dropdown icon"></i>
+						<input type="hidden" name="site_id[]" value="<?php echo esc_attr( $id ); ?>" />
 						<label class="ps-switch-1">
 							<input type="checkbox" <?php echo esc_attr( $enabled_on_child_site ); ?> value="1" class="enable-on-child-site" data-id="<?php echo esc_attr( $id ); ?>" name="<?php echo 'enable_on_child_site['.esc_attr( $id ).']'; ?>" />
 							<span class="slider round"></span>
