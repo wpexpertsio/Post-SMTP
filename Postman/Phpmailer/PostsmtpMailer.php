@@ -132,7 +132,14 @@ class PostsmtpMailer extends PHPMailer {
 			if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) ) {
 				$result = $this->options->getTransportType() !== 'smtp' ?
 					$postmanWpMail->send( $to, $subject, $body, $headers, $attachments ) :
-					$this->sendSmtp();
+					$response = $this->sendSmtp();
+
+					if( $response ) {
+
+						do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport );
+
+					}
+
 			}
 
 			return $result;
