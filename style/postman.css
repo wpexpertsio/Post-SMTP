@@ -1542,3 +1542,15 @@ div#ps-email-log_length{
 #ps-email-log_paginate a {
     margin: 0 4px;
 }
+
+.ps-refresh-logs span {
+    vertical-align: middle;
+    background: #f8f9fa;
+    padding: 6px;
+    border-radius: 50px;
+    color: #0086fd;
+}
+
+.ps-refresh-logs span:hover {
+    cursor: pointer;
+}
