@@ -254,7 +254,19 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 
 			// truncate the log (remove older entries)
 			$purger = new PostmanEmailLogPurger();
-			$purger->truncateLogItems( PostmanOptions::getInstance()->getMailLoggingMaxEntries() );
+
+			/**
+			 * Filter whether to truncate the log
+			 * 
+			 * @param bool $truncate
+			 * @since 2.6.1
+			 * @version 1.0.0
+			 */
+			if( apply_filters( 'post_smtp_truncate_the_log', true ) ) {
+
+				$purger->truncateLogItems( PostmanOptions::getInstance()->getMailLoggingMaxEntries() );
+
+			}
 			
 		}
 
