@@ -43,32 +43,55 @@ endif;
  * @since 2.5.0
  * @version 1.0.0
  */
-if( !function_exists( 'postman_update_log_meta' ) ):
-function postman_update_log_meta( $log_id, $meta_key, $meta_value ) {
+if ( ! function_exists( 'postman_update_log_meta' ) ) {
+    function postman_update_log_meta( $log_id, $meta_key, $meta_value ) {
+        global $wpdb;
+        $email_logs = new PostmanEmailLogs();
 
-    global $wpdb;
-    $email_logs = new PostmanEmailLogs();
+        $existing_meta = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM {$wpdb->prefix}{$email_logs->meta_table} WHERE log_id = %d AND meta_key = %s",
+                $log_id,
+                $meta_key
+            )
+        );
 
-    return $wpdb->update(
-        $wpdb->prefix . $email_logs->meta_table,
-        array(
-            'meta_value'    =>  $meta_value
-        ),
-        array(
-            'log_id'        =>  $log_id,
-            'meta_key'      =>  $meta_key
-        ),
-        array(
-            '%s'
-        ),
-        array(
-            '%d',
-            '%s'
-        )
-    );
-
+        if ( $existing_meta ) {
+            return $wpdb->update(
+                $wpdb->prefix . $email_logs->meta_table,
+                array(
+                    'meta_value' => $meta_value
+                ),
+                array(
+                    'log_id' => $log_id,
+                    'meta_key' => $meta_key
+                ),
+                array(
+                    '%s'
+                ),
+                array(
+                    '%d',
+                    '%s'
+                )
+            );
+        } else {
+            return $wpdb->insert(
+                $wpdb->prefix . $email_logs->meta_table,
+                array(
+                    'log_id' => $log_id,
+                    'meta_key' => $meta_key,
+                    'meta_value' => $meta_value
+                ),
+                array(
+                    '%d',
+                    '%s',
+                    '%s'
+                )
+            );
+        }
+    }
 }
-endif;
+
 
 
 /**
@@ -95,7 +118,7 @@ function postman_get_log_meta( $log_id, $key = '' ) {
 
     }
 
-    return $wpdb->get_row(
+    $result = $wpdb->get_row(
         $wpdb->prepare(
             "SELECT `meta_value` FROM {$wpdb->prefix}{$email_logs->meta_table}
             WHERE `log_id` = %d && `meta_key` = %s",
@@ -103,6 +126,8 @@ function postman_get_log_meta( $log_id, $key = '' ) {
             $key
         )
     ); 
+
+    return $result ? $result->meta_value : false;
 
 }
 endif;
