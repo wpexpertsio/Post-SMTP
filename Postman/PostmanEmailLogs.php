@@ -323,7 +323,7 @@ class PostmanEmailLogs {
             foreach( $data as $row ) {
 
                 $row->time = date( "{$date_format} {$time_format}", $row->time );
-                $row->success = $row->success == 1 ? '<span></span>' : '<span></span><pre class="ps-status-log">' . str_replace( $search, $replace, $row->success ) . '</pre>';
+                $row->success = $row->success == 1 ? '<span title="Successful"></span>' : '<span title="Failed"></span><pre class="ps-status-log">' . str_replace( $search, $replace, $row->success ) . '</pre>';
                 $row->actions = '';
 
             }

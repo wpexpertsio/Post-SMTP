@@ -1338,6 +1338,7 @@ h5#ps-progress {
     border-radius: 50px;
     display: inline-block;
     margin-right: 5px;
+    cursor: pointer;
 }
 
 
