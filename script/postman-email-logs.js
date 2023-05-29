@@ -89,7 +89,7 @@ jQuery(document).ready(function($) {
 				<div class="ps-email-log-resend-container"></div>
 			` );
 
-			if( data['success'] == '<span></span>' ) {
+			if( data['success'] == '<span title="Successful"></span>' ) {
 
 				jQuery( status ).addClass( 'ps-email-log-status-success' );
 
