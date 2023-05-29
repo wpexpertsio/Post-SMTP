@@ -306,12 +306,24 @@ class PostmanEmailLogs {
             //WordPress Date, Time Format
             $date_format = get_option( 'date_format' );
 		    $time_format = get_option( 'time_format' );
+            $search = array(
+                '<',
+                '>',
+                '"',
+                "'"
+            );
+            $replace = array(
+                '&lt;',
+                '&gt;',
+                '&quot;',
+                '&#039;'
+            );
 
             //Lets manage the Date format :)
             foreach( $data as $row ) {
 
                 $row->time = date( "{$date_format} {$time_format}", $row->time );
-                $row->success = $row->success == 1 ? '<span></span>' : '<span></span>' . $row->success;
+                $row->success = $row->success == 1 ? '<span></span>' : '<span></span><pre class="ps-status-log">' . str_replace( $search, $replace, $row->success ) . '</pre>';
                 $row->actions = '';
 
             }

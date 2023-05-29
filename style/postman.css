@@ -1537,3 +1537,8 @@ div#ps-email-log_length{
 #ps-email-log_paginate a {
     margin: 0 4px;
 }
+
+.ps-status-log {
+    display: inline-block;
+    font-family: inherit;
+}
