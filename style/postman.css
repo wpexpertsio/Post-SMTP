@@ -1247,8 +1247,8 @@ th#date {
 .ps-switch-1 {
     position: relative;
     display: inline-block;
-    width: 34px;
-    height: 21px;
+    width: 30px;
+    height: 17px;
 }
 
 .ps-switch-1 input {
@@ -1290,8 +1290,8 @@ th#date {
 .ps-switch-1 .slider:before {
     position: absolute;
     content: "";
-    height: 17px;
-    width: 16px;
+    height: 13px;
+    width: 12px;
     left: 2px;
     bottom: 2px;
     background-color: #fff;
