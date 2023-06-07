@@ -330,6 +330,7 @@ if ( ! class_exists( 'PostmanEmailLogPurger' ) ) {
 
 			$this->get_logs();
 			$this->email_logs = new PostmanEmailLogs();
+			$this->logger = new PostmanLogger( get_class( $this ) );
 			
 		}
 
@@ -359,7 +360,6 @@ if ( ! class_exists( 'PostmanEmailLogPurger' ) ) {
 		 */
 		public function get_old_logs() {
 
-			$this->logger = new PostmanLogger( get_class( $this ) );
 			$args = array(
 					'posts_per_page' => -1,
 					'offset' => 0,
@@ -414,11 +414,24 @@ if ( ! class_exists( 'PostmanEmailLogPurger' ) ) {
 			$this->logger->warn( 'could not find Postman Log Item #' . $postid );
 		}
 		function removeAll() {
-			$this->logger->debug( sprintf( 'deleting %d log items ', sizeof( $this->logs ) ) );
-			$force_delete = true;
-			foreach ( $this->logs as $post ) {
-				wp_delete_post( $post->ID, $force_delete );
+			
+			if( $this->new_logging ) {
+
+				$email_query_log = new PostmanEmailQueryLog();
+				$delete = $email_query_log->delete_logs( array( -1 ) );
+				$this->logger->debug( sprintf( 'Delete Response: %s', $delete ) );
+
 			}
+			else {
+				
+				$this->logger->debug( sprintf( 'deleting %d log items ', sizeof( $this->logs ) ) );
+				$force_delete = true;
+				foreach ( $this->logs as $post ) {
+					wp_delete_post( $post->ID, $force_delete );
+				}
+
+			}
+
 		}
 
 		/**
