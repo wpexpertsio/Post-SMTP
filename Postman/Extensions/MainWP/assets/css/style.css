@@ -49,3 +49,21 @@
     padding: 5px 15px;
     font-size: 13px;
 }
+
+.post-smtp-mainwp button {
+	float: left;
+}
+
+#mainwp-select-sites-filters {
+	width: 70%;	
+	float: left;
+}
+
+.post-smtp-mainwp .ps-error {
+    font-size: 13px;
+    font-weight: normal;
+    color: #fff;
+    background: #ad0000;
+    border-radius: 5px;
+    margin-left: 10px;
+}

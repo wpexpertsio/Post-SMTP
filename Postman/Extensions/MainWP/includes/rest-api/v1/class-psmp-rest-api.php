@@ -5,17 +5,9 @@ use MainWP\Dashboard\MainWP_DB;
 if( !class_exists( 'Post_SMTP_MWP_Rest_API' ) ):
 class Post_SMTP_MWP_Rest_API {
 	
-
 	private $site_id = false;
 	private $site = false;
 	
-
-	/*
-	 * Constructor
-	 * 
-	 * @since 2.5.0
-	 * @version 1.0.0
-	 */
 	public function __construct() {
 		
 		add_action( 'rest_api_init', array( $this, 'rest_api_init' ) );
@@ -24,12 +16,6 @@ class Post_SMTP_MWP_Rest_API {
 	} 
 	
 	
-	/*
-	 * Register Rest Routes | Action Callback
-	 * 
-	 * @since 2.5.0
-	 * @version 1.0.0
-	 */
 	public function rest_api_init() {
 		
 		register_rest_route( 
@@ -45,12 +31,6 @@ class Post_SMTP_MWP_Rest_API {
 	}
 	
 	
-	/*
-	 * Validates the request
-	 * 
-	 * @since 2.5.0
-	 * @version 1.0.0
-	 */
 	public function validate( $api_key, $site_url ) {
 		
 		if( 
@@ -101,12 +81,6 @@ class Post_SMTP_MWP_Rest_API {
 	} 
 
 
-	/*
-	 * Sends Email
-	 * 
-	 * @since 2.5.0
-	 * @version 1.0.0
-	 */
     public function send_email( WP_REST_Request $request ) {
 
 		$result = false;
@@ -181,12 +155,6 @@ class Post_SMTP_MWP_Rest_API {
     }
 	
 	
-	/*
-	 * Updates Log Meta
-	 * 
-	 * @since 2.5.0
-	 * @version 1.0.0
-	 */
 	public function update_log_meta( $log_id ) {
 		
 		//Store Site ID, if log has been created :)
@@ -203,12 +171,6 @@ class Post_SMTP_MWP_Rest_API {
 	}
 	
 	
-	/*
-	 * Override Settings
-	 * 
-	 * @since 2.5.0
-	 * @version 1.0.0
-	 */
 	public function override_settings() {
 		
 		$saved_sites = get_option( 'postman_mainwp_sites' );
@@ -217,26 +179,30 @@ class Post_SMTP_MWP_Rest_API {
 			!empty( $saved_sites ) 
 			&& 
 			isset( $saved_sites[$this->site_id] ) 
-			&&
-			$saved_sites[$this->site_id]['enabled'] == 1
 		) {
 			
 			$this->site = $saved_sites[$this->site_id];
-			add_filter( 'post_smtp_from_email_address', array( $this, 'override_from_email'  ) );
-			add_filter( 'post_smtp_from_name', array( $this, 'override_from_name'  ) );
-			add_filter( 'post_smtp_reply_to', array( $this, 'override_reply_to'  ) );
+			if( !empty( $saved_sites[$this->site_id]['email_address'] ) ) {
+				
+				add_filter( 'post_smtp_from_email_address', array( $this, 'override_from_email'  ) );
+				
+			}
+			if( !empty( $saved_sites[$this->site_id]['name'] ) ) {
+				
+				add_filter( 'post_smtp_from_name', array( $this, 'override_from_name'  ) );
+				
+			}
+			if( !empty( $saved_sites[$this->site_id]['reply_to'] ) ) {
+				
+				add_filter( 'post_smtp_reply_to', array( $this, 'override_reply_to'  ) );
+				
+			}
 			
 		}
 		
 	}
 	
 	
-	/*
-	 * Override From Email | Filter Callback
-	 * 
-	 * @since 2.5.0
-	 * @version 1.0.0
-	 */
 	public function override_from_email() {
 		
 		return $this->site['email_address'];
@@ -244,12 +210,6 @@ class Post_SMTP_MWP_Rest_API {
 	}
 	
 	
-	/*
-	 * Override From Name | Filter Callback
-	 * 
-	 * @since 2.5.0
-	 * @version 1.0.0
-	 */
 	public function override_from_name() {
 		
 		return $this->site['name'];
@@ -257,12 +217,6 @@ class Post_SMTP_MWP_Rest_API {
 	}
 	
 	
-	/*
-	 * Override Reply To | Filter Callback
-	 * 
-	 * @since 2.5.0
-	 * @version 1.0.0
-	 */
 	public function override_reply_to() {
 		
 		return $this->site['reply_to'];
