@@ -378,6 +378,8 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			$authorizationToken = $this->authorizationToken;
 			$logger->debug( 'Authorization in progress' );
 			$transactionId = PostmanSession::getInstance()->getOauthInProgress();
+			$message = '';
+        	$redirect_uri = admin_url( "admin.php?page=postman/configuration_wizard&socket=gmail_api&step=2" );
 
 			// begin transaction
 			PostmanUtils::lock();
@@ -388,16 +390,62 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 					$logger->debug( 'Authorization successful' );
 					// save to database
 					$authorizationToken->save();
-					$this->messageHandler->addMessage( __( 'The OAuth 2.0 authorization was successful. Ready to send e-mail.', 'post-smtp' ) );
+					$message = __( 'The OAuth 2.0 authorization was successful. Ready to send e-mail.', 'post-smtp' );
+					$this->messageHandler->addMessage( $message );
+
+					//Let's redirect to New Wizard
+					if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+						
+						wp_redirect( "{$redirect_uri}&message={$message}&success=1" );
+						exit();
+
+					}
+
 				} else {
-					$this->messageHandler->addError( __( 'Your email provider did not grant Postman permission. Try again.', 'post-smtp' ) );
+
+					$message = __( 'Your email provider did not grant Postman permission. Try again.', 'post-smtp' );
+
+					$this->messageHandler->addError( $message );
+
+					//Let's redirect to New Wizard
+					if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+						
+						wp_redirect( "{$redirect_uri}&message={$message}" );
+						exit();
+
+					}
+
 				}
 			} catch ( PostmanStateIdMissingException $e ) {
-				$this->messageHandler->addError( __( 'The grant code from Google had no accompanying state and may be a forgery', 'post-smtp' ) );
+
+				$message = __( 'The grant code from Google had no accompanying state and may be a forgery', 'post-smtp' );
+
+				$this->messageHandler->addError( $message );
+
+				//Let's redirect to New Wizard
+                if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+                    
+                    wp_redirect( "{$redirect_uri}&message={$message}" );
+                    exit();
+
+                }
+
 			} catch ( Exception $e ) {
 				$logger->error( 'Error: ' . get_class( $e ) . ' code=' . $e->getCode() . ' message=' . $e->getMessage() );
+
+				$message = sprintf( __( 'Error authenticating with this Client ID. [%s]', 'post-smtp' ), '<em>' . $e->getMessage() . '</em>' );
+
 				/* translators: %s is the error message */
-				$this->messageHandler->addError( sprintf( __( 'Error authenticating with this Client ID. [%s]', 'post-smtp' ), '<em>' . $e->getMessage() . '</em>' ) );
+				$this->messageHandler->addError( $message );
+
+				//Let's redirect to New Wizard
+                if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+                    
+                    wp_redirect( "{$redirect_uri}&message={$message}" );
+                    exit();
+
+                }
+
 			}
 
 			// clean-up
