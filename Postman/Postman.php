@@ -80,6 +80,9 @@ class Postman {
 		//require_once 'Postman-Mail/PostmanWooCommerce.php';
 		require_once 'Postman-Mail/Services/PostmanServiceRequest.php';
 
+		//load MainWP Child Files
+		require_once 'Extensions/MainWP-Child/mainwp-child.php';
+
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
 				'name' => __( 'Postman SMTP', 'post-smtp' ),
@@ -107,18 +110,22 @@ class Postman {
         // store an instance of the WpMailBinder
         $this->wpMailBinder = PostmanWpMailBinder::getInstance();
 
-        $mailer = PostmanOptions::getInstance()->getSmtpMailer();
-        $this->logger->trace( 'SMTP Mailer: ' . $mailer );
+        if( apply_filters( 'post_smtp_declare_wp_mail', true ) ) {
 
-		if ( $mailer && $mailer !== 'phpmailer') {
+			$mailer = PostmanOptions::getInstance()->getSmtpMailer();
+			$this->logger->trace( 'SMTP Mailer: ' . $mailer );
 
-            // bind to wp_mail - this has to happen before the "init" action
-            // this design allows other plugins to register a Postman transport and call bind()
-            // bind may be called more than once
-            $this->wpMailBinder->bind();
-        } else {
-            PostmanWpMailBinder::getInstance()->bound = true;
-        }
+			if ( $mailer && $mailer !== 'phpmailer') {
+
+				// bind to wp_mail - this has to happen before the "init" action
+				// this design allows other plugins to register a Postman transport and call bind()
+				// bind may be called more than once
+				$this->wpMailBinder->bind();
+			} else {
+				PostmanWpMailBinder::getInstance()->bound = true;
+			}
+
+		}
 
 		// registers the custom post type for all callers
 		PostmanEmailLogPostType::automaticallyCreatePostType();

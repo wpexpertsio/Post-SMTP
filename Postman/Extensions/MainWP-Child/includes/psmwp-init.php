@@ -70,20 +70,58 @@ class Post_SMTP_MainWP_Child {
      * @version 2.6.0
      */
     public function init() {
+		
+		require_once 'rest-api/v1/class-psmwp-rest-api.php';
     
-    	$post_smtp_enabled = get_option( 'post_smtp_enabled_for_child' );
+    	$post_smtp_enabled = get_option( 'post_smtp_use_from_main_site' );
 
 		if( $post_smtp_enabled ) {
-
+			
+			add_filter( 'post_smtp_dashboard_notice', array( $this, 'update_notice' ) );
             add_filter( 'post_smtp_declare_wp_mail', '__return_false' );
-        	
-            require_once 'includes/rest-api/v1/class-psmwp-rest-api.php';
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+
             require_once 'classes/class-psmwp-request.php';
         	require_once 'psmwp-functions.php';
         
         }
 
     }
+	
+	/**
+	 * Enqueue Admin Scripts.
+	 * 
+	 * @since 2.6.0
+	 * @version 1.0.0
+	 */
+	public function enqueue_scripts() {
+		
+		$css = '
+		.ps-config-bar .dashicons-dismiss {
+			display: none;
+		}';
+		wp_add_inline_style( 
+			'postman_style',
+			$css
+		);
+		
+	}
+	
+	
+	/**
+	 * Update Dashboard Notice | Filter Callback
+	 * 
+	 * @since 2.6.0
+	 * @version 1.0.0
+	 */
+	public function update_notice() {
+		
+		return array(
+			'error'		=>	false,
+			'message'	=>	__( 'Post SMTP is being used by MainWP Dashboard Site.', 'post-smtp' )
+		);
+		
+	}
 
 }
 
