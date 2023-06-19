@@ -290,13 +290,15 @@ class PostmanEmailLogsMigration {
      */
     public function update_database() {
 
-        $this->log( 'Info: Creating table' );
-
         if( !wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
+
+            $this->log( 'Error: Creating table, Nonce Verification Failed' );
 
             return;
 
         }
+
+        $this->log( 'Info: Creating table' );
 
         //Let's start migration 
 
