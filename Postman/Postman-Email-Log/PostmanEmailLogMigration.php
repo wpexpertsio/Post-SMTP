@@ -292,7 +292,11 @@ class PostmanEmailLogsMigration {
 
         $this->log( 'Info: Creating table' );
 
-        wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' );
+        if( !wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
+
+            return;
+
+        }
 
         //Let's start migration 
 

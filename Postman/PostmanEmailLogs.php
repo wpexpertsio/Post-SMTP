@@ -273,7 +273,11 @@ class PostmanEmailLogs {
      */
     public function get_logs_ajax() {
 
-        wp_verify_nonce( $_GET['security'], 'security' );
+        if( !wp_verify_nonce( $_GET['security'], 'security' ) ) {
+
+            return;
+
+        }
 
         if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-get-email-logs' ) {
 
@@ -357,7 +361,11 @@ class PostmanEmailLogs {
 	 */
 	public function delete_logs_ajax() {
 
-		wp_verify_nonce( $_POST['security'], 'security' );
+		if( !wp_verify_nonce( $_POST['security'], 'security' ) ) {
+
+            return;
+
+        }
 		
 		if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-delete-email-logs' ) {
 
@@ -420,7 +428,11 @@ class PostmanEmailLogs {
 	 */
 	public function export_log_ajax() {
 
-		wp_verify_nonce( $_POST['security'], 'security' );
+		if( !wp_verify_nonce( $_POST['security'], 'security' ) ) {
+
+            return;
+
+        }
 
 		if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-export-email-logs' ) {
 
@@ -508,7 +520,11 @@ class PostmanEmailLogs {
 	 */
 	public function view_log_ajax() {
 
-		wp_verify_nonce( $_POST['security'], 'security' );
+		if( !wp_verify_nonce( $_POST['security'], 'security' ) ) {
+
+            return;
+
+        }
 
 		if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-view-log' ) {
 
@@ -561,7 +577,11 @@ class PostmanEmailLogs {
      */
     public function resend_email() {
 
-        wp_verify_nonce( $_POST['security'], 'security' );
+        if( !wp_verify_nonce( $_POST['security'], 'security' ) ) {
+
+            return;
+
+        }
 
         if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-resend-email' ) {
 
