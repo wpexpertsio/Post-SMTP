@@ -84,7 +84,10 @@ class PostmanEmailQueryLog {
          */
         $this->columns = apply_filters( 'post_smtp_get_logs_query_cols', $this->columns, $args );
 
-        $this->query = "SELECT {$this->columns} FROM `{$this->table}` AS pl";
+        $this->query = $this->db->prepare(
+            "SELECT {$this->columns} FROM %i AS pl",
+            $this->table
+        );
 
         /**
          * Filter the query after the table name
@@ -104,7 +107,7 @@ class PostmanEmailQueryLog {
 
             foreach( $args['search_by'] as $key ) {
                 
-                $this->query .= " {$key} LIKE '%{$args["search"]}%'";
+                $this->query .= " {$key} LIKE '%{$this->db->esc_like( $args["search"] )}%'";
                 $this->query .= $counter != count( $args['search_by'] ) ? ' OR' : '';
                 $counter++;
 
@@ -115,7 +118,10 @@ class PostmanEmailQueryLog {
         //Date Filter :)
         if( isset( $args['from'] ) ) {
                 
-            $this->query .= " {$clause_for_date} pl.`time` >= {$args['from']}";
+            $this->query .= $this->db->prepare( 
+                " {$clause_for_date} pl.`time` >= %d",
+                $args['from']
+            );
 
         }
 
@@ -123,28 +129,37 @@ class PostmanEmailQueryLog {
 
             $clause_for_date = ( empty( $args['search'] ) && !isset( $args['from'] ) ) ? " WHERE" : " AND";
 
-            $this->query .= " {$clause_for_date} pl.`time` <= {$args['to']}";
+            $this->query .= $this->db->prepare(
+                " {$clause_for_date} pl.`time` <= %d",
+                $args['to']
+            );
 
         }
 
         //Order By
         if( !empty( $args['order'] ) && !empty( $args['order_by'] ) ) {
-            
+
+            $orderby_sql = sanitize_sql_orderby( "`{$args['order_by']}` {$args['order']}" );
+
             //If no alias added, add one
             if( !strpos( $args['order_by'], '.' ) ) {
                     
-                $args['order_by'] = "pl.`{$args['order_by']}`";
+                $orderby_sql = "pl.{$orderby_sql}";
 
             }
-
-            $this->query .= " ORDER BY {$args['order_by']} {$args['order']}";
+            
+            $this->query .= " ORDER BY {$orderby_sql}";
 
         }
 
         //Lets say from 0 to 25
         if( isset( $args['start'] ) && isset( $args['end'] ) ) {
             
-            $this->query .= " LIMIT {$args['start']}, {$args['end']}";
+            $this->query .= $this->db->prepare(
+                " LIMIT %d, %d",
+                $args['start'],
+                $args['end']
+            );
 
         }
         
