@@ -25,6 +25,8 @@ class PostmanSettingsRegistry {
 			( apply_filters( 'post_smtp_legacy_wizard', true ) ) 
 			||
 			( !apply_filters( 'post_smtp_legacy_wizard', true ) && isset( $_GET['page'] ) && $_GET['page'] != 'postman/configuration_wizard' )
+			||
+			( !apply_filters( 'post_smtp_legacy_wizard', true ) && !isset( $_GET['page'] )
 		) {
 
 			$this->registerSettings();
