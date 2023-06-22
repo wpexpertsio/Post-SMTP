@@ -319,7 +319,7 @@ jQuery(document).ready(function($) {
 
 				if( response.success === true ) {
 
-					logsDT.ajax.reload();
+					logsDT.ajax.reload( null, false );
 
 				}
 				else {
@@ -509,7 +509,7 @@ jQuery(document).ready(function($) {
 				else {
 
 					alert( response.message );
-					logsDT.ajax.reload();
+					logsDT.ajax.reload( null, false );
 
 				}
 
@@ -557,13 +557,13 @@ jQuery(document).ready(function($) {
 				if( response.success === true ) {
 
 					alert( response.message );
-					logsDT.ajax.reload();
+					logsDT.ajax.reload( null, false );
 
 				}
 				else {
 
 					alert( response.message );
-					logsDT.ajax.reload();
+					logsDT.ajax.reload( null, false );
 
 				}
 
