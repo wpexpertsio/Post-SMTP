@@ -330,6 +330,9 @@ class PostmanEmailLogs {
                 $row->success = $row->success == 1 ? '<span title="Successful"></span>' : '<span title="Failed"></span><pre class="ps-status-log">' . str_replace( $search, $replace, $row->success ) . '</pre>';
                 $row->actions = '';
 
+                //Escape HTML
+                $row->original_subject = esc_html( $row->original_subject );
+
             }
 
             $total_rows = $logs_query->get_total_row_count();
@@ -534,6 +537,14 @@ class PostmanEmailLogs {
 
 			$email_query_log = new PostmanEmailQueryLog();
 			$log = $email_query_log->get_log( $id, $type );
+            $_log = $log;
+
+            //Escape HTML
+            foreach( $_log as $key => $value ) {
+
+                $log[$key] = esc_html( $value );
+
+            }
 
 			if( isset( $log['time'] ) ) {
 
