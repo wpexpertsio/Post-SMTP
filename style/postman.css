@@ -1333,14 +1333,12 @@ h5#ps-progress {
 .ps-email-log-status-failed span {
     color: #fff;
     font-weight: 600;
-    height: 9px;
-    width: 9px;
-    border-radius: 50px;
+    border-radius: 25px;
     display: inline-block;
     margin-right: 5px;
     cursor: pointer;
+    padding: 2px 10px;
 }
-
 
 .ps-email-log-status-success span {
     background: #3FA500;
@@ -1542,4 +1540,5 @@ div#ps-email-log_length{
 .ps-status-log {
     display: inline-block;
     font-family: inherit;
+    margin-left: 5px;
 }
