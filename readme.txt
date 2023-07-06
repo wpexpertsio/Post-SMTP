@@ -301,6 +301,18 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
+= 2.5.8 - 2023-07-06 =
+**IMPROVEMENTS**
+
+* Added function to escape backend email content popup HTML. 
+* Added Failed/success labels for better visibility. 
+* Displayed error message on hover and in the popup to simplify the interface and UX in the log section.
+* Updated Feedback SDK to the latest version
+
+**FIXES**
+
+* Fix: Pagination was getting reset on resending emails.
+
 = 2.5.7 - 2023-06-21 =
 **IMPROVEMENTS**
 
