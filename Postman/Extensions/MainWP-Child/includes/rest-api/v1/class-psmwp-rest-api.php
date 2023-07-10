@@ -45,11 +45,10 @@ class PSMWP_Rest_API {
         $params = $request->get_params();
 		$headers = $request->get_headers();
 		$api_key = empty( $request->get_header( 'api_key' ) ) ? '' : sanitize_text_field( $request->get_header( 'api_key' ) );
-		$site_url = empty( $request->get_header( 'site_url' ) ) ? '' : sanitize_url( $request->get_header( 'site_url' ) );
 		$action = $request->get_param( 'action' );
 
         //Lets Validate :D
-		if( $this->validate( $api_key, $site_url ) ) {
+		if( $this->validate( $api_key ) ) {
 
             if( $action == 'enable_post_smtp' ) {
 				
@@ -81,12 +80,10 @@ class PSMWP_Rest_API {
      * @since 2.6.0
      * @version 1.0.0
      */
-    private function validate( $api_key, $site_url ) {
+    private function validate( $api_key ) {
 
         if( 
-			empty( $api_key ) 
-			||
-			empty( $site_url ) 
+			empty( $api_key )
 		) {
 			
 			wp_send_json(
@@ -99,21 +96,8 @@ class PSMWP_Rest_API {
 			
 		}
 		
-		$_site_url = site_url( '/' );
         $pubkey = get_option( 'mainwp_child_pubkey' );
 		$pubkey = $pubkey ? md5( $pubkey ) : '';
-
-		if( $_site_url != $site_url ) {
-			
-			wp_send_json(
-				array(
-					'code'		=>	'incorrect_site_url',
-					'message'	=>	'Incorrect site URL.'
-				),
-				404
-			);
-			
-		}
 
         if( $pubkey != $api_key ) {
 			
@@ -130,8 +114,6 @@ class PSMWP_Rest_API {
 		//Let's allow request
 		if( 
             $pubkey == $api_key
-            &&
-            $_site_url == $site_url
 		) {
 			
 			return true;
