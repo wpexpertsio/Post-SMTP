@@ -437,6 +437,23 @@ jQuery(document).ready(function($) {
 							</div>
 						`;
 
+						//Show Attachments
+						if( response.data.attachments !== undefined ) {
+
+							popupContent += `
+									<hr />
+									<div>`;
+
+							jQuery.each( response.data.attachments, function( i, attachment ) {
+
+								popupContent += `<a href='${response.data.path}${attachment}' target="_blank">${attachment}</a><br />`;
+
+							} );
+
+							popupContent += `</div>`;
+
+						}
+
 						jQuery( '.ps-popup-container' ).find( 'h1' ).after( popupContent );
 
 					}
