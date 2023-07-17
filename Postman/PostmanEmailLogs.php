@@ -588,6 +588,16 @@ class PostmanEmailLogs {
 
 			if( $log ) {
 
+                /**
+                 * Fires before viewing logs
+                 * 
+                 * @param array $log
+                 * @param string $type
+                 * @since 2.5.9
+                 * @version 1.0.0
+                 */
+                $log = apply_filters( 'post_smtp_before_view_log', $log, $type );
+
 				$response = array(
 					'success' => true,
 					'data' => $log,
@@ -646,7 +656,16 @@ class PostmanEmailLogs {
 
                 }
 
-                $success = wp_mail( $to, $log['original_subject'], $log['original_message'], $log['original_headers'] );
+                /**
+                 * Fires before resending email
+                 * 
+                 * @param array attachments
+                 * @since 2.5.9
+                 * @version 1.0.0
+                 */
+                $attachments = apply_filters( 'post_smtp_resend_attachments', array(), $id );
+
+                $success = wp_mail( $to, $log['original_subject'], $log['original_message'], $log['original_headers'], $attachments );
 
                 // Postman API: retrieve the result of sending this message from Postman
                 $result = apply_filters( 'postman_wp_mail_result', null );
