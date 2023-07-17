@@ -433,7 +433,7 @@ jQuery(document).ready(function($) {
 							</table>
 							<hr />
 							<div>
-								${response.data.original_message}
+								<iframe src="${response.data.log_url}" width="100%" height="310px"></iframe>
 							</div>
 						`;
 

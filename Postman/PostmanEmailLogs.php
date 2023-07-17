@@ -46,6 +46,27 @@ class PostmanEmailLogs {
         $this->db = $wpdb;
 		$this->logger = new PostmanLogger( get_class( $this ) );
 
+        //Render Message body in iframe
+        if( 
+            isset( $_GET['page'] ) && $_GET['page'] == 'postman_email_log' 
+            && 
+            isset( $_GET['view'] ) && $_GET['view'] == 'log' 
+            &&
+            isset( $_GET['log_id'] ) && !empty( $_GET['log_id'] )
+        ) {
+
+            $id = sanitize_text_field( $_GET['log_id'] );
+            $email_query_log = new PostmanEmailQueryLog();
+            $log = $email_query_log->get_log( $id, '' );
+            $msg = $log['original_message'];
+            $msg = preg_replace( "/<script\b[^>]*>(.*?)<\/script>/s", '', $msg );
+
+            echo $msg;
+
+            die;
+
+        }
+
     }
 
 
@@ -542,7 +563,16 @@ class PostmanEmailLogs {
             //Escape HTML
             foreach( $_log as $key => $value ) {
 
-                $log[$key] = esc_html( $value );
+                if( $key == 'original_message') {
+
+                    $log['log_url'] = admin_url( "admin.php?page=postman_email_log&view=log&log_id={$id}" );
+
+                }
+                else {
+                
+                    $log[$key] = esc_html( $value );
+                
+                }
 
             }
 
