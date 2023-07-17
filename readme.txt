@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 5.6.0
 Tested up to: 6.2.2
-Stable tag: 2.5.7
+Stable tag: 2.5.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -302,6 +302,15 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 1. Email Log Filter
 
 == Changelog ==
+
+== 2.5.9 - 2023-07-17 =
+**FIX**
+
+* Reverted support for HTML view in email content popup with proper checks to avoid CSS conflicts.
+
+**NEW**
+
+* Added new filter post_smtp_before_view_log to extend log section view.
 
 = 2.5.8 - 2023-07-06 =
 **IMPROVEMENTS**
