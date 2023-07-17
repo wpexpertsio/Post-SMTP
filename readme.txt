@@ -228,6 +228,9 @@ To use OAuth, your website needs it's own Client ID. The Client ID is used to co
 * If you have a Microsoft Live account, from the [Microsoft account Developer Center](https://account.live.com/developers/applications/index), select the Application and choose Delete Application.
 * If you have a Yahoo Account, from the [Yahoo Developer Network My Apps](https://developer.yahoo.com/apps/), select the Application and choose Delete App.
 
+= How can I report security bugs? =
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/woocommerce)
+
 == Grant OAuth permission error messages ==
 
 Please note that the Client ID and Client Secret fields are NOT for your username and password. They are for OAuth Credentials only.
@@ -312,7 +315,7 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 * Added new filter post_smtp_before_view_log to extend log section view.
 
-= 2.5.8 - 2023-07-06 =
+= 2.5.8 - 2023-07-11 =
 **IMPROVEMENTS**
 
 * Added function to escape backend email content popup HTML. 
