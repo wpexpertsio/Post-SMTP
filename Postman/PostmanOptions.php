@@ -93,6 +93,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const POSTMARK_API_KEY = 'postmark_api_key';
 		const SPARKPOST_API_KEY = 'sparkpost_api_key';
 		const MAILGUN_API_KEY = 'mailgun_api_key';
+		const ELASTICEMAIL_API_KEY = 'elasticemail_api_key';
 		const MAILGUN_DOMAIN_NAME = 'mailgun_domain_name';
 		const MAILGUN_REGION = 'mailgun_region';
 		const PREVENT_MESSAGE_SENDER_NAME_OVERRIDE = 'prevent_sender_name_override';
@@ -538,6 +539,23 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 		
 		}
+
+
+		/**
+         * @since 2.6.0
+         * @version 1.0
+         */
+        public function getElasticEmailApiKey() {
+
+            if ( defined( 'POST_SMTP_API_KEY' ) ) {
+                return POST_SMTP_API_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::ELASTICEMAIL_API_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::ELASTICEMAIL_API_KEY] );
+            }
+
+        }
 
 		/**
 		 * (non-PHPdoc)
