@@ -232,8 +232,17 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 					$this->logger->debug( 'Sending mail' );
 
 					// may throw an exception attempting to contact the SMTP server
-                    if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) ) {
-                        $engine->send($message);
+					/**
+					 * Filters to send email or not
+					 * 
+					 * @param bool $send_email
+					 * @since 2.5.0
+					 * @version 1.0.0
+					 */
+                    if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) && apply_filters( 'post_smtp_send_email', true ) ) {
+
+						$engine->send( $message );
+
                     } else {
                         $this->transcript = 'Bypassed By MailControl For Post SMTP';
                     }

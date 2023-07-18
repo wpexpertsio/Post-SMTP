@@ -348,7 +348,24 @@ class PostmanEmailLogs {
             foreach( $data as $row ) {
 
                 $row->time = date( "{$date_format} {$time_format}", $row->time );
-                $row->success = $row->success == 1 ? '<span title="Success">Success</span>' : '<span title="'.str_replace( $search, $replace, $row->success ).'">Failed</span><a href="#" class="ps-status-log ps-popup-btn">View details</a>';
+
+                if( $row->success == 1 ) {
+
+                    $row->success = '<span title="Success">Success</span>';
+
+                }
+                elseif( $row->success == 'In Queue' ) {
+
+                    $row->success = '<span title="In Queue">In Queue</span>';
+
+                }
+                else {
+
+                    $row->success = '<span title="'.str_replace( $search, $replace, $row->success ).'">Failed</span><a href="#" class="ps-status-log ps-popup-btn">View details</a>';
+                    
+                }
+                
+        
                 $row->actions = '';
 
                 //Escape HTML

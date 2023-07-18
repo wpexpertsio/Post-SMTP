@@ -1330,7 +1330,8 @@ h5#ps-progress {
 }
 
 .ps-email-log-status-success span, 
-.ps-email-log-status-failed span {
+.ps-email-log-status-failed span,
+.ps-email-log-status-queued span {
     color: #fff;
     font-weight: 600;
     border-radius: 25px;
@@ -1346,6 +1347,10 @@ h5#ps-progress {
 
 .ps-email-log-status-failed span {
     background: #DC3545;
+}
+
+.ps-email-log-status-queued span {
+    background: #ffa500;
 }
 
 .ps-email-log-view,
@@ -1541,4 +1546,16 @@ div#ps-email-log_length{
     display: inline-block;
     font-family: inherit;
     margin-left: 5px;
+}
+
+.ps-refresh-logs span {
+    vertical-align: middle;
+    background: #f8f9fa;
+    padding: 6px;
+    border-radius: 50px;
+    color: #0086fd;
+}
+
+.ps-refresh-logs span:hover {
+    cursor: pointer;
 }

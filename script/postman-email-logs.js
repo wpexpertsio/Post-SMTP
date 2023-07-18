@@ -94,6 +94,11 @@ jQuery(document).ready(function($) {
 				jQuery( status ).addClass( 'ps-email-log-status-success' );
 
 			}
+			else if( data['success'] == '<span></span>In Queue' ) {
+
+				jQuery( status ).addClass( 'ps-email-log-status-queued' );
+
+			}
 			else {
 
 				jQuery( status ).addClass( 'ps-email-log-status-failed' );
@@ -114,6 +119,7 @@ jQuery(document).ready(function($) {
 		<div class="ps-email-log-date-filter">
 			<label>From <input type="date" class="ps-email-log-from" /></label>
 			<label>To <input type="date" class="ps-email-log-to" /></label>
+			<span class="ps-refresh-logs" title="refresh logs"><span class="dashicons dashicons-image-rotate"></span></span>
 		</div>
 	` );
 
@@ -469,6 +475,14 @@ jQuery(document).ready(function($) {
 			}
 
 		} );
+
+	} );
+
+	//Refresh Logs
+	jQuery( document ).on( 'click', '.ps-refresh-logs', function( e ) {
+
+		e.preventDefault();
+		logsDT.ajax.reload();
 
 	} );
 
