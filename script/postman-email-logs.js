@@ -346,7 +346,7 @@ jQuery(document).ready(function($) {
 		toDo = ( toDo ) ? 'original_message' : 'session_transcript';
 		var heading = ( toDo == 'original_message' ) ? 'Email Message' : 'Session Transcript';
 		jQuery( '.ps-popup-container' ).html( `
-			<h1>${heading}</h1>
+			<h1 style="margin: 0; padding: 0;"></h1>
 			<h4>Loading...</h4>
 		` );
 
@@ -595,7 +595,7 @@ jQuery(document).ready(function($) {
 
 		e.preventDefault();
 		var _details = jQuery( this ).siblings( 'span' ).attr( 'title' );
-		jQuery( '.ps-popup-container' ).html( `<h1>Details</h1>${_details}` );
+		jQuery( '.ps-popup-container' ).html( `<h1 style="margin: 0; padding: 0;"></h1>${_details}` );
 
 	} );
 
