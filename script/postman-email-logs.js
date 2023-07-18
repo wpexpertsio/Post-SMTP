@@ -94,7 +94,7 @@ jQuery(document).ready(function($) {
 				jQuery( status ).addClass( 'ps-email-log-status-success' );
 
 			}
-			else if( data['success'] == '<span></span>In Queue' ) {
+			else if( data['success'] == '<span title="In Queue">In Queue</span>' ) {
 
 				jQuery( status ).addClass( 'ps-email-log-status-queued' );
 
