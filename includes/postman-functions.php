@@ -145,3 +145,19 @@ function postman_delete_log_meta( $log_id, $meta_key, $meta_value = '' ) {
 
 }
 endif;
+
+if( !function_exists( 'post_smtp_sanitize_array' ) ):
+function post_smtp_sanitize_array( $_array ) {
+
+    $array = array();
+
+    foreach( $_array as $key => $value ) {
+
+        $array[$key] = sanitize_text_field( $value );
+
+    }
+
+    return $array;
+
+}
+endif;
