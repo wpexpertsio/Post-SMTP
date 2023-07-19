@@ -79,172 +79,95 @@ class PostmanElasticEmailMailEngine implements PostmanMailEngine {
     public function send( PostmanMessage $message ) { 
 
         $options = PostmanOptions::getInstance();
+        $email_content = array();
+        
         //ElasticEmail preparation
         if ( $this->logger->isDebug() ) {
 
-            $this->logger->debug( 'Creating SendGrid service with apiKey=' . $this->apiKey );
+            $this->logger->debug( 'Creating SendGrid service with apiKey=' . $this->api_key );
 
         }
 
         $elasticemail = new PostmanElasticEmail( $this->api_key );
-        $sender = $message->getFromAddress();
-        $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-        $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
-        $headers = array();
         
-        $sender->log( $this->logger, 'From' );
+        //$email_content['Recipients'] = 
 
-        $sendSmtpEmail['sender'] = array(
-            'name'  =>  $senderName, 
-            'email' =>  $senderEmail
-        );
-        
-        $tos = array();
-        $duplicates = array();
-
-        // add the to recipients
+        //Adding to receipients
+        $to = array();
         foreach ( (array)$message->getToRecipients() as $key => $recipient ) {
-                    
-            if ( !array_key_exists( $recipient->getEmail(), $duplicates ) ) {
 
-                $tos[] = array(
-                    'email' =>  $recipient->getEmail()
-                );
-
-                if( !empty( $recipient->getName() ) ) {
-
-                    $tos[$key]['name'] = $recipient->getName();
-
-                }
-                
-                $duplicates[] = $recipient->getEmail();
-
-            }
+            $to[] = !empty( $recipient->getName() ) ? $recipient->getName() . ' <' . $recipient->getEmail() . '>' : $recipient->getEmail();
 
         }
-        $sendSmtpEmail['to'] = $tos;
-        
-        $sendSmtpEmail['subject'] = $message->getSubject();
-  
+
+        //Adding cc receipients
+        $cc = array();
+        foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
+
+            $cc[] = !empty( $recipient->getName() ) ? $recipient->getName() . ' <' . $recipient->getEmail() . '>' : $recipient->getEmail();
+
+        }
+
+        //Adding bcc receipients
+        $bcc = array();
+        foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
+
+            $bcc[] = !empty( $recipient->getName() ) ? $recipient->getName() . ' <' . $recipient->getEmail() . '>' : $recipient->getEmail();
+
+        }
+
+        $email_content['Recipients'] = array(
+            'To'    =>  $to,
+            'CC'    =>  $cc,
+            'BCC'   =>  $bcc
+        );
+
         $textPart = $message->getBodyTextPart();
         if ( ! empty( $textPart ) ) {
             $this->logger->debug( 'Adding body as text' );
-            $sendSmtpEmail['textContent'] = $textPart;
+            $email_content['Content'] = array(
+                'Body'  => array(
+                    0       =>  array(
+                        'ContentType'   =>  'TEXT',
+                        'Content'       =>  $textPart
+                    )
+                )
+            );
         }
         
         $htmlPart = $message->getBodyHtmlPart();
         if ( ! empty( $htmlPart ) ) {
             $this->logger->debug( 'Adding body as html' );
-            $sendSmtpEmail['htmlContent'] = $htmlPart;
-        }
-        
-        // add the reply-to
-        $replyTo = $message->getReplyTo();
-        // $replyTo is null or a PostmanEmailAddress object
-        if ( isset( $replyTo ) ) {
-            $sendSmtpEmail['replyTo'] = array(
-                'email' => $replyTo->getEmail()
+            $email_content['Content'] = array(
+                'Body'  => array(
+                   0        => array(
+                    'ContentType'   =>  'HTML',
+                    'Content'       =>  $htmlPart
+                   )
+                )
             );
-            
-            if( !empty( $replyTo->getName() ) ) {
-                 $sendSmtpEmail['name'] = $replyTo->getName();
-            }
         }
 
-        // add the Postman signature - append it to whatever the user may have set
-        if ( ! $options->isStealthModeEnabled() ) {
-            $pluginData = apply_filters( 'postman_get_plugin_metadata', null );
-            $headers['X-Mailer'] = sprintf( 'Postman SMTP %s for WordPress (%s)', $pluginData ['version'], 'https://wordpress.org/plugins/post-smtp/' );
-        }
+        $sender = $message->getFromAddress();
+        $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+        $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
 
-        foreach ( ( array ) $message->getHeaders() as $header ) {
-            $this->logger->debug( sprintf( 'Adding user header %s=%s', $header ['name'], $header ['content'] ) );
-            $headers[$header['name']] = $header ['content'];
-        }
+        $replyTo = $message->getReplyTo();
+        $replyTo_email = $replyTo->getEmail();
 
-        // add the messageId
-        $messageId = $message->getMessageId();
-        if ( ! empty( $messageId ) ) {
-            $headers['message-id'] = $messageId;
-        }
+        $email_content['Content']['EnvelopeFrom'] = !empty( $senderName ) ? $senderName . ' <' . $senderEmail . '>' : $senderEmail;
+        $email_content['Content']['From'] = !empty( $senderName ) ? $senderName . ' <' . $senderEmail . '>' : $senderEmail;
 
-        $sendSmtpEmail['headers'] = $headers;
+        if( isset( $replyTo_email ) ) {
 
-        // if the caller set a Content-Type header, use it
-        $contentType = $message->getContentType();
-        if ( ! empty( $contentType ) ) {
-            $this->logger->debug( 'Some header keys are reserved. You may not include any of the following reserved headers: x-sg-id, x-sg-eid, received, dkim-signature, Content-Type, Content-Transfer-Encoding, To, From, Subject, Reply-To, CC, BCC.' );
-        }
-
-        $cc = array();
-        $duplicates = array();
-        foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
-
-            if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
-
-                $recipient->log($this->logger, 'Cc');
-                $cc[] = array(
-                    'email' =>  $recipient->getEmail()
-                );
-                
-                if( !empty( $recipient->getName() ) ) {
-                    $cc['name'] = $recipient->getName();
-                }
-                
-                $duplicates[] = $recipient->getEmail();
-
-            }
+            $email_content['Content']['ReplyTo'] = !empty( $replyTo->getName() ) ? $replyTo->getName() . ' <' . $replyTo->getEmail() . '>' : $replyTo->getEmail();
 
         }
-        if( !empty( $cc ) )
-            $sendSmtpEmail['cc'] = $cc;
 
-        $bcc = array();
-        $duplicates = array();
-        foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
+        $email_content['Content']['Subject'] = $message->getSubject();
 
-            if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
+        var_dump( '<pre>', $email_content );die;
 
-                $recipient->log($this->logger, 'Bcc');
-                $bcc[] = array(
-                    'email'  =>  $recipient->getEmail()
-                );
-                
-                if( !empty( $recipient->getName() ) ) {
-                    $bcc['name'] = $recipient->getName();
-                }
-
-                $duplicates[] = $recipient->getEmail();
-
-            }
-
-        }
-        
-        if( !empty( $bcc ) )
-            $sendSmtpEmail['bcc'] = $bcc;
-
-        // add attachments
-        $this->logger->debug( 'Adding attachments' );
-
-        $attachments = $this->addAttachmentsToMail( $message );
-
-        $email_attachments = array();
-        
-        if( !empty( $attachments ) ) {
-        
-            foreach ( $attachments as $index => $attachment ) {
-
-                $email_attachments[] = array(
-                    'name'      =>  $attachment['file_name'],
-                    'content'   =>  $attachment['content']
-                );
-            }
-
-            $sendSmtpEmail['attachment'] = $email_attachments;
-        
-        }
-        
-         
         try {
 
             // send the message
@@ -252,18 +175,18 @@ class PostmanElasticEmailMailEngine implements PostmanMailEngine {
                 $this->logger->debug( 'Sending mail' );
             }
 
-            $response = $elasticemail->send( $sendSmtpEmail );
+            $response = $elasticemail->send( $email_content );
             
             $this->transcript = print_r( $response, true );
             $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-            $this->transcript .= print_r( $sendSmtpEmail, true );
+            $this->transcript .= print_r( $email_content, true );
             $this->logger->debug( 'Transcript=' . $this->transcript );
             
         } catch (Exception $e) {
 
             $this->transcript = $e->getMessage();
             $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-            $this->transcript .= print_r( $sendSmtpEmail, true );
+            $this->transcript .= print_r( $email_content, true );
             $this->logger->debug( 'Transcript=' . $this->transcript );
 
             throw $e;
