@@ -63,6 +63,9 @@ class Post_SMTP_MainWP_Child_Request {
 		}
 			
 		$body = compact( 'to', 'subject', 'message', 'headers', 'attachments' );
+		$action_nonce = apply_filters( 'mainwp_child_create_action_nonce', false, 'post-smtp-send-mail' );
+		$ping_nonce = apply_filters( 'mainwp_child_get_ping_nonce', '' );
+		$this->base_url = "$this->base_url/?actionnonce={$action_nonce}&pingnonce={$ping_nonce}";
 
         $response = wp_remote_post(
             $this->base_url,
@@ -72,7 +75,7 @@ class Post_SMTP_MainWP_Child_Request {
                 'headers'	=>	$request_headers
             )
         );
-
+		
         if( wp_remote_retrieve_body( $response ) ) {
 			
 			return true;
