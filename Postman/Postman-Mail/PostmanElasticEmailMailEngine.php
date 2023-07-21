@@ -59,15 +59,13 @@ class PostmanElasticEmailMailEngine implements PostmanMailEngine {
                 $file_parts = explode( '.', $file_name );
                 $file_type = wp_check_filetype( $file );
                 $attachments[] = array(
-                    'content' => base64_encode( file_get_contents( $file ) ),
-                    'type' => $file_type['type'],
-                    'file_name' => $file_name,
-                    'disposition' => 'attachment',
-                    'id' => $file_parts[0],
+                    'BinaryContent' =>  base64_encode( file_get_contents( $file ) ),
+                    'Name'          =>  $file_name,
+                    'ContentType'   =>  $file_type['type']
                 );
             }
         }
-
+        
         return $attachments;
 
     }
@@ -151,7 +149,13 @@ class PostmanElasticEmailMailEngine implements PostmanMailEngine {
 
         $email_content['Content']['Subject'] = $message->getSubject();
 
-        //var_dump( '<pre>', json_encode( $email_content ) );die;
+        $attachments = $this->addAttachmentsToMail( $message );
+
+        if( !empty( $attachments ) ) {
+
+            $email_content['Content']['Attachments'] = $attachments;
+
+        }
 
         try {
 
