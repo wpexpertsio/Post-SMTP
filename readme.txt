@@ -306,6 +306,12 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
+= 2.5.9.1 =
+**NEW**
+
+* Added option to refresh recent logs in the dashboard without loading the page.
+* Added new hooks in the code to make the functionality extendable.
+
 = 2.5.9 - 2023-07-18 =
 **IMPROVEMENTS**
 
