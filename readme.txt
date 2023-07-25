@@ -306,7 +306,7 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
-== 2.5.9 - 2023-07-18 =
+= 2.5.9 - 2023-07-18 =
 **IMPROVEMENTS**
 
 * Improved email log popup content
