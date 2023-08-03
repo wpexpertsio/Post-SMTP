@@ -77,7 +77,7 @@ class Post_SMTP_New_Wizard {
         $is_active = ( isset( $_GET['step'] ) && $_GET['step'] == 2 ) ? 'ps-active-nav' : 'ps-in-active-nav';
         $in_active = ( isset( $_GET['step'] ) && $_GET['step'] != 1 ) ? '' : 'ps-active-nav';
         $selected_tansport = $this->options->getTransportType();
-
+        $socket = isset( $_GET['socket'] ) ? "{$_GET['socket']}-outer" : '';
         ?>
 
         <div class="wrap">
@@ -85,7 +85,7 @@ class Post_SMTP_New_Wizard {
                 <div class="ps-logo">
                     <img src="https://postmansmtp.com/wp-content/uploads/2022/06/postman-smtp-mailer-1024x163.png" width="250px" />
                 </div>
-                <div class="ps-wizard-outer">
+                <div class="ps-wizard-outer <?php echo esc_attr( $socket ); ?>">
                     <div class="ps-wizard-section">
                         <div class="ps-wizard-nav">
                             <table>
@@ -304,7 +304,7 @@ class Post_SMTP_New_Wizard {
                                     ?>
                                 </div>
                                 <div class="ps-wizard-view-logs">
-                                    <div><a href="<?php echo esc_url( admin_url( 'admin.php?page=postman_email_log' ) ); ?>" class="button button-primary ps-blue-btn ps-wizard-next-btn"><?php esc_html_e( 'View logs section', 'post-smtp' ); ?> <span class="dashicons dashicons-arrow-right-alt"></span></a></div>
+                                    <div><a href="<?php echo esc_url( admin_url( 'admin.php?page=postman_email_log' ) ); ?>" class="button button-primary ps-blue-btn"><?php esc_html_e( 'View logs section', 'post-smtp' ); ?> <span class="dashicons dashicons-arrow-right-alt"></span></a></div>
                                     <div><a href="<?php echo esc_url( admin_url( 'admin.php?page=postman' ) ); ?>" style="font-size: 12px; color: #999999;"><?php esc_html_e( 'Skip to dashboard', 'post-smtp' ); ?></a></div>
                                 </div>
                                 <div style="clear: both"></div>
@@ -382,11 +382,8 @@ class Post_SMTP_New_Wizard {
             <div class="ps-form-control">
                 <h3>From Address</h3>
                 <p>'. sprintf(
-                    '%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s',
-                    esc_html__( 'This address, like the letterhead printed on a letter, identifies the sender to the recipient. Change this when you are sending on behalf of someone else, for example to use Google\'s', 'post-smtp' ),
-                    esc_url( 'https://support.google.com/mail/answer/22370?hl=en' ),
-                    esc_html__( 'Send Mail As', 'post-smtp' ),
-                    esc_html__( 'feature. Other plugins, especially Contact Forms, may override the field to be your visitor\'s address.', 'post-smtp' )
+                    '%1$s',
+                    esc_html__( 'This address, like the letterhead printed on a letter, identifies the sender to the recipient. Change this when you are sending on behalf of someone else. Other plugins, especially Contact Forms, may override the field to be your visitor\'s address.', 'post-smtp' )
                 ) .'</p>
                 <div><label>From Email</label></div>
                 <input type="text" class="ps-from-email" required data-error="'.__( 'Please enter From Email.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_EMAIL ).']" value="'.$from_email.'" placeholder="From Email">
@@ -859,7 +856,7 @@ class Post_SMTP_New_Wizard {
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
         $html = sprintf(
-            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s </p><a href="%4$s">%5$s</a>',
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s </p><a href="%4$s" target="_blank">%5$s</a>',
             esc_url( 'https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/' ),
             __( 'Office 365', 'post-smtp' ),
             __( 'is a popular transactional email provider that sends more than 35 billion emails every month. If you\'re just starting out, the free plan allows you to send up to 100 emails each day without entering your credit card details', 'post-smtp' ),

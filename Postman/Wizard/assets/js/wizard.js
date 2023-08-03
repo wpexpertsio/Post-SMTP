@@ -224,6 +224,30 @@ jQuery( document ).ready(function() {
 
     }
 
+    /**
+     * Gets URL Parameter
+     * 
+     * @return void
+     * @since 2.0.0
+     * @version 1.0.0
+     */
+    const getUrlParameter = function getUrlParameter(sParam) {
+
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+    
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+    
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+        return false;
+
+    };
 
     //Switch to next step
     jQuery( document ).on( 'click', '.ps-wizard-next-btn', function( e ) {
@@ -409,5 +433,11 @@ jQuery( document ).ready(function() {
     } );
 
     refreshWizard();
+
+    if( getUrlParameter( 'socket' ) ) {
+
+        jQuery( document ).scrollTop( jQuery( document ).height() );
+
+    }
 
 } );
