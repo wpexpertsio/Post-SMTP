@@ -244,12 +244,12 @@ class Post_SMTP_New_Wizard {
                                         </p>
                                         <div class="ps-wizard-card">
                                             <p><?php printf(
-                                                '<b>%1$s</b>%2$s',
+                                                '<b>%1$s</b> %2$s',
                                                 __( '📉 Report and Tracking Addon', 'post-smtp' ),
-                                                __( 'Receive in-depth reports and statics of your website\'s email performance. and, get access to email\'s open rate and get more visibility.' )
+                                                __( 'Receive in-depth reports and statics of your website\'s email performance and get access to email\'s open rate and get more visibility.' )
                                             ) ?></p>
                                             <p><?php printf(
-                                                '<b>%1$s</b>%2$s',
+                                                '<b>%1$s</b> %2$s',
                                                 __( '⚡ Advanced Email delivery and logs', 'post-smtp' ),
                                                 __( 'You can automate the process of retrying failed email attempts and optamize your website for users by sending emails asychronously from the backend.' )
                                             ) ?></p>
