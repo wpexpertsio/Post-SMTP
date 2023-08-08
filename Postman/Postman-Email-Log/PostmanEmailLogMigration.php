@@ -157,7 +157,7 @@ class PostmanEmailLogsMigration {
             <p><b><?php _e( 'Post SMTP database update required', 'post-smtp' ); ?></b></p>
             <?php if( $this->have_old_logs && !$this->migrating && !$this->is_migrated() ): ?>
                 <p><?php echo _e( 'Post SMTP has been updated! To keep things running smoothly, we have to update your database to the newest version, migrate email logs to new system. The database update process runs in the background and may take a little while, so please be patient.', 'post-smtp' ); ?></p>
-                <a href="<?php echo esc_url( $migration_url ) ?>" class="button button-primary">Update and Migrate Logs</a>
+                <a href="<?php echo esc_url( $migration_url ) ?>" class="button button-primary"><?php esc_html_e( 'Update and Migrate Logs', 'post-smtp' ); ?></a>
             <?php endif; ?>
             <?php if(  
                 ( $this->is_migrated() && $current_page !== 'postman_email_log' )
@@ -167,7 +167,7 @@ class PostmanEmailLogsMigration {
                 ( $current_page !== 'postman_email_log' )
             ): ?>
                 <p><?php echo _e( 'Post SMTP is migrating logs to new system.', 'post-smtp' ); ?></p>
-                <a href="<?php echo esc_url( $status_url ); ?>" class="button button-secondary">View Progress →</a>
+                <a href="<?php echo esc_url( $status_url ); ?>" class="button button-secondary"><?php esc_html_e( 'View Progress →', 'post-smtp' ); ?></a>
             <?php endif; ?>
             <?php
             if(  
@@ -180,10 +180,10 @@ class PostmanEmailLogsMigration {
                 $new_logging
             ): ?>
                 <p><?php echo _e( 'Great! You have successfully migrated to new logs.', 'post-smtp' ); ?> 
-                    <?php echo file_exists( $this->logging_file ) ? '<a href="'.$this->logging_file_url.'" target="_blank">View Migration Log</a>' : ''; ?>
+                    <?php echo file_exists( $this->logging_file ) ? '<a href="'.$this->logging_file_url.'" target="_blank">' . __( 'View Migration Log', 'post-smtp' ) . '</a>' : ''; ?>
                 </p>
-                <a href="<?php echo esc_url( $switch_back ); ?>" class="button button-primary">View old logs</a>
-                <a href="<?php echo esc_url( $delete_url ); ?>" class="button button-primary">Delete old Logs</a>
+                <a href="<?php echo esc_url( $switch_back ); ?>" class="button button-primary"><?php esc_html_e( 'View old logs', 'post-smtp' ); ?></a>
+                <a href="<?php echo esc_url( $delete_url ); ?>" class="button button-primary"><?php esc_html_e( 'Delete old Logs', 'post-smtp' ); ?></a>
             <?php endif; ?>
             <?php if( 
                 $this->migrating 
@@ -201,7 +201,7 @@ class PostmanEmailLogsMigration {
                 &&
                 $current_page == 'postman_email_log' 
             ): ?>
-                <a href="<?php echo esc_url( $switch_to_new ); ?>" class="button button-primary">Switch to new System</a>
+                <a href="<?php echo esc_url( $switch_to_new ); ?>" class="button button-primary"><?php esc_html_e( 'Switch to new System', 'post-smtp' ); ?></a>
             <?php endif; ?>
             <?php
                 if(  
@@ -213,7 +213,7 @@ class PostmanEmailLogsMigration {
                     &&
                     $new_logging
                 ): ?>
-                    <a href="<?php echo esc_url( $switch_back ); ?>" class="button button-primary">View old logs</a>
+                    <a href="<?php echo esc_url( $switch_back ); ?>" class="button button-primary"><?php esc_html_e( 'View old logs', 'post-smtp' ); ?></a>
                 <?php endif; ?>
                 <?php if( 
                 !$new_logging
@@ -224,16 +224,16 @@ class PostmanEmailLogsMigration {
                 &&
                 $current_page == 'postman_email_log' 
             ): ?>
-                <a href="<?php echo esc_url( $switch_to_new ); ?>" class="button button-primary">Switch to new System</a>
+                <a href="<?php echo esc_url( $switch_to_new ); ?>" class="button button-primary"><?php esc_html_e( 'Switch to new System', 'post-smtp' ); ?></a>
             <?php endif; ?>
-            <a href="https://postmansmtp.com/new-and-better-email-log-post-smtp-feature-update/" target="__blank" class="button button-secondary">Learn about migration</a>
+            <a href="https://postmansmtp.com/new-and-better-email-log-post-smtp-feature-update/" target="__blank" class="button button-secondary"><?php esc_html_e( 'Learn about migration', 'post-smtp' ); ?></a>
             <div style="float: right">
             <?php
             //Revert Migration
             if( $this->have_old_logs() && $new_logging ) {
 
                 ?>
-                <a href="<?php echo esc_url( $revert_url ); ?>" style="font-size: 13px;">Revert Migration</a>
+                <a href="<?php echo esc_url( $revert_url ); ?>" style="font-size: 13px;"><?php esc_html_e( 'Revert Migration', 'post-smtp' ); ?></a>
                 <br>
                 <?php
 
@@ -241,7 +241,7 @@ class PostmanEmailLogsMigration {
             if( $this->have_old_logs() ) {
 
                 ?>
-                <a href="<?php echo esc_url( $skip_migration_url ); ?>" style="font-size: 13px;">Switch to new logs without migration</a>
+                <a href="<?php echo esc_url( $skip_migration_url ); ?>" style="font-size: 13px;"><?php esc_html_e( 'Switch to new logs without migration', 'post-smtp' ); ?></a>
                 <?php
 
             }

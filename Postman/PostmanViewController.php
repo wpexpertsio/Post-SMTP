@@ -126,7 +126,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			$mainPostmanSettingsPage = add_menu_page( $pageTitle, $pluginName, Postman::MANAGE_POSTMAN_CAPABILITY_NAME, $uniqueId, $pageOptions, 'dashicons-email' );
 			
 			//To change the text of top level menu
-			add_submenu_page( $uniqueId, $pageTitle, 'Dashboard', Postman::MANAGE_POSTMAN_CAPABILITY_NAME, $uniqueId, $pageOptions );
+			add_submenu_page( $uniqueId, $pageTitle, __( 'Dashboard', 'post-smtp' ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, $uniqueId, $pageOptions );
 
 			// When the plugin options page is loaded, also load the stylesheet
 			add_action( 'admin_print_styles-' . $mainPostmanSettingsPage, array(
@@ -235,14 +235,16 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					else {
 						printf( 
 							'<div class="ps-config-bar">
-								<span>%s</span><span style="color: green" class="dashicons dashicons-yes-alt"></span>
+								<span>%1$s</span><span style="color: green" class="dashicons dashicons-yes-alt"></span>
 								<div class="ps-right">
-									What\'s Next? Get Started by Sending a Test Email! <a href="%s" class="button button-primary"> Send a Test Email</a>
+								%2$s <a href="%3$s" class="button button-primary"> %4$s</a>
 								</div>
 								<div class="clear"></div>
 							</div>', 
 							wp_kses_post( $statusMessage ),
-							esc_url( $this->getPageUrl( PostmanSendTestEmailController::EMAIL_TEST_SLUG ) )
+							esc_html__( 'What\'s Next? Get Started by Sending a Test Email!', 'post-smtp' ),
+							esc_url( $this->getPageUrl( PostmanSendTestEmailController::EMAIL_TEST_SLUG ) ),
+							esc_html__( 'Send a Test Email', 'post-smtp' )
 						);
 					}
 				}
@@ -411,43 +413,43 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/help-configure-post-smtp/' ); ?>" target="_blank" >
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />
-							<?php echo esc_html( 'Need help setup everything? (paid)' ); ?>
+							<?php esc_html_e( 'Need help setup everything? (paid)', 'post-smtp' ); ?>
 						</a>
 					</div>
 					<div>
 						<a href="<?php echo $this->getPageUrl( PostmanConnectivityTestController::PORT_TEST_SLUG ); ?>">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Connectivity Test' ); ?>
+							<?php esc_html_e( 'Connectivity Test', 'post-smtp' ); ?>
 						</a>
 					</div>
 					<div>
 						<a href="<?php echo $this->getPageUrl( PostmanDiagnosticTestController::DIAGNOSTICS_SLUG ); ?>">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Diagnostic Test' ); ?>
+							<?php esc_html_e( 'Diagnostic Test', 'post-smtp' ); ?>
 						</a>
 					</div>
 					<div>
 						<a href="#" class="release-lock-file" data-security="<?php esc_attr_e( wp_create_nonce( "postman" ) ); ?>" >
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Release Lock File Error' ); ?>
+							<?php esc_html_e( 'Release Lock File Error', 'post-smtp' ); ?>
 						</a>
 					</div>
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/forums/' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Online Support' ); ?>
+							<?php esc_html_e( 'Online Support', 'post-smtp' ); ?>
 						</a>
 					</div>
 					<div>
 						<a href="<?php echo esc_url( 'https://www.facebook.com/groups/post.smtp' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Facebook Group' ); ?>
+							<?php esc_html_e( 'Facebook Group', 'post-smtp' ); ?>
 						</a>
 					</div>
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/category/guides/' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Guides' ); ?>
+							<?php esc_html_e( 'Guides', 'post-smtp' ); ?>
 						</a>
 					</div>
 				</div>

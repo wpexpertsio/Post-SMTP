@@ -370,7 +370,7 @@ class Postman {
 	public static function getMailerTypeRecommend() {
 	    ?>
         <div>
-            <p style="font-size: 18px; font-weight: bold;">Please notice</p>
+            <p style="font-size: 18px; font-weight: bold;"><?php esc_html_e( 'Please notice', 'post-smtp' ); ?></p>
             <p style="font-size: 14px; line-height: 1.7;">
                 <?php _e('Post SMTP v2 includes and new feature called: <b>Mailer Type</b>.', 'post-smtp' ); ?><br>
                 <?php _e('I recommend to change it and <strong>TEST</strong> Post SMTP with the value <code>PHPMailer</code>.', 'post-smtp' ); ?><br>

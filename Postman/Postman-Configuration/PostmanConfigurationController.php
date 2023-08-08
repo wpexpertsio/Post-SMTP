@@ -561,12 +561,8 @@ class PostmanConfigurationController {
 			print '<fieldset>';
 			printf( '<legend>%s</legend>', esc_html_x( 'Who is the mail coming from?', 'Wizard Step Title', 'post-smtp' ) );
 			printf( '<p>%s</p>', esc_html__( 'Enter the email address and name you\'d like to send mail as.', 'post-smtp' ) );
-			// translators: 1: Opening paragraph tag, 2: Emphasized "not", 3: Remaining sentence
-			printf( 
-				'<p>%1$s <em>%2$s</em> %3$s</p>', 
-				esc_html__( 'Please note that to prevent abuse, many email services will ', 'post-smtp' ), 
-				esc_html__( 'not', 'post-smtp' ), 
-				esc_html__( 'let you send from an email address other than the one you authenticate with.', 'post-smtp' ) 
+			// translators: 1: Opening paragraph tag, 2: Opening emphasized tag, 3: Closing emphasized tag, 4. Closing paragraph tag
+			printf( esc_html__( '%1$sPlease note that to prevent abuse, many email services will %2$snot%3$s let you send from an email address other than the one you authenticate with.%4$s', 'post-smtp' ),'<p>','<em>','</em>','</p>'
 			);
 			
 			print( '<div class="ps-ib ps-w-50">' );
