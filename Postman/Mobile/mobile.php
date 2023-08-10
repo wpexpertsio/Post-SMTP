@@ -44,6 +44,7 @@ class Post_SMTP_Mobile {
         
         $this->generate_qr_code();
         $this->app_connected = get_option( 'post_smtp_fcm_token' );
+		delete_option( 'post_smtp_fcm_token' );
         
     }
 
@@ -103,7 +104,8 @@ class Post_SMTP_Mobile {
     public function generate_qr_code() {
 
         include_once 'includes/phpqrcode/qrlib.php';
-        $authkey = $this->generate_auth_key();
+        $nonce = get_transient( 'post_smtp_auth_nonce' );
+		$authkey = $nonce ? $nonce : $this->generate_auth_key();
         set_transient( 'post_smtp_auth_nonce', $authkey );
         $endpoint = site_url( "?authkey={$authkey}" );
         ob_start();
@@ -157,6 +159,9 @@ class Post_SMTP_Mobile {
                         echo '<img src="data:image/jpeg;base64,'. $this->qr_code.'" width="300"/>'; 
 
                     }
+					else {
+						echo 'Connected';
+					}
                     ?>
                 </div>
                 <div class="mobile-app-internal-box">
