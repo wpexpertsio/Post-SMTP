@@ -76,6 +76,10 @@ class Postman {
 		require_once 'Phpmailer/PostsmtpMailer.php';
 		//require_once 'Postman-Mail/PostmanWooCommerce.php';
 		require_once 'Postman-Mail/Services/PostmanServiceRequest.php';
+
+		//Mobile Application
+		require_once 'Mobile/mobile.php';
+
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
 				'name' => __( 'Postman SMTP', 'post-smtp' ),

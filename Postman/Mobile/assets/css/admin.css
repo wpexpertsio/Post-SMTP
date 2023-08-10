@@ -1,0 +1,7 @@
+#mobile-app .mobile-app-box {
+    display: flex;
+}
+
+.mobile-app-internal-box {
+    width: 50%;
+}
