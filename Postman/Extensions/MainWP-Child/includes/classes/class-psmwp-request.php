@@ -45,7 +45,7 @@ class Post_SMTP_MainWP_Child_Request {
 		$pubkey = get_option( 'mainwp_child_pubkey' );
 		$pubkey = $pubkey ? md5( $pubkey ) : '';
         $request_headers = array(
-            'Site-URL'	=>	site_url( '/' ),
+            'Site-Id'	=>	get_option( 'mainwp_child_siteid' ),
 			'API-Key'	=>	$pubkey
         );
 		
