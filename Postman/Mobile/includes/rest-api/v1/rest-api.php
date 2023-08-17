@@ -37,10 +37,19 @@ class Post_SMTP_Mobile_Rest_API {
 		$nonce = get_transient( 'post_smtp_auth_nonce' );
 		$auth_key = $request->get_header( 'auth_key' );
 		$fcm_token = $request->get_header( 'fcm_token' );
+		$device = $request->get_header( 'device' );
 		
 		if( $auth_key == $nonce ) {
 			
-			//update_option( 'post_smtp_fcm_token', $fcm_token );
+			$data = array(
+				0	=>	array(
+					'auth_key'	=>	$auth_key,
+					'fcm_token'	=>	$fcm_token,
+					'device'	=>	$device
+				)
+			);
+			
+			update_option( 'post_smtp_mobile_app_connection', $data );
 			
 			wp_send_json_success( 
 				array(

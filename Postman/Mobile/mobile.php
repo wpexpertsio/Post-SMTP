@@ -43,8 +43,8 @@ class Post_SMTP_Mobile {
         include_once 'includes/rest-api/v1/rest-api.php';
         
         $this->generate_qr_code();
-        $this->app_connected = get_option( 'post_smtp_fcm_token' );
-		delete_option( 'post_smtp_fcm_token' );
+        $this->app_connected = get_option( 'post_smtp_mobile_app_connection' );
+		//delete_option( 'post_smtp_mobile_app_connection' );
         
     }
 
@@ -160,7 +160,7 @@ class Post_SMTP_Mobile {
 
                     }
 					else {
-						echo 'Connected';
+						echo "<b>Connected Device:</b> {$this->app_connected[0]['device']}";
 					}
                     ?>
                 </div>
