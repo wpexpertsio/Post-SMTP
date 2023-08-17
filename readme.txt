@@ -229,7 +229,7 @@ To use OAuth, your website needs it's own Client ID. The Client ID is used to co
 * If you have a Yahoo Account, from the [Yahoo Developer Network My Apps](https://developer.yahoo.com/apps/), select the Application and choose Delete App.
 
 = How can I report security bugs? =
-You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/woocommerce)
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vulnerability/post-smtp)
 
 == Grant OAuth permission error messages ==
 
@@ -306,9 +306,12 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
-= 2.5.9.3 - 2023-08-18 =
+= 2.5.9.3 - 2023-08-17 =
 
-* Compatible & Tested up to WordPress v 6.3
+* Minor Tweaks
+
+= 2.5.9.2 - 2023-08-16 =
+* Compatible & Tested up to WordPress v6.3
 
 = 2.5.9.1 =
 **NEW**
