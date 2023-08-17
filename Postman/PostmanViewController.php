@@ -453,6 +453,14 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				</div>
 				<div class="clear"></div>
 			</div>
+			<?php 
+				/**
+				 * Fires after the Postman SMTP dashboard configuration.
+				 * 
+				 * @since 2.5.9.3
+				 */
+				do_action( 'post_smtp_dashboard_after_config' ); 
+			?>
 			<div class="ps-home-middle">
 				<?php
 
