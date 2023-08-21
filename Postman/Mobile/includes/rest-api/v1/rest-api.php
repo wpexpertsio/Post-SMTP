@@ -28,7 +28,12 @@ class Post_SMTP_Mobile_Rest_API {
             'callback'              => array( $this, 'connect_app' ),
             'permission_callback'   => '__return_true',
         ) );
-
+		
+		register_rest_route( 'post-smtp/v1', '/get-logs', array(
+            'methods'               => WP_REST_Server::READABLE,
+            'callback'              => array( $this, 'get_logs' ),
+            'permission_callback'   => '__return_true',
+        ) );
 
     }
 	
@@ -42,7 +47,7 @@ class Post_SMTP_Mobile_Rest_API {
 		if( $auth_key == $nonce ) {
 			
 			$data = array(
-				0	=>	array(
+				$fcm_token	=>	array(
 					'auth_key'	=>	$auth_key,
 					'fcm_token'	=>	$fcm_token,
 					'device'	=>	$device
@@ -68,6 +73,65 @@ class Post_SMTP_Mobile_Rest_API {
 			), 
 			200 
 		);
+		
+	}
+	
+	private function validate( $fcm_token ) {
+		
+		$device = get_option( 'post_smtp_mobile_app_connection' );
+		
+		if( empty( $fcm_token ) ) {
+			
+			wp_send_json_error( 
+				array(
+					'error'	=>	'Auth token missing.'
+				), 
+				400 
+			);
+			
+		}
+		elseif( $device && isset( $device[$fcm_token] ) ) {
+			
+			return true;
+			
+		}
+		else {
+			
+			wp_send_json_error( 
+				array(
+					'error'	=>	'Invalid Auth Token.'
+				), 
+				401 
+			);
+			
+		}
+		
+	}
+	
+	public function get_logs( WP_REST_Request $request ) {
+		
+		$args['order_by'] = 'time';
+		
+		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
+		
+		if( !class_exists( 'PostmanEmailQueryLog' ) ) {
+			
+			require POST_SMTP_PATH . '/Postman/Postman-Email-Log/PostmanEmailQueryLog.php';
+			
+		}
+		
+		if( $this->validate( $fcm_token ) ) {
+			
+			$logs_query = new PostmanEmailQueryLog();
+			$args['start'] = 0;
+			$args['end'] = 25;
+			
+			wp_send_json_success(
+				$logs_query->get_logs( $args ),
+				200
+			);
+			
+		}
 		
 	}
 

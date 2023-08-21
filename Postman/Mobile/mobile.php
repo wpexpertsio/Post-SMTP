@@ -160,7 +160,15 @@ class Post_SMTP_Mobile {
 
                     }
 					else {
-						echo "<b>Connected Device:</b> {$this->app_connected[0]['device']}";
+						
+						echo "<b>Connected Device:</b> ";
+						
+						foreach( $this->app_connected as $device ) {
+							
+							echo $device['device'];
+							
+						}
+						
 					}
                     ?>
                 </div>
