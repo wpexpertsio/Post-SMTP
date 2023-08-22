@@ -111,8 +111,11 @@ class Post_SMTP_Mobile_Rest_API {
 	public function get_logs( WP_REST_Request $request ) {
 		
 		$args['order_by'] = 'time';
+		$args['order'] = 'DESC';
 		
 		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
+		$start = $request->get_param( 'start' ) !== null ? $request->get_param( 'start' ) : 0;
+		$end = $request->get_param( 'end' ) !== null ? $request->get_param( 'end' ) : 25;
 		
 		if( !class_exists( 'PostmanEmailQueryLog' ) ) {
 			
@@ -123,8 +126,8 @@ class Post_SMTP_Mobile_Rest_API {
 		if( $this->validate( $fcm_token ) ) {
 			
 			$logs_query = new PostmanEmailQueryLog();
-			$args['start'] = 0;
-			$args['end'] = 25;
+			$args['start'] = $start;
+			$args['end'] = $end;
 			
 			wp_send_json_success(
 				$logs_query->get_logs( $args ),
