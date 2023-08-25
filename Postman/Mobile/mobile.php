@@ -106,8 +106,9 @@ class Post_SMTP_Mobile {
         include_once 'includes/phpqrcode/qrlib.php';
         $nonce = get_transient( 'post_smtp_auth_nonce' );
 		$authkey = $nonce ? $nonce : $this->generate_auth_key();
+		$site_title = get_bloginfo( 'name' );
         set_transient( 'post_smtp_auth_nonce', $authkey );
-        $endpoint = site_url( "?authkey={$authkey}" );
+        $endpoint = site_url( "?authkey={$authkey}&site_title={$site_title}" );
         ob_start();
         QRcode::png( urlencode_deep( $endpoint ) );
         $result_qr_content_in_png = ob_get_contents();
@@ -127,8 +128,8 @@ class Post_SMTP_Mobile {
     private function generate_auth_key() {
 
         $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
-        $chars .= '!@#$%^&*()';
-        $chars .= '-_ []{}<>~`+=,.;:/?|';
+        $chars .= '!@#$%^*()';
+        $chars .= '-_ []{}<>~`+,.;:/|';
 
         $pass = array(); //remember to declare $pass as an array
         $alphaLength = strlen( $chars ) - 1; //put the length -1 in cache
