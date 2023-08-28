@@ -206,6 +206,11 @@ class PostmanSendTestEmailController {
 
 		}  
 
+		/**
+		 * Fires after the test email section
+		 */
+		do_action( 'post_smtp_test_email_section' );
+
 		print '</section>';
 		print '</fieldset>';
 
