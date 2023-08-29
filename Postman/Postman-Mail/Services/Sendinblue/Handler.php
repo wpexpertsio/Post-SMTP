@@ -24,7 +24,7 @@ class PostmanSendinblue extends PostmanServiceRequest {
      * @since 2.3
      * @version 1.0
      */
-    private $base_url = 'https://api.sendinblue.com/v3/smtp';
+    private $base_url = 'https://api.brevo.com/v3/smtp';
 
     /**
      * constructor PostmanSendinblue
