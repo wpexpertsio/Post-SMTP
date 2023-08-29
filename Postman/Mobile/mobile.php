@@ -44,7 +44,6 @@ class Post_SMTP_Mobile {
         
         $this->generate_qr_code();
         $this->app_connected = get_option( 'post_smtp_mobile_app_connection' );
-		//delete_option( 'post_smtp_mobile_app_connection' );
         
     }
 

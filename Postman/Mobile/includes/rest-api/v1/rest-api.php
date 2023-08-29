@@ -34,6 +34,12 @@ class Post_SMTP_Mobile_Rest_API {
             'callback'              => array( $this, 'get_logs' ),
             'permission_callback'   => '__return_true',
         ) );
+		
+		register_rest_route( 'post-smtp/v1', '/disconnect-site', array(
+            'methods'               => WP_REST_Server::EDITABLE,
+            'callback'              => array( $this, 'disconnect_site' ),
+            'permission_callback'   => '__return_true',
+        ) );
 
     }
 	
@@ -132,6 +138,41 @@ class Post_SMTP_Mobile_Rest_API {
 			wp_send_json_success(
 				$logs_query->get_logs( $args ),
 				200
+			);
+			
+		}
+		
+	}
+	
+	public function disconnect_site( WP_REST_Request $request ) {
+		
+		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
+		
+		if( !class_exists( 'PostmanEmailQueryLog' ) ) {
+			
+			require POST_SMTP_PATH . '/Postman/Postman-Email-Log/PostmanEmailQueryLog.php';
+			
+		}
+		
+		if( $this->validate( $fcm_token ) ) {
+			
+			$response = delete_option( 'post_smtp_mobile_app_connection' );
+			
+			if( $response ) {
+				
+				wp_send_json_success(
+					array(
+						'message'	=> 'Site Disconnected.'
+					),
+					200
+				);	
+			}
+			
+			wp_send_json_error( 
+				array(
+					'error'	=>	'Invalid Request.'
+				), 
+				403 
 			);
 			
 		}
