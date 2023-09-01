@@ -41,6 +41,7 @@ class Post_SMTP_Mobile {
         add_filter( 'post_smtp_admin_tabs', array( $this, 'tabs' ), 11 );
 
         include_once 'includes/rest-api/v1/rest-api.php';
+        include_once 'includes/email-content.php';
         
         $this->generate_qr_code();
         $this->app_connected = get_option( 'post_smtp_mobile_app_connection' );

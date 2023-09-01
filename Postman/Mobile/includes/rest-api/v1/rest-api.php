@@ -40,6 +40,12 @@ class Post_SMTP_Mobile_Rest_API {
             'callback'              => array( $this, 'disconnect_site' ),
             'permission_callback'   => '__return_true',
         ) );
+		
+		register_rest_route( 'post-smtp/v1', '/get-log', array(
+            'methods'               => WP_REST_Server::READABLE,
+            'callback'              => array( $this, 'get_log' ),
+            'permission_callback'   => '__return_true',
+        ) );
 
     }
 	
@@ -137,6 +143,25 @@ class Post_SMTP_Mobile_Rest_API {
 			
 			wp_send_json_success(
 				$logs_query->get_logs( $args ),
+				200
+			);
+			
+		}
+		
+	}
+	
+	public function get_log( WP_REST_Request $request ) {
+		
+		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
+		$id = $request->get_param( 'id' ) !== null ? $request->get_param( 'id' ) : 1;
+		$type = $request->get_param( 'type' ) !== null ? $request->get_param( 'type' ) : 'log';
+		
+		if( $this->validate( $fcm_token ) ) {
+			
+			$url = admin_url( "admin.php?access_token={$fcm_token}&type={$type}&log_id={$id}" );
+			
+			wp_send_json_success(
+			 	$url,
 				200
 			);
 			
