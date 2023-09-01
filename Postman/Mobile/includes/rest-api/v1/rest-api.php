@@ -1,6 +1,8 @@
 <?php
 
 class Post_SMTP_Mobile_Rest_API {
+	
+	private $filter = '';
 
 
     /**
@@ -128,6 +130,14 @@ class Post_SMTP_Mobile_Rest_API {
 		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
 		$start = $request->get_param( 'start' ) !== null ? $request->get_param( 'start' ) : 0;
 		$end = $request->get_param( 'end' ) !== null ? $request->get_param( 'end' ) : 25;
+		$this->filter = $request->get_param( 'filter' ) !== 'all' ? $request->get_param( 'filter' ) : '';
+		$query = $request->get_param( 'query' ) !== '' ? $request->get_param( 'query' ) : '';
+		
+		if( !empty( $this->filter ) ) {
+			
+			add_filter( 'post_smtp_get_logs_query_after_table', array( $this, 'filter_query' ) );
+			
+		}
 		
 		if( !class_exists( 'PostmanEmailQueryLog' ) ) {
 			
@@ -201,6 +211,14 @@ class Post_SMTP_Mobile_Rest_API {
 			);
 			
 		}
+		
+	}
+	
+	public function filter_query( $query ) {
+		
+		$query .= $this->filter == 'success' ? ' WHERE `success` = 1 ' : ' WHERE `success` != 1 ';
+		
+		return $query;
 		
 	}
 
