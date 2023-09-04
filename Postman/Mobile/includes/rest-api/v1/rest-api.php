@@ -133,9 +133,15 @@ class Post_SMTP_Mobile_Rest_API {
 		$this->filter = $request->get_param( 'filter' ) !== 'all' ? $request->get_param( 'filter' ) : '';
 		$query = $request->get_param( 'query' ) !== '' ? $request->get_param( 'query' ) : '';
 		
-		if( !empty( $this->filter ) ) {
+		if( empty( $query ) && !empty( $this->filter ) ) {
 			
 			add_filter( 'post_smtp_get_logs_query_after_table', array( $this, 'filter_query' ) );
+			
+		}
+		
+		if( !empty( $query ) ) {
+			
+			$args['search'] = $query;
 			
 		}
 		
@@ -150,6 +156,15 @@ class Post_SMTP_Mobile_Rest_API {
 			$logs_query = new PostmanEmailQueryLog();
 			$args['start'] = $start;
 			$args['end'] = $end;
+			
+			if( empty( $args ) ) {
+				
+				wp_send_json_success(
+					array( 'message' => 'Logs not found.' ),
+					200
+				);
+				
+			}
 			
 			wp_send_json_success(
 				$logs_query->get_logs( $args ),
