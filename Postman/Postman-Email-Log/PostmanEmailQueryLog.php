@@ -135,6 +135,14 @@ class PostmanEmailQueryLog {
             );
 
         }
+		
+		if( isset( $args['site_id'] ) && $args['site_id'] != -1 ) {
+
+            $clause_for_site = ( empty( $args['search'] ) ) ? " WHERE" : " AND";
+			
+            $this->query .= " {$clause_for_site} lm.meta_value = '{$args['site_id']}'";
+
+        }
 
         //Order By
         if( !empty( $args['order'] ) && !empty( $args['order_by'] ) ) {
@@ -162,7 +170,7 @@ class PostmanEmailQueryLog {
             );
 
         }
-        
+
         return $this->db->get_results( $this->query );
 
     }
