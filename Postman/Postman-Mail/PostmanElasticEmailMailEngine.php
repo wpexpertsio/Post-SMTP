@@ -136,12 +136,13 @@ class PostmanElasticEmailMailEngine implements PostmanMailEngine {
         $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
 
         $replyTo = $message->getReplyTo();
-        $replyTo_email = $replyTo->getEmail();
+        $replyTo_email = !empty( $replyTo ) ? $replyTo->getEmail() : '';
+        
 
         $email_content['Content']['EnvelopeFrom'] = !empty( $senderName ) ? $senderName . ' <' . $senderEmail . '>' : $senderEmail;
         $email_content['Content']['From'] = !empty( $senderName ) ? $senderName . ' <' . $senderEmail . '>' : $senderEmail;
 
-        if( isset( $replyTo_email ) ) {
+        if( !empty( $replyTo_email ) ) {
 
             $email_content['Content']['ReplyTo'] = !empty( $replyTo->getName() ) ? $replyTo->getName() . ' <' . $replyTo->getEmail() . '>' : $replyTo->getEmail();
 
