@@ -698,6 +698,11 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				esc_html__( 'Are you sure?', 'post-smtp' ) 
 			);
 
+			printf(
+				'<input type="checkbox" name="ps_preserve_email_logs" value="1" checked /> %s',
+				esc_html__( 'Preserve my email logs', 'post-smtp' )
+			);
+
 			submit_button( $resetTitle, 'delete button button-secondary', 'submit', true );
 			print '</form>';
 			print '</section>';
