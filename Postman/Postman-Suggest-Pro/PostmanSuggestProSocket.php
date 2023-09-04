@@ -22,11 +22,19 @@ class PostmanSuggestProSocket {
 
         $this->pro_extenstions();
         $this->fs = freemius( 10461 );
+        $hide_notice = get_transient( 'post_smtp_skip_banner' );
 
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
         $this->fs->add_action( 'addons/after_addons', array( $this, 'promote_bundles_fs' ) );
-        add_action( 'post_smtp_dashboard_after_config', array( $this, 'promote_bundles_dashboard' ) );
+
+        if( !$hide_notice ) {
+
+            add_action( 'post_smtp_dashboard_after_config', array( $this, 'promote_bundles_dashboard' ) );
+
+        }
+        
         add_filter( 'gettext', array( $this, 'change_fs_submenu_text' ), 10, 3 );
+        add_action( 'admin_action_ps_skip_pro_banner', array( $this, 'skip_pro_banner' ) );
         
     }
 
@@ -134,9 +142,13 @@ class PostmanSuggestProSocket {
     public function promote_bundles_dashboard() {
 
         ?>
-        <div style="margin-top: 10px;">
+        <div style="margin-top: 10px; float: left;">
             <?php $this->promote_bundles_html(); ?>
         </div>
+        <div style="padding: 30px 0; margin-left: 10px; float: left;">
+            <a href="<?php echo admin_url( 'admin.php?action=ps_skip_pro_banner' ); ?>">Not interested, Skip for now.</a>
+        </div>
+        <div style="clear: both;"></div>
         <?php
 
     }
@@ -160,6 +172,24 @@ class PostmanSuggestProSocket {
         }
 
         return $translated_text;
+
+    }
+
+    /**
+     * Skip Pro banner
+     * 
+     * @since 2.6.0
+     * @version 1.0.0
+     */
+    public function skip_pro_banner() {
+
+        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps_skip_pro_banner' ) {
+
+            set_transient( 'post_smtp_skip_banner', 23668200 );
+
+            wp_redirect( admin_url( 'admin.php?page=postman' ) );
+
+        }
 
     }
 
