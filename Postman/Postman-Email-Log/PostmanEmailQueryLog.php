@@ -280,7 +280,12 @@ class PostmanEmailQueryLog {
         $columns = empty( $columns ) ? '*' : implode( ',', $columns );
 
         return $this->db->get_row(
-            "SELECT {$columns} FROM `{$this->table}` WHERE id = {$id};",
+            $this->db->prepare(
+                'SELECT %i FROM %i WHERE id = %d',
+                $columns,
+                $this->table,
+                $id
+            ),
             ARRAY_A
         );
 

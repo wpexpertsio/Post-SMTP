@@ -668,7 +668,7 @@ class PostmanEmailLogs {
 
         if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-resend-email' ) {
 
-            $id = sanitize_text_field( $_POST['id'] );
+            $id =  intval( $_POST['id'] );
             $response = '';
             $email_query_log = new PostmanEmailQueryLog();
             $log = $email_query_log->get_log( $id );
