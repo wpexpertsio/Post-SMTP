@@ -354,8 +354,15 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				delete_option( PostmanOptions::POSTMAN_OPTIONS );
 				delete_option( PostmanOAuthToken::OPTIONS_NAME );
 				delete_option( PostmanAdminController::TEST_OPTIONS );
-				$logPurger = new PostmanEmailLogPurger();
-				$logPurger->removeAll();
+
+				//delete logs as well
+				if( !isset( $_REQUEST['ps_preserve_email_logs'] ) ) {
+
+					$logPurger = new PostmanEmailLogPurger();
+					$logPurger->removeAll();
+
+				}
+
 				$this->messageHandler->addMessage( __( 'Plugin data was removed.', 'post-smtp' ) );
 
 				/**

@@ -3,8 +3,8 @@ Plugin URI: https://wpexperts.io/
 Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 5.6.0
-Tested up to: 6.2.2
-Stable tag: 2.5.9
+Tested up to: 6.3
+Stable tag: 2.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -229,7 +229,7 @@ To use OAuth, your website needs it's own Client ID. The Client ID is used to co
 * If you have a Yahoo Account, from the [Yahoo Developer Network My Apps](https://developer.yahoo.com/apps/), select the Application and choose Delete App.
 
 = How can I report security bugs? =
-You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/woocommerce)
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vulnerability/post-smtp)
 
 == Grant OAuth permission error messages ==
 
@@ -305,6 +305,33 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 1. Email Log Filter
 
 == Changelog ==
+
+= 2.6.0 - 2023-09-12 =
+
+**NEW**
+
+* Elastic mail socket added
+* When resetting the plugin settings, the user can check to preserve logs from getting removed
+* MainWP integration added. How-to instructions will be available publicly soon.
+
+**FIX**
+
+* When using PHPMailer, the failed email log was not creating
+
+**IMPROVEMENT**
+
+* Now, users can skip the banner from the dashboard.
+
+= 2.5.9.4 - 2023-08-29 =
+
+* API endpoint "SendinBlue" has been updated to "Brevo"
+
+= 2.5.9.3 - 2023-08-17 =
+
+* Minor Tweaks
+
+= 2.5.9.2 - 2023-08-16 =
+* Compatible & Tested up to WordPress v6.3
 
 = 2.5.9.1 =
 **NEW**

@@ -1,19 +1,19 @@
 <?php
 
-class PostmanSendinblue extends PostmanServiceRequest {
+class PostmanElasticEmail extends PostmanServiceRequest {
 
     /**
      * Success Code
      * 
-     * @since 2.3
+     * @since 2.6.0
      * @version 1.0
      */
-    private $email_sent_code = 201;
+    private $email_sent_code = 200;
 
     /**
      * API Key
      * 
-     * @since 2.3
+     * @since 2.6.0
      * @version 1.0
      */
     private $api_key = '';
@@ -21,16 +21,16 @@ class PostmanSendinblue extends PostmanServiceRequest {
     /**
      * Base URL
      * 
-     * @since 2.3
+     * @since 2.6.0
      * @version 1.0
      */
-    private $base_url = 'https://api.brevo.com/v3/smtp';
+    private $base_url = 'https://api.elasticemail.com/v4/emails';
 
     /**
-     * constructor PostmanSendinblue
+     * constructor ElasticEmail
      * 
      * @param $api_key
-     * @since 2.3
+     * @since 2.6.0
      * @version 1.0
      */
     public function __construct( $api_key ) {
@@ -44,24 +44,22 @@ class PostmanSendinblue extends PostmanServiceRequest {
     /**
      * Prepares Header for Request
      * 
-     * @since 2.3
+     * @since 2.6.0
      * @version 1.0
      */
     private function get_headers() {
 
         return array(
-            'Api-Key'       =>  $this->api_key,
-            'Content-Type'  =>  'application/json',
-            'Accept'        =>  'application/json'
+            'X-ElasticEmail-ApiKey' =>  $this->api_key
         );
 
     }
 
     /**
-     * Sends Email using Sendinblue transmissions end point
+     * Sends Email using ElasticEmail transactional end point
      * 
      * @param $api_key
-     * @since 2.3
+     * @since 2.6.0
      * @version 1.0
      */
     public function send( $content ) {
@@ -70,7 +68,7 @@ class PostmanSendinblue extends PostmanServiceRequest {
 
         return $this->request(
             'POST',
-            '/email',
+            '/transactional',
             $this->get_headers(),
             $content,
             $this->email_sent_code

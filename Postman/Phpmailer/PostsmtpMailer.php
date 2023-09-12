@@ -129,6 +129,8 @@ class PostsmtpMailer extends PHPMailer {
 
 		try {
 
+			$response = false;
+
 			if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) ) {
 				$result = $this->options->getTransportType() !== 'smtp' ?
 					$postmanWpMail->send( $to, $subject, $body, $headers, $attachments ) :
@@ -151,6 +153,9 @@ class PostsmtpMailer extends PHPMailer {
 			$this->mailHeader = '';
 
 			$this->setError($exc->getMessage());
+
+            do_action( 'post_smtp_on_failed', $log, $postmanMessage,  $this->transcript, $transport, $exc->getMessage() );
+
 			if ($this->exceptions) {
 				throw $exc;
 			}
