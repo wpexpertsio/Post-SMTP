@@ -189,6 +189,54 @@ class Post_SMTP_Email_Content {
 				die;
 			}
 			
+			if( $this->type == 'details' ) {
+
+				$log = $logs_query->get_log( 
+					$this->log_id,
+					array(
+						'success'
+					)
+				);
+
+				if( empty( $log ) ) {
+
+					wp_send_json_error(
+						array(
+							'message'	=> "{$this->type} not found for id {$this->log_id}"
+						),
+						404
+					);
+
+				}
+				?>
+				<html>
+					<head>
+						<meta name="viewport" content="width=device-width, initial-scale=1.0">
+						<style>
+							* {
+								box-sizing: border-box;
+							}
+							.container {
+								margin: 0 auto;
+								width: 95%;
+							}
+							.message-body {
+								margin-top: 15px;
+							}
+						</style>
+					</head>
+					<body>
+						<div class="container">
+							<div class="message-body">
+								<?php echo $log['success']; ?>
+							</div>
+						</div>
+					</body>
+				</html>
+				<?php
+				die;
+			}
+			
 		}
 		else {
 			

@@ -37,10 +37,13 @@ class Post_SMTP_Mobile {
         add_action( 'admin_menu', array( $this, 'add_menu' ), 21 );
         add_action( 'post_smtp_settings_menu', array( $this, 'section' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ) );
-
+		add_action( 'admin_action_post_smtp_disconnect_app', array( $this, 'disconnect_app' ) );
+		
+		add_filter( 'post_smtp_sanitize', array( $this, 'sanitize' ), 10, 3 );
         add_filter( 'post_smtp_admin_tabs', array( $this, 'tabs' ), 11 );
 
         include_once 'includes/rest-api/v1/rest-api.php';
+        include_once 'includes/controller/v1/controller.php';
         include_once 'includes/email-content.php';
         
         $this->generate_qr_code();
@@ -153,7 +156,7 @@ class Post_SMTP_Mobile {
         <section id="mobile-app">
             <h2><?php _e( 'Mobile Application', 'post-smtp' ); ?></h2>
             <div class="mobile-app-box">
-                <div class="mobile-app-internal-box ps-qr-box">
+                <div class="mobile-app-internal-box ps-qr-box" style="line-height: 30px;">
                     <?php 
                     if( !$this->app_connected ) {
                         
@@ -166,7 +169,17 @@ class Post_SMTP_Mobile {
 						
 						foreach( $this->app_connected as $device ) {
 							
-							echo $device['device'];
+							$url = admin_url( "admin.php?action=post_smtp_disconnect_app&auth_token={$device['fcm_token']}" );
+							$checked = $device['enable_notification'] == 1 ? 'checked="checked"' : '';
+							
+							echo "{$device['device']} <a href='{$url}' style='color: red'>Disconnect</a>";
+							echo '<br />';
+							echo sprintf(
+								'<label for="enable-app-notice">%s <input type="checkbox" id="enable-app-notice" name="postman_app_connection[%s]" %s /></label>',
+								__( 'Send failed email notification' ),
+								$device['fcm_token'],
+								$checked
+							);
 							
 						}
 						
@@ -181,6 +194,85 @@ class Post_SMTP_Mobile {
         <?php
 
     }
+	
+	/**
+     * Sanitize the Settings | Filter Callback
+     * 
+     * @since 2.7.0
+     * @version 1.0.0
+     */
+    public function sanitize( $input, $option, $section ) {
+			
+		$connected_devices = get_option( 'post_smtp_mobile_app_connection' );
+		$devices = !isset( $_POST['postman_app_connection'] ) ? array() : array_keys( $_POST['postman_app_connection'] );
+
+		if( $connected_devices ) {
+
+			foreach( $connected_devices as $key => $device ) {
+
+				if( in_array( $device['fcm_token'], $devices ) ) {
+
+					$connected_devices[$key]['enable_notification'] = 1;
+
+				}
+				else {
+
+					$connected_devices[$key]['enable_notification'] = 0;
+
+				}
+
+			}
+
+		}
+
+		update_option( 'post_smtp_mobile_app_connection', $connected_devices );
+
+        return $input;
+
+    }
+	
+	public function disconnect_app() {
+		
+		if( isset( $_GET['action'] ) && $_GET['action'] == 'post_smtp_disconnect_app' ) {
+			
+			$connected_devices = get_option( 'post_smtp_mobile_app_connection' );
+			$auth_token = $_GET['auth_token'];
+			$server_url = get_option( 'post_smtp_server_url' );
+			
+			if( $connected_devices && isset( $connected_devices[$auth_token] ) ) {
+				
+				$device = $connected_devices[$auth_token];
+				$auth_key = $device['auth_key'];
+				
+				$response = wp_remote_post(
+					"{$server_url}/disconnect-app",
+					array(
+						'method'	=>	'PUT',
+						'headers'	=>	array(
+							'Content-Type'	=>	'application/json',
+							'Auth-Key'		=>	$auth_key,
+							'FCM-Token'		=>	$auth_token
+						)
+					)
+				);
+				
+				$response_code = wp_remote_retrieve_response_code( $response );
+				
+				if( $response_code == 200 ) {
+					
+					delete_option( 'post_smtp_mobile_app_connection' );
+					delete_option( 'post_smtp_server_url' );
+					
+				}
+				
+			}
+			
+			wp_redirect( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) );
+			
+		}
+		
+	}
+
 
 }
 

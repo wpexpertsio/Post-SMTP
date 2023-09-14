@@ -57,18 +57,21 @@ class Post_SMTP_Mobile_Rest_API {
 		$auth_key = $request->get_header( 'auth_key' );
 		$fcm_token = $request->get_header( 'fcm_token' );
 		$device = $request->get_header( 'device' );
+		$server_url = $request->get_header( 'server_url' );
 		
 		if( $auth_key == $nonce ) {
 			
 			$data = array(
 				$fcm_token	=>	array(
-					'auth_key'	=>	$auth_key,
-					'fcm_token'	=>	$fcm_token,
-					'device'	=>	$device
+					'auth_key'				=>	$auth_key,
+					'fcm_token'				=>	$fcm_token,
+					'device'				=>	$device,
+					'enable_notification'	=>	1
 				)
 			);
 			
 			update_option( 'post_smtp_mobile_app_connection', $data );
+			update_option( 'post_smtp_server_url', $server_url );
 			
 			wp_send_json_success( 
 				array(
@@ -207,6 +210,7 @@ class Post_SMTP_Mobile_Rest_API {
 		if( $this->validate( $fcm_token ) ) {
 			
 			$response = delete_option( 'post_smtp_mobile_app_connection' );
+			$response = delete_option( 'post_smtp_server_url' );
 			
 			if( $response ) {
 				
