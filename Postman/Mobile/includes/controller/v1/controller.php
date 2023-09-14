@@ -10,15 +10,20 @@ class Post_SMTP_Mobile_Controller {
 		
 		$this->baseurl = get_option( 'post_smtp_server_url' );
 		$connected_devices = get_option( 'post_smtp_mobile_app_connection' );
-		$this->auth_token = array_keys( $connected_devices );
-		$this->auth_token = $this->auth_token[0];
-		$this->auth_key = $connected_devices[$this->auth_token]['auth_key'];
 		
-		add_action( 'admin_action_post_smtp_disconnect_app', array( $this, 'disconnect_app' ) );
-		
-		if( $connected_devices[$this->auth_token]['enable_notification'] ) {
+		if( $connected_devices ) {
 			
-			add_action( 'post_smtp_on_failed', array( $this, 'push_notification' ), 10, 5 );
+			$this->auth_token = array_keys( $connected_devices );
+			$this->auth_token = $this->auth_token[0];
+			$this->auth_key = $connected_devices[$this->auth_token]['auth_key'];
+
+			add_action( 'admin_action_post_smtp_disconnect_app', array( $this, 'disconnect_app' ) );
+
+			if( $connected_devices[$this->auth_token]['enable_notification'] ) {
+
+				add_action( 'post_smtp_on_failed', array( $this, 'push_notification' ), 10, 5 );
+
+			}
 			
 		}
 		
