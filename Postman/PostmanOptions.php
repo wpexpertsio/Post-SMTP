@@ -90,6 +90,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const MANDRILL_API_KEY = 'mandrill_api_key';
 		const SENDGRID_API_KEY = 'sendgrid_api_key';
 		const SENDINBLUE_API_KEY = 'sendinblue_api_key';
+		const SENDPULSE_API_KEY = 'sendpulse_api_key';
 		const POSTMARK_API_KEY = 'postmark_api_key';
 		const SPARKPOST_API_KEY = 'sparkpost_api_key';
 		const MAILGUN_API_KEY = 'mailgun_api_key';
@@ -545,6 +546,24 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
             if ( isset( $this->options[PostmanOptions::SENDINBLUE_API_KEY] ) ) {
                 return base64_decode( $this->options[PostmanOptions::SENDINBLUE_API_KEY] );
+            }
+
+        }
+
+		/**
+		 * Get SendPulse API key
+		 * 
+         * @since 2.7
+         * @version 1.0
+         */
+		public function getSendpulseApiKey() {
+
+            if ( defined( 'POST_SMTP_API_KEY' ) ) {
+                return POST_SMTP_API_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::SENDPULSE_API_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::SENDPULSE_API_KEY] );
             }
 
         }
