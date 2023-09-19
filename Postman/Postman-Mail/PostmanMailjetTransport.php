@@ -298,7 +298,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
 	 */
 	protected function validateTransportConfiguration() {
 		$messages = parent::validateTransportConfiguration ();
-		$apiKey = $this->options->getSendinblueApiKey ();
+		$apiKey = $this->options->getMailjetApiKey ();
 		if (empty ( $apiKey )) {
 			array_push ( $messages, __ ( 'API Key can not be empty', 'post-smtp' ) . '.' );
 			$this->setNotConfiguredAndReady ();
