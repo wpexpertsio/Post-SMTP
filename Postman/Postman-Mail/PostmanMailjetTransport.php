@@ -103,7 +103,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
         $api_key = $this->options->getMailjetApiKey();
         $secret_key = $this->options->getMailjetSecretKey();
         require_once 'PostmanMailjetMailEngine.php';
-		$engine = new PostmanSendinblueMailEngine( $api_key,$secret_key );
+		$engine = new PostmanMailjetMailEngine( $api_key,$secret_key );
 
 		return $engine;
 
