@@ -62,7 +62,7 @@ class PostmanMailjet extends PostmanServiceRequest {
     private function get_headers() {
 
         return array(
-            'Authorization' => 'Basic' . base64_encode(get_usepass()),
+            'Authorization' => 'Basic' . base64_encode($this->get_usepass()),
             'Content-Type'  =>  'application/json',
             'Accept'        =>  'application/json'
         );
