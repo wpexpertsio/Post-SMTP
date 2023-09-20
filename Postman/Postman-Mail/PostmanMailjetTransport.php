@@ -7,7 +7,7 @@ require_once 'PostmanModuleTransport.php';
 
 /**
  * Postman Sendinblue
- * @since 2.1
+ * @since 2.7
  * @version 1.0
  */
 if( !class_exists( 'PostmanMailjetTransport' ) ):
@@ -23,7 +23,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     /**
      * PostmanMailjetTransport constructor.
      * @param $rootPluginFilenameAndPath
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function __construct( $rootPluginFilenameAndPath ) {
@@ -37,7 +37,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
 
     /**
      * @return int
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function getPort() {
@@ -46,7 +46,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
 
     /**
      * @return string
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function getSlug() {
@@ -55,7 +55,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
 
     /**
      * @return string
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function getProtocol() {
@@ -64,7 +64,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
 
     /**
      * @return string
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function getHostname() {
@@ -72,7 +72,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     }
 
     /**
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function getConfigurationBid( PostmanWizardSocket $hostData, $userAuthOverride, $originalSmtpServer ) {
@@ -95,7 +95,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     }
 
     /**
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function createMailEngine() {
@@ -110,7 +110,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     }
 
     /**
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function getName() {
@@ -120,7 +120,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     }
 
     /**
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function getDeliveryDetails() {
@@ -135,7 +135,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
      * @param $userSocketOverride
      * @param $userAuthOverride
      * @return array
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function createOverrideMenu( PostmanWizardSocket $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride ) {
@@ -156,7 +156,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     }
 
     /**
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function on_admin_init() {
@@ -171,7 +171,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     }
 
     /**
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function addSettings()
@@ -192,23 +192,31 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
             self::Mailjet_AUTH_SECTION
         );
 
-    }
-
-    /**
-     * @since 2.1
-     * @version 1.0
-     */
-    public function printMailjetAuthSectionInfo() {
-
-        printf (
-            '<p id="wizard_sendinblue_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s (formely Sendinblue)</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
-                'https://www.brevo.com/', 'brevo.com', 'https://account.brevo.com/advanced/api' )
+        add_settings_field(
+            PostmanOptions::Mailjet_Secret_KEY,
+            __( 'Secret Key', 'post-smtp' ),
+            array( $this, 'mailjet_secret_key_callback' ),
+            self::Mailjet_AUTH_OPTIONS,
+            self::Mailjet_AUTH_SECTION
         );
 
     }
 
     /**
-     * @since 2.1
+     * @since 2.7
+     * @version 1.0
+     */
+    public function printMailjetAuthSectionInfo() {
+
+        printf (
+            '<p id="wizard_sendinblue_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s </a> and enter <a href="%3$s" target="_blank">an API key and Secret Key</a> below.', 'post-smtp' ),
+            'https://app.mailjet.com', 'mailjet.com', 'https://app.mailjet.com/account/apikeys' )
+        );
+
+    }
+
+    /**
+     * @since 2.7
      * @version 1.0
      */
     public function mailjet_api_key_callback() {
@@ -216,13 +224,21 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
         printf ( '<input type="password" autocomplete="off" id="mailjet_api_key" name="postman_options[mailjet_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailjetApiKey() ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getMailjetApiKey()) ) : '', __ ( 'Required', 'post-smtp' ) );
         print ' <input type="button" id="toggleMailjetApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 
-        printf ( '<input type="password" autocomplete="off" id="mailjet_secret_key" name="postman_options[mailjet_secret_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailjetSecretKey() ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getMailjetSecretKey()) ) : '', __ ( 'Required', 'post-smtp' ) );
-        print ' <input type="button" id="toggleMailjetSecretKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
-
     }
 
     /**
-     * @since 2.1
+     * @since 2.7
+     * @version 1.0
+     */
+    public function mailjet_secret_key_callback(){
+
+        printf ( '<input type="password" autocomplete="off" id="mailjet_secret_key" name="postman_options[mailjet_secret_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailjetSecretKey() ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getMailjetSecretKey()) ) : '', __ ( 'Required', 'post-smtp' ) );
+        print ' <input type="button" id="toggleMailjetSecretKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
+    
+    }
+
+    /**
+     * @since 2.7
      * @version 1.0
      */
     public function registerStylesAndScripts() {
@@ -243,7 +259,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     }
 
     /**
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function enqueueScript() {
@@ -253,7 +269,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     }
 
     /**
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function printWizardAuthenticationStep() {
@@ -268,7 +284,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     /**
 	 * Get Socket's logo
 	 * 
-	 * @since 2.1
+	 * @since 2.7
 	 * @version 1.0
 	 */
 	public function getLogoURL() {
@@ -280,7 +296,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     /**
 	 * Returns true, to prevent from errors because it's default Module Transport.
 	 * 
-	 * @since 2.1.8
+	 * @since 2.7.8
 	 * @version 1.0
 	 */
 	public function has_granted() {
@@ -293,7 +309,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
 	 * (non-PHPdoc)
 	 *
 	 * @see PostmanTransport::getMisconfigurationMessage()
-     * @since 2.1.8
+     * @since 2.7.8
      * @version 1.0
 	 */
 	protected function validateTransportConfiguration() {
@@ -313,7 +329,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     /**
 	 *
 	 * @param mixed $data     
-     * @since 2.1.8
+     * @since 2.7.8
      * @version 1.0   	
 	 */
 	public function prepareOptionsForExport($data) {
