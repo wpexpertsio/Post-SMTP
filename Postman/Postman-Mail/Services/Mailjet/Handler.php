@@ -18,7 +18,7 @@ class PostmanMailjet extends PostmanServiceRequest {
      */
     private $api_key = '';
     private $secret_key = '';
-    private $usepass = '';
+    private $auth = false;
 
     
     /**
@@ -45,11 +45,16 @@ class PostmanMailjet extends PostmanServiceRequest {
 
     }
 
-    private function get_usepass(){
-        if(isset($api_key) && isset($secret_key )){
-             $usepass = $api_key.':'.$secret_key;
-             return $usepass;
+    private function get_auth(){
+
+        if( isset( $this->api_key ) && isset( $this->secret_key ) ) {
+
+            $this->auth = base64_encode( "{$this->api_key}:{$this->secret_key}" );
+
         }
+
+        return $this->auth;
+
     }
     
 
@@ -61,10 +66,11 @@ class PostmanMailjet extends PostmanServiceRequest {
      */
     private function get_headers() {
 
+        $auth = $this->get_auth();
+
         return array(
-            'Authorization' => 'Basic' . base64_encode($this->get_usepass()),
-            'Content-Type'  =>  'application/json',
-            'Accept'        =>  'application/json'
+            'Authorization' => "Basic {$auth}",
+            'Content-Type'  =>  'application/json'
         );
 
     }
