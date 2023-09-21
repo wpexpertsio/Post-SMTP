@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once 'PostmanModuleTransport.php';
 
 /**
- * Postman Sendinblue
+ * Postman Mailjet
  * @since 2.7
  * @version 1.0
  */
@@ -209,7 +209,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     public function printMailjetAuthSectionInfo() {
 
         printf (
-            '<p id="wizard_sendinblue_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s </a> and enter <a href="%3$s" target="_blank">an API key and Secret Key</a> below.', 'post-smtp' ),
+            '<p id="wizard_mailjet_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s </a> and enter <a href="%3$s" target="_blank">an API key and Secret Key</a> below.', 'post-smtp' ),
             'https://app.mailjet.com', 'mailjet.com', 'https://app.mailjet.com/account/apikeys' )
         );
 
@@ -278,6 +278,9 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
         printf ( '<label for="api_key">%s</label>', __ ( 'API Key', 'post-smtp' ) );
         print '<br />';
         print $this->mailjet_api_key_callback();
+        printf ( '<label for="secret_key">%s</label>', __ ( 'Secret Key', 'post-smtp' ) );
+        print '<br />';
+        print $this->mailjet_secret_key_callback();
         print '</section>';
     }
 
@@ -289,7 +292,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
 	 */
 	public function getLogoURL() {
 
-        return POST_SMTP_ASSETS . "images/logos/sendinblue.png";
+        return POST_SMTP_ASSETS . "images/logos/Mailjet.png";
 
 	}
 
