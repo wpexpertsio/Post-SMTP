@@ -18,7 +18,7 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
 
 
     /**
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function __construct( $api_key, $secret_key ) {
@@ -33,7 +33,7 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
     }
 
     /**
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function getTranscript() {
@@ -73,7 +73,7 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
     }
 
     /**
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     public function send( PostmanMessage $message ) { 
@@ -152,10 +152,10 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
                  $name = $replyTo->getName();
             }
 
-            if(isset( $name )){
+            if( isset( $name ) ){
                 $sendSmtpEmail['To'] = $name.' '.$email;
             }
-            if(!isset( $name )){
+            if( !isset( $name ) ){
                 $sendSmtpEmail['To'] = $email;
             }
              
@@ -284,7 +284,7 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
     }
 
     /**
-     * @since 2.1
+     * @since 2.7
      * @version 1.0
      */
     private function errorCodesMap( $error_code ) {

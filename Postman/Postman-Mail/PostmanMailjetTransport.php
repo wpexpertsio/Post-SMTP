@@ -16,7 +16,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     const SLUG = 'mailjet_api';
     const PORT = 587;
     const HOST = 'in-v3.mailjet.com';
-    const PRIORITY = 50000;
+    const PRIORITY = 52000;
     const Mailjet_AUTH_OPTIONS = 'postman_mailjet_auth_options';
     const Mailjet_AUTH_SECTION = 'postman_mailjet_auth_section';
 
