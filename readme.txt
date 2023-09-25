@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 5.6.0
 Tested up to: 6.3
-Stable tag: 2.6.0
+Stable tag: 2.6.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -305,6 +305,12 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 1. Email Log Filter
 
 == Changelog ==
+
+= 2.6.1 - 2023-09-26 =
+
+* Fix: Removed broken link from test email.
+* Improvement: Improved SQL query to meet latest security standards.
+* Improvement: Replaced sanitize_text_field() with intval() as suggested by WP Scan team.
 
 = 2.6.0 - 2023-09-12 =
 
