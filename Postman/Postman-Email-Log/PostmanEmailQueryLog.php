@@ -281,8 +281,7 @@ class PostmanEmailQueryLog {
 
         return $this->db->get_row(
             $this->db->prepare(
-                'SELECT %i FROM %i WHERE id = %d',
-                $columns,
+                "SELECT {$columns} FROM %i WHERE id = %d",
                 $this->table,
                 $id
             ),
