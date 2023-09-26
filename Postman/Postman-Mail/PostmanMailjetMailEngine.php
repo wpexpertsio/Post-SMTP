@@ -107,7 +107,7 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
         // add the to recipients
         foreach ( (array)$message->getToRecipients() as $key => $recipient ) {
                     
-            if ( !array_key_exists( $recipient->getEmail(), $duplicates ) ) {
+            if ( !in_array( $recipient->getEmail(), $duplicates ) ) {
 
                 $tos[] = array(
                     'Email' =>  $recipient->getEmail()
@@ -144,6 +144,7 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
         // add the reply-to
         $replyTo = $message->getReplyTo();
 
+        $name = null;
         if ( isset( $replyTo ) ) {
             $email = $replyTo->getEmail();
         
@@ -193,7 +194,6 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
 
             if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 
-                $recipient->log($this->logger, 'Cc');
                 $cc[] = array(
                     'email' =>  $recipient->getEmail()
                 );
@@ -216,7 +216,6 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
 
             if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 
-                $recipient->log($this->logger, 'Bcc');
                 $bcc[] = array(
                     'email'  =>  $recipient->getEmail()
                 );

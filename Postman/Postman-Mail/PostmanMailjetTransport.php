@@ -17,8 +17,8 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     const PORT = 587;
     const HOST = 'in-v3.mailjet.com';
     const PRIORITY = 52000;
-    const Mailjet_AUTH_OPTIONS = 'postman_mailjet_auth_options';
-    const Mailjet_AUTH_SECTION = 'postman_mailjet_auth_section';
+    const MAILJET_AUTH_OPTIONS = 'postman_mailjet_auth_options';
+    const MAILJET_AUTH_SECTION = 'postman_mailjet_auth_section';
 
     /**
      * PostmanMailjetTransport constructor.
@@ -178,26 +178,26 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     {
 
         add_settings_section(
-            self::Mailjet_AUTH_SECTION,
+            self::MAILJET_AUTH_SECTION,
             __('Authentication', 'post-smtp'),
             array( $this, 'printMailjetAuthSectionInfo' ),
-            self::Mailjet_AUTH_OPTIONS
+            self::MAILJET_AUTH_OPTIONS
         );
 
         add_settings_field(
             PostmanOptions::Mailjet_API_KEY,
             __( 'API Key', 'post-smtp' ),
             array( $this, 'mailjet_api_key_callback' ),
-            self::Mailjet_AUTH_OPTIONS,
-            self::Mailjet_AUTH_SECTION
+            self::MAILJET_AUTH_OPTIONS,
+            self::MAILJET_AUTH_SECTION
         );
 
         add_settings_field(
             PostmanOptions::Mailjet_Secret_KEY,
             __( 'Secret Key', 'post-smtp' ),
             array( $this, 'mailjet_secret_key_callback' ),
-            self::Mailjet_AUTH_OPTIONS,
-            self::Mailjet_AUTH_SECTION
+            self::MAILJET_AUTH_OPTIONS,
+            self::MAILJET_AUTH_SECTION
         );
 
     }

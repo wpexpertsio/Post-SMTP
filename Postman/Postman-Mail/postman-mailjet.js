@@ -5,12 +5,12 @@ jQuery( document ).ready( function(){
     enablePasswordDisplayOnEntry('mailjet_secret_key', 'toggleMailjetSecretKey');
 
     // define the PostmanMandrill class
-    var PostmanSendGrid = function() {
+    var PostmanMailjet = function() {
 
     }
 
     // behavior for handling the user's transport change
-    PostmanSendGrid.prototype.handleTransportChange = function( transportName ) {
+    PostmanMailjet.prototype.handleTransportChange = function( transportName ) {
         if ( transportName == 'mailjet_api' ) {
             hide( 'div.transport_setting' );
             hide( 'div.authentication_setting' );
@@ -20,7 +20,7 @@ jQuery( document ).ready( function(){
 
     // behavior for handling the wizard configuration from the
     // server (after the port test)
-    PostmanSendGrid.prototype.handleConfigurationResponse = function( response ) {
+    PostmanMailjet.prototype.handleConfigurationResponse = function( response ) {
         var transportName = response.configuration.transport_type;
         if ( transportName == 'mailjet_api' ) {
             show( 'section.wizard_mailjet' );
@@ -30,7 +30,7 @@ jQuery( document ).ready( function(){
     }
 
     // add this class to the global transports
-    var transport = new PostmanSendGrid();
+    var transport = new PostmanMailjet();
     transports.push( transport );
 
     // since we are initialize the screen, check if needs to be modded by this
