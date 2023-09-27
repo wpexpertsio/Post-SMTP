@@ -354,8 +354,15 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				delete_option( PostmanOptions::POSTMAN_OPTIONS );
 				delete_option( PostmanOAuthToken::OPTIONS_NAME );
 				delete_option( PostmanAdminController::TEST_OPTIONS );
-				$logPurger = new PostmanEmailLogPurger();
-				$logPurger->removeAll();
+
+				//delete logs as well
+				if( !isset( $_REQUEST['ps_preserve_email_logs'] ) ) {
+
+					$logPurger = new PostmanEmailLogPurger();
+					$logPurger->removeAll();
+
+				}
+
 				$this->messageHandler->addMessage( __( 'Plugin data was removed.', 'post-smtp' ) );
 
 				/**
@@ -396,7 +403,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 					//Let's redirect to New Wizard
 					if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
 						
-						wp_redirect( "{$redirect_uri}&message={$message}&success=1" );
+						wp_redirect( "{$redirect_uri}&msg={$message}&success=1" );
 						exit();
 
 					}
@@ -410,7 +417,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 					//Let's redirect to New Wizard
 					if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
 						
-						wp_redirect( "{$redirect_uri}&message={$message}" );
+						wp_redirect( "{$redirect_uri}&msg={$message}" );
 						exit();
 
 					}
@@ -425,7 +432,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				//Let's redirect to New Wizard
                 if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
                     
-                    wp_redirect( "{$redirect_uri}&message={$message}" );
+                    wp_redirect( "{$redirect_uri}&msg={$message}" );
                     exit();
 
                 }
@@ -441,7 +448,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				//Let's redirect to New Wizard
                 if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
                     
-                    wp_redirect( "{$redirect_uri}&message={$message}" );
+                    wp_redirect( "{$redirect_uri}&msg={$message}" );
                     exit();
 
                 }

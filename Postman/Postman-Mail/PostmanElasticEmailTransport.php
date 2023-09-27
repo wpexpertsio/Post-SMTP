@@ -6,24 +6,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once 'PostmanModuleTransport.php';
 
 /**
- * Postman Sendinblue
- * @since 2.1
+ * Postman ElasticEmail
+ * @since 2.6.0
  * @version 1.0
  */
-if( !class_exists( 'PostmanSendinblueTransport' ) ):
-class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implements PostmanModuleTransport {
+if( !class_exists( 'PostmanElasticEmailTransport' ) ):
+class PostmanElasticEmailTransport extends PostmanAbstractModuleTransport implements PostmanModuleTransport {
 
-    const SLUG = 'sendinblue_api';
-    const PORT = 587;
-    const HOST = 'smtp-relay.brevo.com';
-    const PRIORITY = 50000;
-    const SENDINBLUE_AUTH_OPTIONS = 'postman_sendinblue_auth_options';
-    const SENDINBLUE_AUTH_SECTION = 'postman_sendinblue_auth_section';
+    const SLUG = 'elasticemail_api';
+    const PORT = 2525;
+    const HOST = 'smtp.elasticemail.com';
+    const PRIORITY = 51000;
+    const ELASTICEMAIL_AUTH_OPTIONS = 'postman_elasticemail_auth_options';
+    const ELASTICEMAIL_AUTH_SECTION = 'postman_elasticemail_auth_section';
 
     /**
-     * PostmanSendinblueTransport constructor.
+     * PostmanElasticEmailTransport constructor.
      * @param $rootPluginFilenameAndPath
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function __construct( $rootPluginFilenameAndPath ) {
@@ -37,7 +37,7 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
 
     /**
      * @return int
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function getPort() {
@@ -46,7 +46,7 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
 
     /**
      * @return string
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function getSlug() {
@@ -55,7 +55,7 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
 
     /**
      * @return string
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function getProtocol() {
@@ -64,7 +64,7 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
 
     /**
      * @return string
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function getHostname() {
@@ -72,7 +72,7 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
     }
 
     /**
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function getConfigurationBid( PostmanWizardSocket $hostData, $userAuthOverride, $originalSmtpServer ) {
@@ -95,31 +95,31 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
     }
 
     /**
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function createMailEngine() {
 
-        $api_key = $this->options->getSendinblueApiKey();
-        require_once 'PostmanSendinblueMailEngine.php';
-		$engine = new PostmanSendinblueMailEngine( $api_key );
+        $api_key = $this->options->getElasticEmailApiKey();
+        require_once 'PostmanElasticEmailMailEngine.php';
+		$engine = new PostmanElasticEmailMailEngine( $api_key );
 
 		return $engine;
 
     }
 
     /**
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function getName() {
 
-        return __( 'Brevo (formely Sendinblue)', 'post-smtp' );
+        return __( 'Elastic Email', 'post-smtp' );
 
     }
 
     /**
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function getDeliveryDetails() {
@@ -134,7 +134,7 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
      * @param $userSocketOverride
      * @param $userAuthOverride
      * @return array
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function createOverrideMenu( PostmanWizardSocket $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride ) {
@@ -155,7 +155,7 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
     }
 
     /**
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function on_admin_init() {
@@ -170,55 +170,55 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
     }
 
     /**
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function addSettings()
     {
 
         add_settings_section(
-            self::SENDINBLUE_AUTH_SECTION,
+            self::ELASTICEMAIL_AUTH_SECTION,
             __('Authentication', 'post-smtp'),
-            array( $this, 'printSendinblueAuthSectionInfo' ),
-            self::SENDINBLUE_AUTH_OPTIONS
+            array( $this, 'printElasticEmailAuthSectionInfo' ),
+            self::ELASTICEMAIL_AUTH_OPTIONS
         );
 
         add_settings_field(
-            PostmanOptions::SENDINBLUE_API_KEY,
+            PostmanOptions::ELASTICEMAIL_API_KEY,
             __( 'API Key', 'post-smtp' ),
-            array( $this, 'sendinblue_api_key_callback' ),
-            self::SENDINBLUE_AUTH_OPTIONS,
-            self::SENDINBLUE_AUTH_SECTION
+            array( $this, 'elasticemail_api_key_callback' ),
+            self::ELASTICEMAIL_AUTH_OPTIONS,
+            self::ELASTICEMAIL_AUTH_SECTION
         );
 
     }
 
     /**
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
-    public function printSendinblueAuthSectionInfo() {
+    public function printElasticEmailAuthSectionInfo() {
 
         printf (
-            '<p id="wizard_sendinblue_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s (formely Sendinblue)</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
-                'https://www.brevo.com/', 'brevo.com', 'https://account.brevo.com/advanced/api' )
+            '<p id="wizard_elasticemail_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
+                'https://www.elasticemail.com/', 'elasticemail.com', 'https://app.elasticemail.com/marketing/settings/new/create-api' )
         );
 
     }
 
     /**
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
-    public function sendinblue_api_key_callback() {
+    public function elasticemail_api_key_callback() {
 
-        printf ( '<input type="password" autocomplete="off" id="sendinblue_api_key" name="postman_options[sendinblue_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getSendinblueApiKey() ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getSendinblueApiKey() ) ) : '', __ ( 'Required', 'post-smtp' ) );
-        print ' <input type="button" id="toggleSendinblueApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
+        printf ( '<input type="password" autocomplete="off" id="elasticemail_api_key" name="postman_options[elasticemail_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getElasticEmailApiKey() ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getElasticEmailApiKey() ) ) : '', __ ( 'Required', 'post-smtp' ) );
+        print ' <input type="button" id="toggleElasticEmailApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 
     }
 
     /**
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function registerStylesAndScripts() {
@@ -226,8 +226,8 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
         $pluginData = apply_filters( 'postman_get_plugin_metadata', null );
 
         wp_register_script (
-            'postman-sendinblue',
-            plugins_url ( 'Postman/Postman-Mail/postman-sendinblue.js', $this->rootPluginFilenameAndPath ),
+            'postman-elasticemail',
+            plugins_url ( 'Postman/Postman-Mail/postman-elasticemail.js', $this->rootPluginFilenameAndPath ),
             array (
                 PostmanViewController::JQUERY_SCRIPT,
                 'jquery_validation',
@@ -239,44 +239,44 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
     }
 
     /**
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function enqueueScript() {
 
-        wp_enqueue_script( 'postman-sendinblue' );
+        wp_enqueue_script( 'postman-elasticemail' );
 
     }
 
     /**
-     * @since 2.1
+     * @since 2.6.0
      * @version 1.0
      */
     public function printWizardAuthenticationStep() {
-        print '<section class="wizard_sendinblue">';
-        $this->printSendinblueAuthSectionInfo();
+        print '<section class="wizard_elasticemail">';
+        $this->printElasticEmailAuthSectionInfo();
         printf ( '<label for="api_key">%s</label>', __ ( 'API Key', 'post-smtp' ) );
         print '<br />';
-        print $this->sendinblue_api_key_callback();
+        print $this->elasticemail_api_key_callback();
         print '</section>';
     }
 
     /**
 	 * Get Socket's logo
 	 * 
-	 * @since 2.1
+	 * @since 2.6.0
 	 * @version 1.0
 	 */
 	public function getLogoURL() {
 
-        return POST_SMTP_ASSETS . "images/logos/sendinblue.png";
+        return POST_SMTP_ASSETS . "images/logos/elasticemail.png";
 
 	}
 
     /**
 	 * Returns true, to prevent from errors because it's default Module Transport.
 	 * 
-	 * @since 2.1.8
+	 * @since 2.6.0
 	 * @version 1.0
 	 */
 	public function has_granted() {
@@ -289,12 +289,12 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
 	 * (non-PHPdoc)
 	 *
 	 * @see PostmanTransport::getMisconfigurationMessage()
-     * @since 2.1.8
+     * @since 2.6.0
      * @version 1.0
 	 */
 	protected function validateTransportConfiguration() {
 		$messages = parent::validateTransportConfiguration ();
-		$apiKey = $this->options->getSendinblueApiKey ();
+		$apiKey = $this->options->getElasticEmailApiKey ();
 		if (empty ( $apiKey )) {
 			array_push ( $messages, __ ( 'API Key can not be empty', 'post-smtp' ) . '.' );
 			$this->setNotConfiguredAndReady ();
@@ -309,12 +309,12 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
     /**
 	 *
 	 * @param mixed $data     
-     * @since 2.1.8
+     * @since 2.6.0
      * @version 1.0   	
 	 */
 	public function prepareOptionsForExport($data) {
 		$data = parent::prepareOptionsForExport ( $data );
-		$data [PostmanOptions::SENDINBLUE_API_KEY] = PostmanOptions::getInstance ()->getSendinblueApiKey ();
+		$data [PostmanOptions::ELASTICEMAIL_API_KEY] = PostmanOptions::getInstance ()->getElasticEmailApiKey ();
 		return $data;
 	}
 }

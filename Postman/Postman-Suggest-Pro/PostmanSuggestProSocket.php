@@ -10,6 +10,7 @@ if( !class_exists( 'PostmanSuggestProSocket' ) ):
 class PostmanSuggestProSocket {
 
     public $data = array();
+    private $fs = null;
     
     /**
      * class constructor PostmanSuggestProSocket
@@ -20,8 +21,20 @@ class PostmanSuggestProSocket {
     public function __construct() {
 
         $this->pro_extenstions();
+        $this->fs = freemius( 10461 );
+        $hide_notice = get_transient( 'post_smtp_skip_banner' );
 
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+        $this->fs->add_action( 'addons/after_addons', array( $this, 'promote_bundles_fs' ) );
+
+        if( !$hide_notice ) {
+
+            add_action( 'post_smtp_dashboard_after_config', array( $this, 'promote_bundles_dashboard' ) );
+
+        }
+        
+        add_filter( 'gettext', array( $this, 'change_fs_submenu_text' ), 10, 3 );
+        add_action( 'admin_action_ps_skip_pro_banner', array( $this, 'skip_pro_banner' ) );
         
     }
 
@@ -82,6 +95,101 @@ class PostmanSuggestProSocket {
             'postmanPro', 
             $this->data
         );
+
+    }
+
+    /**
+     * Promote bundles HTML
+     * 
+     * @since 2.5.9.3
+     * @version 1.0
+     */
+    public function promote_bundles_html() {
+
+        ?>
+        <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman-pricing' ) ); ?>">
+            <div style="color:#000;background: #fed90f;display: inline-block;padding: 23px;border-radius: 14px;font-size: 16px;font-weight: 400;box-shadow: 5px 5px 8px #c7c7c7;" >
+                🎉 GET ACCESS TO ALL CURRENT AND FUTURE EXTENSIONS STARTING FROM <b>$5/MONTH</b>&nbsp;&nbsp;&nbsp;<span style="background: #000;color: #fff;text-decoration: none;padding: 10px;border-radius: 10px;">👉 <?php printf( '%s <b>%s</b> ', esc_html( 'GET', 'post-smtp' ), esc_html( 'PRO BUNDLE', 'post-smtp' ) ); ?></span>
+            </div>
+        </a>
+        <?php
+
+    }
+
+    /**
+     * Promote bundles Freemius
+     * 
+     * @since 2.5.9.3
+     * @version 1.0
+     */
+    public function promote_bundles_fs() {
+
+        ?>
+        <div style="clear: both;"></div>
+        <div style="margin-left: 29px;" >
+            <?php $this->promote_bundles_html(); ?> 
+        </div>
+        <?php
+
+    }
+
+    /**
+     * Promote bundles Dashboard
+     * 
+     * @since 2.5.9.3
+     * @version 1.0
+     */
+    public function promote_bundles_dashboard() {
+
+        ?>
+        <div style="margin-top: 10px; float: left;">
+            <?php $this->promote_bundles_html(); ?>
+        </div>
+        <div style="padding: 30px 0; margin-left: 10px; float: left;">
+            <a href="<?php echo admin_url( 'admin.php?action=ps_skip_pro_banner' ); ?>">Not interested, Skip for now.</a>
+        </div>
+        <div style="clear: both;"></div>
+        <?php
+
+    }
+
+    /**
+     * Change Freemius Submenu Text
+     * 
+     * @since 2.5.9.3
+     * @version 1.0
+     */
+    public function change_fs_submenu_text( $translated_text, $text, $domain ) {
+
+        if( $text == 'Upgrade' && $domain == 'freemius' ) {
+
+            return sprintf( 
+                '👉 %s <b>%s</b>', 
+                esc_html( 'Get', 'post-smtp' ), 
+                esc_html( 'Pro Bundle', 'post-smtp' ) 
+            );
+
+        }
+
+        return $translated_text;
+
+    }
+
+    /**
+     * Skip Pro banner
+     * 
+     * @since 2.6.0
+     * @version 1.0.0
+     */
+    public function skip_pro_banner() {
+
+        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps_skip_pro_banner' ) {
+
+            set_transient( 'post_smtp_skip_banner', 23668200 );
+
+            wp_redirect( admin_url( 'admin.php?page=postman' ) );
+
+        }
 
     }
 

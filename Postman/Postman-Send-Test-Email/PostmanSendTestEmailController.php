@@ -206,6 +206,11 @@ class PostmanSendTestEmailController {
 
 		}  
 
+		/**
+		 * Fires after the test email section
+		 */
+		do_action( 'post_smtp_test_email_section' );
+
 		print '</section>';
 		print '</fieldset>';
 
@@ -418,7 +423,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 				'								</tr>',
 				'							</tbody>',
 				'						</table>',
-				sprintf( '						<br><span style="font-size:0.9em;color:#94c0dc;">%s: <a style="color:#94c0dc" href="http://poofytoo.com">poofytoo.com</a> - %s</span>', $imageSource, $withPermission ),
+				sprintf( '						<br><span style="font-size:0.9em;color:#94c0dc;">%s: poofytoo - %s</span>', $imageSource, $withPermission ),
 				'					</td>',
 				'				</tr>',
 				'			</tbody>',

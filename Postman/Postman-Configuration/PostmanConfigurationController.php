@@ -280,6 +280,9 @@ class PostmanConfigurationController {
 		print '<div id="sparkpost_settings" class="authentication_setting non-basic non-oauth2">';
         do_settings_sections( PostmanSparkPostTransport::SPARKPOST_AUTH_OPTIONS );
         print '</div>';
+		print '<div id="elasticemail_settings" class="authentication_setting non-basic non-oauth2">';
+        do_settings_sections( PostmanElasticEmailTransport::ELASTICEMAIL_AUTH_OPTIONS );
+        print '</div>';
 
 		do_action( 'post_smtp_settings_sections' );
 

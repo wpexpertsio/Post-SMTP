@@ -453,6 +453,14 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				</div>
 				<div class="clear"></div>
 			</div>
+			<?php 
+				/**
+				 * Fires after the Postman SMTP dashboard configuration.
+				 * 
+				 * @since 2.5.9.3
+				 */
+				do_action( 'post_smtp_dashboard_after_config' ); 
+			?>
 			<div class="ps-home-middle">
 				<?php
 
@@ -688,6 +696,11 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				'<p><span>%s</span></p><p><span>%s</span></p>',
 				esc_html__( 'This will purge all of Postman\'s settings, including account credentials and the email log.', 'post-smtp' ), 
 				esc_html__( 'Are you sure?', 'post-smtp' ) 
+			);
+
+			printf(
+				'<input type="checkbox" name="ps_preserve_email_logs" value="1" checked /> %s',
+				esc_html__( 'Preserve my email logs', 'post-smtp' )
 			);
 
 			submit_button( $resetTitle, 'delete button button-secondary', 'submit', true );
