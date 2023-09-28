@@ -23,7 +23,6 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
      */
     public function __construct( $api_key, $secret_key ) {
         
-        assert( !empty( $api_key ) );
         $this->api_key = $api_key;
         $this->secret_key = $secret_key;
 
@@ -101,32 +100,30 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
         //Add subject
         $sendSmtpEmail['Subject'] = $message->getSubject();
         
+        
+
+        //add the To recipients  
         $tos = array();
-        $duplicates = array();
-
-        // add the to recipients
         foreach ( (array)$message->getToRecipients() as $key => $recipient ) {
-                    
-            if ( !in_array( $recipient->getEmail(), $duplicates ) ) {
 
-                $tos[] = array(
-                    'Email' =>  $recipient->getEmail()
-                );
-
-                if( !empty( $recipient->getName() ) ) {
-
-                    $tos[$key]['Name'] = $recipient->getName();
-
-                }
-                
-                $duplicates[] = $recipient->getEmail();
-
-            }
-
+                $tos[] = !empty( $recipient->getName() ) ? $recipient->getName() . ' <' . $recipient->getEmail() . '>' : $recipient->getEmail();
         }
-        $sendSmtpEmail['Recipients'] = $tos;
+
+        if( !empty( $tos ) ){
+
+			$sendSmtpEmail['To'] = $tos[0];
+
+            if( sizeof($tos)>1 ){
+
+                for( $i=1 ; $i<sizeof($tos) ; $i++ ){
+
+                    $sendSmtpEmail['To'] = $sendSmtpEmail['To'] . ',' . $tos[$i];
         
-        
+                }
+
+            }					
+       	} 
+
         //Add text part if any
         $textPart = $message->getBodyTextPart();
         if ( ! empty( $textPart ) ) {
@@ -144,20 +141,19 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
         // add the reply-to
         $replyTo = $message->getReplyTo();
 
-        $name = null;
+        $To=null;
         if ( isset( $replyTo ) ) {
-            $email = $replyTo->getEmail();
-        
-            
-            if( !empty( $replyTo->getName() ) ) {
-                 $name = $replyTo->getName();
-            }
+            $To = !empty( $replyTo->getName() ) ? $replyTo->getName() . ' <' . $replyTo->getEmail() . '>' : $replyTo->getEmail();
 
-            if( isset( $name ) ){
-                $sendSmtpEmail['To'] = $name.' '.$email;
+            if(!empty($tos)){
+
+                $sendSmtpEmail['To'] = $sendSmtpEmail['To'] . ',' . $To;
+
             }
-            if( !isset( $name ) ){
-                $sendSmtpEmail['To'] = $email;
+            else{
+
+                $sendSmtpEmail['To'] = $To;
+
             }
              
         }
@@ -188,50 +184,55 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
             $this->logger->debug( 'Some header keys are reserved. You may not include any of the following reserved headers: x-sg-id, x-sg-eid, received, dkim-signature, Content-Type, Content-Transfer-Encoding, To, From, Subject, Reply-To, CC, BCC.' );
         }
 
+        //Add CC
         $cc = array();
-        $duplicates = array();
+    
         foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
 
-            if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
-
-                $cc[] = array(
-                    'email' =>  $recipient->getEmail()
-                );
-                
-                if( !empty( $recipient->getName() ) ) {
-                    $cc['name'] = $recipient->getName();
-                }
-                
-                $duplicates[] = $recipient->getEmail();
+        	$cc[]  = !empty( $recipient->getName() ) ? $recipient->getName() . '<' . $recipient->getEmail() .'>' :   $recipient->getEmail() ;
 
             }
+		
 
-        }
-        if( !empty( $cc ) )
-            $sendSmtpEmail['Cc'] = $cc['name'].' '.$cc['$email'];
 
-        $bcc = array();
-        $duplicates = array();
-        foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
+        if( !empty( $cc ) ){
 
-            if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
+			$sendSmtpEmail['CC'] = $cc[0];
 
-                $bcc[] = array(
-                    'email'  =>  $recipient->getEmail()
-                );
-                
-                if( !empty( $recipient->getName() ) ) {
-                    $bcc['name'] = $recipient->getName();
-                }
+            if( sizeof($cc)>1 ){
 
-                $duplicates[] = $recipient->getEmail();
+                for( $i=1 ; $i<sizeof($cc) ; $i++ ){
 
-            }
-
-        }
+                    $sendSmtpEmail['CC'] = $sendSmtpEmail['CC'] . ',' . $cc[$i];
         
-        if( !empty( $bcc ) )
-            $sendSmtpEmail['Bcc'] = $bcc['name'].' '.$bcc['email'];
+                }
+
+            }					
+       	}  
+    
+    //Add BCC
+    $bcc = array();
+
+    foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
+
+        $bcc[]  = !empty( $recipient->getName() ) ? $recipient->getName() . '<' . $recipient->getEmail() .'>' :   $recipient->getEmail() ;
+
+        }
+
+    if( !empty( $bcc ) ){
+
+        $sendSmtpEmail['Bcc'] = $bcc[0];
+
+            if( sizeof($bcc)>1 ){
+
+                for( $i=1 ; $i<sizeof($bcc) ; $i++ ){
+
+                    $sendSmtpEmail['Bcc'] = $sendSmtpEmail['Bcc'] . ',' . $bcc[$i];
+            
+                }
+
+            }      
+        }  
 
         // add attachments
         $this->logger->debug( 'Adding attachments' );
