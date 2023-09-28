@@ -78,6 +78,7 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
     public function send( PostmanMessage $message ) { 
 
         $options = PostmanOptions::getInstance();
+        
         //Mailjet preparation
         if ( $this->logger->isDebug() ) {
 
@@ -101,7 +102,6 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
         $sendSmtpEmail['Subject'] = $message->getSubject();
         
         
-
         //add the To recipients  
         $tos = array();
         foreach ( (array)$message->getToRecipients() as $key => $recipient ) {
@@ -193,8 +193,6 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
 
             }
 		
-
-
         if( !empty( $cc ) ){
 
 			$sendSmtpEmail['CC'] = $cc[0];
