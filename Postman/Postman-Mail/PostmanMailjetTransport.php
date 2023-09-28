@@ -185,7 +185,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
         );
 
         add_settings_field(
-            PostmanOptions::Mailjet_API_KEY,
+            PostmanOptions::MAILJET_API_KEY,
             __( 'API Key', 'post-smtp' ),
             array( $this, 'mailjet_api_key_callback' ),
             self::MAILJET_AUTH_OPTIONS,
@@ -193,7 +193,7 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
         );
 
         add_settings_field(
-            PostmanOptions::Mailjet_Secret_KEY,
+            PostmanOptions::MAILJET_SECRET_KEY,
             __( 'Secret Key', 'post-smtp' ),
             array( $this, 'mailjet_secret_key_callback' ),
             self::MAILJET_AUTH_OPTIONS,
@@ -337,8 +337,8 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
 	 */
 	public function prepareOptionsForExport($data) {
 		$data = parent::prepareOptionsForExport ( $data );
-		$data [PostmanOptions::Mailjet_API_KEY] = PostmanOptions::getInstance ()->getMailjetApiKey ();
-        $data [PostmanOptions::Mailjet_Secret_KEY] = PostmanOptions::getInstance ()->getMailjetSecretKey ();
+		$data [PostmanOptions::MAILJET_API_KEY] = PostmanOptions::getInstance ()->getMailjetApiKey ();
+        $data [PostmanOptions::MAILJET_SECRET_KEY] = PostmanOptions::getInstance ()->getMailjetSecretKey ();
 		return $data;
 	}
 }
