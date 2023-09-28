@@ -8,7 +8,7 @@ class PostmanSendpulse extends PostmanServiceRequest{
      * @since 2.7
      * @version 1.0
      */
-    private $email_sent_code = "";
+    private $email_sent_code = "200";
 
     /**
      * Private Auth Key
@@ -54,9 +54,8 @@ class PostmanSendpulse extends PostmanServiceRequest{
     private function get_headers() {
 
         return array(
-            'Authorization'       =>  $this->api_key,
-            'Content-Type'        =>  'application/json',
-            'Accept'              =>  'application/json'
+            'Authorization'       =>  'Bearer' . $this->api_key,
+            'Content-Type'        =>  'application/json'
         );
 
     }
