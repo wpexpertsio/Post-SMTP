@@ -91,7 +91,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const SENDGRID_API_KEY = 'sendgrid_api_key';
 		const SENDINBLUE_API_KEY = 'sendinblue_api_key';
 		const SENDPULSE_API_KEY = 'sendpulse_api_key';
-		const SENDPULSE_SECRET_KEY = 'sendpulse_api_key';
+		const SENDPULSE_SECRET_KEY = 'sendpulse_secret_key';
 		const POSTMARK_API_KEY = 'postmark_api_key';
 		const SPARKPOST_API_KEY = 'sparkpost_api_key';
 		const MAILGUN_API_KEY = 'mailgun_api_key';

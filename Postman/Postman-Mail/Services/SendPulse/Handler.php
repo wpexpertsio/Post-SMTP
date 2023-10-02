@@ -21,7 +21,8 @@ class PostmanSendpulse extends PostmanServiceRequest{
     private $api_key = " ";
     private $secret_key = " ";
     private $grant_type = "client_credentials";
-
+    private $auth_response_body= " ";
+    private $auth_response= " ";
     private $token = " "; 
 
      /**
@@ -51,7 +52,7 @@ class PostmanSendpulse extends PostmanServiceRequest{
     }
 
      /**
-     * header to take token
+     * header to get token
      * 
      * @since 2.7
      * @version 1.0
@@ -66,7 +67,7 @@ class PostmanSendpulse extends PostmanServiceRequest{
     }
 
     /**
-     * Body to take token
+     * Body to get token
      * 
      * @since 2.7
      * @version 1.0
@@ -92,13 +93,17 @@ class PostmanSendpulse extends PostmanServiceRequest{
 
         $content = json_encode( $this->auth_body() );
 
-        $this->auth_response = $this->request(
+       $this->auth_response_body = $this->request(
             'POST',
             '/oauth/access_token',
             $this->auth_headers(),
             $content,
             $this->email_sent_code
         );
+
+        $this->auth_response = json_decode( $this->auth_response_body['body'],true );
+
+        set_transient( 'sendpulse_token', $this->auth_response['access_token'], $this->auth_response['expires_in'] );
 
     }
 
@@ -112,8 +117,20 @@ class PostmanSendpulse extends PostmanServiceRequest{
 
     private function get_headers() {
 
+        if( get_transient( 'sendpulse_token' ) ){
+
+            $this->token = get_transient( 'sendpulse_token' );
+
+        }
+        else{
+
+            $this->authentication();
+            $this->token = get_transient( 'sendpulse_token' );
+
+        }
+
         return array(
-            'Authorization'       =>  'Bearer' . $this->api_key,
+            'Authorization'       =>  'Bearer' . $this->token,
             'Content-Type'        =>  'application/json'
         );
 
@@ -127,16 +144,17 @@ class PostmanSendpulse extends PostmanServiceRequest{
      * @version 1.0
      */
     public function send( $content ) {
+        $this->authentication();
 
         $content = json_encode( $content );
 
-        return $this->request(
-            'POST',
-            '/emails',
-            $this->get_headers(),
-            $content,
-            $this->email_sent_code
-        );
+            return $this->request(
+                'POST',
+                '/smtp/emails',
+                $this->get_headers(),
+                $content,
+                $this->email_sent_code
+            );
 
     }
 

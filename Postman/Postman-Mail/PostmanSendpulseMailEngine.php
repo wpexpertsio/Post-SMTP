@@ -95,11 +95,11 @@ class PostmanSendpulseMailEngine implements PostmanMailEngine{
         //Sendinblue preparation
         if ( $this->logger->isDebug() ) {
 
-            $this->logger->debug( 'Creating SendGrid service with apiKey=' . $this->apiKey );
+            $this->logger->debug( 'Creating SendPulse service with apiKey=' . $this->apiKey );
 
         }
 
-        $sendinblue = new PostmanSendpulse( $this->api_key );
+        $sendinblue = new PostmanSendpulse( $this->api_key, $this->secret_key );
         $sender = $message->getFromAddress();
         $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
         $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
