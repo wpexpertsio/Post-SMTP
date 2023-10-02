@@ -375,7 +375,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/office-365-for-post-smtp-extension/?utm_source=wp_dashboard&utm_medium=plugin' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />
-							<?php echo esc_html( 'Office 365' ); ?>
+							<?php echo esc_html( 'Microsoft 365/ Office 365' ); ?>
 						</a>
 					</div>
 					<div>
@@ -387,7 +387,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/email-log-attachment/?utm_source=wp_dashboard&utm_medium=plugin' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Email Log attachment' ); ?>
+							<?php echo esc_html( 'Email Log attachment support' ); ?>
 						</a>
 					</div>
 					<div>
