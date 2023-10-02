@@ -17,8 +17,8 @@ class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implement
     const PORT = 2525;
     const HOST = 'smtp-pulse.com';
     const PRIORITY = 53000;
-    const SENDPULSE_AUTH_OPTIONS = 'postman_sendinblue_auth_options';
-    const SENDPULSE_AUTH_SECTION = 'postman_sendinblue_auth_section';
+    const SENDPULSE_AUTH_OPTIONS = 'postman_sendpulse_auth_options';
+    const SENDPULSE_AUTH_SECTION = 'postman_sendpulse_auth_section';
 
     /**
      * PostmanSendpulseTransport constructor.

@@ -274,6 +274,9 @@ class PostmanConfigurationController {
         print '<div id="sendinblue_settings" class="authentication_setting non-basic non-oauth2">';
         do_settings_sections( PostmanSendinblueTransport::SENDINBLUE_AUTH_OPTIONS );
         print '</div>';
+		print '<div id="sendpulse_settings" class="authentication_setting non-basic non-oauth2">';
+        do_settings_sections( PostmanSendpulseTransport::SENDPULSE_AUTH_OPTIONS );
+        print '</div>';
         print '<div id="postmark_settings" class="authentication_setting non-basic non-oauth2">';
         do_settings_sections( PostmanPostmarkTransport::POSTMARK_AUTH_OPTIONS );
 		print '</div>';
