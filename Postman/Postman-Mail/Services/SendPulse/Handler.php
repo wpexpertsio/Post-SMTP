@@ -46,10 +46,11 @@ class PostmanSendpulse extends PostmanServiceRequest{
 
         $this->api_key = $api_key;
         $this->secret_key = $secret_key;
-        
+        // add_filter( 'post_smtp_sanitize', array($this, 'update_transient'), 20 , 3 );
         parent::__construct( $this->base_url );
 
     }
+
 
      /**
      * header to get token
@@ -107,7 +108,6 @@ class PostmanSendpulse extends PostmanServiceRequest{
 
     }
 
-
     /**
      * Prepares Header for Request
      * 
@@ -119,13 +119,13 @@ class PostmanSendpulse extends PostmanServiceRequest{
 
         if( get_transient( 'sendpulse_token' ) ){
 
-            $this->token = get_transient( 'sendpulse_token' );
+             $this->token = get_transient( 'sendpulse_token' );
 
         }
         else{
-
-            $this->authentication();
-            $this->token = get_transient( 'sendpulse_token' );
+            
+              $this->authentication();
+              $this->token = get_transient( 'sendpulse_token' );
 
         }
 
@@ -144,7 +144,6 @@ class PostmanSendpulse extends PostmanServiceRequest{
      * @version 1.0
      */
     public function send( $content ) {
-        $this->authentication();
 
         $content = json_encode( $content );
 

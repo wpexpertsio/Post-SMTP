@@ -96,6 +96,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
             $this->sanitizePassword( 'Fallback password', PostmanOptions::FALLBACK_SMTP_PASSWORD, $input, $new_input, $this->options->getFallbackPassword() );
 
             $new_input = apply_filters( 'post_smtp_sanitize', $new_input, $input, $this );
+			delete_transient( 'sendpulse_token' );
 
 			if ( $new_input [ PostmanOptions::CLIENT_ID ] != $this->options->getClientId() || $new_input [ PostmanOptions::CLIENT_SECRET ] != $this->options->getClientSecret() || $new_input [ PostmanOptions::HOSTNAME ] != $this->options->getHostname() ) {
 				$this->logger->debug( 'Recognized new Client ID' );
