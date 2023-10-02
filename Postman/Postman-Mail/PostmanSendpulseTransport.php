@@ -6,19 +6,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once 'PostmanModuleTransport.php';
 
 /**
- * Postman Senpulse
+ * Postman Sendpulse
  * @since 2.7
  * @version 1.0
  */
-if( !class_exists( 'PostmanSendPulse' ) ):
+if( !class_exists( 'PostmanSendpulseTransport' ) ):
 class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implements PostmanModuleTransport {
 
     const SLUG = 'sendpulse_api';
     const PORT = 2525;
     const HOST = 'smtp-pulse.com';
     const PRIORITY = 53000;
-    const SENDPULSE_AUTH_OPTIONS = 'postman_mailjet_auth_options';
-    const SENDPULSE_AUTH_SECTION = 'postman_mailjet_auth_section';
+    const SENDPULSE_AUTH_OPTIONS = 'postman_sendinblue_auth_options';
+    const SENDPULSE_AUTH_SECTION = 'postman_sendinblue_auth_section';
 
     /**
      * PostmanSendpulseTransport constructor.
@@ -100,11 +100,10 @@ class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implement
      */
     public function createMailEngine() {
 
-        // $api_key = $this->options->getMailjetApiKey();
-        $token_key = $this->options->getSendpulseToken();
-        // $secret_key = $this->options->getMailjetSecretKey();
-        require_once 'PostmanMailjetMailEngine.php';
-		$engine = new PostmanSendpulseMailEngine( $token_key );
+        $api_key = $this->options->getSendpulseApiKey();
+        $secret_key = $this->options->getSendpulseSecretKey();
+        require_once 'PostmanSendpulseMailEngine.php';
+		$engine = new PostmanSendpulseMailEngine( $api_key, $secret_key );
 
 		return $engine;
 
@@ -116,7 +115,7 @@ class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implement
      */
     public function getName() {
 
-        return __( 'Sendpulse', 'post-smtp' );
+        return __( 'SendPulse', 'post-smtp' );
 
     }
 
@@ -170,7 +169,6 @@ class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implement
         }
 
     }
-    //continue
 
     /**
      * @since 2.7
@@ -182,24 +180,24 @@ class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implement
         add_settings_section(
             self::SENDPULSE_AUTH_SECTION,
             __('Authentication', 'post-smtp'),
-            array( $this, 'printMailjetAuthSectionInfo' ),
+            array( $this, 'printSendpulseAuthSectionInfo' ),
             self::SENDPULSE_AUTH_OPTIONS
         );
 
         add_settings_field(
-            PostmanOptions::Mailjet_API_KEY,
+            PostmanOptions::SENDPULSE_API_KEY,
             __( 'API Key', 'post-smtp' ),
-            array( $this, 'mailjet_api_key_callback' ),
-            self::MAILJET_AUTH_OPTIONS,
-            self::MAILJET_AUTH_SECTION
+            array( $this, 'sendpulse_api_key_callback' ),
+            self::SENDPULSE_AUTH_OPTIONS,
+            self::SENDPULSE_AUTH_SECTION
         );
 
         add_settings_field(
-            PostmanOptions::Mailjet_Secret_KEY,
+            PostmanOptions::SENDPULSE_SECRET_KEY,
             __( 'Secret Key', 'post-smtp' ),
-            array( $this, 'mailjet_secret_key_callback' ),
-            self::MAILJET_AUTH_OPTIONS,
-            self::MAILJET_AUTH_SECTION
+            array( $this, 'sendpulse_secret_key_callback' ),
+            self::SENDPULSE_AUTH_OPTIONS,
+            self::SENDPULSE_AUTH_SECTION
         );
 
     }
@@ -208,11 +206,11 @@ class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implement
      * @since 2.7
      * @version 1.0
      */
-    public function printMailjetAuthSectionInfo() {
+    public function printSendpulseAuthSectionInfo() {
 
         printf (
-            '<p id="wizard_mailjet_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s </a> and enter <a href="%3$s" target="_blank">an API key and Secret Key</a> below.', 'post-smtp' ),
-            'https://app.mailjet.com', 'mailjet.com', 'https://app.mailjet.com/account/apikeys' )
+            '<p id="wizard_sendpulse_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key and Secret</a> below.', 'post-smtp' ),
+                'https://sendpulse.com/', 'sendpulse.com', 'https://login.sendpulse.com/settings/#api' )
         );
 
     }
@@ -221,22 +219,22 @@ class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implement
      * @since 2.7
      * @version 1.0
      */
-    public function mailjet_api_key_callback() {
+    public function sendpulse_api_key_callback() {
 
-        printf ( '<input type="password" autocomplete="off" id="mailjet_api_key" name="postman_options[mailjet_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailjetApiKey() ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getMailjetApiKey()) ) : '', __ ( 'Required', 'post-smtp' ) );
-        print ' <input type="button" id="toggleMailjetApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
+        printf ( '<input type="password" autocomplete="off" id="sendpulse_api_key" name="postman_options[sendpulse_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getSendpulseApiKey() ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getSendpulseApiKey() ) ) : '', __ ( 'Required', 'post-smtp' ) );
+        print ' <input type="button" id="toggleSendpulseApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 
     }
 
-    /**
+     /**
      * @since 2.7
      * @version 1.0
      */
-    public function mailjet_secret_key_callback(){
+    public function sendpulse_secret_key_callback() {
 
-        printf ( '<input type="password" autocomplete="off" id="mailjet_secret_key" name="postman_options[mailjet_secret_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailjetSecretKey() ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getMailjetSecretKey()) ) : '', __ ( 'Required', 'post-smtp' ) );
-        print ' <input type="button" id="toggleMailjetSecretKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
-    
+        printf ( '<input type="password" autocomplete="off" id="sendpulse_secret_key" name="postman_options[sendpulse_secret_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getSendpulseSecretKey() ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getSendpulseSecretKey() ) ) : '', __ ( 'Required', 'post-smtp' ) );
+        print ' <input type="button" id="toggleSendpulseSecretKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
+
     }
 
     /**
@@ -248,8 +246,8 @@ class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implement
         $pluginData = apply_filters( 'postman_get_plugin_metadata', null );
 
         wp_register_script (
-            'postman-mailjet',
-            plugins_url ( 'Postman/Postman-Mail/postman-mailjet.js', $this->rootPluginFilenameAndPath ),
+            'postman-sendpulse',
+            plugins_url ( 'Postman/Postman-Mail/postman-sendpulse.js', $this->rootPluginFilenameAndPath ),
             array (
                 PostmanViewController::JQUERY_SCRIPT,
                 'jquery_validation',
@@ -266,7 +264,7 @@ class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implement
      */
     public function enqueueScript() {
 
-        wp_enqueue_script( 'postman-mailjet' );
+        wp_enqueue_script( 'postman-sendpulse' );
 
     }
 
@@ -275,14 +273,15 @@ class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implement
      * @version 1.0
      */
     public function printWizardAuthenticationStep() {
-        print '<section class="wizard_mailjet">';
-        $this->printMailjetAuthSectionInfo();
-        printf ( '<label for="api_key">%s</label>', __ ( 'API Key', 'post-smtp' ) );
+        print '<section class="wizard_sendpulse">';
+        $this->printSendpulseAuthSectionInfo();
+        printf ( '<label for="api_key">%s</label>', __ ( 'ID Key', 'post-smtp' ) );
         print '<br />';
-        print $this->mailjet_api_key_callback();
+        print $this->sendpulse_api_key_callback();
+        print '<br />';
         printf ( '<label for="secret_key">%s</label>', __ ( 'Secret Key', 'post-smtp' ) );
         print '<br />';
-        print $this->mailjet_secret_key_callback();
+        print $this->sendpulse_secret_key_callback();
         print '</section>';
     }
 
@@ -294,14 +293,14 @@ class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implement
 	 */
 	public function getLogoURL() {
 
-        return POST_SMTP_ASSETS . "images/logos/Mailjet.png";
+        return POST_SMTP_ASSETS . "images/logos/sendpulse.png";
 
 	}
 
     /**
 	 * Returns true, to prevent from errors because it's default Module Transport.
 	 * 
-	 * @since 2.7.8
+	 * @since 2.7
 	 * @version 1.0
 	 */
 	public function has_granted() {
@@ -314,14 +313,19 @@ class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implement
 	 * (non-PHPdoc)
 	 *
 	 * @see PostmanTransport::getMisconfigurationMessage()
-     * @since 2.7.8
+     * @since 2.7
      * @version 1.0
 	 */
 	protected function validateTransportConfiguration() {
 		$messages = parent::validateTransportConfiguration ();
-		$apiKey = $this->options->getMailjetApiKey ();
+		$apiKey = $this->options->getSendpulseApiKey ();
+        $secretKey = $this->options->getSendpulseSecretKey ();
 		if (empty ( $apiKey )) {
-			array_push ( $messages, __ ( 'API Key can not be empty', 'post-smtp' ) . '.' );
+			array_push ( $messages, __ ( 'ID Key can not be empty', 'post-smtp' ) . '.' );
+			$this->setNotConfiguredAndReady ();
+		}
+        if (empty ( $secretKey )) {
+			array_push ( $messages, __ ( 'Secret Key can not be empty', 'post-smtp' ) . '.' );
 			$this->setNotConfiguredAndReady ();
 		}
 		if (! $this->isSenderConfigured ()) {
@@ -334,13 +338,13 @@ class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implement
     /**
 	 *
 	 * @param mixed $data     
-     * @since 2.7.8
+     * @since 2.7
      * @version 1.0   	
 	 */
 	public function prepareOptionsForExport($data) {
 		$data = parent::prepareOptionsForExport ( $data );
-		$data [PostmanOptions::Mailjet_API_KEY] = PostmanOptions::getInstance ()->getMailjetApiKey ();
-        $data [PostmanOptions::Mailjet_Secret_KEY] = PostmanOptions::getInstance ()->getMailjetSecretKey ();
+		$data [PostmanOptions::SENDPULSE_API_KEY] = PostmanOptions::getInstance ()->getSendpulseApiKey ();
+        $data [PostmanOptions::SENDPULSE_SECRET_KEY] = PostmanOptions::getInstance ()->getSendpulseSecretKey ();
 		return $data;
 	}
 }

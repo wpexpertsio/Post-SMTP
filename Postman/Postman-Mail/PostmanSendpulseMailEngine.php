@@ -15,6 +15,9 @@ class PostmanSendpulseMailEngine implements PostmanMailEngine{
 
     private $api_key;
 
+    private $secret_key;
+
+
 
     /**
      * constructor PostmanSendpulseMailEngine
@@ -22,10 +25,11 @@ class PostmanSendpulseMailEngine implements PostmanMailEngine{
      * @since 2.7
      * @version 1.0
      */
-    public function __construct( $api_key ) {
+    public function __construct( $api_key, $secret_key ) {
         
-        assert( !empty( $api_key ) );
         $this->api_key = $api_key;
+
+        $this->secret_key = $secret_key;
 
         // create the logger
         $this->logger = new PostmanLogger( get_class( $this ) );
@@ -279,43 +283,6 @@ class PostmanSendpulseMailEngine implements PostmanMailEngine{
     
         }
 
-    }
-
-     /**
-     * @since 2.7
-     * @version 1.0
-     */
-    private function errorCodesMap( $error_code ) {
-        switch ( $error_code ) {
-            case 400:
-                $message = sprintf( __( 'ERROR: Request is invalid. Check the error code in JSON. Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            case 401:
-                $message = sprintf( __( 'ERROR: You have not been authenticated. Make sure the provided api-key is correct. Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            case 402:
-                $message = sprintf( __( 'ERROR: Make sure you\'re account is activated and that you\'ve sufficient credits. Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            case 403:
-                $message = sprintf( __( 'ERROR: You do not have the rights to access the resource. Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            case 404:
-                $message =  sprintf( __( 'ERROR: Make sure your calling an existing endpoint and that the parameters (object id etc.) in the path are correct. Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            case 405:
-                $message =  sprintf( __( 'ERROR: The verb you\'re using is not allowed for this endpoint. Make sure you\'re using the correct method (GET, POST, PUT, DELETE). Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            case 406:
-                $message =  sprintf( __( 'ERROR: The value of contentType for PUT or POST request in request headers is not application/json. Make sure the value is application/json only and not empty. Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            case 2020202020:
-                $message =  sprintf( __( 'ERROR: The expected rate limit is exceeded. Status code is %1$s', 'post-smtp' ), $error_code );
-                break;
-            default:
-                $message = sprintf( __( 'ERROR: Status code is %1$s', 'post-smtp' ), $error_code );
-        }
-
-        return $message;
     }
 
 }

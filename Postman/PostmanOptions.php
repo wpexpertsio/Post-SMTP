@@ -91,6 +91,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const SENDGRID_API_KEY = 'sendgrid_api_key';
 		const SENDINBLUE_API_KEY = 'sendinblue_api_key';
 		const SENDPULSE_API_KEY = 'sendpulse_api_key';
+		const SENDPULSE_SECRET_KEY = 'sendpulse_api_key';
 		const POSTMARK_API_KEY = 'postmark_api_key';
 		const SPARKPOST_API_KEY = 'sparkpost_api_key';
 		const MAILGUN_API_KEY = 'mailgun_api_key';
@@ -567,6 +568,25 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
 
         }
+
+		/**
+		 * Get SendPulse Secret key
+		 * 
+         * @since 2.7
+         * @version 1.0
+         */
+		public function getSendpulseSecretKey() {
+
+            if ( defined( 'POST_SMTP_SECRET_KEY' ) ) {
+                return POST_SMTP_SECRET_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::SENDPULSE_SECRET_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::SENDPULSE_SECRET_KEY] );
+            }
+
+        }
+
 
 		/**
 		 * Gets SparkPost API key
