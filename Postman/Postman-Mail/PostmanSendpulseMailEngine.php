@@ -89,17 +89,17 @@ class PostmanSendpulseMailEngine implements PostmanMailEngine{
      * @version 1.0
      */
 
-    public function send( PostmanMessage $message ) { 
+     public function send( PostmanMessage $message ) { 
 
         $options = PostmanOptions::getInstance();
-        //Sendinblue preparation
+        //Sendpulse preparation
         if ( $this->logger->isDebug() ) {
 
-            $this->logger->debug( 'Creating SendPulse service with apiKey=' . $this->apiKey );
+            $this->logger->debug( 'Creating SendGrid service with apiKey=' . $this->apiKey );
 
         }
 
-        $sendinblue = new PostmanSendpulse( $this->api_key, $this->secret_key );
+        $sendpulse = new PostmanSendpulse( $this->api_key, $this->secret_key );
         $sender = $message->getFromAddress();
         $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
         $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
@@ -107,7 +107,7 @@ class PostmanSendpulseMailEngine implements PostmanMailEngine{
         
         $sender->log( $this->logger, 'From' );
 
-        $sendSmtpEmail['sender'] = array(
+        $sendSmtpEmail['from'] = array(
             'name'  =>  $senderName, 
             'email' =>  $senderEmail
         );
@@ -142,20 +142,21 @@ class PostmanSendpulseMailEngine implements PostmanMailEngine{
         $textPart = $message->getBodyTextPart();
         if ( ! empty( $textPart ) ) {
             $this->logger->debug( 'Adding body as text' );
-            $sendSmtpEmail['textContent'] = $textPart;
+            $sendSmtpEmail['text'] = $textPart;
         }
         
         $htmlPart = $message->getBodyHtmlPart();
         if ( ! empty( $htmlPart ) ) {
             $this->logger->debug( 'Adding body as html' );
-            $sendSmtpEmail['htmlContent'] = $htmlPart;
+            $htmlPart = base64_encode($htmlPart);
+            $sendSmtpEmail['html'] = $htmlPart;
         }
         
         // add the reply-to
         $replyTo = $message->getReplyTo();
         // $replyTo is null or a PostmanEmailAddress object
         if ( isset( $replyTo ) ) {
-            $sendSmtpEmail['replyTo'] = array(
+            $sendSmtpEmail['to'] = array(
                 'email' => $replyTo->getEmail()
             );
             
@@ -253,7 +254,7 @@ class PostmanSendpulseMailEngine implements PostmanMailEngine{
                 );
             }
 
-            $sendSmtpEmail['attachment'] = $email_attachments;
+            $sendSmtpEmail['attachments'] = $email_attachments;
         
         }
         
@@ -264,8 +265,12 @@ class PostmanSendpulseMailEngine implements PostmanMailEngine{
             if ( $this->logger->isDebug() ) {
                 $this->logger->debug( 'Sending mail' );
             }
+            $final_message = array(
 
-            $response = $sendinblue->send( $sendSmtpEmail );
+                'email' => $sendSmtpEmail
+            );
+            // var_dump($final);die;
+            $response = $sendpulse->send( $final_message );
             
             $this->transcript = print_r( $response, true );
             $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;

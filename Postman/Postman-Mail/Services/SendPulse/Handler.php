@@ -11,15 +11,24 @@ class PostmanSendpulse extends PostmanServiceRequest{
     private $email_sent_code = "200";
 
     /**
-     * Private Auth Key
+     * API Key and Secret Key
      *
      * @since 2.7
      * @version 1.0 
      */
 
-    private $body = array();
+
     private $api_key = " ";
     private $secret_key = " ";
+
+
+     /**
+     * Parameters used to get Token
+     *
+     * @since 2.7
+     * @version 1.0 
+     */
+
     private $grant_type = "client_credentials";
     private $auth_response_body= " ";
     private $auth_response= " ";
@@ -46,7 +55,6 @@ class PostmanSendpulse extends PostmanServiceRequest{
 
         $this->api_key = $api_key;
         $this->secret_key = $secret_key;
-        // add_filter( 'post_smtp_sanitize', array($this, 'update_transient'), 20 , 3 );
         parent::__construct( $this->base_url );
 
     }
@@ -100,12 +108,16 @@ class PostmanSendpulse extends PostmanServiceRequest{
             $this->auth_headers(),
             $content,
             $this->email_sent_code
+
         );
 
         $this->auth_response = json_decode( $this->auth_response_body['body'],true );
 
+        //Auto delete token when token expires after given time period
+
         set_transient( 'sendpulse_token', $this->auth_response['access_token'], $this->auth_response['expires_in'] );
 
+   
     }
 
     /**
@@ -128,10 +140,12 @@ class PostmanSendpulse extends PostmanServiceRequest{
               $this->token = get_transient( 'sendpulse_token' );
 
         }
-
+            
         return array(
-            'Authorization'       =>  'Bearer' . $this->token,
-            'Content-Type'        =>  'application/json'
+
+            'Content-Type'        =>  'application/json',
+            'Authorization'       =>  'Bearer ' . $this->token
+        
         );
 
     }
@@ -139,14 +153,14 @@ class PostmanSendpulse extends PostmanServiceRequest{
      /**
      * Sends Email using Sendpulse transmissions end point
      * 
-     * @param $api_key
+     * @param $token
      * @since 2.7
      * @version 1.0
      */
     public function send( $content ) {
 
-        $content = json_encode( $content );
-
+         $content = json_encode( $content );
+         
             return $this->request(
                 'POST',
                 '/smtp/emails',
