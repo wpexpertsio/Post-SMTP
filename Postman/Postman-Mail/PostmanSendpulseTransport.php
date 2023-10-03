@@ -16,7 +16,7 @@ class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implement
     const SLUG = 'sendpulse_api';
     const PORT = 2525;
     const HOST = 'smtp-pulse.com';
-    const PRIORITY = 53000;
+    const PRIORITY = 52000;
     const SENDPULSE_AUTH_OPTIONS = 'postman_sendpulse_auth_options';
     const SENDPULSE_AUTH_SECTION = 'postman_sendpulse_auth_section';
 
