@@ -114,7 +114,7 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
      */
     public function getName() {
 
-        return __( 'Brevo (formely Sendinblue)', 'post-smtp' );
+        return __( 'Brevo', 'post-smtp' );
 
     }
 

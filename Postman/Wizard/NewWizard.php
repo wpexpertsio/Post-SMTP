@@ -118,7 +118,7 @@ class Post_SMTP_New_Wizard {
                                         printf( 
                                             '%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s',
                                             __( 'Which mailer would you like to use to send emails? Not sure which mailer to choose? Check out our ', 'post-smtp' ),
-                                            esc_url( '#' ),
+                                            esc_url( 'https://postmansmtp.com/documentation/' ),
                                             __( 'complete mailer guide', 'post-smtp' ),
                                             __( ' for details on each option.', 'post-smtp' )
                                         ); 
@@ -139,7 +139,7 @@ class Post_SMTP_New_Wizard {
                                                 'mandrill_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mandrill.png',
                                                 'sendgrid_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendgrid.png',
                                                 'mailgun_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailgun.png',
-                                                'sendinblue_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendinblue.png',
+                                                'sendinblue_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/brevo.png',
                                                 'postmark_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/postmark.png',
                                                 'sparkpost_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sparkpost.png',
                                                 'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/logo.png'
@@ -387,7 +387,7 @@ class Post_SMTP_New_Wizard {
                 ) .'</p>
                 <div><label>From Email</label></div>
                 <input type="text" class="ps-from-email" required data-error="'.__( 'Please enter From Email.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_EMAIL ).']" value="'.$from_email.'" placeholder="From Email">
-                <span class="ps-form-control-info">The name that emails are sent from.</span>
+                <span class="ps-form-control-info">The email that emails are sent from.</span>
                 <div>
                     <div class="ps-form-switch-control">
                         <label class="ps-switch-1">
@@ -410,7 +410,7 @@ class Post_SMTP_New_Wizard {
             <div class="ps-form-control">
                 <div><label>From Name</label></div>
                 <input type="text" class="ps-from-name" required data-error="'.__( 'Please enter From Name.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_NAME ).']" value="'.$from_name.'" placeholder="From Name">
-                <span class="ps-form-control-info">The email that emails are sent from.</span>
+                <span class="ps-form-control-info">The name that emails are sent from.</span>
                 <div>
                     <div class="ps-form-switch-control">
                         <label class="ps-switch-1">
