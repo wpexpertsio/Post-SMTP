@@ -207,11 +207,11 @@
 }
 
 .smtp-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 752px;
+  height: 837px;
 }
 
 .gmail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 764px;
+  height: 923px;
 }
 
 .mandrill_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
@@ -243,7 +243,7 @@
 }
 
 .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 210px;
+  height: 258px;
 }
 
 .ps-wizard-sockets {

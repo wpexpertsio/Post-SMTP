@@ -179,6 +179,14 @@ class Post_SMTP_New_Wizard {
                                         }
                                         ?>
                                         </div>
+                                        <p style="width: 70%; margin-bottom: 30px;">
+                                        <?php echo sprintf(
+                                            '%1$s <i><a href="%2$s">%3$s</a></i>',
+                                            __( 'Did we miss out What you are looking for?', 'post-smtp' ),
+                                            esc_url( admin_url( 'admin.php?page=postman-contact' ) ),
+                                            __( 'Suggest your Mailer', 'post-smtp' )
+                                        ); ?>
+                                        </p>
                                     </div>
                                     <div class="ps-wizard-step ps-wizard-step-2">
                                         <a href="" data-step="1" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span>Back</a>
@@ -387,7 +395,8 @@ class Post_SMTP_New_Wizard {
                 ) .'</p>
                 <div><label>From Email</label></div>
                 <input type="text" class="ps-from-email" required data-error="'.__( 'Please enter From Email.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_EMAIL ).']" value="'.$from_email.'" placeholder="From Email">
-                <span class="ps-form-control-info">The email that emails are sent from.</span>
+                <span class="ps-form-control-info">'.__( 'The email address that emails are sent from.', 'post-smtp' ).'</span>
+                <div class="ps-form-control-info">'.__( 'Please note that other plugins may override this field, to prevent this use the setting below.', 'post-smtp' ).'</div>
                 <div>
                     <div class="ps-form-switch-control">
                         <label class="ps-switch-1">
@@ -397,12 +406,13 @@ class Post_SMTP_New_Wizard {
                     </div>
                     <span>'.
                     sprintf( 
-                        '%1$s <b>%2$s</b> %3$s <b>%4$s</b> %5$s', 
-                        __( 'Prevent', 'post-smtp' ),
-                        __( 'plugins', 'post-smtp' ),
+                        '%1$s <b>%2$s</b> %3$s <b>%4$s</b> %5$s <b>%6$s</b>',
+                        __( 'Check this to prevent changes on the', 'post-smtp' ),
+                        __( 'From Email', 'post-smtp' ),
+                        __( 'field by other', 'post-smtp' ),
+                        __( 'Plugins', 'post-smtp' ),
                         __( 'and', 'post-smtp' ),
-                        __( 'themes', 'post-smtp' ),
-                        __( 'from changing this.', 'post-smtp' )
+                        __( 'Themes', 'post-smtp' )
                     ).
                     '</span>
                 </div> 
@@ -420,12 +430,13 @@ class Post_SMTP_New_Wizard {
                     </div>
                     <span>'.
                     sprintf( 
-                        '%1$s <b>%2$s</b> %3$s <b>%4$s</b> %5$s', 
-                        __( 'Prevent', 'post-smtp' ),
-                        __( 'plugins', 'post-smtp' ),
+                        '%1$s <b>%2$s</b> %3$s <b>%4$s</b> %5$s <b>%6$s</b>',
+                        __( 'Check this to prevent changes on the', 'post-smtp' ),
+                        __( 'From Name', 'post-smtp' ),
+                        __( 'field by other', 'post-smtp' ),
+                        __( 'Plugins', 'post-smtp' ),
                         __( 'and', 'post-smtp' ),
-                        __( 'themes', 'post-smtp' ),
-                        __( 'from changing this.', 'post-smtp' )
+                        __( 'Themes', 'post-smtp' )
                     ).
                     '</span>
                 </div>
@@ -495,6 +506,16 @@ class Post_SMTP_New_Wizard {
         $password = null !== $this->options->getPassword() ? esc_attr ( $this->options->getPassword() ) : '';
 
         $html = '
+        <p>'.__( 'The SMTP option lets you send emails directly through an SMTP server instead of using a SMTP Server provider\'s API. This is easy and convenient, but it\'s less secure than the other mailers.', 'post-smtp' ).'</p>
+        <p>'.sprintf(
+            '%1$s <a href="%2$s" target="_blank">%3$s</a>',
+            __( 'Let\'s get started with our ', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/' ),
+            __( 'SMTP Documentation', 'post-smtp' )
+        ).'</p>
+        ';
+
+        $html .= '
         <div class="ps-form-control">
             <div><label>Host Name</label></div>
             <input type="text" class="ps-smtp-host-name" required data-error="'.__( 'Please enter Host Name.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::HOSTNAME ) .']" value="'.$hostname.'" placeholder="Host Name">
@@ -552,6 +573,27 @@ class Post_SMTP_New_Wizard {
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
         $html = '
+        <p>'.sprintf(
+            '%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s',
+            __( 'Our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/gmail/' ),
+            __( 'Gmail mailer', 'post-smtp' ),
+            __( 'works with any Gmail or Google Workspace account via the Google API. You can send WordPress emails from your main email address and it\'s more secure than directly connecting to Gmail using SMTP credentials.', 'post-smtp' )
+        ).'
+        </p>';
+
+        $html .= __( 'The configuration steps are more technical than other options, so our detailed guide will walk you through the whole process.', 'post-smtp' );
+
+        $html .= '
+        <p>'.sprintf(
+            '%1$s <a href="%2$s" target="_blank">%3$s</a>',
+            __( 'Let’s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/gmail/' ),
+            __( 'Gmail Documentation', 'post-smtp' )
+        ).'
+        </p>';
+
+        $html .= '
         <div class="ps-form-control">
             <div><label>Client ID</label></div>
             <input type="text" class="ps-gmail-api-client-id" required data-error="'.__( 'Please enter Client ID.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::CLIENT_ID ) .']" value="'.$client_id.'" placeholder="Client ID">
