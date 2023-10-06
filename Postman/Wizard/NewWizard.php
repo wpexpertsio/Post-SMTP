@@ -142,7 +142,8 @@ class Post_SMTP_New_Wizard {
                                                 'sendinblue_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/brevo.png',
                                                 'postmark_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/postmark.png',
                                                 'sparkpost_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sparkpost.png',
-                                                'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/logo.png'
+                                                'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/logo.png',
+                                                'elasticemail_api'  =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/elasticemail.png',
                                             );
 
                                             $url = isset( $urls[$transport->getSlug()] ) ? $urls[$transport->getSlug()] : $transport->getLogoURL();
@@ -869,24 +870,33 @@ class Post_SMTP_New_Wizard {
 
         $api_key = null !== $this->options->getPostmarkApiKey() ? esc_attr ( $this->options->getPostmarkApiKey() ) : '';
 
-        $html = '
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
+            esc_url( 'https://postmarkapp.com/' ),
+            __( 'Postmark', 'post-smtp' ),
+            __( 'is a transactional email provider that offers great deliverability and accessible pricing for any business. You can start out with the free trial that allows you to send 100 test emails each month via its secure API.', 'post-smtp' ),
+            __( 'Let\'s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/postmark/' ),
+            __( 'PostMark Documentation', 'post-smtp' )
+        );
+
+        $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-postmark-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::POSTMARK_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
-            <span class="ps-form-control-info">'.
+            <input type="text" class="ps-postmark-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::POSTMARK_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
             sprintf(
-                '%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s <a href="%5$s" target="_blank">%6$s</a>',
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
                 __( 'Create an account at', 'post-smtp' ),
                 esc_url( 'https://postmarkapp.com/' ),
                 esc_attr( 'Postmark' ),
-                __( 'and enter an', 'post-smtp' ),
-                esc_url( 'https://account.postmarkapp.com/sign_up' ),
-                esc_attr( 'API Token' )
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+                esc_url( 'https://account.postmarkapp.com/api_tokens' ),
+                esc_attr( 'API Key or Server API Token.' )
             )
-            .'</span>
+            .'
         </div>
         ';
 
@@ -905,24 +915,33 @@ class Post_SMTP_New_Wizard {
 
         $api_key = null !== $this->options->getSparkPostApiKey() ? esc_attr ( $this->options->getSparkPostApiKey() ) : '';
 
-        $html = '
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
+            esc_url( 'https://www.sparkpost.com/' ),
+            __( 'SparkPost', 'post-smtp' ),
+            __( 'is a transactional email provider that\'s trusted by big brands and small businesses. It sends more than 4 trillion emails each year and reports 99.9% uptime. You can get started with the free test account that lets you send up to 500 emails per month.', 'post-smtp' ),
+            __( 'Let\'s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/sparkpost/' ),
+            __( 'SparkPost Documentation', 'post-smtp' )
+        );
+
+        $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-sparkpost-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SPARKPOST_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
-            <span class="ps-form-control-info">'.
+            <input type="text" class="ps-sparkpost-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SPARKPOST_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
             sprintf(
-                '%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s <a href="%5$s" target="_blank">%6$s</a>',
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
                 __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://app.sparkpost.com/join' ),
+                esc_url( 'https://messagebird.com/email/cloud-sending?sp=true' ),
                 esc_attr( 'SparkPost' ),
-                __( 'and enter an', 'post-smtp' ),
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://app.sparkpost.com/account/api-keys' ),
-                esc_attr( 'API Key' )
+                esc_attr( 'API Key.' )
             )
-            .'</span>
+            .'
         </div>
         ';
 
