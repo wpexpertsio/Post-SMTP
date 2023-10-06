@@ -373,33 +373,45 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 						<h3 class="ps-ib ps-vm"><?php esc_html_e( 'Extensions', 'post-smtp' ); ?></h3>
 					</div> 
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/office-365-for-post-smtp-extension/' ); ?>" target="_blank">
+						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/office-365-for-post-smtp-extension/?utm_source=wp_dashboard&utm_medium=plugin' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />
-							<?php echo esc_html( 'Office 365' ); ?>
+							<?php echo esc_html( 'Microsoft 365/ Office 365' ); ?>
 						</a>
 					</div>
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/' ); ?>" target="_blank">
+						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/?utm_source=wp_dashboard&utm_medium=plugin' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
 							<?php echo esc_html( 'Amazon SES' ); ?>
 						</a>
 					</div>
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/the-better-email/' ); ?>" target="_blank">
+						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/email-log-attachment/?utm_source=wp_dashboard&utm_medium=plugin' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Better Email Logger' ); ?>
+							<?php echo esc_html( 'Email Log attachment support' ); ?>
 						</a>
 					</div>
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/twilio-extension-pro/' ); ?>" target="_blank">
+						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/reporting-and-tracking-extension/?utm_source=wp_dashboard&utm_medium=plugin' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Twilio Notifications' ); ?>
+							<?php echo esc_html( 'Report & Tracking' ); ?>
 						</a>
 					</div>
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/post-smtp-mail-control/' ); ?>" target="_blank">
+						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/advanced-email-delivery/?utm_source=wp_dashboard&utm_medium=plugin' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Mail Control' ); ?>
+							<?php echo esc_html( 'Advanced Email Delivery and Logs' ); ?>
+						</a>
+					</div>
+					<div>
+						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/twilio-extension-pro/?utm_source=wp_dashboard&utm_medium=plugin' ); ?>" target="_blank">
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
+							<?php echo esc_html( 'Twilio' ); ?>
+						</a>
+					</div>
+					<div>
+						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/zoho-mail-pro-extension/?utm_source=wp_dashboard&utm_medium=plugin' ); ?>" target="_blank">
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
+							<?php echo esc_html( 'Zoho Mail' ); ?>
 						</a>
 					</div>
 				</div>
