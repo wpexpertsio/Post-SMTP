@@ -42,31 +42,31 @@
 }
 
 .ps-wizard-section .ps-wizard-nav {
-  height: 351px;
+  height: 399px;
 }
 
 .smtp-outer .ps-wizard-section .ps-wizard-nav {
-  height: 893px;
+  height: 978px;
 }
 
 .gmail_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 905px;
+  height: 1087px;
 }
 
 .mandrill_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 552px;
+  height: 676px;
 }
 
 .sendgrid_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 552px;
+  height: 676px;
 }
 
 .mailgun_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 736px;
+  height: 904px;
 }
 
 .sendinblue_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 552px;
+  height: 724px;
 }
 
 .postmark_api-outer .ps-wizard-section .ps-wizard-nav {
@@ -211,23 +211,23 @@
 }
 
 .gmail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 923px;
+  height: 946px;
 }
 
 .mandrill_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 411px;
+  height: 535px;
 }
 
 .sendgrid_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 411px;
+  height: 535px;
 }
 
 .mailgun_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 595px;
+  height: 763px;
 }
 
 .sendinblue_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 411px;
+  height: 583px;
 }
 
 .postmark_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {

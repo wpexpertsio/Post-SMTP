@@ -618,6 +618,9 @@ class Post_SMTP_New_Wizard {
         <div class="ps-form-control">
             <div><label>Authorized redirect URI</label></div>
             <input type="text" class="ps-gmail-redirect-uri" value="'.admin_url( 'options-general.php?page=postman' ).'" readonly>
+            <span class="ps-form-control-info">
+            '.__( 'Please copy this URL into the "Authorized redirect URL" field of your Gmail account settings.', 'post-smtp' ).'
+            </span>
         </div>
         ';
 
@@ -642,24 +645,33 @@ class Post_SMTP_New_Wizard {
 
         $api_key = null !== $this->options->getMandrillApiKey() ? esc_attr ( $this->options->getMandrillApiKey() ) : '';
 
-        $html = '
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
+            esc_url( 'https://mandrillapp.com/login/?referrer=%2F' ),
+            __( 'Mandrill', 'post-smtp' ),
+            __( 'is an email infrastructure service offered as an add-on for MailChimp that you can use to send personalized, one-to-one e-commerce emails, or automated transactional emails.You can easily send WordPress emails from your Mandrill account.', 'post-smtp' ),
+            __( 'Let’s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mandrill-with-post-smtp/' ),
+            __( 'Mandrill Documentation', 'post-smtp' )
+        );
+
+        $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-mandrill-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MANDRILL_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
-            <span class="ps-form-control-info">'.
+            <input type="text" class="ps-mandrill-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MANDRILL_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
             sprintf(
-                '%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s <a href="%5$s" target="_blank">%6$s</a>',
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
                 __( 'Create an account at', 'post-smtp' ),
                 esc_url( 'https://mandrillapp.com/' ),
                 esc_attr( 'Mandrill' ),
-                __( 'and enter an', 'post-smtp' ),
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://mandrillapp.com/settings' ),
                 esc_attr( 'API Key.' )
             )
-            .'</span>
+            .'
         </div>
         ';
 
@@ -678,24 +690,32 @@ class Post_SMTP_New_Wizard {
 
         $api_key = null !== $this->options->getSendGridApiKey() ? esc_attr ( $this->options->getSendGridApiKey() ) : '';
 
-        $html = '
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
+            esc_url( 'https://sendgrid.com/' ),
+            __( 'SendGrid', 'post-smtp' ),
+            __( 'is a popular transactional email provider that sends more than 35 billion emails every month. If you\'re just starting out, the free plan allows you to send up to 100 emails each day without entering your credit card details.', 'post-smtp' ),
+            __( 'Let’s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendgrid-with-post-smtp/' ),
+            __( 'SendGrid Documentation', 'post-smtp' )
+        );
+
+        $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-sendgrid-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDGRID_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
-            <span class="ps-form-control-info">'.
+            <input type="text" class="ps-sendgrid-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDGRID_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
             sprintf(
-                '%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s <a href="%5$s" target="_blank">%6$s</a>',
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
                 __( 'Create an account at', 'post-smtp' ),
                 esc_url( 'https://sendgrid.com/' ),
                 esc_attr( 'SendGrid' ),
-                __( 'and enter an', 'post-smtp' ),
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://app.sendgrid.com/settings/api_keys' ),
                 esc_attr( 'API Key.' )
-            )
-            .'</span>
+            ).'
         </div>
         ';
 
@@ -716,24 +736,33 @@ class Post_SMTP_New_Wizard {
         $domain_name = null !== $this->options->getMailgunDomainName() ? esc_attr ( $this->options->getMailgunDomainName() ) : '';
         $region = null !== $this->options->getMailgunRegion() ? ' checked' : '';
 
-        $html = '
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
+            esc_url( 'https://www.mailgun.com/' ),
+            __( 'Mailgun', 'post-smtp' ),
+            __( 'is a transactional email provider that offers a generous 3-month free trial. After that, it offers a \'Pay As You Grow\' plan that allows you to pay for what you use without committing to a fixed monthly rate.', 'post-smtp' ),
+            __( 'Let’s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-configure-post-smtp-with-mail-gun/' ),
+            __( 'Mailgun Documentation', 'post-smtp' )
+        );
+
+        $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-mailgun-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILGUN_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
-            <span class="ps-form-control-info">'.
+            <input type="text" class="ps-mailgun-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILGUN_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
             sprintf(
-                '%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s <a href="%5$s" target="_blank">%6$s</a>',
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
                 __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://mailgun.com/' ),
+                esc_url( 'https://www.mailgun.com/' ),
                 esc_attr( 'Mailgun' ),
-                __( 'and enter an', 'post-smtp' ),
-                esc_url( 'https://app.mailgun.com/app/account/security/api_keys' ),
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+                esc_url( 'https://app.mailgun.com/settings/api_security' ),
                 esc_attr( 'API Key.' )
             )
-            .'</span>
+            .'
         </div>
         ';
 
@@ -767,6 +796,16 @@ class Post_SMTP_New_Wizard {
                     <span class="slider round"></span>
                 </label> 
             </div>
+            '.
+            sprintf(
+                '<div class="ps-form-control-info">%1$s</div><div class="ps-form-control-info">%2$s <a href="%3$s" target="_blank">%4$s</a> %5$s</div>',
+                __( 'Define your endpoint to send messages.', 'post-smtp' ),
+                __( 'If you are operating under EU laws then check the above button.', 'post-smtp' ),
+                esc_url( 'https://www.mailgun.com/about/regions/' ),
+                __( 'More information', 'post-smtp' ),
+                __( 'about Mailgun.', 'post-smtp' ),
+            )
+            .'
         </div> 
         ';
 
@@ -785,25 +824,34 @@ class Post_SMTP_New_Wizard {
 
         $api_key = null !== $this->options->getSendinblueApiKey() ? esc_attr ( $this->options->getSendinblueApiKey() ) : '';
 
-        $html = '
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">Brevo</a> %2$s</p><p>%3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a>',
+            esc_url( 'https://www.brevo.com/products/transactional-email/?tap_a=30591-fb13f0&tap_s=1114139-605ce2' ),
+            __( 'is one of our recommended mailers. It\'s a transactional email provider with scalable price plans, so it\'s suitable for any size of business.', 'post-smtp' ),
+            __( 'If you\'re just starting out, you can use Brevo\'s free plan to send up to 300 emails a day. You don\'t need to use a credit card to try it out. When you\'re ready, you can upgrade to a higher plan to increase your sending limits.', 'post-smtp' ),
+            __( 'Let\'s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendinblue-aka-brevo-with-post-smtp/' ),
+            __( 'Brevo Documentation', 'post-smtp' )
+        );
+
+        $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-brevo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDINBLUE_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
-            <span class="ps-form-control-info">'.
+            <input type="text" class="ps-brevo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDINBLUE_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
             sprintf(
-                '%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s <a href="%5$s" target="_blank">%6$s</a>',
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
                 __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://www.brevo.com/' ),
-                esc_attr( 'Brevo (Formerly SendInBlue)' ),
-                __( 'and enter an', 'post-smtp' ),
-                esc_url( 'https://app.brevo.com/settings/keys/smtp' ),
-                esc_attr( 'API Key' )
+                esc_url( 'https://www.brevo.com/products/transactional-email/?tap_a=30591-fb13f0&tap_s=1114139-605ce2' ),
+                esc_attr( 'Brevo' ),
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+                esc_url( 'https://app.brevo.com/settings/keys/api' ),
+                esc_attr( 'API Key.' )
             )
-            .'</span>
-        </div>
+            .
+        '</div>
         ';
 
         return $html;
