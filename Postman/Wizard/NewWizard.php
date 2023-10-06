@@ -71,7 +71,6 @@ class Post_SMTP_New_Wizard {
 
         $transports = PostmanTransportRegistry::getInstance()->getTransports();
         //Not for wizard
-        unset( $transports['default'] );
         $settings_registry = new PostmanSettingsRegistry();
         $this->options = PostmanOptions::getInstance();
         $is_active = ( isset( $_GET['step'] ) && $_GET['step'] == 2 ) ? 'ps-active-nav' : 'ps-in-active-nav';
@@ -134,6 +133,7 @@ class Post_SMTP_New_Wizard {
                                             $checked = $transport->getSlug() == $this->options->getTransportType() ? 'checked' : '';
 
                                             $urls = array(
+                                                'default'           =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.png',
                                                 'smtp'              =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.png',
                                                 'gmail_api'         =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/gmail.png',
                                                 'mandrill_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mandrill.png',
@@ -202,7 +202,7 @@ class Post_SMTP_New_Wizard {
 
                                                 ?>
                                                 <div class="ps-form-ui ps-wizard-socket <?php echo esc_attr( $key ); ?>" <?php echo $active_socket; ?>>
-                                                    <h3><?php echo esc_attr( $title ); ?></h3>
+                                                    <h3><?php echo $title == 'Default' ? '' : esc_attr( $title ); ?></h3>
                                                     <?php $this->render_socket_settings( $key ); ?>
                                                 </div>
                                                 <?php
@@ -392,7 +392,7 @@ class Post_SMTP_New_Wizard {
                 <h3>From Address</h3>
                 <p>'. sprintf(
                     '%1$s',
-                    esc_html__( 'This address, like the letterhead printed on a letter, identifies the sender to the recipient. Change this when you are sending on behalf of someone else. Other plugins, especially Contact Forms, may override the field to be your visitor\'s address.', 'post-smtp' )
+                    esc_html__( 'This address, like the letterhead printed on a letter, identifies the sender to the recipient. Change this when you are sending on behalf of someone else.', 'post-smtp' )
                 ) .'</p>
                 <div><label>From Email</label></div>
                 <input type="text" class="ps-from-email" required data-error="'.__( 'Please enter From Email.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_EMAIL ).']" value="'.$from_email.'" placeholder="From Email">
@@ -460,6 +460,9 @@ class Post_SMTP_New_Wizard {
 
         switch ( $socket ) {
             
+            case 'default':
+                echo wp_kses( $this->render_default_settings(), $this->allowed_tags );
+            break;
             case 'smtp':
                 echo wp_kses( $this->render_smtp_settings(), $this->allowed_tags );
             break;
@@ -484,11 +487,28 @@ class Post_SMTP_New_Wizard {
             case 'sparkpost_api':
                 echo wp_kses( $this->render_sparkpost_settings(), $this->allowed_tags );
             break;
+            case 'elasticemail_api':
+                echo wp_kses( $this->render_elasticemail_settings(), $this->allowed_tags );
+            break;
             case 'office365_api';
                 echo wp_kses( $this->render_office365_settings(), $this->allowed_tags );
             break;
 
         }
+
+    }
+
+    /**
+     * Render default Settings
+     * 
+     * @since 2.7.0
+     * @version 1.0.0
+     */
+    public function render_default_settings() {
+
+        $html = '<input type="hidden" name="postman_options=[transport_type]" value="dafault" />';
+
+        return $html;
 
     }
 
@@ -816,7 +836,7 @@ class Post_SMTP_New_Wizard {
 
 
     /**
-     * Render Sendinblue Settings
+     * Render Brevo Settings
      * 
      * @since 2.0.0
      * @version 1.0.0
@@ -861,7 +881,7 @@ class Post_SMTP_New_Wizard {
 
 
     /**
-     * Render Sendinblue Settings
+     * Render Postmark Settings
      * 
      * @since 2.0.0
      * @version 1.0.0
@@ -943,6 +963,49 @@ class Post_SMTP_New_Wizard {
             )
             .'
         </div>
+        ';
+
+        return $html;
+
+    }
+
+    /**
+     * Render Brevo Settings
+     * 
+     * @since 2.0.0
+     * @version 1.0.0
+     */
+    public function render_elasticemail_settings() {
+
+        $api_key = null !== $this->options->getElasticEmailApiKey() ? esc_attr ( $this->options->getElasticEmailApiKey() ) : '';
+
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">Elastic Email</a> %2$s</p><p>%3$s <a href="%4$s" target="_blank">%5$s</a>',
+            esc_url( 'https://elasticemail.com/' ),
+            __( 'is a powerful transactional email platform designed to deliver exceptional performance and affordability for businesses of all sizes. which grants you the ability to send 100 test emails every month through our secure API.', 'post-smtp' ),
+            __( 'Let\'s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/' ),
+            __( 'Elastic Email Documentation', 'post-smtp' )
+        );
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>API Key</label></div>
+            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::ELASTICEMAIL_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            /**
+             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
+             */
+            sprintf(
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
+                __( 'Create an account at', 'post-smtp' ),
+                esc_url( 'https://elasticemail.com/' ),
+                esc_attr( 'Elastic Email' ),
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+                esc_url( 'https://elasticemail.com/account#/settings/new/manage-api' ),
+                esc_attr( 'API Key.' )
+            )
+            .
+        '</div>
         ';
 
         return $html;
@@ -1079,6 +1142,7 @@ class Post_SMTP_New_Wizard {
                 $sanitized['mailgun_api_key'] = isset( $sanitized['mailgun_api_key'] ) ? base64_encode( $sanitized['mailgun_api_key'] ) : '';
                 $sanitized['sendgrid_api_key'] = isset( $sanitized['sendgrid_api_key'] ) ? base64_encode( $sanitized['sendgrid_api_key'] ) : '';
                 $sanitized['mandrill_api_key'] = isset( $sanitized['mandrill_api_key'] ) ? base64_encode( $sanitized['mandrill_api_key'] ) : '';
+                $sanitized['elasticemail_api_key'] = isset( $sanitized['elasticemail_api_key'] ) ? base64_encode( $sanitized['elasticemail_api_key'] ) : '';
                 $sanitized['basic_auth_password'] = isset( $sanitized['basic_auth_password'] ) ? base64_encode( $sanitized['basic_auth_password'] ) : '';
 
                 foreach( $sanitized as $key => $value ) {

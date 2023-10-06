@@ -77,6 +77,10 @@
   height: 676px;
 }
 
+.elasticemail_api-outer .ps-wizard-section .ps-wizard-nav {
+  height: 676px;
+}
+
 .office365_api-outer .ps-wizard-section .ps-wizard-nav {
   height: 978px;
 }
@@ -186,7 +190,7 @@
 }
 
 .ps-wizard-footer .ps-active-nav .ps-wizard-line:after {
-  height: 211px;
+  height: 259px;
 }
 
 .ps-wizard-screens-container {
@@ -235,6 +239,10 @@
 }
 
 .sparkpost_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
+  height: 535px;
+}
+
+.elasticemail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
   height: 535px;
 }
 
