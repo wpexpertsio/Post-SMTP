@@ -154,15 +154,20 @@ class PostmanSendpulseMailEngine implements PostmanMailEngine{
         
         // add the reply-to
         $replyTo = $message->getReplyTo();
+        $replies = array();
         // $replyTo is null or a PostmanEmailAddress object
-        if ( isset( $replyTo ) ) {
-            $sendSmtpEmail['to'] = array(
-                'email' => $replyTo->getEmail()
+        if ( isset( $replyTo ) && !empty( $replyTo->getName() ) ) {
+            $replies['to'] = array(
+                'email' => $replyTo->getEmail(),
+                'name'  => $replyTo->getName()
             );
             
-            if( !empty( $replyTo->getName() ) ) {
-                 $sendSmtpEmail['name'] = $replyTo->getName();
+            if( isset( $replyTo ) ) {
+                $replies['to'] = array(
+                    'email' => $replyTo->getEmail(),
+                ); 
             }
+            $sendSmtpEmail['to'] = $replies;
         }
 
         // add the Postman signature - append it to whatever the user may have set
@@ -237,25 +242,22 @@ class PostmanSendpulseMailEngine implements PostmanMailEngine{
         if( !empty( $bcc ) )
             $sendSmtpEmail['bcc'] = $bcc;
 
+
         // add attachments
         $this->logger->debug( 'Adding attachments' );
+        $attachments_array = array();
 
         $attachments = $this->addAttachmentsToMail( $message );
 
-        $email_attachments = array();
+        if (!empty($attachments)) {
+            $attachments_array = [];
         
-        if( !empty( $attachments ) ) {
-        
-            foreach ( $attachments as $index => $attachment ) {
-
-                $email_attachments[] = array(
-                    'name'      =>  $attachment['file_name'],
-                    'content'   =>  $attachment['content']
-                );
+            foreach ($attachments as $attachment) {
+                $attachments_array[$attachment['file_name']] = $attachment['content'];
             }
-
-            $sendSmtpEmail['attachments'] = $email_attachments;
-        
+            
+            $sendSmtpEmail['attachments_binary'] = $attachments_array;
+           
         }
         
          
@@ -269,7 +271,7 @@ class PostmanSendpulseMailEngine implements PostmanMailEngine{
 
                 'email' => $sendSmtpEmail
             );
-            // var_dump($final);die;
+            
             $response = $sendpulse->send( $final_message );
             
             $this->transcript = print_r( $response, true );

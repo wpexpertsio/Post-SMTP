@@ -140,7 +140,7 @@ class PostmanSendpulse extends PostmanServiceRequest{
               $this->token = get_transient( 'sendpulse_token' );
 
         }
-            
+
         return array(
 
             'Content-Type'        =>  'application/json',
