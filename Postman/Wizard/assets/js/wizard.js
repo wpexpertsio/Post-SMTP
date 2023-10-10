@@ -440,4 +440,22 @@ jQuery( document ).ready(function() {
 
     }
 
+    jQuery( document ).on( 'click', '.ps-pro-extension-outer', function(){
+
+        var placeholder = jQuery( this ).find( 'h4' ).text();
+        var imgSrc = jQuery( this ).find( 'img' ).attr( 'src' ); 
+
+        jQuery( '.ps-pro-for-img' ).attr( 'src', imgSrc );
+        jQuery( '.ps-pro-for' ).text( placeholder );
+        jQuery( '.ps-pro-popup-overlay' ).fadeIn();
+
+    } );
+
+    jQuery( document ).on( 'click', '.ps-pro-close-popup', function( e ){
+
+        e.preventDefault();
+        jQuery( '.ps-pro-popup-overlay' ).fadeOut();
+
+    } );
+
 } );

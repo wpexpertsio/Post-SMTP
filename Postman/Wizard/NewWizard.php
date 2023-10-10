@@ -40,6 +40,22 @@ class Post_SMTP_New_Wizard {
         'h3'            =>  array(),
     );
 
+    private $socket_sequence = array(
+        'gmail_api',
+        'sendinblue_api',
+        'sendgrid_api',
+        'mailgun_api',
+        'elasticemail_api',
+        'mandrill_api',
+        'postmark_api',
+        'sparkpost_api',
+        'office365_api',
+        'aws_ses_api',
+        'zohomail_api',
+        'smtp',
+        'default'
+    );
+
     /**
      * Constructor for the class
      * 
@@ -79,6 +95,28 @@ class Post_SMTP_New_Wizard {
         $socket = isset( $_GET['socket'] ) ? "{$_GET['socket']}-outer" : '';
         ?>
 
+        <div class="ps-pro-popup-overlay">
+            <div class="ps-pro-popup-container">
+                <div class="ps-pro-popup-outer">
+                    <div class="ps-pro-popup-body">
+                        <span class="dashicons dashicons-no-alt ps-pro-close-popup"></span>
+                        <div class="ps-pro-popup-content">
+                            <img src="" class="ps-pro-for-img" />
+                            <h1><span class="ps-pro-for"></span> is a Pro feature</h1>
+                            <p>
+                                We're sorry, the <span class="ps-pro-for"></span> mailer is not available on your plan. Please upgrade to the PRO plan to unlock all these awesome fetures.
+                            </p>
+                            <div>
+                                <a href="https://postmansmtp.com/membership-plan/" target="_blank" class="button button-primary ps-yellow-btn" style="color: #ffffff!important">UPGRADE TO PRO</a>
+                            </div>
+                            <div>
+                                <a href="" class="ps-pro-close-popup" style="color: #c2c2c2; font-size: 10px;">Already purchased?</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="wrap">
             <div class="ps-wizard">
                 <div class="ps-logo">
@@ -127,10 +165,9 @@ class Post_SMTP_New_Wizard {
 
                                         $row  = 0;
 
-                                        foreach( $transports as $transport ) {
+                                        $transports = array_merge( array_flip( $this->socket_sequence ), $transports );
 
-                                            $this->sockets[$transport->getSlug()] = $transport->getName();
-                                            $checked = $transport->getSlug() == $this->options->getTransportType() ? 'checked' : '';
+                                        foreach( $transports as $transport ) {
 
                                             $urls = array(
                                                 'default'           =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.png',
@@ -144,9 +181,54 @@ class Post_SMTP_New_Wizard {
                                                 'sparkpost_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sparkpost.png',
                                                 'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/logo.png',
                                                 'elasticemail_api'  =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/elasticemail.png',
+                                                'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png'
                                             );
 
-                                            $url = isset( $urls[$transport->getSlug()] ) ? $urls[$transport->getSlug()] : $transport->getLogoURL();
+                                            $url = '';
+                                            $checked = '';
+                                            $slug = '';
+                                            $transport_name = '';
+                                            $is_pro = '';
+
+                                            if( is_object( $transport ) ) {
+                                                
+                                                $url = isset( $urls[$transport->getSlug()] ) ? $urls[$transport->getSlug()] : $transport->getLogoURL();
+                                                $this->sockets[$transport->getSlug()] = $transport->getName();
+                                                $checked = $transport->getSlug() == $this->options->getTransportType() ? 'checked' : '';
+                                                $slug = $transport->getSlug();
+                                                $transport_name = $transport->getName();
+
+                                            }
+                                            else {
+                                                
+                                                $transport_slug = array_search( $transport, (array)$transports );
+
+                                                if( $transport_slug == 'office365_api' ) {
+                                                    
+                                                    $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.png';
+                                                    $slug = $transport_slug;
+                                                    $transport_name = 'Microsoft 365';
+                                                    $is_pro = 'ps-pro-extension';
+
+                                                }
+                                                if( $transport_slug == 'zohomail_api' ) {
+                                                    
+                                                    $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png';
+                                                    $slug = $transport_slug;
+                                                    $transport_name = 'Zoho';
+                                                    $is_pro = 'ps-pro-extension';
+
+                                                }
+                                                if( !class_exists( 'Post_Smtp_Amazon_Ses' ) && $transport_slug == 'aws_ses_api' ) {
+                                                    
+                                                    $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png';
+                                                    $slug = $transport_slug;
+                                                    $transport_name = 'Amazon SES';
+                                                    $is_pro = 'ps-pro-extension';
+
+                                                }
+
+                                            }
 
                                             if( $row >= 4 ) {
 
@@ -162,15 +244,22 @@ class Post_SMTP_New_Wizard {
 
                                             ?>
                                             <div class="ps-wizard-socket-radio-outer">
-                                                <div class="ps-wizard-socket-radio">
-                                                    <label for="ps-wizard-socket-<?php echo esc_attr( $transport->getSlug() ); ?>">                                                    
-                                                        <input type="radio" <?php echo esc_attr( $checked ) ;?> class="ps-wizard-socket-check" id="ps-wizard-socket-<?php echo esc_attr( $transport->getSlug() ); ?>" value="<?php echo esc_attr( $transport->getSlug() ); ?>" name="<?php echo 'postman_options[' . esc_attr( PostmanOptions::TRANSPORT_TYPE ) . ']'; ?>">
+                                                <div class="ps-wizard-socket-radio <?php echo !empty( $is_pro ) ? esc_attr( $is_pro ) . '-outer' : ''; ?>">
+                                                    <?php if( !empty( $is_pro ) ): ?>
+                                                        <span class="<?php echo $is_pro . '-tag' ?>">PRO</span>
+                                                    <?php endif; ?>
+                                                    <?php if( empty( $is_pro ) ) : ?> <label for="ps-wizard-socket-<?php echo esc_attr( $slug ); ?>"><? endif; ?>                                                    
+                                                        <?php if( empty( $is_pro ) ) : ?> 
+                                                            <input type="radio" <?php echo esc_attr( $checked ) ;?> class="ps-wizard-socket-check <?php echo esc_attr( $is_pro ); ?>" id="ps-wizard-socket-<?php echo esc_attr( $slug ); ?>" value="<?php echo esc_attr( $slug ); ?>" name="<?php echo 'postman_options[' . esc_attr( PostmanOptions::TRANSPORT_TYPE ) . ']'; ?>">
+                                                        <?php endif; ?>
                                                         <img src="<?php echo esc_url( $url ); ?>">
-                                                        <div class="ps-wizard-socket-tick-container">
-                                                            <div class="ps-wizard-socket-tick"><span class="dashicons dashicons-yes"></span></div>
-                                                        </div>
-                                                        <h4><?php echo esc_attr( $transport->getName() ); ?></h4>
-                                                    </label>
+                                                        <?php if( empty( $is_pro ) ) : ?>
+                                                            <div class="ps-wizard-socket-tick-container">
+                                                                <div class="ps-wizard-socket-tick"><span class="dashicons dashicons-yes"></span></div>
+                                                            </div> 
+                                                        <? endif; ?>
+                                                        <h4><?php echo esc_attr( $transport_name ); ?></h4>
+                                                    <?php if( empty( $is_pro ) ) : ?> </label><? endif; ?>
                                                 </div>
                                             </div>
                                             <?php
@@ -489,6 +578,9 @@ class Post_SMTP_New_Wizard {
             break;
             case 'elasticemail_api':
                 echo wp_kses( $this->render_elasticemail_settings(), $this->allowed_tags );
+            break;
+            case 'aws_ses_api';
+                echo wp_kses( $this->render_amazonses_settings(), $this->allowed_tags );
             break;
             case 'office365_api';
                 echo wp_kses( $this->render_office365_settings(), $this->allowed_tags );
@@ -1002,6 +1094,50 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Elastic Email' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://elasticemail.com/account#/settings/new/manage-api' ),
+                esc_attr( 'API Key.' )
+            )
+            .
+        '</div>
+        ';
+
+        return $html;
+
+    }
+
+    /**
+     * Render Brevo Settings
+     * 
+     * @since 2.0.0
+     * @version 1.0.0
+     */
+    public function render_amazonses_settings() {
+
+        $api_key = null !== $this->options->getSendinblueApiKey() ? esc_attr ( $this->options->getSendinblueApiKey() ) : '';
+
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">Brevo</a> %2$s</p><p>%3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a>',
+            esc_url( 'https://www.brevo.com/products/transactional-email/?tap_a=30591-fb13f0&tap_s=1114139-605ce2' ),
+            __( 'is one of our recommended mailers. It\'s a transactional email provider with scalable price plans, so it\'s suitable for any size of business.', 'post-smtp' ),
+            __( 'If you\'re just starting out, you can use Brevo\'s free plan to send up to 300 emails a day. You don\'t need to use a credit card to try it out. When you\'re ready, you can upgrade to a higher plan to increase your sending limits.', 'post-smtp' ),
+            __( 'Let\'s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendinblue-aka-brevo-with-post-smtp/' ),
+            __( 'Brevo Documentation', 'post-smtp' )
+        );
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>API Key</label></div>
+            <input type="text" class="ps-brevo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDINBLUE_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            /**
+             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
+             */
+            sprintf(
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
+                __( 'Create an account at', 'post-smtp' ),
+                esc_url( 'https://www.brevo.com/products/transactional-email/?tap_a=30591-fb13f0&tap_s=1114139-605ce2' ),
+                esc_attr( 'Brevo' ),
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+                esc_url( 'https://app.brevo.com/settings/keys/api' ),
                 esc_attr( 'API Key.' )
             )
             .

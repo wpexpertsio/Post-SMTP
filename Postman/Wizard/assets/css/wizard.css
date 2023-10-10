@@ -42,7 +42,7 @@
 }
 
 .ps-wizard-section .ps-wizard-nav {
-  height: 399px;
+  height: 484px;
 }
 
 .smtp-outer .ps-wizard-section .ps-wizard-nav {
@@ -251,7 +251,7 @@
 }
 
 .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 258px;
+  height: 343px;
 }
 
 .ps-wizard-sockets {
@@ -493,5 +493,84 @@
   height: auto;
   width: auto;
 }
+
+.ps-pro-extension-outer {
+  position: relative;
+}
+
+.ps-pro-extension-tag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #FF9900;
+  color: #ffffff;
+}
+
+.ps-pro-extension-tag {
+  position: absolute;
+  left: 1px;
+  top: 1px;
+  background: #FF9900;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: bold;
+  font-family: sans-serif;
+  padding: 0px 3px;
+}
+
+.ps-pro-popup-overlay {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: #bfbfbfa1;
+  z-index: 9990;
+}
+
+.ps-pro-popup-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.ps-pro-popup-outer {
+  position: absolute;
+  left: 30%;
+  top: 30%;
+  width: 500px;
+  height: 360px;
+  border-top: 3px solid #375caf;
+  background: #fff;
+}
+
+span.ps-pro-close-popup {
+  position: absolute;
+  right: 27px;
+  top: 0;
+  color: #fff;
+  background: #bababa;
+}
+
+.ps-pro-popup-body {
+  position: relative;
+  cursor: pointer;
+  line-height: 30px;
+}
+
+.ps-pro-popup-content {
+  width: 60%;
+  text-align: center;
+  font-weight: bolder;
+  margin: 30px auto;
+}
+
+.ps-pro-popup-content p {
+  font-size: 11px;
+  color: #000;
+  margin: 25px 0;
+}
+
 
 /* Lets make wizard responsive */
