@@ -50,6 +50,7 @@ class Post_SMTP_New_Wizard {
         'mandrill_api',
         'postmark_api',
         'sparkpost_api',
+        'mailjet_api',
         'office365_api',
         'aws_ses_api',
         'zohomail_api',
@@ -60,7 +61,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Constructor for the class
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function __construct() {
@@ -83,7 +84,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Load the wizard | Action Callback
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function load_wizard() {
@@ -182,6 +183,7 @@ class Post_SMTP_New_Wizard {
                                                 'sendinblue_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/brevo.png',
                                                 'postmark_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/postmark.png',
                                                 'sparkpost_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sparkpost.png',
+                                                'mailjet_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailjet.png',
                                                 'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/logo.png',
                                                 'elasticemail_api'  =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/elasticemail.png',
                                                 'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png'
@@ -430,7 +432,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Enqueue Scripts | Action Callback
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function enqueue_scripts() {
@@ -468,7 +470,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Render Name and Email Settings
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function render_name_email_settings() {
@@ -545,7 +547,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Render Socket Settings
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function render_socket_settings( $socket ) {
@@ -579,6 +581,9 @@ class Post_SMTP_New_Wizard {
             case 'sparkpost_api':
                 echo wp_kses( $this->render_sparkpost_settings(), $this->allowed_tags );
             break;
+            case 'mailjet_api':
+                echo wp_kses( $this->render_mailjet_settings(), $this->allowed_tags );
+            break;
             case 'elasticemail_api':
                 echo wp_kses( $this->render_elasticemail_settings(), $this->allowed_tags );
             break;
@@ -611,7 +616,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Render SMTP Settings
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function render_smtp_settings() {
@@ -679,7 +684,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Render Gmail API Settings
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function render_gmail_settings() {
@@ -754,7 +759,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Render Mandrill Settings
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function render_mandrill_settings() {
@@ -799,7 +804,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Render SendGrid Settings
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function render_sendgrid_settings() {
@@ -843,7 +848,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Render Mailgun Settings
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function render_mailgun_settings() {
@@ -933,7 +938,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Render Brevo Settings
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function render_brevo_settings() {
@@ -978,7 +983,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Render Postmark Settings
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function render_postmark_settings() {
@@ -1023,7 +1028,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Render Sparkpost Settings
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function render_sparkpost_settings() {
@@ -1065,9 +1070,9 @@ class Post_SMTP_New_Wizard {
     }
 
     /**
-     * Render Brevo Settings
+     * Render ElasticEmail Settings
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function render_elasticemail_settings() {
@@ -1108,9 +1113,73 @@ class Post_SMTP_New_Wizard {
     }
 
     /**
-     * Render Brevo Settings
+     * Render Mailjet Settings
      * 
-     * @since 2.0.0
+     * @since 2.7.0
+     * @version 1.0.0
+     */
+    public function render_mailjet_settings() {
+
+        $api_key = null !== $this->options->getMailjetApiKey() ? esc_attr ( $this->options->getMailjetApiKey() ) : '';
+        $secret_key = null !== $this->options->getMailjetApiKey() ? esc_attr ( $this->options->getMailjetSecretKey() ) : '';
+
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">Elastic Email</a> %2$s</p><p>%3$s <a href="%4$s" target="_blank">%5$s</a>',
+            esc_url( 'https://elasticemail.com/' ),
+            __( 'is a powerful transactional email platform designed to deliver exceptional performance and affordability for businesses of all sizes. which grants you the ability to send 100 test emails every month through our secure API.', 'post-smtp' ),
+            __( 'Let\'s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/' ),
+            __( 'Elastic Email Documentation', 'post-smtp' )
+        );
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>API Key</label></div>
+            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            /**
+             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
+             */
+            sprintf(
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
+                __( 'Create an account at', 'post-smtp' ),
+                esc_url( 'https://elasticemail.com/' ),
+                esc_attr( 'Elastic Email' ),
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+                esc_url( 'https://elasticemail.com/account#/settings/new/manage-api' ),
+                esc_attr( 'API Key.' )
+            )
+            .
+        '</div>
+        ';
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>Secret Key</label></div>
+            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="Secret Key">'.
+            /**
+             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
+             */
+            sprintf(
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
+                __( 'Create an account at', 'post-smtp' ),
+                esc_url( 'https://elasticemail.com/' ),
+                esc_attr( 'Elastic Email' ),
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+                esc_url( 'https://elasticemail.com/account#/settings/new/manage-api' ),
+                esc_attr( 'API Key.' )
+            )
+            .
+        '</div>
+        ';
+
+        return $html;
+
+    }
+
+    /**
+     * Render Amazon SES Settings
+     * 
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function render_amazonses_settings() {
@@ -1197,7 +1266,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Render Office365 Settings
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function render_office365_settings() {
@@ -1286,7 +1355,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Save Wizard | AJAX Callback
      * 
-     * @since 2.0.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function save_wizard() {
@@ -1324,6 +1393,8 @@ class Post_SMTP_New_Wizard {
                 $sanitized['sendgrid_api_key'] = isset( $sanitized['sendgrid_api_key'] ) ? base64_encode( $sanitized['sendgrid_api_key'] ) : '';
                 $sanitized['mandrill_api_key'] = isset( $sanitized['mandrill_api_key'] ) ? base64_encode( $sanitized['mandrill_api_key'] ) : '';
                 $sanitized['elasticemail_api_key'] = isset( $sanitized['elasticemail_api_key'] ) ? base64_encode( $sanitized['elasticemail_api_key'] ) : '';
+                $sanitized[PostmanOptions::MAILJET_API_KEY] = isset( $sanitized[PostmanOptions::MAILJET_API_KEY] ) ? base64_encode( $sanitized[PostmanOptions::MAILJET_API_KEY] ) : '';
+                $sanitized[PostmanOptions::MAILJET_SECRET_KEY] = isset( $sanitized[PostmanOptions::MAILJET_SECRET_KEY] ) ? base64_encode( $sanitized[PostmanOptions::MAILJET_SECRET_KEY] ) : '';
                 $sanitized['basic_auth_password'] = isset( $sanitized['basic_auth_password'] ) ? base64_encode( $sanitized['basic_auth_password'] ) : '';
                 $sanitized['ses_access_key_id'] = isset( $sanitized['ses_access_key_id'] ) ? base64_encode( $sanitized['ses_access_key_id'] ) : '';
                 $sanitized['ses_secret_access_key'] = isset( $sanitized['ses_secret_access_key'] ) ? base64_encode( $sanitized['ses_secret_access_key'] ) : '';
