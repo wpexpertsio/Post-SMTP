@@ -6,6 +6,7 @@ class Post_SMTP_New_Wizard {
 
     private $sockets = array();
     private $options;
+    private $options_array;
     private $allowed_tags = array(
         'input'			=>	array(
             'type'			=>	array(),
@@ -74,6 +75,8 @@ class Post_SMTP_New_Wizard {
             add_filter( 'post_smtp_legacy_wizard', '__return_true' );
 
         }
+
+        $this->options_array = get_option( PostmanOptions::POSTMAN_OPTIONS );
         
     }
 
@@ -1112,7 +1115,9 @@ class Post_SMTP_New_Wizard {
      */
     public function render_amazonses_settings() {
 
-        $api_key = null !== $this->options->getSendinblueApiKey() ? esc_attr ( $this->options->getSendinblueApiKey() ) : '';
+        $access_key_id = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ] ) ? base64_decode( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ] ) : '';
+        $access_key_secret = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ] ) ? base64_decode( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ] ) : '';
+        $region = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] ) ? $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] : '';
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">Brevo</a> %2$s</p><p>%3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a>',
@@ -1126,8 +1131,48 @@ class Post_SMTP_New_Wizard {
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>API Key</label></div>
-            <input type="text" class="ps-brevo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDINBLUE_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <div><label>Access Key ID</label></div>
+            <input type="text" class="ps-amazon-key-id" required data-error="'.__( 'Please enter Access Key ID', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ) .']" value="'.$access_key_id.'" placeholder="Access Key ID">'.
+            /**
+             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
+             */
+            sprintf(
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
+                __( 'Create an account at', 'post-smtp' ),
+                esc_url( 'https://www.brevo.com/products/transactional-email/?tap_a=30591-fb13f0&tap_s=1114139-605ce2' ),
+                esc_attr( 'Brevo' ),
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+                esc_url( 'https://app.brevo.com/settings/keys/api' ),
+                esc_attr( 'API Key.' )
+            )
+            .
+        '</div>
+        ';
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>Access Key Secret</label></div>
+            <input type="text" class="ps-amazon-key-secret" required data-error="'.__( 'Please enter Access Key Secret', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ) .']" value="'.$access_key_secret.'" placeholder="Access Key Secret">'.
+            /**
+             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
+             */
+            sprintf(
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
+                __( 'Create an account at', 'post-smtp' ),
+                esc_url( 'https://www.brevo.com/products/transactional-email/?tap_a=30591-fb13f0&tap_s=1114139-605ce2' ),
+                esc_attr( 'Brevo' ),
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+                esc_url( 'https://app.brevo.com/settings/keys/api' ),
+                esc_attr( 'API Key.' )
+            )
+            .
+        '</div>
+        ';
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>SES Region</label></div>
+            <input type="text" class="ps-amazon-region" required data-error="'.__( 'Please enter SES Region', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ) .']" value="'.$region.'" placeholder="SES Region">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1280,6 +1325,9 @@ class Post_SMTP_New_Wizard {
                 $sanitized['mandrill_api_key'] = isset( $sanitized['mandrill_api_key'] ) ? base64_encode( $sanitized['mandrill_api_key'] ) : '';
                 $sanitized['elasticemail_api_key'] = isset( $sanitized['elasticemail_api_key'] ) ? base64_encode( $sanitized['elasticemail_api_key'] ) : '';
                 $sanitized['basic_auth_password'] = isset( $sanitized['basic_auth_password'] ) ? base64_encode( $sanitized['basic_auth_password'] ) : '';
+                $sanitized['ses_access_key_id'] = isset( $sanitized['ses_access_key_id'] ) ? base64_encode( $sanitized['ses_access_key_id'] ) : '';
+                $sanitized['ses_secret_access_key'] = isset( $sanitized['ses_secret_access_key'] ) ? base64_encode( $sanitized['ses_secret_access_key'] ) : '';
+                $sanitized['ses_region'] = isset( $sanitized['ses_region'] ) ? $sanitized['ses_region'] : '';
 
                 foreach( $sanitized as $key => $value ) {
 
