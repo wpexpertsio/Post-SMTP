@@ -322,6 +322,7 @@ class Post_SMTP_New_Wizard {
                                             <div class="ps-form-control">
                                                 <div><label>Recipient Email Address</label></div>
                                                 <input type="text" class="ps-test-to" required data-error="Enter Recipient Email Address" name="postman_test_options[test_email]" value="<?php echo esc_attr( wp_get_current_user()->user_email ); ?>" placeholder="Recipient Email Address">
+                                                <span class="ps-form-control-info">Enter the email address where you want to send a test email message.</span>
                                             </div>
                                             <button class="button button-primary ps-blue-btn ps-wizard-send-test-email" data-step="3">Send Test Email <span class="dashicons dashicons-email"></span></button>
                                             <div>
