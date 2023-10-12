@@ -39,6 +39,13 @@ class Post_SMTP_New_Wizard {
         ),
         'p'             =>  array(),
         'h3'            =>  array(),
+        'select'        =>  array(
+            'name'          =>  array()
+        ),
+        'option'        =>  array(
+            'value'         =>  array(),
+            'selected'      => array()
+        )
     );
 
     private $socket_sequence = array(
@@ -70,6 +77,7 @@ class Post_SMTP_New_Wizard {
         add_action( 'post_smtp_new_wizard', array( $this, 'load_wizard' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
         add_action( 'wp_ajax_ps-save-wizard', array( $this, 'save_wizard' ) );
+        add_action( 'admin_action_zoho_auth_request', array( $this, 'auth_zoho' ) );
 
         if( isset( $_GET['wizard'] ) && $_GET['wizard'] == 'legacy' ) {
 
@@ -186,7 +194,8 @@ class Post_SMTP_New_Wizard {
                                                 'mailjet_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailjet.png',
                                                 'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/logo.png',
                                                 'elasticemail_api'  =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/elasticemail.png',
-                                                'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png'
+                                                'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
+                                                'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png'
                                             );
 
                                             $url = '';
@@ -592,6 +601,9 @@ class Post_SMTP_New_Wizard {
             break;
             case 'office365_api';
                 echo wp_kses( $this->render_office365_settings(), $this->allowed_tags );
+            break;
+            case 'zohomail_api';
+                echo wp_kses( $this->render_zoho_settings(), $this->allowed_tags );
             break;
 
         }
@@ -1124,49 +1136,36 @@ class Post_SMTP_New_Wizard {
         $secret_key = null !== $this->options->getMailjetApiKey() ? esc_attr ( $this->options->getMailjetSecretKey() ) : '';
 
         $html = sprintf(
-            '<p><a href="%1$s" target="_blank">Elastic Email</a> %2$s</p><p>%3$s <a href="%4$s" target="_blank">%5$s</a>',
-            esc_url( 'https://elasticemail.com/' ),
-            __( 'is a powerful transactional email platform designed to deliver exceptional performance and affordability for businesses of all sizes. which grants you the ability to send 100 test emails every month through our secure API.', 'post-smtp' ),
+            '<p><a href="%1$s" target="_blank">Mailjet</a> %2$s</p><p>%6$s<p>%3$s <a href="%4$s" target="_blank">%5$s</a>',
+            esc_url( 'https://app.mailjet.com/signin?redirect=aHR0cHM6Ly9hcHAubWFpbGpldC5jb20vfDI0fDgyMzU3ZDFmMWE4Y2NjMjc4ZWRhMzI0MDUzZTNlMjY0' ),
+            __( 'is a leading email service provider that delivers a complete set of email marketing and transactional email solutions.', 'post-smtp' ),
             __( 'Let\'s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/' ),
-            __( 'Elastic Email Documentation', 'post-smtp' )
+            esc_url( 'https://app.mailjet.com/signin?redirect=aHR0cHM6Ly9hcHAubWFpbGpldC5jb20vfDI0fDgyMzU3ZDFmMWE4Y2NjMjc4ZWRhMzI0MDUzZTNlMjY0' ),
+            __( 'Mailjet Documentation', 'post-smtp' ),
+            __( 'Mailjet’s platform enables you to create, send, and track email marketing campaigns, transactional email messages, and email performance metrics.', 'post-smtp' )
         );
 
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
-            /**
-             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
-             */
-            sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://elasticemail.com/' ),
-                esc_attr( 'Elastic Email' ),
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://elasticemail.com/account#/settings/new/manage-api' ),
-                esc_attr( 'API Key.' )
-            )
-            .
-        '</div>
+            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key"></div>
         ';
 
         $html .= '
         <div class="ps-form-control">
             <div><label>Secret Key</label></div>
-            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="Secret Key">'.
+            <input type="text" class="ps-elasticemail-secret-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="Secret Key">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
             sprintf(
                 '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
                 __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://elasticemail.com/' ),
-                esc_attr( 'Elastic Email' ),
+                esc_url( 'https://app.mailjet.com/signup' ),
+                esc_attr( 'Mailjet' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://elasticemail.com/account#/settings/new/manage-api' ),
-                esc_attr( 'API Key.' )
+                esc_url( 'https://api-console.zoho.com/' ),
+                esc_attr( 'Mailjet API and Access Key' )
             )
             .
         '</div>
@@ -1189,34 +1188,19 @@ class Post_SMTP_New_Wizard {
         $region = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] ) ? $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] : '';
 
         $html = sprintf(
-            '<p><a href="%1$s" target="_blank">Brevo</a> %2$s</p><p>%3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a>',
-            esc_url( 'https://www.brevo.com/products/transactional-email/?tap_a=30591-fb13f0&tap_s=1114139-605ce2' ),
-            __( 'is one of our recommended mailers. It\'s a transactional email provider with scalable price plans, so it\'s suitable for any size of business.', 'post-smtp' ),
-            __( 'If you\'re just starting out, you can use Brevo\'s free plan to send up to 300 emails a day. You don\'t need to use a credit card to try it out. When you\'re ready, you can upgrade to a higher plan to increase your sending limits.', 'post-smtp' ),
-            __( 'Let\'s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendinblue-aka-brevo-with-post-smtp/' ),
-            __( 'Brevo Documentation', 'post-smtp' )
+            '<p><a href="%1$s" target="_blank">Amazon Simple Email Service (Amazon SES)</a> %2$s</p><p>%3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a>',
+            esc_url( 'https://aws.amazon.com/ses/' ),
+            __( 'a cloud-based email platform was developed by AWS to make sending and receiving emails at scale simple and effective. They also offer tools to create and send out marketing emails.', 'post-smtp' ),
+            __( 'To use Amazon SES for your wordpress site, you must have an SSL certificate installed on your WordPress site.', 'post-smtp' ),
+            __( 'Let’s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/amazon-ses-pro/' ),
+            __( 'Amazon SES Documentation', 'post-smtp' )
         );
 
         $html .= '
         <div class="ps-form-control">
             <div><label>Access Key ID</label></div>
-            <input type="text" class="ps-amazon-key-id" required data-error="'.__( 'Please enter Access Key ID', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ) .']" value="'.$access_key_id.'" placeholder="Access Key ID">'.
-            /**
-             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
-             */
-            sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://www.brevo.com/products/transactional-email/?tap_a=30591-fb13f0&tap_s=1114139-605ce2' ),
-                esc_attr( 'Brevo' ),
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://app.brevo.com/settings/keys/api' ),
-                esc_attr( 'API Key.' )
-            )
-            .
-        '</div>
-        ';
+            <input type="text" class="ps-amazon-key-id" required data-error="'.__( 'Please enter Access Key ID', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ) .']" value="'.$access_key_id.'" placeholder="Access Key ID"></div>';
 
         $html .= '
         <div class="ps-form-control">
@@ -1228,11 +1212,11 @@ class Post_SMTP_New_Wizard {
             sprintf(
                 '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
                 __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://www.brevo.com/products/transactional-email/?tap_a=30591-fb13f0&tap_s=1114139-605ce2' ),
-                esc_attr( 'Brevo' ),
+                esc_url( 'https://portal.aws.amazon.com/billing/signup?nc2=h_ct&src=header_signup&redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start/email' ),
+                esc_attr( 'Amazon SES' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://app.brevo.com/settings/keys/api' ),
-                esc_attr( 'API Key.' )
+                esc_url( '#' ),
+                esc_attr( 'Access Key ID and Sceret Access Key' )
             )
             .
         '</div>
@@ -1241,21 +1225,7 @@ class Post_SMTP_New_Wizard {
         $html .= '
         <div class="ps-form-control">
             <div><label>SES Region</label></div>
-            <input type="text" class="ps-amazon-region" required data-error="'.__( 'Please enter SES Region', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ) .']" value="'.$region.'" placeholder="SES Region">'.
-            /**
-             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
-             */
-            sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://www.brevo.com/products/transactional-email/?tap_a=30591-fb13f0&tap_s=1114139-605ce2' ),
-                esc_attr( 'Brevo' ),
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://app.brevo.com/settings/keys/api' ),
-                esc_attr( 'API Key.' )
-            )
-            .
-        '</div>
+            <input type="text" class="ps-amazon-region" required data-error="'.__( 'Please enter SES Region', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ) .']" value="'.$region.'" placeholder="SES Region"></div>
         ';
 
         return $html;
@@ -1351,6 +1321,113 @@ class Post_SMTP_New_Wizard {
 
     }
 
+    
+    /**
+     * Render Gmail API Settings
+     * 
+     * @since 2.7.0
+     * @version 1.0.0
+     */
+    public function render_zoho_settings() {
+
+        $regions = array(
+            'com'       => __( 'United States (US)', 'postsmtp-zoho' ),
+            'eu'        => __( 'Europe (EU)', 'postsmtp-zoho' ),
+            'in'        => __( 'India (IN)', 'postsmtp-zoho' ),
+            'com.cn'    => __( 'China (CN)', 'postsmtp-zoho' ),
+            'com.au'    => __( 'Australia (AU)', 'postsmtp-zoho' ),
+            'jp'        => __( 'Japan (JP)', 'postsmtp-zoho' ),
+        );
+        $selected_region = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ]: '';
+        
+        $client_id = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] : '';
+        $client_secret = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] : '';
+        $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
+
+        $html = '
+        <p>'.sprintf(
+            '<a href="%1$s" target="_blank">%2$s</a> %3$s',
+            esc_url( 'https://www.zoho.com/mail/' ),
+            __( 'Zoho', 'post-smtp' ),
+            __( 'is a well-known provider of cloud-based business software and services. Zoho Corporation offers Zoho Mail, a leading email hosting and collaboration solution.', 'post-smtp' )
+        ).'
+        </p>';
+
+        $html .= '<p>' . __( 'Zoho Mail offers free email accounts as well as domain-specific email accounts. You can use Zoho Mail\'s API to help emails from your WordPress site deliver reliably.', 'post-smtp' ) . '</p>';
+
+        $html .= '
+        <p>'.sprintf(
+            '%1$s <a href="%2$s" target="_blank">%3$s</a>',
+            __( 'Let\'s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/zoho-mail-pro/' ),
+            __( 'Zoho Mail Documentation', 'post-smtp' )
+        ).'
+        </p>';
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>Region</label></div>
+            <select>';
+        foreach( $regions as $key => $value ) {
+
+            $selected = $key == $selected_region ? 'selected="selected"' : '';
+
+            $html .= "<option value='{$key}' {$selected}>{$value}</option>";
+
+        }
+        $html .= '</select></div>
+        ';
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>Client ID</label></div>
+            <input type="text" class="ps-zoho-client-id" required data-error="'.__( 'Please enter Client ID.', 'post-smtp' ).'" name="postman_options['. esc_attr( ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ) .']" value="'.$client_id.'" placeholder="Client ID">
+        </div>
+        ';
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>Client Secret</label></div>
+            <input type="text" class="ps-zoho-client-secret" required data-error="'.__( 'Please enter Client Secret.', 'post-smtp' ).'" name="postman_options['. esc_attr( ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ) .']" value="'.$client_secret.'" placeholder="Client Secret">
+            <div class="ps-form-control-info">
+            '.sprintf(
+                '%1$s <a href="%2$s" target="_blank">%3$s</a>',
+                __( 'Create an account at', 'post-smtp' ),
+                esc_url( 'https://www.zoho.com/mail/' ),
+                __( 'Zoho Mail', 'post-smtp' )
+            ).'
+            </div>
+            <div class="ps-form-control-info">
+            '.sprintf(
+                '%1$s <a href="%2$s" target="_blank">%3$s</a>',
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+                esc_url( 'https://api-console.zoho.com/' ),
+                __( 'Zoho API Credentials', 'post-smtp' )
+            ).'
+            </div>
+        </div>
+        ';
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>Redirect URI</label></div>
+            <input type="text" class="ps-zoho-redirect-uri" value="'.admin_url( 'admin.php?page=postman/' ).'" readonly>
+            <span class="ps-form-control-info">
+            '.__( 'Please copy this URL into the "Redirect URL" field of your Zoho account settings.', 'post-smtp' ).'
+            </span>
+        </div>
+        ';
+        
+        $html .= '
+        <h3>'.__( 'Authorization (Required)', 'post-smtp' ).'</h3>
+        <p>'.__( 'Before continuing, you\'ll need to allow this plugin to send emails using Zoho.', 'post-smtp' ).'</p>
+        <input type="hidden" '.$required.' data-error="Please authenticate by clicking Connect to Zoho" />
+        <a href="'.admin_url( 'admin.php?postman/configuration_wizard&action=zoho_auth_request' ).'" class="button button-primary ps-blue-btn" id="ps-wizard-connect-zoho">Connect to Zoho</a>';
+
+        return $html;
+
+    }
+
 
     /**
      * Save Wizard | AJAX Callback
@@ -1424,7 +1501,33 @@ class Post_SMTP_New_Wizard {
 
     }
 
-    
+    /**
+     * Redirect to Zoho Authentication
+     * 
+     * @since 2.7.0
+     * @version 1.0.0
+     */
+    public function auth_zoho() {
+
+        $zoho_mailer = new PostSMTP_ZohoMail();
+        $oauthClient = $zoho_mailer->zohomail_configuration();
+        $PostmanOauthClient = new ZohoMailPostSMTP\ZohoMailOauth( $oauthClient );
+        $state = get_transient( PostSMTP_ZohoMail::STATE );
+        // Save client state so we can validate in response
+        
+        if ( $state === false ) {
+            $state = bin2hex( random_bytes( 32 / 2 ) );
+            set_transient( PostSMTP_ZohoMail::STATE, $state, 5 * MINUTE_IN_SECONDS );
+        }
+        
+        // // Generate the auth URL
+        $redirect_url = $PostmanOauthClient->getZohoMailAuthURL( array(
+            'state' => $state,
+        ) );
+
+        wp_redirect( $redirect_url );
+
+    }
 
 }
 

@@ -432,6 +432,50 @@ jQuery( document ).ready(function() {
 
     } );
 
+    //Connect to Zoho | Auth
+    jQuery( document ).on( 'click', '#ps-wizard-connect-zoho', function( e ) {
+
+        e.preventDefault();
+
+        var clientID = jQuery( '.ps-zoho-client-id' ).val();
+        var clientSecret = jQuery( '.ps-zoho-client-secret' ).val();
+        var redirectURI = jQuery( this ).attr( 'href' );
+
+        if( clientID == '' ) {
+
+            jQuery( '.ps-zoho-client-id' ).focus();
+            return;
+
+        }
+        if( clientSecret == '' ) {
+
+            jQuery( '.ps-zoho-client-secret' ).focus();
+            return;
+
+        }
+
+        jQuery( this ).html( 'Redirecting...' );
+
+        jQuery.ajax( {
+
+            url: ajaxurl,
+            type: 'POST',
+            async: true,
+            data: {
+                action: 'ps-save-wizard',
+                FormData: jQuery( '#ps-wizard-form' ).serialize(),
+            },
+
+            success: function( response ) {
+
+                window.location.assign( redirectURI );
+
+            },
+
+        } );
+
+    } );
+
     refreshWizard();
 
     if( getUrlParameter( 'socket' ) ) {

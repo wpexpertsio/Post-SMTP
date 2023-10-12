@@ -85,6 +85,18 @@
   height: 978px;
 }
 
+.zohomail_api-outer .ps-wizard-section .ps-wizard-nav {
+  height: 1087px;
+}
+
+.aws_ses_api-outer .ps-wizard-section .ps-wizard-nav {
+  height: 887px;
+}
+
+.mailjet_api-outer .ps-wizard-section .ps-wizard-nav {
+  height: 778px;
+}
+
 .ps-wizard-footer .ps-wizard-nav {
   border-right: none;
 }
@@ -190,7 +202,7 @@
 }
 
 .ps-wizard-footer .ps-active-nav .ps-wizard-line:after {
-  height: 259px;
+  height: 342px;
 }
 
 .ps-wizard-screens-container {
@@ -248,6 +260,18 @@
 
 .office365_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
   height: 837px;
+}
+
+.zohomail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
+  height: 946px;;
+}
+
+.aws_ses_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
+  height: 746px;;
+}
+
+.mailjet_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
+  height: 638px;;
 }
 
 .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
@@ -425,8 +449,10 @@
   font-weight: 600;
 }
 
-.ps-form-ui input[type="text"] {
-  width: 100%;
+.ps-form-ui input[type="text"], 
+.ps-form-ui select {
+  width: 100%!important;
+  max-width: 100%!important;
   height: 37px;
   margin-top: 5px;
   border: 1px solid #000;
