@@ -262,7 +262,7 @@ class Post_SMTP_New_Wizard {
                                                     <?php if( !empty( $is_pro ) ): ?>
                                                         <span class="<?php echo $is_pro . '-tag' ?>">PRO</span>
                                                     <?php endif; ?>
-                                                    <?php if( empty( $is_pro ) ) : ?> <label for="ps-wizard-socket-<?php echo esc_attr( $slug ); ?>"><? endif; ?>                                                    
+                                                    <?php if( empty( $is_pro ) ) : ?> <label for="ps-wizard-socket-<?php echo esc_attr( $slug ); ?>"><?php endif; ?>                                                    
                                                         <?php if( empty( $is_pro ) ) : ?> 
                                                             <input type="radio" <?php echo esc_attr( $checked ) ;?> class="ps-wizard-socket-check <?php echo esc_attr( $is_pro ); ?>" id="ps-wizard-socket-<?php echo esc_attr( $slug ); ?>" value="<?php echo esc_attr( $slug ); ?>" name="<?php echo 'postman_options[' . esc_attr( PostmanOptions::TRANSPORT_TYPE ) . ']'; ?>">
                                                         <?php endif; ?>
@@ -271,9 +271,9 @@ class Post_SMTP_New_Wizard {
                                                             <div class="ps-wizard-socket-tick-container">
                                                                 <div class="ps-wizard-socket-tick"><span class="dashicons dashicons-yes"></span></div>
                                                             </div> 
-                                                        <? endif; ?>
+                                                        <?php endif; ?>
                                                         <h4><?php echo esc_attr( $transport_name ); ?></h4>
-                                                    <?php if( empty( $is_pro ) ) : ?> </label><? endif; ?>
+                                                    <?php if( empty( $is_pro ) ) : ?> </label><?php endif; ?>
                                                 </div>
                                             </div>
                                             <?php
