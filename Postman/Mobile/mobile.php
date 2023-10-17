@@ -46,8 +46,13 @@ class Post_SMTP_Mobile {
         include_once 'includes/controller/v1/controller.php';
         include_once 'includes/email-content.php';
         
-        $this->generate_qr_code();
-        $this->app_connected = get_option( 'post_smtp_mobile_app_connection' );
+        if( isset( $_GET['page'] ) && $_GET['page'] == 'postman/configuration' ) {
+			
+			delete_transient( 'post_smtp_auth_nonce' );
+			$this->generate_qr_code();
+			$this->app_connected = get_option( 'post_smtp_mobile_app_connection' );
+			
+		}
         
     }
 
@@ -110,7 +115,7 @@ class Post_SMTP_Mobile {
         $nonce = get_transient( 'post_smtp_auth_nonce' );
 		$authkey = $nonce ? $nonce : $this->generate_auth_key();
 		$site_title = get_bloginfo( 'name' );
-        set_transient( 'post_smtp_auth_nonce', $authkey );
+        set_transient( 'post_smtp_auth_nonce', $authkey, 1800 );
         $endpoint = site_url( "?authkey={$authkey}&site_title={$site_title}" );
         ob_start();
         QRcode::png( urlencode_deep( $endpoint ) );
@@ -185,6 +190,9 @@ class Post_SMTP_Mobile {
 						
 					}
                     ?>
+					<div>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
+					</div>
                 </div>
                 <div class="mobile-app-internal-box">
                     <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/gif/qr-scan.gif' ) ?>" width="425" />	

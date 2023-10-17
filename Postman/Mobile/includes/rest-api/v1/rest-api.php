@@ -48,6 +48,12 @@ class Post_SMTP_Mobile_Rest_API {
             'callback'              => array( $this, 'get_log' ),
             'permission_callback'   => '__return_true',
         ) );
+		
+		register_rest_route( 'post-smtp/v1', '/resend-email', array(
+            'methods'               => WP_REST_Server::CREATABLE,
+            'callback'              => array( $this, 'resend_email' ),
+            'permission_callback'   => '__return_true',
+        ) );
 
     }
 	
@@ -192,6 +198,92 @@ class Post_SMTP_Mobile_Rest_API {
 			 	$url,
 				200
 			);
+			
+		}
+		
+	}
+	
+	public function resend_email( WP_REST_Request $request ) {
+		
+		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
+		$id = $request->get_param( 'id' ) !== null ? $request->get_param( 'id' ) : '';
+		
+		if( $this->validate( $fcm_token ) ) {
+			
+			if( empty( $id ) ){
+				
+				wp_send_json_error( 
+					array(
+						'error'	=>	'Enter email id.'
+					), 
+					401 
+				);
+				
+			}
+			
+			if( !class_exists( 'PostmanEmailQueryLog' ) ) {
+			
+				require POST_SMTP_PATH . '/Postman/Postman-Email-Log/PostmanEmailQueryLog.php';
+
+			}
+
+            $response = '';
+            $email_query_log = new PostmanEmailQueryLog();
+            $log = $email_query_log->get_log( $id );
+            $to = '';
+
+            if( $log ) {
+
+				$to = $log['original_to'];
+
+                /**
+                 * Fires before resending email
+                 * 
+                 * @param array attachments
+                 * @since 2.5.9
+                 * @version 1.0.0
+                 */
+                $attachments = apply_filters( 'post_smtp_resend_attachments', array(), $id );
+
+                $success = wp_mail( $to, $log['original_subject'], $log['original_message'], $log['original_headers'], $attachments );
+
+                // Postman API: retrieve the result of sending this message from Postman
+                $result = apply_filters( 'postman_wp_mail_result', null );
+                $transcript = $result ['transcript'];
+     
+                // post-handling
+                if ( $success ) {
+				
+                    wp_send_json_success(
+						array(
+							'message'	=>	'Email successfully resend.'
+						),
+						200
+					);
+
+                }
+                else {
+					
+					wp_send_json_error( 
+						array(
+							'message'	=>	'Email not send.'
+						), 
+						200
+					);
+					
+                }
+
+            }
+			else {
+				
+				wp_send_json_error( 
+					array(
+						'error'	=>	'Invalid email id.'
+					), 
+					401 
+				);
+				
+			}
 			
 		}
 		
