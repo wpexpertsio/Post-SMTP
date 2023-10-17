@@ -169,7 +169,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				$data['original_to'] = is_array( $log->originalTo ) ? implode( ',', $log->originalTo ) : $log->originalTo;
 				$data['original_subject'] = !empty( $log->originalSubject ) ? $log->originalSubject : '';
 				$data['original_message'] = $log->originalMessage;
-				$data['original_headers'] = $log->originalHeaders;
+				$data['original_headers'] = is_array($log->originalHeaders) ? serialize($log->originalHeaders) : $log->originalHeaders;
 				$data['session_transcript'] = $log->sessionTranscript;
 
 				$email_logs = new PostmanEmailLogs();
