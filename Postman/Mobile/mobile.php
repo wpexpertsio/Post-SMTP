@@ -189,6 +189,11 @@ class Post_SMTP_Mobile {
                     if( !$this->app_connected ) {
                         
                         echo '<img src="data:image/jpeg;base64,'. $this->qr_code.'" width="300"/>'; 
+                        ?>
+                        <div>
+                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
+                        </div>
+                        <?php
 
                     }
 					else {
@@ -213,9 +218,6 @@ class Post_SMTP_Mobile {
 						
 					}
                     ?>
-					<div>
-						<a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
-					</div>
                 </div>
             </div>
         </section>
