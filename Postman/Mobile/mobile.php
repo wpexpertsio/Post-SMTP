@@ -160,7 +160,30 @@ class Post_SMTP_Mobile {
         ?>
         <section id="mobile-app">
             <h2><?php _e( 'Mobile Application', 'post-smtp' ); ?></h2>
+            <div class="download-app">
+                <div style="float: left;">
+                    <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/mobile.png' ) ?>" width="55px" />
+                </div>
+                <div style="display: inline-block; text-align: center;">
+                    <h3>Download Post SMTP Mobile Application</h3>
+                </div>
+                <div style="float: right; margin: 19px 0;">
+                    <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/google-play.png' ) ?>" class="google-logo" />
+                    <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/apple-store.jpg' ) ?>" class="apple-logo" />
+                </div>
+                <div style="clear: both;"></div>
+            </div>
             <div class="mobile-app-box">
+                <div class="mobile-app-internal-box">
+                    <ol style="line-height: 30px;">
+                        <li>Open Post SMTP <b>mobile app</b> 📱 on your android or iOS device.</li>
+                        <li>Tap on <b>Scan QR Code</b> button to link your mobile device with Post SMTP plugin.</li>
+                        <li>Point your mobile device to this screen to <b>capture</b> the QR Code.</li>
+                    </ol>
+                    <p>
+                        And you are done👍.
+                    </p>
+                </div>
                 <div class="mobile-app-internal-box ps-qr-box" style="line-height: 30px;">
                     <?php 
                     if( !$this->app_connected ) {
@@ -193,9 +216,6 @@ class Post_SMTP_Mobile {
 					<div>
 						<a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
 					</div>
-                </div>
-                <div class="mobile-app-internal-box">
-                    <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/gif/qr-scan.gif' ) ?>" width="425" />	
                 </div>
             </div>
         </section>
