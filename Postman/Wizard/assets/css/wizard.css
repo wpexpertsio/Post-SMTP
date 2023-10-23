@@ -563,12 +563,15 @@
 
 .ps-pro-popup-outer {
   position: absolute;
-  left: 30%;
-  top: 30%;
   width: 500px;
   height: 360px;
   border-top: 3px solid #375caf;
   background: #fff;
+  margin: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 
 span.ps-pro-close-popup {
