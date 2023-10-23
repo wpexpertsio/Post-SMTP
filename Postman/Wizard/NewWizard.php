@@ -179,7 +179,7 @@ class Post_SMTP_New_Wizard {
 
                                         $transports = array_merge( array_flip( $this->socket_sequence ), $transports );
 
-                                        foreach( $transports as $transport ) {
+                                        foreach( $transports as $key => $transport ) {
 
                                             $urls = array(
                                                 'default'           =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.png',
@@ -215,7 +215,7 @@ class Post_SMTP_New_Wizard {
                                             }
                                             else {
                                                 
-                                                $transport_slug = array_search( $transport, (array)$transports );
+                                                $transport_slug = $key;
 
                                                 if( $transport_slug == 'office365_api' ) {
                                                     
