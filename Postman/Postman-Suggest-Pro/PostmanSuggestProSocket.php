@@ -35,6 +35,7 @@ class PostmanSuggestProSocket {
         
         add_filter( 'gettext', array( $this, 'change_fs_submenu_text' ), 10, 3 );
         add_action( 'admin_action_ps_skip_pro_banner', array( $this, 'skip_pro_banner' ) );
+        add_action( 'init', array( $this, 'init' ) );
         
     }
 
@@ -107,9 +108,9 @@ class PostmanSuggestProSocket {
     public function promote_bundles_html() {
 
         ?>
-        <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman-pricing' ) ); ?>">
+        <a href="<?php echo esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=banner' ); ?>">
             <div style="color:#000;background: #fed90f;display: inline-block;padding: 23px;border-radius: 14px;font-size: 16px;font-weight: 400;box-shadow: 5px 5px 8px #c7c7c7;" >
-                🎉 GET ACCESS TO ALL CURRENT AND FUTURE EXTENSIONS STARTING FROM <b>$5/MONTH</b>&nbsp;&nbsp;&nbsp;<span style="background: #000;color: #fff;text-decoration: none;padding: 10px;border-radius: 10px;">👉 <?php printf( '%s <b>%s</b> ', esc_html( 'GET', 'post-smtp' ), esc_html( 'PRO BUNDLE', 'post-smtp' ) ); ?></span>
+                🎉 GET MORE CONTROL WITH PRO FEATURES &nbsp;&nbsp;&nbsp;<span style="background: #000;color: #fff;text-decoration: none;padding: 10px;border-radius: 10px;">👉 <?php printf( '%s', esc_html( 'LEARN MORE', 'post-smtp' ) ); ?></span>
             </div>
         </a>
         <?php
@@ -146,7 +147,7 @@ class PostmanSuggestProSocket {
             <?php $this->promote_bundles_html(); ?>
         </div>
         <div style="padding: 30px 0; margin-left: 10px; float: left;">
-            <a href="<?php echo admin_url( 'admin.php?action=ps_skip_pro_banner' ); ?>">Not interested, Skip for now.</a>
+            <a href="<?php echo admin_url( 'admin.php?action=ps_skip_pro_banner' ); ?>">Not interested, Hide for now.</a>
         </div>
         <div style="clear: both;"></div>
         <?php
@@ -191,6 +192,23 @@ class PostmanSuggestProSocket {
 
         }
 
+    }
+
+    /**
+     * Redirect
+     * 
+     * @since 2.6.3
+     * @version 1.0.0
+     */
+    public function init() {
+        
+        if ( isset( $_GET['page'] ) && 'postman-pricing' === $_GET['page'] ) {
+
+            wp_redirect( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu' );
+            exit;
+
+        }
+        
     }
 
 }
