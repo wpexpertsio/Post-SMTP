@@ -1460,6 +1460,9 @@ class Post_SMTP_New_Wizard {
                 //for the checkboxes
                 $sanitized['prevent_sender_email_override'] = isset( $sanitized['prevent_sender_email_override'] ) ? 1 : '';
                 $sanitized['prevent_sender_name_override'] = isset( $sanitized['prevent_sender_name_override'] ) ? 1 : '';
+                
+                //Envelop Email Address
+                $sanitized['envelope_sender'] = isset( $sanitized['sender_email'] ) ? $sanitized['sender_email'] : '';
 
                 //Encode API Keys
                 $sanitized['office365_app_id'] = isset( $sanitized['office365_app_id'] ) ? base64_encode( $sanitized['office365_app_id'] ) : '';
