@@ -304,11 +304,18 @@ jQuery( document ).ready(function() {
 
         e.preventDefault();
 
-        jQuery( '.ps-wizard-error' ).html('');
-        jQuery( '.ps-wizard-success' ).html( 'Sending...' );
-
         var sendTo = jQuery( '.ps-test-to' ).val();
         var security = jQuery( '#security' ).val();
+
+        if( sendTo == '' ) {
+
+            jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${PostSMTPWizard.Step3E4}` );
+            return;
+
+        }
+
+        jQuery( '.ps-wizard-error' ).html('');
+        jQuery( '.ps-wizard-success' ).html( 'Sending...' );
 
         jQuery.ajax( {
 
@@ -326,6 +333,7 @@ jQuery( document ).ready(function() {
                 if( response.success === true ) {
 
                     jQuery( '.ps-wizard-success' ).html( `<span class="dashicons dashicons-yes"></span> ${response.data.message}` );
+                    jQuery( '.ps-finish-wizard' ).html( `${PostSMTPWizard.finish} <span class="dashicons dashicons-arrow-right-alt">` );
 
                 }
                 if( response.success === false ) {

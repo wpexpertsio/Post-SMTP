@@ -399,7 +399,7 @@ class Post_SMTP_New_Wizard {
                                 <div style="clear: both"></div>
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-3">
-                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="3">Finish <span class="dashicons dashicons-arrow-right-alt"></span></button>
+                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn ps-finish-wizard" data-step="3"><?php _e( 'I\'ll send a test email later.', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-4">
                                 <div class="ps-wizard-congrates">
@@ -451,6 +451,8 @@ class Post_SMTP_New_Wizard {
             'Step1E1'           => __( 'Select a socket type to continue.', 'post-smtp' ),
             'Step2E2'           => __( 'Please enter From Email.', 'post-smtp' ),
             'Step2E3'           => __( 'Please try again, something went wrong.', 'post-smtp' ),
+            'Step3E4'           => __( 'Please enter recipient email address.', 'post-smtp' ),
+            'finish'           => __( 'Finish', 'post-smtp' ),
             'adminURL'          => admin_url(),
         );
 
