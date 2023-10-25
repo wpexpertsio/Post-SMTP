@@ -3,8 +3,8 @@ Plugin URI: https://wpexperts.io/
 Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 5.6.0
-Tested up to: 6.3
-Stable tag: 2.6.1
+Tested up to: 6.3.2
+Stable tag: 2.6.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -74,7 +74,7 @@ In essence, SMTP is a set of commands that authenticates and directs the transfe
 [Post SMTP Pro Extensions](https://postmansmtp.com/extensions/) are everything you need to enhance your WordPress email deliverability experience. Check our extensions for Amazon SES, Advanced Email Delivery and Logs, and Office365.
 
 **Office365 API delivery**
-[Office365 Pro Extension](https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/) allows you to connect PostSMTP with your Outlook and Microsoft 365 accounts to improve email deliverability.
+[Office365 Pro Extension](https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/?utm_source=wp_org&utm_medium=readme) allows you to connect PostSMTP with your Outlook and Microsoft 365 accounts to improve email deliverability.
 
 **Amazon SES API delivery**
 [Amazon SES Pro Extension](https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/) combines Amazon's mail service provider with PostSMTP's powerful and easy-to-use SMTP mailing features. 
@@ -93,8 +93,8 @@ In essence, SMTP is a set of commands that authenticates and directs the transfe
 
 **Advanced Email Delivery and Logs Extension**
 With the [Advanced Email Delivery and Logs Extension](https://postmansmtp.com/extensions/advanced-email-delivery/), boost your email efficiency and improve deliverability. Also, implement effective email quota management and streamlined log storage for optimal email communication.
-= Post SMTP Membership Plans = 
-[Post SMTP membership plans](https://postmansmtp.com/membership-plan/) offer access to all pro extensions along with other benefits including 1-year extension updates and support, Email Reporting, Logging, and Tracking, all other SMTP Services and a 30-day money-back guarantee.
+= Post SMTP PRO = 
+[Post SMTP PRO Bundle](https://postmansmtp.com/pricing/?utm_source=wp_org&utm_medium=readme) offer access to all pro extensions along with other benefits including 1-year extension updates and support, Email Reporting, Logging, and Tracking, all other SMTP Services and a 30-day money-back guarantee.
 
 = API (HTTPS) Email Support for different SMTPs =
 * **Gmail API for sending Gmail and Google Apps email** (requires a [Google](https://accounts.google.com/signup) account)
@@ -306,7 +306,16 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
-= 2.6.1 - 2023-09-26 =
+= 2.6.3 - 2023-10-25 =
+
+* Fix - HTML was sent when using ElasticEmail.
+* Fix - Emails were broken when resend in some cases.
+
+= 2.6.2 - 2023-10-19 =
+
+* Tested up to WordPress v6.3.2
+
+= 2.6.1 - 2023-10-03 =
 
 * Fix: Removed broken link from test email.
 * Improvement: Improved SQL query to meet latest security standards.
