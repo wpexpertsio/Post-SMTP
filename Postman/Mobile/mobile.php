@@ -183,6 +183,9 @@ class Post_SMTP_Mobile {
                     <p>
                         And you are done👍.
                     </p>
+                    <p>
+                        Want more details? Check out our complete guide <a href="https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app" target="_blank">Post SMTP Plugin with Mobile App</a>
+                    </p>
                 </div>
                 <div class="mobile-app-internal-box ps-qr-box" style="line-height: 30px;">
                     <?php 
