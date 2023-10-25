@@ -168,7 +168,7 @@ class Post_SMTP_Mobile {
                     <h3>Download Post SMTP Mobile Application</h3>
                 </div>
                 <div style="float: right; margin: 19px 0;">
-                    <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/google-play.png' ) ?>" class="google-logo" />
+                    <a href="https://play.google.com/store/apps/details?id=com.postsmtp" target="_blank" /><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/google-play.png' ) ?>" class="google-logo" /></a>
                     <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/apple-store.jpg' ) ?>" class="apple-logo" />
                 </div>
                 <div style="clear: both;"></div>
