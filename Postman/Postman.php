@@ -83,6 +83,9 @@ class Postman {
 
 		//load MainWP Child Files
 		require_once 'Extensions/MainWP-Child/mainwp-child.php';
+		
+		//Mobile Application
+		require_once 'Mobile/mobile.php';
 
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
