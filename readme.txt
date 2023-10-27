@@ -308,7 +308,7 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 = 2.7.0 - 2023-10-26 =
 
-NEW - Added support for POST SMTP app. [Visit documentation for more information](https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app)
+NEW - Added support for POST SMTP app. [Visit documentation for more information](https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=wp_org&utm_medium=changelog)
 Fix - Raw HTML was sent when using ElasticEmail service.
 Fix - Raw HTML was sent when resending emails from the log section.
 
