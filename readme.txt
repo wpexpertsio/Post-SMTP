@@ -49,20 +49,20 @@ https://www.youtube.com/watch?v=mXDEEE9jnfw
 * Fire-and-forget delivery continues even if you change your password.
 * [Set up an app password](https://youtu.be/OX2g6QB6LWI) in your Google account.
 
-* **NEW:** One-of-a-kind mobile app for monitoring your WordPress emails on the go, you can view detailed email logs, check email errors, and resend them with a single tap directly from your mobile.
+* 👉 **NEW:** One-of-a-kind mobile app for monitoring your WordPress emails on the go, you can view detailed email logs, check email errors, and resend them with a single tap directly from your mobile.
 
- = Post SMTP Mobile App - Get an instant pulse of your WordPress emails =
-**Keep track of Your Emails:** You can monitor all the emails sent from your WordPress site and check the status of each email.
+ = 👉 Post SMTP Mobile App - Get an instant pulse of your WordPress emails =
+**👉 Keep track of Your Emails:** You can monitor all the emails sent from your WordPress site and check the status of each email.
 
-**Get Instant Alerts:** When an email fails to deliver, you will receive an instant notification on your phone.
+**👉 Get Instant Alerts:** When an email fails to deliver, you will receive an instant notification on your phone.
 
-**Resend Failed Emails:** With one tap on your app, you can resend any failed email.
+**👉 Resend Failed Emails:** With one tap on your app, you can resend any failed email.
 
-**Preview Any Email:** You can preview your emails and see how it looks.
+**👉 Preview Any Email:** You can preview your emails and see how it looks.
 
-**Manage Your Site:** Check which WordPress sites are connected to your app and switch between them with ease [Coming soon].
+**👉 Manage Your Site:** Check which WordPress sites are connected to your app and switch between them with ease [Coming soon].
 
-**Troubleshoot Errors:** Quickly fix any email failure issues by viewing the error details with a single tap.
+**👉 Troubleshoot Errors:** Quickly fix any email failure issues by viewing the error details with a single tap.
 
 = Slack notifications =
 Receive Post SMTP notifications on your Slack app. If you approve ["Post SMTP Notifications" app for Slack](https://slack.postmansmtp.com/), you will be notified on any selected workplace about your failed emails.
