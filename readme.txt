@@ -1,5 +1,5 @@
 === POST SMTP Mailer - Email log, Delivery Failure Notifications and Best Mail SMTP for WordPress ===
-Plugin URI: https://wpexperts.io/
+Plugin URI: https://postmansmtp.com/
 Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 5.6.0
@@ -12,7 +12,7 @@ Connect with any SMTP, including Gmail, Outlook, SendinBlue, Sendgrid, Mailgun, 
 
 == Description ==
 
-[Live Demo](https://www.tastewp.com/plugins/post-smtp) | [Extensions](https://postmansmtp.com/extension/)
+[Live Demo](https://www.tastewp.com/plugins/post-smtp) | [Extensions](https://postmansmtp.com/extension/?utm_source=wp_org&utm_medium=readme)
 
 = WordPress Mail SMTP Plugin =
 
@@ -23,8 +23,6 @@ Post SMTP is a next-generation WP Mail SMTP plugin that assists and improves the
 **Easy-to-use and reliable** - 300,000+ customers trust Post SMTP Mailer to send their daily WordPress emails to millions of users worldwide.  
 
 Post SMTP is not another WP Mail SMTP clone like WP Bank or Easy SMTP. It helps provide authentication that makes sure your emails get delivered and don't end up in the spam filter or worse, the undelivered email queue.
-
-Post SMTP replaces the default WordPress SMTP library, PHPMailer, with the heavy-duty Zend_Mail - **Never lose an email to PHP mail() again.**
 
 = What makes Post SMTP the best WP Mail SMTP plugin? =
 * Post SMTP's intelligent setup wizard helps guide you each and every step of the way from getting started to sending test emails. 
@@ -49,9 +47,9 @@ https://www.youtube.com/watch?v=mXDEEE9jnfw
 * Fire-and-forget delivery continues even if you change your password.
 * [Set up an app password](https://youtu.be/OX2g6QB6LWI) in your Google account.
 
-* 👉 **NEW:** One-of-a-kind mobile app for monitoring your WordPress emails on the go, you can view detailed email logs, check email errors, and resend them with a single tap directly from your mobile.
+* 👉 **NEW:** One-of-a-kind **Mobile App** for monitoring your WordPress emails on the go, you can view detailed email logs, check email errors, and resend them with a single tap directly from your mobile.
 
- = 👉 Post SMTP Mobile App - Get an instant pulse of your WordPress emails =
+ = Post SMTP Mobile App - Get an instant pulse of your WordPress emails =
 **👉 Keep track of Your Emails:** You can monitor all the emails sent from your WordPress site and check the status of each email.
 
 **👉 Get Instant Alerts:** When an email fails to deliver, you will receive an instant notification on your phone.
@@ -86,28 +84,28 @@ Simple Mail Transfer Protocol or SMTP is the protocol used for sending emails ov
 In essence, SMTP is a set of commands that authenticates and directs the transfer of electronic mail. When configuring your email program, you will typically need to set the SMTP server to your local ISP's SMTP settings.
 
 = Looking for Post SMTP Pro Extensions? = 
-[Post SMTP Pro Extensions](https://postmansmtp.com/extensions/) are everything you need to enhance your WordPress email deliverability experience. Check our extensions for Amazon SES, Advanced Email Delivery and Logs, and Office365.
+[Post SMTP Pro Extensions](https://postmansmtp.com/extensions/?utm_source=wp_org&utm_medium=readme) are everything you need to enhance your WordPress email deliverability experience. Check our extensions for Amazon SES, Advanced Email Delivery and Logs, and Office365.
 
 **Office365 API delivery**
 [Office365 Pro Extension](https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/?utm_source=wp_org&utm_medium=readme) allows you to connect PostSMTP with your Outlook and Microsoft 365 accounts to improve email deliverability.
 
 **Amazon SES API delivery**
-[Amazon SES Pro Extension](https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/) combines Amazon's mail service provider with PostSMTP's powerful and easy-to-use SMTP mailing features. 
+[Amazon SES Pro Extension](https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/?utm_source=wp_org&utm_medium=readme) combines Amazon's mail service provider with PostSMTP's powerful and easy-to-use SMTP mailing features. 
 
 **Report & Tracking Pro Extension**
-[Report and Tracking Pro Extension](https://postmansmtp.com/extensions/reporting-and-tracking-extension/) gives you detailed reports and statistics of your website's email performance. You can filter email statistics by day/week/month and track who viewed your emails. You can also view your email's open rate. Also, the addon sends you daily, weekly or monthly email reports directly in your inbox to make sure you are aware of your email performance.
+[Report and Tracking Pro Extension](https://postmansmtp.com/extensions/reporting-and-tracking-extension/?utm_source=wp_org&utm_medium=readme) gives you detailed reports and statistics of your website's email performance. You can filter email statistics by day/week/month and track who viewed your emails. You can also view your email's open rate. Also, the addon sends you daily, weekly or monthly email reports directly in your inbox to make sure you are aware of your email performance.
 
 **Zoho Mail API delivery**
-[Zoho Mail Pro Extension](https://postmansmtp.com/extensions/zoho-mail-pro-extension/) gives you the power to connect PostSMTP with your Zoho Mail account to improve email deliverability of your WordPress site.
+[Zoho Mail Pro Extension](https://postmansmtp.com/extensions/zoho-mail-pro-extension/?utm_source=wp_org&utm_medium=readme) gives you the power to connect PostSMTP with your Zoho Mail account to improve email deliverability of your WordPress site.
 
 **Twilio Pro Extension**
-[Twilio Extension](https://postmansmtp.com/extensions/twilio-extension-pro/) allows you to add your phone number so that you can receive SMS notifications and alerts when emails are not delivered to your recipients.
+[Twilio Extension](https://postmansmtp.com/extensions/twilio-extension-pro/?utm_source=wp_org&utm_medium=readme) allows you to add your phone number so that you can receive SMS notifications and alerts when emails are not delivered to your recipients.
 
 **Mail Control Pro Extension**
-[Mail Control Pro Extension](https://postmansmtp.com/extensions/post-smtp-mail-control/) allows you to control Post SMTP's email actions like sending email alerts to authors, webmasters, and new users. 
+[Mail Control Pro Extension](https://postmansmtp.com/extensions/post-smtp-mail-control/?utm_source=wp_org&utm_medium=readme) allows you to control Post SMTP's email actions like sending email alerts to authors, webmasters, and new users. 
 
 **Advanced Email Delivery and Logs Extension**
-With the [Advanced Email Delivery and Logs Extension](https://postmansmtp.com/extensions/advanced-email-delivery/), boost your email efficiency and improve deliverability. Also, implement effective email quota management and streamlined log storage for optimal email communication.
+With the [Advanced Email Delivery and Logs Extension](https://postmansmtp.com/extensions/advanced-email-delivery/?utm_source=wp_org&utm_medium=readme), boost your email efficiency and improve deliverability. Also, implement effective email quota management and streamlined log storage for optimal email communication.
 = Post SMTP PRO = 
 [Post SMTP PRO Bundle](https://postmansmtp.com/pricing/?utm_source=wp_org&utm_medium=readme) offer access to all pro extensions along with other benefits including 1-year extension updates and support, Email Reporting, Logging, and Tracking, all other SMTP Services and a 30-day money-back guarantee.
 
