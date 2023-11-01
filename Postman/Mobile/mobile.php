@@ -48,9 +48,14 @@ class Post_SMTP_Mobile {
         
         if( isset( $_GET['page'] ) && $_GET['page'] == 'postman/configuration' ) {
 			
-			delete_transient( 'post_smtp_auth_nonce' );
-			$this->generate_qr_code();
-			$this->app_connected = get_option( 'post_smtp_mobile_app_connection' );
+            //Incompatible server
+            if( function_exists( 'ImageCreate' ) ) {
+
+                delete_transient( 'post_smtp_auth_nonce' );
+                $this->generate_qr_code();
+                $this->app_connected = get_option( 'post_smtp_mobile_app_connection' );
+
+            }
 			
 		}
         
@@ -157,6 +162,8 @@ class Post_SMTP_Mobile {
      */
     public function section() {
 
+        //Incompatible server
+        if( function_exists( 'ImageCreate' ) ):
         ?>
         <section id="mobile-app">
             <h2><?php _e( 'Mobile Application', 'post-smtp' ); ?></h2>
@@ -225,6 +232,24 @@ class Post_SMTP_Mobile {
             </div>
         </section>
         <?php
+        endif;
+
+        //Incompatible server
+        if( !function_exists( 'ImageCreate' ) ):
+            ?>
+            <section id="mobile-app">
+                <h2><?php _e( 'Mobile Application', 'post-smtp' ); ?></h2>
+                <?php 
+                    printf(
+                        '%s <a href="%s" target="_blank">%s</a>',
+                        __( 'Your server does not have GD Library Installed/ Enabled, talk to your host provider to enable to enjoy Post SMTP Mobile Application', 'post-smtp' ),
+                        esc_url( 'https://www.php.net/manual/en/image.installation.php' ),
+                        __( 'learn more.', 'post-smtp' )
+                    ) 
+                ?>
+            </section>
+            <?php
+        endif;
 
     }
 	
