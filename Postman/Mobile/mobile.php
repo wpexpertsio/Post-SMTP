@@ -77,8 +77,8 @@ class Post_SMTP_Mobile {
      */
     public function admin_enqueue() {
 
-        wp_enqueue_script( 'post-smtp-mobile', POST_SMTP_URL . '/Postman/Mobile/assets/js/admin.js', array( 'jquery' ), false );
-        wp_enqueue_style( 'post-smtp-mobile', POST_SMTP_URL . '/Postman/Mobile/assets/css/admin.css' );
+        wp_enqueue_script( 'post-smtp-mobile', POST_SMTP_URL . '/Postman/Mobile/assets/js/admin.js', array( 'jquery' ), POST_SMTP_VER );
+        wp_enqueue_style( 'post-smtp-mobile', POST_SMTP_URL . '/Postman/Mobile/assets/css/admin.css', array(), POST_SMTP_VER );
 
     } 
 
