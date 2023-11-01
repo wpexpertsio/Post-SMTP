@@ -9,7 +9,7 @@ class Post_SMTP_Mobile {
     /**
      * Get instance
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      * 
      * @return Post_SMTP_Mobile
@@ -29,7 +29,7 @@ class Post_SMTP_Mobile {
     /**
      * Constructor
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function __construct() {
@@ -38,6 +38,7 @@ class Post_SMTP_Mobile {
         add_action( 'post_smtp_settings_menu', array( $this, 'section' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ) );
 		add_action( 'admin_action_post_smtp_disconnect_app', array( $this, 'disconnect_app' ) );
+        add_action( 'admin_post_ps_dimiss_app_notice', array( $this, 'dismiss_app_notice' ) );
 		
 		add_filter( 'post_smtp_sanitize', array( $this, 'sanitize' ), 10, 3 );
         add_filter( 'post_smtp_admin_tabs', array( $this, 'tabs' ), 11 );
@@ -58,13 +59,20 @@ class Post_SMTP_Mobile {
             }
 			
 		}
+
+        //Mobile App Notice
+        if( isset( $_GET['page'] ) && $_GET['page'] === 'postman' && !get_option( 'ps_dismissed_mobile_notice' ) ) {
+
+            add_action( 'admin_notices', array( $this, 'mobile_app_notice' ) );
+
+        }
         
     }
 
     /**
      * Enqueue scripts
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function admin_enqueue() {
@@ -77,7 +85,7 @@ class Post_SMTP_Mobile {
     /**
      * Add menu
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function add_menu() {
@@ -97,7 +105,7 @@ class Post_SMTP_Mobile {
     /**
      * Add tab
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function tabs( $tabs ) {
@@ -111,7 +119,7 @@ class Post_SMTP_Mobile {
     /**
      * Generate QR code
      *
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function generate_qr_code() {
@@ -135,7 +143,7 @@ class Post_SMTP_Mobile {
     /**
      * Generate auth key
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     private function generate_auth_key() {
@@ -157,7 +165,7 @@ class Post_SMTP_Mobile {
     /**
      * Section
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function section() {
@@ -289,6 +297,12 @@ class Post_SMTP_Mobile {
 
     }
 	
+    /**
+     * Disconnects the mobile application :(
+     * 
+     * @since 2.7.0
+     * @version 1.0.0
+     */
 	public function disconnect_app() {
 		
 		if( isset( $_GET['action'] ) && $_GET['action'] == 'post_smtp_disconnect_app' ) {
@@ -331,6 +345,80 @@ class Post_SMTP_Mobile {
 		
 	}
 
+    /**
+     * Shows mobile app notice | Action Call-back
+     * 
+     * @since 2.7.1
+     * @version 1.0.0
+     */
+    public function mobile_app_notice() {
+
+    ?>
+    <div class="notice is-dismissible ps-mobile-admin-notice">
+        <div class="ps-mobile-notice">
+            <input type="hidden" value="<?php echo esc_url( admin_url( 'admin-post.php?action=ps_dimiss_app_notice' ) ); ?>" class="ps-mobile-notice-hidden-url" />
+            <div class="ps-mobile-notice-img">
+                <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/mobile2.png' ) ?>" width="55px" />
+            </div>
+            <div class="ps-mobile-notice-content">
+                <h4><?php _e( 'Introducing NEW Post SMTP Mobile App' ); ?></h4>
+                <table width="100%">
+                    <tr>
+                        <td>
+                            <span class="dashicons dashicons-yes-alt"></span>
+                            Easy Email Tracking
+                        </td>
+                        <td>
+                            <span class="dashicons dashicons-yes-alt"></span>
+                            Quickly View Error Details
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="dashicons dashicons-yes-alt"></span>
+                            Get Instant Failure Notifications
+                        </td>
+                        <td>
+                            <span class="dashicons dashicons-yes-alt"></span>
+                            Get Email Preview
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="dashicons dashicons-yes-alt"></span>
+                            Resend Failed Emails
+                        </td>
+                        <td>
+                            <span class="dashicons dashicons-yes-alt"></span>
+                            Support For Multiple Sites (Coming Soon)
+                        </td>
+                    </tr>
+                </table>
+                <a href="https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=plugin&utm_medium=notice" target="_blank">Learn More</a>
+            </div>
+        </div>
+    </div>
+    <?php
+        
+    }
+
+    /**
+     * Dismiss App Notice | Action Call-back
+     * 
+     * @since 2.7.1
+     * @version 1.0.0
+     */
+    public function dismiss_app_notice() {
+
+        if( isset( $_GET['action'] ) && $_GET['action'] === 'ps_dimiss_app_notice' ) {
+
+            update_option( 'ps_dismissed_mobile_notice', 1 );
+
+            wp_redirect( admin_url( 'admin.php?page=postman' ) );
+
+        }
+
+    }
 
 }
 
