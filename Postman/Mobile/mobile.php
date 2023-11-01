@@ -61,7 +61,7 @@ class Post_SMTP_Mobile {
 		}
 
         //Mobile App Notice
-        if( isset( $_GET['page'] ) && $_GET['page'] === 'postman' && !get_option( 'ps_dismissed_mobile_notice' ) ) {
+        if( !get_option( 'ps_dismissed_mobile_notice' ) ) {
 
             add_action( 'admin_notices', array( $this, 'mobile_app_notice' ) );
 

@@ -32,6 +32,7 @@
     margin: 0;
     color: #375caf;
     text-decoration: underline;
+    font-size: 19px;
 }
 
 .ps-mobile-notice-content table {
@@ -50,6 +51,7 @@
 
 .ps-mobile-notice-content a {
     color: #404aa4;
+    font-size: 19px;
 }
 
 .ps-mobile-notice-img {
