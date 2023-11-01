@@ -120,9 +120,27 @@ class PostmanElasticEmailMailEngine implements PostmanMailEngine {
             'BCC'   =>  $bcc
         );
 
-        $body = !empty( $message->getBodyTextPart() ) ? $message->getBodyTextPart() : $message->getBodyHtmlPart();
-        $this->logger->debug( 'Adding body as html' );
-        $email_content['Content'] = array(
+        //Adding PlainText Body
+        if( !empty( $message->getBodyTextPart() ) ){
+
+            $body = $message->getBodyTextPart();
+            $this->logger->debug( 'Adding body as text' );
+            $email_content['Content'] = array(
+            'Body'  => array(
+                0        => array(
+                'ContentType'   =>  'PlainText',
+                'Content'       =>  $body
+                )
+            )
+        );
+        }
+
+        //Adding HTML Body
+        if( !empty( $message->getBodyHtmlPart() ) ){
+
+            $body = $message->getBodyHtmlPart();
+            $this->logger->debug( 'Adding body as html' );
+            $email_content['Content'] = array(
             'Body'  => array(
                 0        => array(
                 'ContentType'   =>  'HTML',
@@ -130,6 +148,7 @@ class PostmanElasticEmailMailEngine implements PostmanMailEngine {
                 )
             )
         );
+        }
 
         $sender = $message->getFromAddress();
         $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
