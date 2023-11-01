@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 5.6.0
 Tested up to: 6.3.2
-Stable tag: 2.7.0
+Stable tag: 2.7.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -319,11 +319,17 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
+= 2.7.1 - 2023-11-01 =
+
+* NEW - Show Mobile App Notice on Post SMTP dashboard
+* Improvement - Improved SQL query to meet latest security standards
+* Improvement - Added patch to avoid script execution in log content.
+
 = 2.7.0 - 2023-10-26 =
 
-NEW - Added support for POST SMTP app. [Visit documentation for more information](https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=wp_org&utm_medium=changelog)
-Fix - Raw HTML was sent when using ElasticEmail service.
-Fix - Raw HTML was sent when resending emails from the log section.
+* NEW - Added support for POST SMTP app. [Visit documentation for more information](https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=wp_org&utm_medium=changelog)
+* Fix - Raw HTML was sent when using ElasticEmail service.
+* Fix - Raw HTML was sent when resending emails from the log section.
 
 = 2.6.2 - 2023-10-19 =
 
