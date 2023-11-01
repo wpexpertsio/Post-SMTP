@@ -8,7 +8,7 @@ class Post_SMTP_Mobile_Rest_API {
     /**
      * Register routes
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function __construct() {
@@ -20,7 +20,7 @@ class Post_SMTP_Mobile_Rest_API {
     /**
      * Register routes
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function register_routes() {

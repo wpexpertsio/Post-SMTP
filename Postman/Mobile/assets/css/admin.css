@@ -22,3 +22,36 @@
 #mobile-app .google-logo {
     border-radius: 8px;
 }
+
+.ps-mobile-notice {
+    display: flex;
+    padding: 15px 0;
+}
+
+.ps-mobile-notice h4 {
+    margin: 0;
+    color: #375caf;
+    text-decoration: underline;
+}
+
+.ps-mobile-notice-content table {
+    margin: 20px 0;
+}
+
+.ps-mobile-notice-content td {
+    color: #000000;
+    padding: 4px 0;
+    font-size: 18px;
+}
+
+.ps-mobile-notice-content span {
+    color: #12d726;
+}
+
+.ps-mobile-notice-content a {
+    color: #404aa4;
+}
+
+.ps-mobile-notice-img {
+    padding: 28px 40px;
+}
