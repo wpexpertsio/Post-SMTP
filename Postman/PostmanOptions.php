@@ -90,6 +90,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const MANDRILL_API_KEY = 'mandrill_api_key';
 		const SENDGRID_API_KEY = 'sendgrid_api_key';
 		const SENDINBLUE_API_KEY = 'sendinblue_api_key';
+		const MAILJET_API_KEY = 'mailjet_api_key';
+		const MAILJET_SECRET_KEY = 'mailjet_secret_key';
 		const POSTMARK_API_KEY = 'postmark_api_key';
 		const SPARKPOST_API_KEY = 'sparkpost_api_key';
 		const MAILGUN_API_KEY = 'mailgun_api_key';
@@ -548,6 +550,45 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
 
         }
+
+		/**
+		 * Gets Mailjet API key
+		 * 
+         * @since 2.7
+         * @version 1.0
+         */
+
+		public function getMailjetApiKey() {
+
+            if ( defined( 'POST_SMTP_API_KEY' ) ) {
+                return POST_SMTP_API_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::MAILJET_API_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::MAILJET_API_KEY] );
+            }
+
+        }
+
+		/**
+		 * Gets Mailjet Secret key
+		 * 
+         * @since 2.7
+         * @version 1.0
+         */
+
+		public function getMailjetSecretKey() {
+
+            if ( defined( 'POST_SMTP_API_KEY' ) ) {
+                return POST_SMTP_API_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::MAILJET_SECRET_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::MAILJET_SECRET_KEY] );
+            }
+
+        }
+
 
 		/**
 		 * Gets SparkPost API key
