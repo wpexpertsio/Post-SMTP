@@ -167,7 +167,7 @@ class Post_SMTP_New_Wizard {
                                         printf( 
                                             '%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s',
                                             __( 'Which mailer would you like to use to send emails? Not sure which mailer to choose? Check out our ', 'post-smtp' ),
-                                            esc_url( 'https://postmansmtp.com/documentation/' ),
+                                            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/post-smtp-complete-mailer-guide' ),
                                             __( 'complete mailer guide', 'post-smtp' ),
                                             __( ' for details on each option.', 'post-smtp' )
                                         ); 
@@ -646,7 +646,7 @@ class Post_SMTP_New_Wizard {
         <p>'.sprintf(
             '%1$s <a href="%2$s" target="_blank">%3$s</a>',
             __( 'Let\'s get started with our ', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-other-smtp' ),
             __( 'SMTP Documentation', 'post-smtp' )
         ).'</p>
         ';
@@ -712,7 +712,7 @@ class Post_SMTP_New_Wizard {
         <p>'.sprintf(
             '%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s',
             __( 'Our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/gmail/' ),
+            esc_url( 'https://www.google.com/gmail/about/' ),
             __( 'Gmail mailer', 'post-smtp' ),
             __( 'works with any Gmail or Google Workspace account via the Google API. You can send WordPress emails from your main email address and it\'s more secure than directly connecting to Gmail using SMTP credentials.', 'post-smtp' )
         ).'
@@ -801,10 +801,10 @@ class Post_SMTP_New_Wizard {
             sprintf(
                 '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
                 __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://mandrillapp.com/' ),
+                esc_url( 'https://mandrillapp.com/login/?referrer=%2F' ),
                 esc_attr( 'Mandrill' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://mandrillapp.com/settings' ),
+                esc_url( 'https://mandrillapp.com/settings/index' ),
                 esc_attr( 'API Key.' )
             )
             .'
@@ -911,12 +911,9 @@ class Post_SMTP_New_Wizard {
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
             sprintf(
-                '%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s <a href="%5$s" target="_blank">%6$s</a>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://mailgun.com/' ),
-                esc_attr( 'Mailgun' ),
-                __( 'and enter a', 'post-smtp' ),
-                esc_url( 'https://app.mailgun.com/app/domains' ),
+                '%1$s <a href="%2$s" target="_blank">%3$s</a>',
+                __( ' Follow this link to get the Mailgun', 'post-smtp' ),
+                esc_url( 'https://app.mailgun.com/app/sending/domains' ),
                 esc_attr( 'Domain Name.' )
             )
             .'</span>
@@ -1070,7 +1067,7 @@ class Post_SMTP_New_Wizard {
             sprintf(
                 '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
                 __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://messagebird.com/email/cloud-sending?sp=true' ),
+                esc_url( 'https://app.sparkpost.com/join' ),
                 esc_attr( 'SparkPost' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://app.sparkpost.com/account/api-keys' ),
@@ -1099,7 +1096,7 @@ class Post_SMTP_New_Wizard {
             esc_url( 'https://elasticemail.com/' ),
             __( 'is a powerful transactional email platform designed to deliver exceptional performance and affordability for businesses of all sizes. which grants you the ability to send 100 test emails every month through our secure API.', 'post-smtp' ),
             __( 'Let\'s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-elastic-email' ),
             __( 'Elastic Email Documentation', 'post-smtp' )
         );
 
@@ -1143,7 +1140,7 @@ class Post_SMTP_New_Wizard {
             esc_url( 'https://app.mailjet.com/signin?redirect=aHR0cHM6Ly9hcHAubWFpbGpldC5jb20vfDI0fDgyMzU3ZDFmMWE4Y2NjMjc4ZWRhMzI0MDUzZTNlMjY0' ),
             __( 'is a leading email service provider that delivers a complete set of email marketing and transactional email solutions.', 'post-smtp' ),
             __( 'Let\'s get started with our', 'post-smtp' ),
-            esc_url( 'https://app.mailjet.com/signin?redirect=aHR0cHM6Ly9hcHAubWFpbGpldC5jb20vfDI0fDgyMzU3ZDFmMWE4Y2NjMjc4ZWRhMzI0MDUzZTNlMjY0' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-mailjet' ),
             __( 'Mailjet Documentation', 'post-smtp' ),
             __( 'Mailjet’s platform enables you to create, send, and track email marketing campaigns, transactional email messages, and email performance metrics.', 'post-smtp' )
         );
@@ -1167,7 +1164,7 @@ class Post_SMTP_New_Wizard {
                 esc_url( 'https://app.mailjet.com/signup' ),
                 esc_attr( 'Mailjet' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://api-console.zoho.com/' ),
+                esc_url( 'https://app.mailjet.com/account/apikeys' ),
                 esc_attr( 'Mailjet API and Access Key' )
             )
             .
@@ -1218,7 +1215,7 @@ class Post_SMTP_New_Wizard {
                 esc_url( 'https://portal.aws.amazon.com/billing/signup?nc2=h_ct&src=header_signup&redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start/email' ),
                 esc_attr( 'Amazon SES' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( '#' ),
+                esc_url( 'https://us-east-1.console.aws.amazon.com/iamv2/home#/users' ),
                 esc_attr( 'Access Key ID and Sceret Access Key' )
             )
             .
