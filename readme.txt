@@ -319,9 +319,13 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
+= 2.8.0 - 2023-11-03 =
+
+* NEW - Introducing all New super fast Wizard.
+
 = 2.7.2 - 2023-11-01 =
 
-* Improvement - Mobile App banner improvement
+* Improvement - Mobile App banner improvement.
 
 = 2.7.1 - 2023-11-01 =
 
