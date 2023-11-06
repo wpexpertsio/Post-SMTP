@@ -61,10 +61,12 @@ class Post_SMTP_Mobile {
 		}
 
         //Mobile App Notice
-        if( !get_option( 'ps_dismissed_mobile_notice' ) ) {
+        if ( isset( $_GET['page'] ) && 'postman' === $_GET['page'] ) {
+	        if ( ! get_option( 'ps_dismissed_mobile_notice' ) ) {
 
-            add_action( 'admin_notices', array( $this, 'mobile_app_notice' ) );
+		        add_action( 'admin_notices', array( $this, 'mobile_app_notice' ) );
 
+	        }
         }
         
     }
