@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 5.6.0
 Tested up to: 6.3.2
-Stable tag: 2.7.2
+Stable tag: 2.8.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -319,9 +319,13 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
-= 2.8.0 - 2023-11-03 =
+= 2.8.0 - 2023-11-13 =
 
-* NEW - Introducing all New super fast Wizard.
+* NEW – Introducing a NEW 3-step wizard to speed up the initial setup.
+* NEW - Added documentation within the wizard to ease out the setup
+* NEW - Added new socket/email service for Mailjet
+* NEW - Added support for default socket within wizard (you can use this option in case you want to use the logs functionality only)
+* Fix - Updated the error string as reported by @interaptivre
 
 = 2.7.2 - 2023-11-01 =
 
