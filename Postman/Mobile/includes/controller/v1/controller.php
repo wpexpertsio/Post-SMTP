@@ -91,6 +91,17 @@ class Post_SMTP_Mobile_Controller {
 				)
 			)
 		);
+		
+		$response = wp_remote_retrieve_body( $response );
+		$response = json_decode( $response );
+		
+		//Let's migrate to new server :)
+		if( isset( $response->new_base_url ) ) {
+			
+			update_option( 'post_smtp_server_url', $response->new_base_url );
+						  
+		}
+		
 	}
 	
 }
