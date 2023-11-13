@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 5.6.0
 Tested up to: 6.3.2
-Stable tag: 2.8.0
+Stable tag: 2.8.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -130,6 +130,8 @@ Postmark is a cloud-based email management software designed to help businesses 
 
 * **SparkPost API for sending any email** (requires a [SparkPost](https://www.sparkpost.com/) account and PHP 5.3)
 SparkPost is a cloud-based email analytics solution designed to help businesses of all sizes optimize email performance, deliverability, engagement, and more.
+
+* **Mailjet API for sending any email** (requires a [Mailjet](https://www.mailjet.com/) account)
 
 = Compatibility & Support =
 * [Contact Form 7](https://wordpress.org/plugins/contact-form-7/)
@@ -319,11 +321,15 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
+= 2.8.1 - 2023-11-13 =
+
+* Fix - Other SMTP option in the wizard was not saving the settings correctly
+
 = 2.8.0 - 2023-11-13 =
 
 * NEW – Introducing a NEW 3-step wizard to speed up the initial setup.
 * NEW - Added documentation within the wizard to ease out the setup
-* NEW - Added new socket/email service for Mailjet
+* NEW - Added new socket/email service for [Mailjet](https://www.mailjet.com/)
 * NEW - Added support for default socket within wizard (you can use this option in case you want to use the logs functionality only)
 * Fix - Updated the error string as reported by @interaptivre
 
