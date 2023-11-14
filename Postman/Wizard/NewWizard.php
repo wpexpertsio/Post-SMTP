@@ -936,7 +936,7 @@ class Post_SMTP_New_Wizard {
                 __( 'If you are operating under EU laws then check the above button.', 'post-smtp' ),
                 esc_url( 'https://www.mailgun.com/about/regions/' ),
                 __( 'More information', 'post-smtp' ),
-                __( 'about Mailgun.', 'post-smtp' ),
+                __( 'about Mailgun.', 'post-smtp' )
             )
             .'
         </div> 
@@ -1253,7 +1253,7 @@ class Post_SMTP_New_Wizard {
             __( 'Office 365', 'post-smtp' ),
             __( 'is a popular transactional email provider that sends more than 35 billion emails every month. If you\'re just starting out, the free plan allows you to send up to 100 emails each day without entering your credit card details', 'post-smtp' ),
             esc_url( 'https://postmansmtp.com/documentation/postman-smtp-documentation/pro-extensions/configure-office-365-integration/' ),
-            __( 'Read how to setup Office 365', 'post-smtp' ),
+            __( 'Read how to setup Office 365', 'post-smtp' )
         );
 
         $html .= '
