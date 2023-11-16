@@ -39,6 +39,7 @@ class Post_SMTP_Mobile {
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ) );
 		add_action( 'admin_action_post_smtp_disconnect_app', array( $this, 'disconnect_app' ) );
         add_action( 'admin_post_ps_dimiss_app_notice', array( $this, 'dismiss_app_notice' ) );
+        add_action( 'admin_post_regenerate-qrcode', array( $this, 'regenerate_qrcode' ) );
 		
 		add_filter( 'post_smtp_sanitize', array( $this, 'sanitize' ), 10, 3 );
         add_filter( 'post_smtp_admin_tabs', array( $this, 'tabs' ), 11 );
@@ -52,7 +53,6 @@ class Post_SMTP_Mobile {
             //Incompatible server
             if( function_exists( 'ImageCreate' ) ) {
 
-                delete_transient( 'post_smtp_auth_nonce' );
                 $this->generate_qr_code();
                 $this->app_connected = get_option( 'post_smtp_mobile_app_connection' );
 
@@ -211,7 +211,7 @@ class Post_SMTP_Mobile {
                         echo '<img src="data:image/jpeg;base64,'. $this->qr_code.'" width="300"/>'; 
                         ?>
                         <div>
-                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
+                            <a href="<?php echo esc_url( admin_url('admin-post.php?action=regenerate-qrcode') ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
                         </div>
                         <?php
 
@@ -417,6 +417,24 @@ class Post_SMTP_Mobile {
             update_option( 'ps_dismissed_mobile_notice', 1 );
 
             wp_redirect( admin_url( 'admin.php?page=postman' ) );
+
+        }
+
+    }
+
+    /**
+     * Regenerates QR Code | Action Call-back
+     * 
+     * @since 2.8.2
+     * @version 1.0.0
+     */
+    public function regenerate_qrcode() {
+
+        if( isset( $_GET['action'] ) && $_GET['action'] === 'regenerate-qrcode' ) {
+
+            delete_transient( 'post_smtp_auth_nonce' );
+
+            wp_redirect( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) );
 
         }
 
