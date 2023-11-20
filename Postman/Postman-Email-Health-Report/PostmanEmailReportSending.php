@@ -361,7 +361,7 @@ class PostmanEmailReportSending {
                                 <h1>";
                                 if( $opened == 0 )
                                 {
-                                    $body .= " locked ";
+                                    $body .= "🔒";
                                 }
                                 else{
                                     $body .= $opened;
