@@ -318,7 +318,7 @@ class PostmanEmailReportSending {
                         <div class='outer-box'>
                             <div class='inner-box'>
                                 <div class='img-box'>
-                                    <img src='images/total.png' />
+                                    <img src='".POST_SMTP_ASSETS."images/reporting/total.png' />
                                 </div>
                                 <div>
                                     Total Emails
@@ -329,7 +329,7 @@ class PostmanEmailReportSending {
                             </div>
                             <div class='inner-box'>
                                 <div class='img-box'>
-                                    <img src='images/sent.png' />
+                                    <img src='".POST_SMTP_ASSETS."images/reporting/sent.png' />
                                 </div>
                                 <div>
                                     Sent
@@ -342,7 +342,7 @@ class PostmanEmailReportSending {
                         <div class='outer-box'>
                             <div class='inner-box'>
                                 <div class='img-box'>
-                                    <img src='images/failed.png' />
+                                    <img src='".POST_SMTP_ASSETS."images/reporting/failed.png' />
                                 </div>
                                 <div>
                                     Failed
@@ -353,7 +353,7 @@ class PostmanEmailReportSending {
                             </div>
                             <div class='inner-box'>
                                 <div class='img-box'>
-                                    <img src='images/opened.png' />
+                                    <img src='".POST_SMTP_ASSETS."images/reporting/opened.png' />
                                 </div>
                                 <div>
                                     Opened
