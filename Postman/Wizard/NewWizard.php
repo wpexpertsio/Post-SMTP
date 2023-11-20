@@ -1464,24 +1464,24 @@ class Post_SMTP_New_Wizard {
                 $sanitized['envelope_sender'] = isset( $sanitized['sender_email'] ) ? $sanitized['sender_email'] : '';
 
                 //Encode API Keys
-                $sanitized['office365_app_id'] = isset( $sanitized['office365_app_id'] ) ? base64_encode( $sanitized['office365_app_id'] ) : '';
-                $sanitized['office365_app_password'] = isset( $sanitized['office365_app_password'] ) ? base64_encode( $sanitized['office365_app_password'] ) : '';
-                $sanitized['sendinblue_api_key'] = isset( $sanitized['sendinblue_api_key'] ) ? base64_encode( $sanitized['sendinblue_api_key'] ) : '';
-                $sanitized['sparkpost_api_key'] = isset( $sanitized['sparkpost_api_key'] ) ? base64_encode( $sanitized['sparkpost_api_key'] ) : '';
-                $sanitized['postmark_api_key'] = isset( $sanitized['postmark_api_key'] ) ? base64_encode( $sanitized['postmark_api_key'] ) : '';
-                $sanitized['mailgun_api_key'] = isset( $sanitized['mailgun_api_key'] ) ? base64_encode( $sanitized['mailgun_api_key'] ) : '';
-                $sanitized['sendgrid_api_key'] = isset( $sanitized['sendgrid_api_key'] ) ? base64_encode( $sanitized['sendgrid_api_key'] ) : '';
-                $sanitized['mandrill_api_key'] = isset( $sanitized['mandrill_api_key'] ) ? base64_encode( $sanitized['mandrill_api_key'] ) : '';
-                $sanitized['elasticemail_api_key'] = isset( $sanitized['elasticemail_api_key'] ) ? base64_encode( $sanitized['elasticemail_api_key'] ) : '';
-                $sanitized[PostmanOptions::MAILJET_API_KEY] = isset( $sanitized[PostmanOptions::MAILJET_API_KEY] ) ? base64_encode( $sanitized[PostmanOptions::MAILJET_API_KEY] ) : '';
-                $sanitized[PostmanOptions::MAILJET_SECRET_KEY] = isset( $sanitized[PostmanOptions::MAILJET_SECRET_KEY] ) ? base64_encode( $sanitized[PostmanOptions::MAILJET_SECRET_KEY] ) : '';
-                $sanitized['basic_auth_password'] = isset( $sanitized['basic_auth_password'] ) ? base64_encode( $sanitized['basic_auth_password'] ) : '';
-                $sanitized['ses_access_key_id'] = isset( $sanitized['ses_access_key_id'] ) ? base64_encode( $sanitized['ses_access_key_id'] ) : '';
-                $sanitized['ses_secret_access_key'] = isset( $sanitized['ses_secret_access_key'] ) ? base64_encode( $sanitized['ses_secret_access_key'] ) : '';
+                $sanitized['office365_app_id'] = isset( $sanitized['office365_app_id'] ) ? $sanitized['office365_app_id'] : '';
+                $sanitized['office365_app_password'] = isset( $sanitized['office365_app_password'] ) ? $sanitized['office365_app_password'] : '';
+                $sanitized[PostmanOptions::SENDINBLUE_API_KEY] = isset( $sanitized[PostmanOptions::SENDINBLUE_API_KEY] ) ? $sanitized[PostmanOptions::SENDINBLUE_API_KEY] : '';
+                $sanitized['sparkpost_api_key'] = isset( $sanitized['sparkpost_api_key'] ) ? $sanitized['sparkpost_api_key'] : '';
+                $sanitized['postmark_api_key'] = isset( $sanitized['postmark_api_key'] ) ? $sanitized['postmark_api_key'] : '';
+                $sanitized['mailgun_api_key'] = isset( $sanitized['mailgun_api_key'] ) ? $sanitized['mailgun_api_key'] : '';
+                $sanitized[PostmanOptions::SENDGRID_API_KEY] = isset( $sanitized[PostmanOptions::SENDGRID_API_KEY] ) ? $sanitized[PostmanOptions::SENDGRID_API_KEY] : '';
+                $sanitized['mandrill_api_key'] = isset( $sanitized['mandrill_api_key'] ) ? $sanitized['mandrill_api_key'] : '';
+                $sanitized['elasticemail_api_key'] = isset( $sanitized['elasticemail_api_key'] ) ? $sanitized['elasticemail_api_key'] : '';
+                $sanitized[PostmanOptions::MAILJET_API_KEY] = isset( $sanitized[PostmanOptions::MAILJET_API_KEY] ) ? $sanitized[PostmanOptions::MAILJET_API_KEY] : '';
+                $sanitized[PostmanOptions::MAILJET_SECRET_KEY] = isset( $sanitized[PostmanOptions::MAILJET_SECRET_KEY] ) ? $sanitized[PostmanOptions::MAILJET_SECRET_KEY] : '';
+                $sanitized['basic_auth_password'] = isset( $sanitized['basic_auth_password'] ) ? $sanitized['basic_auth_password'] : '';
+                $sanitized['ses_access_key_id'] = isset( $sanitized['ses_access_key_id'] ) ? $sanitized['ses_access_key_id'] : '';
+                $sanitized['ses_secret_access_key'] = isset( $sanitized['ses_secret_access_key'] ) ? $sanitized['ses_secret_access_key'] : '';
                 $sanitized['ses_region'] = isset( $sanitized['ses_region'] ) ? $sanitized['ses_region'] : '';
                 $sanitized['enc_type'] = 'tls';
                 $sanitized['auth_type'] = 'login';
-
+                
                 foreach( $sanitized as $key => $value ) {
 
                     $options[$key] = $value;
@@ -1497,12 +1497,15 @@ class Post_SMTP_New_Wizard {
                     $response = update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
 
                 }
-
+                
             }
             
         }
 
-        wp_send_json( array(), $response ? 200 : 400 );
+        //Prevent redirection
+        delete_transient( PostmanSession::ACTION );
+
+        wp_send_json( array(), 200 );
 
     }
 
