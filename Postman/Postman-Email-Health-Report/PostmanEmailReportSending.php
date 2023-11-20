@@ -107,15 +107,16 @@ class PostmanEmailReportSending {
         $where = ( !empty( $from ) && !empty( $to ) ) ? "WHERE time >= {$from} && time <= {$to}" : '';
        
 
-        $query = "SELECT COUNT( pl.original_subject ) AS total, SUM( pl.success = 1 ) As sent, SUM( pl.success != 1 ) As failed FROM {$ps_query->table} as pl {$where} ";
-        
+        $query = "SELECT COUNT( pl.original_subject ) AS total, SUM( pl.success = 1 ) As sent, SUM( pl.success != 1 ) As failed FROM {$ps_query->table} AS pl {$where} GROUP BY pl.original_subject";
+        $query .= !empty( $limit ) ? " LIMIT {$limit}" : '';
+
+        //Filter for addon
+        $query = apply_filters( 'postman_health_count', $query );
+
         global $wpdb;
         $response = $wpdb->get_results( $query );
 
-        //filter
-
         return $response ? $response : false;
-
 
     }
 
@@ -131,7 +132,7 @@ class PostmanEmailReportSending {
         $total = 0;
         $sent = 0;
         $failed = 0;
-        $opened = 0;
+        $opened = -1;
     
         $yesterday = new DateTime('yesterday');
         $yesterday->setTime(23, 59, 0);
@@ -205,7 +206,7 @@ class PostmanEmailReportSending {
          * 
          * @param string $to The email address to which the report is sent.
          * @since 1.0.0
-         * @version 1.0.0
+         * @version 2.9.0
          */
         $admin_email = apply_filters( 'postman_rat_reporting_email_to', get_option( 'admin_email' ) );
         $admin_name = '';
@@ -222,7 +223,7 @@ class PostmanEmailReportSending {
          * 
          * @param string $site_title The site title.
          * @since 1.0.0
-         * @version 1.0.0
+         * @version 2.9.0
          */
         $site_title = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
         $url = admin_url( "admin.php?page=post-smtp-email-reporting&from={$from}&to={$to}" );
@@ -359,7 +360,7 @@ class PostmanEmailReportSending {
                                     Opened
                                 </div>
                                 <h1>";
-                                if( $opened == 0 )
+                                if( $opened == -1 )
                                 {
                                     $body .= "🔒";
                                 }
@@ -405,7 +406,7 @@ class PostmanEmailReportSending {
                                     <td>{$log->total}</td>
                                     <td>{$log->sent}</td>
                                     <td>{$log->failed}</td>
-                                    <td>{$opened}</td>
+                                    <td>{$log->opened}</td>
                                 </tr>";
 
                                 $row++;
