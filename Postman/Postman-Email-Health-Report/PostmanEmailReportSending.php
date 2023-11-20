@@ -190,9 +190,9 @@ class PostmanEmailReportSending {
                     $failed += $log->failed;
 
                 }
-                if( !$log->opened ) {
+                if( $log->opened ) {
 
-                    $opened = apply_filters( "post_smtp_open_count", $opened );
+                    $opened += $log->opened;
 
                 }
 

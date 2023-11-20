@@ -87,6 +87,10 @@ class Postman {
 		//Mobile Application
 		require_once 'Mobile/mobile.php';
 
+		//Email Reporting
+		require_once 'Postman-Email-Health-Report/PostmanEmailReporting.php';
+		require_once 'Postman-Email-Health-Report/PostmanEmailReportSending.php';
+
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
 				'name' => __( 'Postman SMTP', 'post-smtp' ),
