@@ -358,8 +358,15 @@ class PostmanEmailReportSending {
                                 <div>
                                     Opened
                                 </div>
-                                <h1>
-                                    {$opened}
+                                <h1>";
+                                if( $opened == 0 )
+                                {
+                                    $body .= " locked ";
+                                }
+                                else{
+                                    $body .= $opened;
+                                }
+                            $body .= "
                                 </h1>
                             </div>
                         </div>
