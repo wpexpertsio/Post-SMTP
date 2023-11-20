@@ -9,8 +9,8 @@ class PostmanEmailReportSending {
     /**
      * Get the instance of the class
      * 
-     * @since 1.0.0
-     * @version 2.9.0
+     * @since 2.9.0
+     * @version 1.0.0
      */
     public static function get_instance() {
 
@@ -28,8 +28,8 @@ class PostmanEmailReportSending {
     /**
      * PostmanEmailReportTemplate constructor.
      * 
-     * @since 1.0.0
-     * @version 2.9.0
+     * @since 2.9.0
+     * @version 1.0.0
      */
     public function __construct() {
       
@@ -40,8 +40,8 @@ class PostmanEmailReportSending {
     /**
      * Send the report
      * 
-     * @since 1.0.0
-     * @version 2.9.0
+     * @since 2.9.0
+     * @version 1.0.0
      */
     public function send_report() {
 
@@ -92,8 +92,8 @@ class PostmanEmailReportSending {
      * Get total email count
      * 
      * @param string $email
-     * @since 1.0.0
-     * @version 2.9.0
+     * @since 2.9.0
+     * @version 1.0.0
      */
     public function get_total_logs( $from = '', $to = '', $limit = '' ) {
 
@@ -105,13 +105,13 @@ class PostmanEmailReportSending {
                 $ps_query = new PostmanEmailQueryLog();
 
         $where = ( !empty( $from ) && !empty( $to ) ) ? "WHERE time >= {$from} && time <= {$to}" : '';
-       
 
-        $query = "SELECT COUNT( pl.original_subject ) AS total, SUM( pl.success = 1 ) As sent, SUM( pl.success != 1 ) As failed FROM {$ps_query->table} AS pl {$where} GROUP BY pl.original_subject";
-        $query .= !empty( $limit ) ? " LIMIT {$limit}" : '';
 
-        //Filter for addon
+        $query = "SELECT COUNT( pl.original_subject ) AS total, SUM( pl.success = 1 ) As sent, SUM( pl.success != 1 ) As failed FROM {$ps_query->table} AS pl";
         $query = apply_filters( 'postman_health_count', $query );
+
+        $query .= "{$where} GROUP BY pl.original_subject";
+        $query .= !empty( $limit ) ? " LIMIT {$limit}" : '';
 
         global $wpdb;
         $response = $wpdb->get_results( $query );
@@ -124,15 +124,15 @@ class PostmanEmailReportSending {
     /**
      * Get the email body
      * 
-     * @since 1.0.0
-     * @version 2.9.0
+     * @since 2.9.0
+     * @version 1.0.0
      */
     public function get_body( $interval ) {
 
         $total = 0;
         $sent = 0;
         $failed = 0;
-        $opened = -1;
+        $opened = 0;
     
         $yesterday = new DateTime('yesterday');
         $yesterday->setTime(23, 59, 0);
@@ -205,8 +205,8 @@ class PostmanEmailReportSending {
          * Filters the email address to which the report is sent.
          * 
          * @param string $to The email address to which the report is sent.
-         * @since 1.0.0
-         * @version 2.9.0
+         * @since 2.9.0
+         * @version 1.0.0
          */
         $admin_email = apply_filters( 'postman_rat_reporting_email_to', get_option( 'admin_email' ) );
         $admin_name = '';
@@ -222,8 +222,8 @@ class PostmanEmailReportSending {
          * Filters the site title to be used in the email subject.
          * 
          * @param string $site_title The site title.
-         * @since 1.0.0
-         * @version 2.9.0
+         * @since 2.9.0
+         * @version 1.0.0
          */
         $site_title = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
         $url = admin_url( "admin.php?page=post-smtp-email-reporting&from={$from}&to={$to}" );
@@ -360,7 +360,7 @@ class PostmanEmailReportSending {
                                     Opened
                                 </div>
                                 <h1>";
-                                if( $opened == -1 )
+                                if( $opened == 0 )
                                 {
                                     $body .= "🔒";
                                 }
@@ -443,8 +443,8 @@ class PostmanEmailReportSending {
     /**
      * Function to send the report
      * 
-     * @since 1.0.0
-     * @version 2.9.0
+     * @since 2.9.0
+     * @version 1.0.0
      */
     public function send_mail( $interval ) {
 
@@ -470,8 +470,8 @@ class PostmanEmailReportSending {
          * Filters the site title to be used in the email subject.
          * 
          * @param string $site_title The site title.
-         * @since 1.0.0
-         * @version 2.9.0
+         * @since 2.9.0
+         * @version 1.0.0
          */
         $site_title = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
 
@@ -479,8 +479,8 @@ class PostmanEmailReportSending {
          * Filters the email address to which the report is sent.
          * 
          * @param string $to The email address to which the report is sent.
-         * @since 1.0.0
-         * @version 2.9.0
+         * @since 2.9.0
+         * @version 1.0.0
          */
         $to = apply_filters( 'postman_rat_reporting_email_to', get_option( 'admin_email' ) );
  
