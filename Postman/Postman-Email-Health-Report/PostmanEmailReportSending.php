@@ -104,7 +104,7 @@ class PostmanEmailReportSending {
         }
                 $ps_query = new PostmanEmailQueryLog();
 
-        $where = ( !empty( $from ) && !empty( $to ) ) ? "WHERE time >= {$from} && time <= {$to}" : '';
+        $where = ( !empty( $from ) && !empty( $to ) ) ? " WHERE pl.time >= {$from} && pl.time <= {$to}" : '';
 
 
         $query = "SELECT COUNT( pl.original_subject ) AS total, SUM( pl.success = 1 ) As sent, SUM( pl.success != 1 ) As failed FROM {$ps_query->table} AS pl";
