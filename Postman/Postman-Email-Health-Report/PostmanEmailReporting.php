@@ -64,7 +64,7 @@ if( !class_exists( "PostmanEmailHealthReporting" ) ):
         $data['enable_email_reporting'] = isset( $_POST['enable_email_reporting'] ) ? 1 : 0;
         $data['reporting_interval'] = isset( $_POST['reporting_interval'] ) ? sanitize_text_field( $_POST['reporting_interval'] ) : 'd';
 
-        update_option( 'Postman_RAT', $data );
+        update_option( 'postman_rat', $data );
 
         return $input;
 
@@ -79,7 +79,7 @@ if( !class_exists( "PostmanEmailHealthReporting" ) ):
      */
     public function section() {
 
-        $data = get_option( 'Postman_RAT' );
+        $data = get_option( 'postman_rat' );
         $checked = ( isset( $data['enable_email_reporting'] ) && $data['enable_email_reporting'] == 1 ) ? 'checked' : '';
         $selected_interval = ( isset( $data['reporting_interval'] ) ) ? $data['reporting_interval'] : 'd';
         $selection = array(
