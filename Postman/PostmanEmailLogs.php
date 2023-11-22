@@ -58,10 +58,11 @@ class PostmanEmailLogs {
             $id = sanitize_text_field( $_GET['log_id'] );
             $email_query_log = new PostmanEmailQueryLog();
             $log = $email_query_log->get_log( $id, '' );
+            $header = $log['original_headers'];
             $msg = $log['original_message'];
             $msg = preg_replace( "/<script\b[^>]*>(.*?)<\/script>/s", '', $msg );
 
-            echo '<pre>' . $msg . '</pre>';
+            ( isset ( $header ) && strpos( $header, "text/html" ) ) ? _e( $msg )   : _e( '<pre>' . $msg . '</pre>' );
 
             die;
 
