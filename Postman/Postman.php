@@ -237,6 +237,13 @@ class Postman {
 	 */
 	public function on_activation() {
 
+		//Enable Email reporting on activation of plugin
+		$data = array();
+        $data['enable_email_reporting'] = 1;
+        $data['reporting_interval'] = 'w';
+
+        update_option( 'postman_rat', $data );
+
 		if ( $this->logger->isInfo() ) {
 			$this->logger->info( 'Activating plugin' );
 		}

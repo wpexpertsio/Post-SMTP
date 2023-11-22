@@ -62,7 +62,7 @@ if( !class_exists( "PostmanEmailHealthReporting" ) ):
 
         $data = array();
         $data['enable_email_reporting'] = isset( $_POST['enable_email_reporting'] ) ? 1 : 0;
-        $data['reporting_interval'] = isset( $_POST['reporting_interval'] ) ? sanitize_text_field( $_POST['reporting_interval'] ) : 'd';
+        $data['reporting_interval'] = isset( $_POST['reporting_interval'] ) ? sanitize_text_field( $_POST['reporting_interval'] ) : 'w';
 
         update_option( 'postman_rat', $data );
 
@@ -81,7 +81,7 @@ if( !class_exists( "PostmanEmailHealthReporting" ) ):
 
         $data = get_option( 'postman_rat' );
         $checked = ( isset( $data['enable_email_reporting'] ) && $data['enable_email_reporting'] == 1 ) ? 'checked' : '';
-        $selected_interval = ( isset( $data['reporting_interval'] ) ) ? $data['reporting_interval'] : 'd';
+        $selected_interval = ( isset( $data['reporting_interval'] ) ) ? $data['reporting_interval'] : 'w';
         $selection = array(
             'd' =>  __( 'Daily', 'post-smtp' ),
             'w' =>  __( 'Weekly', 'post-smtp' ),
@@ -89,11 +89,11 @@ if( !class_exists( "PostmanEmailHealthReporting" ) ):
         );
         ?>
         <section id="email_reporting">
-            <h2><?php _e( 'Email Reporting', 'psrat' ); ?></h2>
+            <h2><?php ( class_exists( 'Post_SMTP_Report_And_Tracking' ) ) ? _e( 'Email Health Reporting', 'psrat' ) : _e( 'Email Health Reporting Lite', 'psrat' ) ; ?></h2>
             <br> 
             <table>
                 <tr>
-                    <td><?php _e( 'Enable Email Reporting', 'psrat' ); ?></td>
+                    <td><?php ( class_exists( 'Post_SMTP_Report_And_Tracking' ) ) ? _e( 'Enable Email Reporting', 'psrat' ) : _e( 'Enable Lite Email Reporting', 'psrat' ); ?></td>
                     <td>
                         <label class="ps-switch-1"> 
                             <input type="checkbox" name="enable_email_reporting" <?php echo esc_attr( $checked ) ?> />

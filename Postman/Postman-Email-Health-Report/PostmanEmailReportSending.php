@@ -46,7 +46,7 @@ class PostmanEmailReportSending {
     public function send_report() {
 
         
-        $options = get_option('postman_rat');
+        $options = get_option( 'postman_rat' );
 
         $enabled = ( $options && isset( $options['enable_email_reporting'] ) ) ? $options['enable_email_reporting'] : false;
         
@@ -108,11 +108,18 @@ class PostmanEmailReportSending {
 
 
         $query = "SELECT COUNT( pl.original_subject ) AS total, SUM( pl.success = 1 ) As sent, SUM( pl.success != 1 ) As failed FROM {$ps_query->table} AS pl";
+        
+    /**
+     * Filter to get query from extension
+     * 
+     * @since 2.9.0
+     * @version 1.0.0
+     */
         $query = apply_filters( 'postman_health_count', $query );
-
+        
         $query .= "{$where} GROUP BY pl.original_subject";
         $query .= !empty( $limit ) ? " LIMIT {$limit}" : '';
-
+        
         global $wpdb;
         $response = $wpdb->get_results( $query );
 
@@ -227,6 +234,7 @@ class PostmanEmailReportSending {
          */
         $site_title = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
         $url = admin_url( "admin.php?page=post-smtp-email-reporting&from={$from}&to={$to}" );
+        $extension_url = 'https://postmansmtp.com/extensions/reporting-and-tracking-extension/';
 
         $body = "
         <html>
@@ -360,9 +368,9 @@ class PostmanEmailReportSending {
                                     Opened
                                 </div>
                                 <h1>";
-                                if( $opened == 0 )
+                                if( !class_exists( "Post_SMTP_Report_And_Tracking" ) ) 
                                 {
-                                    $body .= "🔒";
+                                    $body .= "<a href={$extension_url} style='text-decoration: none' target='_blank'>🔒</a>";
                                 }
                                 else{
                                     $body .= $opened;
@@ -371,9 +379,10 @@ class PostmanEmailReportSending {
                                 </h1>
                             </div>
                         </div>
-                        <div class='button-outer'>
-                            <a href='{$url}' target='_blank'>View more stats</a>
-                        </div>";
+                        <div class='button-outer'>";
+                        ( !class_exists( "Post_SMTP_Report_And_Tracking" ) ) ? $body .= "<a href='{$extension_url}' target='_blank'>View more stats</a>": $body .= "<a href='{$url}' target='_blank'>View more stats</a>";
+                            $body .= "</div>";
+                        
 
                         if( !empty( $logs ) ) {
 
@@ -418,9 +427,11 @@ class PostmanEmailReportSending {
                             if( count( $logs ) > 3 ) {
 
                                 $body .= "
-                                <div class='button-outer'>
-                                    <a href='{$url}' target='_blank'>View more emails</a>
-                                </div>
+                                <div class='button-outer'>";
+
+                                ( !class_exists( "Post_SMTP_Report_And_Tracking" ) ) ? $body .= "<a href='{$extension_url}' target='_blank'>View more emails</a>" : $body .= "<a href='{$url}' target='_blank'>View more emails</a>";
+                                    
+                                $body .= "</div>
                                 ";
                             }
 
