@@ -62,7 +62,7 @@ class PostmanEmailLogs {
             $msg = $log['original_message'];
             $msg = preg_replace( "/<script\b[^>]*>(.*?)<\/script>/s", '', $msg );
 
-            ( isset ( $header ) && strpos( $header, "text/html" ) ) ? _e( $msg )   : _e( '<pre>' . $msg . '</pre>' );
+            echo ( isset ( $header ) && strpos( $header, "text/html" ) ) ? $msg : '<pre>' . $msg . '</pre>' ;
 
             die;
 
