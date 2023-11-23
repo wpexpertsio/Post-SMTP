@@ -54,8 +54,12 @@ class PostmanEmailReportSending {
         
         $has_sent = get_transient( 'ps_rat_has_sent' );
 
+        $post_option = get_option( 'postman_options' );
+
+
+
         //If transient expired, let's send :)
-        if( $enabled && $interval && !$has_sent ) {
+        if( $enabled && $interval && !$has_sent && isset ( $post_option['transport_type'] ) && $post_option['transport_type'] != 'default' ) {
 
             $expiry_time = '';
             $report_sent = $this->send_mail( $interval );
@@ -107,7 +111,7 @@ class PostmanEmailReportSending {
         $where = ( !empty( $from ) && !empty( $to ) ) ? " WHERE pl.time >= {$from} && pl.time <= {$to}" : '';
 
 
-        $query = "SELECT COUNT( pl.original_subject ) AS total, SUM( pl.success = 1 ) As sent, SUM( pl.success != 1 ) As failed FROM {$ps_query->table} AS pl";
+        $query = "SELECT pl.original_subject AS subject, COUNT( pl.original_subject ) AS total, SUM( pl.success = 1 ) As sent, SUM( pl.success != 1 ) As failed FROM {$ps_query->table} AS pl";
         
     /**
      * Filter to get query from extension
