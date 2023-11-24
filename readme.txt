@@ -35,7 +35,7 @@ Even hosts that block the standard SMTP ports, like GoDaddy or Bluehost, can't s
 https://www.youtube.com/watch?v=mXDEEE9jnfw
 
 = Post SMTP Features =
-* Easy-to-use, powerful Setup Wizard for perfect configuration
+* Easy-to-use and powerful 3-Step Setup Wizard for quick SMTP configuration.
 * Commercial-grade Connectivity Tester to diagnose server issues
 * Log and resend all emails; see the exact cause of failed emails
 * Supports [International alphabets](https://tools.ietf.org/html/rfc6530), [HTML Mail](https://en.wikipedia.org/wiki/HTML_email) and [MultiPart/Alternative](https://en.wikipedia.org/wiki/MIME#Alternative)
