@@ -418,9 +418,10 @@ class PostmanEmailReportSending {
                                     <td>{$log->subject}</td>
                                     <td>{$log->total}</td>
                                     <td>{$log->sent}</td>
-                                    <td>{$log->failed}</td>
-                                    <td>{$log->opened}</td>
-                                </tr>";
+                                    <td>{$log->failed}</td>";
+                                ( !class_exists( "Post_SMTP_Report_And_Tracking" ) ) ? $body .= "<td>🔒</td>" : $body .= "<td>{$log->opened}</td>";
+                                    
+                               $body .= "</tr>";
 
                                 $row++;
 
