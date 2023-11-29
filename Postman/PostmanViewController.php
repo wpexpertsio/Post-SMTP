@@ -378,6 +378,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					</div>
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/?utm_source=plugin&utm_medium=dashboard' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	<?php echo esc_html( 'Amazon SES' ); ?></a>
+						<span class="ps-dashboard-pro">Pro</span>
 					</div>
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/email-log-attachment/?utm_source=plugin&utm_medium=dashboard' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	<?php echo esc_html( 'Email Log attachment support' ); ?></a>
