@@ -51,7 +51,7 @@ if ( ! function_exists( 'ps_fs' ) ) {
                 'has_addons'          => false,
 				'bundle_id' 		  => '10910',
 				'bundle_public_key'   => 'pk_c5110ef04ba30cd57dd970a269a1a',
-                'has_paid_plans'      => true,
+                'has_paid_plans'      => false,
                 'menu'                => array(
                     'slug'           => 'postman',
                     'first-path'     => 'admin.php?page=postman/configuration_wizard',

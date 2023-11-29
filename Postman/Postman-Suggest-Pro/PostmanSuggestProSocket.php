@@ -26,8 +26,24 @@ class PostmanSuggestProSocket {
 
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
         $this->fs->add_action( 'addons/after_addons', array( $this, 'promote_bundles_fs' ) );
-
-        if( !$hide_notice ) {
+        
+        if( 
+            ( !is_plugin_active( 'zoho-premium/postsmtp-extension-zoho-mail.php' ) 
+            &&
+            !is_plugin_active( 'twilio-notifications-postsmtp-extension-premium/plugin.php' ) 
+            &&
+            !is_plugin_active( 'post-smtp-extension-amazon-ses-premium/plugin.php' ) 
+            &&
+            !is_plugin_active( 'report-and-tracking-addon-premium/post-smtp-report-and-tracking.php' ) 
+            &&
+            !is_plugin_active( 'post-smtp-extension-office365-premium/plugin.php' ) 
+            &&
+            !is_plugin_active( 'attachment-support-premium/post-smtp-attachment-support.php' ) 
+            &&
+            !is_plugin_active( 'advance-email-delivery-and-logs-premium/post-smtp-advanced-email-delivery-and-logs.php' ) 
+            && 
+            !$hide_notice )
+        ) {
 
             add_action( 'post_smtp_dashboard_after_config', array( $this, 'promote_bundles_dashboard' ) );
 
@@ -36,6 +52,7 @@ class PostmanSuggestProSocket {
         add_filter( 'gettext', array( $this, 'change_fs_submenu_text' ), 10, 3 );
         add_action( 'admin_action_ps_skip_pro_banner', array( $this, 'skip_pro_banner' ) );
         add_action( 'init', array( $this, 'init' ) );
+        add_action( 'admin_menu', array( $this, 'add_menu' ), 9999999999 );
         
     }
 
@@ -208,6 +225,26 @@ class PostmanSuggestProSocket {
             exit;
 
         }
+        
+    }
+
+    /**
+     * Add menu
+     * 
+     * @since 2.8.6
+     * @version 1.0.0
+     */
+    public function add_menu() {
+        
+        add_submenu_page( 
+            PostmanViewController::POSTMAN_MENU_SLUG, 
+            __( '👉 Get Pro Bundle', 'post-smtp' ), 
+            sprintf( '👉 %1$s <b>%2$s</b>&nbsp;&nbsp;➤', __( 'Get', 'post-smtp' ), __( 'Pro Bundle', 'post-smtp' ) ),
+            'manage_options', 
+            esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu' ),
+            '',
+            99
+        );
         
     }
 
