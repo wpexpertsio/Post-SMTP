@@ -451,19 +451,18 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				</div>
 				<div class="clear"></div>
 			</div>
-			<?php 
+			<div class="ps-home-middle">
+				<div class="ps-home-middle-left">
+				<?php
 				/**
 				 * Fires after the Postman SMTP dashboard configuration.
 				 * 
 				 * @since 2.5.9.3
 				 */
 				do_action( 'post_smtp_dashboard_after_config' ); 
-			?>
-			<div class="ps-home-middle">
-				<?php
 
 				if ( PostmanPreRequisitesCheck::isReady() ) {
-			
+
 					$this->printDeliveryDetails();
 					/* translators: where %d is the number of emails delivered */
 					print '<p><span>';
@@ -537,51 +536,52 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					esc_url( 'https://postmansmtp.com/post-smtp-1-9-7-the-smtp-fallback/' ),
 					esc_html__( 'Check the detailes here', 'post-smtp')
 				);
-			
-			print '</div>';
 
-			//Temporary disabled
+				?>
+				</div>
+				<div class="ps-home-middle-right">
+				<div class="ps-mobile-notice-content">
+					<h4><?php _e( 'Introducing NEW Post SMTP Mobile App' ); ?></h4>
+					<table width="100%">
+						<tr>
+							<td>
+								<span class="dashicons dashicons-yes-alt"></span>
+								Easy Email Tracking
+							</td>
+							<td>
+								<span class="dashicons dashicons-yes-alt"></span>
+								Quickly View Error Details
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span class="dashicons dashicons-yes-alt"></span>
+								Get Instant Failure Notifications
+							</td>
+							<td>
+								<span class="dashicons dashicons-yes-alt"></span>
+								Get Email Preview
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span class="dashicons dashicons-yes-alt"></span>
+								Resend Failed Emails
+							</td>
+							<td>
+								<span class="dashicons dashicons-yes-alt"></span>
+								Support For Multiple Sites (Coming Soon)
+							</td>
+						</tr>
+					</table>
+					<a href="https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=plugin&utm_medium=notice" target="_blank">Learn More</a>
+				</div>
+				</div>
+			</div>
+			</div>
+			</div>
 
-			// <div class="ps-home-bottom">
-			// 	<div class="ps-config-bar">
-			// 		<h1>Download Our Featured Plugins For Free</h1>
-			// 	</div>
-			// 	<div class="ps-flex">
-			// 		<div class="ps-email-templates">
-			// 			<h4>Create Fully Responsive Email Templates in Just a Few Minutes With Email Templates</h2>
-			// 			<ul>
-			// 				<li>A free WordPress email template plugin.</li>
-			// 				<li>Quickest way to design elegant responsive emails.</li>
-			// 				<li>Features fully compatible with Postnman SMTP.</li>
-			// 			</ul>
-			// 			<div class="ps-left">
-			// 				<a href="https://wordpress.org/plugins/email-templates/>" class="ps-btn-light-blue" target="_blank">Free Download</a>
-			// 			</div>
-			// 			<div class="ps-right">
-			// 				<img src="echo esc_url( POST_SMTP_ASSETS . 'images/logos/email-templates.jpg' )" />
-			// 			</div>
-			// 			<div class="clear"></div>
-			// 		</div>
-			// 		<div class="ps-login-designer">
-			// 			<h4>Upgrade Your Custom Login Styling Experience With Login Designer</h2>
-			// 			<ul>
-			// 				<li>A free Login customizer plugin for WordPress.</li>
-			// 				<li>Easiest way to customize your website's login page.</li>
-			// 				<li>Installation is free, fun quick, and easy.</li>
-			// 			</ul>
-			// 			<div class="ps-left">
-			// 				<a href="https://wordpress.org/plugins/login-designer/>" class="ps-btn-blue" target="_blank">Free Download</a>
-			// 			</div>
-			// 			<div class="ps-right">
-			// 				<img src="<?php esc_url( POST_SMTP_ASSETS . 'images/logos/login-designer.jpg' )" />
-			// 			</div>
-			// 			<div class="clear"></div>
-			// 		</div>
-			// 	</div>
-			// </div>
-			
-			print "</div>";
-			print "</div>";
+			<?php
 
 		}
 
