@@ -120,16 +120,19 @@ class PostmanSuggestProSocket {
      * Promote bundles HTML
      * 
      * @since 2.5.9.3
-     * @version 1.0
+     * @version 1.0.1
      */
     public function promote_bundles_html() {
 
         ?>
-        <a href="<?php echo esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=banner' ); ?>">
-            <div style="color:#000;background: #fed90f;display: inline-block;padding: 23px;border-radius: 14px;font-size: 16px;font-weight: 400;box-shadow: 5px 5px 8px #c7c7c7;" >
-                🎉 GET MORE CONTROL WITH PRO FEATURES &nbsp;&nbsp;&nbsp;<span style="background: #000;color: #fff;text-decoration: none;padding: 10px;border-radius: 10px;">👉 <?php printf( '%s', esc_html( 'LEARN MORE', 'post-smtp' ) ); ?></span>
-            </div>
-        </a>
+        <div style="color:#000;background: #fed90f;display: inline-block;padding: 23px;border-radius: 14px;font-size: 16px;font-weight: 400;box-shadow: 5px 5px 8px #c7c7c7; padding-bottom:10px" >
+            <a style="text-decoration:none; color:#231F20;" href="<?php echo esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=banner' ); ?>">   🎉 GET MORE CONTROL WITH PRO FEATURES &nbsp;&nbsp;&nbsp;<span style="background: #000;color: #fff;text-decoration: none;padding: 10px;border-radius: 10px;">👉 <?php printf( '%s', esc_html( 'LEARN MORE', 'post-smtp' ) ); ?></span> </a>
+            <br>
+        <div style="font-size:12px; margin-left:25px; margin-top:8px">
+            <a style="text-decoration:none; color:#231F20;" href="<?php echo admin_url( 'admin.php?action=ps_skip_pro_banner' ); ?>">Not interested, Hide for now.</a>
+        </div>
+            
+        </div>
         <?php
 
     }
@@ -155,19 +158,17 @@ class PostmanSuggestProSocket {
      * Promote bundles Dashboard
      * 
      * @since 2.5.9.3
-     * @version 1.0
+     * @version 1.0.1
      */
     public function promote_bundles_dashboard() {
 
-        ?>
+    ?>
         <div style="margin-top: 10px; float: left;">
             <?php $this->promote_bundles_html(); ?>
         </div>
-        <div style="padding: 30px 0; margin-left: 10px; float: left;">
-            <a href="<?php echo admin_url( 'admin.php?action=ps_skip_pro_banner' ); ?>">Not interested, Hide for now.</a>
-        </div>
         <div style="clear: both;"></div>
-        <?php
+        
+    <?php
 
     }
 
