@@ -539,47 +539,47 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 
 				?>
 				</div>
-				<div class="ps-home-middle-right">
+				<div class="ps-home-middle-right" style="background-image: url(<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/mobile-banner.png' ) ?>)">
 				<div class="ps-mobile-notice-content">
-					<h4><?php _e( 'Introducing NEW Post SMTP Mobile App' ); ?></h4>
-					<table width="100%">
-						<tr>
-							<td>
+
+					<p><?php _e( 'Introducing NEW Post SMTP Mobile App' ); ?></p>
+
+					<div class="ps-mobile-notice-features">
+
+					<div class="ps-mobile-feature-left">
 								<span class="dashicons dashicons-yes-alt"></span>
 								Easy Email Tracking
-							</td>
-							<td>
+								<br>
 								<span class="dashicons dashicons-yes-alt"></span>
 								Quickly View Error Details
-							</td>
-						</tr>
-						<tr>
-							<td>
+								<br>
 								<span class="dashicons dashicons-yes-alt"></span>
-								Get Instant Failure Notifications
-							</td>
-							<td>
+								Easy Email Tracking			
+					</div>
+
+					<div class="ps-mobile-feature-right">
 								<span class="dashicons dashicons-yes-alt"></span>
 								Get Email Preview
-							</td>
-						</tr>
-						<tr>
-							<td>
+								<br>
 								<span class="dashicons dashicons-yes-alt"></span>
 								Resend Failed Emails
-							</td>
-							<td>
+								<br>
 								<span class="dashicons dashicons-yes-alt"></span>
-								Support For Multiple Sites (Coming Soon)
-							</td>
-						</tr>
-					</table>
-					<a href="https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=plugin&utm_medium=notice" target="_blank">Learn More</a>
+								Support multiple sites		
+					</div>
+
+					</div>
+					
+					<div class="ps-app-download-button">
+
+					<a href="https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=plugin&utm_medium=notice" target="_blank">Download the app</a>
+					</div>
+				
 				</div>
-				</div>
 			</div>
-			</div>
-			</div>
+		</div>
+	</div>
+</div>
 
 			<?php
 
