@@ -133,7 +133,7 @@ class PostmanSuggestProSocket {
             <a style="text-decoration:none; color:#231F20;" href="<?php echo esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=banner' ); ?>">   🎉 GET MORE CONTROL WITH PRO FEATURES &nbsp;&nbsp;&nbsp;<span style="background: #000;color: #fff;text-decoration: none;padding: 10px;border-radius: 10px;">👉 <?php printf( '%s', esc_html( 'LEARN MORE', 'post-smtp' ) ); ?></span> </a>
             <br>
         <div style="font-size:12px; margin-left:25px; margin-top:8px">
-            <a style="text-decoration:none; color:#231F20;" href="<?php echo admin_url( 'admin.php?action=ps_skip_pro_banner' ); ?>">Not interested, Hide for now.</a>
+            <a style="color:#231F20;" href="<?php echo admin_url( 'admin.php?action=ps_skip_pro_banner' ); ?>">Not interested, Hide for now.</a>
         </div>
             
         </div>
