@@ -596,7 +596,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					
 					<div class="ps-app-download-button">
 
-					<a href="https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=plugin&utm_medium=notice" target="_blank">Download the app</a>
+					<a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26anid%3Dadmob" target="_blank">Download the app</a>
 					</div>
 				
 				</div>
