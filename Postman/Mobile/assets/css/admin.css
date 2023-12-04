@@ -9,7 +9,8 @@
     background-repeat: no-repeat;
     background-position-y: bottom !important;
     background-position: right;
-    margin-left: 110px;
+    position: absolute;
+    right: 18px;
 }
 #mobile-app .mobile-app-box {
     display: flex;
