@@ -364,6 +364,30 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 							);
 			
 							do_action( 'post_smtp_extension_reset_link' );
+
+							if( 
+								( !is_plugin_active( 'zoho-premium/postsmtp-extension-zoho-mail.php' ) 
+								&&
+								!is_plugin_active( 'twilio-notifications-postsmtp-extension-premium/plugin.php' ) 
+								&&
+								!is_plugin_active( 'post-smtp-extension-amazon-ses-premium/plugin.php' ) 
+								&&
+								!is_plugin_active( 'report-and-tracking-addon-premium/post-smtp-report-and-tracking.php' ) 
+								&&
+								!is_plugin_active( 'post-smtp-extension-office365-premium/plugin.php' ) 
+								&&
+								!is_plugin_active( 'attachment-support-premium/post-smtp-attachment-support.php' ) 
+								&&
+								!is_plugin_active( 'advance-email-delivery-and-logs-premium/post-smtp-advanced-email-delivery-and-logs.php' ) 
+								 )
+							) {
+					
+								$badgesDisplay = "ps-dashboard-pro";
+					
+							}
+							else{
+								$badgesDisplay = "ps-dashboard-pro-hide";
+							}
 						?>
 					</div>
 				</div>
@@ -374,31 +398,31 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					</div> 
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/?utm_source=plugin&utm_medium=dashboard' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" /><?php echo esc_html( 'Microsoft 365/ Office 365' ); ?></a>
-						<span class="ps-dashboard-pro">Pro</span>
+						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/?utm_source=plugin&utm_medium=dashboard' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	<?php echo esc_html( 'Amazon SES' ); ?></a>
-						<span class="ps-dashboard-pro">Pro</span>
+						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/email-log-attachment/?utm_source=plugin&utm_medium=dashboard' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	<?php echo esc_html( 'Email Log attachment support' ); ?></a>
-						<span class="ps-dashboard-pro">Pro</span>
+						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/reporting-and-tracking-extension/?utm_source=plugin&utm_medium=dashboard' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	<?php echo esc_html( 'Report & Tracking' ); ?></a>
-						<span class="ps-dashboard-pro">Pro</span>
+						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/advanced-email-delivery/?utm_source=plugin&utm_medium=dashboard' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	<?php echo esc_html( 'Advanced Email Delivery & Logs' ); ?></a>
-						<span class="ps-dashboard-pro">Pro</span>
+						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/twilio-extension-pro/?utm_source=plugin&utm_medium=dashboard' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	<?php echo esc_html( 'Twilio' ); ?></a>
-						<span class="ps-dashboard-pro">Pro</span>
+						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/zoho-mail-pro-extension/?utm_source=plugin&utm_medium=dashboard' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	<?php echo esc_html( 'Zoho Mail' ); ?></a>
-						<span class="ps-dashboard-pro">Pro</span>
+						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 				</div>
 				<div class="ps-setting-box">

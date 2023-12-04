@@ -27,6 +27,7 @@ class PostmanSuggestProSocket {
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
         $this->fs->add_action( 'addons/after_addons', array( $this, 'promote_bundles_fs' ) );
         
+        $check = false;
         if( 
             ( !is_plugin_active( 'zoho-premium/postsmtp-extension-zoho-mail.php' ) 
             &&
@@ -41,18 +42,21 @@ class PostmanSuggestProSocket {
             !is_plugin_active( 'attachment-support-premium/post-smtp-attachment-support.php' ) 
             &&
             !is_plugin_active( 'advance-email-delivery-and-logs-premium/post-smtp-advanced-email-delivery-and-logs.php' ) 
-            && 
-            !$hide_notice )
+             )
         ) {
 
-            add_action( 'post_smtp_dashboard_after_config', array( $this, 'promote_bundles_dashboard' ) );
+            $check = true;
+            add_action( 'admin_menu', array( $this, 'add_menu' ), 9999999999 );
 
+        }
+        if( $check && !$hide_notice ){
+            add_action( 'post_smtp_dashboard_after_config', array( $this, 'promote_bundles_dashboard' ) );
+            $check = false;
         }
         
         add_filter( 'gettext', array( $this, 'change_fs_submenu_text' ), 10, 3 );
         add_action( 'admin_action_ps_skip_pro_banner', array( $this, 'skip_pro_banner' ) );
         add_action( 'init', array( $this, 'init' ) );
-        add_action( 'admin_menu', array( $this, 'add_menu' ), 9999999999 );
         
     }
 

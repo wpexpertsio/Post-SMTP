@@ -1572,3 +1572,8 @@ div#ps-email-log_length{
     border-radius: 3px;
     margin-left: 1px;
 }
+
+.ps-dashboard-pro-hide{
+    display: none;
+
+}
