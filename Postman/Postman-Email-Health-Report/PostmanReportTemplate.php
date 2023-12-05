@@ -1,0 +1,449 @@
+<?php
+
+if( !class_exists( 'PostmanReportTemplate' ) ):
+
+class PostmanReportTemplate{
+
+
+    public function reporting_template( $duration, $from, $to, $logs ){
+
+        $total = 0;
+        $sent = 0;
+        $failed = 0;
+        $opened = 0;
+
+        //lets calculate the total
+        if( $logs ) {
+
+            foreach( $logs as $log ) {
+
+                if( $log->total ) {
+
+                    $total += $log->total;
+
+                }
+                if( $log->sent ) {
+
+                    $sent += $log->sent;
+
+                }
+                if( $log->failed ) {
+
+                    $failed += $log->failed;
+
+                }
+                if( $log->opened ) {
+
+                    $opened += $log->opened;
+
+                }
+
+            }
+
+        }
+
+       /**
+         * Filters the email address to which the report is sent.
+         * 
+         * @param string $to The email address to which the report is sent.
+         * @since 2.9.0
+         * @version 1.0.0
+         */
+        $admin_email = apply_filters( 'postman_rat_reporting_email_to', get_option( 'admin_email' ) );
+        $admin_name = '';
+        $user = get_user_by( 'email', $admin_email );
+
+        if ( $user ) {
+
+            $admin_name = !empty( $user->first_name ) ? $user->first_name : $user->user_login;
+
+        }
+
+        /**
+         * Filters the site title to be used in the email subject.
+         * 
+         * @param string $site_title The site title.
+         * @since 2.9.0
+         * @version 1.0.0
+         */
+        $site_title = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
+        $url = admin_url( "admin.php?page=post-smtp-email-reporting&from={$from}&to={$to}" );
+        $extension_url = 'https://postmansmtp.com/extensions/reporting-and-tracking-extension/';
+
+        $body = "
+
+    <html>
+        <head>
+            <style>
+                .container {
+                    height: 100%;
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: grey;
+        
+                }
+        
+                .main {
+                    width: 471px;
+                    height: 580px;
+                    font-family: 'Inter';
+                    background-color: white;
+                    margin: 7%;
+        
+                }
+        
+                .logo {
+                    margin-top: 36px;
+                    text-align: center;
+        
+                }
+        
+                .text {
+        
+                    font-size: 12px;
+                    font-weight: 400;
+                    line-height: 15px;
+                    text-align: left;
+                    margin-top: 32px;
+                    height: 60px;
+                    width: 424px;
+                    margin-left: 30px;
+        
+                }
+        
+                .cards {
+        
+                    margin-top: 20px;
+                    Width: 424px;
+                    Height: 120px;
+                    margin-left: 27px;
+                }
+        
+                .inner-cards {
+                    display: inline-block;
+                    box-sizing: border-box;
+                    text-align: center;
+                    width: 100px;
+                    height: 120px;
+                    padding: 10px;
+                    border-radius: 5px;
+                }
+        
+                .total {
+        
+                    background: #EAFFF2;
+                    border: 1px solid #26E271;
+        
+                }
+        
+                .sent {
+        
+                    background: #E8EFF9;
+                    border: 1px solid #B8C7E4;
+        
+                }
+        
+                .failed {
+        
+                    background: #FFEFE7;
+                    border: 1px solid #E8AF92;
+        
+                }
+        
+                .opened {
+        
+                    background: #FFF5E9;
+                    border: 1px solid #FA8900;
+                }
+        
+                .txt {
+        
+                    font-size: 12px;
+                    color: #151D48;
+                    padding: 5px;
+                }
+        
+                .count {
+        
+                    font-weight: 700;
+                    font-size: 27px;
+                    color: #151D48;
+                }
+        
+                .ellipse {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    display: inline-block;
+                }
+        
+                .ellipse-total {
+        
+                    background: #26E271;
+        
+                }
+        
+                .ellipse-sent {
+        
+                    background: #B8C7E4;
+        
+                }
+        
+                .ellipse-failed {
+        
+                    background: #E8AF92;
+        
+                }
+        
+                .ellipse-opened {
+        
+                    background: #FA8900;
+        
+                }
+        
+                .icon {
+        
+                    width: 24px;
+                    height: 24px;
+                    display: inline-block;
+                    line-height: 44px;
+        
+                }
+        
+                .btn {
+        
+                    width: 110px;
+                    height: 20px;
+                    background-color: #375CAF;
+                    color: white;
+                    font-size: 11px;
+                    border-radius: 10px;
+                    margin-top: 17px;
+                    margin-left: 40%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+        
+                }
+        
+                .btn a {
+                    text-decoration: none;
+                    color: white;
+                }
+        
+                .table-display {
+                    margin-top: 15px;
+                    height: 153px;
+                    width: 424px;
+                    border: 1px solid #CDCDCD;
+                    border-top: none;
+                    margin-left: 23px;
+                    border-radius: 10px;
+                }
+        
+                .table-header {
+                    width: 100%;
+                    height: 30px;
+                    background-color: #3A5EAF;
+                    color: white;
+                    border-top-left-radius: 8px;
+                    border-top-right-radius: 8px;
+                    font-size: 12px;
+                    display: flex;
+                    line-height: 32px;
+                }
+        
+                .table-header span {
+                    line-height: 20px;
+                    margin: 8px;
+                }
+        
+                table,
+                td,
+                th {
+                    border-bottom: 1px solid #CDCDCD;
+                    border-collapse: collapse;
+                    text-align: center;
+                }
+                table td{
+                    line-height: 18px;
+                    font-size: 10px;
+                    color: #444A6D;
+                    font-weight: 600;
+                }
+                .heading{
+                        font-size: 11px;
+                        color: #151D48;
+                      line-height: 22px;
+                      font-weight: 800;
+                }
+                .bottom-text{
+                    width: 307px;
+                    height: 17px;
+                    color: #375CAF;
+                    font-size: 12px;
+                    font-weight: 400;
+                   margin-left: 20%;
+                   margin-top: 20px;
+                }
+            </style>
+        </head>
+        
+        <body>
+            <div class='container'>
+                <div class='main'>
+                    <div class='logo'>
+                        <img src='".POST_SMTP_ASSETS."images/reporting/post_logo.png' />
+                    </div>
+                    <div class='text'>
+                        Hi {$admin_name}
+                        <br>
+                        <br>
+                        Here is a quick overview of how your emails were performing in the past {$duration}
+        
+                    </div>
+                    <div class='cards'>
+                        <div class='total inner-cards'>
+        
+                            <div class='ellipse ellipse-total'>
+        
+                                <div class='icon' style='line-height: 53px;'>
+                                    <img src='".POST_SMTP_ASSETS."images/reporting/total.png' />
+                                </div>
+        
+                            </div>
+        
+                            <div class='txt'>
+                                Total Emails
+                            </div>
+                            <div class='count'>
+                                {$total}
+                            </div>
+                        </div>
+                        <div class='sent inner-cards'>
+                            <div class='ellipse ellipse-sent'>
+        
+                                <div class='icon'>
+                                    <img src='".POST_SMTP_ASSETS."images/reporting/sent.png' />
+                                </div>
+        
+                            </div>
+        
+                            <div class='txt'>
+                                Sent
+                            </div>
+                            <div class='count'>
+                                {$sent}
+                            </div>
+                        </div>
+                        <div class='failed inner-cards'>
+        
+                            <div class='ellipse ellipse-failed'>
+        
+                                <div class='icon'>
+                                    <img src='".POST_SMTP_ASSETS."images/reporting/failed.png' />
+                                </div>
+        
+                            </div>
+        
+                            <div class='txt'>
+                                Failed
+                            </div>
+                            <div class='count'>
+                                {$failed}
+                            </div>
+        
+                        </div>
+                        <div class='opened inner-cards'>
+        
+                            <div class='ellipse ellipse-opened'>
+        
+                                <div class='icon' style='line-height: 53px;'>
+                                    <img src='".POST_SMTP_ASSETS."images/reporting/opened2.png' />
+                                </div>
+        
+                            </div>
+        
+                            <div class='txt'>
+                                Opened
+                            </div>
+                            <div class='count'>
+                                {$opened}
+                            </div>
+        
+                        </div>
+        
+                    </div>
+        
+                    <div class='btn'>
+                        <a href='{$url}' target='_blank'>View More Stats</a>
+                    </div>
+        
+                    <div class='table-display'>
+                        <div class='table-header'>
+                            <span><img src='".POST_SMTP_ASSETS."images/reporting/clock.png'></span>
+                            Last {$duration} top emails
+                        </div>
+                        <div>
+                            <table style='width:100%'>
+                                <tr>
+                                    <td class='heading' style='text-align: left; padding-left: 10px;'>Subject</td>
+                                    <td class='heading'>Total</td>
+                                    <td class='heading'>Sent</td>
+                                    <td class='heading'>Failed</td>
+                                    <td class='heading'>Opened</td>
+                                </tr>";
+
+                                if( !empty($logs) ){
+
+                                    $row = 1;
+                                    foreach( $logs as $log ) {
+
+                                        //Let break if greater than 3
+                                        if( $row > 3 ) {
+                                            break;
+                                        }
+                                        else{
+
+                                            $body .= "
+
+                                        <tr>
+                                            <td style='text-align: left; padding-left: 10px;'>{$log->subject}</td>
+                                            <td>{$log->total}</td>
+                                            <td>{$log->sent}</td>
+                                            <td>{$log->failed}</td>
+                                            <td>{$log->opened}</td>
+                                        </tr>
+
+                                            ";
+
+                                        }
+                                }
+                            }
+                        $body .="        
+                            </table>
+                            <div class='btn' style='position: relative; margin-left: 10px; margin-top: 8px;'>
+                                <a href='{$url}' target='_blank'>View More Emails ></a>
+                            </div>
+                        </div>
+        
+                    </div>
+                    <div class='bottom-text'>
+                        This email was autogenerated and sent from <a href='{$url}' style='text-decoration:none;'>{$site_title}</a>
+                    </div>
+                </div>
+            </div>
+        </body>
+        
+    </html>
+
+        ";
+
+        return $body;
+    }
+}   
+
+endif;
+?>
