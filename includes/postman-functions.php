@@ -194,8 +194,8 @@ endif;
      * @version 1.0
      */
 
-if( !function_exists( 'check_extensions' )):
-function check_extensions(){
+if( !function_exists( 'post_smtp_check_extensions' )):
+function post_smtp_check_extensions(){
         
         if( 
             ( !is_plugin_active( 'zoho-premium/postsmtp-extension-zoho-mail.php' ) 

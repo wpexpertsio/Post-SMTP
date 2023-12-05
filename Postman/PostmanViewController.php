@@ -365,7 +365,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			
 							do_action( 'post_smtp_extension_reset_link' );
 
-							if( check_extensions() ) {
+							if( post_smtp_check_extensions() ) {
 					
 								$badgesDisplay = "ps-dashboard-pro";
 					
