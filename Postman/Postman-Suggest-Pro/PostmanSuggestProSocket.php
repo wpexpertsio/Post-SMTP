@@ -28,51 +28,21 @@ class PostmanSuggestProSocket {
         $this->fs->add_action( 'addons/after_addons', array( $this, 'promote_bundles_fs' ) );
         
         
-        if( array( $this, 'check_extensions' ) ) {
+        if( check_extensions() ) {
+
             add_action( 'admin_menu', array( $this, 'add_menu' ), 9999999999 );
+        
         }
-        if( array( $this, 'check_extensions' ) && !$hide_notice ){
+        if( check_extensions() && !$hide_notice ){
+            
             add_action( 'post_smtp_dashboard_after_config', array( $this, 'promote_bundles_dashboard' ) );
+        
         }
         
         add_filter( 'gettext', array( $this, 'change_fs_submenu_text' ), 10, 3 );
         add_action( 'admin_action_ps_skip_pro_banner', array( $this, 'skip_pro_banner' ) );
         add_action( 'init', array( $this, 'init' ) );
         
-    }
-
-     /**
-     * Check pro extenstions is activated or not
-     * 
-     * @since 2.8.6
-     * @version 1.0
-     */
-
-    public function check_extensions(){
-        
-        if( 
-            ( !is_plugin_active( 'zoho-premium/postsmtp-extension-zoho-mail.php' ) 
-            &&
-            !is_plugin_active( 'twilio-notifications-postsmtp-extension-premium/plugin.php' ) 
-            &&
-            !is_plugin_active( 'post-smtp-extension-amazon-ses-premium/plugin.php' ) 
-            &&
-            !is_plugin_active( 'report-and-tracking-addon-premium/post-smtp-report-and-tracking.php' ) 
-            &&
-            !is_plugin_active( 'post-smtp-extension-office365-premium/plugin.php' ) 
-            &&
-            !is_plugin_active( 'attachment-support-premium/post-smtp-attachment-support.php' ) 
-            &&
-            !is_plugin_active( 'advance-email-delivery-and-logs-premium/post-smtp-advanced-email-delivery-and-logs.php' ) 
-             )
-        ){
-            return true;
-        }
-        else{
-
-            return false;
-        }
-
     }
 
     /**
