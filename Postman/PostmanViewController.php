@@ -365,27 +365,15 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			
 							do_action( 'post_smtp_extension_reset_link' );
 
-							if( 
-								( !is_plugin_active( 'zoho-premium/postsmtp-extension-zoho-mail.php' ) 
-								&&
-								!is_plugin_active( 'twilio-notifications-postsmtp-extension-premium/plugin.php' ) 
-								&&
-								!is_plugin_active( 'post-smtp-extension-amazon-ses-premium/plugin.php' ) 
-								&&
-								!is_plugin_active( 'report-and-tracking-addon-premium/post-smtp-report-and-tracking.php' ) 
-								&&
-								!is_plugin_active( 'post-smtp-extension-office365-premium/plugin.php' ) 
-								&&
-								!is_plugin_active( 'attachment-support-premium/post-smtp-attachment-support.php' ) 
-								&&
-								!is_plugin_active( 'advance-email-delivery-and-logs-premium/post-smtp-advanced-email-delivery-and-logs.php' ) 
-								 )
-							) {
+							$check = new PostmanSuggestProSocket();
+
+							if( $check->check_extensions() ) {
 					
 								$badgesDisplay = "ps-dashboard-pro";
 					
 							}
 							else{
+								
 								$badgesDisplay = "ps-dashboard-pro-hide";
 							}
 						?>
