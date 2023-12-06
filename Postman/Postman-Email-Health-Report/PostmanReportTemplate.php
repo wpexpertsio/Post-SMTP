@@ -7,6 +7,12 @@ class PostmanReportTemplate{
 
     public function reporting_template( $duration, $from, $to, $logs ){
 
+        $is_addonactivated = false;
+        if ( is_plugin_active( 'report-and-tracking-addon-premium/post-smtp-report-and-tracking.php' ) ){
+
+            $is_addonactivated = true;
+        }
+
         $total = 0;
         $sent = 0;
         $failed = 0;
@@ -71,300 +77,348 @@ class PostmanReportTemplate{
         $extension_url = 'https://postmansmtp.com/extensions/reporting-and-tracking-extension/';
 
         $body = "
+        <!DOCTYPE html>
+<html>
 
-    <html>
-        <head>
-            <style>
-                .container {
-                    height: 100%;
-                    width: 100%;
+<head>
+    <style>
+        .container {
+            width: 100%;
+                    height: 600px;
+                    background-color: #f1f1f1;
                     display: flex;
+                    align-items: start;
                     justify-content: center;
-                    align-items: center;
-                    background-color: grey;
-        
-                }
-        
-                .main {
-                    width: 471px;
-                    height: 580px;
-                    font-family: 'Inter';
-                    background-color: white;
-                    margin: 7%;
-        
-                }
-        
-                .logo {
-                    margin-top: 36px;
-                    text-align: center;
-        
-                }
-        
-                .text {
-        
-                    font-size: 12px;
-                    font-weight: 400;
-                    line-height: 15px;
-                    text-align: left;
-                    margin-top: 32px;
-                    height: 60px;
-                    width: 424px;
-                    margin-left: 30px;
-        
-                }
-        
-                .cards {
-        
-                    margin-top: 20px;
-                    Width: 424px;
-                    Height: 120px;
-                    margin-left: 27px;
-                }
-        
-                .inner-cards {
-                    display: inline-block;
-                    box-sizing: border-box;
-                    text-align: center;
-                    width: 100px;
-                    height: 120px;
-                    padding: 10px;
-                    border-radius: 5px;
-                }
-        
-                .total {
-        
-                    background: #EAFFF2;
-                    border: 1px solid #26E271;
-        
-                }
-        
-                .sent {
-        
-                    background: #E8EFF9;
-                    border: 1px solid #B8C7E4;
-        
-                }
-        
-                .failed {
-        
-                    background: #FFEFE7;
-                    border: 1px solid #E8AF92;
-        
-                }
-        
-                .opened {
-        
-                    background: #FFF5E9;
-                    border: 1px solid #FA8900;
-                }
-        
-                .txt {
-        
-                    font-size: 12px;
-                    color: #151D48;
-                    padding: 5px;
-                }
-        
-                .count {
-        
-                    font-weight: 700;
-                    font-size: 27px;
-                    color: #151D48;
-                }
-        
-                .ellipse {
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    display: inline-block;
-                }
-        
-                .ellipse-total {
-        
-                    background: #26E271;
-        
-                }
-        
-                .ellipse-sent {
-        
-                    background: #B8C7E4;
-        
-                }
-        
-                .ellipse-failed {
-        
-                    background: #E8AF92;
-        
-                }
-        
-                .ellipse-opened {
-        
-                    background: #FA8900;
-        
-                }
-        
-                .icon {
-        
-                    width: 24px;
-                    height: 24px;
-                    display: inline-block;
-                    line-height: 44px;
-        
-                }
-        
-                .btn {
-        
-                    width: 110px;
-                    height: 20px;
-                    background-color: #375CAF;
-                    color: white;
-                    font-size: 11px;
-                    border-radius: 10px;
-                    margin-top: 17px;
-                    margin-left: 40%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-        
-                }
-        
-                .btn a {
-                    text-decoration: none;
-                    color: white;
-                }
-        
-                .table-display {
-                    margin-top: 15px;
-                    height: 153px;
-                    width: 424px;
-                    border: 1px solid #CDCDCD;
-                    border-top: none;
-                    margin-left: 23px;
-                    border-radius: 10px;
-                }
-        
-                .table-header {
-                    width: 100%;
-                    height: 30px;
-                    background-color: #3A5EAF;
-                    color: white;
-                    border-top-left-radius: 8px;
-                    border-top-right-radius: 8px;
-                    font-size: 12px;
-                    display: flex;
-                    line-height: 32px;
-                }
-        
-                .table-header span {
-                    line-height: 20px;
-                    margin: 8px;
-                }
-        
-                table,
-                td,
-                th {
-                    border-bottom: 1px solid #CDCDCD;
-                    border-collapse: collapse;
-                    text-align: center;
-                }
-                table td{
-                    line-height: 18px;
-                    font-size: 10px;
-                    color: #444A6D;
-                    font-weight: 600;
-                }
-                .heading{
-                        font-size: 11px;
-                        color: #151D48;
-                      line-height: 22px;
-                      font-weight: 800;
-                }
-                .bottom-text{
-                    width: 307px;
-                    height: 17px;
-                    color: #375CAF;
-                    font-size: 12px;
-                    font-weight: 400;
-                   margin-left: 20%;
-                   margin-top: 20px;
-                }
-            </style>
-        </head>
-        
-        <body>
-            <div class='container'>
-                <div class='main'>
-                    <div class='logo'>
-                        <img src='".POST_SMTP_ASSETS."images/reporting/post_logo.png' />
+                    padding: 15px 0;
+
+        }
+
+        .main {
+            width: 490px;
+            height: 100%;
+            font-family: 'Inter';
+            background-color: white;
+            margin: 0 auto;
+
+        }
+
+        .logo {
+            margin-top: 36px;
+            text-align: center;
+
+        }
+
+        .text {
+
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 15px;
+            text-align: left;
+            margin-top: 32px;
+            height: 60px;
+            width: 424px;
+            margin-left: 38px;
+
+        }
+
+        .cards {
+
+            margin-top: 20px;
+            Width: 424px;
+            Height: 120px;
+            margin-left: 36px;
+        }
+
+        .inner-cards {
+            display: inline-block;
+            box-sizing: border-box;
+            text-align: center;
+            width: 100px;
+            height: 120px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .total {
+
+            background: #EAFFF2;
+            border: 1px solid #26E271;
+
+        }
+
+        .sent {
+
+            background: #E8EFF9;
+            border: 1px solid #B8C7E4;
+
+        }
+
+        .failed {
+
+            background: #FFEFE7;
+            border: 1px solid #E8AF92;
+
+        }
+
+        .opened-pro {
+
+            background: #FFF5E9;
+            border: 1px solid #FA8900;
+        }
+
+        .opened{
+            background: #FA8900;
+        }
+
+        .txt {
+
+            font-size: 12px;
+            color: #151D48;
+            padding: 5px;
+        }
+
+        .count {
+
+            font-weight: 700;
+            font-size: 27px;
+            color: #151D48;
+        }
+
+        .ellipse {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .ellipse-total {
+
+            background: #26E271;
+
+        }
+
+        .ellipse-sent {
+
+            background: #B8C7E4;
+
+        }
+
+        .ellipse-failed {
+
+            background: #E8AF92;
+
+        }
+
+        .ellipse-opened {
+
+            background: #FFF5E9;
+
+        }
+        .ellipse-opened-pro {
+
+            background: #FA8900;
+
+        }
+
+        .icon {
+
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            line-height: 44px;
+
+        }
+
+        .btn {
+
+            width: 110px;
+            background-color: #375CAF;
+            color: white;
+            font-size: 11px;
+            border-radius: 10px;
+            margin-top: 17px;
+            margin-left: 40%;
+            text-align: center;
+            padding: 2px;
+        }
+
+        .btn a {
+            text-decoration: none;
+            color: white;
+        }
+
+        .table-display {
+            margin-top: 15px;
+            height: 153px;
+            width: 424px;
+            border: 1px solid #CDCDCD;
+            border-top: none;
+            margin-left: 32px;
+            border-radius: 10px;
+        }
+
+        .table-display-free{
+            margin-top: 25px;
+            height: 187px;
+            width: 424px;
+            border: 1px solid #CDCDCD;
+            border-top: none;
+            margin-left: 32px;
+            border-radius: 10px;
+
+        }
+
+        .table-header {
+            width: 100%;
+            height: 30px;
+            background-color: #3A5EAF;
+            color: white;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            font-size: 12px;
+            display: flex;
+            line-height: 32px;
+        }
+
+        .table-header span {
+            line-height: 20px;
+            margin: 8px;
+        }
+
+        .table-header-free{
+            width: 100%;
+            height: 30px;
+            background-color: #FA8900;
+            color: white;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            font-size: 12px;
+            display: flex;
+            line-height: 32px;
+        }
+        .table-header-free span {
+            line-height: 20px;
+            margin: 8px;
+        }
+
+        table,
+        td,
+        th {
+            border-bottom: 1px solid #CDCDCD;
+            border-collapse: collapse;
+            text-align: center;
+        }
+        table td{
+            line-height: 18px;
+            font-size: 10px;
+            color: #444A6D;
+            font-weight: 600;
+        }
+        .heading{
+                font-size: 11px;
+                color: #151D48;
+                line-height: 22px;
+                font-weight: 800;
+        }
+        .bottom-text{
+            width: 312px;
+            height: 17px;
+            color: #375CAF;
+            font-size: 12px;
+            font-weight: 400;
+           margin-left: 16%;
+           margin-top: 20px;
+        }
+
+        .wrap-text{
+            white-space: nowrap; 
+            width: 100px; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class='container'>
+        <div class='main'>
+            <div class='logo'>
+            <img src='".POST_SMTP_ASSETS."images/reporting/post_logo.png' />
+            </div>
+            <div class='text'>
+            Hi {$admin_name}
+                <br>
+                <br>
+                Here is a quick overview of how your emails were performing in the past {$duration}
+
+            </div>
+            <div class='cards'>
+                <div class='total inner-cards'>
+
+                    <div class='ellipse ellipse-total'>
+
+                        <div class='icon' style='line-height: 53px;'>
+                        <img src='".POST_SMTP_ASSETS."images/reporting/total.png' />
+                        </div>
+
                     </div>
-                    <div class='text'>
-                        Hi {$admin_name}
-                        <br>
-                        <br>
-                        Here is a quick overview of how your emails were performing in the past {$duration}
-        
+
+                    <div class='txt'>
+                        Total Emails
                     </div>
-                    <div class='cards'>
-                        <div class='total inner-cards'>
-        
-                            <div class='ellipse ellipse-total'>
-        
-                                <div class='icon' style='line-height: 53px;'>
-                                    <img src='".POST_SMTP_ASSETS."images/reporting/total.png' />
-                                </div>
-        
-                            </div>
-        
-                            <div class='txt'>
-                                Total Emails
-                            </div>
-                            <div class='count'>
-                                {$total}
-                            </div>
+                    <div class='count'>
+                    {$total}
+                    </div>
+                </div>
+                <div class='sent inner-cards'>
+                    <div class='ellipse ellipse-sent'>
+
+                        <div class='icon'>
+                        <img src='".POST_SMTP_ASSETS."images/reporting/sent.png' />
                         </div>
-                        <div class='sent inner-cards'>
-                            <div class='ellipse ellipse-sent'>
-        
-                                <div class='icon'>
-                                    <img src='".POST_SMTP_ASSETS."images/reporting/sent.png' />
-                                </div>
-        
-                            </div>
-        
-                            <div class='txt'>
-                                Sent
-                            </div>
-                            <div class='count'>
-                                {$sent}
-                            </div>
+
+                    </div>
+
+                    <div class='txt'>
+                        Sent
+                    </div>
+                    <div class='count'>
+                    {$sent}
+                    </div>
+                </div>
+                <div class='failed inner-cards'>
+
+                    <div class='ellipse ellipse-failed'>
+
+                        <div class='icon' >
+                        <img src='".POST_SMTP_ASSETS."images/reporting/failed.png' />
                         </div>
-                        <div class='failed inner-cards'>
+
+                    </div>
+
+                    <div class='txt'>
+                        Failed
+                    </div>
+                    <div class='count'>
+                    {$failed}
+                    </div>
+
+                </div>";
+
+                if( $is_addonactivated ){
+
+                    $body .="
+
+                    <div class='opened-pro inner-cards'>
         
-                            <div class='ellipse ellipse-failed'>
-        
-                                <div class='icon'>
-                                    <img src='".POST_SMTP_ASSETS."images/reporting/failed.png' />
-                                </div>
-        
-                            </div>
-        
-                            <div class='txt'>
-                                Failed
-                            </div>
-                            <div class='count'>
-                                {$failed}
-                            </div>
-        
+                    <div class='ellipse ellipse-opened-pro'>
+
+                        <div class='icon' style='line-height: 53px;'>
+                            <img src='".POST_SMTP_ASSETS."images/reporting/opened-pro.png' />
                         </div>
-                        <div class='opened inner-cards'>
-        
-                            <div class='ellipse ellipse-opened'>
-        
-                                <div class='icon' style='line-height: 53px;'>
-                                    <img src='".POST_SMTP_ASSETS."images/reporting/opened2.png' />
-                                </div>
-        
-                            </div>
+
+                    </div>
         
                             <div class='txt'>
                                 Opened
@@ -374,15 +428,44 @@ class PostmanReportTemplate{
                             </div>
         
                         </div>
-        
+                    
+                    ";
+
+                }
+                else{
+
+                    $body .="
+                    <div class='opened inner-cards'>
+
+                    <div class='ellipse ellipse-opened'>
+
+                        <div class='icon' style='line-height: 53px;'>
+                        <img src='".POST_SMTP_ASSETS."images/reporting/opened.png' />
+                        </div>
+
                     </div>
-        
-                    <div class='btn'>
-                        <a href='{$url}' target='_blank'>View More Stats</a>
+
+                    <div class='txt' style='color: white;'>
+                        Opened
                     </div>
-        
-                    <div class='table-display'>
-                        <div class='table-header'>
+                    <div class='count'>
+                    <img src='".POST_SMTP_ASSETS."images/reporting/lock.png' />
+                    </div>
+
+                </div>";
+                         
+                }
+
+            if( $is_addonactivated ){
+
+                $body .= "  
+                </div>
+                            <div class='btn'>
+                                <a href='{$url}' target='_blank'>View More Stats</a>
+                            </div> 
+                            
+                            <div class='table-display'>
+                            <div class='table-header'>
                             <span><img src='".POST_SMTP_ASSETS."images/reporting/clock.png'></span>
                             Last {$duration} top emails
                         </div>
@@ -410,7 +493,7 @@ class PostmanReportTemplate{
                                             $body .= "
 
                                         <tr>
-                                            <td style='text-align: left; padding-left: 10px;'>{$log->subject}</td>
+                                            <td style='text-align: left; padding-left: 10px;'><div class='wrap-text'>{$log->subject}</div></td>
                                             <td>{$log->total}</td>
                                             <td>{$log->sent}</td>
                                             <td>{$log->failed}</td>
@@ -432,13 +515,51 @@ class PostmanReportTemplate{
                     </div>
                     <div class='bottom-text'>
                         This email was autogenerated and sent from <a href='{$url}' style='text-decoration:none;'>{$site_title}</a>
+                    </div>";
+            }   
+            else{
+
+                $body .="   </div>
+
+            <div class='table-display-free'>
+                <div class='table-header-free'>
+                    <span><img src='".POST_SMTP_ASSETS."images/reporting/state.png'></span>
+                    Is it less. Want more stats?
+                </div>
+                <div>
+                    <table style='width:100%'>
+                        <tr>
+                            <td class='heading' style='text-align: center; padding-left: 10px; color: #375CAF; padding-bottom: 4px; padding-top: 4px;'>Unlock Post SMTP Pro and unveils the power of</td>
+                        </tr>
+                        <tr>
+                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>Advance email health reports.</td>
+                        </tr>
+                        <tr>
+                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>Email quota scheduling.</td>
+                        </tr>
+                        <tr>
+                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>Auto-resend failed emails.</td>
+                        </tr>
+                    </table>
+                    <div class='btn' style='position: relative; margin-left: 10px !important; margin-top: 8px !important; background-color: #FA8900 !important; padding:3px !important; text-align:center !important; display: block !important;'>
+                        <a href='{$extension_url}' target='_blank'>Upgrade to PRO ></a>
                     </div>
                 </div>
-            </div>
-        </body>
-        
-    </html>
 
+            </div>
+            <div class='bottom-text' style='width: 332px; margin-left: 15%;'>
+                This email was auto-generated and learn how to disable it.
+            </div>";
+            } 
+                
+        $body .="
+         
+        </div>
+    </div>
+</body>
+
+</html>
+    
         ";
 
         return $body;
