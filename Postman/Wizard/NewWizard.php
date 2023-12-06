@@ -366,7 +366,7 @@ class Post_SMTP_New_Wizard {
                                                 __( '⚡ Advanced Email delivery and logs', 'post-smtp' ),
                                                 __( 'You can automate the process of retrying failed email attempts and optamize your website for users by sending emails asychronously from the backend.' )
                                             ) ?></p>
-                                            <a href="<?php echo esc_url( 'https://postmansmtp.com/extension/' ); ?>" class="button button-primary ps-yellow-btn" target="_blank"><?php esc_html_e( 'CHECK THERE ADDONS', 'post-smtp' ); ?><span class="dashicons dashicons-arrow-right-alt"></span></a>
+                                            <a href="<?php echo esc_url( 'https://postmansmtp.com/extension/' ); ?>" class="button button-primary ps-yellow-btn" target="_blank"><?php esc_html_e( 'CHECK OTHER ADDONS', 'post-smtp' ); ?><span class="dashicons dashicons-arrow-right-alt"></span></a>
                                         </div>
                                     </div>
                                 </div>

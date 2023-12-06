@@ -1,6 +1,7 @@
 .ps-home-middle{
     display: flex;
 }
+
 .ps-home-middle-right{
     width: 500px;
     height: 168px;
@@ -9,9 +10,8 @@
     background-repeat: no-repeat;
     background-position-y: bottom !important;
     background-position: right;
-    position: absolute;
-    right: 18px;
 }
+
 #mobile-app .mobile-app-box {
     display: flex;
 }
