@@ -549,14 +549,12 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 
 				?>
 				</div>
+
 				<div class="ps-home-middle-right" style="background-image: url(<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/mobile-banner.png' ) ?>)">
-				<div class="ps-mobile-notice-content">
-
-					<p><?php _e( 'Introducing NEW Post SMTP Mobile App' ); ?></p>
-
-					<div class="ps-mobile-notice-features">
-
-					<div class="ps-mobile-feature-left">
+					<div class="ps-mobile-notice-content">
+						<p><?php _e( 'Introducing NEW Post SMTP Mobile App' ); ?></p>
+						<div class="ps-mobile-notice-features">
+							<div class="ps-mobile-feature-left">
 								<span class="dashicons dashicons-yes-alt"></span>
 								Easy Email Tracking
 								<br>
@@ -565,9 +563,8 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 								<br>
 								<span class="dashicons dashicons-yes-alt"></span>
 								Easy Email Tracking			
-					</div>
-
-					<div class="ps-mobile-feature-right">
+							</div>
+							<div class="ps-mobile-feature-right">
 								<span class="dashicons dashicons-yes-alt"></span>
 								Get Email Preview
 								<br>
@@ -576,20 +573,17 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 								<br>
 								<span class="dashicons dashicons-yes-alt"></span>
 								Support multiple sites		
+							</div>
+						</div>
+						<div class="ps-app-download-button">
+							<a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26anid%3Dadmob" target="_blank">Download the app</a>
+						</div>
 					</div>
-
-					</div>
-					
-					<div class="ps-app-download-button">
-
-					<a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26anid%3Dadmob" target="_blank">Download the app</a>
-					</div>
-				
 				</div>
+				<div style="clear: both"></div>
 			</div>
 		</div>
 	</div>
-</div>
 
 			<?php
 

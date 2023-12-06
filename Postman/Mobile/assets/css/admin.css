@@ -1,15 +1,12 @@
-.ps-home-middle{
-    display: flex;
-}
-
 .ps-home-middle-right{
-    width: 500px;
+    width: 435px;
     height: 168px;
     background-color: #F5F8FB;
     border: 1px solid #E6E6E6;
     background-repeat: no-repeat;
     background-position-y: bottom !important;
     background-position: right;
+    float: right;
 }
 
 #mobile-app .mobile-app-box {
