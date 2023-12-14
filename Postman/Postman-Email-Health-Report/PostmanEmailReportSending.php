@@ -9,7 +9,7 @@ class PostmanEmailReportSending {
     /**
      * Get the instance of the class
      * 
-     * @since 2.9.0
+     * @since 3.0.0
      * @version 1.0.0
      */
     public static function get_instance() {
@@ -28,7 +28,7 @@ class PostmanEmailReportSending {
     /**
      * PostmanEmailReportTemplate constructor.
      * 
-     * @since 2.9.0
+     * @since 3.0.0
      * @version 1.0.0
      */
     public function __construct() {
@@ -40,7 +40,7 @@ class PostmanEmailReportSending {
     /**
      * Send the report
      * 
-     * @since 2.9.0
+     * @since 3.0.0
      * @version 1.0.0
      */
     public function send_report() {
@@ -96,7 +96,7 @@ class PostmanEmailReportSending {
      * Get total email count
      * 
      * @param string $email
-     * @since 2.9.0
+     * @since 3.0.0
      * @version 1.0.0
      */
     public function get_total_logs( $from = '', $to = '', $limit = '' ) {
@@ -116,7 +116,7 @@ class PostmanEmailReportSending {
     /**
      * Filter to get query from extension
      * 
-     * @since 2.9.0
+     * @since 3.0.0
      * @version 1.0.0
      */
         $query = apply_filters( 'postman_health_count', $query );
@@ -135,7 +135,7 @@ class PostmanEmailReportSending {
     /**
      * Get the email body
      * 
-     * @since 2.9.0
+     * @since 3.0.0
      * @version 1.0.0
      */
     public function get_body( $interval ) {
@@ -187,7 +187,7 @@ class PostmanEmailReportSending {
     /**
      * Function to send the report
      * 
-     * @since 2.9.0
+     * @since 3.0.0
      * @version 1.0.0
      */
     public function send_mail( $interval ) {
@@ -214,7 +214,7 @@ class PostmanEmailReportSending {
          * Filters the site title to be used in the email subject.
          * 
          * @param string $site_title The site title.
-         * @since 2.9.0
+         * @since 3.0.0
          * @version 1.0.0
          */
         $site_title = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
@@ -223,7 +223,7 @@ class PostmanEmailReportSending {
          * Filters the email address to which the report is sent.
          * 
          * @param string $to The email address to which the report is sent.
-         * @since 2.9.0
+         * @since 3.0.0
          * @version 1.0.0
          */
         $to = apply_filters( 'postman_rat_reporting_email_to', get_option( 'admin_email' ) );

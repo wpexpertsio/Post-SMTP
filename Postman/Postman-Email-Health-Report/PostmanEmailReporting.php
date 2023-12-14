@@ -9,7 +9,7 @@ if( !class_exists( "PostmanEmailHealthReporting" ) ):
      /**
      * Get the instance of the class
      * 
-     * @since 2.9.0
+     * @since 3.0.0
      * @version 1.0.0
      */
     public static function get_instance() {
@@ -27,7 +27,7 @@ if( !class_exists( "PostmanEmailHealthReporting" ) ):
     /**
      * Constructor of the class
      * 
-     * @since 2.9.0
+     * @since 3.0.0
      * @version 1.0.0
      */
     public function __construct() {
@@ -41,7 +41,7 @@ if( !class_exists( "PostmanEmailHealthReporting" ) ):
     /**
      * Add tab to Post SMTP Admin | Filter Callback
      * 
-     * @since 2.9.0
+     * @since 3.0.0
      * @version 1.0.0
      */
     public function add_tab( $tabs ) {
@@ -55,7 +55,7 @@ if( !class_exists( "PostmanEmailHealthReporting" ) ):
      /**
      * Sanitize the Settings | Filter Callback
      * 
-     * @since 2.9.0
+     * @since 3.0.0
      * @version 1.0.0 
      */
     public function sanitize( $input, $option, $section ) {
@@ -75,7 +75,7 @@ if( !class_exists( "PostmanEmailHealthReporting" ) ):
     /**
      * Section to Display Fields | Actoin Callback
      * 
-     * @since 2.9.0
+     * @since 3.0.0
      * @version 1.0.0
      */
     public function section() {
