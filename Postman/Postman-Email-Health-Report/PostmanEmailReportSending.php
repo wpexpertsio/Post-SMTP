@@ -59,7 +59,7 @@ class PostmanEmailReportSending {
 
 
         //If transient expired, let's send :)
-        if( $enabled && $interval && !$has_sent && isset ( $post_option['transport_type'] ) && $post_option['transport_type'] != 'default' ) {
+        if( $enabled && $interval && !$has_sent && isset ( $post_option['transport_type'] ) ) {
 
             $expiry_time = '';
             $report_sent = $this->send_mail( $interval );
