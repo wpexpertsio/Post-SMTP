@@ -445,7 +445,7 @@ class PostmanEmailLogs {
 			//Delete selected
 			else {
 
-				$args = $_POST['selected'];
+				$args = wp_parse_id_list( $_POST['selected'] );
 
 			}
 
@@ -512,7 +512,7 @@ class PostmanEmailLogs {
 			//Export selected
 			else {
 
-				$args = $_POST['selected'];
+				$args = wp_parse_id_list( $_POST['selected'] );
 
 			}
 
