@@ -88,11 +88,9 @@ class Post_SMTP_Mobile_Rest_API {
 			
 		}
 		
-		delete_transient( 'post_smtp_auth_nonce' );
-		
 		wp_send_json_error( 
 			array(
-				'error'	=>	'Refresh QR Code page, and scan again.'
+				'error'	=>	'Regenerate QR Code, and scan again.'
 			), 
 			200 
 		);
