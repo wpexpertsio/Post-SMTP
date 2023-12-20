@@ -1,0 +1,87 @@
+.ps-dash-left {
+    width: calc(75% - 20px);
+    float: left;
+}
+
+.ps-dash-right {
+    width: calc(25% - 20px);
+    float: left;
+}
+
+.ps-dash-header-left {
+    width: calc(67% - 20px);
+    float: left;
+}
+
+.ps-dash-header-right {
+    width: calc(33% - 20px);
+    float: left;
+}
+
+.ps-dashboard h1 {
+    color: #05004E;
+    font-weight: 700;
+    font-size: 28px;
+}
+
+.ps-dashboard h6 {
+    color: #737791;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.ps-dash-header-right {
+    padding: 23px 0;
+}
+
+.ps-dash-sort {
+    border: 1px solid #CDCDCD;
+    border-radius: 9px;
+    padding: 3px;
+    display: inline-block;
+}
+
+.ps-dash-sort button {
+    padding: 7px 20px;
+    border: none;
+    background: #ff000000;
+    float: left;
+    cursor: pointer;
+}
+
+.ps-dash-sort button:nth-child(2):not(.active) {
+    position: relative;
+}
+
+.ps-dash-sort button.active {
+    background: #3A5EAF;
+    color: #ffffff;
+    border-radius: 7px;
+}
+
+.ps-sort-border:after {
+    content: '';
+    display: block;
+    background: #CDCDCD;
+    height: 20px;
+    width: 1px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+}
+
+.ps-sort-border:before {
+    content: '';
+    display: block;
+    background: #CDCDCD;
+    height: 20px;
+    width: 1px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+}

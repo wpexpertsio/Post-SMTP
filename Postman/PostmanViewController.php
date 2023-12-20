@@ -11,6 +11,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		private $oauthScribe;
 		private $importableConfiguration;
 		private $adminController;
+		public $dashboard;
 		const POSTMAN_MENU_SLUG = 'postman';
 
 		// style sheets and scripts
@@ -31,6 +32,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			$this->authorizationToken = $authorizationToken;
 			$this->oauthScribe = $oauthScribe;
 			$this->adminController = $adminController;
+			$this->dashboard = new Post_SMTP_Dashboard();
 			$this->logger = new PostmanLogger( get_class( $this ) );
 			$hostname = PostmanOptions::getInstance()->getHostname();
 			$transportType = PostmanOptions::getInstance()->getTransportType();
@@ -194,6 +196,8 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		 * Options page callback
 		 */
 		public function outputDefaultContent() {
+
+			$this->dashboard->render();
 
 			// Set class property
 			print '<div class="wrap">';

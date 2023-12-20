@@ -1919,7 +1919,7 @@ msgstr ""
 msgid "Timestamp"
 msgstr ""
 
-#: templates/secure-https-header.php:28
+#: templates/secure-https-dash-header.php:28
 msgid "Secure HTTPS %s page, running from an external domain"
 msgstr ""
 

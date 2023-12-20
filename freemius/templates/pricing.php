@@ -109,7 +109,7 @@
             'id'   => $VARS['id'],
             'page' => strtolower( $fs->get_text_x_inline( 'Pricing', 'noun', 'pricing' ) ),
         );
-        fs_require_once_template('secure-https-header.php', $view_params);
+        fs_require_once_template('secure-https-dash-header.php', $view_params);
     }
 
 	$has_tabs = $fs->_add_tabs_before_content();

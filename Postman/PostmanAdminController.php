@@ -18,6 +18,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 	require_once 'PostmanViewController.php';
 	require_once 'PostmanPreRequisitesCheck.php';
 	require_once 'Postman-Auth/PostmanAuthenticationManagerFactory.php';
+	require_once 'Dashboard/dashboard.php';
 
 	class PostmanAdminController {
 

@@ -180,7 +180,7 @@
 		'id'   => $VARS['id'],
 		'page' => strtolower( $fs->get_text_inline( 'Checkout', 'checkout' ) ) . ' ' . $fs->get_text_inline( 'PCI compliant', 'pci-compliant' ),
 	);
-	fs_require_once_template('secure-https-header.php', $view_params);
+	fs_require_once_template('secure-https-dash-header.php', $view_params);
 ?>
 	<div id="fs_checkout" class="wrap fs-section fs-full-size-wrapper">
 		<div id="fs_frame"></div>
