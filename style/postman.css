@@ -1559,3 +1559,25 @@ div#ps-email-log_length{
 .ps-refresh-logs span:hover {
     cursor: pointer;
 }
+
+#toplevel_page_postman ul li:last-child a {
+    color: #adff2f!important;
+}
+
+.ps-dashboard-pro {
+    background: #eef2f4;
+    color: #1d9ad2;
+    font-size: 11px;
+    padding: 0px 4px;
+    border-radius: 3px;
+    margin-left: 1px;
+}
+
+.ps-dashboard-pro-hide{
+    display: none;
+
+}
+
+.ps-home-middle-left {
+    float: left;
+}

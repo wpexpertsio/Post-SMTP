@@ -67,6 +67,7 @@ class Postman {
 		require_once 'Postman-Mail/PostmanSendGridTransport.php';
 		require_once 'Postman-Mail/PostmanMailgunTransport.php';
         require_once 'Postman-Mail/PostmanSendinblueTransport.php';
+		require_once 'Postman-Mail/PostmanMailjetTransport.php';
 		require_once 'Postman-Suggest-Pro/PostmanSuggestProSocket.php';
         require_once 'Postman-Mail/PostmanPostmarkTransport.php';
         require_once 'Postman-Mail/PostmanSparkPostTransport.php';
@@ -81,6 +82,8 @@ class Postman {
 		//require_once 'Postman-Mail/PostmanWooCommerce.php';
 		require_once 'Postman-Mail/Services/PostmanServiceRequest.php';
 
+		//New Wizard
+		require_once 'Wizard/NewWizard.php';
 		//load MainWP Child Files
 		require_once 'Extensions/MainWP-Child/mainwp-child.php';
 		
@@ -460,6 +463,7 @@ class Postman {
         $postman_transport_registry->registerTransport( new PostmanSendGridTransport( $rootPluginFilenameAndPath ) );
         $postman_transport_registry->registerTransport( new PostmanMailgunTransport( $rootPluginFilenameAndPath ) );
         $postman_transport_registry->registerTransport( new PostmanSendinblueTransport( $rootPluginFilenameAndPath ) );
+		$postman_transport_registry->registerTransport( new PostmanMailjetTransport( $rootPluginFilenameAndPath ) );
         $postman_transport_registry->registerTransport( new PostmanPostmarkTransport( $rootPluginFilenameAndPath ) );
         $postman_transport_registry->registerTransport( new PostmanSparkPostTransport( $rootPluginFilenameAndPath ) );
         $postman_transport_registry->registerTransport( new PostmanElasticEmailTransport( $rootPluginFilenameAndPath ) );

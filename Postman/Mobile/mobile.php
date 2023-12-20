@@ -9,7 +9,7 @@ class Post_SMTP_Mobile {
     /**
      * Get instance
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      * 
      * @return Post_SMTP_Mobile
@@ -29,7 +29,7 @@ class Post_SMTP_Mobile {
     /**
      * Constructor
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function __construct() {
@@ -38,6 +38,8 @@ class Post_SMTP_Mobile {
         add_action( 'post_smtp_settings_menu', array( $this, 'section' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ) );
 		add_action( 'admin_action_post_smtp_disconnect_app', array( $this, 'disconnect_app' ) );
+        add_action( 'admin_post_ps_dimiss_app_notice', array( $this, 'dismiss_app_notice' ) );
+        add_action( 'admin_post_regenerate-qrcode', array( $this, 'regenerate_qrcode' ) );
 		
 		add_filter( 'post_smtp_sanitize', array( $this, 'sanitize' ), 10, 3 );
         add_filter( 'post_smtp_admin_tabs', array( $this, 'tabs' ), 11 );
@@ -48,9 +50,13 @@ class Post_SMTP_Mobile {
         
         if( isset( $_GET['page'] ) && $_GET['page'] == 'postman/configuration' ) {
 			
-			delete_transient( 'post_smtp_auth_nonce' );
-			$this->generate_qr_code();
-			$this->app_connected = get_option( 'post_smtp_mobile_app_connection' );
+            //Incompatible server
+            if( function_exists( 'ImageCreate' ) ) {
+
+                $this->generate_qr_code();
+                $this->app_connected = get_option( 'post_smtp_mobile_app_connection' );
+
+            }
 			
 		}
         
@@ -59,20 +65,20 @@ class Post_SMTP_Mobile {
     /**
      * Enqueue scripts
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function admin_enqueue() {
 
-        wp_enqueue_script( 'post-smtp-mobile', POST_SMTP_URL . '/Postman/Mobile/assets/js/admin.js', array( 'jquery' ), false );
-        wp_enqueue_style( 'post-smtp-mobile', POST_SMTP_URL . '/Postman/Mobile/assets/css/admin.css' );
+        wp_enqueue_script( 'post-smtp-mobile', POST_SMTP_URL . '/Postman/Mobile/assets/js/admin.js', array( 'jquery' ), POST_SMTP_VER );
+        wp_enqueue_style( 'post-smtp-mobile', POST_SMTP_URL . '/Postman/Mobile/assets/css/admin.css', array(), POST_SMTP_VER );
 
     } 
 
     /**
      * Add menu
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function add_menu() {
@@ -92,7 +98,7 @@ class Post_SMTP_Mobile {
     /**
      * Add tab
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function tabs( $tabs ) {
@@ -106,7 +112,7 @@ class Post_SMTP_Mobile {
     /**
      * Generate QR code
      *
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function generate_qr_code() {
@@ -130,7 +136,7 @@ class Post_SMTP_Mobile {
     /**
      * Generate auth key
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     private function generate_auth_key() {
@@ -152,11 +158,13 @@ class Post_SMTP_Mobile {
     /**
      * Section
      * 
-     * @since 2.8.0
+     * @since 2.7.0
      * @version 1.0.0
      */
     public function section() {
 
+        //Incompatible server
+        if( function_exists( 'ImageCreate' ) ):
         ?>
         <section id="mobile-app">
             <h2><?php _e( 'Mobile Application', 'post-smtp' ); ?></h2>
@@ -194,7 +202,7 @@ class Post_SMTP_Mobile {
                         echo '<img src="data:image/jpeg;base64,'. $this->qr_code.'" width="300"/>'; 
                         ?>
                         <div>
-                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
+                            <a href="<?php echo esc_url( admin_url('admin-post.php?action=regenerate-qrcode') ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
                         </div>
                         <?php
 
@@ -203,9 +211,11 @@ class Post_SMTP_Mobile {
 						
 						echo "<b>Connected Device:</b> ";
 						
+						$nonce = wp_create_nonce( 'ps-disconnect-app-nonce' );
+						
 						foreach( $this->app_connected as $device ) {
 							
-							$url = admin_url( "admin.php?action=post_smtp_disconnect_app&auth_token={$device['fcm_token']}" );
+							$url = admin_url( "admin.php?action=post_smtp_disconnect_app&auth_token={$device['fcm_token']}&ps_disconnect_app_nonce={$nonce}" );
 							$checked = $device['enable_notification'] == 1 ? 'checked="checked"' : '';
 							
 							echo "{$device['device']} <a href='{$url}' style='color: red'>Disconnect</a>";
@@ -225,6 +235,24 @@ class Post_SMTP_Mobile {
             </div>
         </section>
         <?php
+        endif;
+
+        //Incompatible server
+        if( !function_exists( 'ImageCreate' ) ):
+            ?>
+            <section id="mobile-app">
+                <h2><?php _e( 'Mobile Application', 'post-smtp' ); ?></h2>
+                <?php 
+                    printf(
+                        '%s <a href="%s" target="_blank">%s</a>',
+                        __( 'Your server does not have GD Library Installed/ Enabled, talk to your host provider to enable to enjoy Post SMTP Mobile Application', 'post-smtp' ),
+                        esc_url( 'https://www.php.net/manual/en/image.installation.php' ),
+                        __( 'learn more.', 'post-smtp' )
+                    ) 
+                ?>
+            </section>
+            <?php
+        endif;
 
     }
 	
@@ -264,8 +292,20 @@ class Post_SMTP_Mobile {
 
     }
 	
+    /**
+     * Disconnects the mobile application :(
+     * 
+     * @since 2.7.0
+     * @version 1.0.0
+     */
 	public function disconnect_app() {
-		
+
+		if( !isset( $_GET['ps_disconnect_app_nonce'] ) || !wp_verify_nonce( $_GET['ps_disconnect_app_nonce'], 'ps-disconnect-app-nonce' ) ) {
+			
+			die( 'Security Check' );
+			
+		}
+
 		if( isset( $_GET['action'] ) && $_GET['action'] == 'post_smtp_disconnect_app' ) {
 			
 			$connected_devices = get_option( 'post_smtp_mobile_app_connection' );
@@ -306,6 +346,41 @@ class Post_SMTP_Mobile {
 		
 	}
 
+    /**
+     * Dismiss App Notice | Action Call-back
+     * 
+     * @since 2.7.1
+     * @version 1.0.0
+     */
+    public function dismiss_app_notice() {
+
+        if( isset( $_GET['action'] ) && $_GET['action'] === 'ps_dimiss_app_notice' ) {
+
+            update_option( 'ps_dismissed_mobile_notice', 1 );
+
+            wp_redirect( admin_url( 'admin.php?page=postman' ) );
+
+        }
+
+    }
+
+    /**
+     * Regenerates QR Code | Action Call-back
+     * 
+     * @since 2.8.2
+     * @version 1.0.0
+     */
+    public function regenerate_qrcode() {
+
+        if( isset( $_GET['action'] ) && $_GET['action'] === 'regenerate-qrcode' ) {
+
+            delete_transient( 'post_smtp_auth_nonce' );
+
+            wp_redirect( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) );
+
+        }
+
+    }
 
 }
 

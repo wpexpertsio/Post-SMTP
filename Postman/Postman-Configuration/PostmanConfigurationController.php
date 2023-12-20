@@ -45,8 +45,6 @@ class PostmanConfigurationController {
 		$this->options = PostmanOptions::getInstance();
 		$this->settingsRegistry = new PostmanSettingsRegistry();
 
-		PostmanUtils::registerAdminMenu( $this, 'addSetupWizardSubmenu' );
-
 		// hook on the init event
 		add_action( 'init', array(
 				$this,
@@ -60,6 +58,8 @@ class PostmanConfigurationController {
 		) );
 
 		add_action( 'admin_menu', array( $this, 'add_submenu_page' ), 21 );
+		add_action( 'admin_menu', array( $this, 'addSetupWizardSubmenu' ), 21 );
+		add_filter( 'submenu_file', array( $this, 'hide_submenu_item' ) );
 
 	}
 
@@ -169,7 +169,13 @@ class PostmanConfigurationController {
 	 * Register the Setup Wizard screen
 	 */
 	public function addSetupWizardSubmenu() {
-		$page = add_submenu_page( '', sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ), __( 'Postman SMTP', 'post-smtp' ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG, array(
+		$page = add_submenu_page( 
+			PostmanViewController::POSTMAN_MENU_SLUG, 
+			sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ), 
+			__( 'Postman SMTP', 'post-smtp' ), 
+			Postman::MANAGE_POSTMAN_CAPABILITY_NAME, 
+			PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG, 
+			array(
 				$this,
 				'outputWizardContent',
 		) );
@@ -178,6 +184,24 @@ class PostmanConfigurationController {
 				$this,
 				'enqueueWizardResources',
 		) );
+	}
+
+	/**
+	 * Hides submenu 
+	 */
+	public function hide_submenu_item( $submenu_file ) {
+
+		$hidden_submenus = array(
+			PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG => true,
+		);
+
+		// Hide the submenu.
+		foreach ( $hidden_submenus as $submenu => $unused ) {
+			remove_submenu_page( PostmanViewController::POSTMAN_MENU_SLUG, $submenu );
+		}
+
+		return $submenu_file;
+
 	}
 
 	/**
@@ -273,6 +297,9 @@ class PostmanConfigurationController {
 		print '</div>';
         print '<div id="sendinblue_settings" class="authentication_setting non-basic non-oauth2">';
         do_settings_sections( PostmanSendinblueTransport::SENDINBLUE_AUTH_OPTIONS );
+        print '</div>';
+		print '<div id="mailjet_settings" class="authentication_setting non-basic non-oauth2">';
+        do_settings_sections( PostmanMailjetTransport::MAILJET_AUTH_OPTIONS );
         print '</div>';
         print '<div id="postmark_settings" class="authentication_setting non-basic non-oauth2">';
         do_settings_sections( PostmanPostmarkTransport::POSTMARK_AUTH_OPTIONS );

@@ -45,7 +45,7 @@ class Post_SMTP_Mobile_Controller {
 				$response = wp_remote_post(
 					"{$server_url}/disconnect-app",
 					array(
-						'method'	=>	'PUT',
+						'method'	=>	'POST',
 						'headers'	=>	array(
 							'Content-Type'	=>	'application/json',
 							'Auth-Key'		=>	$auth_key,

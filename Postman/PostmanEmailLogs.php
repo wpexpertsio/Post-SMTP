@@ -61,6 +61,15 @@ class PostmanEmailLogs {
             $msg = $log['original_message'];
             $msg = preg_replace( "/<script\b[^>]*>(.*?)<\/script>/s", '', $msg );
 
+            // Strip <xml> and comment tags.
+            $msg = preg_replace( '/<xml\b[^>]*>(.*?)<\/xml>/is', '', $msg );
+            $msg = preg_replace( '/<!--(.*?)-->/', '', $msg );
+
+            $allowed_html = wp_kses_allowed_html( 'post' );
+            $allowed_html['style'][''] = true;
+
+            $msg = wp_kses( $msg, $allowed_html );
+
             echo '<pre>' . $msg . '</pre>';
 
             die;
@@ -436,7 +445,7 @@ class PostmanEmailLogs {
 			//Delete selected
 			else {
 
-				$args = $_POST['selected'];
+				$args = wp_parse_id_list( $_POST['selected'] );
 
 			}
 
@@ -503,7 +512,7 @@ class PostmanEmailLogs {
 			//Export selected
 			else {
 
-				$args = $_POST['selected'];
+				$args = wp_parse_id_list( $_POST['selected'] );
 
 			}
 

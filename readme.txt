@@ -3,8 +3,8 @@ Plugin URI: https://postmansmtp.com/
 Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 5.6.0
-Tested up to: 6.3.2
-Stable tag: 2.7.0
+Tested up to: 6.4.2
+Stable tag: 2.8.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Connect with any SMTP, including Gmail, Outlook, SendinBlue, Sendgrid, Mailgun, 
 
 == Description ==
 
-[Live Demo](https://www.tastewp.com/plugins/post-smtp) | [Extensions](https://postmansmtp.com/extension/?utm_source=wp_org&utm_medium=readme)
+[💻Live Demo](https://www.tastewp.com/plugins/post-smtp) | [🔌Extensions](https://postmansmtp.com/extension/?utm_source=wp_org&utm_medium=readme_top) | [📱Mobile Application](https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=wp_org&utm_medium=readme_top)
 
 = WordPress Mail SMTP Plugin =
 
@@ -35,7 +35,7 @@ Even hosts that block the standard SMTP ports, like GoDaddy or Bluehost, can't s
 https://www.youtube.com/watch?v=mXDEEE9jnfw
 
 = Post SMTP Features =
-* Easy-to-use, powerful Setup Wizard for perfect configuration
+* Easy-to-use and powerful 3-Step Setup Wizard for quick SMTP configuration.
 * Commercial-grade Connectivity Tester to diagnose server issues
 * Log and resend all emails; see the exact cause of failed emails
 * Supports [International alphabets](https://tools.ietf.org/html/rfc6530), [HTML Mail](https://en.wikipedia.org/wiki/HTML_email) and [MultiPart/Alternative](https://en.wikipedia.org/wiki/MIME#Alternative)
@@ -130,6 +130,8 @@ Postmark is a cloud-based email management software designed to help businesses 
 
 * **SparkPost API for sending any email** (requires a [SparkPost](https://www.sparkpost.com/) account and PHP 5.3)
 SparkPost is a cloud-based email analytics solution designed to help businesses of all sizes optimize email performance, deliverability, engagement, and more.
+
+* **Mailjet API for sending any email** (requires a [Mailjet](https://www.mailjet.com/) account)
 
 = Compatibility & Support =
 * [Contact Form 7](https://wordpress.org/plugins/contact-form-7/)
@@ -319,11 +321,61 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
+= 2.8.7 - 2023-12-20 =
+
+* Improvement - added sanitization where missing to improve security
+* Improvement - added nonce where missing to improve security
+
+= 2.8.6 - 2023-12-07 =
+
+* Improvement - Changed banner placement for NEW mobile app for POST SMTP to improve UX.
+* Improvement - Tweaked dashboard UI for better usability.
+
+= 2.8.5 - 2023-11-23 =
+
+* Fix: In some cases, there was an issue disconnecting mobile application.
+
+= 2.8.4 - 2023-11-20 =
+
+* Fix: From name and emails, prevention settings were not being saved correctly in some cases in the new wizard.
+* Fix: In some sockets, the API keys getting saved were encoded in multiple layers.
+
+= 2.8.3 - 2023-11-17 =
+
+* Fix - Getting error when saving settings in some scenarios.
+* Improvement - Optimized QR code scanning module for [Post SMTP mobile app](https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=wp_org&utm_medium=changelog) to avoid any scanning delays
+
+= 2.8.2 - 2023-11-14 =
+
+* Improvement - PHP < 7.3 compatibility added.
+
+= 2.8.1 - 2023-11-13 =
+
+* Fix - Other SMTP option in the wizard was not saving the settings correctly.
+
+= 2.8.0 - 2023-11-13 =
+
+* NEW – Introducing a NEW 3-step wizard to speed up the initial setup.
+* NEW - Added documentation within the wizard to ease out the setup
+* NEW - Added new socket/email service for [Mailjet](https://www.mailjet.com/)
+* NEW - Added support for default socket within wizard (you can use this option in case you want to use the logs functionality only)
+* Fix - Updated the error string as reported by @interaptivre
+
+= 2.7.2 - 2023-11-01 =
+
+* Improvement - Mobile App banner improvement.
+
+= 2.7.1 - 2023-11-01 =
+
+* NEW - Show Mobile App Notice on Post SMTP dashboard
+* Improvement - Improved SQL query to meet latest security standards
+* Improvement - Added patch to avoid script execution in log content.
+
 = 2.7.0 - 2023-10-26 =
 
-NEW - Added support for POST SMTP app. [Visit documentation for more information](https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=wp_org&utm_medium=changelog)
-Fix - Raw HTML was sent when using ElasticEmail service.
-Fix - Raw HTML was sent when resending emails from the log section.
+* NEW - Added support for POST SMTP app. [Visit documentation for more information](https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=wp_org&utm_medium=changelog)
+* Fix - Raw HTML was sent when using ElasticEmail service.
+* Fix - Raw HTML was sent when resending emails from the log section.
 
 = 2.6.2 - 2023-10-19 =
 

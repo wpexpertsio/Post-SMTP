@@ -84,7 +84,7 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
 
         }
 
-        $sendinblue = new PostmanSendinblue( $this->api_key );
+        $sendinblue = new PostmanSendinblue( $this->api_key);
         $sender = $message->getFromAddress();
         $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
         $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
@@ -242,6 +242,8 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
         
         }
         
+        
+         
          
         try {
 
