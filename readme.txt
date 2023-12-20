@@ -3,8 +3,8 @@ Plugin URI: https://postmansmtp.com/
 Contributors: wpexpertsio
 Tags: email, mail, smtp, wordpress smtp, email log, postman smtp, postman, gmail, google apps, hotmail, yahoo, mandrill api, sendgrid api, elastic email, office365, mailgun
 Requires at least: 5.6.0
-Tested up to: 6.4
-Stable tag: 2.8.6
+Tested up to: 6.4.2
+Stable tag: 2.8.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -321,14 +321,19 @@ To avoid being flagged as spam, you need to prove your email isn't forged. On a 
 
 == Changelog ==
 
-= 2.8.6 - 2023-12-20 =
+= 2.8.7 - 2023-12-20 =
 
 * Improvement - added sanitization where missing to improve security
 * Improvement - added nonce where missing to improve security
 
+= 2.8.6 - 2023-12-07 =
+
+* Improvement - Changed banner placement for NEW mobile app for POST SMTP to improve UX.
+* Improvement - Tweaked dashboard UI for better usability.
+
 = 2.8.5 - 2023-11-23 =
 
-* Fix: Fix: In some cases, there was an issue disconnecting mobile application.
+* Fix: In some cases, there was an issue disconnecting mobile application.
 
 = 2.8.4 - 2023-11-20 =
 
