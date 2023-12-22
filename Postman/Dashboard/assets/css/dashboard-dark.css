@@ -1,0 +1,61 @@
+body:has(.ps-dashboard.dark) {
+    background-color: #171923;
+    transition: background 0.1s linear;
+}
+
+.ps-dashboard.dark .ps-theme-mode-label {
+    border-color: #F9F9F9;
+}
+
+.ps-dashboard.dark h1 {
+    color: #ffffff;
+}
+
+.ps-dashboard.dark h6 {
+    color: #D0D0D0;
+}
+
+.ps-dashboard.dark .ps-dash-sort {
+    border-color: #636880;
+    background: #212330;
+}
+
+.ps-dashboard.dark .ps-sort-border:after,
+.ps-dashboard.dark .ps-sort-border:before {
+    background-color: #636880;
+}
+
+.ps-dashboard.dark .ps-dash-sort button {
+    color: #ffffff;
+}
+
+.ps-dashboard.dark .ps-dash-email-summery h1 {
+    color: #151D48;
+}
+
+.ps-dashboard.dark .ps-opened-pro h1 {
+    color: #ffffff;
+}
+
+.ps-dashboard.dark .ps-dash-top-icons-bar .dashicons.active {
+    color: #ffffff;
+}
+
+.ps-dashboard.dark .ps-dash-top-icons-bar button {
+    background: #747995;
+}
+
+.ps-dashboard.dark .ps-slide-body {
+    background-color: #212330;
+    border-color: #4D526D;
+}
+
+.ps-dashboard.dark .ps-slide-body span.dashicons,
+.ps-dashboard.dark a,
+.ps-dashboard.dark .ps-pro-features h3 {
+    color: #ffffff;
+}
+
+.ps-dashboard.dark .ps-pro-features .ps-slide-body span.dashicons {
+    color: #FA8900;
+}
