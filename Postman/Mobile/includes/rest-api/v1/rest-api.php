@@ -65,7 +65,7 @@ class Post_SMTP_Mobile_Rest_API {
 		$device = $request->get_header( 'device' );
 		$server_url = $request->get_header( 'server_url' );
 		
-		if( $auth_key == $nonce ) {
+		if( $auth_key === $nonce ) {
 			
 			$data = array(
 				$fcm_token	=>	array(
