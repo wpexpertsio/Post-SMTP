@@ -108,6 +108,12 @@
     font-size: 28px;
 }
 
+.ps-dashboard h4 {
+    color: #151D48;
+    font-weight: 600;
+    font-size: 18px;
+}
+
 .ps-dashboard h6 {
     color: #737791;
     margin: 0;
@@ -363,6 +369,7 @@ img.ps-dash-sidebar {
 .ps-slide-body a {
     margin-left: 15px;
     color: #444A6D;
+    font-size: 12px;
 }
 
 .ps-slide-body span.dashicons {
@@ -385,9 +392,68 @@ img.ps-dash-sidebar {
 }
 
 .ps-pro-urls {
-    margin-top: 15px;
+    margin: 15px 0;
 }
 
 .ps-pro-features .ps-slide-header {
     background-color: #FA8900;
+}
+
+.ps-pro.button-primary {
+    background: #fa8900;
+    border-color: #fa8900;
+    border-radius: 50px;
+    padding: 5px 24px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.ps-pro.button-primary:hover {
+    background-color: #f18400;
+    border-color: #f18400;
+}
+
+.ps-pro.button-secondary {
+    border-color: #fa8900;
+    border-radius: 50px;
+    padding: 5px 24px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #fa8900;
+    background: #fff;
+}
+
+.ps-pro.button-secondary:hover {
+    border-color: #fa8900;
+    color: #fa8900;
+    background: #d9770014;
+}
+
+.ps-expert-assistance p {
+    margin-top: 0px;
+}
+
+.ps-guide-and-doc .ps-slide-body .dashicons {
+    color: #3A5EAF;
+}
+
+.ps-guide-and-doc .ps-slide-body a {
+    color: #444A6D;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.ps-dash-docs {
+    float: left;
+    width: calc(33% - 5px);
+}
+
+a.ps-simple.button-primary {
+    background: #3A5EAF;
+    color: #ffffff;
+    border-radius: 8px;
+}
+
+a.ps-simple.button-primary .dashicons {
+    color: #ffffff;
 }

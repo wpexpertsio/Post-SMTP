@@ -7,14 +7,6 @@ body:has(.ps-dashboard.dark) {
     border-color: #F9F9F9;
 }
 
-.ps-dashboard.dark h1 {
-    color: #ffffff;
-}
-
-.ps-dashboard.dark h6 {
-    color: #D0D0D0;
-}
-
 .ps-dashboard.dark .ps-dash-sort {
     border-color: #636880;
     background: #212330;
@@ -25,20 +17,8 @@ body:has(.ps-dashboard.dark) {
     background-color: #636880;
 }
 
-.ps-dashboard.dark .ps-dash-sort button {
-    color: #ffffff;
-}
-
 .ps-dashboard.dark .ps-dash-email-summery h1 {
     color: #151D48;
-}
-
-.ps-dashboard.dark .ps-opened-pro h1 {
-    color: #ffffff;
-}
-
-.ps-dashboard.dark .ps-dash-top-icons-bar .dashicons.active {
-    color: #ffffff;
 }
 
 .ps-dashboard.dark .ps-dash-top-icons-bar button {
@@ -52,10 +32,31 @@ body:has(.ps-dashboard.dark) {
 
 .ps-dashboard.dark .ps-slide-body span.dashicons,
 .ps-dashboard.dark a,
-.ps-dashboard.dark .ps-pro-features h3 {
+.ps-dashboard.dark .ps-pro-features h3,
+.ps-dashboard.dark p,
+.ps-dashboard.dark .ps-opened-pro h1,
+.ps-dashboard.dark .ps-dash-top-icons-bar .dashicons.active,
+.ps-dashboard.dark .ps-dash-sort button,
+.ps-dashboard.dark h6,
+.ps-dashboard.dark h1,
+.ps-dashboard.dark h4,
+.ps-dashboard.dark .ps-opened-pro .ps-summery-container p  {
     color: #ffffff;
 }
 
 .ps-dashboard.dark .ps-pro-features .ps-slide-body span.dashicons {
     color: #FA8900;
+}
+
+.ps-dashboard.dark .ps-pro.button-secondary {
+    background-color: #212330;
+    color: #FA8900;
+}
+
+.ps-dashboard.dark .ps-pro.button-secondary:hover {
+    background: #d9770014;
+}
+
+.ps-dashboard.dark .ps-summery-container p {
+    color: #425166;
 }
