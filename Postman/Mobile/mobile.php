@@ -218,7 +218,7 @@ class Post_SMTP_Mobile {
 							$url = admin_url( "admin.php?action=post_smtp_disconnect_app&auth_token={$device['fcm_token']}&ps_disconnect_app_nonce={$nonce}" );
 							$checked = $device['enable_notification'] == 1 ? 'checked="checked"' : '';
 							
-							echo "{$device['device']} <a href='{$url}' style='color: red'>Disconnect</a>";
+							echo  esc_html( $device['device'] ) . "<a href='{$url}' style='color: red'>Disconnect</a>";
 							echo '<br />';
 							echo sprintf(
 								'<label for="enable-app-notice">%s <input type="checkbox" id="enable-app-notice" name="postman_app_connection[%s]" %s /></label>',

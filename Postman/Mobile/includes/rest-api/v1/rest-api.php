@@ -65,7 +65,7 @@ class Post_SMTP_Mobile_Rest_API {
 		$device = $request->get_header( 'device' );
 		$server_url = $request->get_header( 'server_url' );
 		
-		if( $auth_key == $nonce ) {
+		if( $auth_key === $nonce ) {
 			
 			$data = array(
 				$fcm_token	=>	array(
@@ -88,11 +88,9 @@ class Post_SMTP_Mobile_Rest_API {
 			
 		}
 		
-		delete_transient( 'post_smtp_auth_nonce' );
-		
 		wp_send_json_error( 
 			array(
-				'error'	=>	'Refresh QR Code page, and scan again.'
+				'error'	=>	'Regenerate QR Code, and scan again.'
 			), 
 			200 
 		);
