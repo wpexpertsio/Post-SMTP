@@ -33,6 +33,8 @@ class Post_SMTP_Dashboard extends PostmanViewController {
      */
     public function render() {
 
+        $this_week = strtotime( '-7 days' );
+
         ?>
         <div class="wrap">
             <div class="ps-dashboard" style="height: 300vh;">
@@ -44,8 +46,8 @@ class Post_SMTP_Dashboard extends PostmanViewController {
                         </div>
                         <div class="ps-dash-header-right">
                             <div class="ps-dash-sort">
-                                <button class="active"><?php _e( 'Month', 'post-smtp' ) ?></button>
-                                <button><span class="ps-sort-border"></span><?php _e( 'Week', 'post-smtp' ) ?></button>
+                                <button><?php _e( 'Month', 'post-smtp' ) ?></button>
+                                <button class="active"><span class="ps-sort-border"></span><?php _e( 'Week', 'post-smtp' ) ?></button>
                                 <button><?php _e( 'Day', 'post-smtp' ) ?></button>
                                 <div class="clear"></div>
                             </div>
@@ -60,7 +62,7 @@ class Post_SMTP_Dashboard extends PostmanViewController {
                             </div>
                             <div class="ps-summery-container">
                                 <h1>150K</h1>
-                                <p><b>Total</b> Email This Week</p>
+                                <p><b>Total</b> Emails This Week</p>
                             </div>
                         </div>
                         <div class="ps-success">
@@ -69,7 +71,7 @@ class Post_SMTP_Dashboard extends PostmanViewController {
                             </div>
                             <div class="ps-summery-container">
                                 <h1>150K</h1>
-                                <p><b>Total</b> Email This Week</p>
+                                <p><b>10%</b> Success This Week</p>
                             </div>
                         </div>
                         <div class="ps-failed">
@@ -78,7 +80,7 @@ class Post_SMTP_Dashboard extends PostmanViewController {
                             </div>
                             <div class="ps-summery-container">
                                 <h1>150K</h1>
-                                <p><b>Total</b> Email This Week</p>
+                                <p><b>10%</b> Failed This Week</p>
                             </div>
                         </div>
                         <div class="ps-opened-pro">
@@ -100,7 +102,7 @@ class Post_SMTP_Dashboard extends PostmanViewController {
                             <span class="dashicons dashicons-arrow-down-alt2 ps-slide-toggle"></span>
                         </div>
                         <div class="ps-slide-body">
-                            
+
                         </div>
                     </div>
                     <!-- Guides and Documentation -->

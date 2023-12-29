@@ -454,6 +454,11 @@ a.ps-simple.button-primary {
     border-radius: 8px;
 }
 
+a.ps-simple.button-primary:hover {
+    background: #2e519f;
+}
+
+
 a.ps-simple.button-primary .dashicons {
     color: #ffffff;
 }
