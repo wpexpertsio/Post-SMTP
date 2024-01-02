@@ -3,6 +3,7 @@
 class Post_SMTP_Mobile_Rest_API {
 	
 	private $filter = '';
+	private $has_mainwp = false;
 
 
     /**
@@ -14,6 +15,8 @@ class Post_SMTP_Mobile_Rest_API {
     public function __construct() {
 
         add_action( 'rest_api_init', array( $this, 'register_routes' ) );
+		
+		$this->has_mainwp = is_plugin_active( 'mainwp/mainwp.php' );
 
     }
 
@@ -79,10 +82,18 @@ class Post_SMTP_Mobile_Rest_API {
 			update_option( 'post_smtp_mobile_app_connection', $data );
 			update_option( 'post_smtp_server_url', $server_url );
 			
+			$response = array(
+				'fcm_token'	=>	$fcm_token
+			);
+			
+			if( $this->has_mainwp ) {
+				
+				$response['mainwp'] = $this->get_child_sites();
+				
+			}
+			
 			wp_send_json_success( 
-				array(
-					'fcm_token'	=>	$fcm_token
-				), 
+				$response, 
 				200 
 			);
 			
@@ -139,6 +150,13 @@ class Post_SMTP_Mobile_Rest_API {
 		$end = $request->get_param( 'end' ) !== null ? $request->get_param( 'end' ) : 25;
 		$this->filter = $request->get_param( 'filter' ) !== 'all' ? $request->get_param( 'filter' ) : '';
 		$query = $request->get_param( 'query' ) !== '' ? $request->get_param( 'query' ) : '';
+		$mainwp_site_id = $request->get_param( 'mainwp_site_id' ) !== '' ? $request->get_param( 'mainwp_site_id' ) : '';
+		
+		if( $this->has_mainwp ) {
+			
+			$args['site_id'] = empty( $mainwp_site_id ) ? 'main_site' : $mainwp_site_id;
+			
+		}
 		
 		if( empty( $query ) && !empty( $this->filter ) ) {
 			
@@ -329,6 +347,28 @@ class Post_SMTP_Mobile_Rest_API {
 		
 		return $query;
 		
+	}
+
+	/**
+	 * Get MainWP child sites
+	 * 
+	 * @since 2.8.9
+	 */
+	private function get_child_sites() {
+
+		$child_enabled = apply_filters( 'mainwp_extension_enabled_check', __FILE__ );
+		$child_key     = $child_enabled['key'];
+		$sites         = apply_filters( 'mainwp_getsites', __FILE__, $child_key );
+		$site_ids      = array();
+
+		foreach ( $sites as $site ) {
+
+			$site_ids[ $site['id'] ] = $site['name'];
+
+		}
+		
+		return $site_ids ? $site_ids : 0;
+
 	}
 
 }
