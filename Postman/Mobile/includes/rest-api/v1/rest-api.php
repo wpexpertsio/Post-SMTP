@@ -191,8 +191,18 @@ class Post_SMTP_Mobile_Rest_API {
 				
 			}
 			
+			$response = array(
+				'logs'	=>	$logs_query->get_logs( $args )
+			);
+			
+			if( $this->has_mainwp ) {
+				
+				$response['mainwp'] = $this->get_child_sites();
+				
+			}
+			
 			wp_send_json_success(
-				$logs_query->get_logs( $args ),
+				$response,
 				200
 			);
 			
@@ -363,7 +373,10 @@ class Post_SMTP_Mobile_Rest_API {
 
 		foreach ( $sites as $site ) {
 
-			$site_ids[ $site['id'] ] = $site['name'];
+			$site_ids[ $site['id'] ] = array(
+				'siteURL'	=>	$site['url'],
+				'siteTitle'	=>	$site['name']
+			);
 
 		}
 		
