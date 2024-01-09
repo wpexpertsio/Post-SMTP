@@ -89,7 +89,7 @@ class PSMWP_Rest_API {
 			wp_send_json(
 				array(
 					'code'		=>	'incomplete_request',
-					'message'	=>	'Empty API-Key or Site-URL.'
+					'message'	=>	__( 'Empty API-Key or Site-URL.', 'post-smtp' )
 				),
 				404
 			);
@@ -104,7 +104,7 @@ class PSMWP_Rest_API {
 			wp_send_json(
 				array(
 					'code'		=>	'incorrect_api_key',
-					'message'	=>	'Incorrect API Key.'
+					'message'	=>	__( 'Incorrect API Key.', 'post-smtp' )
 				),
 				404
 			);

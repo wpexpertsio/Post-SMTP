@@ -77,7 +77,7 @@ class PostmanWelcomeController {
 		<div class="wrap about-wrap">
 			<h1><?php printf( esc_html__( 'Welcome to Post SMTP %s', 'post-smtp' ), $this->version ); ?></h1>
 			<div class="about-text"><?php printf( esc_html__( 'Thank you for updating! Post SMTP %s is bundled up and ready to take your SMTP needs to the next level!', 'post-smtp' ), $this->version ); ?><br>
-				<?php printf( '<strong>%s</strong>','Post SMTP support every SMTP service: Gmail/G-suite, SendGrid, Mandrill, Office365, and more...' ); ?>
+				<?php printf(esc_html__('%1$sPost SMTP support every SMTP service: Gmail/G-suite, SendGrid, Mandrill, Office 365, and more...%2$s', 'post-smtp' ),'<strong>','</strong>'); ?>
 			</div>
 			<div class="post-badge"><?php printf( esc_html__( 'Version %s', 'post-smtp' ), $this->version ); ?></div>
 

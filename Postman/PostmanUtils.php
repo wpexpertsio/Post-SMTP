@@ -242,7 +242,7 @@ class PostmanUtils {
 				} else {
 					$attempts ++;
 					if ( $attempts >= 10 ) {
-						throw new Exception( sprintf( 'Could not create lockfile %s', '/tmp' . '/.postman.lock' ) );
+						throw new Exception( sprintf(__('Could not create lockfile %s', 'post-smtp'), '/tmp' . '/.postman.lock' ) );
 					}
 					sleep( 1 );
 				}

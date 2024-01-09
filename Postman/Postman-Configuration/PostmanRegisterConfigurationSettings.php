@@ -442,7 +442,7 @@ class PostmanSettingsRegistry {
 	}
 
 	public function temporaryDirectoryCallback() {
-		$inputDescription = __( 'Lockfiles are written here to prevent users from triggering an OAuth 2.0 token refresh at the same time.' );
+		$inputDescription = __( 'Lockfiles are written here to prevent users from triggering an OAuth 2.0 token refresh at the same time.', 'post-smtp' );
 		printf( 
 			'<input type="text" id="input_%2$s" name="%1$s[%2$s]" value="%3$s" />', 
 			PostmanOptions::POSTMAN_OPTIONS, 

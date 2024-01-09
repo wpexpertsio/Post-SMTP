@@ -283,7 +283,7 @@ abstract class Postman_Zend_Mail_Protocol_Abstract
              * @see Postman_Zend_Mail_Protocol_Exception
              */
 //             require_once 'Zend/Mail/Protocol/Exception.php';
-            throw new Postman_Zend_Mail_Protocol_Exception('Could not set stream timeout');
+            throw new Postman_Zend_Mail_Protocol_Exception(__('Could not set stream timeout', 'post-smtp'));
         }
 
         return $result;
@@ -317,7 +317,7 @@ abstract class Postman_Zend_Mail_Protocol_Abstract
              * @see Postman_Zend_Mail_Protocol_Exception
              */
 //             require_once 'Zend/Mail/Protocol/Exception.php';
-            throw new Postman_Zend_Mail_Protocol_Exception('No connection has been established to ' . $this->_host);
+            throw new Postman_Zend_Mail_Protocol_Exception(sprintf(__('No connection has been established to %s', 'post-smtp'),$this->_host));
         }
 
         $this->_request = $request;
@@ -332,7 +332,7 @@ abstract class Postman_Zend_Mail_Protocol_Abstract
              * @see Postman_Zend_Mail_Protocol_Exception
              */
 //             require_once 'Zend/Mail/Protocol/Exception.php';
-            throw new Postman_Zend_Mail_Protocol_Exception('Could not send request to ' . $this->_host);
+            throw new Postman_Zend_Mail_Protocol_Exception(sprintf(__('Could not send request to %s', 'post-smtp'),$this->_host));
         }
 
         return $result;
@@ -353,7 +353,7 @@ abstract class Postman_Zend_Mail_Protocol_Abstract
              * @see Postman_Zend_Mail_Protocol_Exception
              */
 //             require_once 'Zend/Mail/Protocol/Exception.php';
-            throw new Postman_Zend_Mail_Protocol_Exception('No connection has been established to ' . $this->_host);
+            throw new Postman_Zend_Mail_Protocol_Exception(sprintf(__('No connection has been established to %s', 'post-smtp'),$this->_host));
         }
 
         // Adapters may wish to supply per-commend timeouts according to appropriate RFC
@@ -375,7 +375,7 @@ abstract class Postman_Zend_Mail_Protocol_Abstract
              * @see Postman_Zend_Mail_Protocol_Exception
              */
 //             require_once 'Zend/Mail/Protocol/Exception.php';
-            throw new Postman_Zend_Mail_Protocol_Exception($this->_host . ' has timed out');
+            throw new Postman_Zend_Mail_Protocol_Exception(sprintf(__('%s has timed out', 'post-smtp'),$this->_host));
         }
 
         if ($reponse === false) {
@@ -383,7 +383,7 @@ abstract class Postman_Zend_Mail_Protocol_Abstract
              * @see Postman_Zend_Mail_Protocol_Exception
              */
 //             require_once 'Zend/Mail/Protocol/Exception.php';
-            throw new Postman_Zend_Mail_Protocol_Exception('Could not read from ' . $this->_host);
+            throw new Postman_Zend_Mail_Protocol_Exception(sprintf(__('Could not read from %s', 'post-smtp'),$this->_host));
         }
 
         return $reponse;

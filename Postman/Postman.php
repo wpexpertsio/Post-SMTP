@@ -334,7 +334,7 @@ class Postman {
 					$plugin_file = $output_array[1];
 					$plugin_data = get_plugin_data( $plugin_full_path );
 
-					$deactivate_url = '<a href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( $plugin_file ) . '&amp;plugin_status=active&amp;paged=1&amp;s=deactivate-plugin_' . $plugin_file ) . '" aria-label="' . esc_attr( sprintf( _x( 'Deactivate %s', 'plugin' ), $plugin_data['Name'] ) ) . '">' . __( 'Deactivate' ) . '</a><br>';
+					$deactivate_url = '<a href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( $plugin_file ) . '&amp;plugin_status=active&amp;paged=1&amp;s=deactivate-plugin_' . $plugin_file ) . '" aria-label="' . esc_attr( sprintf( _x( 'Deactivate %s', 'plugin', 'post-smtp' ), $plugin_data['Name'] ) ) . '">' . __( 'Deactivate', 'post-smtp' ) . '</a><br>';
 					$message .= '<br><strong>Plugin Name:</strong> ' . $plugin_data['Name'];
 					$message .= '<br>' . $deactivate_url;
 				}
@@ -385,7 +385,7 @@ class Postman {
 	public static function getMailerTypeRecommend() {
 	    ?>
         <div>
-            <p style="font-size: 18px; font-weight: bold;"><?php esc_html_e( 'Please notice', 'post-smtp' ); ?></p>
+            <p style="font-size: 18px; font-weight: bold;">Please notice</p>
             <p style="font-size: 14px; line-height: 1.7;">
                 <?php _e('Post SMTP v2 includes and new feature called: <b>Mailer Type</b>.', 'post-smtp' ); ?><br>
                 <?php _e('I recommend to change it and <strong>TEST</strong> Post SMTP with the value <code>PHPMailer</code>.', 'post-smtp' ); ?><br>

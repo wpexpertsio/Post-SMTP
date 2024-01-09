@@ -345,7 +345,7 @@ class PostmanConfigurationController {
                     <?php $host = $this->options->getFallbackHostname(); ?>
                     <td>
                         <input type="text" id="fallback-smtp-host" name="postman_options[<?php esc_attr_e( PostmanOptions::FALLBACK_SMTP_HOSTNAME ); ?>]"
-                               value="<?php esc_attr_e( $host ); ?>" placeholder="Example: smtp.host.com">
+                               value="<?php esc_attr_e( $host ); ?>" placeholder="<?php esc_attr_e( 'Example: smtp.host.com', 'post-smtp' ); ?>">
                     </td>
                 </tr>
 
@@ -354,7 +354,7 @@ class PostmanConfigurationController {
                     <?php $port = $this->options->getFallbackPort(); ?>
                     <td>
                         <input type="number" id="fallback-smtp-port" name="postman_options[<?php esc_attr_e( PostmanOptions::FALLBACK_SMTP_PORT ); ?>]"
-                               value="<?php esc_attr_e( $port ); ?>" placeholder="Example: 587">
+                               value="<?php esc_attr_e( $port ); ?>" placeholder="<?php esc_attr_e( 'Example: 587', 'post-smtp' ); ?>">
                     </td>
                 </tr>
 
@@ -457,7 +457,7 @@ class PostmanConfigurationController {
 
 		do_action( 'post_smtp_settings_menu' );
 
-		submit_button( 'Save Changes', 'button button-primary' );
+		submit_button( __('Save Changes', 'post-smtp') );
 		print '</form>';
 		print '</div>';
 		print '</div>';
@@ -591,8 +591,9 @@ class PostmanConfigurationController {
 			print '<fieldset>';
 			printf( '<legend>%s</legend>', esc_html_x( 'Who is the mail coming from?', 'Wizard Step Title', 'post-smtp' ) );
 			printf( '<p>%s</p>', esc_html__( 'Enter the email address and name you\'d like to send mail as.', 'post-smtp' ) );
-			// translators: 1: Opening paragraph tag, 2: Opening emphasized tag, 3: Closing emphasized tag, 4. Closing paragraph tag
-			printf( esc_html__( '%1$sPlease note that to prevent abuse, many email services will %2$snot%3$s let you send from an email address other than the one you authenticate with.%4$s', 'post-smtp' ),'<p>','<em>','</em>','</p>'
+			// translators: 1: Opening paragraph tag, 2: Emphasized "not", 3: Remaining sentence
+			printf(esc_html__(
+				'%1$sPlease note that to prevent abuse, many email services will %2$snot%3$s let you send from an email address other than the one you authenticate with.%4$s', 'post-smtp' ),'<p>','<b>','</b>','</p>'
 			);
 			
 			print( '<div class="ps-ib ps-w-50">' );
@@ -660,7 +661,7 @@ class PostmanConfigurationController {
 			
 			?>
 			<h2><?php esc_html_e( 'Select notification service', 'post-smtp' ); ?></h2>
-			<p><?php printf( esc_html( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %s if required.', 'post-smtp' ), '<a href="'.$logs_url.'" target="_blank">log section</a>' ) ?></p>
+			<p><?php printf(esc_html__( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %1$slog section%2$s if required.', 'post-smtp' ), '<a href="'.$logs_url.'" target="_blank">','</a>' ) ?></p>
 			<div class="ps-notify-radios">
 				<div class="ps-notify-radio-outer">
 					<div class="ps-notify-radio">

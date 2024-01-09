@@ -32,9 +32,9 @@ if ( ! class_exists( 'PostmanAbstractConfigTextHelper' ) ) {
 	 */
 	abstract class PostmanAbstractConfigTextHelper implements PostmanConfigTextHelper {
 		public function getOAuthHelp() {
-			$attention = __( 'Attention', 'post-smtp' );
-			$errorMessage = sprintf( __('Check this article how to configure Gmail/Gsuite OAuth:<a href="%1$s" target="_blank">Read Here</a>', 'post-smtp' ), 'https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/' );
-			$text = sprintf( '<b style="color:red">%s!</b> %s', $attention, $errorMessage );
+			$attention = __( 'Attention!', 'post-smtp' );
+			$errorMessage = sprintf(esc_html__('Check this article how to configure Gmail/Gsuite OAuth: %1$sRead Here%2$s', 'post-smtp' ),'<a href="https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/" target="_blank">','</a>' );
+			$text = sprintf( '<b style="color:red">%1$s</b> %2$s', $attention, $errorMessage );
 			
 			return $text;
 		}

@@ -246,7 +246,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		
 		if ($hostData->hostname == self::HOST && $hostData->port == self::PORT) {
 			/* translators: where variables are (1) transport name (2) host and (3) port */
-			$recommendation ['message'] = sprintf ( __ ( ('Postman recommends the %1$s to host %2$s on port %3$d.') ), $this->getName (), self::HOST, self::PORT );
+			$recommendation ['message'] = sprintf (__('Postman recommends the %1$s to host %2$s on port %3$d.', 'post-smtp' ), $this->getName (), self::HOST, self::PORT );
 			$recommendation ['priority'] = self::PRIORITY;
 		}
 		
