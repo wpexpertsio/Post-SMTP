@@ -108,38 +108,6 @@ class Post_SMTP_Mobile_Rest_API {
 		
 	}
 	
-	private function validate( $fcm_token ) {
-		
-		$device = get_option( 'post_smtp_mobile_app_connection' );
-		
-		if( empty( $fcm_token ) ) {
-			
-			wp_send_json_error( 
-				array(
-					'error'	=>	'Auth token missing.'
-				), 
-				400 
-			);
-			
-		}
-		elseif( $device && isset( $device[$fcm_token] ) ) {
-			
-			return true;
-			
-		}
-		else {
-			
-			wp_send_json_error( 
-				array(
-					'error'	=>	'Invalid Auth Token.'
-				), 
-				401 
-			);
-			
-		}
-		
-	}
-	
 	public function get_logs( WP_REST_Request $request ) {
 		
 		$args['order_by'] = 'time';
@@ -150,13 +118,6 @@ class Post_SMTP_Mobile_Rest_API {
 		$end = $request->get_param( 'end' ) !== null ? $request->get_param( 'end' ) : 25;
 		$this->filter = $request->get_param( 'filter' ) !== 'all' ? $request->get_param( 'filter' ) : '';
 		$query = $request->get_param( 'query' ) !== '' ? $request->get_param( 'query' ) : '';
-		$mainwp_site_id = $request->get_param( 'mainwp_site_id' ) !== '' ? $request->get_param( 'mainwp_site_id' ) : '';
-		
-		if( $this->has_mainwp ) {
-			
-			$args['site_id'] = empty( $mainwp_site_id ) ? 'main_site' : $mainwp_site_id;
-			
-		}
 		
 		if( empty( $query ) && !empty( $this->filter ) ) {
 			
@@ -176,7 +137,7 @@ class Post_SMTP_Mobile_Rest_API {
 			
 		}
 		
-		if( $this->validate( $fcm_token ) ) {
+		if( post_smtp_mobile_validate( $fcm_token ) ) {
 			
 			$logs_query = new PostmanEmailQueryLog();
 			$args['start'] = $start;
@@ -191,18 +152,8 @@ class Post_SMTP_Mobile_Rest_API {
 				
 			}
 			
-			$response = array(
-				'logs'	=>	$logs_query->get_logs( $args )
-			);
-			
-			if( $this->has_mainwp ) {
-				
-				$response['mainwp'] = $this->get_child_sites();
-				
-			}
-			
 			wp_send_json_success(
-				$response,
+				$logs_query->get_logs( $args ),
 				200
 			);
 			
@@ -216,7 +167,7 @@ class Post_SMTP_Mobile_Rest_API {
 		$id = $request->get_param( 'id' ) !== null ? $request->get_param( 'id' ) : 1;
 		$type = $request->get_param( 'type' ) !== null ? $request->get_param( 'type' ) : 'log';
 		
-		if( $this->validate( $fcm_token ) ) {
+		if( post_smtp_mobile_validate( $fcm_token ) ) {
 			
 			$url = admin_url( "admin.php?access_token={$fcm_token}&type={$type}&log_id={$id}" );
 			
@@ -234,7 +185,7 @@ class Post_SMTP_Mobile_Rest_API {
 		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
 		$id = $request->get_param( 'id' ) !== null ? $request->get_param( 'id' ) : '';
 		
-		if( $this->validate( $fcm_token ) ) {
+		if( post_smtp_mobile_validate( $fcm_token ) ) {
 			
 			if( empty( $id ) ){
 				
@@ -325,7 +276,7 @@ class Post_SMTP_Mobile_Rest_API {
 			
 		}
 		
-		if( $this->validate( $fcm_token ) ) {
+		if( post_smtp_mobile_validate( $fcm_token ) ) {
 			
 			$response = delete_option( 'post_smtp_mobile_app_connection' );
 			$response = delete_option( 'post_smtp_server_url' );
