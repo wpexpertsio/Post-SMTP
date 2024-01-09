@@ -58,19 +58,11 @@ class PostmanEmailLogs {
             $id = sanitize_text_field( $_GET['log_id'] );
             $email_query_log = new PostmanEmailQueryLog();
             $log = $email_query_log->get_log( $id, '' );
+            $header = $log['original_headers'];
             $msg = $log['original_message'];
             $msg = preg_replace( "/<script\b[^>]*>(.*?)<\/script>/s", '', $msg );
 
-            // Strip <xml> and comment tags.
-            $msg = preg_replace( '/<xml\b[^>]*>(.*?)<\/xml>/is', '', $msg );
-            $msg = preg_replace( '/<!--(.*?)-->/', '', $msg );
-
-            $allowed_html = wp_kses_allowed_html( 'post' );
-            $allowed_html['style'][''] = true;
-
-            $msg = wp_kses( $msg, $allowed_html );
-
-            echo '<pre>' . $msg . '</pre>';
+            echo ( isset ( $header ) && strpos( $header, "text/html" ) ) ? $msg : '<pre>' . $msg . '</pre>' ;
 
             die;
 
