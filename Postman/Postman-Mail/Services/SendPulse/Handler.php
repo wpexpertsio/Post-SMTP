@@ -8,7 +8,7 @@ class PostmanSendpulse extends PostmanServiceRequest{
      * @since 2.7
      * @version 1.0
      */
-    private $email_sent_code = "200";
+    private $email_sent_code = 200;
 
     /**
      * API Key and Secret Key
