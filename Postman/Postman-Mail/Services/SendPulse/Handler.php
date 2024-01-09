@@ -16,8 +16,6 @@ class PostmanSendpulse extends PostmanServiceRequest{
      * @since 2.7
      * @version 1.0 
      */
-
-
     private $api_key = " ";
     private $secret_key = " ";
 
@@ -28,7 +26,6 @@ class PostmanSendpulse extends PostmanServiceRequest{
      * @since 2.7
      * @version 1.0 
      */
-
     private $grant_type = "client_credentials";
     private $auth_response_body= " ";
     private $auth_response= " ";
@@ -66,7 +63,6 @@ class PostmanSendpulse extends PostmanServiceRequest{
      * @since 2.7
      * @version 1.0
      */
-
     private function auth_headers() {
 
         return array(
@@ -97,7 +93,6 @@ class PostmanSendpulse extends PostmanServiceRequest{
      * @since 2.7
      * @version 1.0
      */
-
     private function authentication(){
 
         $content = json_encode( $this->auth_body() );
@@ -126,7 +121,6 @@ class PostmanSendpulse extends PostmanServiceRequest{
      * @since 2.7
      * @version 1.0
      */
-
     private function get_headers() {
 
         if( get_transient( 'sendpulse_token' ) ){
