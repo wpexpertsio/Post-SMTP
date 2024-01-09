@@ -138,7 +138,7 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 		if ( $hostData->hostname == $this->getHostname() && $hostData->port == self::PORT ) {
 			$recommendation ['priority'] = self::PRIORITY;
 			/* translators: where variables are (1) transport name (2) host and (3) port */
-			$recommendation ['message'] = sprintf( __( ('Postman recommends the %1$s to host %2$s on port %3$d.') ), $this->getName(), $this->getHostname(), self::PORT );
+			$recommendation ['message'] = sprintf(__('Postman recommends the %1$s to host %2$s on port %3$d.', 'post-smtp' ), $this->getName(), $this->getHostname(), self::PORT );
 		}
 		return $recommendation;
 	}

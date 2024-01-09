@@ -90,7 +90,7 @@ class Post_SMTP_Mobile_Rest_API {
 		
 		wp_send_json_error( 
 			array(
-				'error'	=>	'Regenerate QR Code, and scan again.'
+				'error'	=>	__( 'Regenerate QR Code, and scan again.', 'post-smtp' )
 			), 
 			200 
 		);
@@ -105,7 +105,7 @@ class Post_SMTP_Mobile_Rest_API {
 			
 			wp_send_json_error( 
 				array(
-					'error'	=>	'Auth token missing.'
+					'error'	=>	__( 'Auth token missing.', 'post-smtp' )
 				), 
 				400 
 			);
@@ -120,7 +120,7 @@ class Post_SMTP_Mobile_Rest_API {
 			
 			wp_send_json_error( 
 				array(
-					'error'	=>	'Invalid Auth Token.'
+					'error'	=>	__( 'Invalid Auth Token.', 'post-smtp' )
 				), 
 				401 
 			);
@@ -167,7 +167,7 @@ class Post_SMTP_Mobile_Rest_API {
 			if( empty( $args ) ) {
 				
 				wp_send_json_success(
-					array( 'message' => 'Logs not found.' ),
+					array( 'message' => __( 'Logs not found.', 'post-smtp' ) ),
 					200
 				);
 				
@@ -212,7 +212,7 @@ class Post_SMTP_Mobile_Rest_API {
 				
 				wp_send_json_error( 
 					array(
-						'error'	=>	'Enter email id.'
+						'error'	=>	__( 'Enter email id.', 'post-smtp' )
 					), 
 					401 
 				);
@@ -254,7 +254,7 @@ class Post_SMTP_Mobile_Rest_API {
 				
                     wp_send_json_success(
 						array(
-							'message'	=>	'Email successfully resend.'
+							'message'	=>	__( 'Email successfully resend.', 'post-smtp' )
 						),
 						200
 					);
@@ -264,7 +264,7 @@ class Post_SMTP_Mobile_Rest_API {
 					
 					wp_send_json_error( 
 						array(
-							'message'	=>	'Email not send.'
+							'message'	=>	__( 'Email not send.', 'post-smtp' )
 						), 
 						200
 					);
@@ -276,7 +276,7 @@ class Post_SMTP_Mobile_Rest_API {
 				
 				wp_send_json_error( 
 					array(
-						'error'	=>	'Invalid email id.'
+						'error'	=>	__( 'Invalid email id.', 'post-smtp' )
 					), 
 					401 
 				);
@@ -306,7 +306,7 @@ class Post_SMTP_Mobile_Rest_API {
 				
 				wp_send_json_success(
 					array(
-						'message'	=> 'Site Disconnected.'
+						'message'	=> __( 'Site Disconnected.', 'post-smtp' )
 					),
 					200
 				);	
@@ -314,7 +314,7 @@ class Post_SMTP_Mobile_Rest_API {
 			
 			wp_send_json_error( 
 				array(
-					'error'	=>	'Invalid Request.'
+					'error'	=>	__( 'Invalid Request.', 'post-smtp' )
 				), 
 				403 
 			);

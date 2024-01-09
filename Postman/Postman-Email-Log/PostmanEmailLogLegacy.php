@@ -73,7 +73,7 @@ $testListTable->prepare_items();
 			</div>
 
         </div>
-		<div class="error">Please notice: when you select a date for example 11/20/2017, behind the scene the query select <b>11/20/2017 00:00:00</b>.<br>So if you searching for an email arrived that day at any hour you need to select 11/20/2017 as the <b>From Date</b> and 11/21/2017 as the <b>To Date</b>.</div>
+		<div class="error"><?php printf(esc_html__('Please notice: when you select a date for example 11/20/2017, behind the scene the query select %1$s11/20/2017 00:00:00%2$s.%3$sSo if you searching for an email arrived that day at any hour you need to select 11/20/2017 as the %1$sFrom Date%2$s and 11/21/2017 as the %1$sTo Date%2$s.', 'post-smtp'),'<b>','</b>','<br>'); ?></div>
 	</form>
 
 	<!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions -->

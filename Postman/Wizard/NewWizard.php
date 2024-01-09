@@ -114,15 +114,15 @@ class Post_SMTP_New_Wizard {
                         <span class="dashicons dashicons-no-alt ps-pro-close-popup"></span>
                         <div class="ps-pro-popup-content">
                             <img src="" class="ps-pro-for-img" />
-                            <h1><span class="ps-pro-for"></span> is a Pro feature</h1>
+                            <h1><?php printf(esc_html__( '%s is a Pro feature', 'post-smtp' ),'<span class="ps-pro-for"></span>'); ?></h1>
                             <p>
-                                We're sorry, the <span class="ps-pro-for"></span> mailer is not available on your plan. Please upgrade to the PRO plan to unlock all these awesome fetures.
+                                <?php printf(esc_html__( 'We\'re sorry, the %s mailer is not available on your plan. Please upgrade to the PRO plan to unlock all these awesome fetures.', 'post-smtp' ),'<span class="ps-pro-for"></span>'); ?>
                             </p>
                             <div>
-                                <a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard" target="_blank" class="button button-primary ps-yellow-btn" style="color: #ffffff!important">UPGRADE TO PRO</a>
+                                <a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard" target="_blank" class="button button-primary ps-yellow-btn" style="color: #ffffff!important"><?php esc_html_e( 'UPGRADE TO PRO', 'post-smtp' ); ?></a>
                             </div>
                             <div>
-                                <a href="" class="ps-pro-close-popup" style="color: #c2c2c2; font-size: 10px;">Already purchased?</a>
+                                <a href="" class="ps-pro-close-popup" style="color: #c2c2c2; font-size: 10px;"><?php esc_html_e( 'Already purchased?', 'post-smtp' ); ?></a>
                             </div>
                         </div>
                     </div>
@@ -140,17 +140,17 @@ class Post_SMTP_New_Wizard {
                             <table>
                                 <tr class="<?php echo esc_attr( $in_active ) ?>">
                                     <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"></span></td>
-                                    <td class="ps-wizard-text">Choose your SMTP Mailer</td>
+                                    <td class="ps-wizard-text"><?php esc_html_e( 'Choose your SMTP Mailer', 'post-smtp' ); ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="1"></span></td>
                                 </tr>
                                 <tr class="<?php echo esc_attr( $is_active ) ?>">
                                     <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"><span class="ps-wizard-line"></span></span></td>
-                                    <td class="ps-wizard-text">Configure Mailer Settings</td>
+                                    <td class="ps-wizard-text"><?php esc_html_e( 'Configure Mailer Settings', 'post-smtp' ); ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="2"></span></td>
                                 </tr>
                                 <tr class="ps-in-active-nav">
                                     <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"><span class="ps-wizard-line"></span></span></td>
-                                    <td class="ps-wizard-text">Send Test Email</td>
+                                    <td class="ps-wizard-text"><?php esc_html_e( 'Send Test Email', 'post-smtp' ); ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="3"></span></td>
                                 </tr>
                             </table>
@@ -164,13 +164,9 @@ class Post_SMTP_New_Wizard {
                                         /**
                                          * Translators: %1$s Description of the step, %2$s Link to the complete mailer guide, %3$s Link text, %4$s Description of the step
                                          */
-                                        printf( 
-                                            '%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s',
-                                            __( 'Which mailer would you like to use to send emails? Not sure which mailer to choose? Check out our ', 'post-smtp' ),
-                                            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/post-smtp-complete-mailer-guide' ),
-                                            __( 'complete mailer guide', 'post-smtp' ),
-                                            __( ' for details on each option.', 'post-smtp' )
-                                        ); 
+                                        printf(esc_html__(
+										'Which mailer would you like to use to send emails? Not sure which mailer to choose? Check out our %1$scomplete mailer guide%2$s for details on each option.', 'post-smtp' ),'<a href="https://postmansmtp.com/documentation/sockets-addons/post-smtp-complete-mailer-guide" target="_blank">','</a>'
+										); 
                                         ?></p>
                                         <div class="ps-wizard-sockets">      
                                         <?php
@@ -260,7 +256,7 @@ class Post_SMTP_New_Wizard {
                                             <div class="ps-wizard-socket-radio-outer">
                                                 <div class="ps-wizard-socket-radio <?php echo !empty( $is_pro ) ? esc_attr( $is_pro ) . '-outer' : ''; ?>">
                                                     <?php if( !empty( $is_pro ) ): ?>
-                                                        <span class="<?php echo $is_pro . '-tag' ?>">PRO</span>
+                                                        <span class="<?php echo $is_pro . '-tag' ?>"><?php esc_html_e( 'PRO', 'post-smtp' ); ?></span>
                                                     <?php endif; ?>
                                                     <?php if( empty( $is_pro ) ) : ?> <label for="ps-wizard-socket-<?php echo esc_attr( $slug ); ?>"><?php endif; ?>                                                    
                                                         <?php if( empty( $is_pro ) ) : ?> 
@@ -284,16 +280,13 @@ class Post_SMTP_New_Wizard {
                                         ?>
                                         </div>
                                         <p style="width: 70%; margin-bottom: 30px;">
-                                        <?php echo sprintf(
-                                            '%1$s <i><a href="%2$s">%3$s</a></i>',
-                                            __( 'Did we miss out What you are looking for?', 'post-smtp' ),
-                                            esc_url( admin_url( 'admin.php?page=postman-contact' ) ),
-                                            __( 'Suggest your Mailer', 'post-smtp' )
-                                        ); ?>
+                                        <?php printf(esc_html__(
+                                            'Did we miss out What you are looking for? %1$sSuggest your Mailer%2$s', 'post-smtp' ),'<b><a href="' . admin_url( 'admin.php?page=postman-contact' ) . '">','</a></b>'
+											); ?>
                                         </p>
                                     </div>
                                     <div class="ps-wizard-step ps-wizard-step-2">
-                                        <a href="" data-step="1" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span>Back</a>
+                                        <a href="" data-step="1" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span><?php esc_html_e( 'Back', 'post-smtp' ); ?></a>
                                         <?php
                                         if( !empty( $this->sockets ) ) {
 
@@ -316,15 +309,15 @@ class Post_SMTP_New_Wizard {
                                         ?>
                                     </div>
                                     <div class="ps-wizard-step ps-wizard-step-3">
-                                        <a href="" data-step="2" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span>Back</a>
+                                        <a href="" data-step="2" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span><?php esc_html_e( 'Back', 'post-smtp' ); ?></a>
                                         <p><?php _e( 'This step allows you to send an email message for testing. If there is a problem, Post SMTP will give up after 60 seconds.', 'post-smtp' ); ?></p>
                                         <div class="ps-form-ui">
                                             <div class="ps-form-control">
-                                                <div><label>Recipient Email Address</label></div>
-                                                <input type="text" class="ps-test-to" required data-error="Enter Recipient Email Address" name="postman_test_options[test_email]" value="<?php echo esc_attr( wp_get_current_user()->user_email ); ?>" placeholder="Recipient Email Address">
-                                                <span class="ps-form-control-info">Enter the email address where you want to send a test email message.</span>
+                                                <div><label><?php esc_html_e( 'Recipient Email Address', 'post-smtp' ); ?></label></div>
+                                                <input type="text" class="ps-test-to" required data-error="<?php esc_attr_e( 'Enter Recipient Email Address', 'post-smtp' ); ?>" name="postman_test_options[test_email]" value="<?php echo esc_attr( wp_get_current_user()->user_email ); ?>" placeholder="<?php esc_attr_e( 'Recipient Email Address', 'post-smtp' ); ?>">
+                                                <span class="ps-form-control-info"><?php esc_html_e( 'Enter the email address where you want to send a test email message.', 'post-smtp' ); ?></span>
                                             </div>
-                                            <button class="button button-primary ps-blue-btn ps-wizard-send-test-email" data-step="3">Send Test Email <span class="dashicons dashicons-email"></span></button>
+                                            <button class="button button-primary ps-blue-btn ps-wizard-send-test-email" data-step="3"><?php esc_html_e( 'Send Test Email', 'post-smtp' ); ?> <span class="dashicons dashicons-email"></span></button>
                                             <div>
                                                 <p class="ps-wizard-error"></p>
                                                 <p class="ps-wizard-success"></p>
@@ -337,34 +330,24 @@ class Post_SMTP_New_Wizard {
                                         /**
                                          * Translators: %1$s Text, %2$s URL, %3$s URL Text
                                          */
-                                        printf(
-                                            '%1$s <a href="%2$s" target="_blank">%3$s</a>',
-                                            __( 'We value your opinion on your experience with Post SMTP and would appreciate your feedback. ' ),
-                                            esc_url( 'https://wordpress.org/support/plugin/post-smtp/reviews/#new-post' ),
-                                            __( 'Leave a review here.', 'post-smtp' )
+                                        printf(esc_html__(
+                                            'We value your opinion on your experience with Post SMTP and would appreciate your feedback. %1$sLeave a review here.%2$s', 'post-smtp' ),'<a href="https://wordpress.org/support/plugin/post-smtp/reviews/#new-post" target="_blank">','</a>'
                                         ) ?></p>
                                         <p><?php
                                         /**
                                          * Translators: %1$s Text, %2$s URL, %3$s URL Text with
                                          */
-                                        printf(
-                                            '<b>%1$s</b> <a href="%2$s" target="_blank">%3$s </a>',
-                                            __( 'Get More Insights & Optimize Your Email Delivery - ' ),
-                                            esc_url( 'https://postmansmtp.com/extension/' ),
-                                            __( 'Learn more about Post SMTP Addons 💪', 'post-smtp' )
+                                        printf(esc_html__(
+                                            '%1$sGet More Insights & Optimize Your Email Delivery - %2$s%3$sLearn more about Post SMTP Addons 💪%4$s', 'post-smtp' ),'<b>','</b>','<a href="https://postmansmtp.com/extension/" target="_blank">','</a>'
                                         );
                                         ?>
                                         </p>
                                         <div class="ps-wizard-card">
-                                            <p><?php printf(
-                                                '<b>%1$s</b> %2$s',
-                                                __( '📉 Report and Tracking Addon', 'post-smtp' ),
-                                                __( 'Receive in-depth reports and statics of your website\'s email performance and get access to email\'s open rate and get more visibility.' )
+                                            <p><?php printf(esc_html__(
+                                                '%1$s📉 Report and Tracking Addon - %2$sReceive in-depth reports and statics of your website\'s email performance and get access to email\'s open rate and get more visibility.', 'post-smtp' ),'<b>','</b>'
                                             ) ?></p>
-                                            <p><?php printf(
-                                                '<b>%1$s</b> %2$s',
-                                                __( '⚡ Advanced Email delivery and logs', 'post-smtp' ),
-                                                __( 'You can automate the process of retrying failed email attempts and optamize your website for users by sending emails asychronously from the backend.' )
+                                            <p><?php printf(esc_html__(
+                                                '%1$s⚡ Advanced Email delivery and logs - %2$sYou can automate the process of retrying failed email attempts and optamize your website for users by sending emails asychronously from the backend.', 'post-smtp' ),'<b>','</b>'
                                             ) ?></p>
                                             <a href="<?php echo esc_url( 'https://postmansmtp.com/extension/' ); ?>" class="button button-primary ps-yellow-btn" target="_blank"><?php esc_html_e( 'CHECK OTHER ADDONS', 'post-smtp' ); ?><span class="dashicons dashicons-arrow-right-alt"></span></a>
                                         </div>
@@ -389,13 +372,13 @@ class Post_SMTP_New_Wizard {
                         <div class="ps-wizard-footer-right">
                             <div class="ps-wizard-step ps-wizard-step-1">
                                 <p class="ps-wizard-error"></p>
-                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="1">Continue <span class="dashicons dashicons-arrow-right-alt"></span></button>
+                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="1"><?php esc_html_e( 'Continue', 'post-smtp' ); ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                                 <div style="clear: both"></div>
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-2">
                                 <p class="ps-wizard-success"><?php echo ( isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
                                 <p class="ps-wizard-error"><?php echo ( !isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
-                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="2"></span>Save and Continue <span class="dashicons dashicons-arrow-right-alt"></span></button>
+                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="2"></span><?php esc_html_e( 'Save and Continue', 'post-smtp' ); ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                                 <div style="clear: both"></div>
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-3">
@@ -403,17 +386,10 @@ class Post_SMTP_New_Wizard {
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-4">
                                 <div class="ps-wizard-congrates">
-                                    <h2>👏 <?php _e( 'Great you are all done!', 'post-smtp' ); ?></h1>
+                                    <h2>👏 <?php esc_html_e( 'Great you are all done!', 'post-smtp' ); ?></h1>
                                     <?php 
-                                    printf( 
-                                        '<a href="%1$s" style="font-size: 12px;">%2$s <b>%3$s</b> %4$s <b>%5$s</b> %6$s</a>', 
-                                        esc_url( admin_url( 'admin.php?page=postman/configuration' ) ),
-                                        __( 'Visit settings to setup', 'post-smtp' ),
-                                        __( 'Notifications', 'post-smtp' ),
-                                        __( 'and', 'post-smtp' ),
-                                        __( 'Fallback SMTP'),
-                                        __( 'options.', 'post-smtp' )
-                                    );
+                                    printf(esc_html__(
+                                        '%1$sVisit settings to setup %2$sNotifications%3$s and %2$sFallback SMTP%3$s options.%4$s', 'post-smtp' ),'<a href="admin.php?page=postman/configuration" style="font-size: 12px;">','<b>','</b>','</a>');
                                     ?>
                                 </div>
                                 <div class="ps-wizard-view-logs">
@@ -427,9 +403,9 @@ class Post_SMTP_New_Wizard {
                     </div>
                 </div>
                 <div class="ps-wizard-page-footer">
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration_wizard&wizard=legacy' ) ); ?>"><?php _e( 'Continue with legacy wizard', 'post-smtp' ); ?></a>
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman' ) );?>"><?php _e( 'Go back to dashboard', 'post-smtp' ); ?></a>
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration' ) );?>"><?php _e( 'Switch to settings section', 'post-smtp' ); ?></a>
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration_wizard&wizard=legacy' ) ); ?>"><?php esc_html_e( 'Continue with legacy wizard', 'post-smtp' ); ?></a>
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman' ) );?>"><?php esc_html_e( 'Go back to dashboard', 'post-smtp' ); ?></a>
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration' ) );?>"><?php esc_html_e( 'Switch to settings section', 'post-smtp' ); ?></a>
                 </div>
             </div>
         </div>
@@ -495,15 +471,15 @@ class Post_SMTP_New_Wizard {
         $html = '
         <div class="ps-form-ui ps-name-email-settings">
             <div class="ps-form-control">
-                <h3>From Address</h3>
+                <h3>' . esc_html__( 'From Address', 'post-smtp' ) . '</h3>
                 <p>'. sprintf(
                     '%1$s',
                     esc_html__( 'This address, like the letterhead printed on a letter, identifies the sender to the recipient. Change this when you are sending on behalf of someone else.', 'post-smtp' )
                 ) .'</p>
-                <div><label>From Email</label></div>
-                <input type="text" class="ps-from-email" required data-error="'.__( 'Please enter From Email.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_EMAIL ).']" value="'.$from_email.'" placeholder="From Email">
-                <span class="ps-form-control-info">'.__( 'The email address that emails are sent from.', 'post-smtp' ).'</span>
-                <div class="ps-form-control-info">'.__( 'Please note that other plugins may override this field, to prevent this use the setting below.', 'post-smtp' ).'</div>
+                <div><label>' . esc_html__( 'From Email', 'post-smtp' ) . '</label></div>
+                <input type="text" class="ps-from-email" required data-error="' . esc_html__( 'Please enter From Email.', 'post-smtp' ) . '" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_EMAIL ).']" value="'.$from_email.'" placeholder="' . esc_attr__( 'From Email', 'post-smtp') . '">
+                <span class="ps-form-control-info">'. esc_html__( 'The email address that emails are sent from.', 'post-smtp' ).'</span>
+                <div class="ps-form-control-info">'.  esc_html__( 'Please note that other plugins may override this field, to prevent this use the setting below.', 'post-smtp' ).'</div>
                 <div>
                     <div class="ps-form-switch-control">
                         <label class="ps-switch-1">
@@ -512,22 +488,17 @@ class Post_SMTP_New_Wizard {
                         </label> 
                     </div>
                     <span>'.
-                    sprintf( 
-                        '%1$s <b>%2$s</b> %3$s <b>%4$s</b> %5$s <b>%6$s</b>',
-                        __( 'Check this to prevent changes on the', 'post-smtp' ),
-                        __( 'From Email', 'post-smtp' ),
-                        __( 'field by other', 'post-smtp' ),
-                        __( 'Plugins', 'post-smtp' ),
-                        __( 'and', 'post-smtp' ),
-                        __( 'Themes', 'post-smtp' )
+                    sprintf(esc_html__( 
+                        'Check this to prevent changes on the %1$sFrom Email%2$s field by other %1$sPlugins%2$s and %1$sThemes%2$s',
+                        'post-smtp' ),'<b>','</b>'
                     ).
                     '</span>
                 </div> 
             </div>
             <div class="ps-form-control">
-                <div><label>From Name</label></div>
-                <input type="text" class="ps-from-name" required data-error="'.__( 'Please enter From Name.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_NAME ).']" value="'.$from_name.'" placeholder="From Name">
-                <span class="ps-form-control-info">The name that emails are sent from.</span>
+                <div><label> ' . esc_html__( 'From Name', 'post-smtp' ) . '</label></div>
+                <input type="text" class="ps-from-name" required data-error="'.__( 'Please enter From Name.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_NAME ).']" value="'.$from_name.'" placeholder="' . esc_attr__( 'From Name', 'post-smtp' ) . '">
+                <span class="ps-form-control-info">' . esc_html__( 'The name that emails are sent from.', 'post-smtp' ) . '</span>
                 <div>
                     <div class="ps-form-switch-control">
                         <label class="ps-switch-1">
@@ -536,14 +507,9 @@ class Post_SMTP_New_Wizard {
                         </label> 
                     </div>
                     <span>'.
-                    sprintf( 
-                        '%1$s <b>%2$s</b> %3$s <b>%4$s</b> %5$s <b>%6$s</b>',
-                        __( 'Check this to prevent changes on the', 'post-smtp' ),
-                        __( 'From Name', 'post-smtp' ),
-                        __( 'field by other', 'post-smtp' ),
-                        __( 'Plugins', 'post-smtp' ),
-                        __( 'and', 'post-smtp' ),
-                        __( 'Themes', 'post-smtp' )
+                    sprintf(esc_html__( 
+                        'Check this to prevent changes on the %1$sFrom Name%2$s field by other %1$sPlugins%2$s and %1$sThemes%2$s',
+                        'post-smtp' ),'<b>','</b>'
                     ).
                     '</span>
                 </div>
@@ -643,38 +609,35 @@ class Post_SMTP_New_Wizard {
 
         $html = '
         <p>'.__( 'The SMTP option lets you send emails directly through an SMTP server instead of using a SMTP Server provider\'s API. This is easy and convenient, but it\'s less secure than the other mailers.', 'post-smtp' ).'</p>
-        <p>'.sprintf(
-            '%1$s <a href="%2$s" target="_blank">%3$s</a>',
-            __( 'Let\'s get started with our ', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-other-smtp' ),
-            __( 'SMTP Documentation', 'post-smtp' )
+        <p>'.sprintf(esc_html__(
+            'Let\'s get started with our %1$sSMTP Documentation%2$s', 'post-smtp' ),'<a href="https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-other-smtp" target="_blank">','</a>'
         ).'</p>
         ';
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Host Name</label></div>
-            <input type="text" class="ps-smtp-host-name" required data-error="'.__( 'Please enter Host Name.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::HOSTNAME ) .']" value="'.$hostname.'" placeholder="Host Name">
+            <div><label>' . esc_html__( 'Host Name', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-smtp-host-name" required data-error="'.__( 'Please enter Host Name.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::HOSTNAME ) .']" value="'.$hostname.'" placeholder="' . esc_attr__( 'Host Name', 'post-smtp' ) . '">
             <span class="ps-form-control-info">
-            '.__( 'Outgoing Mail Server Hostname', 'post-smtp' ).'
+            '.__( 'Outgoing Mail Server Hostname.', 'post-smtp' ).'
             </span>
         </div>
         ';
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Port</label></div>
-            <input type="text" class="ps-smtp-port" required data-error="'.__( 'Please enter Port.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::PORT ) .']" value="'.$port.'" placeholder="Port">
+            <div><label>' . esc_html__( 'Port', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-smtp-port" required data-error="'.__( 'Please enter Port.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::PORT ) .']" value="'.$port.'" placeholder="' . esc_attr__( 'Port', 'post-smtp' ) . '">
             <span class="ps-form-control-info">
-            '.__( 'Outgoing Mail Server Port', 'post-smtp' ).'
+            '.__( 'Outgoing Mail Server Port.', 'post-smtp' ).'
             </span>
         </div>
         ';
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Username</label></div>
-            <input type="text" class="ps-smtp-username" required data-error="'.__( 'Please enter Username.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::BASIC_AUTH_USERNAME ) .']" value="'.$username.'" placeholder="Username">
+            <div><label>' . esc_html__( 'Username', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-smtp-username" required data-error="'.__( 'Please enter Username.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::BASIC_AUTH_USERNAME ) .']" value="'.$username.'" placeholder="' . esc_attr__( 'Username', 'post-smtp' ) . '">
             <span class="ps-form-control-info">
             '.__( 'The Username is usually the same as the Envelope-From Email Address.', 'post-smtp' ).'
             </span>
@@ -683,8 +646,8 @@ class Post_SMTP_New_Wizard {
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Password</label></div>
-            <input type="text" class="ps-smtp-password" required data-error="'.__( 'Please enter Password.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::BASIC_AUTH_PASSWORD ) .']" value="'.$password.'" placeholder="Password">
+            <div><label>' . esc_html__( 'Password', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-smtp-password" required data-error="'.__( 'Please enter Password.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::BASIC_AUTH_PASSWORD ) .']" value="'.$password.'" placeholder="' . esc_attr__( 'Password', 'post-smtp' ) . '">
             <span class="ps-form-control-info">
             '.__( 'Password or App Password.', 'post-smtp' ).'
             </span>
@@ -709,62 +672,55 @@ class Post_SMTP_New_Wizard {
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
         $html = '
-        <p>'.sprintf(
-            '%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s',
-            __( 'Our', 'post-smtp' ),
-            esc_url( 'https://www.google.com/gmail/about/' ),
-            __( 'Gmail mailer', 'post-smtp' ),
-            __( 'works with any Gmail or Google Workspace account via the Google API. You can send WordPress emails from your main email address and it\'s more secure than directly connecting to Gmail using SMTP credentials.', 'post-smtp' )
+        <p>'.sprintf(esc_html__(
+            'Our %1$sGmail mailer%2$s works with any Gmail or Google Workspace account via the Google API. You can send WordPress emails from your main email address and it\'s more secure than directly connecting to Gmail using SMTP credentials.', 'post-smtp' ),'<a href="https://www.google.com/gmail/about/" target="_blank">','</a>'
         ).'
         </p>';
 
         $html .= __( 'The configuration steps are more technical than other options, so our detailed guide will walk you through the whole process.', 'post-smtp' );
 
         $html .= '
-        <p>'.sprintf(
-            '%1$s <a href="%2$s" target="_blank">%3$s</a>',
-            __( 'Let’s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/gmail/' ),
-            __( 'Gmail Documentation', 'post-smtp' )
+        <p>'.sprintf(esc_html__(
+            'Let\'s get started with our %1$sGmail Documentation%2$s', 'post-smtp' ),'<a href="https://postmansmtp.com/documentation/sockets-addons/gmail/" target="_blank">','</a>'
         ).'
         </p>';
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Client ID</label></div>
-            <input type="text" class="ps-gmail-api-client-id" required data-error="'.__( 'Please enter Client ID.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::CLIENT_ID ) .']" value="'.$client_id.'" placeholder="Client ID">
+            <div><label>' . esc_html__( 'Client ID', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-gmail-api-client-id" required data-error="'.__( 'Please enter Client ID.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::CLIENT_ID ) .']" value="'.$client_id.'" placeholder="' . esc_attr__( 'Client ID', 'post-smtp' ) . '">
         </div>
         ';
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Client Secret</label></div>
-            <input type="text" class="ps-gmail-client-secret" required data-error="'.__( 'Please enter Client Secret.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::CLIENT_SECRET ) .']" value="'.$client_secret.'" placeholder="Client Secret">
+            <div><label>' . esc_html__( 'Client Secret', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-gmail-client-secret" required data-error="'.__( 'Please enter Client Secret.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::CLIENT_SECRET ) .']" value="'.$client_secret.'" placeholder="' . esc_html__( 'Client Secret', 'post-smtp' ) . '">
         </div>
         ';
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Authorized JavaScript origins</label></div>
+            <div><label>' . esc_html__( 'Authorized JavaScript origins', 'post-smtp' ) . '</label></div>
             <input type="text" class="ps-gmail-js-origin" value="'.site_url().'" readonly>
         </div>
         ';
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Authorized redirect URI</label></div>
+            <div><label>' . esc_html__( 'Authorized redirect URI', 'post-smtp' ) . '</label></div>
             <input type="text" class="ps-gmail-redirect-uri" value="'.admin_url( 'options-general.php?page=postman' ).'" readonly>
             <span class="ps-form-control-info">
-            '.__( 'Please copy this URL into the "Authorized redirect URL" field of your Gmail account settings.', 'post-smtp' ).'
+            '.__( 'Please copy this URL into the "Authorized redirect URI" field of your Gmail account settings.', 'post-smtp' ).'
             </span>
         </div>
         ';
 
         $html .= '
-        <h3>'.__( 'Authorization (Required)', 'post-smtp' ).'</h3>
-        <p>'.__( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ).'</p>
-        <input type="hidden" '.$required.' data-error="Please authenticate by clicking Connect to Gmail API" />
-        <a href="'.admin_url( 'admin-post.php?action=postman/requestOauthGrant' ).'" class="button button-primary ps-blue-btn" id="ps-wizard-connect-gmail">Connect to Gmail API</a>';
+        <h3>'.esc_html__( 'Authorization (Required)', 'post-smtp' ).'</h3>
+        <p>'.esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ).'</p>
+        <input type="hidden" '.$required.' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp') . '" />
+        <a href="'.admin_url( 'admin-post.php?action=postman/requestOauthGrant' ).'" class="button button-primary ps-blue-btn" id="ps-wizard-connect-gmail">' . esc_html__( 'Connect to Gmail API', 'post-smtp') . '</a>';
 
         return $html;
 
@@ -781,31 +737,19 @@ class Post_SMTP_New_Wizard {
 
         $api_key = null !== $this->options->getMandrillApiKey() ? esc_attr ( $this->options->getMandrillApiKey() ) : '';
 
-        $html = sprintf(
-            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
-            esc_url( 'https://mandrillapp.com/login/?referrer=%2F' ),
-            __( 'Mandrill', 'post-smtp' ),
-            __( 'is an email infrastructure service offered as an add-on for MailChimp that you can use to send personalized, one-to-one e-commerce emails, or automated transactional emails.You can easily send WordPress emails from your Mandrill account.', 'post-smtp' ),
-            __( 'Let’s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mandrill-with-post-smtp/' ),
-            __( 'Mandrill Documentation', 'post-smtp' )
+        $html = sprintf(esc_html__(
+            '%1$s%2$sMandrill%3$s is an email infrastructure service offered as an add-on for MailChimp that you can use to send personalized, one-to-one e-commerce emails, or automated transactional emails. You can easily send WordPress emails from your Mandrill account.%4$s%1$sLet\'s get started with our %5$sMandrill Documentation%3$s%4$s', 'post-smtp' ),'<p>','<a href="https://mandrillapp.com/login/?referrer=%2F" target="_blank">','</a>','</p>','<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mandrill-with-post-smtp/" target="_blank">'
         );
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>API Key</label></div>
-            <input type="text" class="ps-mandrill-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MANDRILL_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <div><label>' . esc_html__( 'API Key', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-mandrill-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MANDRILL_API_KEY ) .']" value="'.$api_key.'" placeholder="' . esc_attr__( 'API Key', 'post-smtp' ) . '">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
-            sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://mandrillapp.com/login/?referrer=%2F' ),
-                esc_attr( 'Mandrill' ),
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://mandrillapp.com/settings/index' ),
-                esc_attr( 'API Key.' )
+            sprintf(esc_html__(
+                '%1$sCreate an account at %2$sMandrill%3$s.%4$s%1$sIf you are already logged in follow this link to get an %5$sAPI Key%3$s.%4$s', 'post-smtp' ),'<div class="ps-form-control-info">','<a href="https://mandrillapp.com/login/?referrer=%2F" target="_blank">','</a>', '</div>', '<a href="https://mandrillapp.com/settings/index" target="_blank">'
             )
             .'
         </div>
@@ -826,31 +770,19 @@ class Post_SMTP_New_Wizard {
 
         $api_key = null !== $this->options->getSendGridApiKey() ? esc_attr ( $this->options->getSendGridApiKey() ) : '';
 
-        $html = sprintf(
-            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
-            esc_url( 'https://sendgrid.com/' ),
-            __( 'SendGrid', 'post-smtp' ),
-            __( 'is a popular transactional email provider that sends more than 35 billion emails every month. If you\'re just starting out, the free plan allows you to send up to 100 emails each day without entering your credit card details.', 'post-smtp' ),
-            __( 'Let’s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendgrid-with-post-smtp/' ),
-            __( 'SendGrid Documentation', 'post-smtp' )
+        $html = sprintf(esc_html__(
+            '%1$s%2$sSendGrid%3$s is a popular transactional email provider that sends more than 35 billion emails every month. If you\'re just starting out, the free plan allows you to send up to 100 emails each day without entering your credit card details.%4$s%1$sLet\'s get started with our %5$sSendGrid Documentation%3$s%4$s', 'post-smtp' ),'<p>','<a href="https://sendgrid.com/" target="_blank">','</a>','</p>','<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendgrid-with-post-smtp/" target="_blank">'
         );
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>API Key</label></div>
-            <input type="text" class="ps-sendgrid-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDGRID_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <div><label>' . esc_html__( 'API Key', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-sendgrid-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDGRID_API_KEY ) .']" value="'.$api_key.'" placeholder="' . esc_attr__( 'API Key', 'post-smtp' ) . '">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
-            sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://sendgrid.com/' ),
-                esc_attr( 'SendGrid' ),
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://app.sendgrid.com/settings/api_keys' ),
-                esc_attr( 'API Key.' )
+            sprintf(esc_html__(
+                '%1$sCreate an account at %2$sSendGrid%3$s%4$s%1$sIf you are already logged in follow this link to get an %5$sAPI Key%3$s.%4$s', 'post-smtp' ),'<div class="ps-form-control-info">','<a href="https://sendgrid.com/" target="_blank">','</a>','</div>','<a href="https://app.sendgrid.com/settings/api_keys" target="_blank">'
             ).'
         </div>
         ';
@@ -872,31 +804,19 @@ class Post_SMTP_New_Wizard {
         $domain_name = null !== $this->options->getMailgunDomainName() ? esc_attr ( $this->options->getMailgunDomainName() ) : '';
         $region = null !== $this->options->getMailgunRegion() ? ' checked' : '';
 
-        $html = sprintf(
-            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
-            esc_url( 'https://www.mailgun.com/' ),
-            __( 'Mailgun', 'post-smtp' ),
-            __( 'is a transactional email provider that offers a generous 3-month free trial. After that, it offers a \'Pay As You Grow\' plan that allows you to pay for what you use without committing to a fixed monthly rate.', 'post-smtp' ),
-            __( 'Let’s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-configure-post-smtp-with-mail-gun/' ),
-            __( 'Mailgun Documentation', 'post-smtp' )
+        $html = sprintf(esc_html__(
+            '%1$s%2$sMailgun%3$s is a transactional email provider that offers a generous 3-month free trial. After that, it offers a \'Pay As You Grow\' plan that allows you to pay for what you use without committing to a fixed monthly rate.%4$s%1$sLet\'s get started with our %5$sMailgun Documentation%3$s%4$s', 'post-smtp' ),'<p>','<a href="https://www.mailgun.com/" target="_blank">','</a>','</p>','<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-configure-post-smtp-with-mail-gun/" target="_blank">'
         );
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>API Key</label></div>
-            <input type="text" class="ps-mailgun-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILGUN_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <div><label>' . esc_html__( 'API Key', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-mailgun-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILGUN_API_KEY ) .']" value="'.$api_key.'" placeholder="' . esc_attr__( 'API Key', 'post-smtp' ) . '">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
-            sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://www.mailgun.com/' ),
-                esc_attr( 'Mailgun' ),
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://app.mailgun.com/settings/api_security' ),
-                esc_attr( 'API Key.' )
+            sprintf(esc_html__(
+                '%1$sCreate an account at %2$sMailgun%3$s%4$s%1$sIf you are already logged in follow this link to get an %5$sAPI Key%3$s.%4$s', 'post-smtp' ),'<div class="ps-form-control-info">','<a href="https://www.mailgun.com/" target="_blank">','</a>','</div>','<a href="https://app.mailgun.com/settings/api_security" target="_blank">'
             )
             .'
         </div>
@@ -904,17 +824,14 @@ class Post_SMTP_New_Wizard {
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Domain Name</label></div>
-            <input type="text" class="ps-mailgun-domain-name" required data-error="'.__( 'Please Domain Name.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILGUN_DOMAIN_NAME ) .']" value="'.$domain_name.'" placeholder="Domain Name">
+            <div><label>' . esc_html__( 'Domain Name', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-mailgun-domain-name" required data-error="'.__( 'Please Domain Name.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILGUN_DOMAIN_NAME ) .']" value="'.$domain_name.'" placeholder="'. esc_attr__( 'Domain Name', 'post-smtp' ) . '">
             <span class="ps-form-control-info">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
-            sprintf(
-                '%1$s <a href="%2$s" target="_blank">%3$s</a>',
-                __( ' Follow this link to get the Mailgun', 'post-smtp' ),
-                esc_url( 'https://app.mailgun.com/app/sending/domains' ),
-                esc_attr( 'Domain Name.' )
+            sprintf(esc_html__(
+                'Follow this link to get the Mailgun %1$sDomain Name%2$s.', 'post-smtp' ),'<a href="https://app.mailgun.com/app/sending/domains" target="_blank">','</a>'
             )
             .'</span>
         </div>
@@ -922,7 +839,7 @@ class Post_SMTP_New_Wizard {
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Mailgun Europe Region?</label></div>
+            <div><label>' . esc_html__( 'Mailgun Europe Region?', 'post-smtp' ) . '</label></div>
             <div class="ps-form-switch-control">
                 <label class="ps-switch-1">
                     <input type="checkbox" '.$region.' name="postman_options['.esc_attr( PostmanOptions::MAILGUN_REGION ).']" id="">
@@ -930,13 +847,8 @@ class Post_SMTP_New_Wizard {
                 </label> 
             </div>
             '.
-            sprintf(
-                '<div class="ps-form-control-info">%1$s</div><div class="ps-form-control-info">%2$s <a href="%3$s" target="_blank">%4$s</a> %5$s</div>',
-                __( 'Define your endpoint to send messages.', 'post-smtp' ),
-                __( 'If you are operating under EU laws then check the above button.', 'post-smtp' ),
-                esc_url( 'https://www.mailgun.com/about/regions/' ),
-                __( 'More information', 'post-smtp' ),
-                __( 'about Mailgun.', 'post-smtp' )
+            sprintf(esc_html__(
+                '%1$sDefine your endpoint to send messages.%2$s%1$sIf you are operating under EU laws then check the above button. %3$sMore information%4$s about Mailgun.%2$s', 'post-smtp' ),'<div class="ps-form-control-info">','</div>','<a href="https://www.mailgun.com/about/regions/" target="_blank">','</a>'
             )
             .'
         </div> 
@@ -957,31 +869,19 @@ class Post_SMTP_New_Wizard {
 
         $api_key = null !== $this->options->getSendinblueApiKey() ? esc_attr ( $this->options->getSendinblueApiKey() ) : '';
 
-        $html = sprintf(
-            '<p><a href="%1$s" target="_blank">Brevo</a> %2$s</p><p>%3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a>',
-            esc_url( 'https://www.brevo.com/products/transactional-email/?tap_a=30591-fb13f0&tap_s=1114139-605ce2' ),
-            __( 'is one of our recommended mailers. It\'s a transactional email provider with scalable price plans, so it\'s suitable for any size of business.', 'post-smtp' ),
-            __( 'If you\'re just starting out, you can use Brevo\'s free plan to send up to 300 emails a day. You don\'t need to use a credit card to try it out. When you\'re ready, you can upgrade to a higher plan to increase your sending limits.', 'post-smtp' ),
-            __( 'Let\'s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendinblue-aka-brevo-with-post-smtp/' ),
-            __( 'Brevo Documentation', 'post-smtp' )
+        $html = sprintf(esc_html__(
+            '%1$s%2$sBrevo%3$s is one of our recommended mailers. It\'s a transactional email provider with scalable price plans, so it\'s suitable for any size of business.%4$s%1$sIf you\'re just starting out, you can use Brevo\'s free plan to send up to 300 emails a day. You don\'t need to use a credit card to try it out. When you\'re ready, you can upgrade to a higher plan to increase your sending limits.%4$s%1$sLet\'s get started with our %5$sBrevo Documentation%3$s%4$s', 'post-smtp' ),'<p>','<a href="https://www.brevo.com/products/transactional-email/?tap_a=30591-fb13f0&tap_s=1114139-605ce2" target="_blank">','</a>','</p>','<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendinblue-aka-brevo-with-post-smtp/" target="_blank">'
         );
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>API Key</label></div>
-            <input type="text" class="ps-brevo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDINBLUE_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <div><label>' . esc_html__( 'API Key', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-brevo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDINBLUE_API_KEY ) .']" value="'.$api_key.'" placeholder="' . esc_attr__( 'API Key', 'post-smtp' ) . '">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
-            sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://www.brevo.com/products/transactional-email/?tap_a=30591-fb13f0&tap_s=1114139-605ce2' ),
-                esc_attr( 'Brevo' ),
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://app.brevo.com/settings/keys/api' ),
-                esc_attr( 'API Key.' )
+            sprintf(esc_html__(
+                '%1$sCreate an account at %2$sBrevo%3$s%4$s%1$sIf you are already logged in follow this link to get an %5$sAPI Key%3$s.%4$s', 'post-smtp' ),'<div class="ps-form-control-info">','<a href="https://www.brevo.com/products/transactional-email/?tap_a=30591-fb13f0&tap_s=1114139-605ce2" target="_blank">','</a>','</div>','<a href="https://app.brevo.com/settings/keys/api" target="_blank">'
             )
             .
         '</div>
@@ -1002,31 +902,19 @@ class Post_SMTP_New_Wizard {
 
         $api_key = null !== $this->options->getPostmarkApiKey() ? esc_attr ( $this->options->getPostmarkApiKey() ) : '';
 
-        $html = sprintf(
-            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
-            esc_url( 'https://postmarkapp.com/' ),
-            __( 'Postmark', 'post-smtp' ),
-            __( 'is a transactional email provider that offers great deliverability and accessible pricing for any business. You can start out with the free trial that allows you to send 100 test emails each month via its secure API.', 'post-smtp' ),
-            __( 'Let\'s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/postmark/' ),
-            __( 'PostMark Documentation', 'post-smtp' )
+        $html = sprintf(esc_html__(
+            '%1$s%2$sPostmark%3$s is a transactional email provider that offers great deliverability and accessible pricing for any business. You can start out with the free trial that allows you to send 100 test emails each month via its secure API.%4$s%1$sLet\'s get started with our %5$sPostMark Documentation%3$s%4$s', 'post-smtp' ),'<p>','<a href="https://postmarkapp.com/" target="_blank">','</a>','</p>','<a href="https://postmansmtp.com/documentation/sockets-addons/postmark/" target="_blank">'
         );
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>API Key</label></div>
-            <input type="text" class="ps-postmark-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::POSTMARK_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <div><label>' . esc_html__( 'API Key', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-postmark-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::POSTMARK_API_KEY ) .']" value="'.$api_key.'" placeholder="' . esc_attr__( 'API Key', 'post-smtp' ) . '">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
-            sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://postmarkapp.com/' ),
-                esc_attr( 'Postmark' ),
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://account.postmarkapp.com/api_tokens' ),
-                esc_attr( 'API Key or Server API Token.' )
+            sprintf(esc_html__(
+                '%1$sCreate an account at %2$sPostmark%3$s%4$s%1$sIf you are already logged in follow this link to get an %5$sAPI Key or Server API Token%3$s.%4$s', 'post-smtp' ),'<div class="ps-form-control-info">','<a href="https://postmarkapp.com/" target="_blank">','</a>','</div>','<a href="https://account.postmarkapp.com/api_tokens" target="_blank">'
             )
             .'
         </div>
@@ -1047,31 +935,19 @@ class Post_SMTP_New_Wizard {
 
         $api_key = null !== $this->options->getSparkPostApiKey() ? esc_attr ( $this->options->getSparkPostApiKey() ) : '';
 
-        $html = sprintf(
-            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
-            esc_url( 'https://www.sparkpost.com/' ),
-            __( 'SparkPost', 'post-smtp' ),
-            __( 'is a transactional email provider that\'s trusted by big brands and small businesses. It sends more than 4 trillion emails each year and reports 99.9% uptime. You can get started with the free test account that lets you send up to 500 emails per month.', 'post-smtp' ),
-            __( 'Let\'s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/sparkpost/' ),
-            __( 'SparkPost Documentation', 'post-smtp' )
+        $html = sprintf(esc_html__(
+            '%1$s%2$sSparkPost%3$s is a transactional email provider that\'s trusted by big brands and small businesses. It sends more than 4 trillion emails each year and reports 99.9%% uptime. You can get started with the free test account that lets you send up to 500 emails per month.%4$s%1$sLet\'s get started with our %5$sSparkPost Documentation%3$s%4$s', 'post-smtp' ),'<p>','<a href="https://www.sparkpost.com/" target="_blank">','</a>','</p>','<a href="https://postmansmtp.com/documentation/sockets-addons/sparkpost/" target="_blank">'
         );
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>API Key</label></div>
-            <input type="text" class="ps-sparkpost-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SPARKPOST_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <div><label>' . esc_html__( 'API Key', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-sparkpost-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SPARKPOST_API_KEY ) .']" value="'.$api_key.'" placeholder="' . esc_attr__( 'API Key', 'post-smtp' ) . '">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
-            sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://app.sparkpost.com/join' ),
-                esc_attr( 'SparkPost' ),
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://app.sparkpost.com/account/api-keys' ),
-                esc_attr( 'API Key.' )
+            sprintf(esc_html__(
+                '%1$sCreate an account at %2$sSparkPost%3$s%4$s%1$sIf you are already logged in follow this link to get an %5$sAPI Key%3$s.%4$s', 'post-smtp' ),'<div class="ps-form-control-info">','<a href="https://app.sparkpost.com/join" target="_blank">','</a>','</div>','<a href="https://app.sparkpost.com/account/api-keys" target="_blank">'
             )
             .'
         </div>
@@ -1091,30 +967,19 @@ class Post_SMTP_New_Wizard {
 
         $api_key = null !== $this->options->getElasticEmailApiKey() ? esc_attr ( $this->options->getElasticEmailApiKey() ) : '';
 
-        $html = sprintf(
-            '<p><a href="%1$s" target="_blank">Elastic Email</a> %2$s</p><p>%3$s <a href="%4$s" target="_blank">%5$s</a>',
-            esc_url( 'https://elasticemail.com/' ),
-            __( 'is a powerful transactional email platform designed to deliver exceptional performance and affordability for businesses of all sizes. which grants you the ability to send 100 test emails every month through our secure API.', 'post-smtp' ),
-            __( 'Let\'s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-elastic-email' ),
-            __( 'Elastic Email Documentation', 'post-smtp' )
+        $html = sprintf(esc_html__(
+            '%1$s%2$sElastic Email%3$s is a powerful transactional email platform designed to deliver exceptional performance and affordability for businesses of all sizes. which grants you the ability to send 100 test emails every month through our secure API.%4$s%1$sLet\'s get started with our %5$sElastic Email Documentation%3$s%4$s', 'post-smtp' ),'<p>','<a href="https://elasticemail.com/" target="_blank">','</a>','</p>','<a href="https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-elastic-email" target="_blank">'
         );
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>API Key</label></div>
-            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::ELASTICEMAIL_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <div><label>' . esc_html__( 'API Key', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::ELASTICEMAIL_API_KEY ) .']" value="'.$api_key.'" placeholder="' . esc_attr__( 'API Key', 'post-smtp' ) . '">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
-            sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://elasticemail.com/' ),
-                esc_attr( 'Elastic Email' ),
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://elasticemail.com/account#/settings/new/manage-api' ),
-                esc_attr( 'API Key.' )
+            sprintf(esc_html__(
+                '%1$sCreate an account at %2$sElastic Email%3$s%4$s%1$sIf you are already logged in follow this link to get an %5$sAPI Key%3$s.%4$s', 'post-smtp' ),'<div class="ps-form-control-info">','<a href="https://elasticemail.com/" target="_blank">','</a>','</div>','<a href="https://elasticemail.com/account#/settings/new/manage-api" target="_blank">'
             )
             .
         '</div>
@@ -1135,37 +1000,25 @@ class Post_SMTP_New_Wizard {
         $api_key = null !== $this->options->getMailjetApiKey() ? esc_attr ( $this->options->getMailjetApiKey() ) : '';
         $secret_key = null !== $this->options->getMailjetApiKey() ? esc_attr ( $this->options->getMailjetSecretKey() ) : '';
 
-        $html = sprintf(
-            '<p><a href="%1$s" target="_blank">Mailjet</a> %2$s</p><p>%6$s<p>%3$s <a href="%4$s" target="_blank">%5$s</a>',
-            esc_url( 'https://app.mailjet.com/signin?redirect=aHR0cHM6Ly9hcHAubWFpbGpldC5jb20vfDI0fDgyMzU3ZDFmMWE4Y2NjMjc4ZWRhMzI0MDUzZTNlMjY0' ),
-            __( 'is a leading email service provider that delivers a complete set of email marketing and transactional email solutions.', 'post-smtp' ),
-            __( 'Let\'s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-mailjet' ),
-            __( 'Mailjet Documentation', 'post-smtp' ),
-            __( 'Mailjet’s platform enables you to create, send, and track email marketing campaigns, transactional email messages, and email performance metrics.', 'post-smtp' )
+        $html = sprintf(esc_html__(
+            '%1$s%2$sMailjet%3$s is a leading email service provider that delivers a complete set of email marketing and transactional email solutions.%4$s%1$sMailjet’s platform enables you to create, send, and track email marketing campaigns, transactional email messages, and email performance metrics.%4$s%1$sLet\'s get started with our %5$sMailjet Documentation%3$s%4$s', 'post-smtp' ),'<p>','<a href="https://app.mailjet.com/signin?redirect=aHR0cHM6Ly9hcHAubWFpbGpldC5jb20vfDI0fDgyMzU3ZDFmMWE4Y2NjMjc4ZWRhMzI0MDUzZTNlMjY0" target="_blank">','</a>','</p>','<a href="https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-mailjet" target="_blank">'
         );
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>API Key</label></div>
-            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key"></div>
+            <div><label>' . esc_html__( 'API Key', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_API_KEY ) .']" value="'.$api_key.'" placeholder="' . esc_attr__( 'API Key', 'post-smtp' ) . '"></div>
         ';
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Secret Key</label></div>
-            <input type="text" class="ps-elasticemail-secret-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="Secret Key">'.
+            <div><label>' . esc_html__( 'Secret Key', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-elasticemail-secret-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="' . esc_attr__( 'Secret Key', 'post-smtp' ) . '">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
-            sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://app.mailjet.com/signup' ),
-                esc_attr( 'Mailjet' ),
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://app.mailjet.com/account/apikeys' ),
-                esc_attr( 'Mailjet API and Access Key' )
+            sprintf(esc_html__(
+                '%1$sCreate an account at %2$sMailjet%3$s%4$s%1$sIf you are already logged in follow this link to get an %5$sMailjet API and Access Key%3$s.%4$s', 'post-smtp' ),'<div class="ps-form-control-info">','<a href="https://app.mailjet.com/signup" target="_blank">','</a>','</div>','<a href="https://app.mailjet.com/account/apikeys" target="_blank">'
             )
             .
         '</div>
@@ -1187,36 +1040,24 @@ class Post_SMTP_New_Wizard {
         $access_key_secret = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ] ) ? base64_decode( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ] ) : '';
         $region = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] ) ? $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] : '';
 
-        $html = sprintf(
-            '<p><a href="%1$s" target="_blank">Amazon Simple Email Service (Amazon SES)</a> %2$s</p><p>%3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a>',
-            esc_url( 'https://aws.amazon.com/ses/' ),
-            __( 'a cloud-based email platform was developed by AWS to make sending and receiving emails at scale simple and effective. They also offer tools to create and send out marketing emails.', 'post-smtp' ),
-            __( 'To use Amazon SES for your wordpress site, you must have an SSL certificate installed on your WordPress site.', 'post-smtp' ),
-            __( 'Let’s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/amazon-ses-pro/' ),
-            __( 'Amazon SES Documentation', 'post-smtp' )
+        $html = sprintf(esc_html__(
+            '%1$s%2$sAmazon Simple Email Service (Amazon SES)%3$s a cloud-based email platform was developed by AWS to make sending and receiving emails at scale simple and effective. They also offer tools to create and send out marketing emails.%4$s%1$sTo use Amazon SES for your WordPress site, you must have an SSL certificate installed on your WordPress site.%4$s%1$sLet\'s get started with our %5$sAmazon SES Documentation%3$s%4$s', 'post-smtp' ),'<p>','<a href="https://aws.amazon.com/ses/" target="_blank">','</a>','</p>','<a href="https://postmansmtp.com/documentation/sockets-addons/amazon-ses-pro/" target="_blank">'
         );
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Access Key ID</label></div>
-            <input type="text" class="ps-amazon-key-id" required data-error="'.__( 'Please enter Access Key ID', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ) .']" value="'.$access_key_id.'" placeholder="Access Key ID"></div>';
+            <div><label>' . esc_html__( 'Access Key ID', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-amazon-key-id" required data-error="'.__( 'Please enter Access Key ID', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ) .']" value="'.$access_key_id.'" placeholder="' . esc_html__( 'Access Key ID', 'post-smtp' ) . '"></div>';
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Access Key Secret</label></div>
-            <input type="text" class="ps-amazon-key-secret" required data-error="'.__( 'Please enter Access Key Secret', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ) .']" value="'.$access_key_secret.'" placeholder="Access Key Secret">'.
+            <div><label>' . esc_html__( 'Sceret Access Key', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-amazon-key-secret" required data-error="'.__( 'Please enter Sceret Access Key', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ) .']" value="'.$access_key_secret.'" placeholder="' . esc_html__( 'Sceret Access Key', 'post-smtp' ) . '">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
-            sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://portal.aws.amazon.com/billing/signup?nc2=h_ct&src=header_signup&redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start/email' ),
-                esc_attr( 'Amazon SES' ),
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://us-east-1.console.aws.amazon.com/iamv2/home#/users' ),
-                esc_attr( 'Access Key ID and Sceret Access Key' )
+            sprintf(esc_html__(
+                '%1$sCreate an account at %2$sAmazon SES%3$s%4$s%1$sIf you are already logged in follow this link to get an %5$sAccess Key ID and Sceret Access Key%3$s.%4$s', 'post-smtp' ),'<div class="ps-form-control-info">','<a href="https://portal.aws.amazon.com/billing/signup?nc2=h_ct&src=header_signup&redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start/email" target="_blank">','</a>','</div>','<a href="https://us-east-1.console.aws.amazon.com/iamv2/home#/users" target="_blank">'
             )
             .
         '</div>
@@ -1224,8 +1065,8 @@ class Post_SMTP_New_Wizard {
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>SES Region</label></div>
-            <input type="text" class="ps-amazon-region" required data-error="'.__( 'Please enter SES Region', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ) .']" value="'.$region.'" placeholder="SES Region"></div>
+            <div><label>' . esc_html__( 'SES Region', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-amazon-region" required data-error="'.__( 'Please enter SES Region', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ) .']" value="'.$region.'" placeholder="' . esc_attr__( 'SES Region', 'post-smtp' ) . '"></div>
         ';
 
         return $html;
@@ -1247,28 +1088,20 @@ class Post_SMTP_New_Wizard {
         $redirect_uri = admin_url();
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
-        $html = sprintf(
-            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s </p><a href="%4$s" target="_blank">%5$s</a>',
-            esc_url( 'https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/' ),
-            __( 'Office 365', 'post-smtp' ),
-            __( 'is a popular transactional email provider that sends more than 35 billion emails every month. If you\'re just starting out, the free plan allows you to send up to 100 emails each day without entering your credit card details', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/postman-smtp-documentation/pro-extensions/configure-office-365-integration/' ),
-            __( 'Read how to setup Office 365', 'post-smtp' )
+        $html = sprintf(esc_html__(
+            '%1$s%2$sOffice 365%3$s is a popular transactional email provider that sends more than 35 billion emails every month. If you\'re just starting out, the free plan allows you to send up to 100 emails each day without entering your credit card details.%4$s%5$sRead how to setup Office 365%3$s', 'post-smtp' ),'<p>','<a href="https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/" target="_blank">','</a>','</p>','<a href="https://postmansmtp.com/documentation/postman-smtp-documentation/pro-extensions/configure-office-365-integration/" target="_blank">'
         );
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>'.__( 'Application (Client) ID', 'post-smtp' ).'</label></div>
-            <input type="text" class="ps-office365-client-id" required data-error="'.__( 'Please enter Application (Client) ID.', 'post-smtp' ).'" name="postman_options[office365_app_id]" value="'.$app_client_id.'" placeholder="Application (Client) ID">
+            <div><label>'.esc_html__( 'Application (Client) ID', 'post-smtp' ).'</label></div>
+            <input type="text" class="ps-office365-client-id" required data-error="'.__( 'Please enter Application (Client) ID.', 'post-smtp' ).'" name="postman_options[office365_app_id]" value="'.$app_client_id.'" placeholder="' . esc_attr__( 'Application (Client) ID', 'post-smtp' ) . '">
             <span class="ps-form-control-info">'.
             /**
              * Translators: %1$s URL, %2$s URL Text, %3$s Text
              */
-            sprintf(
-                '<a href="%1$s" target="_blank">%2$s</a> %3$s',
-                esc_url( 'https://postmansmtp.com/documentation/postman-smtp-documentation/pro-extensions/configure-office-365-integration/' ),
-                __( 'Follow this link', 'post-smtp' ),
-                __( 'to get Application (Client) ID for Office 365', 'post-smtp' )
+            sprintf(esc_html__(
+                '%1$sFollow this link%2$s to get Application (Client) ID for Office 365.', 'post-smtp' ),'<a href="https://postmansmtp.com/documentation/postman-smtp-documentation/pro-extensions/configure-office-365-integration/" target="_blank">','</a>'
             )
             .'</span>
         </div>
@@ -1276,17 +1109,14 @@ class Post_SMTP_New_Wizard {
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>'.__( 'Client Secret (Value)', 'post-smtp' ).'</label></div>
-            <input type="text" class="ps-office365-client-secret" required data-error="'.__( 'Please enter Client Secret (Value).', 'post-smtp' ).'" name="postman_options[office365_app_password]" value="'.$app_client_secret.'" placeholder="Client Secret (Value)">
+            <div><label>'.esc_html__( 'Client Secret (Value)', 'post-smtp' ).'</label></div>
+            <input type="text" class="ps-office365-client-secret" required data-error="'.__( 'Please enter Client Secret (Value).', 'post-smtp' ).'" name="postman_options[office365_app_password]" value="'.$app_client_secret.'" placeholder="' . esc_attr__( 'Client Secret (Value)', 'post-smtp' ) . '">
             <span class="ps-form-control-info">'.
             /**
              * Translators: %1$s URL, %2$s URL Text, %3$s Text
              */
-            sprintf(
-                '<a href="%1$s" target="_blank">%2$s</a> %3$s',
-                esc_url( 'https://postmansmtp.com/documentation/postman-smtp-documentation/pro-extensions/configure-office-365-integration/' ),
-                __( 'Follow this link', 'post-smtp' ),
-                __( 'to get Client Secret (Value) for Office 365', 'post-smtp' )
+            sprintf(esc_html__(
+                '%1$sFollow this link%2$s to get Client Secret (Value) for Office 365.', 'post-smtp' ),'<a href="https://postmansmtp.com/documentation/postman-smtp-documentation/pro-extensions/configure-office-365-integration/" target="_blank">','</a>'
             )
             .'</span>
         </div>
@@ -1301,21 +1131,18 @@ class Post_SMTP_New_Wizard {
             /**
              * Translators: %1$s URL, %2$s URL Text, %3$s Text
              */
-            sprintf(
-                '<a href="%1$s" target="_blank">%2$s</a> %3$s',
-                esc_url( 'https://postmansmtp.com/documentation/postman-smtp-documentation/pro-extensions/configure-office-365-integration/' ),
-                __( 'Follow this link', 'post-smtp' ),
-                __( 'to get Redirect URI for Office 365', 'post-smtp' )
+            sprintf(esc_html__(
+                '%1$sFollow this link%2$s to get Redirect URI for Office 365.', 'post-smtp' ),'<a href="https://postmansmtp.com/documentation/postman-smtp-documentation/pro-extensions/configure-office-365-integration/" target="_blank">','</a>'
             )
             .'</span>
         </div>
         ';
 
         $html .= '
-        <h3>'.__( 'Authorization (Required)', 'post-smtp' ).'</h3>
-        <p>'.__( 'Before continuing, you\'ll need to allow this plugin to send emails using your Office 365 account.', 'post-smtp' ).'</p>
-        <input type="hidden" '.$required.' data-error="Please authenticate by clicking Connect to Office 365" />
-        <a class="button button-primary ps-blue-btn" id="ps-wizard-connect-office365">Connect to Office 365</a>';
+        <h3>'.esc_html__( 'Authorization (Required)', 'post-smtp' ).'</h3>
+        <p>'.esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using your Office 365 account.', 'post-smtp' ).'</p>
+        <input type="hidden" '.$required.' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Office 365', 'post-smtp') . '" />
+        <a class="button button-primary ps-blue-btn" id="ps-wizard-connect-office365">' . esc_html__( 'Connect to Office 365', 'post-smtp') . '</a>';
 
         return $html;
 
@@ -1323,7 +1150,7 @@ class Post_SMTP_New_Wizard {
 
     
     /**
-     * Render Gmail API Settings
+     * Render Zoho Mail API Settings
      * 
      * @since 2.7.0
      * @version 1.0.0
@@ -1331,12 +1158,12 @@ class Post_SMTP_New_Wizard {
     public function render_zoho_settings() {
 
         $regions = array(
-            'com'       => __( 'United States (US)', 'postsmtp-zoho' ),
-            'eu'        => __( 'Europe (EU)', 'postsmtp-zoho' ),
-            'in'        => __( 'India (IN)', 'postsmtp-zoho' ),
-            'com.cn'    => __( 'China (CN)', 'postsmtp-zoho' ),
-            'com.au'    => __( 'Australia (AU)', 'postsmtp-zoho' ),
-            'jp'        => __( 'Japan (JP)', 'postsmtp-zoho' ),
+            'com'       => __( 'United States (US)', 'post-smtp' ),
+            'eu'        => __( 'Europe (EU)', 'post-smtp' ),
+            'in'        => __( 'India (IN)', 'post-smtp' ),
+            'com.cn'    => __( 'China (CN)', 'post-smtp' ),
+            'com.au'    => __( 'Australia (AU)', 'post-smtp' ),
+            'jp'        => __( 'Japan (JP)', 'post-smtp' ),
         );
         $selected_region = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ]: '';
         
@@ -1345,28 +1172,22 @@ class Post_SMTP_New_Wizard {
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
         $html = '
-        <p>'.sprintf(
-            '<a href="%1$s" target="_blank">%2$s</a> %3$s',
-            esc_url( 'https://www.zoho.com/mail/' ),
-            __( 'Zoho', 'post-smtp' ),
-            __( 'is a well-known provider of cloud-based business software and services. Zoho Corporation offers Zoho Mail, a leading email hosting and collaboration solution.', 'post-smtp' )
+        <p>'.sprintf(esc_html__(
+            '%1$sZoho%1$s is a well-known provider of cloud-based business software and services. Zoho Corporation offers Zoho Mail, a leading email hosting and collaboration solution.', 'post-smtp' ),'<a href="https://www.zoho.com/mail/" target="_blank">','</a>'
         ).'
         </p>';
 
-        $html .= '<p>' . __( 'Zoho Mail offers free email accounts as well as domain-specific email accounts. You can use Zoho Mail\'s API to help emails from your WordPress site deliver reliably.', 'post-smtp' ) . '</p>';
+        $html .= '<p>' . esc_html__( 'Zoho Mail offers free email accounts as well as domain-specific email accounts. You can use Zoho Mail\'s API to help emails from your WordPress site deliver reliably.', 'post-smtp' ) . '</p>';
 
         $html .= '
-        <p>'.sprintf(
-            '%1$s <a href="%2$s" target="_blank">%3$s</a>',
-            __( 'Let\'s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/zoho-mail-pro/' ),
-            __( 'Zoho Mail Documentation', 'post-smtp' )
+        <p>'.sprintf(esc_html__(
+            'Let\'s get started with our %1$sZoho Mail Documentation%2$s', 'post-smtp' ),'<a href="https://postmansmtp.com/documentation/sockets-addons/zoho-mail-pro/" target="_blank">','</a>'
         ).'
         </p>';
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Region</label></div>
+            <div><label>' . esc_html__( 'Region', 'post-smtp' ) . '</label></div>
             <select>';
         foreach( $regions as $key => $value ) {
 
@@ -1380,29 +1201,23 @@ class Post_SMTP_New_Wizard {
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Client ID</label></div>
-            <input type="text" class="ps-zoho-client-id" required data-error="'.__( 'Please enter Client ID.', 'post-smtp' ).'" name="postman_options['. esc_attr( ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ) .']" value="'.$client_id.'" placeholder="Client ID">
+            <div><label>' . esc_html__( 'Client ID', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-zoho-client-id" required data-error="'.__( 'Please enter Client ID.', 'post-smtp' ).'" name="postman_options['. esc_attr( ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ) .']" value="'.$client_id.'" placeholder="' . esc_attr__( 'Client ID', 'post-smtp' ) . '">
         </div>
         ';
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Client Secret</label></div>
-            <input type="text" class="ps-zoho-client-secret" required data-error="'.__( 'Please enter Client Secret.', 'post-smtp' ).'" name="postman_options['. esc_attr( ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ) .']" value="'.$client_secret.'" placeholder="Client Secret">
+            <div><label>' . esc_html__( 'Client Secret', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-zoho-client-secret" required data-error="'.__( 'Please enter Client Secret.', 'post-smtp' ).'" name="postman_options['. esc_attr( ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ) .']" value="'.$client_secret.'" placeholder="' . esc_attr__( 'Client Secret', 'post-smtp' ) . '">
             <div class="ps-form-control-info">
-            '.sprintf(
-                '%1$s <a href="%2$s" target="_blank">%3$s</a>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://www.zoho.com/mail/' ),
-                __( 'Zoho Mail', 'post-smtp' )
+            '.sprintf(esc_html__(
+                'Create an account at %1$sZoho Mail%2$s', 'post-smtp' ),'<a href="https://www.zoho.com/mail/" target="_blank">','</a>'
             ).'
             </div>
             <div class="ps-form-control-info">
-            '.sprintf(
-                '%1$s <a href="%2$s" target="_blank">%3$s</a>',
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://api-console.zoho.com/' ),
-                __( 'Zoho API Credentials', 'post-smtp' )
+            '.sprintf(esc_html__(
+                'If you are already logged in follow this link to get an %1$sZoho API Credentials%2$s.', 'post-smtp' ),'<a href="https://api-console.zoho.com/" target="_blank">','</a>'
             ).'
             </div>
         </div>
@@ -1410,19 +1225,19 @@ class Post_SMTP_New_Wizard {
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Redirect URI</label></div>
+            <div><label>' . esc_html__( 'Redirect URI', 'post-smtp' ) . '</label></div>
             <input type="text" class="ps-zoho-redirect-uri" value="'.admin_url( 'admin.php?page=postman/' ).'" readonly>
             <span class="ps-form-control-info">
-            '.__( 'Please copy this URL into the "Redirect URL" field of your Zoho account settings.', 'post-smtp' ).'
+            '.__( 'Please copy this URL into the "Redirect URI" field of your Zoho account settings.', 'post-smtp' ).'
             </span>
         </div>
         ';
         
         $html .= '
-        <h3>'.__( 'Authorization (Required)', 'post-smtp' ).'</h3>
-        <p>'.__( 'Before continuing, you\'ll need to allow this plugin to send emails using Zoho.', 'post-smtp' ).'</p>
-        <input type="hidden" '.$required.' data-error="Please authenticate by clicking Connect to Zoho" />
-        <a href="'.admin_url( 'admin.php?postman/configuration_wizard&action=zoho_auth_request' ).'" class="button button-primary ps-blue-btn" id="ps-wizard-connect-zoho">Connect to Zoho</a>';
+        <h3>'.esc_html__( 'Authorization (Required)', 'post-smtp' ).'</h3>
+        <p>'.esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Zoho.', 'post-smtp' ).'</p>
+        <input type="hidden" '.$required.' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Zoho', 'post-smtp') . '" />
+        <a href="'.admin_url( 'admin.php?postman/configuration_wizard&action=zoho_auth_request' ).'" class="button button-primary ps-blue-btn" id="ps-wizard-connect-zoho">' . esc_html__( 'Connect to Zoho', 'post-smtp') . '</a>';
 
         return $html;
 

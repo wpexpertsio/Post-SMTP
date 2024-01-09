@@ -126,7 +126,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			$mainPostmanSettingsPage = add_menu_page( $pageTitle, $pluginName, Postman::MANAGE_POSTMAN_CAPABILITY_NAME, $uniqueId, $pageOptions, 'dashicons-email' );
 			
 			//To change the text of top level menu
-			add_submenu_page( $uniqueId, $pageTitle, 'Dashboard', Postman::MANAGE_POSTMAN_CAPABILITY_NAME, $uniqueId, $pageOptions );
+			add_submenu_page( $uniqueId, $pageTitle, __( 'Dashboard', 'post-smtp' ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, $uniqueId, $pageOptions );
 
 			// When the plugin options page is loaded, also load the stylesheet
 			add_action( 'admin_print_styles-' . $mainPostmanSettingsPage, array(
@@ -236,8 +236,8 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 						printf( 
 							'<div class="ps-config-bar">
 								<span>%s</span><span style="color: green" class="dashicons dashicons-yes-alt"></span>
-								<div class="ps-right">
-									What\'s Next? Get Started by Sending a Test Email! <a href="%s" class="button button-primary"> Send a Test Email</a>
+								<div class="ps-right">' .
+									esc_html__( 'What\'s Next? Get Started by Sending a Test Email!', 'post-smtp' ) . '<a href="%s" class="button button-primary">' . esc_html__( 'Send a Test Email', 'post-smtp' ) . '</a>
 								</div>
 								<div class="clear"></div>
 							</div>', 
@@ -419,43 +419,43 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/help-configure-post-smtp/' ); ?>" target="_blank" >
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />
-							<?php echo esc_html( 'Need help setup everything? (paid)' ); ?>
+							<?php esc_html_e( 'Need help setup everything? (paid)', 'post-smtp' ); ?>
 						</a>
 					</div>
 					<div>
 						<a href="<?php echo $this->getPageUrl( PostmanConnectivityTestController::PORT_TEST_SLUG ); ?>">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Connectivity Test' ); ?>
+							<?php esc_html_e( 'Connectivity Test', 'post-smtp' ); ?>
 						</a>
 					</div>
 					<div>
 						<a href="<?php echo $this->getPageUrl( PostmanDiagnosticTestController::DIAGNOSTICS_SLUG ); ?>">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Diagnostic Test' ); ?>
+							<?php esc_html_e( 'Diagnostic Test', 'post-smtp' ); ?>
 						</a>
 					</div>
 					<div>
 						<a href="#" class="release-lock-file" data-security="<?php esc_attr_e( wp_create_nonce( "postman" ) ); ?>" >
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Release Lock File Error' ); ?>
+							<?php esc_html_e( 'Release Lock File Error', 'post-smtp' ); ?>
 						</a>
 					</div>
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/forums/' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Online Support' ); ?>
+							<?php esc_html_e( 'Online Support', 'post-smtp' ); ?>
 						</a>
 					</div>
 					<div>
 						<a href="<?php echo esc_url( 'https://www.facebook.com/groups/post.smtp' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Facebook Group' ); ?>
+							<?php esc_html_e( 'Facebook Group', 'post-smtp' ); ?>
 						</a>
 					</div>
 					<div>
 						<a href="<?php echo esc_url( 'https://postmansmtp.com/category/guides/' ); ?>" target="_blank">
 							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />	
-							<?php echo esc_html( 'Guides' ); ?>
+							<?php esc_html_e( 'Guides', 'post-smtp' ); ?>
 						</a>
 					</div>
 				</div>
@@ -501,20 +501,20 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				if ( $this->options->isNew() ) {
 					printf( 
 						'<h3 style="padding-top:10px">%s</h3>', 
-						esc_html( 'Thank-you for choosing Postman!', 'post-smtp' ) 
+						esc_html__( 'Thank-you for choosing Postman!', 'post-smtp' ) 
 					);
 					/* translators: where %s is the URL of the Setup Wizard */
 					printf( 
 						'<p><span>%s</span></p>', 
 						sprintf( 
-							wp_kses_post( 'Let\'s get started! All users are strongly encouraged to <a href="%s">run the Setup Wizard</a>.', 'post-smtp' ), 
+							wp_kses_post(__('Let\'s get started! All users are strongly encouraged to <a href="%s">run the Setup Wizard</a>.', 'post-smtp' )), 
 							esc_url( $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG ) ) 
 						) 
 					);
 					printf( 
 						'<p><span>%s</span></p>', 
 						sprintf( 
-							wp_kses_post( 'Alternately, <a href="%s">manually configure</a> your own settings and/or modify advanced options.', 'post-smtp' ), 
+							wp_kses_post(__('Alternately, <a href="%s">manually configure</a> your own settings and/or modify advanced options.', 'post-smtp' )), 
 							esc_attr( $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_SLUG ) ) 
 						) 
 					);
@@ -522,19 +522,15 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					if ( PostmanState::getInstance()->isTimeToReviewPostman() && ! PostmanOptions::getInstance()->isNew() ) {
 						print '</br><hr width="70%"></br>';
 						/* translators: where %s is the URL to the WordPress.org review and ratings page */
-						printf( 
-							'<p>%s <a href="%s">%s</a>%s</p>',
-							esc_html__( 'Please consider', 'post-smtp' ),
-							esc_url( 'https://wordpress.org/support/plugin/post-smtp/reviews/?filter=5' ),
-							esc_html__( 'leaving a review', 'post-smtp' ),
-							esc_html( 'to help spread the word! :D', 'post-smtp' )
+						printf(esc_html__(
+						'%1$sPlease consider %2$sleaving a review%3$s to help spread the word! :D%4$s', 'post-smtp'),'<p>','<a href="https://wordpress.org/support/plugin/post-smtp/reviews/?filter=5" target="_blank">','</a>','</p>'
 						);
 					}
 
 					printf( 
 						esc_html__( '%1$s Postman needs translators! Please take a moment to %2$s translate a few sentences on-line %3$s', 'post-smtp' ),
 						'<p><span>',
-						'<a href="https://translate.wordpress.org/projects/wp-plugins/post-smtp/stable">',
+						'<a href="https://translate.wordpress.org/projects/wp-plugins/post-smtp/stable" target="_blank">',
 						'</a> :-)</span></p>'
 					);
 				}
@@ -552,31 +548,31 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 
 				<div class="ps-home-middle-right" style="background-image: url(<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/mobile-banner.png' ) ?>)">
 					<div class="ps-mobile-notice-content">
-						<p><?php _e( 'Introducing NEW Post SMTP Mobile App' ); ?></p>
+						<p><?php esc_html_e( 'Introducing NEW Post SMTP Mobile App', 'post-smtp' ); ?></p>
 						<div class="ps-mobile-notice-features">
 							<div class="ps-mobile-feature-left">
 								<span class="dashicons dashicons-yes-alt"></span>
-								Easy Email Tracking
+								<?php esc_html_e( 'Easy Email Tracking', 'post-smtp' ); ?>
 								<br>
 								<span class="dashicons dashicons-yes-alt"></span>
-								Quickly View Error Details
+								<?php esc_html_e( 'Quickly View Error Details', 'post-smtp' ); ?>
 								<br>
 								<span class="dashicons dashicons-yes-alt"></span>
-								Easy Email Tracking			
+								<?php esc_html_e( 'Easy Email Tracking', 'post-smtp' ); ?>			
 							</div>
 							<div class="ps-mobile-feature-right">
 								<span class="dashicons dashicons-yes-alt"></span>
-								Get Email Preview
+								<?php esc_html_e( 'Get Email Preview', 'post-smtp' ); ?>
 								<br>
 								<span class="dashicons dashicons-yes-alt"></span>
-								Resend Failed Emails
+								<?php esc_html_e( 'Resend Failed Emails', 'post-smtp' ); ?>
 								<br>
 								<span class="dashicons dashicons-yes-alt"></span>
-								Support multiple sites		
+								<?php esc_html_e( 'Support multiple sites', 'post-smtp' ); ?>		
 							</div>
 						</div>
 						<div class="ps-app-download-button">
-							<a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26anid%3Dadmob" target="_blank">Download the app</a>
+							<a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26anid%3Dadmob" target="_blank"><?php esc_html_e( 'Download the app', 'post-smtp' ); ?></a>
 						</div>
 					</div>
 				</div>
@@ -716,29 +712,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			?>
 			<div class="notice notice-error is-dismissible ps-less-secure-notice">
 			<?php 
-				printf(
-					'<p>
-						%1$s
-						<a href="%2$s" target="blank">%3$s</a>
-						%4$s
-						<a href="%5$s" target="blank">%6$s</a>
-						%7$s
-						<br />
-						<a href="%8$s" target="_blank">%9$s</a>
-						<br />
-						<a href="" id="discard-less-secure-notification">%10$s</a>
-					</p>',
-					esc_html__( 'To help keep your account secure, Google will no longer support using third-party apps to sign in to your Google Account using only your username and primary password. You can ', 'post-smtp' ),
-					esc_url( 'https://postmansmtp.com/gmail-is-disabling-less-secure-apps-feature-soon/' ),
-					esc_html__( 'switch to the Auth 2.0', 'post-smtp' ),
-					esc_html__( 'alternative or use your ', 'post-smtp' ),
-					esc_url( 'https://postmansmtp.com/documentation/#setting-up-an-app-password-in-your-google-account' ),
-					esc_html__( 'App Password', 'post-smtp' ),
-					esc_html__( 'option to continue.	', 'post-smtp' ),
-					esc_url( 'https://postmansmtp.com/gmail-is-disabling-less-secure-apps' ),
-					esc_html__( 'Click here for more info', 'post-smtp' ),
-					esc_html__( 'I understand and would like to discard this notice', 'post-smtp' )
-				);
+				printf(esc_html__('%1$sTo help keep your account secure, Google will no longer support using third-party apps to sign in to your Google Account using only your username and primary password. You can %2$sswitch to the Auth 2.0%3$s alternative or use your %4$sApp Password%3$s option to continue. %5$s%6$sClick here for more info%3$s%5$s%7$sI understand and would like to discard this notice%3$s%8$s', 'post-smtp'),'<p>','<a href="https://postmansmtp.com/gmail-is-disabling-less-secure-apps-feature-soon/" target="blank">','</a>','<a href="https://postmansmtp.com/documentation/postman-smtp-documentation/settings-configuration/setting-up-an-app-password-in-your-google-account/" target="blank">','<br />','<a href="https://postmansmtp.com/gmail-is-disabling-less-secure-apps" target="_blank">','<a href="" id="discard-less-secure-notification">','</p>');
 			?>
 			</div>
 			<?php

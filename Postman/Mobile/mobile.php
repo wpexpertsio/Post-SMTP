@@ -167,13 +167,13 @@ class Post_SMTP_Mobile {
         if( function_exists( 'ImageCreate' ) ):
         ?>
         <section id="mobile-app">
-            <h2><?php _e( 'Mobile Application', 'post-smtp' ); ?></h2>
+            <h2><?php esc_html_e( 'Mobile Application', 'post-smtp' ); ?></h2>
             <div class="download-app">
                 <div style="float: left;">
                     <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/mobile.png' ) ?>" width="55px" />
                 </div>
                 <div style="display: inline-block; text-align: center;">
-                    <h3>Download Post SMTP Mobile Application</h3>
+                    <h3><?php esc_html_e( 'Download Post SMTP Mobile Application', 'post-smtp' ); ?></h3>
                 </div>
                 <div style="float: right; margin: 19px 0;">
                     <a href="https://play.google.com/store/apps/details?id=com.postsmtp" target="_blank" /><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/google-play.png' ) ?>" class="google-logo" /></a>
@@ -184,15 +184,15 @@ class Post_SMTP_Mobile {
             <div class="mobile-app-box">
                 <div class="mobile-app-internal-box">
                     <ol style="line-height: 30px;">
-                        <li>Open Post SMTP <b>mobile app</b> 📱 on your android or iOS device.</li>
-                        <li>Tap on <b>Scan QR Code</b> button to link your mobile device with Post SMTP plugin.</li>
-                        <li>Point your mobile device to this screen to <b>capture</b> the QR Code.</li>
+                        <li><?php printf(esc_html__( 'Open Post SMTP %1$smobile app%2$s 📱 on your android or iOS device.', 'post-smtp' ),'<b>','</b>'); ?></li>
+                        <li><?php printf(esc_html__( 'Tap on %1$sScan QR Code%2$s button to link your mobile device with Post SMTP plugin.', 'post-smtp' ),'<b>','</b>'); ?></li>
+                        <li><?php printf(esc_html__( 'Point your mobile device to this screen to %1$scapture%2$s the QR Code.', 'post-smtp' ),'<b>','</b>'); ?></li>
                     </ol>
                     <p>
-                        And you are done👍.
+                        <?php esc_html_e( 'And you are done👍.', 'post-smtp' ); ?>
                     </p>
                     <p>
-                        Want more details? Check out our complete guide <a href="https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app" target="_blank">Post SMTP Plugin with Mobile App</a>
+                        <?php printf(esc_html__( 'Want more details? Check out our complete guide %1$sPost SMTP Plugin with Mobile App%2$s', 'post-smtp' ),'<a href="https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app" target="_blank">','</a>'); ?>
                     </p>
                 </div>
                 <div class="mobile-app-internal-box ps-qr-box" style="line-height: 30px;">
@@ -202,14 +202,14 @@ class Post_SMTP_Mobile {
                         echo '<img src="data:image/jpeg;base64,'. $this->qr_code.'" width="300"/>'; 
                         ?>
                         <div>
-                            <a href="<?php echo esc_url( admin_url('admin-post.php?action=regenerate-qrcode') ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
+                            <a href="<?php echo esc_url( admin_url('admin-post.php?action=regenerate-qrcode') ); ?>"><?php esc_html_e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
                         </div>
                         <?php
 
                     }
 					else {
 						
-						echo "<b>Connected Device:</b> ";
+						echo "<b>" . esc_html__( 'Connected Device:', 'post-smtp' ) . "</b> ";
 						
 						$nonce = wp_create_nonce( 'ps-disconnect-app-nonce' );
 						
@@ -218,11 +218,11 @@ class Post_SMTP_Mobile {
 							$url = admin_url( "admin.php?action=post_smtp_disconnect_app&auth_token={$device['fcm_token']}&ps_disconnect_app_nonce={$nonce}" );
 							$checked = $device['enable_notification'] == 1 ? 'checked="checked"' : '';
 							
-							echo  esc_html( $device['device'] ) . "<a href='{$url}' style='color: red'>Disconnect</a>";
+							echo  esc_html( $device['device'] ) . "<a href='{$url}' style='color: red'>" . esc_html__( 'Disconnect', 'post-smtp' ) . "</a>";
 							echo '<br />';
 							echo sprintf(
 								'<label for="enable-app-notice">%s <input type="checkbox" id="enable-app-notice" name="postman_app_connection[%s]" %s /></label>',
-								__( 'Send failed email notification' ),
+								__( 'Send failed email notification', 'post-smtp' ),
 								$device['fcm_token'],
 								$checked
 							);

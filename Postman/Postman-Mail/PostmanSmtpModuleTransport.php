@@ -57,7 +57,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		return self::SLUG;
 	}
 	public function getName() {
-		return 'Other SMTP';
+		return __( 'Other SMTP', 'post-smtp' );
 	}
 	public function getHostname() {
 		$this->options = $this->options;

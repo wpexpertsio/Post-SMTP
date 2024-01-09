@@ -128,7 +128,7 @@ class PostmanNotify {
 
         add_settings_section( 
             'chrome_notification', 
-            'Setup Chrome extension (optional)', 
+            __( 'Setup Chrome extension (optional)', 'post-smtp' ), 
             array( $this, 'chrome_extension' ), 
             self::CHROME_EXTENSION 
         );
@@ -280,8 +280,8 @@ class PostmanNotify {
         $logs_url = admin_url( 'admin.php?page=postman_email_log' );
         
         echo '<p>' . sprintf( 
-            esc_html( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %s if required.', 'post-smtp' ), 
-            '<a href="'.$logs_url.'" target="_blank">log section</a>' 
+            esc_html__( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %1$slog section%2$s if required.', 'post-smtp' ), 
+            '<a href="'.$logs_url.'" target="_blank">','</a>' 
         ) . '</p>';
         
         ?>
