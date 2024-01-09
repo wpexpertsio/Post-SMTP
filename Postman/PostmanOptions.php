@@ -92,6 +92,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const SENDINBLUE_API_KEY = 'sendinblue_api_key';
 		const MAILJET_API_KEY = 'mailjet_api_key';
 		const MAILJET_SECRET_KEY = 'mailjet_secret_key';
+		const SENDPULSE_API_KEY = 'sendpulse_api_key';
+		const SENDPULSE_SECRET_KEY = 'sendpulse_secret_key';
 		const POSTMARK_API_KEY = 'postmark_api_key';
 		const SPARKPOST_API_KEY = 'sparkpost_api_key';
 		const MAILGUN_API_KEY = 'mailgun_api_key';
@@ -571,12 +573,29 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
         }
 
 		/**
+		 * Get SendPulse API key
+		 * 
+         * @since 2.7
+         * @version 1.0
+         */
+		public function getSendpulseApiKey() {
+
+            if ( defined( 'POST_SMTP_API_KEY' ) ) {
+                return POST_SMTP_API_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::SENDPULSE_API_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::SENDPULSE_API_KEY] );
+            }
+
+        }
+
+		/**
 		 * Gets Mailjet Secret key
 		 * 
          * @since 2.7
          * @version 1.0
          */
-
 		public function getMailjetSecretKey() {
 
             if ( defined( 'POST_SMTP_API_KEY' ) ) {
@@ -585,6 +604,24 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
             if ( isset( $this->options[PostmanOptions::MAILJET_SECRET_KEY] ) ) {
                 return base64_decode( $this->options[PostmanOptions::MAILJET_SECRET_KEY] );
+            }
+
+        }
+
+		/**
+		 * Gets SendPulse Secret key
+		 * 
+         * @since 2.7
+         * @version 1.0
+         */
+		public function getSendpulseSecretKey() {
+
+            if ( defined( 'POST_SMTP_SECRET_KEY' ) ) {
+                return POST_SMTP_SECRET_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::SENDPULSE_SECRET_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::SENDPULSE_SECRET_KEY] );
             }
 
         }
