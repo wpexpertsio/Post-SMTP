@@ -1,6 +1,6 @@
 <?php
 
-class Post_SMTP_Mobile_Rest_API {
+class Post_SMTP_Mobile_Rest_API_V2 {
 	
 	private $filter = '';
 	private $has_mainwp = false;
@@ -93,7 +93,7 @@ class Post_SMTP_Mobile_Rest_API {
 			
 			if( $this->has_mainwp ) {
 				
-				$response['mainwp'] = $this->get_child_sites();
+				$response['mainwp'] = post_smtp_mobile_get_child_sites();
 				
 			}
 			
@@ -108,4 +108,4 @@ class Post_SMTP_Mobile_Rest_API {
 
 }
 
-new Post_SMTP_Mobile_Rest_API();
+new Post_SMTP_Mobile_Rest_API_V2();
