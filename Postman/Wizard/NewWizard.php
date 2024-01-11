@@ -58,6 +58,7 @@ class Post_SMTP_New_Wizard {
         'postmark_api',
         'sparkpost_api',
         'mailjet_api',
+        'sendpulse_api',
         'office365_api',
         'aws_ses_api',
         'zohomail_api',
@@ -192,6 +193,7 @@ class Post_SMTP_New_Wizard {
                                                 'postmark_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/postmark.png',
                                                 'sparkpost_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sparkpost.png',
                                                 'mailjet_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailjet.png',
+                                                'sendpulse_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendpulse.png',
                                                 'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/logo.png',
                                                 'elasticemail_api'  =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/elasticemail.png',
                                                 'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
@@ -601,6 +603,9 @@ class Post_SMTP_New_Wizard {
             break;
             case 'mailjet_api':
                 echo wp_kses( $this->render_mailjet_settings(), $this->allowed_tags );
+            break;
+            case 'sendpulse_api':
+                echo wp_kses( $this->render_sendpulse_settings(), $this->allowed_tags );
             break;
             case 'elasticemail_api':
                 echo wp_kses( $this->render_elasticemail_settings(), $this->allowed_tags );
@@ -1161,6 +1166,57 @@ class Post_SMTP_New_Wizard {
         <div class="ps-form-control">
             <div><label>Secret Key</label></div>
             <input type="text" class="ps-elasticemail-secret-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="Secret Key">'.
+            /**
+             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
+             */
+            sprintf(
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
+                __( 'Create an account at', 'post-smtp' ),
+                esc_url( 'https://app.mailjet.com/signup' ),
+                esc_attr( 'Mailjet' ),
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+                esc_url( 'https://app.mailjet.com/account/apikeys' ),
+                esc_attr( 'Mailjet API and Access Key' )
+            )
+            .
+        '</div>
+        ';
+
+        return $html;
+
+    }
+
+    /**
+     * Render SendPulse Settings
+     * 
+     * @since 2.9.0
+     * @version 1.0.0
+     */
+    public function render_sendpulse_settings() {
+
+        $api_key = null !== $this->options->getSendpulseApiKey() ? esc_attr ( $this->options->getSendpulseApiKey() ) : '';
+        $secret_key = null !== $this->options->getSendpulseSecretKey() ? esc_attr ( $this->options->getSendpulseSecretKey() ) : '';
+
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">Mailjet</a> %2$s</p><p>%6$s<p>%3$s <a href="%4$s" target="_blank">%5$s</a>',
+            esc_url( 'https://app.mailjet.com/signin?redirect=aHR0cHM6Ly9hcHAubWFpbGpldC5jb20vfDI0fDgyMzU3ZDFmMWE4Y2NjMjc4ZWRhMzI0MDUzZTNlMjY0' ),
+            __( 'is a leading email service provider that delivers a complete set of email marketing and transactional email solutions.', 'post-smtp' ),
+            __( 'Let\'s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-mailjet' ),
+            __( 'Mailjet Documentation', 'post-smtp' ),
+            __( 'Mailjet’s platform enables you to create, send, and track email marketing campaigns, transactional email messages, and email performance metrics.', 'post-smtp' )
+        );
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>API Key</label></div>
+            <input type="text" class="ps-sendpulse-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDPULSE_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key"></div>
+        ';
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>Secret Key</label></div>
+            <input type="text" class="ps-sendpulse-secret-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDPULSE_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="Secret Key">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
