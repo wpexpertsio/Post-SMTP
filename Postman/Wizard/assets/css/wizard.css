@@ -97,6 +97,10 @@
   height: 778px;
 }
 
+.sendpulse_api-outer .ps-wizard-section .ps-wizard-nav {
+  height: 775px;
+}
+
 .ps-wizard-footer .ps-wizard-nav {
   border-right: none;
 }
@@ -263,15 +267,19 @@
 }
 
 .zohomail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 946px;;
+  height: 946px;
 }
 
 .aws_ses_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 746px;;
+  height: 746px;
 }
 
 .mailjet_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 638px;;
+  height: 638px;
+}
+
+.sendpulse_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
+  height: 635px;
 }
 
 .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {

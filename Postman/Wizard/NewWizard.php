@@ -1198,13 +1198,14 @@ class Post_SMTP_New_Wizard {
         $secret_key = null !== $this->options->getSendpulseSecretKey() ? esc_attr ( $this->options->getSendpulseSecretKey() ) : '';
 
         $html = sprintf(
-            '<p><a href="%1$s" target="_blank">Mailjet</a> %2$s</p><p>%6$s<p>%3$s <a href="%4$s" target="_blank">%5$s</a>',
-            esc_url( 'https://app.mailjet.com/signin?redirect=aHR0cHM6Ly9hcHAubWFpbGpldC5jb20vfDI0fDgyMzU3ZDFmMWE4Y2NjMjc4ZWRhMzI0MDUzZTNlMjY0' ),
-            __( 'is a leading email service provider that delivers a complete set of email marketing and transactional email solutions.', 'post-smtp' ),
+            '<p>%1$s <a href="%2$s" target="_blank">SendPulse</a> %3$s</p><p>%4$s<p>%5$s <a href="%6$s" target="_blank">%7$s</a>',
+            __( 'With', 'post-smtp' ),
+            esc_url( 'https://sendpulse.com/features/transactional' ),
+            __( 'Transactional Email, whether you need to send order confirmations, booking notifications, password resets, or any other transactional messages, You can handle it with ease and reliability.', 'post-smtp' ),
+            __( 'If you\'re just starting out, the free plan allows you to send up to 12000 emails without entering your credit card details.', 'post-smtp' ),
             __( 'Let\'s get started with our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-mailjet' ),
-            __( 'Mailjet Documentation', 'post-smtp' ),
-            __( 'Mailjet’s platform enables you to create, send, and track email marketing campaigns, transactional email messages, and email performance metrics.', 'post-smtp' )
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-sendpulse/?utm_source=plugin&utm_medium=wizard' ),
+            __( 'SendPulse Transactional Email Documentation', 'post-smtp' )
         );
 
         $html .= '
@@ -1221,13 +1222,10 @@ class Post_SMTP_New_Wizard {
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
             sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
-                __( 'Create an account at', 'post-smtp' ),
-                esc_url( 'https://app.mailjet.com/signup' ),
-                esc_attr( 'Mailjet' ),
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://app.mailjet.com/account/apikeys' ),
-                esc_attr( 'Mailjet API and Access Key' )
+                '<div class="ps-form-control-info"><a href="%1$s" target="_blank">%2$s</a> %3$s</div>',
+                esc_url( 'https://sendpulse.com/features/transactional' ),
+                esc_attr( 'Click here' ),
+                __( 'to create an account at SendPulse', 'post-smtp' )
             )
             .
         '</div>
