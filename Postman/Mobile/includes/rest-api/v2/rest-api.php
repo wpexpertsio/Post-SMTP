@@ -88,7 +88,8 @@ class Post_SMTP_Mobile_Rest_API_V2 {
 			}
 			
 			$response = array(
-				'logs'	=>	$logs_query->get_logs( $args )
+				'logs'				=>	$logs_query->get_logs( $args ),
+				'plugin_version'	=>	POST_SMTP_VER
 			);
 			
 			if( $this->has_mainwp ) {

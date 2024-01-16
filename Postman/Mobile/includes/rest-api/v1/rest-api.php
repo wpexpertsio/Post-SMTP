@@ -83,7 +83,8 @@ class Post_SMTP_Mobile_Rest_API {
 			update_option( 'post_smtp_server_url', $server_url );
 			
 			$response = array(
-				'fcm_token'	=>	$fcm_token
+				'fcm_token'			=>	$fcm_token,
+				'plugin_version'	=>	POST_SMTP_VER
 			);
 			
 			if( $this->has_mainwp ) {
@@ -152,8 +153,13 @@ class Post_SMTP_Mobile_Rest_API {
 				
 			}
 			
+			$response = array(
+				'logs'				=>	$logs_query->get_logs( $args ),
+				'plugin_version'	=>	POST_SMTP_VER
+			);
+			
 			wp_send_json_success(
-				$logs_query->get_logs( $args ),
+				$response,
 				200
 			);
 			
