@@ -1,0 +1,1582 @@
+@CHARSET "UTF-8";
+
+/* Opt-in popup Styling Starts */
+
+.toplevel_page_postman #fs_connect .fs-actions .button.button-primary {
+    background-color: #66AF3A;
+    border: #66AF3A;
+    font-weight: bold;
+    width: 240px;
+}
+
+.toplevel_page_postman #fs_connect .fs-terms, 
+.toplevel_page_postman #fs_connect .fs-actions,
+.toplevel_page_postman #fs_connect .fs-visual {
+    background: #fff;
+}
+
+.toplevel_page_postman #fs_connect {
+    box-shadow: 1px 5px 10px #b5b598;
+}
+
+.ps-optin-popup h1 {
+    color: #3A5EAF;
+    font-weight: bold;
+}
+
+.toplevel_page_postman .fs-site-icon,
+.toplevel_page_postman .fs-first, 
+.toplevel_page_postman .fs-second,
+.toplevel_page_postman .fs-connect-logo {
+    display: none;
+}
+
+.toplevel_page_postman .fs-plugin-icon {
+    border: none!important;
+}
+
+.toplevel_page_postman #skip_activation {
+    background: #fff;
+    border: none;
+    font-size: 15px!important;
+    color: #999;
+}
+
+.toplevel_page_postman .fs-visual {
+    float: left;
+    vertical-align: middle;
+}
+
+.toplevel_page_postman .ps-optin-popup {
+    float: left;
+    width: 315px;
+}
+
+.toplevel_page_postman #fs_connect .fs-visual .fs-plugin-icon {
+    position: unset;
+    top: 0px;
+    left: unset;
+    margin-left: 0px;
+    padding: 15px 10px;
+    text-align: center;
+}
+
+.toplevel_page_postman #fs_connect .fs-visual {
+    padding: 12px;
+    line-height: 0;
+    background: #fff;
+    height: 0px;
+    position: unset;
+}
+
+.toplevel_page_postman #fs_connect .fs-actions {
+    padding: 15px 40px;
+}
+
+.toplevel_page_postman #fs_connect .fs-actions .button.button-secondary {
+    float: right;
+    width: 145px;
+}
+
+
+/* Opt-in popup Styling Ends */
+
+/* Post SMTP Global Classes Starts */
+
+body.admin_page_postman-configuration_wizard,
+body.admin_page_postman-manage-options,
+body.admin_page_postman-configuration,
+body.toplevel_page_postman,
+body.post-smtp_page_postman_email_log {
+	background-color: #fff;
+}
+
+.ps-home-main a {
+    font-size: 16px;
+}
+
+.ps-main-header.post-smtp-welcome-panel {
+    padding: 0px 15px;
+    font-size: 19px;
+}
+
+.ps-config-bar {
+    margin-bottom: 25px;
+    border: 1px solid #e6e6e6;
+    padding: 25px;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 30px;
+}
+
+.ps-config-bar span {
+    vertical-align: middle;
+}
+
+.ps-config-bar a {
+    margin-left: 15px!important;
+}
+
+.ps-left {
+    float: left;
+}
+
+.ps-right {
+    float: right;
+}
+
+.ps-socket-wizad-row {
+    display: inline-flex;
+    margin: 20px 0;
+}
+
+.ps-single-socket-outer {
+    border: 1px solid #e4e4e6;
+    background: #f9f9f9;
+    text-align: center;
+    padding: 5px 10px;
+    margin: 0 7px;
+    border-radius: 13px;
+    min-height: 106px;
+    max-width: 187px;
+}
+
+.ps-socket-wizad-row input {
+    display: inline-block!important;
+    margin-left: 15px;
+}
+
+.ps-socket-wizad-row label {
+    font-size: 12px;
+}
+
+.ps-container-90 {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.ps-textarea {
+    border: 2px solid #e4e4e6;
+    border-radius: 12px;
+    scroll-behavior: auto;
+    background: #fff!important;
+    padding: 13px;
+    color: #7e7e7e;
+    width: 100%;
+}
+
+.ps-btn-orange {
+    background: #faaa39!important;
+    color: #FFF!important;
+    text-decoration: none;
+    border-radius: 7px!important;
+    border: none!important;
+    padding: 6px 8px;
+    position: relative;
+    line-height: normal;
+}
+
+.ps-btn-red {
+    background: #ef090b!important;
+    color: #FFF!important;
+    text-decoration: none;
+    border-radius: 7px!important;
+    border: none!important;
+    padding: 6px 8px;
+    position: relative;
+    line-height: normal;
+}
+
+.ps-btn-light-blue {
+    background: #1d9ad2! important;
+    color: #FFF!important;
+    text-decoration: none;
+    border-radius: 7px!important;
+    border: none!important;
+    padding: 6px 8px;
+    position: relative;
+    line-height: normal;
+}
+
+.ps-btn-blue {
+    background: #123694! important;
+    color: #FFF!important;
+    text-decoration: none;
+    border-radius: 7px!important;
+    border: none!important;
+    padding: 6px 8px;
+    position: relative;
+    line-height: normal;
+}
+
+.ps-btn-orange:hover {
+	color: #fff;
+}
+
+.ps-ib {
+    display: inline-block;
+}
+
+.ps-w-50 {
+    width: 50%;
+}
+
+.ps-input {
+    border-color: #e4e4e6!important;
+    color: #838383!important;
+    padding: 2px 10px!important;
+}
+
+.ps-w-75 {
+	width: 75%;
+}
+
+.ps-flex {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    line-height: 30px;
+}
+
+
+.ps-vm {
+    vertical-align: middle;
+}
+
+
+/* Post SMTP Global Classes Ends */
+
+.ps-home-main .ps-wizard {
+    text-align: center;
+    margin: 35px 0;
+}
+
+.ps-flex.ps-home-main {
+    width: 100%;
+    background: #f9f9f9;
+    border: 1px solid #e6e6e6;
+}
+
+.ps-home-main img {
+    vertical-align: middle;
+}
+
+.ps-home-main a {
+    color: #1d9ad2;
+}
+
+.ps-setting-box {
+    padding: 25px;
+    min-height: 275px;
+}
+
+.ps-main-container-wrap {
+    margin: 0 auto;
+}
+
+.ps-email-templates {
+    border: 2px solid #2b96ce;
+    padding: 5px 35px;
+    border-radius: 30px;
+    margin: 30px 0;
+    width: 33vw;
+}
+
+.ps-login-designer {
+    border: 2px solid #123694;
+    padding: 5px 35px;
+    border-radius: 30px;
+    margin: 30px 0;
+    width: 33vw;
+}
+
+.ps-email-templates h4 {
+    margin: 0px;
+    color: #2b96ce;
+}
+
+.ps-login-designer h4 {
+    margin: 0px;
+    color: #123694;
+}
+
+.ps-home-bottom h1 {
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.ps-home-bottom li {
+    margin: 0;
+}
+
+.ps-email-templates ul li::before {
+    content: "\2022";
+    color: #2b96ce;
+    font-weight: bold;
+    display: inline-block; 
+    width: 1em;
+    margin-left: -1em;
+}
+
+.ps-login-designer ul li::before {
+    content: "\2022";
+    color: #123694;
+    font-weight: bold;
+    display: inline-block; 
+    width: 1em;
+    margin-left: -1em;
+}
+
+.ps-email-templates h4 {
+    margin: 0px;
+}
+
+.ps-home-bottom a {
+    color: #faaa39;
+}
+
+.ps-home-bottom {
+    margin: 25px auto;
+}
+
+.ps-config-bar .ps-right {
+    color: #817d7d;
+}
+
+.ps-home-middle {
+    border-bottom: 3px dashed #e6e6e6;
+    margin: 35px auto;
+    padding-bottom: 20px;
+}
+
+.ps-single-socket-outer.ps-sib {
+    position: relative;
+}
+
+img.ps-sib-recommended {
+    position: absolute;
+    left: -8px;
+    top: 1px;
+}
+
+.twitter-wrap {
+	display: flex;
+}
+
+.twitter-wrap #postman-main-menu {
+	flex: 1;
+	margin: 0;
+	margin-right: 10px;
+	overflow: hidden;
+	border-radius: 5px;
+}
+
+.post-smtp-welcome-panel-content {
+    width: 100%;
+}
+
+#postman-main-menu.welcome-panel {
+	padding: 0px 10px 5px;
+	overflow: hidden;
+}
+
+#postman-main-menu.advanced_config {
+	margin: 0;
+}
+
+form#postman_wizard legend, form#postman_test_email_wizard legend {
+	font-weight: bold;
+}
+
+form label {
+	font-weight: bold;
+	margin-right: 10px;
+}
+
+form span.postman_input_description {
+	font-size: 0.8em;
+}
+
+table#connectivity_test_table {
+	width: 100%;
+	display: none;
+	border: solid 1px #ddd;
+}
+
+table#connectivity_test_table tr {
+	background-color: #fff;
+}
+
+table#connectivity_test_table tr td {
+	padding: 5px;
+	margin: 0;
+	text-align: center;
+}
+
+table th.port_25, table th.port_443, table th.port_465, table th.port_587
+	{
+	width: 17%;
+}
+
+table#testing_table td.port {
+	width: 100px;
+}
+
+p#wizard_oauth2_help span.error {
+	color: red;
+}
+
+form#postman_wizard span.postman_input_description + label {
+	margin-top:2em;
+}
+
+input.input_plugin_radio {
+	margin-left: 20px;
+}
+
+.wizard>.content {
+    min-height: 1000px;
+}
+
+dt {
+	font-style: italic;
+}
+
+dt em {
+	font-style: normal;
+}
+
+p#back_to_main_menu {
+	text-align: right;
+	margin-top: 10px;
+	padding-right: 10px;
+}	
+
+.new-item {
+	display: inline-block;
+	padding: 5px;
+	border-radius: 20px;
+	background-color: red;
+	margin-right: 10px;
+}
+
+.new-item span {
+	font-weight: bold;
+	color: white;
+	animation: pulse 2s linear 0s infinite;
+}
+
+.align-middle {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.post-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding-top: 142px;
+    height: 50px;
+    width: 173px;
+    color: #fafafa;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    margin: 0 -5px;
+    background: url(images/badge.png) no-repeat;
+}
+
+.post-smtp-welcome-panel {
+    background: #f9f9f9;
+    border: 1px solid #e6e6e6;
+    margin: 25px 0;
+}
+
+.clear {
+	clear: both;
+}
+
+.welcome-panel-column-container {
+    width: 95%;
+    margin: 0 auto;
+}
+
+.back-to-menu-link {
+	padding: 15px 0;
+}
+
+.post-smtp-welcome-panel {
+    background: #f9f9f9;
+    border: 1px solid #e6e6e6;
+    margin: 25px 0;
+    border-radius: 9px;
+}
+
+#postman_wizard-p-2 {
+    line-height: 55px;
+}
+
+.no-configuration.ps-config-bar {
+    background: #ffe0b2;
+}
+
+/* 
+* Modifying jquery-steps.css Starts
+* @since 2.1 
+*/
+
+.wizard > .steps .number {
+    font-size: 13px;
+    margin-right: 15px;
+}
+
+.wizard > .steps {
+	font-weight: bold;
+}
+
+.wizard > .steps a, 
+.wizard > .steps a:hover, 
+.wizard > .steps a:active {
+    margin-bottom: 20px;
+}
+
+.wizard > .steps .disabled a,
+.wizard > .steps .disabled a:hover,
+.wizard > .steps .disabled a:active {
+    background: #ffff;
+    color: #aaa;
+    cursor: default;
+    border: 1px solid #e4e4e6;
+}
+
+.wizard > .steps .current a, 
+.wizard > .steps .current a:hover, 
+.wizard > .steps .current a:active {
+    background: #456dff;
+    color: #fff;
+    cursor: default;
+}
+
+.wizard > .steps .done a, 
+.wizard > .steps .done a:hover, 
+.wizard > .steps .done a:active {
+    background: #4db556;
+    color: #fff;
+}
+
+.wizard.vertical > .steps {
+    background: #f9f9f9;
+    border: 1px solid #e6e6e6;
+    border-radius: 9px;
+    padding: 25px 21px;
+    width: 33%;
+}
+
+.wizard.vertical > .content {
+    float: right;
+    background: #fff;
+    width: 50%;
+    padding: 25px 35px;
+    border-left: 4px solid #e4e4e6;
+    border-radius: 0;
+}
+
+.wizard > .steps .done a, .wizard > .steps .done a:hover, .wizard > .steps .done a:active {
+    padding: 12px;
+}
+
+legend#wizard_recommendation span {
+    color: #000!important;
+}
+
+#postman_wizard .steps li .number, 
+#postman_test_email_wizard .steps li .number {
+    background: #e6e6e6;
+    padding: 1px 3px 2px 7px;
+    border-radius: 50%;
+    color: #707175;
+    font-size: 11px;
+}
+
+/* 
+* Modifying jquery-steps.css Ends
+*/
+
+.user_override input {
+    display: inline-block!important;
+}
+
+.user_override label {
+    font-size: 12px;
+}
+
+section#export_settings,
+section#import_settings {
+    border: 2px solid #e4e4e6;
+    display: inline-block;
+    padding: 35px;
+    background: #f9f9f9;
+    border-radius: 9px;
+    min-height: 385px;
+    width: 43%;
+}
+
+section#delete_settings {
+    margin-top: 40px;
+}
+
+.ui-widget-header {
+    border-bottom: none;
+}
+
+.ui-widget-content,
+.ui-widget-header {
+    background-color: transparent;
+}
+
+.ui-state-default, 
+.ui-widget-content .ui-state-default, 
+.ui-widget-header .ui-state-default {
+    background-color: #fff;
+}
+
+.ui-tabs .ui-tabs-nav li {
+    border: 1px solid #e6e6e6;
+}
+
+.ui-widget-content .ui-state-default a {
+    color: #797979;
+}
+
+.ui-tabs .ui-tabs-nav li a {
+    padding: 0.8em 1.8em;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.ui-tabs .ui-tabs-nav li:first-child {
+    border-top-left-radius: 17px;
+}
+
+.ui-tabs .ui-tabs-nav li:last-child {
+    border-top-right-radius: 17px;
+}
+
+.ui-tabs .ui-tabs-nav li.visited-config-ui-tab {
+    background-color: #4db556;
+}
+
+.ui-tabs .ui-tabs-active,
+.ui-tabs .ui-tabs-nav li.visited-config-ui-tab.ui-tabs-active {
+    background: #466cff;
+}
+
+.ui-tabs .ui-tabs-active a,
+.ui-tabs .ui-tabs-nav li.visited-config-ui-tab.ui-tabs-active a,
+.ui-tabs .ui-tabs-nav li.visited-config-ui-tab a {
+    color: #fff;
+}
+.ps-less-secure {
+    color: red;
+}
+
+#user_auth_override td {
+    padding-bottom: 15px;
+}
+
+
+@keyframes pulse {
+	0% {
+		opacity: 0;
+	}
+
+	25% {
+		opacity: 0.25;
+	}
+
+	50% {
+		opacity: 0.5;
+	}
+
+	75% {
+		opacity: 0.75;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+@media (min-width: 1024px) and (max-width: 1171px) {
+
+    .ps-email-templates,
+    .ps-login-designer {
+        width: 30vw;
+    }
+
+    .ps-config-bar {
+        font-size: 14px;
+    }
+
+    .ps-flex {
+        justify-content: space-between;
+    }
+}
+
+/* Wizard Responsive */
+@media (min-width: 1024px) and (max-width: 1393px) { 
+
+    .wizard > .steps {
+        font-size: 11px;
+    }
+
+    .wizard.vertical > .content {
+        width: 47%;
+    }
+
+    .ps-single-socket-outer {
+        max-width: 152px;
+    }
+
+    .ps-wizard-socket-logo {
+        width: 144px;
+    }
+
+    #email-log-filter {
+        line-height: 40px;
+    }
+
+}
+
+/* Email Log Styling */
+
+#postman-email-log-filter .form-control {
+    margin: 0 5px;
+}
+
+.post-smtp_page_postman_email_log .ps-config-bar {
+    padding: 10px
+}
+
+@CHARSET "UTF-8";
+
+th#date {
+	width:15%;
+}
+
+.postman-log-row {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    flex-wrap: wrap;
+}
+
+#postman-log-actions postman-log-actions
+
+/* Date Picker Default Styles */
+.ui-datepicker {
+    padding: 0;
+    margin: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    background-color: #fff;
+    border: 1px solid #dfdfdf;
+    border-top: none;
+    -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.075);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.075);
+    min-width: 17em;
+    width: auto;
+}
+
+.ui-datepicker * {
+    padding: 0;
+    font-family: "Open Sans", sans-serif;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+}
+
+.ui-datepicker table {
+    font-size: 13px;
+    margin: 0;
+    border: none;
+    border-collapse: collapse;
+}
+
+.ui-datepicker .ui-widget-header,
+.ui-datepicker .ui-datepicker-header {
+    background-image: none;
+    border: none;
+    color: #fff;
+    font-weight: normal;
+}
+
+.ui-datepicker .ui-datepicker-header .ui-state-hover {
+    background: transparent;
+    border-color: transparent;
+    cursor: pointer;
+}
+
+.ui-datepicker .ui-datepicker-title {
+    margin: 0;
+    padding: 10px 0;
+    color: #fff;
+    font-size: 14px;
+    line-height: 14px;
+    text-align: center;
+}
+
+.ui-datepicker .ui-datepicker-prev,
+.ui-datepicker .ui-datepicker-next {
+    position: relative;
+    top: 0;
+    height: 34px;
+    width: 34px;
+}
+
+.ui-datepicker .ui-state-hover.ui-datepicker-prev,
+.ui-datepicker .ui-state-hover.ui-datepicker-next {
+    border: none;
+}
+
+.ui-datepicker .ui-datepicker-prev,
+.ui-datepicker .ui-datepicker-prev-hover {
+    left: 0;
+}
+
+.ui-datepicker .ui-datepicker-next,
+.ui-datepicker .ui-datepicker-next-hover {
+    right: 0;
+}
+
+.ui-datepicker .ui-datepicker-next span,
+.ui-datepicker .ui-datepicker-prev span {
+    display: none;
+}
+
+.ui-datepicker .ui-datepicker-prev {
+    float: left;
+}
+
+.ui-datepicker .ui-datepicker-next {
+    float: right;
+}
+
+.ui-datepicker .ui-datepicker-prev:before,
+.ui-datepicker .ui-datepicker-next:before {
+    font: normal 20px/34px 'dashicons';
+    padding-left: 7px;
+    color: #fff;
+    speak: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    width: 34px;
+    height: 34px;
+}
+
+.ui-datepicker .ui-datepicker-prev:before {
+    content: '\f341';
+}
+
+.ui-datepicker .ui-datepicker-next:before {
+    content: '\f345';
+}
+
+.ui-datepicker .ui-datepicker-prev-hover:before,
+.ui-datepicker .ui-datepicker-next-hover:before {
+    opacity: 0.7;
+}
+
+.ui-datepicker select.ui-datepicker-month,
+.ui-datepicker select.ui-datepicker-year {
+    width: 33%;
+}
+
+.ui-datepicker thead {
+    color: #fff;
+    font-weight: 600;
+}
+
+.ui-datepicker th {
+    padding: 10px;
+}
+
+.ui-datepicker td {
+    padding: 0;
+    border: 1px solid #f4f4f4;
+    background-color: #f4f4f4;
+}
+
+.ui-datepicker td.ui-datepicker-other-month {
+    border: transparent;
+}
+
+.ui-datepicker td.ui-datepicker-week-end {
+    background-color: #f4f4f4;
+    border: 1px solid #f4f4f4;
+}
+
+.ui-datepicker td.ui-datepicker-today {
+    background-color: #f0f0c0;
+}
+
+.ui-datepicker td.ui-datepicker-current-day {
+    background: #bbdd88;
+}
+
+.ui-datepicker td .ui-state-default {
+    background: transparent;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    width: auto;
+    display: block;
+    padding: 5px 10px;
+    font-weight: normal;
+    color: #444;
+}
+
+.ui-datepicker td.ui-state-disabled .ui-state-default {
+    opacity: 0.5;
+}
+
+/* Default Color Scheme */
+.ui-datepicker .ui-widget-header,
+.ui-datepicker .ui-datepicker-header {
+    background: #00a0d2;
+}
+
+.ui-datepicker thead {
+    background: #32373c;
+}
+
+.ui-datepicker td .ui-state-hover {
+    background: #0073aa;
+    color: #fff;
+}
+
+/* WordPress Color Schemes */
+
+/* Fresh */
+.admin-color-fresh .ui-datepicker .ui-widget-header,
+.admin-color-fresh .ui-datepicker .ui-datepicker-header {
+    background: #00a0d2;
+}
+
+.admin-color-fresh .ui-datepicker thead {
+    background: #32373c;
+}
+
+.admin-color-fresh .ui-datepicker td .ui-state-hover {
+    background: #0073aa;
+    color: #fff;
+}
+
+/* Blue */
+.admin-color-blue .ui-datepicker .ui-widget-header,
+.admin-color-blue .ui-datepicker .ui-datepicker-header {
+    background: #52accc;
+}
+
+.admin-color-blue .ui-datepicker thead {
+    background: #4796b3;
+}
+
+.admin-color-blue .ui-datepicker td .ui-state-hover {
+    background: #096484;
+    color: #fff;
+}
+
+/* Coffee */
+.admin-color-coffee .ui-datepicker .ui-widget-header,
+.admin-color-coffee .ui-datepicker .ui-datepicker-header {
+    background: #59524c;
+}
+
+.admin-color-coffee .ui-datepicker thead {
+    background: #46403c;
+}
+
+.admin-color-coffee .ui-datepicker td .ui-state-hover {
+    background: #c7a589;
+    color: #fff;
+}
+
+/* Ectoplasm */
+.admin-color-ectoplasm .ui-datepicker .ui-widget-header,
+.admin-color-ectoplasm .ui-datepicker .ui-datepicker-header {
+    background: #523f6d;
+}
+
+.admin-color-ectoplasm .ui-datepicker thead {
+    background: #413256;
+}
+
+.admin-color-ectoplasm .ui-datepicker td .ui-state-hover {
+    background: #a3b745;
+    color: #fff;
+}
+
+/* Midnight */
+.admin-color-midnight .ui-datepicker .ui-widget-header,
+.admin-color-midnight .ui-datepicker .ui-datepicker-header {
+    background: #363b3f;
+}
+
+.admin-color-midnight .ui-datepicker thead {
+    background: #26292c;
+}
+
+.admin-color-midnight .ui-datepicker td .ui-state-hover {
+    background: #e14d43;
+    color: #fff;
+}
+
+/* Ocean */
+.admin-color-ocean .ui-datepicker .ui-widget-header,
+.admin-color-ocean .ui-datepicker .ui-datepicker-header {
+    background: #738e96;
+}
+
+.admin-color-ocean .ui-datepicker thead {
+    background: #627c83;
+}
+
+.admin-color-ocean .ui-datepicker td .ui-state-hover {
+    background: #9ebaa0;
+    color: #fff;
+}
+
+/* Sunrise */
+.admin-color-sunrise .ui-datepicker .ui-widget-header,
+.admin-color-sunrise .ui-datepicker .ui-datepicker-header,
+.admin-color-sunrise .ui-datepicker .ui-datepicker-header .ui-state-hover {
+    background: #cf4944;
+}
+
+.admin-color-sunrise .ui-datepicker th {
+    border-color: #be3631;
+    background: #be3631;
+}
+
+.admin-color-sunrise .ui-datepicker td .ui-state-hover {
+    background: #dd823b;
+    color: #fff;
+}
+
+/* Light */
+.admin-color-light .ui-datepicker .ui-widget-header,
+.admin-color-light .ui-datepicker .ui-datepicker-header {
+    background: #e5e5e5;
+}
+
+.admin-color-light .ui-datepicker thead {
+    background: #888;
+}
+
+.admin-color-light .ui-datepicker .ui-datepicker-title,
+.admin-color-light .ui-datepicker td .ui-state-default,
+.admin-color-light .ui-datepicker .ui-datepicker-prev:before,
+.admin-color-light .ui-datepicker .ui-datepicker-next:before {
+    color: #555;
+}
+
+.admin-color-light .ui-datepicker td .ui-state-hover {
+    background: #e5e5e5;
+}
+
+/* bbPress Color Schemes */
+
+/* Evergreen */
+.admin-color-bbp-evergreen .ui-datepicker .ui-widget-header,
+.admin-color-bbp-evergreen .ui-datepicker .ui-datepicker-header {
+    background: #56b274;
+}
+
+.admin-color-bbp-evergreen .ui-datepicker thead {
+    background: #36533f;
+}
+
+.admin-color-bbp-evergreen .ui-datepicker td .ui-state-hover {
+    background: #446950;
+    color: #fff;
+}
+
+/* Mint */
+.admin-color-bbp-mint .ui-datepicker .ui-widget-header,
+.admin-color-bbp-mint .ui-datepicker .ui-datepicker-header {
+    background: #4ca26a;
+}
+
+.admin-color-bbp-mint .ui-datepicker thead {
+    background: #4f6d59;
+}
+
+.admin-color-bbp-mint .ui-datepicker td .ui-state-hover {
+    background: #5fb37c;
+    color: #fff;
+}
+
+#fs_connect .fs-box-container {
+    background: white !important;
+}
+
+.ps-chrome-download {
+    border: 1px solid #000;
+    padding: 5px 35px 9px 25px;
+    border-radius: 7px;
+    box-shadow: 1px 4px 10px #979797;
+    margin-right: 20px;
+    background-color: #f9f9f9;
+    text-decoration: none;
+    color: #000;
+}
+
+.ps-chrome-download img {
+    margin-right: 15px;
+    vertical-align: middle;
+}
+
+.ps-use-chrome-extension {
+    margin-top: 25px;
+    line-height: 40px;
+}
+
+.ps-notify-radios {
+    display: flex;
+    margin: 30px 0;
+}
+
+.ps-notify-radio label {
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.ps-notify-radio img {
+    width: 30px;
+    cursor: pointer;
+    transition: transform 1s;
+    object-fit: cover;
+    padding: 8px 20px 3px 20px;
+}
+
+.ps-notify-tick-container {
+    transition: .5s ease;
+    opacity: 0;
+    position: absolute;
+    top: 29%;
+    left: 29%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+.input_notification_service:checked + label > .ps-notify-tick-container{
+    opacity: 1;
+}
+
+.ps-notify-radio {
+    margin: 0px 15px;
+    border: 1px solid #000;
+}
+
+.ps-notify-radio input {
+    display: none!important;
+}
+
+.ps-notify-radio label {
+    margin: 0!important;
+    display: inline-block;
+}
+
+.ps-notify-tick span {
+    font-size: 15px;
+    background-color: #4caf50;
+    color: #fff;
+    border-radius: 100%;
+    height: 15px;
+    width: 16px;
+    border: 2px solid #fff;
+}
+
+#postman_wizard-p-5 td {
+    padding: 5px;
+}
+
+.ps-notify-radio-outer {
+    text-align: center;
+}
+
+.ps-notify-radio-outer h4 {
+    margin: 10px;
+    font-weight: normal;
+}
+
+.pro-container {
+    position: relative;
+}
+
+.pro-icon {
+    position: absolute;
+    left: -4px;
+    top: 0;
+    padding: 0!important;
+}
+
+.pro-container label {
+    position: initial;
+}
+
+#use-chrome-extension table {
+    margin-top: 10px;
+}
+
+.ps-chrome-extension {
+    line-height: 50px;
+    margin: 30px 0 15px 0;
+}
+
+.ps-notify-radio:has(.input_notification_service:checked) {
+    border: 1px solid #4db556;
+}
+
+.ps-switch-1 {
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    height: 17px;
+}
+
+.ps-switch-1 input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.ps-switch-1 input:checked + .slider {
+    background-color: #4db556;
+}
+
+.ps-switch-1 .slider.round {
+    border-radius: 34px;
+}
+
+.ps-switch-1 .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+.ps-switch-1 input:checked + .slider:before {
+    -webkit-transform: translateX(13px);
+    -ms-transform: translateX(13px);
+    transform: translateX(13px);
+}
+
+.ps-switch-1 .slider.round:before {
+    
+    border-radius: 50%;
+}
+.ps-switch-1 .slider:before {
+    position: absolute;
+    content: "";
+    height: 13px;
+    width: 12px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #fff;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+/*
+Sample Code
+<label class="ps-switch-1">
+    <input type="checkbox" name="" id="">
+    <span class="slider round"></span>
+</label> 
+*/
+
+.welcome-panel-last h1 {
+    line-height: 34px;
+}
+
+progress#ps-migration-progress::-moz-progress-bar {
+    background: #2271b1;
+}
+
+/* For Chrome or Safari */
+progress#ps-migration-progress::-webkit-progress-value {
+    background: #2271b1;
+}
+
+/* For IE10 */
+progress#ps-migration-progress {
+    background: #2271b1;
+}
+
+h5#ps-progress {
+    margin: 5px;
+}
+
+.ps-email-log-status-success span, 
+.ps-email-log-status-failed span,
+.ps-email-log-status-queued span {
+    color: #fff;
+    font-weight: 600;
+    border-radius: 25px;
+    display: inline-block;
+    margin-right: 5px;
+    cursor: pointer;
+    padding: 2px 10px;
+}
+
+.ps-email-log-status-success span {
+    background: #3FA500;
+}
+
+.ps-email-log-status-failed span {
+    background: #DC3545;
+}
+
+.ps-email-log-status-queued span {
+    background: #ffa500;
+}
+
+.ps-email-log-view,
+.ps-email-log-resend,
+.ps-email-log-transcript {
+    color: #0086FD;
+}
+
+.ps-email-log-delete {
+    color: #DC3545;
+}
+
+.dataTables_wrapper #ps-email-log_filter {
+    float: left;
+    text-align: initial;
+}
+
+div#ps-email-log_length{
+    margin-right: 25px;
+}
+
+#ps-email-log_filter input {
+    background: #F8F9FA;
+    border: none;
+    border-radius: 50px;
+    font-size: 13px;
+    padding-left: 12px;
+}
+
+#ps-email-log,
+#ps-email-reporting-logs {
+    padding-top: 15px;
+}
+
+.post-smtp_page_postman_email_log h1 {
+    margin-bottom: 15px;
+}
+
+.dataTables_wrapper #ps-email-log_length select, 
+.dataTables_wrapper #ps-email-reporting-logs_length select {
+    border: none;
+    padding: 0px 20px 0px 8px;
+    font-size: 13px;
+}
+
+.ps-email-log-date-filter {
+    float: left;
+}
+
+.ps-email-log-date-filter input {
+    border-radius: 50px;
+    border: none;
+    background: #f8f9fa;
+    padding: 5px;
+    padding-left: 12px;
+    font-size: 13px;
+}
+
+.ps-email-log-date-filter label {
+    margin-left: 20px;
+}
+
+.ps-email-log-top-buttons span {
+    vertical-align: middle;
+}
+
+.ps-email-log-top-buttons {
+    float: right;
+}
+
+.ps-email-log-export-btn {
+    background: #0086FD!important;
+    border: none!important;
+    border-radius: 50px!important;
+}
+
+.ps-email-log-delete-btn {
+    background: #DC3545!important;
+    border: none!important;
+    border-radius: 50px!important;
+}
+
+/* View And Session Transcript Popup */
+.ps-popup-wrap {
+    width: 100%;
+    height: 100%;
+    display: none;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    bottom: 0;
+    right: 0;
+    content: '';
+}
+
+.ps-popup-box {
+    width: 700px;
+    height: 500px;
+    padding: 20px;
+    transform: translate(-50%, -50%) scale(0.5);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    box-shadow: 0px 2px 16px rgb(0 0 0 / 50%);
+    border-radius: 3px;
+    background: #fff;
+    overflow: auto;
+}
+  
+.ps-popup-close-btn {
+    text-align: center;
+    width: 19px;
+    height: 19px;
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border-radius: 1000px;
+    background: #dc3545;
+    font-weight: bold;
+    text-decoration: none;
+    color: #fff;
+    line-height: 190%;
+}
+
+.transform-in, .transform-out {
+    display:block;
+    -webkit-transition:all ease 0.5s;
+    transition:all ease 0.5s;
+}
+
+.transform-in {
+	-webkit-transform:translate(-50%, -50%) scale(1);
+	transform:translate(-50%, -50%) scale(1);
+}
+
+.transform-out {
+	-webkit-transform:translate(-50%, -50%) scale(0.5);
+	transform:translate(-50%, -50%) scale(0.5);
+}
+
+.ps-email-log-actions span{
+    vertical-align: middle;
+}
+
+.ps-email-resend-btn span {
+    vertical-align: middle;
+}
+
+.ps-broken-mail-notice {
+    margin: 20px 0;
+    padding: 10px;
+    border-radius: 3px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    background: #cce5ff;
+    border: #b8daff;
+    color: #004085;
+    border-radius: 9px;
+}
+
+#ps-email-reporting-logs_wrapper {
+    padding-top: 15px;
+}
+
+#ps-email-log_paginate .paginate_button.current {
+    background: #dc3545;
+    color: #fff!important;
+    border-radius: 5px;
+}
+
+#ps-email-log_paginate .paginate_button:hover {
+    background: #0086fd;
+    border-radius: 5px;
+    border: none;
+}
+
+#ps-email-log_paginate .paginate_button {
+    border: none;
+}
+
+#ps-email-log_next,
+#ps-email-log_previous {
+    background: #dfdfdf;
+    color: #000;
+    border-radius: 5px;
+}
+
+#ps-email-log_paginate a {
+    margin: 0 4px;
+}
+
+.ps-status-log {
+    display: inline-block;
+    font-family: inherit;
+    margin-left: 5px;
+}
+
+.ps-refresh-logs span {
+    vertical-align: middle;
+    background: #f8f9fa;
+    padding: 6px;
+    border-radius: 50px;
+    color: #0086fd;
+}
+
+.ps-refresh-logs span:hover {
+    cursor: pointer;
+}
+#toplevel_page_postman ul li:nth-child(6) a {
+    color: #adff2f!important;
+}
+
+.ps-dashboard-pro {
+    background: #eef2f4;
+    color: #1d9ad2;
+    font-size: 11px;
+    padding: 0px 4px;
+    border-radius: 3px;
+    margin-left: 1px;
+}
+
+.ps-dashboard-pro-hide{
+    display: none;
+
+}
+
+.ps-home-middle-left {
+    float: left;
+}
