@@ -115,6 +115,7 @@ class Post_SMTP_Mobile_Rest_API {
 		$args['order'] = 'DESC';
 		
 		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
+		$app_build_number = $request->get_header( 'app_build_number' ) !== null ? $request->get_header( 'app_build_number' ) : '';
 		$start = $request->get_param( 'start' ) !== null ? $request->get_param( 'start' ) : 0;
 		$end = $request->get_param( 'end' ) !== null ? $request->get_param( 'end' ) : 25;
 		$this->filter = $request->get_param( 'filter' ) !== 'all' ? $request->get_param( 'filter' ) : '';
@@ -153,10 +154,17 @@ class Post_SMTP_Mobile_Rest_API {
 				
 			}
 			
-			$response = array(
-				'logs'				=>	$logs_query->get_logs( $args ),
-				'plugin_version'	=>	POST_SMTP_VER
-			);
+			if( !empty( $app_build_number ) &&  $app_build_number >= 14 ) {
+				
+				$response = array(
+					'logs'				=>	$logs_query->get_logs( $args ),
+					'plugin_version'	=>	POST_SMTP_VER
+				);
+				
+			}
+			else {
+				$response = $logs_query->get_logs( $args );
+			}
 			
 			wp_send_json_success(
 				$response,
