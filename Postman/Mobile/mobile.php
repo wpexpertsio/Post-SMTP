@@ -390,31 +390,25 @@ class Post_SMTP_Mobile {
      * @version 1.0.0
      */
     public function remove_device() {
-        
-        $server = get_option( 'post_smtp_server_url' );
-        $device = get_option( 'post_smtp_mobile_app_connection' );
-        
-        if( empty( $server ) ) {
-            
-            delete_option( 'post_smtp_mobile_app_connection' );
-            delete_option( 'post_smtp_server_url' );
-            delete_transient( 'post_smtp_auth_nonce' );
-            
-            return;
-            
-        }
-        
-        if( $device && !isset( $device['auth_key'] ) ) {
-                
-            delete_option( 'post_smtp_mobile_app_connection' );
-            delete_option( 'post_smtp_server_url' );
-            delete_transient( 'post_smtp_auth_nonce' );
-            
-            return;
-            
-        }
-        
-        return;
+		
+        if( !isset( $_GET['page'] ) || ( isset( $_GET['page'] ) && $_GET['page'] !== 'postman/configuration' ) ) {
+			
+			$device = get_option( 'post_smtp_mobile_app_connection' );
+			$device = $device ? reset( $device ) : $device;
+
+			if( $device && !isset( $device['auth_key'] ) || $device && empty( $device['auth_key'] ) ) {
+
+				delete_option( 'post_smtp_mobile_app_connection' );
+				delete_option( 'post_smtp_server_url' );
+				delete_transient( 'post_smtp_auth_nonce' );
+
+				return;
+
+			}
+
+			return;
+			
+		}
         
     }
 
