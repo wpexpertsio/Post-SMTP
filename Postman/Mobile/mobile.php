@@ -34,6 +34,7 @@ class Post_SMTP_Mobile {
      */
     public function __construct() {
         
+        add_action( 'plugins_loaded', array( $this, 'remove_device' ) );
         add_action( 'admin_menu', array( $this, 'add_menu' ), 21 );
         add_action( 'post_smtp_settings_menu', array( $this, 'section' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ) );
@@ -380,6 +381,41 @@ class Post_SMTP_Mobile {
 
         }
 
+    }
+
+    /**
+     * Remove Device With Incomplete Information
+     * 
+     * @since 2.8.10
+     * @version 1.0.0
+     */
+    public function remove_device() {
+        
+        $server = get_option( 'post_smtp_server_url' );
+        $device = get_option( 'post_smtp_mobile_app_connection' );
+        
+        if( empty( $server ) ) {
+            
+            delete_option( 'post_smtp_mobile_app_connection' );
+            delete_option( 'post_smtp_server_url' );
+            delete_transient( 'post_smtp_auth_nonce' );
+            
+            return;
+            
+        }
+        
+        if( $device && !isset( $device['auth_key'] ) ) {
+                
+            delete_option( 'post_smtp_mobile_app_connection' );
+            delete_option( 'post_smtp_server_url' );
+            delete_transient( 'post_smtp_auth_nonce' );
+            
+            return;
+            
+        }
+        
+        return;
+        
     }
 
 }
