@@ -1559,8 +1559,7 @@ div#ps-email-log_length{
 .ps-refresh-logs span:hover {
     cursor: pointer;
 }
-
-#toplevel_page_postman ul li:last-child a {
+#toplevel_page_postman ul li:nth-child(6) a {
     color: #adff2f!important;
 }
 

@@ -30,7 +30,7 @@ class PostmanSuggestProSocket {
         
         if( post_smtp_check_extensions() ) {
 
-            add_action( 'admin_menu', array( $this, 'add_menu' ), 9999999999 );
+            add_action( 'admin_menu', array( $this, 'add_menu' ), 22 );
         
         }
         if( post_smtp_check_extensions() && !$hide_notice ){

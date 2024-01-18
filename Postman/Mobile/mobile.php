@@ -211,9 +211,11 @@ class Post_SMTP_Mobile {
 						
 						echo "<b>Connected Device:</b> ";
 						
+						$nonce = wp_create_nonce( 'ps-disconnect-app-nonce' );
+						
 						foreach( $this->app_connected as $device ) {
 							
-							$url = admin_url( "admin.php?action=post_smtp_disconnect_app&auth_token={$device['fcm_token']}" );
+							$url = admin_url( "admin.php?action=post_smtp_disconnect_app&auth_token={$device['fcm_token']}&ps_disconnect_app_nonce={$nonce}" );
 							$checked = $device['enable_notification'] == 1 ? 'checked="checked"' : '';
 							
 							echo  esc_html( $device['device'] ) . "<a href='{$url}' style='color: red'>Disconnect</a>";
@@ -297,7 +299,13 @@ class Post_SMTP_Mobile {
      * @version 1.0.0
      */
 	public function disconnect_app() {
-		
+
+		if( !isset( $_GET['ps_disconnect_app_nonce'] ) || !wp_verify_nonce( $_GET['ps_disconnect_app_nonce'], 'ps-disconnect-app-nonce' ) ) {
+			
+			die( 'Security Check' );
+			
+		}
+
 		if( isset( $_GET['action'] ) && $_GET['action'] == 'post_smtp_disconnect_app' ) {
 			
 			$connected_devices = get_option( 'post_smtp_mobile_app_connection' );
