@@ -76,21 +76,19 @@
 .ps-mobile-feature-right{
     width: 166px;
 }
-.ps-app-download-button{
-    height: 23px;
+.ps-app-download-button {
     width: 127px;
     background-color: #F9AA39;
     border-radius: 4px;
-    padding: 4px 8px 4px 8px;
+    padding: 8px;
     text-align: center;
     margin-top: 3px;
     margin-left: 4px;
 }
 .ps-app-download-button a{
     text-decoration: none;
-    color: #231F20;
+    color: #231F20!important;
     font-size: 12px;
-    font-weight: 400;
-    font-style: Poppins;
+    font-weight: 600;
 
 }

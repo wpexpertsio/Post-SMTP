@@ -343,31 +343,42 @@ class Post_SMTP_New_Wizard {
                                             esc_url( 'https://wordpress.org/support/plugin/post-smtp/reviews/#new-post' ),
                                             __( 'Leave a review here.', 'post-smtp' )
                                         ) ?></p>
-                                        <p><?php
-                                        /**
-                                         * Translators: %1$s Text, %2$s URL, %3$s URL Text with
-                                         */
-                                        printf(
-                                            '<b>%1$s</b> <a href="%2$s" target="_blank">%3$s </a>',
-                                            __( 'Get More Insights & Optimize Your Email Delivery - ' ),
-                                            esc_url( 'https://postmansmtp.com/extension/' ),
-                                            __( 'Learn more about Post SMTP Addons 💪', 'post-smtp' )
-                                        );
-                                        ?>
-                                        </p>
-                                        <div class="ps-wizard-card">
-                                            <p><?php printf(
-                                                '<b>%1$s</b> %2$s',
-                                                __( '📉 Report and Tracking Addon', 'post-smtp' ),
-                                                __( 'Receive in-depth reports and statics of your website\'s email performance and get access to email\'s open rate and get more visibility.' )
-                                            ) ?></p>
-                                            <p><?php printf(
-                                                '<b>%1$s</b> %2$s',
-                                                __( '⚡ Advanced Email delivery and logs', 'post-smtp' ),
-                                                __( 'You can automate the process of retrying failed email attempts and optamize your website for users by sending emails asychronously from the backend.' )
-                                            ) ?></p>
-                                            <a href="<?php echo esc_url( 'https://postmansmtp.com/extension/' ); ?>" class="button button-primary ps-yellow-btn" target="_blank"><?php esc_html_e( 'CHECK OTHER ADDONS', 'post-smtp' ); ?><span class="dashicons dashicons-arrow-right-alt"></span></a>
+                                        <div class="ps-home-middle-right" style="background-image: url(<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/mobile-banner.png' ) ?>); float: unset; width: 100%; height: 230px;">
+                                            <div class="ps-mobile-notice-content">
+                                                <p><?php _e( 'Introducing NEW Post SMTP Mobile App' ); ?></p>
+                                                <div class="ps-mobile-notice-features">
+                                                    <div class="ps-mobile-feature-left">
+                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                        Easy Email Tracking
+                                                        <br>
+                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                        Quickly View Error Details
+                                                        <br>
+                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                        Easy Email Tracking			
+                                                    </div>
+                                                    <div class="ps-mobile-feature-right">
+                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                        Get Email Preview
+                                                        <br>
+                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                        Resend Failed Emails
+                                                        <br>
+                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                        Support multiple sites		
+                                                    </div>
+                                                </div>
+                                                <div style="display: flex;">
+                                                    <div class="ps-app-download-button">
+                                                        <a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26anid%3Dadmob" target="_blank">Download on Android</a>
+                                                    </div>
+                                                    <div class="ps-app-download-button">
+                                                        <a href="https://apps.apple.com/us/app/post-smtp/id6473368559" target="_blank">Download on iOS</a>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
+                                        <div style="clear: both"></div>
                                     </div>
                                 </div>
                             </form>
