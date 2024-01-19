@@ -575,8 +575,13 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 								Support multiple sites		
 							</div>
 						</div>
-						<div class="ps-app-download-button">
-							<a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26anid%3Dadmob" target="_blank">Download the app</a>
+						<div style="display: flex;">
+							<div class="ps-app-download-button">
+								<a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26anid%3Dadmob" target="_blank">Download on Android</a>
+							</div>
+							<div class="ps-app-download-button">
+								<a href="https://apps.apple.com/us/app/post-smtp/id6473368559" target="_blank">Download on iOS</a>
+							</div>
 						</div>
 					</div>
 				</div>

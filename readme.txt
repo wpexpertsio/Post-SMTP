@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: smtp, wordpress smtp, wp_mail, gmail smtp, post smtp, email,  email log, office 365, mailgun, wp smtp, sendgrid, brevo, microsoft 365, amazon ses, sendinblue
 Requires at least: 5.6.0
 Tested up to: 6.4.2
-Stable tag: 2.8.10
+Stable tag: 2.8.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -273,10 +273,14 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 ## Upgrade Notice ##
 
-### 2.8.10 ###
+### 2.8.11 ###
 Important: If you are using version 2.8.7 or lower of our plugin, please update to the latest version as soon as possible. This update contains an urgent security fix that prevents potential vulnerabilities and attacks. We apologize for any inconvenience this may cause you and we appreciate your cooperation. Thank you for using our plugin.
 
 == Changelog ==
+
+= 2.8.11 - 2024-01-19 =
+
+* Added link to the [new POST SMTP app for iOS](https://apps.apple.com/us/app/post-smtp/id6473368559) released.
 
 = 2.8.10 - 2024-01-18 =
 
