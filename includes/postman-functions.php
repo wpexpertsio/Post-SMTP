@@ -186,3 +186,39 @@ function post_smtp_sanitize_array( $_array ) {
 
 }
 endif;
+
+/**
+     * Check pro extenstions is activated or not
+     * 
+     * @since 2.8.6
+     * @version 1.0
+     */
+
+if( !function_exists( 'post_smtp_check_extensions' )):
+function post_smtp_check_extensions(){
+        
+        if( 
+            ( !is_plugin_active( 'zoho-premium/postsmtp-extension-zoho-mail.php' ) 
+            &&
+            !is_plugin_active( 'twilio-notifications-postsmtp-extension-premium/plugin.php' ) 
+            &&
+            !is_plugin_active( 'post-smtp-extension-amazon-ses-premium/plugin.php' ) 
+            &&
+            !is_plugin_active( 'report-and-tracking-addon-premium/post-smtp-report-and-tracking.php' ) 
+            &&
+            !is_plugin_active( 'post-smtp-extension-office365-premium/plugin.php' ) 
+            &&
+            !is_plugin_active( 'attachment-support-premium/post-smtp-attachment-support.php' ) 
+            &&
+            !is_plugin_active( 'advance-email-delivery-and-logs-premium/post-smtp-advanced-email-delivery-and-logs.php' ) 
+             )
+        ){
+            return true;
+        }
+        else{
+
+            return false;
+        }
+
+    } 
+endif; 

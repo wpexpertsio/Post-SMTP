@@ -1,3 +1,14 @@
+.ps-home-middle-right{
+    width: 435px;
+    height: 168px;
+    background-color: #F5F8FB;
+    border: 1px solid #E6E6E6;
+    background-repeat: no-repeat;
+    background-position-y: bottom !important;
+    background-position: right;
+    float: right;
+}
+
 #mobile-app .mobile-app-box {
     display: flex;
 }
@@ -28,25 +39,20 @@
     padding: 15px 0;
 }
 
-.ps-mobile-notice h4 {
-    margin: 0;
-    color: #375caf;
-    text-decoration: underline;
-    font-size: 19px;
-}
-
-.ps-mobile-notice-content table {
-    margin: 20px 0;
-}
-
-.ps-mobile-notice-content td {
-    color: #000000;
-    padding: 4px 20px 4px 0px;
-    font-size: 18px;
-}
-
 .ps-mobile-notice-content span {
     color: #12d726;
+}
+.ps-mobile-notice-content{
+    margin-left: 8px;
+    width: 305px;
+    color: #455CB2;
+    height: 24px;
+}
+
+.ps-mobile-notice-content p{
+    font-style: Inter;
+    font-weight: 500;
+    font-size: 16px;
 }
 
 .ps-mobile-notice-content a {
@@ -56,4 +62,33 @@
 
 .ps-mobile-notice-img {
     padding: 28px 40px;
+}
+.ps-mobile-notice-features{
+    display: flex;
+    height: 66px;
+    width: 100%;
+    font-size: 12px;
+    color: #231F20;
+}
+.ps-mobile-feature-left{
+    width: 198px;
+}
+.ps-mobile-feature-right{
+    width: 166px;
+}
+.ps-app-download-button {
+    width: 127px;
+    background-color: #F9AA39;
+    border-radius: 4px;
+    padding: 8px;
+    text-align: center;
+    margin-top: 3px;
+    margin-left: 4px;
+}
+.ps-app-download-button a{
+    text-decoration: none;
+    color: #231F20!important;
+    font-size: 12px;
+    font-weight: 600;
+
 }

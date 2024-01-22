@@ -16,12 +16,13 @@ class Post_SMTP_MainWP_Child_Request {
      */
     public function __construct() {
 
-        $server = get_option( 'mainwp_child_server' );
-
+		$server = apply_filters( 'mainwp_child_get_encrypted_option', false, 'mainwp_child_server', false );
+		$server = str_replace( 'wp-admin/', '', $server );
+		
         if( $server ) {
             
-			$this->base_url = parse_url( $server, PHP_URL_SCHEME ) . "://" . parse_url( $server, PHP_URL_HOST ) . "/" . 'wp-json/post-smtp-for-mainwp/v1/send-email';
-
+			$this->base_url = $server . 'wp-json/post-smtp-for-mainwp/v1/send-email';
+			
         }
 
     }
