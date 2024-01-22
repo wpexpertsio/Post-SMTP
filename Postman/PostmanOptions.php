@@ -626,7 +626,6 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
         }
 
-
 		/**
 		 * Gets SparkPost API key
 		 * 
