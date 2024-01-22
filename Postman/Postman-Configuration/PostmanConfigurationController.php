@@ -300,6 +300,9 @@ class PostmanConfigurationController {
         print '</div>';
 		print '<div id="mailjet_settings" class="authentication_setting non-basic non-oauth2">';
         do_settings_sections( PostmanMailjetTransport::MAILJET_AUTH_OPTIONS );
+		print '</div>';
+		print '<div id="sendpulse_settings" class="authentication_setting non-basic non-oauth2">';
+        do_settings_sections( PostmanSendpulseTransport::SENDPULSE_AUTH_OPTIONS );
         print '</div>';
         print '<div id="postmark_settings" class="authentication_setting non-basic non-oauth2">';
         do_settings_sections( PostmanPostmarkTransport::POSTMARK_AUTH_OPTIONS );

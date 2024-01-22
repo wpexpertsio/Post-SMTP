@@ -60,6 +60,8 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizePassword( 'Brevo API Key', PostmanOptions::SENDINBLUE_API_KEY, $input, $new_input, $this->options->getSendinblueApiKey() );
 			$this->sanitizePassword( 'Mailjet API Key', PostmanOptions::MAILJET_API_KEY, $input, $new_input, $this->options->getMailjetApiKey() );
 			$this->sanitizePassword( 'Mailjet Secret Key', PostmanOptions::MAILJET_SECRET_KEY, $input, $new_input, $this->options->getMailjetSecretKey() );
+			$this->sanitizePassword( 'Sendpulse API Key', PostmanOptions::SENDPULSE_API_KEY, $input, $new_input, $this->options->getSendpulseApiKey() );
+			$this->sanitizePassword( 'Sendpulse Secret Key', PostmanOptions::SENDPULSE_SECRET_KEY, $input, $new_input, $this->options->getSendpulseSecretKey() );
 			$this->sanitizePassword( 'Postmark API Key', PostmanOptions::POSTMARK_API_KEY, $input, $new_input, $this->options->getPostmarkApiKey() );
 			$this->sanitizePassword( 'SparkPost API Key', PostmanOptions::SPARKPOST_API_KEY, $input, $new_input, $this->options->getSparkPostApiKey() );
 			$this->sanitizePassword( 'Mailgun API Key', PostmanOptions::MAILGUN_API_KEY, $input, $new_input, $this->options->getMailgunApiKey() );
@@ -96,6 +98,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
             $this->sanitizePassword( 'Fallback password', PostmanOptions::FALLBACK_SMTP_PASSWORD, $input, $new_input, $this->options->getFallbackPassword() );
 
             $new_input = apply_filters( 'post_smtp_sanitize', $new_input, $input, $this );
+			delete_transient( 'sendpulse_token' );
 
 			if ( $new_input [ PostmanOptions::CLIENT_ID ] != $this->options->getClientId() || $new_input [ PostmanOptions::CLIENT_SECRET ] != $this->options->getClientSecret() || $new_input [ PostmanOptions::HOSTNAME ] != $this->options->getHostname() ) {
 				$this->logger->debug( 'Recognized new Client ID' );
