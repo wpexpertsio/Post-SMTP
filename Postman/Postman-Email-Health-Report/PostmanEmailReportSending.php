@@ -58,6 +58,18 @@ class PostmanEmailReportSending {
 
 
 
+        if( class_exists( 'PostmanTransportRegistry' ) ) {
+
+            $active_transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
+            
+            if( get_class($active_transport) !== 'PostmanDefaultModuleTransport' && !get_option( 'postman_rat' ) && !$has_sent) {
+
+                $report_sent_week = $this->send_mail( 'w' );
+                set_transient( 'ps_rat_has_sent', '1', WEEK_IN_SECONDS );
+
+            }
+        }
+
         //If transient expired, let's send :)
         if( $enabled && $interval && !$has_sent && isset ( $post_option['transport_type'] ) ) {
 
@@ -177,6 +189,7 @@ class PostmanEmailReportSending {
 
         $logs = $this->get_total_logs( $from, $to, 4 );
 
+        include_once POST_SMTP_PATH . '/Postman/Postman-Email-Health-Report/PostmanReportTemplate.php';
         $get_body = new PostmanReportTemplate();
         $body = $get_body->reporting_template( $duration, $from, $to, $logs );
         
