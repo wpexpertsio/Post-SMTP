@@ -75,6 +75,7 @@ class PostmanReportTemplate{
         $site_title = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
         $url = admin_url( "admin.php?page=post-smtp-email-reporting&from={$from}&to={$to}" );
         $extension_url = 'https://postmansmtp.com/extensions/reporting-and-tracking-extension/';
+        $disable_url = 'https://postmansmtp.com/documentation/advance-functionality/weekly-email-health-report/';
 
         $body = "
         <!DOCTYPE html>
@@ -288,17 +289,13 @@ class PostmanReportTemplate{
         .table-header-free{
             width: 100%;
             height: 30px;
-            background-color: #FA8900;
-            color: white;
+            background-color: #E8EFF9;
+            color: black;
             border-top-left-radius: 8px;
             border-top-right-radius: 8px;
             font-size: 12px;
-            display: flex;
             line-height: 32px;
-        }
-        .table-header-free span {
-            line-height: 20px;
-            margin: 8px;
+            text-align:center;
         }
 
         table,
@@ -435,6 +432,7 @@ class PostmanReportTemplate{
                 else{
 
                     $body .="
+                    <a href='{$extension_url}' target='_blank' style='text-decoration:none;'>
                     <div class='opened inner-cards'>
 
                     <div class='ellipse ellipse-opened'>
@@ -452,7 +450,8 @@ class PostmanReportTemplate{
                     <img src='".POST_SMTP_ASSETS."images/reporting/lock.png' />
                     </div>
 
-                </div>";
+                </div>
+                </a>";
                          
                 }
 
@@ -523,32 +522,32 @@ class PostmanReportTemplate{
 
             <div class='table-display-free'>
                 <div class='table-header-free'>
-                    <span><img src='".POST_SMTP_ASSETS."images/reporting/state.png'></span>
-                    Is it less. Want more stats?
+                    Unlock the Post SMTP Pro and enhance your email deliverability
                 </div>
                 <div>
-                    <table style='width:100%'>
+                    <table style='width:100%; margin-top: 20px; border-bottom: none;'>
+                        
                         <tr>
-                            <td class='heading' style='text-align: center; padding-left: 10px; color: #375CAF; padding-bottom: 4px; padding-top: 4px;'>Unlock Post SMTP Pro and unveils the power of</td>
-                        </tr>
-                        <tr>
-                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>Advance email health reports.</td>
+                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>Open rate email tracking.</td>
+                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>Connect any mailer of your choice.</td>                            
                         </tr>
                         <tr>
                             <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>Email quota scheduling.</td>
+                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>Multiple email failure alert options.</td>
                         </tr>
                         <tr>
                             <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>Auto-resend failed emails.</td>
+                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>One-click email attachment resending.</td>
                         </tr>
                     </table>
-                    <div class='btn' style='position: relative; margin-left: 10px !important; margin-top: 8px !important; background-color: #FA8900 !important; padding:3px !important; text-align:center !important; display: block !important;'>
+                    <div class='btn' style='margin-left: 35% !important; background-color: #FA8900 !important; padding:3px !important;'>
                         <a href='{$extension_url}' target='_blank'>Upgrade to PRO ></a>
                     </div>
                 </div>
 
             </div>
             <div class='bottom-text' style='width: 332px; margin-left: 15%;'>
-                This email was auto-generated and learn how to disable it.
+                This email was auto-generated and learn how to <a href='{$disable_url}' target='_blank'>disable it.</a>
             </div>";
             } 
                 
