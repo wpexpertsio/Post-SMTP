@@ -81,16 +81,18 @@ if( !class_exists( "PostmanEmailHealthReporting" ) ):
     public function section() {
 
         $data = get_option( 'postman_rat' );
-        $checking = get_option( 'check_reporting' );
+        $checked = '';
 
-        if ( !$checking ) {
+        if( !$data ){
 
-            $data['enable_email_reporting'] = 1;
-            update_option( 'check_reporting', 'true' );
-        
+            $checked = 'checked';
+        }
+        else{
+            
+            $checked = ( isset( $data['enable_email_reporting'] ) && $data['enable_email_reporting'] == 1 ) ? 'checked' : '';
         }
         
-        $checked = ( isset( $data['enable_email_reporting'] ) && $data['enable_email_reporting'] == 1 ) ? 'checked' : '';
+        
         $selected_interval = ( isset( $data['reporting_interval'] ) ) ? $data['reporting_interval'] : 'w';
         $selection = array(
             'd' =>  __( 'Daily', 'post-smtp' ),
