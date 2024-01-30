@@ -61,11 +61,16 @@ if( !class_exists( "PostmanEmailHealthReporting" ) ):
     public function sanitize( $input, $option, $section ) {
 
         $data = array();
-      
-        $data['enable_email_reporting'] = isset( $_POST['enable_email_reporting'] ) ? 1 : 0;
-        $data['reporting_interval'] = isset( $_POST['reporting_interval'] ) ? sanitize_text_field( $_POST['reporting_interval'] ) : 'w';
+        
+        //Do not save the settings if it's not saving from settings page
+        if( isset( $_POST['action'] ) && $_POST['action'] !== 'ps-save-wizard' ) {
 
-        update_option( 'postman_rat', $data );
+            $data['enable_email_reporting'] = isset( $_POST['enable_email_reporting'] ) ? 1 : 0;
+            $data['reporting_interval'] = isset( $_POST['reporting_interval'] ) ? sanitize_text_field( $_POST['reporting_interval'] ) : 'w';
+
+            update_option( 'postman_rat', $data );
+
+        }
 
         return $input;
 
