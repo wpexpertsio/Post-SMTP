@@ -364,9 +364,9 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				}
 
 				//delete postman health report settings on reset
-				delete_option( 'postman_rat' );
-				delete_option( '_transient_timeout_ps_rat_has_sent' );
-				delete_option( '_transient_ps_rat_has_sent' );
+				delete_transient( 'postman_rat' );
+				delete_transient( '_transient_timeout_ps_rat_has_sent' );
+				delete_transient( '_transient_ps_rat_has_sent' );
 
 				$this->messageHandler->addMessage( __( 'Plugin data was removed.', 'post-smtp' ) );
 
