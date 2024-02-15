@@ -84,7 +84,7 @@ class Postman {
 		require_once 'Postman-Mail/Services/PostmanServiceRequest.php';
 
 		//New Wizard
-		require_once 'Wizard/NewWizard.php';
+		require_once 'Wizard/Wizard.php';
 		//load MainWP Child Files
 		require_once 'Extensions/MainWP-Child/mainwp-child.php';
 		

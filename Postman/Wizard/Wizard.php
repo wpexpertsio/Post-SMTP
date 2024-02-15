@@ -74,6 +74,7 @@ class Post_SMTP_New_Wizard {
      */
     public function __construct() {
 
+        add_action( 'admin_menu', array( $this, 'add_wizard_page' ), 21 );
         add_filter( 'post_smtp_legacy_wizard', '__return_false' );
         add_action( 'post_smtp_new_wizard', array( $this, 'load_wizard' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
@@ -91,6 +92,65 @@ class Post_SMTP_New_Wizard {
     }
 
     /**
+	 * Register the Setup Wizard screen
+	 */
+	public function add_wizard_page() {
+		$page = add_submenu_page( 
+			PostmanViewController::POSTMAN_MENU_SLUG, 
+			sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ), 
+			__( 'Postman SMTP', 'post-smtp' ), 
+			Postman::MANAGE_POSTMAN_CAPABILITY_NAME, 
+			PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG, 
+			array(
+				$this,
+				'wizard_content',
+		) );
+
+        add_action( 'admin_print_styles-' . $page, array(
+            $this,
+            'enqueue_page_styles'
+        ) );
+	}
+
+    /**
+     * Enqueue Page Styles
+     * 
+     * @since 2.7.0
+     * @version 1.0.0
+     */
+    public function enqueue_page_styles() {
+        wp_enqueue_style( PostmanViewController::POSTMAN_STYLE );
+    }
+
+    /**
+     * Render the Setup Wizard screen
+	 */
+	public function wizard_content() {
+		
+		/**
+		 * Filters whether to display the legacy wizard or not.
+		 * 
+		 * @since 2.6.2
+		 */
+		if( apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+
+			wp_die( 'Legacy Wizard has been removed by Post SMTP version 2.9.0' );
+
+		}
+		else {
+
+			/**
+			 * Fires to load new wizard
+			 * 
+			 * @since 2.6.2
+			 */
+			do_action( 'post_smtp_new_wizard' );
+
+		}
+
+	}
+
+    /**
      * Load the wizard | Action Callback
      * 
      * @since 2.7.0
@@ -99,8 +159,6 @@ class Post_SMTP_New_Wizard {
     public function load_wizard() {
 
         $transports = PostmanTransportRegistry::getInstance()->getTransports();
-        //Not for wizard
-        $settings_registry = new PostmanSettingsRegistry();
         $this->options = PostmanOptions::getInstance();
         $is_active = ( isset( $_GET['step'] ) && $_GET['step'] == 2 ) ? 'ps-active-nav' : 'ps-in-active-nav';
         $in_active = ( isset( $_GET['step'] ) && $_GET['step'] != 1 ) ? '' : 'ps-active-nav';
@@ -440,7 +498,6 @@ class Post_SMTP_New_Wizard {
                     </div>
                 </div>
                 <div class="ps-wizard-page-footer">
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration_wizard&wizard=legacy' ) ); ?>"><?php _e( 'Continue with legacy wizard', 'post-smtp' ); ?></a>
                     <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman' ) );?>"><?php _e( 'Go back to dashboard', 'post-smtp' ); ?></a>
                     <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration' ) );?>"><?php _e( 'Switch to settings section', 'post-smtp' ); ?></a>
                 </div>
@@ -1502,75 +1559,81 @@ class Post_SMTP_New_Wizard {
      */
     public function save_wizard() {
 
-        $form_data = array();
-        parse_str( $_POST['FormData'], $form_data );
-        $response = false;
+            $form_data = array();
+            parse_str( $_POST['FormData'], $form_data );
+            $response = false;
 
-        if( 
-            isset( $_POST['action'] )
-            &&
-            'ps-save-wizard' == $_POST['action'] 
-            &&
-            wp_verify_nonce( $form_data['security'], 'post-smtp' )
-        ) {
+            if( 
+                isset( $_POST['action'] )
+                &&
+                'ps-save-wizard' == $_POST['action'] 
+                &&
+                wp_verify_nonce( $form_data['security'], 'post-smtp' )
+            ) {
 
-            if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
+                if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
 
-                $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
-                $options = get_option( PostmanOptions::POSTMAN_OPTIONS );
-                $_options = $options;
-                $options = $options ? $options : array();
+                    $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
+                    $options = get_option( PostmanOptions::POSTMAN_OPTIONS );
+                    $_options = $options;
+                    $options = $options ? $options : array();
 
-                //for the checkboxes
-                $sanitized['prevent_sender_email_override'] = isset( $sanitized['prevent_sender_email_override'] ) ? 1 : '';
-                $sanitized['prevent_sender_name_override'] = isset( $sanitized['prevent_sender_name_override'] ) ? 1 : '';
-                
-                //Envelop Email Address
-                $sanitized['envelope_sender'] = isset( $sanitized['sender_email'] ) ? $sanitized['sender_email'] : '';
+                    //for the checkboxes
+                    $sanitized[PostmanOptions::PREVENT_MESSAGE_SENDER_EMAIL_OVERRIDE] = isset( $sanitized[PostmanOptions::PREVENT_MESSAGE_SENDER_EMAIL_OVERRIDE] ) ? 1 : '';
+                    $sanitized[PostmanOptions::PREVENT_MESSAGE_SENDER_NAME_OVERRIDE] = isset( $sanitized[PostmanOptions::PREVENT_MESSAGE_SENDER_NAME_OVERRIDE] ) ? 1 : '';
+                    
+                    //Envelop Email Address
+                    $sanitized[PostmanOptions::ENVELOPE_SENDER] = isset( $sanitized[PostmanOptions::MESSAGE_SENDER_EMAIL] ) ? $sanitized[PostmanOptions::MESSAGE_SENDER_EMAIL] : '';
 
-                //Encode API Keys
-                $sanitized['office365_app_id'] = isset( $sanitized['office365_app_id'] ) ? $sanitized['office365_app_id'] : '';
-                $sanitized['office365_app_password'] = isset( $sanitized['office365_app_password'] ) ? $sanitized['office365_app_password'] : '';
-                $sanitized[PostmanOptions::SENDINBLUE_API_KEY] = isset( $sanitized[PostmanOptions::SENDINBLUE_API_KEY] ) ? $sanitized[PostmanOptions::SENDINBLUE_API_KEY] : '';
-                $sanitized['sparkpost_api_key'] = isset( $sanitized['sparkpost_api_key'] ) ? $sanitized['sparkpost_api_key'] : '';
-                $sanitized['postmark_api_key'] = isset( $sanitized['postmark_api_key'] ) ? $sanitized['postmark_api_key'] : '';
-                $sanitized['mailgun_api_key'] = isset( $sanitized['mailgun_api_key'] ) ? $sanitized['mailgun_api_key'] : '';
-                $sanitized[PostmanOptions::SENDGRID_API_KEY] = isset( $sanitized[PostmanOptions::SENDGRID_API_KEY] ) ? $sanitized[PostmanOptions::SENDGRID_API_KEY] : '';
-                $sanitized['mandrill_api_key'] = isset( $sanitized['mandrill_api_key'] ) ? $sanitized['mandrill_api_key'] : '';
-                $sanitized['elasticemail_api_key'] = isset( $sanitized['elasticemail_api_key'] ) ? $sanitized['elasticemail_api_key'] : '';
-                $sanitized[PostmanOptions::MAILJET_API_KEY] = isset( $sanitized[PostmanOptions::MAILJET_API_KEY] ) ? $sanitized[PostmanOptions::MAILJET_API_KEY] : '';
-                $sanitized[PostmanOptions::MAILJET_SECRET_KEY] = isset( $sanitized[PostmanOptions::MAILJET_SECRET_KEY] ) ? $sanitized[PostmanOptions::MAILJET_SECRET_KEY] : '';
-                $sanitized['basic_auth_password'] = isset( $sanitized['basic_auth_password'] ) ? $sanitized['basic_auth_password'] : '';
-                $sanitized['ses_access_key_id'] = isset( $sanitized['ses_access_key_id'] ) ? $sanitized['ses_access_key_id'] : '';
-                $sanitized['ses_secret_access_key'] = isset( $sanitized['ses_secret_access_key'] ) ? $sanitized['ses_secret_access_key'] : '';
-                $sanitized['ses_region'] = isset( $sanitized['ses_region'] ) ? $sanitized['ses_region'] : '';
-                $sanitized['enc_type'] = 'tls';
-                $sanitized['auth_type'] = 'login';
-                
-                foreach( $sanitized as $key => $value ) {
+                    //Encode API Keys
+                    $sanitized['office365_app_id'] = isset( $sanitized['office365_app_id'] ) ? base64_encode( $sanitized['office365_app_id'] ) : '';
+                    $sanitized['office365_app_password'] = isset( $sanitized['office365_app_password'] ) ? base64_encode( $sanitized['office365_app_password'] ) : '';
+                    $sanitized[PostmanOptions::SENDINBLUE_API_KEY] = isset( $sanitized[PostmanOptions::SENDINBLUE_API_KEY] ) ? base64_encode( $sanitized[PostmanOptions::SENDINBLUE_API_KEY] ) : '';
+                    $sanitized[PostmanOptions::SPARKPOST_API_KEY] = isset( $sanitized[PostmanOptions::SPARKPOST_API_KEY] ) ? base64_encode( $sanitized[PostmanOptions::SPARKPOST_API_KEY] ) : '';
+                    $sanitized[PostmanOptions::POSTMARK_API_KEY] = isset( $sanitized[PostmanOptions::POSTMARK_API_KEY] ) ? base64_encode( $sanitized[PostmanOptions::POSTMARK_API_KEY] ) : '';
+                    $sanitized[PostmanOptions::MAILGUN_API_KEY] = isset( $sanitized[PostmanOptions::MAILGUN_API_KEY] ) ? base64_encode( $sanitized[PostmanOptions::MAILGUN_API_KEY] ) : '';
+                    $sanitized[PostmanOptions::SENDGRID_API_KEY] = isset( $sanitized[PostmanOptions::SENDGRID_API_KEY] ) ? base64_encode( $sanitized[PostmanOptions::SENDGRID_API_KEY] ) : '';
+                    $sanitized[PostmanOptions::MANDRILL_API_KEY] = isset( $sanitized[PostmanOptions::MANDRILL_API_KEY] ) ? base64_encode( $sanitized[PostmanOptions::MANDRILL_API_KEY] ) : '';
+                    $sanitized[PostmanOptions::ELASTICEMAIL_API_KEY] = isset( $sanitized[PostmanOptions::ELASTICEMAIL_API_KEY] ) ? base64_encode( $sanitized[PostmanOptions::ELASTICEMAIL_API_KEY] ) : '';
+                    $sanitized[PostmanOptions::MAILJET_API_KEY] = isset( $sanitized[PostmanOptions::MAILJET_API_KEY] ) ? base64_encode( $sanitized[PostmanOptions::MAILJET_API_KEY] ) : '';
+                    $sanitized[PostmanOptions::MAILJET_SECRET_KEY] = isset( $sanitized[PostmanOptions::MAILJET_SECRET_KEY] ) ? base64_encode( $sanitized[PostmanOptions::MAILJET_SECRET_KEY] ) : '';
+                    $sanitized[PostmanOptions::SENDPULSE_API_KEY] = isset( $sanitized[PostmanOptions::SENDPULSE_API_KEY] ) ? base64_encode( $sanitized[PostmanOptions::SENDPULSE_API_KEY] ) : '';
+                    $sanitized[PostmanOptions::SENDPULSE_SECRET_KEY] = isset( $sanitized[PostmanOptions::SENDPULSE_SECRET_KEY] ) ? base64_encode( $sanitized[PostmanOptions::SENDPULSE_SECRET_KEY] ) : '';
+                    $sanitized[PostmanOptions::BASIC_AUTH_PASSWORD] = isset( $sanitized[PostmanOptions::BASIC_AUTH_PASSWORD] ) ? base64_encode( $sanitized[PostmanOptions::BASIC_AUTH_PASSWORD] ) : '';
+                    $sanitized['ses_access_key_id'] = isset( $sanitized['ses_access_key_id'] ) ? base64_encode( $sanitized['ses_access_key_id'] ) : '';
+                    $sanitized['ses_secret_access_key'] = isset( $sanitized['ses_secret_access_key'] ) ? base64_encode( $sanitized['ses_secret_access_key'] ) : '';
+                    $sanitized['ses_region'] = isset( $sanitized['ses_region'] ) ? $sanitized['ses_region'] : '';
+                    $sanitized[PostmanOptions::SECURITY_TYPE] = 'tls';
+                    $sanitized[PostmanOptions::AUTHENTICATION_TYPE] = 'login';
+                    
+                    foreach( $sanitized as $key => $value ) {
 
-                    $options[$key] = $value;
+                        $options[$key] = $value;
 
-                }
+                    }
 
-                if( $options == $_options ) {
+                    if( $options == $_options ) {
 
-                    $response = true;
+                        $response = true;
 
-                } else {
+                    } else {
 
-                    $response = update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
+                        // Do not use settings' sanitize function
+                        $sanitizer = new PostmanInputSanitizer();
+                        remove_filter( 'sanitize_option_' . PostmanOptions::POSTMAN_OPTIONS, array( $sanitizer, 'sanitize' ) );
 
+                        $response = update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
+
+                    }
+                    
                 }
                 
             }
-            
-        }
 
-        //Prevent redirection
-        delete_transient( PostmanSession::ACTION );
+            //Prevent redirection
+            delete_transient( PostmanSession::ACTION );
 
-        wp_send_json( array(), 200 );
+            wp_send_json( array(), 200 );
 
     }
 

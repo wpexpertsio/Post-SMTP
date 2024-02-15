@@ -26,7 +26,7 @@ class PostmanSettingsRegistry {
 	private function registerSettings() {
 
 		// only administrators should be able to trigger this
-		if ( PostmanUtils::isAdmin() ) {
+		if ( PostmanUtils::isAdmin() && !wp_doing_ajax() ) {
 			$sanitizer = new PostmanInputSanitizer();
 			register_setting( PostmanAdminController::SETTINGS_GROUP_NAME, PostmanOptions::POSTMAN_OPTIONS, array(
 					$sanitizer,
