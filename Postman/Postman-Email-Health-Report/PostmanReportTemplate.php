@@ -38,7 +38,7 @@ class PostmanReportTemplate{
                     $failed += $log->failed;
 
                 }
-                if( $log->opened ) {
+                if( $is_addonactivated && $log->opened ) {
 
                     $opened += $log->opened;
 
