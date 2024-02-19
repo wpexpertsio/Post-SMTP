@@ -1433,6 +1433,10 @@ div#ps-email-log_length{
     border-radius: 50px!important;
 }
 
+.ps-email-log-resend-to {
+    margin: 3px 0;
+}
+
 /* View And Session Transcript Popup */
 .ps-popup-wrap {
     width: 100%;
