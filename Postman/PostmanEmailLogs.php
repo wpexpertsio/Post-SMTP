@@ -512,7 +512,7 @@ class PostmanEmailLogs {
 			$logs = $email_query_log->get_all_logs( $args );
             $csv_headers = array(
                 'solution',
-                'success',
+                'response',
                 'from_header',
                 'to_header',
                 'cc_header',
@@ -542,7 +542,7 @@ class PostmanEmailLogs {
             foreach ( $logs as $log ) {
 
                 $data[0] = $log->solution;
-                $data[1] = $log->success;
+                $data[1] = $log->success == 1 ? 'Sent' : $log->success;
                 $data[2] = $log->from_header;
                 $data[3] = $log->to_header;
                 $data[4] = $log->cc_header;
