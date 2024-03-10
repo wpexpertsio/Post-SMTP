@@ -368,14 +368,15 @@ class Post_SMTP_New_Wizard {
                                                         <br>
                                                         <span class="dashicons dashicons-yes-alt"></span>
                                                         Support multiple sites		
+                                                        <div style="margin-top: -6px; font-size: 10px; margin-left: 22px; color: #F58014;">Comming Soon</div>
                                                     </div>
                                                 </div>
-                                                <div style="display: flex;">
+                                                <div style="display: flex; margin-top: 15px;">
                                                     <div class="ps-app-download-button">
-                                                        <a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26anid%3Dadmob" target="_blank">Download on Android</a>
+                                                        <a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26anid%3Dadmob" target="_blank"><img src=<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/android-icon.png' ) ?>><div><p style="font-size: 12px;">Get it On</p><p style="font-size: 14px; font-weight: 750">Google Play</p></div></a>
                                                     </div>
                                                     <div class="ps-app-download-button">
-                                                        <a href="https://apps.apple.com/us/app/post-smtp/id6473368559" target="_blank">Download on iOS</a>
+                                                        <a href="https://apps.apple.com/us/app/post-smtp/id6473368559" target="_blank"><img src=<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/apple-icon.png' ) ?>><div><p style="font-size: 12px;">Download on the</p><p style="font-size: 14px; font-weight: 750;">App Store</p></div></a>
                                                     </div>
                                                 </div>
                                             </div>
