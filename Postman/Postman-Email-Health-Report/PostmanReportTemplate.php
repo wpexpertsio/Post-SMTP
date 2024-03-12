@@ -1,83 +1,81 @@
 <?php
 
-if( !class_exists( 'PostmanReportTemplate' ) ):
+if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 
-class PostmanReportTemplate{
+	class PostmanReportTemplate {
 
+		/**
+		 * Template of the email
+		 *
+		 * @since 2.9.0
+		 * @version 1.0.0
+		 */
+		public function reporting_template( $duration, $from, $to, $logs ) {
 
-    public function reporting_template( $duration, $from, $to, $logs ){
+			$is_addonactivated = false;
+			if ( is_plugin_active( 'report-and-tracking-addon-premium/post-smtp-report-and-tracking.php' ) ) {
 
-        $is_addonactivated = false;
-        if ( is_plugin_active( 'report-and-tracking-addon-premium/post-smtp-report-and-tracking.php' ) ){
+				$is_addonactivated = true;
+			}
 
-            $is_addonactivated = true;
-        }
+			$total = 0;
+			$sent = 0;
+			$failed = 0;
+			$opened = 0;
 
-        $total = 0;
-        $sent = 0;
-        $failed = 0;
-        $opened = 0;
+			// lets calculate the total.
+			if ( $logs ) {
 
-        //lets calculate the total
-        if( $logs ) {
+				foreach ( $logs as $log ) {
 
-            foreach( $logs as $log ) {
+					if ( $log->total ) {
 
-                if( $log->total ) {
+						$total += $log->total;
+					}
+					if ( $log->sent ) {
 
-                    $total += $log->total;
+						$sent += $log->sent;
+					}
+					if ( $log->failed ) {
 
-                }
-                if( $log->sent ) {
+						$failed += $log->failed;
+					}
+					if ( $is_addonactivated && $log->opened ) {
 
-                    $sent += $log->sent;
+						$opened += $log->opened;
+					}
+				}
+			}
 
-                }
-                if( $log->failed ) {
+			/**
+			 * Filters the email address to which the report is sent.
+			 *
+			 * @param string $to The email address to which the report is sent.
+			 * @since 3.0.0
+			 * @version 1.0.0
+			 */
+			$admin_email = apply_filters( 'postman_rat_reporting_email_to', get_option( 'admin_email' ) );
+			$admin_name = '';
+			$user = get_user_by( 'email', $admin_email );
 
-                    $failed += $log->failed;
+			if ( $user ) {
 
-                }
-                if( $is_addonactivated && $log->opened ) {
+				$admin_name = ! empty( $user->first_name ) ? $user->first_name : $user->user_login;
+			}
 
-                    $opened += $log->opened;
+			/**
+			 * Filters the site title to be used in the email subject.
+			 *
+			 * @param string $site_title The site title.
+			 * @since 3.0.0
+			 * @version 1.0.0
+			 */
+			$site_title = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
+			$url = admin_url( "admin.php?page=post-smtp-email-reporting&from={$from}&to={$to}" );
+			$extension_url = 'https://postmansmtp.com/extensions/reporting-and-tracking-extension/';
+			$disable_url = 'https://postmansmtp.com/documentation/advance-functionality/weekly-email-health-report/';
 
-                }
-
-            }
-
-        }
-
-       /**
-         * Filters the email address to which the report is sent.
-         * 
-         * @param string $to The email address to which the report is sent.
-         * @since 3.0.0
-         * @version 1.0.0
-         */
-        $admin_email = apply_filters( 'postman_rat_reporting_email_to', get_option( 'admin_email' ) );
-        $admin_name = '';
-        $user = get_user_by( 'email', $admin_email );
-
-        if ( $user ) {
-
-            $admin_name = !empty( $user->first_name ) ? $user->first_name : $user->user_login;
-
-        }
-
-        /**
-         * Filters the site title to be used in the email subject.
-         * 
-         * @param string $site_title The site title.
-         * @since 3.0.0
-         * @version 1.0.0
-         */
-        $site_title = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
-        $url = admin_url( "admin.php?page=post-smtp-email-reporting&from={$from}&to={$to}" );
-        $extension_url = 'https://postmansmtp.com/extensions/reporting-and-tracking-extension/';
-        $disable_url = 'https://postmansmtp.com/documentation/advance-functionality/weekly-email-health-report/';
-
-        $body = "
+			$body = "
         <!DOCTYPE html>
 <html>
 
@@ -341,7 +339,7 @@ class PostmanReportTemplate{
     <div class='container'>
         <div class='main'>
             <div class='logo'>
-            <img src='".POST_SMTP_ASSETS."images/reporting/post_logo.png' />
+            <img src='" . POST_SMTP_ASSETS . "images/reporting/post_logo.png' />
             </div>
             <div class='text'>
             Hi {$admin_name}
@@ -356,7 +354,7 @@ class PostmanReportTemplate{
                     <div class='ellipse ellipse-total'>
 
                         <div class='icon' style='line-height: 53px;'>
-                        <img src='".POST_SMTP_ASSETS."images/reporting/total.png' />
+                        <img src='" . POST_SMTP_ASSETS . "images/reporting/total.png' />
                         </div>
 
                     </div>
@@ -372,7 +370,7 @@ class PostmanReportTemplate{
                     <div class='ellipse ellipse-sent'>
 
                         <div class='icon'>
-                        <img src='".POST_SMTP_ASSETS."images/reporting/sent.png' />
+                        <img src='" . POST_SMTP_ASSETS . "images/reporting/sent.png' />
                         </div>
 
                     </div>
@@ -389,7 +387,7 @@ class PostmanReportTemplate{
                     <div class='ellipse ellipse-failed'>
 
                         <div class='icon' >
-                        <img src='".POST_SMTP_ASSETS."images/reporting/failed.png' />
+                        <img src='" . POST_SMTP_ASSETS . "images/reporting/failed.png' />
                         </div>
 
                     </div>
@@ -403,16 +401,16 @@ class PostmanReportTemplate{
 
                 </div>";
 
-                if( $is_addonactivated ){
+			if ( $is_addonactivated ) {
 
-                    $body .="
+				$body .= "
 
                     <div class='opened-pro inner-cards'>
         
                     <div class='ellipse ellipse-opened-pro'>
 
                         <div class='icon' style='line-height: 53px;'>
-                            <img src='".POST_SMTP_ASSETS."images/reporting/opened-pro.png' />
+                            <img src='" . POST_SMTP_ASSETS . "images/reporting/opened-pro.png' />
                         </div>
 
                     </div>
@@ -427,18 +425,16 @@ class PostmanReportTemplate{
                         </div>
                     
                     ";
+			} else {
 
-                }
-                else{
-
-                    $body .="
+				$body .= "
                     <a href='{$extension_url}' target='_blank' style='text-decoration:none;'>
                     <div class='opened inner-cards'>
 
                     <div class='ellipse ellipse-opened'>
 
                         <div class='icon' style='line-height: 53px;'>
-                        <img src='".POST_SMTP_ASSETS."images/reporting/opened.png' />
+                        <img src='" . POST_SMTP_ASSETS . "images/reporting/opened.png' />
                         </div>
 
                     </div>
@@ -447,17 +443,16 @@ class PostmanReportTemplate{
                         Opened
                     </div>
                     <div class='count'>
-                    <img src='".POST_SMTP_ASSETS."images/reporting/lock.png' />
+                    <img src='" . POST_SMTP_ASSETS . "images/reporting/lock.png' />
                     </div>
 
                 </div>
                 </a>";
-                         
-                }
+			}
 
-            if( $is_addonactivated ){
+			if ( $is_addonactivated ) {
 
-                $body .= "  
+				$body .= "  
                 </div>
                             <div class='btn'>
                                 <a href='{$url}' target='_blank'>View More Stats</a>
@@ -465,12 +460,12 @@ class PostmanReportTemplate{
                             
                             <div class='table-display'>
                             <div class='table-header'>
-                            <span><img src='".POST_SMTP_ASSETS."images/reporting/clock.png'></span>
+                            <span><img src='" . POST_SMTP_ASSETS . "images/reporting/clock.png'></span>
                             Last {$duration} top emails
                         </div>";
-                        if( !empty($logs) ){
-                            
-                    $body .= "<div>
+				if ( ! empty( $logs ) ) {
+
+					$body .= "<div>
                             <table style='width:100%'>
                                 <tr>
                                     <td class='heading' style='text-align: left; padding-left: 10px;'>Subject</td>
@@ -480,18 +475,17 @@ class PostmanReportTemplate{
                                     <td class='heading'>Opened</td>
                                 </tr>";
 
-                                if( !empty($logs) ){
+					if ( ! empty( $logs ) ) {
 
-                                    $row = 1;
-                                    foreach( $logs as $log ) {
+						$row = 1;
+						foreach ( $logs as $log ) {
 
-                                        //Let break if greater than 3
-                                        if( $row > 3 ) {
-                                            break;
-                                        }
-                                        else{
+							// Let break if greater than 3.
+							if ( $row > 3 ) {
+								break;
+							} else {
 
-                                            $body .= "
+								$body .= "
 
                                         <tr>
                                             <td style='text-align: left; padding-left: 10px;'><div class='wrap-text'>{$log->subject}</div></td>
@@ -502,31 +496,29 @@ class PostmanReportTemplate{
                                         </tr>
 
                                             ";
+							}
+						}
+					}
 
-                                        }
-                                }
-                            }
-
-                        $body .="        
+					$body .= "        
                             </table>
                             <div class='btn' style='position: relative; margin-left: 10px; margin-top: 8px;'>
                                 <a href='{$url}' target='_blank'>View More Emails ></a>
                             </div>
                         </div>";
-                    }
+				}
 
-                        if( empty($logs) ){
-                            $body .="<div style='text-align: center; margin-top: 45px;'>No emails were sent last {$duration}</div>";
-                        }
-        
-                 $body .= "</div>
+				if ( empty( $logs ) ) {
+					$body .= "<div style='text-align: center; margin-top: 45px;'>No emails were sent last {$duration}</div>";
+				}
+
+				$body .= "</div>
                     <div class='bottom-text'>
                         This email was autogenerated and sent from <a href='{$url}' style='text-decoration:none;'>{$site_title}</a>
                     </div>";
-            }   
-            else{
+			} else {
 
-                $body .="   </div>
+				$body .= "   </div>
 
             <div class='table-display-free'>
                 <div class='table-header-free'>
@@ -536,16 +528,16 @@ class PostmanReportTemplate{
                     <table style='width:100%; margin-top: 20px; border-bottom: none;'>
                         
                         <tr>
-                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>Open rate email tracking.</td>
-                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>Connect any mailer of your choice.</td>                            
+                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='" . POST_SMTP_ASSETS . "images/reporting/okay.png'></span>Open rate email tracking.</td>
+                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='" . POST_SMTP_ASSETS . "images/reporting/okay.png'></span>Connect any mailer of your choice.</td>                            
                         </tr>
                         <tr>
-                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>Email quota scheduling.</td>
-                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>Multiple email failure alert options.</td>
+                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='" . POST_SMTP_ASSETS . "images/reporting/okay.png'></span>Email quota scheduling.</td>
+                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='" . POST_SMTP_ASSETS . "images/reporting/okay.png'></span>Multiple email failure alert options.</td>
                         </tr>
                         <tr>
-                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>Auto-resend failed emails.</td>
-                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='".POST_SMTP_ASSETS."images/reporting/okay.png'></span>One-click email attachment resending.</td>
+                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='" . POST_SMTP_ASSETS . "images/reporting/okay.png'></span>Auto-resend failed emails.</td>
+                            <td style='font-size: 11px; font-weight: 400; text-align: left; padding-left: 10px; color: #444A6D; padding-bottom: 4px; padding-top: 4px;'><span style='margin-right: 9px;'><img src='" . POST_SMTP_ASSETS . "images/reporting/okay.png'></span>One-click email attachment resending.</td>
                         </tr>
                     </table>
                     <div class='btn' style='margin-left: 35% !important; background-color: #FA8900 !important; padding:3px !important;'>
@@ -557,9 +549,9 @@ class PostmanReportTemplate{
             <div class='bottom-text' style='width: 332px; margin-left: 15%;'>
                 This email was auto-generated and learn how to <a href='{$disable_url}' target='_blank'>disable it.</a>
             </div>";
-            } 
-                
-        $body .="
+			}
+
+			$body .= '
          
         </div>
     </div>
@@ -567,11 +559,10 @@ class PostmanReportTemplate{
 
 </html>
     
-        ";
+        ';
 
-        return $body;
-    }
-}   
+			return $body;
+		}
+	}
 
 endif;
-?>
