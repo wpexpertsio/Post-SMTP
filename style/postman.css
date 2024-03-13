@@ -95,7 +95,7 @@ body.post-smtp_page_postman_email_log {
     font-size: 16px;
 }
 
-.ps-main-header.post-smtp-welcome-panel {
+.ps-main-header.post-smtp-welcome-panel h2 {
     padding: 0px 15px;
     font-size: 19px;
 }
