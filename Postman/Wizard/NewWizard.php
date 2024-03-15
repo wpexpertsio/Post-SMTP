@@ -1218,7 +1218,7 @@ class Post_SMTP_New_Wizard {
         $html .= '
         <div class="ps-form-control">
             <div><label>API ID</label></div>
-            <input type="text" class="ps-sendpulse-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDPULSE_API_KEY ) .']" value="'.$api_key.'" placeholder="API ID"></div>
+            <input type="text" class="ps-sendpulse-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDPULSE_API_KEY ) .']" value="'.$api_key.'" placeholder="API ID">
         '.
         sprintf(
                 
@@ -1238,7 +1238,8 @@ class Post_SMTP_New_Wizard {
             
            
 
-        )
+        ).
+        '</div>'
         ;
 
         $html .= '
