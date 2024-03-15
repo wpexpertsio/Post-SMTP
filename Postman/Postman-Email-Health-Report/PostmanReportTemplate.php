@@ -51,7 +51,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 			 * Filters the email address to which the report is sent.
 			 *
 			 * @param string $to The email address to which the report is sent.
-			 * @since 3.0.0
+			 * @since 2.9.0
 			 * @version 1.0.0
 			 */
 			$admin_email = apply_filters( 'postman_rat_reporting_email_to', get_option( 'admin_email' ) );
@@ -67,7 +67,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 			 * Filters the site title to be used in the email subject.
 			 *
 			 * @param string $site_title The site title.
-			 * @since 3.0.0
+			 * @since 2.9.0
 			 * @version 1.0.0
 			 */
 			$site_title = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
