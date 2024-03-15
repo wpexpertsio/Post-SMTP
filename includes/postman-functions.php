@@ -194,8 +194,8 @@ endif;
      * @version 1.0
      */
 
-if( !function_exists( 'post_smtp_check_extensions' )):
-function post_smtp_check_extensions(){
+if( !function_exists( 'post_smtp_has_pro' )):
+function post_smtp_has_pro(){
         
         if( 
             ( !is_plugin_active( 'zoho-premium/postsmtp-extension-zoho-mail.php' ) 
@@ -212,12 +212,14 @@ function post_smtp_check_extensions(){
             &&
             !is_plugin_active( 'advance-email-delivery-and-logs-premium/post-smtp-advanced-email-delivery-and-logs.php' ) 
              )
+            ||
+            ( !class_exists( 'Post_SMTP_Pro' ) )
         ){
-            return true;
+            return false;
         }
         else{
 
-            return false;
+            return true;
         }
 
     } 

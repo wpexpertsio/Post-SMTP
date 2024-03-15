@@ -28,12 +28,12 @@ class PostmanSuggestProSocket {
         $this->fs->add_action( 'addons/after_addons', array( $this, 'promote_bundles_fs' ) );
         
         
-        if( post_smtp_check_extensions() ) {
+        if( !post_smtp_has_pro() ) {
 
             add_action( 'admin_menu', array( $this, 'add_menu' ), 22 );
         
         }
-        if( post_smtp_check_extensions() && !$hide_notice ){
+        if( !post_smtp_has_pro() && !$hide_notice ){
 
             add_action( 'post_smtp_dashboard_after_config', array( $this, 'promote_bundles_dashboard' ) );
         
