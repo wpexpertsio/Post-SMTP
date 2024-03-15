@@ -231,7 +231,7 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		 */
 		public function sendpulse_api_key_callback() {
 
-			printf( '<input type="password" autocomplete="off" id="sendpulse_api_key" name="postman_options[sendpulse_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getSendpulseApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getSendpulseApiKey() ) ) : '', esc_attr_e( 'Required', 'post-smtp' ) );
+			printf( '<input type="password" autocomplete="off" id="sendpulse_api_key" name="postman_options[sendpulse_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getSendpulseApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getSendpulseApiKey() ) ) : '', __( 'Required', 'post-smtp' ) );
 			print ' <input type="button" id="toggleSendpulseApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 		}
 
@@ -243,7 +243,7 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		 */
 		public function sendpulse_secret_key_callback() {
 
-			printf( '<input type="password" autocomplete="off" id="sendpulse_secret_key" name="postman_options[sendpulse_secret_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getSendpulseSecretKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getSendpulseSecretKey() ) ) : '', esc_attr_e( 'Required', 'post-smtp' ) );
+			printf( '<input type="password" autocomplete="off" id="sendpulse_secret_key" name="postman_options[sendpulse_secret_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getSendpulseSecretKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getSendpulseSecretKey() ) ) : '', __( 'Required', 'post-smtp' ) );
 			print ' <input type="button" id="toggleSendpulseSecretKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 		}
 
@@ -289,11 +289,11 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		public function printWizardAuthenticationStep() {
 			print '<section class="wizard_sendpulse">';
 			$this->printSendpulseAuthSectionInfo();
-			printf( '<label for="api_key">%s</label>', esc_attr_e( 'API ID', 'post-smtp' ) );
+			printf( '<label for="api_key">%s</label>', __( 'API ID', 'post-smtp' ) );
 			print '<br />';
 			print $this->sendpulse_api_key_callback();
 			print '<br />';
-			printf( '<label for="secret_key">%s</label>', esc_attr_e( 'API Secret', 'post-smtp' ) );
+			printf( '<label for="secret_key">%s</label>', __( 'API Secret', 'post-smtp' ) );
 			print '<br />';
 			print $this->sendpulse_secret_key_callback();
 			print '</section>';

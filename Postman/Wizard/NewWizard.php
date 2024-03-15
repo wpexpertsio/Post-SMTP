@@ -1210,37 +1210,53 @@ class Post_SMTP_New_Wizard {
             esc_url( 'https://sendpulse.com/features/transactional' ),
             __( 'Transactional Email, whether you need to send order confirmations, booking notifications, password resets, or any other transactional messages, You can handle it with ease and reliability.', 'post-smtp' ),
             __( 'If you\'re just starting out, the free plan allows you to send up to 12000 emails without entering your credit card details.', 'post-smtp' ),
-            __( 'Let\'s get started with our', 'post-smtp' ),
+            __( 'Let\'s get started with the documentation', 'post-smtp' ),
             esc_url( 'https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-sendpulse/?utm_source=plugin&utm_medium=wizard' ),
-            __( 'SendPulse Transactional Email Documentation', 'post-smtp' )
+            __( 'Configure Sendpulse with Post SMTP', 'post-smtp' )
         );
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>API Key</label></div>
+            <div><label>API ID</label></div>
             <input type="text" class="ps-sendpulse-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDPULSE_API_KEY ) .']" value="'.$api_key.'" placeholder="API ID"></div>
-        ';
+        '.
+        sprintf(
+                
+            '<div class="ps-form-control-info"><a href="%1$s" target="_blank">%2$s</a> %3$s</div>',
+            esc_url( 'https://sendpulse.com/features/transactional' ),
+            esc_attr( 'Click here' ),
+            __( 'to create an account at SendPulse', 'post-smtp' ),
+           
+
+        ).
+        sprintf(
+                
+            '<div class="ps-form-control-info">%1$s<a href="%2$s" target="_blank">%3$s</a></div>',
+            __( 'If you are already logged in follow this ink to get your API ID from Sendpulse', 'post-smtp' ),
+            esc_url( 'https://login.sendpulse.com/settings/#api' ),
+            esc_attr( 'Get API ID' ),
+            
+           
+
+        )
+        ;
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Secret Key</label></div>
+            <div><label>API Secret</label></div>
             <input type="text" class="ps-sendpulse-secret-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDPULSE_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="API Secret">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
             sprintf(
                 
-                '<div class="ps-form-control-info"><a href="%1$s" target="_blank">%2$s</a> %3$s</div>',
-                esc_url( 'https://sendpulse.com/features/transactional' ),
-                esc_attr( 'Click here' ),
-                __( 'to create an account at SendPulse', 'post-smtp' ),
-                '<div class="ps-form-control-info">%1$s<a href="%2$s" target="_blank"> %3$s</a></div>',
-                __( 'f you are already logged in follow this ink to get your API ID from Sendpulse', 'post-smtp' ),
+                '<div class="ps-form-control-info">%1$s<a href="%2$s" target="_blank">%3$s</a></div>',
+                __( 'If you are already logged in follow this ink to get your API ID from Sendpulse', 'post-smtp' ),
                 esc_url( 'https://login.sendpulse.com/settings/#api' ),
-                esc_attr( 'Get API ID' ),
+                esc_attr( 'Get API Secret' ),
+                
                
-            
-
+    
             )
             .
         '</div>
