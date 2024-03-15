@@ -65,7 +65,7 @@ if ( ! class_exists( 'PostmanEmailHealthReporting' ) ) :
 
 			$data = array();
 
-			if ( isset( $_POST['_Reporting'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_Reporting'] ) ), '_EmailReportingNounce' ) ) {
+			if ( isset( $_POST['_EmailReportingNounce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_EmailReportingNounce'] ) ), '_Reporting' ) ) {
 
 				// Do not save the settings if it's not saving from settings page.
 				if ( isset( $_POST['action'] ) && $_POST['action'] !== 'ps-save-wizard' ) {
