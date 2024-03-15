@@ -65,15 +65,17 @@ if ( ! class_exists( 'PostmanEmailHealthReporting' ) ) :
 
 			$data = array();
 
-			// Do not save the settings if it's not saving from settings page.
-			if ( isset( $_POST['action'] ) && $_POST['action'] !== 'ps-save-wizard' ) {
+			if ( isset( $_POST['_Reporting'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_Reporting'] ) ), '_EmailReportingNounce' ) ) {
 
-				$data['enable_email_reporting'] = isset( $_POST['enable_email_reporting'] ) ? 1 : 0;
-				$data['reporting_interval'] = isset( $_POST['reporting_interval'] ) ? sanitize_text_field( wp_unslash( $_POST['reporting_interval'] ) ) : 'w';
+				// Do not save the settings if it's not saving from settings page.
+				if ( isset( $_POST['action'] ) && $_POST['action'] !== 'ps-save-wizard' ) {
 
-				update_option( 'postman_rat', $data );
+					$data['enable_email_reporting'] = isset( $_POST['enable_email_reporting'] ) ? 1 : 0;
+					$data['reporting_interval'] = isset( $_POST['reporting_interval'] ) ? sanitize_text_field( wp_unslash( $_POST['reporting_interval'] ) ) : 'w';
+
+					update_option( 'postman_rat', $data );
+				}
 			}
-
 			return $input;
 		}
 
@@ -142,6 +144,7 @@ if ( ! class_exists( 'PostmanEmailHealthReporting' ) ) :
 				</p>
 			</section>
 			<?php
+			wp_nonce_field( '_Reporting', '_EmailReportingNounce' );
 		}
 	}
 	PostmanEmailHealthReporting::get_instance();
