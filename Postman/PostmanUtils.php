@@ -204,6 +204,7 @@ class PostmanUtils {
 	 * @return string
 	 */
 	static function roundBytes( $size ) {
+		$size = intval( $size );
 		$unit = array(
 				'B',
 				'KiB',
