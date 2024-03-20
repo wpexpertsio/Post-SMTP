@@ -368,8 +368,7 @@ class Post_SMTP_New_Wizard {
                                                         Resend Failed Emails
                                                         <br>
                                                         <span class="dashicons dashicons-yes-alt"></span>
-                                                        Support multiple sites		
-                                                        <div style="margin-top: -6px; font-size: 10px; margin-left: 22px; color: #F58014;">Comming Soon</div>
+                                                        Support multiple sites
                                                     </div>
                                                 </div>
                                                 <div style="display: flex; margin-top: 15px;">
