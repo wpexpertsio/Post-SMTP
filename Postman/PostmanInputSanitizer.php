@@ -107,12 +107,16 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			}
 
 			// can we create a tmp file? - this code is duplicated in ActivationHandler
-			PostmanUtils::deleteLockFile( $new_input [ PostmanOptions::TEMPORARY_DIRECTORY ] );
-			$lockSuccess = PostmanUtils::createLockFile( $new_input [ PostmanOptions::TEMPORARY_DIRECTORY ] );
-			// &= does not work as expected in my PHP
-			$lockSuccess = $lockSuccess && PostmanUtils::deleteLockFile( $new_input [ PostmanOptions::TEMPORARY_DIRECTORY ] );
-			$this->logger->debug( 'FileLocking=' . $lockSuccess );
-			PostmanState::getInstance()->setFileLockingEnabled( $lockSuccess );
+			if( isset( $new_input [ PostmanOptions::TEMPORARY_DIRECTORY ] ) ) {
+				
+				PostmanUtils::deleteLockFile( $new_input [ PostmanOptions::TEMPORARY_DIRECTORY ] );
+				$lockSuccess = PostmanUtils::createLockFile( $new_input [ PostmanOptions::TEMPORARY_DIRECTORY ] );
+				// &= does not work as expected in my PHP
+				$lockSuccess = $lockSuccess && PostmanUtils::deleteLockFile( $new_input [ PostmanOptions::TEMPORARY_DIRECTORY ] );
+				$this->logger->debug( 'FileLocking=' . $lockSuccess );
+				PostmanState::getInstance()->setFileLockingEnabled( $lockSuccess );
+
+			}
 
 			if ( $success ) {
 				PostmanSession::getInstance()->setAction( self::VALIDATION_SUCCESS );
@@ -168,8 +172,9 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 				$this->logSanitize( $desc, $new_input [ $key ] );
 				// base-64 scramble password
 				$new_input [ $key ] = base64_encode( $new_input [ $key ] );
+
+				$this->logger->debug( sprintf( 'Encoding %s as %s', $desc, $new_input [ $key ] ) );
 			}
-			$this->logger->debug( sprintf( 'Encoding %s as %s', $desc, $new_input [ $key ] ) );
 		}
 
 		private function sanitizeLogMax( $desc, $key, $input, &$new_input ) {
