@@ -61,7 +61,7 @@ jQuery(document).ready(function($) {
 		ajax: {
 			url: `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}`,
 		},
-		"lengthMenu": [25, 50, 100, 500],
+		"lengthMenu": [5, 25, 50, 100, 500],
 		columns: PSEmailLogs.DTCols,
 		columnDefs: [
 			{ orderable: false, targets: 0 },
@@ -155,6 +155,35 @@ jQuery(document).ready(function($) {
 		else {
 
 			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}` ).load();
+
+		}
+
+	} );
+
+	// Status Buttons
+	jQuery( '#ps-email-log' ).before( `
+		<div class="ps-email-log-status-buttons">
+			<button class="button ps-status-btn" data-status="all">All</button>
+			<button class="button ps-status-btn" data-status="success">Success</button>
+			<button class="button ps-status-btn" data-status="failed">Failed</button>
+		</div>
+	` );
+
+	// Status Filter
+	jQuery( document ).on( 'click', '.ps-status-btn', function() {
+
+		var status = jQuery( this ).data( 'status' );
+		var from = jQuery( '.ps-email-log-from' ).val();
+		var to = jQuery( '.ps-email-log-to' ).val();
+	
+		if( status == 'all' ) {
+
+			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&from=${from}&to=${to}` ).load();
+
+		}
+		else {
+
+			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&status=${status}&from=${from}&to=${to}` ).load();
 
 		}
 
