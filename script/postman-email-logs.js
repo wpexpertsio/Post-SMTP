@@ -201,7 +201,8 @@ jQuery(document).ready(function($) {
 
 			jQuery( '.ps-email-log-export-btn .ps-btn-text' ).text( `Export Selected (${selectedValue})` );
 			jQuery( '.ps-email-log-delete-btn .ps-btn-text' ).text( `Delete Selected (${selectedValue})` );
-			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn' ).addClass( 'ps-selected' );
+			jQuery( '#ps-aedl-bulk-resend' ).text( `Resend Selected (${selectedValue})` );
+			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn, #ps-aedl-bulk-resend' ).addClass( 'ps-selected' );
 
 		}
 		else {
@@ -211,7 +212,8 @@ jQuery(document).ready(function($) {
 
 			jQuery( '.ps-email-log-export-btn .ps-btn-text' ).text( `Export All` );
 			jQuery( '.ps-email-log-delete-btn .ps-btn-text' ).text( `Delete All` );
-			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn' ).removeClass( 'ps-selected' );
+			jQuery( '#ps-aedl-bulk-resend' ).text( `Resend All` );
+			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn, #ps-aedl-bulk-resend' ).removeClass( 'ps-selected' );
 
 		}
 		
@@ -249,13 +251,15 @@ jQuery(document).ready(function($) {
 
 		jQuery( '.ps-email-log-export-btn .ps-btn-text' ).text( `Export Selected (${checkedCounter})` );
 		jQuery( '.ps-email-log-delete-btn .ps-btn-text' ).text( `Delete Selected (${checkedCounter})` );
-		jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn' ).addClass( 'ps-selected' );
+		jQuery( '#ps-aedl-bulk-resend' ).text( `Resend Selected (${checkedCounter})` );
+		jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn, #ps-aedl-bulk-resend' ).addClass( 'ps-selected' );
 		
 		if( checkedCounter == 0 ) {
 
 			jQuery( '.ps-email-log-export-btn .ps-btn-text' ).text( `Export All` );
 			jQuery( '.ps-email-log-delete-btn .ps-btn-text' ).text( `Delete All` );
-			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn' ).removeClass( 'ps-selected' );
+			jQuery( '#ps-aedl-bulk-resend' ).text( `Resend All` );
+			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn, #ps-aedl-bulk-resend' ).removeClass( 'ps-selected' );
 
 		}
 
