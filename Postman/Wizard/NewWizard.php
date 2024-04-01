@@ -1231,7 +1231,7 @@ class Post_SMTP_New_Wizard {
         sprintf(
                 
             '<div class="ps-form-control-info">%1$s<a href="%2$s" target="_blank">%3$s</a></div>',
-            __( 'If you are already logged in follow this ink to get your API ID from Sendpulse', 'post-smtp' ),
+            __( 'If you are already logged in follow this ink to get your API ID from Sendpulse ', 'post-smtp' ),
             esc_url( 'https://login.sendpulse.com/settings/#api' ),
             esc_attr( 'Get API ID' ),
             
@@ -1251,7 +1251,7 @@ class Post_SMTP_New_Wizard {
             sprintf(
                 
                 '<div class="ps-form-control-info">%1$s<a href="%2$s" target="_blank">%3$s</a></div>',
-                __( 'If you are already logged in follow this ink to get your API ID from Sendpulse', 'post-smtp' ),
+                __( 'If you are already logged in follow this ink to get your API ID from Sendpulse ', 'post-smtp' ),
                 esc_url( 'https://login.sendpulse.com/settings/#api' ),
                 esc_attr( 'Get API Secret' ),
                 

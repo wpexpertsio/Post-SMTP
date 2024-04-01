@@ -56,21 +56,8 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 
 			$has_sent = get_transient( 'ps_rat_has_sent' );
 
-			$post_option = get_option( 'postman_options' );
-
-			if ( class_exists( 'PostmanTransportRegistry' ) ) {
-
-				$active_transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
-
-				if ( get_class( $active_transport ) !== 'PostmanDefaultModuleTransport' && ! get_option( 'postman_rat' ) && ! $has_sent ) {
-
-					$report_sent_week = $this->send_mail('w');
-					set_transient( 'ps_rat_has_sent', '1', WEEK_IN_SECONDS );
-				}
-			}
-
 			// If transient expired, let's send :).
-			if ( $enabled && $interval && ! $has_sent && isset( $post_option['transport_type'] ) ) {
+			if ( $enabled && $interval && ! $has_sent ) {
 
 				$expiry_time = '';
 				$report_sent = $this->send_mail( $interval );
