@@ -73,7 +73,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 			$site_title = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
 			$url = admin_url( "admin.php?page=post-smtp-email-reporting&from={$from}&to={$to}" );
 			$extension_url = 'https://postmansmtp.com/extensions/reporting-and-tracking-extension/';
-			$disable_url = 'https://postmansmtp.com/documentation/advance-functionality/weekly-email-health-report/';
+			$disable_url = 'https://postmansmtp.com/documentation/advance-functionality/email-health-report/';
 
 			$body = "
         <!DOCTYPE html>
