@@ -157,7 +157,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			// if $action is not empty, then sanitize has already run
 			if ( ! empty( $action ) ) {
 				// use the already encoded password in the $input
-				$new_input [ $key ] = $input [ $key ];
+				$new_input[$key] = isset( $input[$key] ) ? $input[$key] : '';
 				// log it
 				$this->logger->debug( 'Warning, second sanitizePassword attempt detected' );
 			} else if ( isset( $input [ $key ] ) ) {
