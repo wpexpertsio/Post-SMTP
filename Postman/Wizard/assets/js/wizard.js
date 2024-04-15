@@ -496,8 +496,10 @@ jQuery( document ).ready(function() {
 
         var placeholder = jQuery( this ).find( 'h4' ).text();
         var imgSrc = jQuery( this ).find( 'img' ).attr( 'src' ); 
+        var productURL = jQuery( this ).data( 'url' );
 
         jQuery( '.ps-pro-for-img' ).attr( 'src', imgSrc );
+        jQuery( '.ps-pro-product-url' ).attr( 'href', productURL );
         jQuery( '.ps-pro-for' ).text( placeholder );
         jQuery( '.ps-pro-popup-overlay' ).fadeIn();
 
