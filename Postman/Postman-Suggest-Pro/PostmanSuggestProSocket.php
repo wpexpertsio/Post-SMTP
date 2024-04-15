@@ -117,14 +117,14 @@ class PostmanSuggestProSocket {
         <div style="color:#000;background: #fed90f;display: inline-block;padding: 23px;border-radius: 14px;font-size: 16px;font-weight: 400;box-shadow: 5px 5px 8px #c7c7c7; padding-bottom:10px; display: flex; width: 84%;" >
             <div style="width: 75%;">
                 <div>
-                    <a style="text-decoration:none; color:#231F20;" href="<?php echo esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=banner' ); ?>">🎉 UNLOCK THE FULL POTENTIAL OF POST SMTP WITH PRO FEATURES</a>
+                    <a style="text-decoration:none; color:#231F20;" href="<?php echo esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=banner&utm_campaign=plugin' ); ?>">🎉 UNLOCK THE FULL POTENTIAL OF POST SMTP WITH PRO FEATURES</a>
                 </div>                
                 <div style="margin-top:8px">
                     <a style="font-size:10px; color:#0019ff;" href="<?php echo admin_url( 'admin.php?action=ps_skip_pro_banner' ); ?>">Not interested, Hide for now.</a>
                 </div>
             </div>
             <div style="margin: 11px 0;">
-                <a style="text-decoration:none; color:#231F20; font-size: 12px; display: block;" href="<?php echo esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=banner' ); ?>"><span style="background: #000;color: #fff;text-decoration: none;padding: 10px;border-radius: 10px;">👉 <?php printf( '%s', esc_html( 'LEARN MORE', 'post-smtp' ) ); ?></span> </a>
+                <a style="text-decoration:none; color:#231F20; font-size: 12px; display: block;" href="<?php echo esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=banner&utm_campaign=plugin' ); ?>"><span style="background: #000;color: #fff;text-decoration: none;padding: 10px;border-radius: 10px;">👉 <?php printf( '%s', esc_html( 'LEARN MORE', 'post-smtp' ) ); ?></span> </a>
             </div>
         </div>
         <?php
@@ -216,7 +216,7 @@ class PostmanSuggestProSocket {
         
         if ( isset( $_GET['page'] ) && 'postman-pricing' === $_GET['page'] ) {
 
-            wp_redirect( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu' );
+            wp_redirect( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu&utm_campaign=plugin' );
             exit;
 
         }
@@ -236,7 +236,7 @@ class PostmanSuggestProSocket {
             __( '👉 Get Pro Bundle', 'post-smtp' ), 
             sprintf( '<span class="dashicons dashicons-superhero-alt ps-pro-icon"></span> %1$s <b>%2$s</b>&nbsp;&nbsp;➤', __( 'Get', 'post-smtp' ), __( 'Pro Bundle', 'post-smtp' ) ),
             'manage_options', 
-            esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu' ),
+            esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu&utm_campaign=plugin' ),
             '',
             99
         );

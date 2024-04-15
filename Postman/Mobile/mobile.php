@@ -178,7 +178,7 @@ class Post_SMTP_Mobile {
                 </div>
                 <div style="float: right; margin: 19px 0;">
                     <a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Dsettings%26anid%3Dadmob" target="_blank" /><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/google-play.png' ) ?>" class="google-logo" /></a>
-                    <a href="https://apps.apple.com/us/app/post-smtp/id6473368559" target="_blank" /><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/apple-store.png' ) ?>" class="apple-logo" /></a>
+                    <a href="https://apps.apple.com/us/app/post-smtp/id6473368559?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin" target="_blank" /><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/apple-store.png' ) ?>" class="apple-logo" /></a>
                 </div>
                 <div style="clear: both;"></div>
             </div>
