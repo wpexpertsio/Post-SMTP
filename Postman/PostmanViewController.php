@@ -383,7 +383,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 						<h3 class="ps-ib ps-vm"><?php esc_html_e( 'Extensions', 'post-smtp' ); ?></h3>
 					</div> 
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" /><?php echo esc_html( 'Microsoft 365/ Office 365' ); ?></a>
+						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" /><?php echo esc_html( 'Microsoft 365/ Office 365' ); ?></a>
 						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 					<div>
