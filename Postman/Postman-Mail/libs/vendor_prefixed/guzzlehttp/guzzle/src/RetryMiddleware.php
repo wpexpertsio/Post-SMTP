@@ -2,32 +2,39 @@
 
 namespace PostSMTP\Vendor\GuzzleHttp;
 
+use PostSMTP\Vendor\GuzzleHttp\Promise as P;
 use PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface;
-use PostSMTP\Vendor\GuzzleHttp\Promise\RejectedPromise;
-use PostSMTP\Vendor\GuzzleHttp\Psr7;
 use PostSMTP\Vendor\Psr\Http\Message\RequestInterface;
 use PostSMTP\Vendor\Psr\Http\Message\ResponseInterface;
 /**
  * Middleware that retries requests based on the boolean result of
  * invoking the provided "decider" function.
+ *
+ * @final
  */
 class RetryMiddleware
 {
-    /** @var callable  */
+    /**
+     * @var callable(RequestInterface, array): PromiseInterface
+     */
     private $nextHandler;
-    /** @var callable */
+    /**
+     * @var callable
+     */
     private $decider;
-    /** @var callable */
+    /**
+     * @var callable(int)
+     */
     private $delay;
     /**
-     * @param callable $decider     Function that accepts the number of retries,
-     *                              a request, [response], and [exception] and
-     *                              returns true if the request is to be
-     *                              retried.
-     * @param callable $nextHandler Next handler to invoke.
-     * @param callable $delay       Function that accepts the number of retries
-     *                              and [response] and returns the number of
-     *                              milliseconds to delay.
+     * @param callable                                            $decider     Function that accepts the number of retries,
+     *                                                                         a request, [response], and [exception] and
+     *                                                                         returns true if the request is to be
+     *                                                                         retried.
+     * @param callable(RequestInterface, array): PromiseInterface $nextHandler Next handler to invoke.
+     * @param (callable(int): int)|null                           $delay       Function that accepts the number of retries
+     *                                                                         and returns the number of
+     *                                                                         milliseconds to delay.
      */
     public function __construct(callable $decider, callable $nextHandler, callable $delay = null)
     {
@@ -38,21 +45,13 @@ class RetryMiddleware
     /**
      * Default exponential backoff delay function.
      *
-     * @param int $retries
-     *
      * @return int milliseconds.
      */
-    public static function exponentialDelay($retries)
+    public static function exponentialDelay(int $retries) : int
     {
-        return (int) \pow(2, $retries - 1) * 1000;
+        return (int) 2 ** ($retries - 1) * 1000;
     }
-    /**
-     * @param RequestInterface $request
-     * @param array            $options
-     *
-     * @return PromiseInterface
-     */
-    public function __invoke(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $options)
+    public function __invoke(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $options) : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
     {
         if (!isset($options['retries'])) {
             $options['retries'] = 0;
@@ -62,38 +61,31 @@ class RetryMiddleware
     }
     /**
      * Execute fulfilled closure
-     *
-     * @return mixed
      */
-    private function onFulfilled(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $req, array $options)
+    private function onFulfilled(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $options) : callable
     {
-        return function ($value) use($req, $options) {
-            if (!\call_user_func($this->decider, $options['retries'], $req, $value, null)) {
+        return function ($value) use($request, $options) {
+            if (!($this->decider)($options['retries'], $request, $value, null)) {
                 return $value;
             }
-            return $this->doRetry($req, $options, $value);
+            return $this->doRetry($request, $options, $value);
         };
     }
     /**
      * Execute rejected closure
-     *
-     * @return callable
      */
-    private function onRejected(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $req, array $options)
+    private function onRejected(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $req, array $options) : callable
     {
         return function ($reason) use($req, $options) {
-            if (!\call_user_func($this->decider, $options['retries'], $req, null, $reason)) {
-                return \PostSMTP\Vendor\GuzzleHttp\Promise\rejection_for($reason);
+            if (!($this->decider)($options['retries'], $req, null, $reason)) {
+                return \PostSMTP\Vendor\GuzzleHttp\Promise\Create::rejectionFor($reason);
             }
             return $this->doRetry($req, $options);
         };
     }
-    /**
-     * @return self
-     */
-    private function doRetry(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $options, \PostSMTP\Vendor\Psr\Http\Message\ResponseInterface $response = null)
+    private function doRetry(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $options, \PostSMTP\Vendor\Psr\Http\Message\ResponseInterface $response = null) : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
     {
-        $options['delay'] = \call_user_func($this->delay, ++$options['retries'], $response);
+        $options['delay'] = ($this->delay)(++$options['retries'], $response, $request);
         return $this($request, $options);
     }
 }

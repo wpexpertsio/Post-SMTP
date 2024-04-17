@@ -18,9 +18,9 @@
 namespace PostSMTP\Vendor\Google\Task;
 
 use PostSMTP\Vendor\Composer\Script\Event;
+use InvalidArgumentException;
 use PostSMTP\Vendor\Symfony\Component\Filesystem\Filesystem;
 use PostSMTP\Vendor\Symfony\Component\Finder\Finder;
-use InvalidArgumentException;
 class Composer
 {
     /**

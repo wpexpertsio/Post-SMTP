@@ -17,9 +17,17 @@
  */
 namespace PostSMTP\Vendor\Google\Auth\Cache;
 
+use DateTime;
+use DateTimeInterface;
+use DateTimeZone;
 use PostSMTP\Vendor\Psr\Cache\CacheItemInterface;
+use TypeError;
 /**
  * A cache item.
+ *
+ * This class will be used by MemoryCacheItemPool and SysVCacheItemPool
+ * on PHP 7.4 and below. It is compatible with psr/cache 1.0 and 2.0 (PSR-6).
+ * @see TypedItem for compatiblity with psr/cache 3.0.
  */
 final class Item implements \PostSMTP\Vendor\Psr\Cache\CacheItemInterface
 {
@@ -32,7 +40,7 @@ final class Item implements \PostSMTP\Vendor\Psr\Cache\CacheItemInterface
      */
     private $value;
     /**
-     * @var \DateTime|null
+     * @var DateTimeInterface|null
      */
     private $expiration;
     /**
@@ -91,9 +99,8 @@ final class Item implements \PostSMTP\Vendor\Psr\Cache\CacheItemInterface
             $this->expiration = $expiration;
             return $this;
         }
-        $implementationMessage = \interface_exists('DateTimeInterface') ? 'implement interface DateTimeInterface' : 'be an instance of DateTime';
-        $error = \sprintf('Argument 1 passed to %s::expiresAt() must %s, %s given', \get_class($this), $implementationMessage, \gettype($expiration));
-        $this->handleError($error);
+        $error = \sprintf('Argument 1 passed to %s::expiresAt() must implement interface DateTimeInterface, %s given', \get_class($this), \gettype($expiration));
+        throw new \TypeError($error);
     }
     /**
      * {@inheritdoc}
@@ -109,22 +116,9 @@ final class Item implements \PostSMTP\Vendor\Psr\Cache\CacheItemInterface
         } else {
             $message = 'Argument 1 passed to %s::expiresAfter() must be an ' . 'instance of DateInterval or of the type integer, %s given';
             $error = \sprintf($message, \get_class($this), \gettype($time));
-            $this->handleError($error);
-        }
-        return $this;
-    }
-    /**
-     * Handles an error.
-     *
-     * @param string $error
-     * @throws \TypeError
-     */
-    private function handleError($error)
-    {
-        if (\class_exists('TypeError')) {
             throw new \TypeError($error);
         }
-        \trigger_error($error, \E_USER_ERROR);
+        return $this;
     }
     /**
      * Determines if an expiration is valid based on the rules defined by PSR6.
@@ -142,6 +136,9 @@ final class Item implements \PostSMTP\Vendor\Psr\Cache\CacheItemInterface
         }
         return \false;
     }
+    /**
+     * @return DateTime
+     */
     protected function currentTime()
     {
         return new \DateTime('now', new \DateTimeZone('UTC'));

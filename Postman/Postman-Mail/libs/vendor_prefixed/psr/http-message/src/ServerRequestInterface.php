@@ -1,5 +1,6 @@
 <?php
 
+declare (strict_types=1);
 namespace PostSMTP\Vendor\Psr\Http\Message;
 
 /**
@@ -214,7 +215,7 @@ interface ServerRequestInterface extends \PostSMTP\Vendor\Psr\Http\Message\Reque
      * @param mixed $default Default value to return if the attribute does not exist.
      * @return mixed
      */
-    public function getAttribute($name, $default = null);
+    public function getAttribute(string $name, $default = null);
     /**
      * Return an instance with the specified derived request attribute.
      *
@@ -230,7 +231,7 @@ interface ServerRequestInterface extends \PostSMTP\Vendor\Psr\Http\Message\Reque
      * @param mixed $value The value of the attribute.
      * @return static
      */
-    public function withAttribute($name, $value);
+    public function withAttribute(string $name, $value);
     /**
      * Return an instance that removes the specified derived request attribute.
      *
@@ -245,5 +246,5 @@ interface ServerRequestInterface extends \PostSMTP\Vendor\Psr\Http\Message\Reque
      * @param string $name The attribute name.
      * @return static
      */
-    public function withoutAttribute($name);
+    public function withoutAttribute(string $name);
 }

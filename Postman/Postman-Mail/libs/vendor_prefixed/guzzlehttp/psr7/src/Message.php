@@ -1,5 +1,6 @@
 <?php
 
+declare (strict_types=1);
 namespace PostSMTP\Vendor\GuzzleHttp\Psr7;
 
 use PostSMTP\Vendor\Psr\Http\Message\MessageInterface;
@@ -11,10 +12,8 @@ final class Message
      * Returns the string representation of an HTTP message.
      *
      * @param MessageInterface $message Message to convert to a string.
-     *
-     * @return string
      */
-    public static function toString(\PostSMTP\Vendor\Psr\Http\Message\MessageInterface $message)
+    public static function toString(\PostSMTP\Vendor\Psr\Http\Message\MessageInterface $message) : string
     {
         if ($message instanceof \PostSMTP\Vendor\Psr\Http\Message\RequestInterface) {
             $msg = \trim($message->getMethod() . ' ' . $message->getRequestTarget()) . ' HTTP/' . $message->getProtocolVersion();
@@ -27,7 +26,7 @@ final class Message
             throw new \InvalidArgumentException('Unknown message type');
         }
         foreach ($message->getHeaders() as $name => $values) {
-            if (\strtolower($name) === 'set-cookie') {
+            if (\is_string($name) && \strtolower($name) === 'set-cookie') {
                 foreach ($values as $value) {
                     $msg .= "\r\n{$name}: " . $value;
                 }
@@ -44,10 +43,8 @@ final class Message
      *
      * @param MessageInterface $message    The message to get the body summary
      * @param int              $truncateAt The maximum allowed size of the summary
-     *
-     * @return string|null
      */
-    public static function bodySummary(\PostSMTP\Vendor\Psr\Http\Message\MessageInterface $message, $truncateAt = 120)
+    public static function bodySummary(\PostSMTP\Vendor\Psr\Http\Message\MessageInterface $message, int $truncateAt = 120) : ?string
     {
         $body = $message->getBody();
         if (!$body->isSeekable() || !$body->isReadable()) {
@@ -57,6 +54,7 @@ final class Message
         if ($size === 0) {
             return null;
         }
+        $body->rewind();
         $summary = $body->read($truncateAt);
         $body->rewind();
         if ($size > $truncateAt) {
@@ -64,7 +62,7 @@ final class Message
         }
         // Matches any printable character, including unicode characters:
         // letters, marks, numbers, punctuation, spacing, and separators.
-        if (\preg_match('/[^\\pL\\pM\\pN\\pP\\pS\\pZ\\n\\r\\t]/u', $summary)) {
+        if (\preg_match('/[^\\pL\\pM\\pN\\pP\\pS\\pZ\\n\\r\\t]/u', $summary) !== 0) {
             return null;
         }
         return $summary;
@@ -79,7 +77,7 @@ final class Message
      *
      * @throws \RuntimeException
      */
-    public static function rewindBody(\PostSMTP\Vendor\Psr\Http\Message\MessageInterface $message)
+    public static function rewindBody(\PostSMTP\Vendor\Psr\Http\Message\MessageInterface $message) : void
     {
         $body = $message->getBody();
         if ($body->tell()) {
@@ -94,10 +92,8 @@ final class Message
      * array values, and a "body" key containing the body of the message.
      *
      * @param string $message HTTP request or response to parse.
-     *
-     * @return array
      */
-    public static function parseMessage($message)
+    public static function parseMessage(string $message) : array
     {
         if (!$message) {
             throw new \InvalidArgumentException('Invalid message');
@@ -107,14 +103,14 @@ final class Message
         if ($messageParts === \false || \count($messageParts) !== 2) {
             throw new \InvalidArgumentException('Invalid message: Missing header delimiter');
         }
-        list($rawHeaders, $body) = $messageParts;
+        [$rawHeaders, $body] = $messageParts;
         $rawHeaders .= "\r\n";
         // Put back the delimiter we split previously
         $headerParts = \preg_split("/\r?\n/", $rawHeaders, 2);
         if ($headerParts === \false || \count($headerParts) !== 2) {
             throw new \InvalidArgumentException('Invalid message: Missing status line');
         }
-        list($startLine, $rawHeaders) = $headerParts;
+        [$startLine, $rawHeaders] = $headerParts;
         if (\preg_match("/(?:^HTTP\\/|^[A-Z]+ \\S+ HTTP\\/)(\\d+(?:\\.\\d+)?)/i", $startLine, $matches) && $matches[1] === '1.0') {
             // Header folding is deprecated for HTTP/1.1, but allowed in HTTP/1.0
             $rawHeaders = \preg_replace(\PostSMTP\Vendor\GuzzleHttp\Psr7\Rfc7230::HEADER_FOLD_REGEX, ' ', $rawHeaders);
@@ -123,7 +119,7 @@ final class Message
         $count = \preg_match_all(\PostSMTP\Vendor\GuzzleHttp\Psr7\Rfc7230::HEADER_REGEX, $rawHeaders, $headerLines, \PREG_SET_ORDER);
         // If these aren't the same, then one line didn't match and there's an invalid header.
         if ($count !== \substr_count($rawHeaders, "\n")) {
-            // Folding is deprecated, see https://tools.ietf.org/html/rfc7230#section-3.2.4
+            // Folding is deprecated, see https://datatracker.ietf.org/doc/html/rfc7230#section-3.2.4
             if (\preg_match(\PostSMTP\Vendor\GuzzleHttp\Psr7\Rfc7230::HEADER_FOLD_REGEX, $rawHeaders)) {
                 throw new \InvalidArgumentException('Invalid header syntax: Obsolete line folding');
             }
@@ -140,12 +136,12 @@ final class Message
      *
      * @param string $path    Path from the start-line
      * @param array  $headers Array of headers (each value an array).
-     *
-     * @return string
      */
-    public static function parseRequestUri($path, array $headers)
+    public static function parseRequestUri(string $path, array $headers) : string
     {
         $hostKey = \array_filter(\array_keys($headers), function ($k) {
+            // Numeric array keys are converted to int by PHP.
+            $k = (string) $k;
             return \strtolower($k) === 'host';
         });
         // If no host is found, then a full URI cannot be constructed.
@@ -160,10 +156,8 @@ final class Message
      * Parses a request message string into a request object.
      *
      * @param string $message Request message string.
-     *
-     * @return Request
      */
-    public static function parseRequest($message)
+    public static function parseRequest(string $message) : \PostSMTP\Vendor\Psr\Http\Message\RequestInterface
     {
         $data = self::parseMessage($message);
         $matches = [];
@@ -179,19 +173,17 @@ final class Message
      * Parses a response message string into a response object.
      *
      * @param string $message Response message string.
-     *
-     * @return Response
      */
-    public static function parseResponse($message)
+    public static function parseResponse(string $message) : \PostSMTP\Vendor\Psr\Http\Message\ResponseInterface
     {
         $data = self::parseMessage($message);
-        // According to https://tools.ietf.org/html/rfc7230#section-3.1.2 the space
-        // between status-code and reason-phrase is required. But browsers accept
-        // responses without space and reason as well.
+        // According to https://datatracker.ietf.org/doc/html/rfc7230#section-3.1.2
+        // the space between status-code and reason-phrase is required. But
+        // browsers accept responses without space and reason as well.
         if (!\preg_match('/^HTTP\\/.* [0-9]{3}( .*|$)/', $data['start-line'])) {
             throw new \InvalidArgumentException('Invalid response string: ' . $data['start-line']);
         }
         $parts = \explode(' ', $data['start-line'], 3);
-        return new \PostSMTP\Vendor\GuzzleHttp\Psr7\Response((int) $parts[1], $data['headers'], $data['body'], \explode('/', $parts[0])[1], isset($parts[2]) ? $parts[2] : null);
+        return new \PostSMTP\Vendor\GuzzleHttp\Psr7\Response((int) $parts[1], $data['headers'], $data['body'], \explode('/', $parts[0])[1], $parts[2] ?? null);
     }
 }

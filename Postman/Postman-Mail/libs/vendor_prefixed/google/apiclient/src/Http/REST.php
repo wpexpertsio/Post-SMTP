@@ -18,9 +18,8 @@
 namespace PostSMTP\Vendor\Google\Http;
 
 use PostSMTP\Vendor\Google\Auth\HttpHandler\HttpHandlerFactory;
-use PostSMTP\Vendor\Google\Client;
-use PostSMTP\Vendor\Google\Task\Runner;
 use PostSMTP\Vendor\Google\Service\Exception as GoogleServiceException;
+use PostSMTP\Vendor\Google\Task\Runner;
 use PostSMTP\Vendor\GuzzleHttp\ClientInterface;
 use PostSMTP\Vendor\GuzzleHttp\Exception\RequestException;
 use PostSMTP\Vendor\GuzzleHttp\Psr7\Response;
@@ -35,18 +34,19 @@ class REST
      * Executes a Psr\Http\Message\RequestInterface and (if applicable) automatically retries
      * when errors occur.
      *
-     * @param Client $client
-     * @param RequestInterface $req
-     * @param string $expectedClass
+     * @template T
+     * @param ClientInterface $client
+     * @param RequestInterface $request
+     * @param class-string<T>|false|null $expectedClass
      * @param array $config
      * @param array $retryMap
-     * @return mixed decoded result
+     * @return mixed|T|null
      * @throws \Google\Service\Exception on server side error (ie: not authenticated,
      *  invalid or malformed post body, invalid url)
      */
-    public static function execute(\PostSMTP\Vendor\GuzzleHttp\ClientInterface $client, \PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, $expectedClass = null, $config = array(), $retryMap = null)
+    public static function execute(\PostSMTP\Vendor\GuzzleHttp\ClientInterface $client, \PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, $expectedClass = null, $config = [], $retryMap = null)
     {
-        $runner = new \PostSMTP\Vendor\Google\Task\Runner($config, \sprintf('%s %s', $request->getMethod(), (string) $request->getUri()), array(\get_class(), 'doExecute'), array($client, $request, $expectedClass));
+        $runner = new \PostSMTP\Vendor\Google\Task\Runner($config, \sprintf('%s %s', $request->getMethod(), (string) $request->getUri()), [\get_class(), 'doExecute'], [$client, $request, $expectedClass]);
         if (null !== $retryMap) {
             $runner->setRetryMap($retryMap);
         }
@@ -55,10 +55,11 @@ class REST
     /**
      * Executes a Psr\Http\Message\RequestInterface
      *
-     * @param Client $client
+     * @template T
+     * @param ClientInterface $client
      * @param RequestInterface $request
-     * @param string $expectedClass
-     * @return array decoded result
+     * @param class-string<T>|false|null $expectedClass
+     * @return mixed|T|null
      * @throws \Google\Service\Exception on server side error (ie: not authenticated,
      *  invalid or malformed post body, invalid url)
      */
@@ -74,7 +75,7 @@ class REST
             }
             $response = $e->getResponse();
             // specific checking for Guzzle 5: convert to PSR7 response
-            if ($response instanceof \PostSMTP\Vendor\GuzzleHttp\Message\ResponseInterface) {
+            if (\interface_exists('PostSMTP\\Vendor\\GuzzleHttp\\Message\\ResponseInterface') && $response instanceof \PostSMTP\Vendor\GuzzleHttp\Message\ResponseInterface) {
                 $response = new \PostSMTP\Vendor\GuzzleHttp\Psr7\Response($response->getStatusCode(), $response->getHeaders() ?: [], $response->getBody(), $response->getProtocolVersion(), $response->getReasonPhrase());
             }
         }
@@ -83,11 +84,13 @@ class REST
     /**
      * Decode an HTTP Response.
      * @static
-     * @throws \Google\Service\Exception
+     *
+     * @template T
      * @param RequestInterface $response The http response to be decoded.
      * @param ResponseInterface $response
-     * @param string $expectedClass
-     * @return mixed|null
+     * @param class-string<T>|false|null $expectedClass
+     * @return mixed|T|null
+     * @throws \Google\Service\Exception
      */
     public static function decodeHttpResponse(\PostSMTP\Vendor\Psr\Http\Message\ResponseInterface $response, \PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request = null, $expectedClass = null)
     {

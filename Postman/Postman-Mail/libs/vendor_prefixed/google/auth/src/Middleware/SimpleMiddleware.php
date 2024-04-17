@@ -28,7 +28,7 @@ use PostSMTP\Vendor\Psr\Http\Message\RequestInterface;
 class SimpleMiddleware
 {
     /**
-     * @var array
+     * @var array<mixed>
      */
     private $config;
     /**
@@ -37,7 +37,7 @@ class SimpleMiddleware
      * The configuration array expects one option
      * - key: required, otherwise InvalidArgumentException is thrown
      *
-     * @param array $config Configuration array
+     * @param array<mixed> $config Configuration array
      */
     public function __construct(array $config)
     {

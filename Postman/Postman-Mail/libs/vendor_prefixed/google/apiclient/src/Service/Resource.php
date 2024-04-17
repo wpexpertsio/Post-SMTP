@@ -17,9 +17,9 @@
  */
 namespace PostSMTP\Vendor\Google\Service;
 
-use PostSMTP\Vendor\Google\Model;
-use PostSMTP\Vendor\Google\Http\MediaFileUpload;
 use PostSMTP\Vendor\Google\Exception as GoogleException;
+use PostSMTP\Vendor\Google\Http\MediaFileUpload;
+use PostSMTP\Vendor\Google\Model;
 use PostSMTP\Vendor\Google\Utils\UriTemplate;
 use PostSMTP\Vendor\GuzzleHttp\Psr7\Request;
 /**
@@ -31,7 +31,7 @@ use PostSMTP\Vendor\GuzzleHttp\Psr7\Request;
 class Resource
 {
     // Valid query parameters that work, but don't appear in discovery.
-    private $stackParameters = array('alt' => array('type' => 'string', 'location' => 'query'), 'fields' => array('type' => 'string', 'location' => 'query'), 'trace' => array('type' => 'string', 'location' => 'query'), 'userIp' => array('type' => 'string', 'location' => 'query'), 'quotaUser' => array('type' => 'string', 'location' => 'query'), 'data' => array('type' => 'string', 'location' => 'body'), 'mimeType' => array('type' => 'string', 'location' => 'header'), 'uploadType' => array('type' => 'string', 'location' => 'query'), 'mediaUpload' => array('type' => 'complex', 'location' => 'query'), 'prettyPrint' => array('type' => 'string', 'location' => 'query'));
+    private $stackParameters = ['alt' => ['type' => 'string', 'location' => 'query'], 'fields' => ['type' => 'string', 'location' => 'query'], 'trace' => ['type' => 'string', 'location' => 'query'], 'userIp' => ['type' => 'string', 'location' => 'query'], 'quotaUser' => ['type' => 'string', 'location' => 'query'], 'data' => ['type' => 'string', 'location' => 'body'], 'mimeType' => ['type' => 'string', 'location' => 'header'], 'uploadType' => ['type' => 'string', 'location' => 'query'], 'mediaUpload' => ['type' => 'complex', 'location' => 'query'], 'prettyPrint' => ['type' => 'string', 'location' => 'query']];
     /** @var string $rootUrl */
     private $rootUrl;
     /** @var \Google\Client $client */
@@ -51,20 +51,22 @@ class Resource
         $this->servicePath = $service->servicePath;
         $this->serviceName = $serviceName;
         $this->resourceName = $resourceName;
-        $this->methods = \is_array($resource) && isset($resource['methods']) ? $resource['methods'] : array($resourceName => $resource);
+        $this->methods = \is_array($resource) && isset($resource['methods']) ? $resource['methods'] : [$resourceName => $resource];
     }
     /**
      * TODO: This function needs simplifying.
-     * @param $name
-     * @param $arguments
-     * @param $expectedClass - optional, the expected class name
-     * @return mixed|$expectedClass|ResponseInterface|RequestInterface
+     *
+     * @template T
+     * @param string $name
+     * @param array $arguments
+     * @param class-string<T> $expectedClass - optional, the expected class name
+     * @return mixed|T|ResponseInterface|RequestInterface
      * @throws \Google\Exception
      */
     public function call($name, $arguments, $expectedClass = null)
     {
         if (!isset($this->methods[$name])) {
-            $this->client->getLogger()->error('Service method unknown', array('service' => $this->serviceName, 'resource' => $this->resourceName, 'method' => $name));
+            $this->client->getLogger()->error('Service method unknown', ['service' => $this->serviceName, 'resource' => $this->resourceName, 'method' => $name]);
             throw new \PostSMTP\Vendor\Google\Exception("Unknown function: " . "{$this->serviceName}->{$this->resourceName}->{$name}()");
         }
         $method = $this->methods[$name];
@@ -78,12 +80,10 @@ class Resource
                 // to use the smart method to create a simple object for
                 // for JSONification.
                 $parameters['postBody'] = $parameters['postBody']->toSimpleObject();
-            } else {
-                if (\is_object($parameters['postBody'])) {
-                    // If the post body is another kind of object, we will try and
-                    // wrangle it into a sensible format.
-                    $parameters['postBody'] = $this->convertToArrayAndStripNulls($parameters['postBody']);
-                }
+            } elseif (\is_object($parameters['postBody'])) {
+                // If the post body is another kind of object, we will try and
+                // wrangle it into a sensible format.
+                $parameters['postBody'] = $this->convertToArrayAndStripNulls($parameters['postBody']);
             }
             $postBody = (array) $parameters['postBody'];
             unset($parameters['postBody']);
@@ -96,18 +96,18 @@ class Resource
             $parameters = \array_merge($parameters, $optParams);
         }
         if (!isset($method['parameters'])) {
-            $method['parameters'] = array();
+            $method['parameters'] = [];
         }
         $method['parameters'] = \array_merge($this->stackParameters, $method['parameters']);
         foreach ($parameters as $key => $val) {
             if ($key != 'postBody' && !isset($method['parameters'][$key])) {
-                $this->client->getLogger()->error('Service parameter unknown', array('service' => $this->serviceName, 'resource' => $this->resourceName, 'method' => $name, 'parameter' => $key));
+                $this->client->getLogger()->error('Service parameter unknown', ['service' => $this->serviceName, 'resource' => $this->resourceName, 'method' => $name, 'parameter' => $key]);
                 throw new \PostSMTP\Vendor\Google\Exception("({$name}) unknown parameter: '{$key}'");
             }
         }
         foreach ($method['parameters'] as $paramName => $paramSpec) {
             if (isset($paramSpec['required']) && $paramSpec['required'] && !isset($parameters[$paramName])) {
-                $this->client->getLogger()->error('Service parameter missing', array('service' => $this->serviceName, 'resource' => $this->resourceName, 'method' => $name, 'parameter' => $paramName));
+                $this->client->getLogger()->error('Service parameter missing', ['service' => $this->serviceName, 'resource' => $this->resourceName, 'method' => $name, 'parameter' => $paramName]);
                 throw new \PostSMTP\Vendor\Google\Exception("({$name}) missing required param: '{$paramName}'");
             }
             if (isset($parameters[$paramName])) {
@@ -120,13 +120,13 @@ class Resource
                 unset($parameters[$paramName]);
             }
         }
-        $this->client->getLogger()->info('Service Call', array('service' => $this->serviceName, 'resource' => $this->resourceName, 'method' => $name, 'arguments' => $parameters));
+        $this->client->getLogger()->info('Service Call', ['service' => $this->serviceName, 'resource' => $this->resourceName, 'method' => $name, 'arguments' => $parameters]);
         // build the service uri
         $url = $this->createRequestUri($method['path'], $parameters);
         // NOTE: because we're creating the request by hand,
         // and because the service has a rootUrl property
         // the "base_uri" of the Http Client is not accounted for
-        $request = new \PostSMTP\Vendor\GuzzleHttp\Psr7\Request($method['httpMethod'], $url, ['content-type' => 'application/json'], $postBody ? \json_encode($postBody) : '');
+        $request = new \PostSMTP\Vendor\GuzzleHttp\Psr7\Request($method['httpMethod'], $url, $postBody ? ['content-type' => 'application/json'] : [], $postBody ? \json_encode($postBody) : '');
         // support uploads
         if (isset($parameters['data'])) {
             $mimeType = isset($parameters['mimeType']) ? $parameters['mimeType']['value'] : 'application/octet-stream';
@@ -184,23 +184,21 @@ class Resource
             }
             $requestUrl = $this->rootUrl . $requestUrl;
         }
-        $uriTemplateVars = array();
-        $queryVars = array();
+        $uriTemplateVars = [];
+        $queryVars = [];
         foreach ($params as $paramName => $paramSpec) {
             if ($paramSpec['type'] == 'boolean') {
                 $paramSpec['value'] = $paramSpec['value'] ? 'true' : 'false';
             }
             if ($paramSpec['location'] == 'path') {
                 $uriTemplateVars[$paramName] = $paramSpec['value'];
-            } else {
-                if ($paramSpec['location'] == 'query') {
-                    if (\is_array($paramSpec['value'])) {
-                        foreach ($paramSpec['value'] as $value) {
-                            $queryVars[] = $paramName . '=' . \rawurlencode(\rawurldecode($value));
-                        }
-                    } else {
-                        $queryVars[] = $paramName . '=' . \rawurlencode(\rawurldecode($paramSpec['value']));
+            } elseif ($paramSpec['location'] == 'query') {
+                if (\is_array($paramSpec['value'])) {
+                    foreach ($paramSpec['value'] as $value) {
+                        $queryVars[] = $paramName . '=' . \rawurlencode(\rawurldecode($value));
                     }
+                } else {
+                    $queryVars[] = $paramName . '=' . \rawurlencode(\rawurldecode($paramSpec['value']));
                 }
             }
         }

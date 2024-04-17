@@ -17,8 +17,11 @@
  */
 namespace PostSMTP\Vendor\Google\Auth\HttpHandler;
 
+use PostSMTP\Vendor\GuzzleHttp\BodySummarizer;
 use PostSMTP\Vendor\GuzzleHttp\Client;
 use PostSMTP\Vendor\GuzzleHttp\ClientInterface;
+use PostSMTP\Vendor\GuzzleHttp\HandlerStack;
+use PostSMTP\Vendor\GuzzleHttp\Middleware;
 class HttpHandlerFactory
 {
     /**
@@ -30,7 +33,17 @@ class HttpHandlerFactory
      */
     public static function build(\PostSMTP\Vendor\GuzzleHttp\ClientInterface $client = null)
     {
-        $client = $client ?: new \PostSMTP\Vendor\GuzzleHttp\Client();
+        if (\is_null($client)) {
+            $stack = null;
+            if (\class_exists(\PostSMTP\Vendor\GuzzleHttp\BodySummarizer::class)) {
+                // double the # of characters before truncation by default
+                $bodySummarizer = new \PostSMTP\Vendor\GuzzleHttp\BodySummarizer(240);
+                $stack = \PostSMTP\Vendor\GuzzleHttp\HandlerStack::create();
+                $stack->remove('http_errors');
+                $stack->unshift(\PostSMTP\Vendor\GuzzleHttp\Middleware::httpErrors($bodySummarizer), 'http_errors');
+            }
+            $client = new \PostSMTP\Vendor\GuzzleHttp\Client(['handler' => $stack]);
+        }
         $version = null;
         if (\defined('PostSMTP\\Vendor\\GuzzleHttp\\ClientInterface::MAJOR_VERSION')) {
             $version = \PostSMTP\Vendor\GuzzleHttp\ClientInterface::MAJOR_VERSION;

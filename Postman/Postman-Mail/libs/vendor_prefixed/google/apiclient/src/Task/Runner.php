@@ -92,7 +92,8 @@ class Runner
      * @param array $arguments The task arguments
      * @throws \Google\Task\Exception when misconfigured
      */
-    public function __construct($config, $name, $action, array $arguments = array())
+    // @phpstan-ignore-next-line
+    public function __construct($config, $name, $action, array $arguments = [])
     {
         if (isset($config['initial_delay'])) {
             if ($config['initial_delay'] < 0) {
@@ -187,12 +188,12 @@ class Runner
     private function backOff()
     {
         $delay = $this->getDelay();
-        \usleep($delay * 1000000);
+        \usleep((int) ($delay * 1000000));
     }
     /**
      * Gets the delay (in seconds) for the current backoff period.
      *
-     * @return float
+     * @return int
      */
     private function getDelay()
     {
@@ -217,7 +218,7 @@ class Runner
      *
      * @return integer
      */
-    public function allowedRetries($code, $errors = array())
+    public function allowedRetries($code, $errors = [])
     {
         if (isset($this->retryMap[$code])) {
             return $this->retryMap[$code];

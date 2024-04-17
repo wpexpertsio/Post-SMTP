@@ -24,7 +24,7 @@ use PostSMTP\Vendor\Google\Service\Gmail\SmimeInfo;
  * Typical usage is:
  *  <code>
  *   $gmailService = new Google\Service\Gmail(...);
- *   $smimeInfo = $gmailService->smimeInfo;
+ *   $smimeInfo = $gmailService->users_settings_sendAs_smimeInfo;
  *  </code>
  */
 class UsersSettingsSendAsSmimeInfo extends \PostSMTP\Vendor\Google\Service\Resource

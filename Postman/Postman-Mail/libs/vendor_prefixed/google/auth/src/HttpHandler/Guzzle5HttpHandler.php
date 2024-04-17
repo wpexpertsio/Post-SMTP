@@ -25,6 +25,9 @@ use PostSMTP\Vendor\GuzzleHttp\Promise\RejectedPromise;
 use PostSMTP\Vendor\GuzzleHttp\Psr7\Response;
 use PostSMTP\Vendor\Psr\Http\Message\RequestInterface;
 use PostSMTP\Vendor\Psr\Http\Message\ResponseInterface;
+/**
+ * @deprecated
+ */
 class Guzzle5HttpHandler
 {
     /**
