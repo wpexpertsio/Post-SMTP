@@ -1464,7 +1464,7 @@ div#ps-email-log_length{
     overflow: auto;
 }
   
-.ps-popup-close-btn {
+.ps-popup-close-btn, .ps-print-email {
     text-align: center;
     width: 19px;
     height: 19px;
@@ -1478,6 +1478,16 @@ div#ps-email-log_length{
     text-decoration: none;
     color: #fff;
     line-height: 190%;
+}
+
+.ps-popup-close-btn:hover {
+    color: #fff;
+}
+
+.ps-print-email {
+    right: 33px;
+    background: none;
+    color: #000;
 }
 
 .transform-in, .transform-out {

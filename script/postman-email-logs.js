@@ -382,6 +382,10 @@ jQuery(document).ready(function($) {
 					else {
 
 						var popupContent;
+						jQuery( '.ps-popup-close' ).before( `
+							<a href="${response.data.log_url}&print=1" target="_blank" class="ps-print-email"><span class="dashicons dashicons-printer"></span></a>
+						` );
+
 						popupContent = `
 						<table>
 							<tr>
@@ -439,7 +443,7 @@ jQuery(document).ready(function($) {
 							</table>
 							<hr />
 							<div>
-								<iframe src="${response.data.log_url}" width="100%" height="310px"></iframe>
+								<iframe src="${response.data.log_url}" id="ps-email-body" width="100%" height="310px"></iframe>
 							</div>
 						`;
 
@@ -500,6 +504,7 @@ jQuery(document).ready(function($) {
 
 		jQuery( '.ps-popup-wrap' ).fadeOut( 500 );
 		jQuery( '.ps-popup-box' ).removeClass( 'transform-in' ).addClass( 'transform-out' );
+		jQuery( '.ps-print-email' ).remove();
 	
 		e.preventDefault();
 
