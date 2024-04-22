@@ -278,7 +278,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
-= 2.9.1 - 2024-04-18 =
+= 2.9.1 - 2024-04-22 =
 * Bug Fix: error appearing "syntax error, unexpected ')'".
 
 = 2.9.0 - 2024-04-16 =
