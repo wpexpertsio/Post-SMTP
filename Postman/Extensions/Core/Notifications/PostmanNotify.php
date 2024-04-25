@@ -234,7 +234,8 @@ class PostmanNotify {
 
             $args = array(
                 'body' => array(
-                    'message' => $message
+                    'message'     => $message,
+                    'site_url'    => get_bloginfo( 'url' )
                 )
             );
 
