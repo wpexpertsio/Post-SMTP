@@ -17,9 +17,8 @@
  */
 namespace PostSMTP\Vendor\Google\AuthHandler;
 
-use PostSMTP\Vendor\GuzzleHttp\Client;
-use PostSMTP\Vendor\GuzzleHttp\ClientInterface;
 use Exception;
+use PostSMTP\Vendor\GuzzleHttp\ClientInterface;
 class AuthHandlerFactory
 {
     /**

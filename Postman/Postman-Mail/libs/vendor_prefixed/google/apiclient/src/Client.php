@@ -17,45 +17,47 @@
  */
 namespace PostSMTP\Vendor\Google;
 
+use BadMethodCallException;
+use DomainException;
 use PostSMTP\Vendor\Google\AccessToken\Revoke;
 use PostSMTP\Vendor\Google\AccessToken\Verify;
 use PostSMTP\Vendor\Google\Auth\ApplicationDefaultCredentials;
 use PostSMTP\Vendor\Google\Auth\Cache\MemoryCacheItemPool;
+use PostSMTP\Vendor\Google\Auth\Credentials\ServiceAccountCredentials;
+use PostSMTP\Vendor\Google\Auth\Credentials\UserRefreshCredentials;
 use PostSMTP\Vendor\Google\Auth\CredentialsLoader;
 use PostSMTP\Vendor\Google\Auth\FetchAuthTokenCache;
 use PostSMTP\Vendor\Google\Auth\HttpHandler\HttpHandlerFactory;
 use PostSMTP\Vendor\Google\Auth\OAuth2;
-use PostSMTP\Vendor\Google\Auth\Credentials\ServiceAccountCredentials;
-use PostSMTP\Vendor\Google\Auth\Credentials\UserRefreshCredentials;
 use PostSMTP\Vendor\Google\AuthHandler\AuthHandlerFactory;
 use PostSMTP\Vendor\Google\Http\REST;
 use PostSMTP\Vendor\GuzzleHttp\Client as GuzzleClient;
 use PostSMTP\Vendor\GuzzleHttp\ClientInterface;
 use PostSMTP\Vendor\GuzzleHttp\Ring\Client\StreamHandler;
-use PostSMTP\Vendor\Psr\Cache\CacheItemPoolInterface;
-use PostSMTP\Vendor\Psr\Http\Message\RequestInterface;
-use PostSMTP\Vendor\Psr\Log\LoggerInterface;
-use PostSMTP\Vendor\Monolog\Logger;
-use PostSMTP\Vendor\Monolog\Handler\StreamHandler as MonologStreamHandler;
-use PostSMTP\Vendor\Monolog\Handler\SyslogHandler as MonologSyslogHandler;
-use BadMethodCallException;
-use DomainException;
 use InvalidArgumentException;
 use LogicException;
+use PostSMTP\Vendor\Monolog\Handler\StreamHandler as MonologStreamHandler;
+use PostSMTP\Vendor\Monolog\Handler\SyslogHandler as MonologSyslogHandler;
+use PostSMTP\Vendor\Monolog\Logger;
+use PostSMTP\Vendor\Psr\Cache\CacheItemPoolInterface;
+use PostSMTP\Vendor\Psr\Http\Message\RequestInterface;
+use PostSMTP\Vendor\Psr\Http\Message\ResponseInterface;
+use PostSMTP\Vendor\Psr\Log\LoggerInterface;
+use UnexpectedValueException;
 /**
  * The Google API Client
  * https://github.com/google/google-api-php-client
  */
 class Client
 {
-    const LIBVER = "2.12.1";
+    const LIBVER = "2.12.6";
     const USER_AGENT_SUFFIX = "google-api-php-client/";
     const OAUTH2_REVOKE_URI = 'https://oauth2.googleapis.com/revoke';
     const OAUTH2_TOKEN_URI = 'https://oauth2.googleapis.com/token';
-    const OAUTH2_AUTH_URL = 'https://accounts.google.com/o/oauth2/auth';
+    const OAUTH2_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
     const API_BASE_PATH = 'https://www.googleapis.com';
     /**
-     * @var OAuth2 $auth
+     * @var ?OAuth2 $auth
      */
     private $auth;
     /**
@@ -63,7 +65,7 @@ class Client
      */
     private $http;
     /**
-     * @var CacheItemPoolInterface $cache
+     * @var ?CacheItemPoolInterface $cache
      */
     private $cache;
     /**
@@ -75,11 +77,11 @@ class Client
      */
     private $config;
     /**
-     * @var LoggerInterface $logger
+     * @var ?LoggerInterface $logger
      */
     private $logger;
     /**
-     * @var CredentialsLoader $credentials
+     * @var ?CredentialsLoader $credentials
      */
     private $credentials;
     /**
@@ -94,7 +96,7 @@ class Client
      *
      * @param array $config
      */
-    public function __construct(array $config = array())
+    public function __construct(array $config = [])
     {
         $this->config = \array_merge([
             'application_name' => '',
@@ -136,7 +138,7 @@ class Client
             'approval_prompt' => 'auto',
             // Task Runner retry configuration
             // @see Google\Task\Runner
-            'retry' => array(),
+            'retry' => [],
             'retry_map' => null,
             // Cache class implementing Psr\Cache\CacheItemPoolInterface.
             // Defaults to Google\Auth\Cache\MemoryCacheItemPool.
@@ -194,7 +196,7 @@ class Client
      * For backwards compatibility
      * alias for fetchAccessTokenWithAuthCode
      *
-     * @param $code string code from accounts.google.com
+     * @param string $code string code from accounts.google.com
      * @return array access token
      * @deprecated
      */
@@ -206,7 +208,7 @@ class Client
      * Attempt to exchange a code for an valid authentication token.
      * Helper wrapped around the OAuth 2.0 implementation.
      *
-     * @param $code string code from accounts.google.com
+     * @param string $code code from accounts.google.com
      * @return array access token
      */
     public function fetchAccessTokenWithAuthCode($code)
@@ -299,9 +301,10 @@ class Client
      * The authorization endpoint allows the user to first
      * authenticate, and then grant/deny the access request.
      * @param string|array $scope The scope is expressed as an array or list of space-delimited strings.
+     * @param array $queryParams Querystring params to add to the authorization URL.
      * @return string
      */
-    public function createAuthUrl($scope = null)
+    public function createAuthUrl($scope = null, array $queryParams = [])
     {
         if (empty($scope)) {
             $scope = $this->prepareScopes();
@@ -313,7 +316,7 @@ class Client
         $approvalPrompt = $this->config['prompt'] ? null : $this->config['approval_prompt'];
         // include_granted_scopes should be string "true", string "false", or null
         $includeGrantedScopes = $this->config['include_granted_scopes'] === null ? null : \var_export($this->config['include_granted_scopes'], \true);
-        $params = \array_filter(['access_type' => $this->config['access_type'], 'approval_prompt' => $approvalPrompt, 'hd' => $this->config['hd'], 'include_granted_scopes' => $includeGrantedScopes, 'login_hint' => $this->config['login_hint'], 'openid.realm' => $this->config['openid.realm'], 'prompt' => $this->config['prompt'], 'response_type' => 'code', 'scope' => $scope, 'state' => $this->config['state']]);
+        $params = \array_filter(['access_type' => $this->config['access_type'], 'approval_prompt' => $approvalPrompt, 'hd' => $this->config['hd'], 'include_granted_scopes' => $includeGrantedScopes, 'login_hint' => $this->config['login_hint'], 'openid.realm' => $this->config['openid.realm'], 'prompt' => $this->config['prompt'], 'redirect_uri' => $this->config['redirect_uri'], 'response_type' => 'code', 'scope' => $scope, 'state' => $this->config['state']]) + $queryParams;
         // If the list of scopes contains plus.login, add request_visible_actions
         // to auth URL.
         $rva = $this->config['request_visible_actions'];
@@ -404,7 +407,7 @@ class Client
                 $token = $json;
             } else {
                 // assume $token is just the token string
-                $token = array('access_token' => $token);
+                $token = ['access_token' => $token];
             }
         }
         if ($token == null) {
@@ -454,6 +457,10 @@ class Client
                     $created = $payload['iat'];
                 }
             }
+        }
+        if (!isset($this->token['expires_in'])) {
+            // if the token does not have an "expires_in", then it's considered expired
+            return \true;
         }
         // If the token is set to expire in the next 30 seconds.
         return $created + ($this->token['expires_in'] - 30) < \time();
@@ -579,7 +586,7 @@ class Client
      * Set the hd (hosted domain) parameter streamlines the login process for
      * Google Apps hosted accounts. By including the domain of the user, you
      * restrict sign-in to accounts at that domain.
-     * @param $hd string - the domain to use.
+     * @param string $hd the domain to use.
      */
     public function setHostedDomain($hd)
     {
@@ -589,7 +596,7 @@ class Client
      * Set the prompt hint. Valid values are none, consent and select_account.
      * If no value is specified and the user has not previously authorized
      * access, then the user is shown a consent screen.
-     * @param $prompt string
+     * @param string $prompt
      *  {@code "none"} Do not display any authentication or consent screens. Must not be specified with other values.
      *  {@code "consent"} Prompt the user for consent.
      *  {@code "select_account"} Prompt the user to select an account.
@@ -602,7 +609,7 @@ class Client
      * openid.realm is a parameter from the OpenID 2.0 protocol, not from OAuth
      * 2.0. It is used in OpenID 2.0 requests to signify the URL-space for which
      * an authentication request is valid.
-     * @param $realm string - the URL-space to use.
+     * @param string $realm the URL-space to use.
      */
     public function setOpenidRealm($realm)
     {
@@ -612,7 +619,7 @@ class Client
      * If this is provided with the value true, and the authorization request is
      * granted, the authorization will include any previous authorizations
      * granted to this user/application combination for other scopes.
-     * @param $include boolean - the URL-space to use.
+     * @param bool $include the URL-space to use.
      */
     public function setIncludeGrantedScopes($include)
     {
@@ -671,7 +678,7 @@ class Client
      */
     public function setScopes($scope_or_scopes)
     {
-        $this->requestedScopes = array();
+        $this->requestedScopes = [];
         $this->addScope($scope_or_scopes);
     }
     /**
@@ -679,17 +686,15 @@ class Client
      * Will append any scopes not previously requested to the scope parameter.
      * A single string will be treated as a scope to request. An array of strings
      * will each be appended.
-     * @param $scope_or_scopes string|array e.g. "profile"
+     * @param string|string[] $scope_or_scopes e.g. "profile"
      */
     public function addScope($scope_or_scopes)
     {
         if (\is_string($scope_or_scopes) && !\in_array($scope_or_scopes, $this->requestedScopes)) {
             $this->requestedScopes[] = $scope_or_scopes;
-        } else {
-            if (\is_array($scope_or_scopes)) {
-                foreach ($scope_or_scopes as $scope) {
-                    $this->addScope($scope);
-                }
+        } elseif (\is_array($scope_or_scopes)) {
+            foreach ($scope_or_scopes as $scope) {
+                $this->addScope($scope);
             }
         }
     }
@@ -716,16 +721,17 @@ class Client
     /**
      * Helper method to execute deferred HTTP requests.
      *
-     * @param $request RequestInterface|\Google\Http\Batch
-     * @param string $expectedClass
+     * @template T
+     * @param RequestInterface $request
+     * @param class-string<T>|false|null $expectedClass
      * @throws \Google\Exception
-     * @return mixed|$expectedClass|ResponseInterface
+     * @return mixed|T|ResponseInterface
      */
     public function execute(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, $expectedClass = null)
     {
         $request = $request->withHeader('User-Agent', \sprintf('%s %s%s', $this->config['application_name'], self::USER_AGENT_SUFFIX, $this->getLibraryVersion()))->withHeader('x-goog-api-client', \sprintf('gl-php/%s gdcl/%s', \phpversion(), $this->getLibraryVersion()));
         if ($this->config['api_format_v2']) {
-            $request = $request->withHeader('X-GOOG-API-FORMAT-VERSION', 2);
+            $request = $request->withHeader('X-GOOG-API-FORMAT-VERSION', '2');
         }
         // call the authorize method
         // this is where most of the grunt work is done
@@ -959,9 +965,11 @@ class Client
         if (5 === $guzzleVersion) {
             $options = ['base_url' => $this->config['base_path'], 'defaults' => ['exceptions' => \false]];
             if ($this->isAppEngine()) {
-                // set StreamHandler on AppEngine by default
-                $options['handler'] = new \PostSMTP\Vendor\GuzzleHttp\Ring\Client\StreamHandler();
-                $options['defaults']['verify'] = '/etc/ca-certificates.crt';
+                if (\class_exists(\PostSMTP\Vendor\GuzzleHttp\Ring\Client\StreamHandler::class)) {
+                    // set StreamHandler on AppEngine by default
+                    $options['handler'] = new \PostSMTP\Vendor\GuzzleHttp\Ring\Client\StreamHandler();
+                    $options['defaults']['verify'] = '/etc/ca-certificates.crt';
+                }
             }
         } elseif (6 === $guzzleVersion || 7 === $guzzleVersion) {
             // guzzle 6 or 7
@@ -981,7 +989,7 @@ class Client
         $signingKey = $this->config['signing_key'];
         // create credentials using values supplied in setAuthConfig
         if ($signingKey) {
-            $serviceAccountCredentials = array('client_id' => $this->config['client_id'], 'client_email' => $this->config['client_email'], 'private_key' => $signingKey, 'type' => 'service_account', 'quota_project_id' => $this->config['quota_project']);
+            $serviceAccountCredentials = ['client_id' => $this->config['client_id'], 'client_email' => $this->config['client_email'], 'private_key' => $signingKey, 'type' => 'service_account', 'quota_project_id' => $this->config['quota_project']];
             $credentials = \PostSMTP\Vendor\Google\Auth\CredentialsLoader::makeCredentials($scopes, $serviceAccountCredentials);
         } else {
             // When $sub is provided, we cannot pass cache classes to ::getCredentials
@@ -1014,7 +1022,7 @@ class Client
     }
     private function createUserRefreshCredentials($scope, $refreshToken)
     {
-        $creds = \array_filter(array('client_id' => $this->getClientId(), 'client_secret' => $this->getClientSecret(), 'refresh_token' => $refreshToken));
+        $creds = \array_filter(['client_id' => $this->getClientId(), 'client_secret' => $this->getClientSecret(), 'refresh_token' => $refreshToken]);
         return new \PostSMTP\Vendor\Google\Auth\Credentials\UserRefreshCredentials($scope, $creds);
     }
 }

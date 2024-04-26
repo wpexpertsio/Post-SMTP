@@ -22,6 +22,7 @@ use PostSMTP\Vendor\Google\Auth\GetQuotaProjectInterface;
 use PostSMTP\Vendor\Google\Auth\HttpHandler\HttpClientCache;
 use PostSMTP\Vendor\Google\Auth\HttpHandler\HttpHandlerFactory;
 use PostSMTP\Vendor\Google\Auth\Iam;
+use PostSMTP\Vendor\Google\Auth\IamSignerTrait;
 use PostSMTP\Vendor\Google\Auth\ProjectIdProviderInterface;
 use PostSMTP\Vendor\Google\Auth\SignBlobInterface;
 use PostSMTP\Vendor\GuzzleHttp\Exception\ClientException;
@@ -56,6 +57,7 @@ use InvalidArgumentException;
  */
 class GCECredentials extends \PostSMTP\Vendor\Google\Auth\CredentialsLoader implements \PostSMTP\Vendor\Google\Auth\SignBlobInterface, \PostSMTP\Vendor\Google\Auth\ProjectIdProviderInterface, \PostSMTP\Vendor\Google\Auth\GetQuotaProjectInterface
 {
+    use IamSignerTrait;
     // phpcs:disable
     const cacheKey = 'GOOGLE_AUTH_PHP_GCE';
     // phpcs:enable
@@ -112,6 +114,8 @@ class GCECredentials extends \PostSMTP\Vendor\Google\Auth\CredentialsLoader impl
     private $isOnGce = \false;
     /**
      * Result of fetchAuthToken.
+     *
+     * @var array<mixed>
      */
     protected $lastReceivedToken;
     /**
@@ -122,10 +126,6 @@ class GCECredentials extends \PostSMTP\Vendor\Google\Auth\CredentialsLoader impl
      * @var string|null
      */
     private $projectId;
-    /**
-     * @var Iam|null
-     */
-    private $iam;
     /**
      * @var string
      */
@@ -144,7 +144,7 @@ class GCECredentials extends \PostSMTP\Vendor\Google\Auth\CredentialsLoader impl
     private $serviceAccountIdentity;
     /**
      * @param Iam $iam [optional] An IAM instance.
-     * @param string|array $scope [optional] the scope of the access request,
+     * @param string|string[] $scope [optional] the scope of the access request,
      *        expressed either as an array or as a space-delimited string.
      * @param string $targetAudience [optional] The audience for the ID token.
      * @param string $quotaProject [optional] Specifies a project to bill for access
@@ -240,7 +240,7 @@ class GCECredentials extends \PostSMTP\Vendor\Google\Auth\CredentialsLoader impl
      */
     public static function onAppEngineFlexible()
     {
-        return \substr(\getenv('GAE_INSTANCE'), 0, 4) === 'aef-';
+        return \substr((string) \getenv('GAE_INSTANCE'), 0, 4) === 'aef-';
     }
     /**
      * Determines if this a GCE instance, by accessing the expected metadata
@@ -282,15 +282,14 @@ class GCECredentials extends \PostSMTP\Vendor\Google\Auth\CredentialsLoader impl
      *
      * @param callable $httpHandler callback which delivers psr7 request
      *
-     * @return array A set of auth related metadata, based on the token type.
+     * @return array<mixed> {
+     *     A set of auth related metadata, based on the token type.
      *
-     * Access tokens have the following keys:
-     *   - access_token (string)
-     *   - expires_in (int)
-     *   - token_type (string)
-     * ID tokens have the following keys:
-     *   - id_token (string)
-     *
+     *     @type string $access_token for access tokens
+     *     @type int    $expires_in   for access tokens
+     *     @type string $token_type   for access tokens
+     *     @type string $id_token     for ID tokens
+     * }
      * @throws \Exception
      */
     public function fetchAuthToken(callable $httpHandler = null)
@@ -301,7 +300,7 @@ class GCECredentials extends \PostSMTP\Vendor\Google\Auth\CredentialsLoader impl
             $this->hasCheckedOnGce = \true;
         }
         if (!$this->isOnGce) {
-            return array();
+            return [];
             // return an empty array with no access token
         }
         $response = $this->getFromMetadata($httpHandler, $this->tokenUri);
@@ -324,7 +323,7 @@ class GCECredentials extends \PostSMTP\Vendor\Google\Auth\CredentialsLoader impl
         return self::cacheKey;
     }
     /**
-     * @return array|null
+     * @return array{access_token:string,expires_at:int}|null
      */
     public function getLastReceivedToken()
     {
@@ -356,34 +355,6 @@ class GCECredentials extends \PostSMTP\Vendor\Google\Auth\CredentialsLoader impl
         }
         $this->clientName = $this->getFromMetadata($httpHandler, self::getClientNameUri($this->serviceAccountIdentity));
         return $this->clientName;
-    }
-    /**
-     * Sign a string using the default service account private key.
-     *
-     * This implementation uses IAM's signBlob API.
-     *
-     * @see https://cloud.google.com/iam/credentials/reference/rest/v1/projects.serviceAccounts/signBlob SignBlob
-     *
-     * @param string $stringToSign The string to sign.
-     * @param bool $forceOpenSsl [optional] Does not apply to this credentials
-     *        type.
-     * @param string $accessToken The access token to use to sign the blob. If
-     *        provided, saves a call to the metadata server for a new access
-     *        token. **Defaults to** `null`.
-     * @return string
-     */
-    public function signBlob($stringToSign, $forceOpenSsl = \false, $accessToken = null)
-    {
-        $httpHandler = \PostSMTP\Vendor\Google\Auth\HttpHandler\HttpHandlerFactory::build(\PostSMTP\Vendor\Google\Auth\HttpHandler\HttpClientCache::getHttpClient());
-        // Providing a signer is useful for testing, but it's undocumented
-        // because it's not something a user would generally need to do.
-        $signer = $this->iam ?: new \PostSMTP\Vendor\Google\Auth\Iam($httpHandler);
-        $email = $this->getClientName($httpHandler);
-        if (\is_null($accessToken)) {
-            $previousToken = $this->getLastReceivedToken();
-            $accessToken = $previousToken ? $previousToken['access_token'] : $this->fetchAuthToken($httpHandler)['access_token'];
-        }
-        return $signer->signBlob($email, $accessToken, $stringToSign);
     }
     /**
      * Fetch the default Project ID from compute engine.
@@ -429,5 +400,19 @@ class GCECredentials extends \PostSMTP\Vendor\Google\Auth\CredentialsLoader impl
     public function getQuotaProject()
     {
         return $this->quotaProject;
+    }
+    /**
+     * Set whether or not we've already checked the GCE environment.
+     *
+     * @param bool $isOnGce
+     *
+     * @return void
+     */
+    public function setIsOnGce($isOnGce)
+    {
+        // Implicitly set hasCheckedGce to true
+        $this->hasCheckedOnGce = \true;
+        // Set isOnGce
+        $this->isOnGce = $isOnGce;
     }
 }

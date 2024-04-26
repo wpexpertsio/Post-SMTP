@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'PostSMTP\\' => array($baseDir . '/src'),
+    'Composer\\Installers\\' => array($vendorDir . '/composer/installers/src/Composer/Installers'),
 );

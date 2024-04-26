@@ -27,6 +27,7 @@ use stdClass;
  * http://tools.ietf.org/html/draft-zyp-json-schema-03#section-5
  *
  */
+#[\AllowDynamicProperties]
 class Model implements \ArrayAccess
 {
     /**
@@ -34,9 +35,9 @@ class Model implements \ArrayAccess
      * instead - it will be replaced when converting to JSON with a real null.
      */
     const NULL_VALUE = "{}gapi-php-null";
-    protected $internal_gapi_mappings = array();
-    protected $modelData = array();
-    protected $processed = array();
+    protected $internal_gapi_mappings = [];
+    protected $modelData = [];
+    protected $processed = [];
     /**
      * Polymorphic - accepts a variable number of arguments dependent
      * on the type of the model subclass.
@@ -63,7 +64,7 @@ class Model implements \ArrayAccess
             if (isset($this->modelData[$key])) {
                 $val = $this->modelData[$key];
             } elseif ($keyDataType == 'array' || $keyDataType == 'map') {
-                $val = array();
+                $val = [];
             } else {
                 $val = null;
             }
@@ -75,14 +76,12 @@ class Model implements \ArrayAccess
                 } else {
                     $this->modelData[$key] = new $keyType($val);
                 }
-            } else {
-                if (\is_array($val)) {
-                    $arrayObject = array();
-                    foreach ($val as $arrayIndex => $arrayItem) {
-                        $arrayObject[$arrayIndex] = new $keyType($arrayItem);
-                    }
-                    $this->modelData[$key] = $arrayObject;
+            } elseif (\is_array($val)) {
+                $arrayObject = [];
+                foreach ($val as $arrayIndex => $arrayItem) {
+                    $arrayObject[$arrayIndex] = new $keyType($arrayItem);
                 }
+                $this->modelData[$key] = $arrayObject;
             }
             $this->processed[$key] = \true;
         }
@@ -101,7 +100,7 @@ class Model implements \ArrayAccess
             if ($keyType = $this->keyType($key)) {
                 $dataType = $this->dataType($key);
                 if ($dataType == 'array' || $dataType == 'map') {
-                    $this->{$key} = array();
+                    $this->{$key} = [];
                     foreach ($val as $itemKey => $itemVal) {
                         if ($itemVal instanceof $keyType) {
                             $this->{$key}[$itemKey] = $itemVal;
@@ -172,18 +171,16 @@ class Model implements \ArrayAccess
     {
         if ($value instanceof \PostSMTP\Vendor\Google\Model) {
             return $value->toSimpleObject();
-        } else {
-            if (\is_array($value)) {
-                $return = array();
-                foreach ($value as $key => $a_value) {
-                    $a_value = $this->getSimpleValue($a_value);
-                    if ($a_value !== null) {
-                        $key = $this->getMappedName($key);
-                        $return[$key] = $this->nullPlaceholderCheck($a_value);
-                    }
+        } elseif (\is_array($value)) {
+            $return = [];
+            foreach ($value as $key => $a_value) {
+                $a_value = $this->getSimpleValue($a_value);
+                if ($a_value !== null) {
+                    $key = $this->getMappedName($key);
+                    $return[$key] = $this->nullPlaceholderCheck($a_value);
                 }
-                return $return;
             }
+            return $return;
         }
         return $value;
     }
@@ -237,16 +234,19 @@ class Model implements \ArrayAccess
             throw new \PostSMTP\Vendor\Google\Exception("Incorrect parameter type passed to {$method}(). Expected an array.");
         }
     }
+    /** @return bool */
     #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return isset($this->{$offset}) || isset($this->modelData[$offset]);
     }
+    /** @return mixed */
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return isset($this->{$offset}) ? $this->{$offset} : $this->__get($offset);
     }
+    /** @return void */
     #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
@@ -257,6 +257,7 @@ class Model implements \ArrayAccess
             $this->processed[$offset] = \true;
         }
     }
+    /** @return void */
     #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
@@ -266,7 +267,7 @@ class Model implements \ArrayAccess
     {
         $keyType = $key . "Type";
         // ensure keyType is a valid class
-        if (\property_exists($this, $keyType) && \class_exists($this->{$keyType})) {
+        if (\property_exists($this, $keyType) && $this->{$keyType} !== null && \class_exists($this->{$keyType})) {
             return $this->{$keyType};
         }
     }
@@ -292,7 +293,7 @@ class Model implements \ArrayAccess
      */
     private function camelCase($value)
     {
-        $value = \ucwords(\str_replace(array('-', '_'), ' ', $value));
+        $value = \ucwords(\str_replace(['-', '_'], ' ', $value));
         $value = \str_replace(' ', '', $value);
         $value[0] = \strtolower($value[0]);
         return $value;

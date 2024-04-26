@@ -23,7 +23,7 @@ use PostSMTP\Vendor\Google\Service\Gmail\ListHistoryResponse;
  * Typical usage is:
  *  <code>
  *   $gmailService = new Google\Service\Gmail(...);
- *   $history = $gmailService->history;
+ *   $history = $gmailService->users_history;
  *  </code>
  */
 class UsersHistory extends \PostSMTP\Vendor\Google\Service\Resource

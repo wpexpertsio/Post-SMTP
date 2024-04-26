@@ -24,7 +24,7 @@ use PostSMTP\Vendor\Google\Service\Gmail\ListForwardingAddressesResponse;
  * Typical usage is:
  *  <code>
  *   $gmailService = new Google\Service\Gmail(...);
- *   $forwardingAddresses = $gmailService->forwardingAddresses;
+ *   $forwardingAddresses = $gmailService->users_settings_forwardingAddresses;
  *  </code>
  */
 class UsersSettingsForwardingAddresses extends \PostSMTP\Vendor\Google\Service\Resource

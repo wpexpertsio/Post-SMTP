@@ -69,8 +69,8 @@ final class Php72
         if ('\\' === \DIRECTORY_SEPARATOR) {
             return 'Windows';
         }
-        $map = array('Darwin' => 'Darwin', 'DragonFly' => 'BSD', 'FreeBSD' => 'BSD', 'NetBSD' => 'BSD', 'OpenBSD' => 'BSD', 'Linux' => 'Linux', 'SunOS' => 'Solaris');
-        return isset($map[\PHP_OS]) ? $map[\PHP_OS] : 'Unknown';
+        $map = ['Darwin' => 'Darwin', 'DragonFly' => 'BSD', 'FreeBSD' => 'BSD', 'NetBSD' => 'BSD', 'OpenBSD' => 'BSD', 'Linux' => 'Linux', 'SunOS' => 'Solaris'];
+        return $map[\PHP_OS] ?? 'Unknown';
     }
     public static function spl_object_id($object)
     {
@@ -118,10 +118,10 @@ final class Php72
     }
     private static function initHashMask()
     {
-        $obj = (object) array();
+        $obj = (object) [];
         self::$hashMask = -1;
         // check if we are nested in an output buffering handler to prevent a fatal error with ob_start() below
-        $obFuncs = array('ob_clean', 'ob_end_clean', 'ob_flush', 'ob_end_flush', 'ob_get_contents', 'ob_get_flush');
+        $obFuncs = ['ob_clean', 'ob_end_clean', 'ob_flush', 'ob_end_flush', 'ob_get_contents', 'ob_get_flush'];
         foreach (\debug_backtrace(\PHP_VERSION_ID >= 50400 ? \DEBUG_BACKTRACE_IGNORE_ARGS : \false) as $frame) {
             if (isset($frame['function'][0]) && !isset($frame['class']) && 'o' === $frame['function'][0] && \in_array($frame['function'], $obFuncs)) {
                 $frame['line'] = 0;
@@ -146,7 +146,7 @@ final class Php72
         } else {
             $s = \chr(0xf0 | $code >> 18) . \chr(0x80 | $code >> 12 & 0x3f) . \chr(0x80 | $code >> 6 & 0x3f) . \chr(0x80 | $code & 0x3f);
         }
-        if ('UTF-8' !== $encoding) {
+        if ('UTF-8' !== ($encoding = $encoding ?? \mb_internal_encoding())) {
             $s = \mb_convert_encoding($s, $encoding, 'UTF-8');
         }
         return $s;
