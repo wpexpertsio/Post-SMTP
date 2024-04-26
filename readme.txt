@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: smtp, wordpress smtp, wp_mail, gmail smtp, post smtp, email,  email log, office 365, mailgun, wp smtp, sendgrid, brevo, microsoft 365, amazon ses, sendinblue
 Requires at least: 5.6.0
 Tested up to: 6.5.2
-Stable tag: 2.9.1
+Stable tag: 2.9.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -277,6 +277,11 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 Important: If you are using version 2.8.7 or lower of our plugin, please update to the latest version as soon as possible. This update contains an urgent security fix that prevents potential vulnerabilities and attacks. We apologize for any inconvenience this may cause you and we appreciate your cooperation. Thank you for using our plugin.
 
 == Changelog ==
+
+= 2.9.2 - 2024-04-26 =
+* NEW - Added new filter post_smtp_postmark_content for developers ease.
+* UPDATED - Google Client SDK to latest version.
+* IMPROVEMENT - Site URL was missing in [Post SMTP Chrome Extension](https://chromewebstore.google.com/detail/post-smtp-notifications/npklmbkpbknkmbohdbpikeidiaekjoch).
 
 = 2.9.1 - 2024-04-22 =
 * Bug Fix: error appearing "syntax error, unexpected ')'".
