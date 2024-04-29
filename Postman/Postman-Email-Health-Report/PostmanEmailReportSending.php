@@ -128,7 +128,7 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 		 * Get the email body
 		 *
 		 * @param string $interval Time interval.
-		 * @since 3.0.0
+		 * @since 2.9.0
 		 * @version 1.0.0
 		 */
 		public function get_body( $interval ) {
@@ -179,7 +179,7 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 		 * Function to send the report
 		 *
 		 * @param string $interval Time Interval.
-		 * @since 3.0.0
+		 * @since 2.9.0
 		 * @version 1.0.0
 		 */
 		public function send_mail( $interval ) {
@@ -203,7 +203,7 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 			 * Filters the site title to be used in the email subject.
 			 *
 			 * @param string $site_title The site title.
-			 * @since 3.0.0
+			 * @since 2.9.0
 			 * @version 1.0.0
 			 */
 			$site_title = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
@@ -212,7 +212,7 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 			 * Filters the email address to which the report is sent.
 			 *
 			 * @param string $to The email address to which the report is sent.
-			 * @since 3.0.0
+			 * @since 2.9.0
 			 * @version 1.0.0
 			 */
 			$to = apply_filters( 'postman_rat_reporting_email_to', get_option( 'admin_email' ) );
