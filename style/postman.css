@@ -1473,15 +1473,22 @@ div#ps-email-log_length{
     top: 10px;
     right: 10px;
     border-radius: 1000px;
-    background: #dc3545;
     font-weight: bold;
     text-decoration: none;
-    color: #fff;
+    color: #000;
     line-height: 190%;
 }
 
+.ps-popup-close-btn {
+    top: 6px;
+}
+
+.ps-popup-close-btn span {
+    font-size: 27px;
+}
+
 .ps-popup-close-btn:hover {
-    color: #fff;
+    color: #000;
 }
 
 .ps-print-email {
