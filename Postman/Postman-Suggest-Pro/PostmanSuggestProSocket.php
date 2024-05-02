@@ -233,8 +233,8 @@ class PostmanSuggestProSocket {
         
         add_submenu_page( 
             PostmanViewController::POSTMAN_MENU_SLUG, 
-            __( '👉 Get Pro Bundle', 'post-smtp' ), 
-            sprintf( '<span class="dashicons dashicons-superhero-alt ps-pro-icon"></span> %1$s <b>%2$s</b>&nbsp;&nbsp;➤', __( 'Get', 'post-smtp' ), __( 'Pro Bundle', 'post-smtp' ) ),
+            __( 'Get Pro Bundle', 'post-smtp' ), 
+            sprintf( '<span class="dashicons dashicons-superhero-alt ps-pro-icon"></span> %1$s <b>%2$s</b>', __( 'Get', 'post-smtp' ), __( 'Pro Bundle', 'post-smtp' ) ),
             'manage_options', 
             esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu&utm_campaign=plugin' ),
             '',
