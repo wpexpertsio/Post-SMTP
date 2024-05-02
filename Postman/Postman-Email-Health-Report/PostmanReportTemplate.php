@@ -79,19 +79,18 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                     <html>
                         <head>
                             <style>
-                                .container {
-                                    width: 100%;
-                                    height: 600px;
+                                .outer-box {
                                     background-color: #f1f1f1;
-                                    display: flex;
-                                    align-items: start;
-                                    justify-content: center;
                                     padding: 15px 0;
                                 }
                                 .main {
                                     width: 490px;
-                                    height: 100%;
-                                    background-color: white;
+                                    background-color: #ffffff;
+                                    margin: 0 auto;
+                                    padding: 1px 0;
+                                }
+                                .container {
+                                    width: 80%;
                                     margin: 0 auto;
                                 }
                                 .logo {
@@ -102,17 +101,11 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                     font-size: 12px;
                                     font-weight: 400;
                                     line-height: 15px;
-                                    text-align: left;
-                                    margin-top: 32px;
-                                    height: 60px;
-                                    width: 424px;
-                                    margin-left: 38px;
+                                    padding-top: 25px;
                                 }
                                 .cards {
                                     margin-top: 20px;
-                                    Width: 424px;
-                                    Height: 120px;
-                                    margin-left: 36px;
+                                    display: flex;
                                 }
                                 .inner-cards {
                                     display: inline-block;
@@ -122,6 +115,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                     height: 120px;
                                     padding: 10px;
                                     border-radius: 5px;
+                                    margin: 0 2px;
                                 }
                                 .total {
                                     background: #eafff2;
@@ -154,18 +148,6 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                     border-radius: 50%;
                                     display: inline-block;
                                 }
-                                .ellipse-total {
-                                    background: #26E271;
-                                }
-                                .ellipse-sent {
-                                    background: #B8C7E4;
-                                }
-                                .ellipse-failed {
-                                    background: #E8AF92;
-                                }
-                                .ellipse-opened {
-                                    background: #FFF5E9;
-                                }
                                 .ellipse-opened-pro {
                                     background: #FA8900;
                                 }
@@ -197,13 +179,10 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                     margin-left: 32px;
                                     border-radius: 10px;
                                 }
-                                .table-display-free{
+                                .table-display-free {
                                     margin-top: 25px;
                                     height: 187px;
-                                    width: 424px;
                                     border: 1px solid #CDCDCD;
-                                    border-top: none;
-                                    margin-left: 32px;
                                     border-radius: 10px;
                                 }
                                 .table-header {
@@ -251,14 +230,11 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                     line-height: 22px;
                                     font-weight: 800;
                                 }
-                                .bottom-text{
-                                    width: 312px;
-                                    height: 17px;
+                                .bottom-text {
                                     color: #375CAF;
                                     font-size: 12px;
                                     font-weight: 400;
-                                    margin-left: 16%;
-                                    margin-top: 20px;
+                                    padding: 20px 0;
                                 }
                                 .bottom-text a {
                                     color: #375CAF;
@@ -282,26 +258,26 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                             </style>
                         </head>
                         <body>
-                            <div class='container'>
+                            <div class='outer-box'>
                                 <div class='main'>
                                     <div class='logo'>
                                     <img src='" . POST_SMTP_ASSETS . "images/reporting/post_logo.png' />
                                     </div>
-                                    <div class='text'>
+                                    <div class='text container'>
                                         Hi {$admin_name}
                                         <br>
                                         <br>
                                         Here is a quick overview of how your emails were performing in the past {$duration}
                                     </div>
-                                    <div class='cards'>
+                                    <div class='cards container'>
                                         <div class='total inner-cards'>
                                             <div class='ellipse ellipse-total'>
-                                                <div class='icon' style='line-height: 53px;'>
+                                                <div class='icon'>
                                                 <img src='" . POST_SMTP_ASSETS . "images/reporting/total.png' />
                                                 </div>
                                             </div>
                                             <div class='txt'>
-                                                Total Emails
+                                                Total
                                             </div>
                                             <div class='count'>
                                             {$total}
@@ -337,7 +313,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 
                                             $body .= "<div class='opened-pro inner-cards'>
                                                         <div class='ellipse ellipse-opened-pro'>
-                                                            <div class='icon' style='line-height: 53px;'>
+                                                            <div class='icon'>
                                                                 <img src='" . POST_SMTP_ASSETS . "images/reporting/opened-pro.png' />
                                                             </div>
                                                         </div>
@@ -355,7 +331,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                             $body .= "<a href='{$extension_url}' target='_blank' style='text-decoration:none;'>
                                                         <div class='opened inner-cards'>
                                                             <div class='ellipse ellipse-opened'>
-                                                                <div class='icon' style='line-height: 53px;'>
+                                                                <div class='icon'>
                                                                     <img src='" . POST_SMTP_ASSETS . "images/reporting/opened.png' />
                                                                 </div>
                                                             </div>
@@ -444,7 +420,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                     else {
 
                                         $body .= "</div>
-                                                    <div class='table-display-free'>
+                                                    <div class='table-display-free container'>
                                                         <div class='table-header-free'>
                                                             Unlock the Post SMTP Pro and enhance your email deliverability
                                                         </div>
@@ -468,7 +444,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class='bottom-text' style='width: 332px; margin-left: 15%;'>
+                                                    <div class='bottom-text container'>
                                                         This email was auto-generated. You can disable it anytime you want. <a href='{$disable_url}' target='_blank'>Learn how?</a>
                                                     </div>";
 
