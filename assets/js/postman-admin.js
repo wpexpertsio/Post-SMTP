@@ -46,4 +46,6 @@ jQuery( document ).ready( function() {
         
     });
 
+    jQuery( '.postman_sent_mail-count' ).closest( 'li' ).css( 'display', 'none' );
+
 } );
