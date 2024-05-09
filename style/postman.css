@@ -1593,9 +1593,8 @@ div#ps-email-log_length{
     vertical-align: text-top;
 }
 
-.post-smtp-remove-webhook-url.dashicons.dashicons-no-alt {
-    background: red;
-    color: #fff;
+.post-smtp-remove-webhook-url {
+    color: #999999;
     border-radius: 50px;
     margin-left: 6px;
     cursor: pointer;

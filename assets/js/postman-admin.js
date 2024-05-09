@@ -70,7 +70,7 @@ jQuery( document ).ready( function() {
 
         var webhookElement = jQuery( '.post-smtp-webhook-urls' ).find( '.post-smtp-webhook-url-container' ).first().clone();
         webhookElement.find( 'input' ).val( '' );
-        jQuery( webhookElement ).find( 'input' ).after( '<span class="post-smtp-remove-webhook-url dashicons dashicons-no-alt"></span>' );
+        jQuery( webhookElement ).find( 'input' ).after( '<span class="post-smtp-remove-webhook-url dashicons dashicons-trash"></span>' );
     
         jQuery( '.post-smtp-webhook-urls' ).find( '.post-smtp-webhook-url-container' ).last().after( webhookElement );
     

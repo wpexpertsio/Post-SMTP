@@ -214,7 +214,7 @@ class PostmanNotify {
 
         do {
 
-            $remove_btn = $i  == 0 ? '' : '<span class="post-smtp-remove-webhook-url dashicons dashicons-no-alt"></span>';
+            $remove_btn = $i  == 0 ? '' : '<span class="post-smtp-remove-webhook-url dashicons dashicons-trash"></span>';
 
             echo "<tr class='post-smtp-webhook-url-container'>
                     <th>".__( 'Webhook URL', 'post-smtp' )."</th>
