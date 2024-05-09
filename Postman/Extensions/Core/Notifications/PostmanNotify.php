@@ -79,7 +79,7 @@ class PostmanNotify {
     }
 
     public function tabs($tabs) {
-        $tabs['notifications'] = __( 'Notifications', 'post-smtp' );
+        $tabs['notifications'] = sprintf( '<span class="dashicons dashicons-bell"></span> %s', __( 'Notifications', 'post-smtp' ) );
 
         return $tabs;
     }

@@ -104,7 +104,7 @@ class Post_SMTP_Mobile {
      */
     public function tabs( $tabs ) {
         
-        $tabs['mobile-app'] = __( 'Mobile App', 'post-smtp' );
+        $tabs['mobile-app'] = sprintf( '<span class="dashicons dashicons-smartphone"></span> %s', __( 'Mobile App', 'post-smtp' ) );
 
         return $tabs;
         

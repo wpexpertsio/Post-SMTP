@@ -50,7 +50,7 @@ if ( ! class_exists( 'PostmanEmailHealthReporting' ) ) :
 		 */
 		public function add_tab( $tabs ) {
 
-			$tabs['email_reporting'] = __( 'Email Reporting', 'post-smtp' );
+			$tabs['email_reporting'] = sprintf( '<span class="dashicons dashicons-media-document"></span> %s', __( 'Email Reporting', 'post-smtp' ) );
 
 			return $tabs;
 		}
