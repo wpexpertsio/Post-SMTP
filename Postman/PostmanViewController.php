@@ -266,6 +266,16 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 
 				}
 				else {
+
+					/**
+					 * Filter the URL of the Postman SMTP Wizard
+					 * 
+					 * @param string $slug The URL page of the Postman SMTP Wizard
+					 * 
+					 * @since 2.9.4
+					 */
+					$slug = apply_filters( 'post_smtp_wizard_url_page', PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG );
+					
 					printf( 
 						'<div class="ps-config-bar">
 							<span >%s</span>
@@ -276,7 +286,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 						</div>',
 						wp_kses_post( $statusMessage ),
 						esc_html__( 'Get Started by Setup Wizard!', 'post-smtp' ),
-						esc_attr( $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG ) ),
+						esc_attr( $this->getPageUrl( $slug ) ),
 						esc_html__( 'Start the Wizard', 'post-smtp' )
 					);
 				}
@@ -284,6 +294,15 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			}
 
 			//Main Content
+
+			/**
+			 * Filter the URL of the Postman SMTP Wizard
+			 * 
+			 * @param string $slug The URL page of the Postman SMTP Wizard
+			 * 
+			 * @since 2.9.4
+			 */
+			$slug = apply_filters( 'post_smtp_wizard_url_page', PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG );
 			?>
 			<div class="ps-flex ps-home-main">
 				<div class="ps-setting-box">
@@ -292,7 +311,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 						<h3 class="ps-ib ps-vm"><?php esc_html_e( 'Configuration', 'post-smtp' ); ?></h3>
 					</div> 
 					<div class="ps-wizard">
-						<a href="<?php esc_attr_e( $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG ) ) ?>" class="button button-primary"><?php esc_html_e( 'Start the Wizard', 'post-smtp' ); ?></a>
+						<a href="<?php esc_attr_e( $this->getPageUrl( $slug ) ) ?>" class="button button-primary"><?php esc_html_e( 'Start the Wizard', 'post-smtp' ); ?></a>
 						<h4><?php esc_html_e( 'OR', 'post-smtp' ); ?></h4>
 						<div>
 							<a href="<?php echo esc_url( $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_SLUG ) ) ?>">
