@@ -205,7 +205,10 @@ class PostmanEmailQueryLog {
     public function get_total_row_count() {
 
         return $this->db->get_results(
-            "SELECT COUNT(*) as count FROM `{$this->table}`;"
+            $this->db->prepare(
+                "SELECT COUNT(*) as count FROM %i;",
+                $this->table
+            )
         );
 
     }
@@ -220,7 +223,10 @@ class PostmanEmailQueryLog {
     public function get_last_log_id() {
 
         $result = $this->db->get_results(
-            "SELECT id FROM `{$this->table}` ORDER BY id DESC LIMIT 1;"
+            $this->db->prepare(
+                "SELECT id FROM %i ORDER BY id DESC LIMIT 1;",
+                $this->table
+            )
         );
 
         return empty( $result ) ? false : $result[0]->id;
@@ -241,7 +247,10 @@ class PostmanEmailQueryLog {
         $ids = $ids == -1 ? '' : "WHERE id IN ({$ids});";
 
         return $this->db->query(
-            "DELETE FROM `{$this->table}` {$ids}"
+            $this->db->prepare(
+                "DELETE FROM %i {$ids}",
+                $this->table
+            )
         );
 
     }
@@ -260,7 +269,10 @@ class PostmanEmailQueryLog {
         $ids = $ids == -1 ? '' : "WHERE id IN ({$ids});";
 
         return $this->db->get_results(
-            "SELECT * FROM `{$this->table}` {$ids}"
+            $this->db->prepare(
+                "SELECT * FROM %i {$ids}",
+                $this->table
+            )
         );
 
 
