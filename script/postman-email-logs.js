@@ -61,7 +61,7 @@ jQuery(document).ready(function($) {
 		ajax: {
 			url: `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}`,
 		},
-		"lengthMenu": [25, 50, 100, 500],
+		"lengthMenu": [5, 25, 50, 100, 500],
 		columns: PSEmailLogs.DTCols,
 		columnDefs: [
 			{ orderable: false, targets: 0 },
@@ -160,6 +160,35 @@ jQuery(document).ready(function($) {
 
 	} );
 
+	// Status Buttons
+	jQuery( '#ps-email-log' ).before( `
+		<div class="ps-email-log-status-buttons">
+			<button class="button ps-status-btn" data-status="all">All</button>
+			<button class="button ps-status-btn" data-status="success">Success</button>
+			<button class="button ps-status-btn" data-status="failed">Failed</button>
+		</div>
+	` );
+
+	// Status Filter
+	jQuery( document ).on( 'click', '.ps-status-btn', function() {
+
+		var status = jQuery( this ).data( 'status' );
+		var from = jQuery( '.ps-email-log-from' ).val();
+		var to = jQuery( '.ps-email-log-to' ).val();
+	
+		if( status == 'all' ) {
+
+			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&from=${from}&to=${to}` ).load();
+
+		}
+		else {
+
+			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&status=${status}&from=${from}&to=${to}` ).load();
+
+		}
+
+	} );
+
 	//Check All
 	jQuery( document ).on( 'click', '.ps-email-log-select-all', function( e ) {
 
@@ -172,7 +201,8 @@ jQuery(document).ready(function($) {
 
 			jQuery( '.ps-email-log-export-btn .ps-btn-text' ).text( `Export Selected (${selectedValue})` );
 			jQuery( '.ps-email-log-delete-btn .ps-btn-text' ).text( `Delete Selected (${selectedValue})` );
-			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn' ).addClass( 'ps-selected' );
+			jQuery( '#ps-aedl-bulk-resend' ).text( `Resend Selected (${selectedValue})` );
+			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn, #ps-aedl-bulk-resend' ).addClass( 'ps-selected' );
 
 		}
 		else {
@@ -182,7 +212,8 @@ jQuery(document).ready(function($) {
 
 			jQuery( '.ps-email-log-export-btn .ps-btn-text' ).text( `Export All` );
 			jQuery( '.ps-email-log-delete-btn .ps-btn-text' ).text( `Delete All` );
-			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn' ).removeClass( 'ps-selected' );
+			jQuery( '#ps-aedl-bulk-resend' ).text( `Resend All` );
+			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn, #ps-aedl-bulk-resend' ).removeClass( 'ps-selected' );
 
 		}
 		
@@ -220,13 +251,15 @@ jQuery(document).ready(function($) {
 
 		jQuery( '.ps-email-log-export-btn .ps-btn-text' ).text( `Export Selected (${checkedCounter})` );
 		jQuery( '.ps-email-log-delete-btn .ps-btn-text' ).text( `Delete Selected (${checkedCounter})` );
-		jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn' ).addClass( 'ps-selected' );
+		jQuery( '#ps-aedl-bulk-resend' ).text( `Resend Selected (${checkedCounter})` );
+		jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn, #ps-aedl-bulk-resend' ).addClass( 'ps-selected' );
 		
 		if( checkedCounter == 0 ) {
 
 			jQuery( '.ps-email-log-export-btn .ps-btn-text' ).text( `Export All` );
 			jQuery( '.ps-email-log-delete-btn .ps-btn-text' ).text( `Delete All` );
-			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn' ).removeClass( 'ps-selected' );
+			jQuery( '#ps-aedl-bulk-resend' ).text( `Resend All` );
+			jQuery( '.ps-email-log-export-btn, .ps-email-log-delete-btn, #ps-aedl-bulk-resend' ).removeClass( 'ps-selected' );
 
 		}
 

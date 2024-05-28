@@ -317,6 +317,7 @@ class PostmanEmailLogs {
             $query['end'] = sanitize_text_field( $_GET['length'] );
             $query['search'] = sanitize_text_field( $_GET['search']['value'] );
             $query['order'] = sanitize_text_field( $_GET['order'][0]['dir'] );
+            $query['status'] = sanitize_text_field( $_GET['status'] );
             
 			//MainWP | Get Sites
             if( isset( $_GET['site_id'] ) ) {
@@ -329,13 +330,13 @@ class PostmanEmailLogs {
             $query['order_by'] = sanitize_text_field( $_GET['columns'][$_GET['order'][0]['column']]['data'] );
 
             //Date Filter :)
-            if( isset( $_GET['from'] ) ) {
+            if( isset( $_GET['from'] ) && !empty( $_GET['from'] ) ) {
 
                 $query['from'] = strtotime( sanitize_text_field( $_GET['from'] ) );
 
             }
 
-            if( isset( $_GET['to'] ) ) {
+            if( isset( $_GET['to'] ) && !empty( $_GET['to'] ) ) {
 
                 $query['to'] = strtotime( sanitize_text_field( $_GET['to'] ) ) + 86400;
 

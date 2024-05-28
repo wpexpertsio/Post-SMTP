@@ -1428,6 +1428,10 @@ div#ps-email-log_length{
     margin: 3px 0;
 }
 
+.ps-email-log-status-buttons {
+    margin-top: 15px;
+}
+
 /* View And Session Transcript Popup */
 .ps-popup-wrap {
     width: 100%;
