@@ -163,7 +163,7 @@ jQuery(document).ready(function($) {
 	// Status Buttons
 	jQuery( '#ps-email-log' ).before( `
 		<div class="ps-email-log-status-buttons">
-			<button class="button ps-status-btn" data-status="all">All</button>
+			<button class="button ps-status-btn active" data-status="all">All logs</button>
 			<button class="button ps-status-btn" data-status="success">Success</button>
 			<button class="button ps-status-btn" data-status="failed">Failed</button>
 		</div>
@@ -172,6 +172,8 @@ jQuery(document).ready(function($) {
 	// Status Filter
 	jQuery( document ).on( 'click', '.ps-status-btn', function() {
 
+		jQuery( '.ps-status-btn' ).removeClass( 'active' );
+		jQuery( this ).addClass( 'active' );
 		var status = jQuery( this ).data( 'status' );
 		var from = jQuery( '.ps-email-log-from' ).val();
 		var to = jQuery( '.ps-email-log-to' ).val();

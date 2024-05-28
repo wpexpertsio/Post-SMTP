@@ -1600,3 +1600,23 @@ div#ps-email-log_length{
 .ps-pro-icon {
     color: #fed90f;
 }
+
+.button.ps-status-btn {
+    border-radius: 50px;
+}
+
+.ps-status-btn {
+    background-color: #ffffff!important;
+    color: #000000!important;
+    border: 1px solid #4578ea!important;
+}
+
+.ps-status-btn.active {
+    background-color: #4578ea!important;;
+    color: #ffffff!important;
+    border: none;
+}
+
+.ps-status-btn:focus {
+    box-shadow: none!important;
+}
