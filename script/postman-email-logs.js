@@ -125,8 +125,8 @@ jQuery(document).ready(function($) {
 
 	jQuery( '.ps-email-log-date-filter' ).after( `
 		<div class="ps-email-log-top-buttons">
-			<button class="button button-primary ps-email-log-export-btn"><span class="ps-btn-text">Export All</span> <span class="dashicons dashicons-admin-page"></span></button>
-			<button class="button button-primary ps-email-log-delete-btn"><span class="ps-btn-text">Delete All</span> <span class="dashicons dashicons-trash"></span></button>
+			<button class="button button-primary ps-email-log-export-btn" data-status="all"><span class="ps-btn-text">Export All</span> <span class="dashicons dashicons-admin-page"></span></button>
+			<button class="button button-primary ps-email-log-delete-btn" data-status="all"><span class="ps-btn-text">Delete All</span> <span class="dashicons dashicons-trash"></span></button>
 		</div>
 		<div class="clear"></div>
 	` );
@@ -175,6 +175,8 @@ jQuery(document).ready(function($) {
 		var status = jQuery( this ).data( 'status' );
 		var from = jQuery( '.ps-email-log-from' ).val();
 		var to = jQuery( '.ps-email-log-to' ).val();
+		jQuery( '.ps-email-log-delete-btn' ).attr( 'data-status', status );
+		jQuery( '.ps-email-log-export-btn' ).attr( 'data-status', status );
 	
 		if( status == 'all' ) {
 
@@ -269,6 +271,7 @@ jQuery(document).ready(function($) {
 	jQuery( document ).on( 'click', '.ps-email-log-export-btn', function( e ) { 
 
 		var selected = [];
+		var status = jQuery( '.ps-email-log-export-btn' ).attr( 'data-status' );
 
 		if( jQuery( this ).hasClass( 'ps-selected' ) ) {
 
@@ -291,7 +294,8 @@ jQuery(document).ready(function($) {
 			data: {
 				action: 'ps-export-email-logs',
 				security: logsDTSecirity,
-				selected: selected
+				selected: selected,
+				status: status
 			},
 			success: function( response ) {
 
@@ -306,8 +310,8 @@ jQuery(document).ready(function($) {
 				downloadLink.download = 'email-logs';
 
 				/*
-					* Actually download CSV
-					*/
+				 * Actually download CSV
+				 */
 				document.body.appendChild(downloadLink);
 				downloadLink.click();
 				document.body.removeChild(downloadLink);

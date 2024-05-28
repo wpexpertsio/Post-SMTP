@@ -317,7 +317,7 @@ class PostmanEmailLogs {
             $query['end'] = sanitize_text_field( $_GET['length'] );
             $query['search'] = sanitize_text_field( $_GET['search']['value'] );
             $query['order'] = sanitize_text_field( $_GET['order'][0]['dir'] );
-            $query['status'] = sanitize_text_field( $_GET['status'] );
+            $query['status'] = isset( $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : '';
             
 			//MainWP | Get Sites
             if( isset( $_GET['site_id'] ) ) {
