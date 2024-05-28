@@ -44,8 +44,10 @@ class Post_SMTP_Mobile {
 		
 		add_filter( 'post_smtp_sanitize', array( $this, 'sanitize' ), 10, 3 );
         add_filter( 'post_smtp_admin_tabs', array( $this, 'tabs' ), 11 );
-
+       
+		include_once 'includes/functions.php';
         include_once 'includes/rest-api/v1/rest-api.php';
+        include_once 'includes/rest-api/v2/rest-api.php';
         include_once 'includes/controller/v1/controller.php';
         include_once 'includes/email-content.php';
         
