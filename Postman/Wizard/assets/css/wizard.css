@@ -609,5 +609,16 @@ span.ps-pro-close-popup {
   margin: 25px 0;
 }
 
+.ps-wizard-connectivity-information {
+  border: 1px solid #EFB3B3;
+  padding: 8px;
+  background: #FFE4E4;
+  color: #000;
+  margin-top: 15px;
+}
+
+.ps-wizard-connectivity-information .dashicons {
+  color: #E57373;
+}
 
 /* Lets make wizard responsive */

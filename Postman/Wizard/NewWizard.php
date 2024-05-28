@@ -470,8 +470,16 @@ class Post_SMTP_New_Wizard {
             'Step2E2'           => __( 'Please enter From Email.', 'post-smtp' ),
             'Step2E3'           => __( 'Please try again, something went wrong.', 'post-smtp' ),
             'Step3E4'           => __( 'Please enter recipient email address.', 'post-smtp' ),
-            'finish'           => __( 'Finish', 'post-smtp' ),
+            'finish'            => __( 'Finish', 'post-smtp' ),
             'adminURL'          => admin_url(),
+            'connectivityTestMsg'  => sprintf( 
+                '%1$s %2$s <a href="%3$s" target="_blank">%4$s</a> %5$s',
+                '<span class="dashicons dashicons-warning"></span>',
+                __( 'Take the', 'post-smtp' ),
+                esc_url( admin_url( 'admin.php?page=postman/port_test' ) ),
+                __( 'connectivity test', 'post-smtp' ),
+                __( 'of your site to get more information about this failure.', 'post-smtp' ),
+            ),
         );
 
         if( class_exists( 'Post_Smtp_Office365' ) ) {
