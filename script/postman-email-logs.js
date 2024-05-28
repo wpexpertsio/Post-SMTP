@@ -61,7 +61,7 @@ jQuery(document).ready(function($) {
 		ajax: {
 			url: `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}`,
 		},
-		"lengthMenu": [5, 25, 50, 100, 500],
+		"lengthMenu": [25, 50, 100, 500],
 		columns: PSEmailLogs.DTCols,
 		columnDefs: [
 			{ orderable: false, targets: 0 },
