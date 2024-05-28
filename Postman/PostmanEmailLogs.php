@@ -55,6 +55,13 @@ class PostmanEmailLogs {
             isset( $_GET['log_id'] ) && !empty( $_GET['log_id'] )
         ) {
 
+            // Print
+            if( isset( $_GET['print'] ) && $_GET['print'] == 1  ) {
+
+                echo "<script>window.print();</script>";
+
+            }
+
             $id = sanitize_text_field( $_GET['log_id'] );
             $email_query_log = new PostmanEmailQueryLog();
             $log = $email_query_log->get_log( $id, '' );

@@ -1464,7 +1464,7 @@ div#ps-email-log_length{
     overflow: auto;
 }
   
-.ps-popup-close-btn {
+.ps-popup-close-btn, .ps-print-email {
     text-align: center;
     width: 19px;
     height: 19px;
@@ -1473,11 +1473,28 @@ div#ps-email-log_length{
     top: 10px;
     right: 10px;
     border-radius: 1000px;
-    background: #dc3545;
     font-weight: bold;
     text-decoration: none;
-    color: #fff;
+    color: #000;
     line-height: 190%;
+}
+
+.ps-popup-close-btn {
+    top: 6px;
+}
+
+.ps-popup-close-btn span {
+    font-size: 27px;
+}
+
+.ps-popup-close-btn:hover {
+    color: #000;
+}
+
+.ps-print-email {
+    right: 33px;
+    background: none;
+    color: #000;
 }
 
 .transform-in, .transform-out {
