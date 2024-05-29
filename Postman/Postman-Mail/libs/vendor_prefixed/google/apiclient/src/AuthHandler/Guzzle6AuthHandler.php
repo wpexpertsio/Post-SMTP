@@ -3,8 +3,8 @@
 namespace PostSMTP\Vendor\Google\AuthHandler;
 
 use PostSMTP\Vendor\Google\Auth\CredentialsLoader;
-use PostSMTP\Vendor\Google\Auth\HttpHandler\HttpHandlerFactory;
 use PostSMTP\Vendor\Google\Auth\FetchAuthTokenCache;
+use PostSMTP\Vendor\Google\Auth\HttpHandler\HttpHandlerFactory;
 use PostSMTP\Vendor\Google\Auth\Middleware\AuthTokenMiddleware;
 use PostSMTP\Vendor\Google\Auth\Middleware\ScopedAccessTokenMiddleware;
 use PostSMTP\Vendor\Google\Auth\Middleware\SimpleMiddleware;
@@ -12,8 +12,8 @@ use PostSMTP\Vendor\GuzzleHttp\Client;
 use PostSMTP\Vendor\GuzzleHttp\ClientInterface;
 use PostSMTP\Vendor\Psr\Cache\CacheItemPoolInterface;
 /**
-* This supports Guzzle 6
-*/
+ * This supports Guzzle 6
+ */
 class Guzzle6AuthHandler
 {
     protected $cache;
@@ -71,6 +71,6 @@ class Guzzle6AuthHandler
     }
     private function createAuthHttp(\PostSMTP\Vendor\GuzzleHttp\ClientInterface $http)
     {
-        return new \PostSMTP\Vendor\GuzzleHttp\Client(['base_uri' => $http->getConfig('base_uri'), 'http_errors' => \true, 'verify' => $http->getConfig('verify'), 'proxy' => $http->getConfig('proxy')]);
+        return new \PostSMTP\Vendor\GuzzleHttp\Client(['http_errors' => \true] + $http->getConfig());
     }
 }

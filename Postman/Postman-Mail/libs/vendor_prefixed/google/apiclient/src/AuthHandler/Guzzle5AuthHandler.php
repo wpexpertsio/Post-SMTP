@@ -3,8 +3,8 @@
 namespace PostSMTP\Vendor\Google\AuthHandler;
 
 use PostSMTP\Vendor\Google\Auth\CredentialsLoader;
-use PostSMTP\Vendor\Google\Auth\HttpHandler\HttpHandlerFactory;
 use PostSMTP\Vendor\Google\Auth\FetchAuthTokenCache;
+use PostSMTP\Vendor\Google\Auth\HttpHandler\HttpHandlerFactory;
 use PostSMTP\Vendor\Google\Auth\Subscriber\AuthTokenSubscriber;
 use PostSMTP\Vendor\Google\Auth\Subscriber\ScopedAccessTokenSubscriber;
 use PostSMTP\Vendor\Google\Auth\Subscriber\SimpleSubscriber;
@@ -12,8 +12,8 @@ use PostSMTP\Vendor\GuzzleHttp\Client;
 use PostSMTP\Vendor\GuzzleHttp\ClientInterface;
 use PostSMTP\Vendor\Psr\Cache\CacheItemPoolInterface;
 /**
-*
-*/
+ * This supports Guzzle 5
+ */
 class Guzzle5AuthHandler
 {
     protected $cache;

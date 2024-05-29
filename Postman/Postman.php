@@ -50,6 +50,9 @@ class Postman {
 		assert( ! empty( $version ) );
 		$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;
 		self::$rootPlugin = $rootPluginFilenameAndPath;
+		
+		//Load helper functions file :D
+		require_once POST_SMTP_PATH . '/includes/postman-functions.php';
 
 		// load the dependencies
 		require_once 'PostmanOptions.php';
@@ -64,9 +67,12 @@ class Postman {
 		require_once 'Postman-Mail/PostmanSendGridTransport.php';
 		require_once 'Postman-Mail/PostmanMailgunTransport.php';
         require_once 'Postman-Mail/PostmanSendinblueTransport.php';
+		require_once 'Postman-Mail/PostmanMailjetTransport.php';
+		require_once 'Postman-Mail/PostmanSendpulseTransport.php';
 		require_once 'Postman-Suggest-Pro/PostmanSuggestProSocket.php';
         require_once 'Postman-Mail/PostmanPostmarkTransport.php';
         require_once 'Postman-Mail/PostmanSparkPostTransport.php';
+        require_once 'Postman-Mail/PostmanElasticEmailTransport.php';
         require_once 'PostmanOAuthToken.php';
 		require_once 'PostmanWpMailBinder.php';
 		require_once 'PostmanConfigTextHelper.php';
@@ -76,6 +82,19 @@ class Postman {
 		require_once 'Phpmailer/PostsmtpMailer.php';
 		//require_once 'Postman-Mail/PostmanWooCommerce.php';
 		require_once 'Postman-Mail/Services/PostmanServiceRequest.php';
+
+		//New Wizard
+		require_once 'Wizard/NewWizard.php';
+		//load MainWP Child Files
+		require_once 'Extensions/MainWP-Child/mainwp-child.php';
+		
+		//Mobile Application
+		require_once 'Mobile/mobile.php';
+
+		//Email Reporting
+		require_once 'Postman-Email-Health-Report/PostmanEmailReporting.php';
+		require_once 'Postman-Email-Health-Report/PostmanEmailReportSending.php';
+
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
 				'name' => __( 'Postman SMTP', 'post-smtp' ),
@@ -103,18 +122,22 @@ class Postman {
         // store an instance of the WpMailBinder
         $this->wpMailBinder = PostmanWpMailBinder::getInstance();
 
-        $mailer = PostmanOptions::getInstance()->getSmtpMailer();
-        $this->logger->trace( 'SMTP Mailer: ' . $mailer );
+        if( apply_filters( 'post_smtp_declare_wp_mail', true ) ) {
 
-		if ( $mailer && $mailer !== 'phpmailer') {
+			$mailer = PostmanOptions::getInstance()->getSmtpMailer();
+			$this->logger->trace( 'SMTP Mailer: ' . $mailer );
 
-            // bind to wp_mail - this has to happen before the "init" action
-            // this design allows other plugins to register a Postman transport and call bind()
-            // bind may be called more than once
-            $this->wpMailBinder->bind();
-        } else {
-            PostmanWpMailBinder::getInstance()->bound = true;
-        }
+			if ( $mailer && $mailer !== 'phpmailer') {
+
+				// bind to wp_mail - this has to happen before the "init" action
+				// this design allows other plugins to register a Postman transport and call bind()
+				// bind may be called more than once
+				$this->wpMailBinder->bind();
+			} else {
+				PostmanWpMailBinder::getInstance()->bound = true;
+			}
+
+		}
 
 		// registers the custom post type for all callers
 		PostmanEmailLogPostType::automaticallyCreatePostType();
@@ -248,9 +271,6 @@ class Postman {
 		$options = PostmanOptions::getInstance();
 		$authToken = PostmanOAuthToken::getInstance();
 		$rootPluginFilenameAndPath = $this->rootPluginFilenameAndPath;
-
-		//Load helper functions file :D
-		require_once POST_SMTP_PATH . '/includes/postman-functions.php';
 
 		// load the dependencies
 		require_once 'PostmanMessageHandler.php';
@@ -448,8 +468,11 @@ class Postman {
         $postman_transport_registry->registerTransport( new PostmanSendGridTransport( $rootPluginFilenameAndPath ) );
         $postman_transport_registry->registerTransport( new PostmanMailgunTransport( $rootPluginFilenameAndPath ) );
         $postman_transport_registry->registerTransport( new PostmanSendinblueTransport( $rootPluginFilenameAndPath ) );
+		$postman_transport_registry->registerTransport( new PostmanMailjetTransport( $rootPluginFilenameAndPath ) );
+		$postman_transport_registry->registerTransport( new PostmanSendpulseTransport( $rootPluginFilenameAndPath ) );
         $postman_transport_registry->registerTransport( new PostmanPostmarkTransport( $rootPluginFilenameAndPath ) );
         $postman_transport_registry->registerTransport( new PostmanSparkPostTransport( $rootPluginFilenameAndPath ) );
+        $postman_transport_registry->registerTransport( new PostmanElasticEmailTransport( $rootPluginFilenameAndPath ) );
 
 		do_action( 'postsmtp_register_transport', $postman_transport_registry );
 	}

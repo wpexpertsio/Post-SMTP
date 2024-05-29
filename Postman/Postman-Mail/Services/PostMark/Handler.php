@@ -65,7 +65,13 @@ class PostmanPostMark extends PostmanServiceRequest {
      * @version 1.0
      */
     public function send( $content ) {
-        $content = json_encode( $content );
+
+        /**
+         * Filters the content before sending
+         * 
+         * @since 2.9.2
+         */
+        $content = json_encode( apply_filters( 'post_smtp_postmark_content' , $content ) );
          
         return $this->request(
             'POST',

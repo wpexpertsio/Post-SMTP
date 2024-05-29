@@ -95,7 +95,7 @@ body.post-smtp_page_postman_email_log {
     font-size: 16px;
 }
 
-.ps-main-header.post-smtp-welcome-panel {
+.ps-main-header.post-smtp-welcome-panel h2 {
     padding: 0px 15px;
     font-size: 19px;
 }
@@ -1247,8 +1247,8 @@ th#date {
 .ps-switch-1 {
     position: relative;
     display: inline-block;
-    width: 34px;
-    height: 21px;
+    width: 30px;
+    height: 17px;
 }
 
 .ps-switch-1 input {
@@ -1290,8 +1290,8 @@ th#date {
 .ps-switch-1 .slider:before {
     position: absolute;
     content: "";
-    height: 17px;
-    width: 16px;
+    height: 13px;
+    width: 12px;
     left: 2px;
     bottom: 2px;
     background-color: #fff;
@@ -1330,7 +1330,8 @@ h5#ps-progress {
 }
 
 .ps-email-log-status-success span, 
-.ps-email-log-status-failed span {
+.ps-email-log-status-failed span,
+.ps-email-log-status-queued span {
     color: #fff;
     font-weight: 600;
     border-radius: 25px;
@@ -1346,6 +1347,10 @@ h5#ps-progress {
 
 .ps-email-log-status-failed span {
     background: #DC3545;
+}
+
+.ps-email-log-status-queued span {
+    background: #ffa500;
 }
 
 .ps-email-log-view,
@@ -1426,6 +1431,10 @@ div#ps-email-log_length{
     background: #DC3545!important;
     border: none!important;
     border-radius: 50px!important;
+}
+
+.ps-email-log-resend-to {
+    margin: 3px 0;
 }
 
 /* View And Session Transcript Popup */
@@ -1541,4 +1550,41 @@ div#ps-email-log_length{
     display: inline-block;
     font-family: inherit;
     margin-left: 5px;
+}
+
+.ps-refresh-logs span {
+    vertical-align: middle;
+    background: #f8f9fa;
+    padding: 6px;
+    border-radius: 50px;
+    color: #0086fd;
+}
+
+.ps-refresh-logs span:hover {
+    cursor: pointer;
+}
+#toplevel_page_postman ul li:nth-last-child(3) a {
+    color: #adff2f!important;
+}
+
+.ps-dashboard-pro {
+    background: #eef2f4;
+    color: #1d9ad2;
+    font-size: 11px;
+    padding: 0px 4px;
+    border-radius: 3px;
+    margin-left: 1px;
+}
+
+.ps-dashboard-pro-hide{
+    display: none;
+
+}
+
+.ps-home-middle-left {
+    float: left;
+}
+
+.ps-pro-icon {
+    color: #fed90f;
 }

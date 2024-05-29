@@ -1,0 +1,104 @@
+.ps-home-middle-right{
+    width: 435px;
+    height: 168px;
+    background-color: #F5F8FB;
+    border: 1px solid #E6E6E6;
+    background-repeat: no-repeat;
+    background-position-y: bottom !important;
+    background-position: right;
+    float: right;
+}
+
+#mobile-app .mobile-app-box {
+    display: flex;
+}
+
+.mobile-app-internal-box {
+    width: 50%;
+}
+
+#mobile-app .download-app {
+    border: 1px solid #000;
+    margin: 30px 0;
+    width: 78%;
+    padding: 15px;
+    background: #fff;
+}
+
+#mobile-app .download-app h3 {
+    margin: 34px 30px;
+    text-align: center;
+}
+
+#mobile-app .google-logo {
+    border-radius: 8px;
+}
+
+.ps-mobile-notice {
+    display: flex;
+    padding: 15px 0;
+}
+
+.ps-mobile-notice-content span {
+    color: #12d726;
+}
+.ps-mobile-notice-content{
+    margin-left: 8px;
+    width: 305px;
+    color: #455CB2;
+    height: 24px;
+}
+
+.ps-mobile-notice-content p{
+    font-style: Inter;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.ps-mobile-notice-content a {
+    color: #404aa4;
+    font-size: 19px;
+}
+
+.ps-mobile-notice-img {
+    padding: 28px 40px;
+}
+.ps-mobile-notice-features{
+    display: flex;
+    height: 66px;
+    width: 100%;
+    font-size: 12px;
+    color: #231F20;
+}
+.ps-mobile-feature-left{
+    width: 198px;
+}
+.ps-mobile-feature-right{
+    width: 166px;
+}
+.ps-app-download-button {
+    width: 140px;
+    background-color: #F9AA39;
+    border-radius: 4px;
+    padding: 4px;
+    text-align: center;
+    margin-top: 10px;
+    margin-left: 4px;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+}
+.ps-app-download-button a{
+    text-decoration: none;
+    color: #231F20!important;
+    font-size: 12px;
+    font-weight: 600;
+    display:flex !important;
+    align-items:center;
+}
+
+.ps-app-download-button div{
+    margin-left: 6px; 
+    text-align:justify;
+}
+.ps-app-download-button p{
+    margin: 0px; 
+}

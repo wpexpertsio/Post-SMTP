@@ -1,9 +1,13 @@
 <?php
 
+declare (strict_types=1);
 namespace PostSMTP\Vendor\ParagonIE\ConstantTime;
 
+use InvalidArgumentException;
+use RangeException;
+use TypeError;
 /**
- *  Copyright (c) 2016 - 2017 Paragon Initiative Enterprises.
+ *  Copyright (c) 2016 - 2022 Paragon Initiative Enterprises.
  *  Copyright (c) 2014 Steve "Sc00bz" Thomas (steve at tobtu dot com)
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -35,13 +39,13 @@ abstract class Base32 implements \PostSMTP\Vendor\ParagonIE\ConstantTime\Encoder
     /**
      * Decode a Base32-encoded string into raw binary
      *
-     * @param string $encoded_string
+     * @param string $encodedString
      * @param bool $strictPadding
      * @return string
      */
-    public static function decode($encoded_string, $strictPadding = \false)
+    public static function decode(string $encodedString, bool $strictPadding = \false) : string
     {
-        return static::doDecode($encoded_string, \false, $strictPadding);
+        return static::doDecode($encodedString, \false, $strictPadding);
     }
     /**
      * Decode an uppercase Base32-encoded string into raw binary
@@ -50,28 +54,29 @@ abstract class Base32 implements \PostSMTP\Vendor\ParagonIE\ConstantTime\Encoder
      * @param bool $strictPadding
      * @return string
      */
-    public static function decodeUpper($src, $strictPadding = \false)
+    public static function decodeUpper(string $src, bool $strictPadding = \false) : string
     {
         return static::doDecode($src, \true, $strictPadding);
     }
     /**
      * Encode into Base32 (RFC 4648)
      *
-     * @param string $bin_string
+     * @param string $binString
      * @return string
+     * @throws TypeError
      */
-    public static function encode($bin_string)
+    public static function encode(string $binString) : string
     {
-        return static::doEncode($bin_string, \false);
+        return static::doEncode($binString, \false, \true);
     }
     /**
      * Encode into Base32 (RFC 4648)
      *
      * @param string $src
      * @return string
-     * @throws \TypeError
+     * @throws TypeError
      */
-    public static function encodeUnpadded($src)
+    public static function encodeUnpadded(string $src) : string
     {
         return static::doEncode($src, \false, \false);
     }
@@ -80,19 +85,20 @@ abstract class Base32 implements \PostSMTP\Vendor\ParagonIE\ConstantTime\Encoder
      *
      * @param string $src
      * @return string
+     * @throws TypeError
      */
-    public static function encodeUpper($src)
+    public static function encodeUpper(string $src) : string
     {
-        return static::doEncode($src, \true);
+        return static::doEncode($src, \true, \true);
     }
     /**
      * Encode into uppercase Base32 (RFC 4648)
      *
      * @param string $src
      * @return string
-     * @throws \TypeError
+     * @throws TypeError
      */
-    public static function encodeUpperUnpadded($src)
+    public static function encodeUpperUnpadded(string $src) : string
     {
         return static::doEncode($src, \true, \false);
     }
@@ -103,7 +109,7 @@ abstract class Base32 implements \PostSMTP\Vendor\ParagonIE\ConstantTime\Encoder
      * @param int $src
      * @return int
      */
-    protected static function decode5Bits($src)
+    protected static function decode5Bits(int $src) : int
     {
         $ret = -1;
         // if ($src > 96 && $src < 123) $ret += $src - 97 + 1; // -64
@@ -121,7 +127,7 @@ abstract class Base32 implements \PostSMTP\Vendor\ParagonIE\ConstantTime\Encoder
      * @param int $src
      * @return int
      */
-    protected static function decode5BitsUpper($src)
+    protected static function decode5BitsUpper(int $src) : int
     {
         $ret = -1;
         // if ($src > 64 && $src < 91) $ret += $src - 65 + 1; // -64
@@ -137,7 +143,7 @@ abstract class Base32 implements \PostSMTP\Vendor\ParagonIE\ConstantTime\Encoder
      * @param int $src
      * @return string
      */
-    protected static function encode5Bits($src)
+    protected static function encode5Bits(int $src) : string
     {
         $diff = 0x61;
         // if ($src > 25) $ret -= 72;
@@ -153,12 +159,32 @@ abstract class Base32 implements \PostSMTP\Vendor\ParagonIE\ConstantTime\Encoder
      * @param int $src
      * @return string
      */
-    protected static function encode5BitsUpper($src)
+    protected static function encode5BitsUpper(int $src) : string
     {
         $diff = 0x41;
         // if ($src > 25) $ret -= 40;
         $diff -= 25 - $src >> 8 & 41;
         return \pack('C', $src + $diff);
+    }
+    /**
+     * @param string $encodedString
+     * @param bool $upper
+     * @return string
+     */
+    public static function decodeNoPadding(string $encodedString, bool $upper = \false) : string
+    {
+        $srcLen = \PostSMTP\Vendor\ParagonIE\ConstantTime\Binary::safeStrlen($encodedString);
+        if ($srcLen === 0) {
+            return '';
+        }
+        if (($srcLen & 7) === 0) {
+            for ($j = 0; $j < 7 && $j < $srcLen; ++$j) {
+                if ($encodedString[$srcLen - $j - 1] === '=') {
+                    throw new \InvalidArgumentException("decodeNoPadding() doesn't tolerate padding");
+                }
+            }
+        }
+        return static::doDecode($encodedString, $upper, \true);
     }
     /**
      * Base32 decoding
@@ -167,8 +193,11 @@ abstract class Base32 implements \PostSMTP\Vendor\ParagonIE\ConstantTime\Encoder
      * @param bool $upper
      * @param bool $strictPadding
      * @return string
+     *
+     * @throws TypeError
+     * @psalm-suppress RedundantCondition
      */
-    protected static function doDecode($src, $upper = \false, $strictPadding = \true)
+    protected static function doDecode(string $src, bool $upper = \false, bool $strictPadding = \false) : string
     {
         // We do this to reduce code duplication:
         $method = $upper ? 'decode5BitsUpper' : 'decode5Bits';
@@ -198,80 +227,129 @@ abstract class Base32 implements \PostSMTP\Vendor\ParagonIE\ConstantTime\Encoder
         $dest = '';
         // Main loop (no padding):
         for ($i = 0; $i + 8 <= $srcLen; $i += 8) {
+            /** @var array<int, int> $chunk */
             $chunk = \unpack('C*', \PostSMTP\Vendor\ParagonIE\ConstantTime\Binary::safeSubstr($src, $i, 8));
+            /** @var int $c0 */
             $c0 = static::$method($chunk[1]);
+            /** @var int $c1 */
             $c1 = static::$method($chunk[2]);
+            /** @var int $c2 */
             $c2 = static::$method($chunk[3]);
+            /** @var int $c3 */
             $c3 = static::$method($chunk[4]);
+            /** @var int $c4 */
             $c4 = static::$method($chunk[5]);
+            /** @var int $c5 */
             $c5 = static::$method($chunk[6]);
+            /** @var int $c6 */
             $c6 = static::$method($chunk[7]);
+            /** @var int $c7 */
             $c7 = static::$method($chunk[8]);
             $dest .= \pack('CCCCC', ($c0 << 3 | $c1 >> 2) & 0xff, ($c1 << 6 | $c2 << 1 | $c3 >> 4) & 0xff, ($c3 << 4 | $c4 >> 1) & 0xff, ($c4 << 7 | $c5 << 2 | $c6 >> 3) & 0xff, ($c6 << 5 | $c7) & 0xff);
             $err |= ($c0 | $c1 | $c2 | $c3 | $c4 | $c5 | $c6 | $c7) >> 8;
         }
         // The last chunk, which may have padding:
         if ($i < $srcLen) {
+            /** @var array<int, int> $chunk */
             $chunk = \unpack('C*', \PostSMTP\Vendor\ParagonIE\ConstantTime\Binary::safeSubstr($src, $i, $srcLen - $i));
+            /** @var int $c0 */
             $c0 = static::$method($chunk[1]);
             if ($i + 6 < $srcLen) {
+                /** @var int $c1 */
                 $c1 = static::$method($chunk[2]);
+                /** @var int $c2 */
                 $c2 = static::$method($chunk[3]);
+                /** @var int $c3 */
                 $c3 = static::$method($chunk[4]);
+                /** @var int $c4 */
                 $c4 = static::$method($chunk[5]);
+                /** @var int $c5 */
                 $c5 = static::$method($chunk[6]);
+                /** @var int $c6 */
                 $c6 = static::$method($chunk[7]);
                 $dest .= \pack('CCCC', ($c0 << 3 | $c1 >> 2) & 0xff, ($c1 << 6 | $c2 << 1 | $c3 >> 4) & 0xff, ($c3 << 4 | $c4 >> 1) & 0xff, ($c4 << 7 | $c5 << 2 | $c6 >> 3) & 0xff);
                 $err |= ($c0 | $c1 | $c2 | $c3 | $c4 | $c5 | $c6) >> 8;
+                if ($strictPadding) {
+                    $err |= $c6 << 5 & 0xff;
+                }
             } elseif ($i + 5 < $srcLen) {
+                /** @var int $c1 */
                 $c1 = static::$method($chunk[2]);
+                /** @var int $c2 */
                 $c2 = static::$method($chunk[3]);
+                /** @var int $c3 */
                 $c3 = static::$method($chunk[4]);
+                /** @var int $c4 */
                 $c4 = static::$method($chunk[5]);
+                /** @var int $c5 */
                 $c5 = static::$method($chunk[6]);
                 $dest .= \pack('CCCC', ($c0 << 3 | $c1 >> 2) & 0xff, ($c1 << 6 | $c2 << 1 | $c3 >> 4) & 0xff, ($c3 << 4 | $c4 >> 1) & 0xff, ($c4 << 7 | $c5 << 2) & 0xff);
                 $err |= ($c0 | $c1 | $c2 | $c3 | $c4 | $c5) >> 8;
             } elseif ($i + 4 < $srcLen) {
+                /** @var int $c1 */
                 $c1 = static::$method($chunk[2]);
+                /** @var int $c2 */
                 $c2 = static::$method($chunk[3]);
+                /** @var int $c3 */
                 $c3 = static::$method($chunk[4]);
+                /** @var int $c4 */
                 $c4 = static::$method($chunk[5]);
                 $dest .= \pack('CCC', ($c0 << 3 | $c1 >> 2) & 0xff, ($c1 << 6 | $c2 << 1 | $c3 >> 4) & 0xff, ($c3 << 4 | $c4 >> 1) & 0xff);
                 $err |= ($c0 | $c1 | $c2 | $c3 | $c4) >> 8;
+                if ($strictPadding) {
+                    $err |= $c4 << 7 & 0xff;
+                }
             } elseif ($i + 3 < $srcLen) {
+                /** @var int $c1 */
                 $c1 = static::$method($chunk[2]);
+                /** @var int $c2 */
                 $c2 = static::$method($chunk[3]);
+                /** @var int $c3 */
                 $c3 = static::$method($chunk[4]);
                 $dest .= \pack('CC', ($c0 << 3 | $c1 >> 2) & 0xff, ($c1 << 6 | $c2 << 1 | $c3 >> 4) & 0xff);
                 $err |= ($c0 | $c1 | $c2 | $c3) >> 8;
+                if ($strictPadding) {
+                    $err |= $c3 << 4 & 0xff;
+                }
             } elseif ($i + 2 < $srcLen) {
+                /** @var int $c1 */
                 $c1 = static::$method($chunk[2]);
+                /** @var int $c2 */
                 $c2 = static::$method($chunk[3]);
                 $dest .= \pack('CC', ($c0 << 3 | $c1 >> 2) & 0xff, ($c1 << 6 | $c2 << 1) & 0xff);
                 $err |= ($c0 | $c1 | $c2) >> 8;
+                if ($strictPadding) {
+                    $err |= $c2 << 6 & 0xff;
+                }
             } elseif ($i + 1 < $srcLen) {
+                /** @var int $c1 */
                 $c1 = static::$method($chunk[2]);
                 $dest .= \pack('C', ($c0 << 3 | $c1 >> 2) & 0xff);
                 $err |= ($c0 | $c1) >> 8;
+                if ($strictPadding) {
+                    $err |= $c1 << 6 & 0xff;
+                }
             } else {
                 $dest .= \pack('C', $c0 << 3 & 0xff);
                 $err |= $c0 >> 8;
             }
         }
-        if ($err !== 0) {
+        $check = $err === 0;
+        if (!$check) {
             throw new \RangeException('Base32::doDecode() only expects characters in the correct base32 alphabet');
         }
         return $dest;
     }
     /**
-     * Base32 Decoding
+     * Base32 Encoding
      *
      * @param string $src
      * @param bool $upper
      * @param bool $pad
      * @return string
+     * @throws TypeError
      */
-    protected static function doEncode($src, $upper = \false, $pad = \true)
+    protected static function doEncode(string $src, bool $upper = \false, $pad = \true) : string
     {
         // We do this to reduce code duplication:
         $method = $upper ? 'encode5BitsUpper' : 'encode5Bits';
@@ -279,6 +357,7 @@ abstract class Base32 implements \PostSMTP\Vendor\ParagonIE\ConstantTime\Encoder
         $srcLen = \PostSMTP\Vendor\ParagonIE\ConstantTime\Binary::safeStrlen($src);
         // Main loop (no padding):
         for ($i = 0; $i + 5 <= $srcLen; $i += 5) {
+            /** @var array<int, int> $chunk */
             $chunk = \unpack('C*', \PostSMTP\Vendor\ParagonIE\ConstantTime\Binary::safeSubstr($src, $i, 5));
             $b0 = $chunk[1];
             $b1 = $chunk[2];
@@ -289,6 +368,7 @@ abstract class Base32 implements \PostSMTP\Vendor\ParagonIE\ConstantTime\Encoder
         }
         // The last chunk, which may have padding:
         if ($i < $srcLen) {
+            /** @var array<int, int> $chunk */
             $chunk = \unpack('C*', \PostSMTP\Vendor\ParagonIE\ConstantTime\Binary::safeSubstr($src, $i, $srcLen - $i));
             $b0 = $chunk[1];
             if ($i + 3 < $srcLen) {

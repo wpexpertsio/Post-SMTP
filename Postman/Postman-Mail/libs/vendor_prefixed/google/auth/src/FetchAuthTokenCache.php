@@ -30,16 +30,12 @@ class FetchAuthTokenCache implements \PostSMTP\Vendor\Google\Auth\FetchAuthToken
      */
     private $fetcher;
     /**
-     * @var array
+     * @var int
      */
-    private $cacheConfig;
-    /**
-     * @var CacheItemPoolInterface
-     */
-    private $cache;
+    private $eagerRefreshThresholdSeconds = 10;
     /**
      * @param FetchAuthTokenInterface $fetcher A credentials fetcher
-     * @param array $cacheConfig Configuration for the cache
+     * @param array<mixed> $cacheConfig Configuration for the cache
      * @param CacheItemPoolInterface $cache
      */
     public function __construct(\PostSMTP\Vendor\Google\Auth\FetchAuthTokenInterface $fetcher, array $cacheConfig = null, \PostSMTP\Vendor\Psr\Cache\CacheItemPoolInterface $cache)
@@ -49,13 +45,20 @@ class FetchAuthTokenCache implements \PostSMTP\Vendor\Google\Auth\FetchAuthToken
         $this->cacheConfig = \array_merge(['lifetime' => 1500, 'prefix' => ''], (array) $cacheConfig);
     }
     /**
+     * @return FetchAuthTokenInterface
+     */
+    public function getFetcher()
+    {
+        return $this->fetcher;
+    }
+    /**
      * Implements FetchAuthTokenInterface#fetchAuthToken.
      *
      * Checks the cache for a valid auth token and fetches the auth tokens
      * from the supplied fetcher.
      *
      * @param callable $httpHandler callback which delivers psr7 request
-     * @return array the response
+     * @return array<mixed> the response
      * @throws \Exception
      */
     public function fetchAuthToken(callable $httpHandler = null)
@@ -75,7 +78,7 @@ class FetchAuthTokenCache implements \PostSMTP\Vendor\Google\Auth\FetchAuthToken
         return $this->getFullCacheKey($this->fetcher->getCacheKey());
     }
     /**
-     * @return array|null
+     * @return array<mixed>|null
      */
     public function getLastReceivedToken()
     {
@@ -130,6 +133,7 @@ class FetchAuthTokenCache implements \PostSMTP\Vendor\Google\Auth\FetchAuthToken
         if ($this->fetcher instanceof \PostSMTP\Vendor\Google\Auth\GetQuotaProjectInterface) {
             return $this->fetcher->getQuotaProject();
         }
+        return null;
     }
     /*
      * Get the Project ID from the fetcher.
@@ -149,10 +153,10 @@ class FetchAuthTokenCache implements \PostSMTP\Vendor\Google\Auth\FetchAuthToken
     /**
      * Updates metadata with the authorization token.
      *
-     * @param array $metadata metadata hashmap
+     * @param array<mixed> $metadata metadata hashmap
      * @param string $authUri optional auth uri
      * @param callable $httpHandler callback which delivers psr7 request
-     * @return array updated metadata hashmap
+     * @return array<mixed> updated metadata hashmap
      * @throws \RuntimeException If the fetcher does not implement
      *     `Google\Auth\UpdateMetadataInterface`.
      */
@@ -176,6 +180,10 @@ class FetchAuthTokenCache implements \PostSMTP\Vendor\Google\Auth\FetchAuthToken
         }
         return $newMetadata;
     }
+    /**
+     * @param string|null $authUri
+     * @return array<mixed>|null
+     */
     private function fetchAuthTokenFromCache($authUri = null)
     {
         // Use the cached value if its available.
@@ -193,13 +201,18 @@ class FetchAuthTokenCache implements \PostSMTP\Vendor\Google\Auth\FetchAuthToken
                 // (for JwtAccess and ID tokens)
                 return $cached;
             }
-            if (\time() < $cached['expires_at']) {
+            if (\time() + $this->eagerRefreshThresholdSeconds < $cached['expires_at']) {
                 // access token is not expired
                 return $cached;
             }
         }
         return null;
     }
+    /**
+     * @param array<mixed> $authToken
+     * @param string|null  $authUri
+     * @return void
+     */
     private function saveAuthTokenInCache($authToken, $authUri = null)
     {
         if (isset($authToken['access_token']) || isset($authToken['id_token'])) {

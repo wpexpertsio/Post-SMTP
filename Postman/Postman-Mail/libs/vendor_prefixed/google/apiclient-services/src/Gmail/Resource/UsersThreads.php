@@ -25,7 +25,7 @@ use PostSMTP\Vendor\Google\Service\Gmail\Thread;
  * Typical usage is:
  *  <code>
  *   $gmailService = new Google\Service\Gmail(...);
- *   $threads = $gmailService->threads;
+ *   $threads = $gmailService->users_threads;
  *  </code>
  */
 class UsersThreads extends \PostSMTP\Vendor\Google\Service\Resource

@@ -94,6 +94,11 @@ jQuery(document).ready(function($) {
 				jQuery( status ).addClass( 'ps-email-log-status-success' );
 
 			}
+			else if( data['success'] == '<span title="In Queue">In Queue</span>' ) {
+
+				jQuery( status ).addClass( 'ps-email-log-status-queued' );
+
+			}
 			else {
 
 				jQuery( status ).addClass( 'ps-email-log-status-failed' );
@@ -114,6 +119,7 @@ jQuery(document).ready(function($) {
 		<div class="ps-email-log-date-filter">
 			<label>From <input type="date" class="ps-email-log-from" /></label>
 			<label>To <input type="date" class="ps-email-log-to" /></label>
+			<span class="ps-refresh-logs" title="refresh logs"><span class="dashicons dashicons-image-rotate"></span></span>
 		</div>
 	` );
 
@@ -346,7 +352,7 @@ jQuery(document).ready(function($) {
 		toDo = ( toDo ) ? 'original_message' : 'session_transcript';
 		var heading = ( toDo == 'original_message' ) ? 'Email Message' : 'Session Transcript';
 		jQuery( '.ps-popup-container' ).html( `
-			<h1>${heading}</h1>
+			<h1 style="margin: 0; padding: 0;"></h1>
 			<h4>Loading...</h4>
 		` );
 
@@ -472,6 +478,14 @@ jQuery(document).ready(function($) {
 
 	} );
 
+	//Refresh Logs
+	jQuery( document ).on( 'click', '.ps-refresh-logs', function( e ) {
+
+		e.preventDefault();
+		logsDT.ajax.reload();
+
+	} );
+
 	//View And Session Transcript Popup
 	jQuery( document ).on( 'click', '.ps-popup-btn', function( e ) {
 
@@ -536,6 +550,33 @@ jQuery(document).ready(function($) {
 
 	} );
 
+	//MainWP | Lets do somthing on changing site
+	jQuery( document ).on( 'change', '.ps-mainwp-site-selector', function() {
+		
+		var siteID = this.value;
+		logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&site_id=${siteID}` ).load();
+		
+	} );
+	
+	//If site already selected
+	jQuery( document ).on( 'click', '.ps-mainwp-site', function( e ) {
+		
+		e.preventDefault();
+		var href = $(this).attr('href');
+	
+		var siteID = PostSMTPGetParameterByName( 'site_id', href );
+		
+		jQuery( `.ps-mainwp-site-selector option[value="${siteID}"]` ).prop( 'selected', true )
+
+		if( siteID != null && siteID != -1 ) {
+
+			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&site_id=${siteID}` ).load();
+
+		}
+		
+	} )
+	
+
 	//Resend
 	jQuery( document ).on( 'click', '.ps-email-log-resend', function( e ) {
 
@@ -595,7 +636,7 @@ jQuery(document).ready(function($) {
 
 		e.preventDefault();
 		var _details = jQuery( this ).siblings( 'span' ).attr( 'title' );
-		jQuery( '.ps-popup-container' ).html( `<h1>Details</h1>${_details}` );
+		jQuery( '.ps-popup-container' ).html( `<h1 style="margin: 0; padding: 0;"></h1>${_details}` );
 
 	} );
 

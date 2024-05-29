@@ -169,7 +169,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				$data['original_to'] = is_array( $log->originalTo ) ? implode( ',', $log->originalTo ) : $log->originalTo;
 				$data['original_subject'] = !empty( $log->originalSubject ) ? $log->originalSubject : '';
 				$data['original_message'] = $log->originalMessage;
-				$data['original_headers'] = $log->originalHeaders;
+				$data['original_headers'] = is_array($log->originalHeaders) ? serialize($log->originalHeaders) : $log->originalHeaders;
 				$data['session_transcript'] = $log->sessionTranscript;
 
 				$email_logs = new PostmanEmailLogs();
@@ -177,13 +177,23 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				/**
 				 * Filter the email log id
 				 * 
-				 * @param string $email_id
+				 * @param string $log_id
 				 * @since 2.5.0
 				 * @version 1.0.0
 				 */
-				$email_id = apply_filters( 'post_smtp_update_email_log_id', '' );
+				$log_id = apply_filters( 'post_smtp_update_email_log_id', '' );
 
-				$log_id = $email_logs->save( $data, $email_id );
+				$log_id = $email_logs->save( $data, $log_id );
+
+				/**
+				 * Fires after the email log is saved
+				 * 
+				 * @param string $log_id
+				 * @since 2.5.0
+				 * @version 1.0.0
+				 */
+
+				do_action( 'post_smtp_after_email_log_saved', $log_id );
 
 				$this->logger->debug( sprintf( 'Saved message #%s to the database', $log_id ) );
 				$this->logger->trace( $log );
@@ -254,7 +264,19 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 
 			// truncate the log (remove older entries)
 			$purger = new PostmanEmailLogPurger();
-			$purger->truncateLogItems( PostmanOptions::getInstance()->getMailLoggingMaxEntries() );
+
+			/**
+			 * Filter whether to truncate the log
+			 * 
+			 * @param bool $truncate
+			 * @since 2.6.1
+			 * @version 1.0.0
+			 */
+			if( apply_filters( 'post_smtp_truncate_the_log', true ) ) {
+
+				$purger->truncateLogItems( PostmanOptions::getInstance()->getMailLoggingMaxEntries() );
+
+			}
 			
 		}
 

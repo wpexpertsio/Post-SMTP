@@ -15,7 +15,7 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
 
     const SLUG = 'sendinblue_api';
     const PORT = 587;
-    const HOST = 'smtp-relay.sendinblue.com';
+    const HOST = 'smtp-relay.brevo.com';
     const PRIORITY = 50000;
     const SENDINBLUE_AUTH_OPTIONS = 'postman_sendinblue_auth_options';
     const SENDINBLUE_AUTH_SECTION = 'postman_sendinblue_auth_section';
@@ -114,7 +114,7 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
      */
     public function getName() {
 
-        return __( 'Sendinblue', 'post-smtp' );
+        return __( 'Brevo', 'post-smtp' );
 
     }
 
@@ -200,8 +200,8 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
     public function printSendinblueAuthSectionInfo() {
 
         printf (
-            '<p id="wizard_sendinblue_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
-                'https://www.sendinblue.com/', 'sendinblue.com', 'https://account.sendinblue.com/advanced/api' )
+            '<p id="wizard_sendinblue_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s (formely Sendinblue)</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
+                'https://www.brevo.com/', 'brevo.com', 'https://account.brevo.com/advanced/api' )
         );
 
     }

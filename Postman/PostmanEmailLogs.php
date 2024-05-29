@@ -58,10 +58,11 @@ class PostmanEmailLogs {
             $id = sanitize_text_field( $_GET['log_id'] );
             $email_query_log = new PostmanEmailQueryLog();
             $log = $email_query_log->get_log( $id, '' );
+            $header = $log['original_headers'];
             $msg = $log['original_message'];
             $msg = preg_replace( "/<script\b[^>]*>(.*?)<\/script>/s", '', $msg );
 
-            echo $msg;
+            echo ( isset ( $header ) && strpos( $header, "text/html" ) ) ? $msg : '<pre>' . $msg . '</pre>' ;
 
             die;
 
@@ -247,7 +248,7 @@ class PostmanEmailLogs {
      * @version 1.0.0
      */
     public function save( $data, $id = '' ) {
-
+        
         $data['time'] = !isset( $data['time'] ) ? current_time( 'timestamp' ) : $data['time'];
 
         if( !empty( $id ) ) {
@@ -309,6 +310,13 @@ class PostmanEmailLogs {
             $query['end'] = sanitize_text_field( $_GET['length'] );
             $query['search'] = sanitize_text_field( $_GET['search']['value'] );
             $query['order'] = sanitize_text_field( $_GET['order'][0]['dir'] );
+            
+			//MainWP | Get Sites
+            if( isset( $_GET['site_id'] ) ) {
+
+                $query['site_id'] = sanitize_text_field( $_GET['site_id'] );
+
+            }
 
             //Column Name
             $query['order_by'] = sanitize_text_field( $_GET['columns'][$_GET['order'][0]['column']]['data'] );
@@ -348,8 +356,33 @@ class PostmanEmailLogs {
             foreach( $data as $row ) {
 
                 $row->time = date( "{$date_format} {$time_format}", $row->time );
-                $row->success = $row->success == 1 ? '<span title="Success">Success</span>' : '<span title="'.str_replace( $search, $replace, $row->success ).'">Failed</span><a href="#" class="ps-status-log ps-popup-btn">View details</a>';
+
+                if( $row->success == 1 ) {
+
+                    $row->success = '<span title="Success">Success</span>';
+
+                }
+                elseif( $row->success == 'In Queue' ) {
+
+                    $row->success = '<span title="In Queue">In Queue</span>';
+
+                }
+                else {
+
+                    $row->success = '<span title="'.str_replace( $search, $replace, $row->success ).'">Failed</span><a href="#" class="ps-status-log ps-popup-btn">View details</a>';
+                    
+                }
+                
+        
                 $row->actions = '';
+				
+				/**
+                 * Filter the row data
+                 * 
+                 * @since 2.5.0
+                 * @version 1.0.0
+                 */
+                $row = apply_filters( 'ps_email_logs_row', $row );
 
                 //Escape HTML
                 $row->original_subject = esc_html( $row->original_subject );
@@ -404,7 +437,7 @@ class PostmanEmailLogs {
 			//Delete selected
 			else {
 
-				$args = $_POST['selected'];
+				$args = wp_parse_id_list( $_POST['selected'] );
 
 			}
 
@@ -471,7 +504,7 @@ class PostmanEmailLogs {
 			//Export selected
 			else {
 
-				$args = $_POST['selected'];
+				$args = wp_parse_id_list( $_POST['selected'] );
 
 			}
 
@@ -479,7 +512,7 @@ class PostmanEmailLogs {
 			$logs = $email_query_log->get_all_logs( $args );
             $csv_headers = array(
                 'solution',
-                'success',
+                'response',
                 'from_header',
                 'to_header',
                 'cc_header',
@@ -509,7 +542,7 @@ class PostmanEmailLogs {
             foreach ( $logs as $log ) {
 
                 $data[0] = $log->solution;
-                $data[1] = $log->success;
+                $data[1] = $log->success == 1 ? 'Sent' : $log->success;
                 $data[2] = $log->from_header;
                 $data[3] = $log->to_header;
                 $data[4] = $log->cc_header;
@@ -636,11 +669,12 @@ class PostmanEmailLogs {
 
         if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-resend-email' ) {
 
-            $id = sanitize_text_field( $_POST['id'] );
+            $id =  intval( $_POST['id'] );
             $response = '';
             $email_query_log = new PostmanEmailQueryLog();
             $log = $email_query_log->get_log( $id );
             $to = '';
+            $headers = '';
 
             if( $log ) {
 
@@ -656,6 +690,12 @@ class PostmanEmailLogs {
 
                 }
 
+                if( $log['original_headers'] ){
+
+					$headers = is_serialized( $log['original_headers'] ) ? unserialize( $log['original_headers'] ) : $log['original_headers'];
+
+				}
+
                 /**
                  * Fires before resending email
                  * 
@@ -665,7 +705,7 @@ class PostmanEmailLogs {
                  */
                 $attachments = apply_filters( 'post_smtp_resend_attachments', array(), $id );
 
-                $success = wp_mail( $to, $log['original_subject'], $log['original_message'], $log['original_headers'], $attachments );
+                $success = wp_mail( $to, $log['original_subject'], $log['original_message'], $headers, $attachments );
 
                 // Postman API: retrieve the result of sending this message from Postman
                 $result = apply_filters( 'postman_wp_mail_result', null );

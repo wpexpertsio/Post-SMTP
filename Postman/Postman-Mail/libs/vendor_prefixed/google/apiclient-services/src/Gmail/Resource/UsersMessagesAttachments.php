@@ -23,7 +23,7 @@ use PostSMTP\Vendor\Google\Service\Gmail\MessagePartBody;
  * Typical usage is:
  *  <code>
  *   $gmailService = new Google\Service\Gmail(...);
- *   $attachments = $gmailService->attachments;
+ *   $attachments = $gmailService->users_messages_attachments;
  *  </code>
  */
 class UsersMessagesAttachments extends \PostSMTP\Vendor\Google\Service\Resource

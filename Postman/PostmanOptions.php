@@ -90,9 +90,14 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const MANDRILL_API_KEY = 'mandrill_api_key';
 		const SENDGRID_API_KEY = 'sendgrid_api_key';
 		const SENDINBLUE_API_KEY = 'sendinblue_api_key';
+		const MAILJET_API_KEY = 'mailjet_api_key';
+		const MAILJET_SECRET_KEY = 'mailjet_secret_key';
+		const SENDPULSE_API_KEY = 'sendpulse_api_key';
+		const SENDPULSE_SECRET_KEY = 'sendpulse_secret_key';
 		const POSTMARK_API_KEY = 'postmark_api_key';
 		const SPARKPOST_API_KEY = 'sparkpost_api_key';
 		const MAILGUN_API_KEY = 'mailgun_api_key';
+		const ELASTICEMAIL_API_KEY = 'elasticemail_api_key';
 		const MAILGUN_DOMAIN_NAME = 'mailgun_domain_name';
 		const MAILGUN_REGION = 'mailgun_region';
 		const PREVENT_MESSAGE_SENDER_NAME_OVERRIDE = 'prevent_sender_name_override';
@@ -305,7 +310,16 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
 
 			if ( isset( $this->options [ PostmanOptions::MESSAGE_SENDER_EMAIL ] ) ) {
-				return $this->options [ PostmanOptions::MESSAGE_SENDER_EMAIL ]; }
+				
+				/**
+				 * Filters the From Email Address | This address, like the letterhead printed on a letter, identifies the sender to the recipient. Change this when you are sending on behalf of someone else, for example to use Google's Send Mail As feature. Other plugins, especially Contact Forms, may override this field to be your visitor's address.
+				 * 
+				 * @since 2.5.0
+				 * @version 1.0.0
+				 */
+				return apply_filters( 'post_smtp_from_email_address', $this->options[PostmanOptions::MESSAGE_SENDER_EMAIL] ); 
+			
+			}
 		}
 
 		public function getFallbackFromEmail() {
@@ -315,7 +329,16 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		public function getMessageSenderName() {
 			if ( isset( $this->options [ PostmanOptions::MESSAGE_SENDER_NAME ] ) ) {
-				return $this->options [ PostmanOptions::MESSAGE_SENDER_NAME ]; }
+				
+				/**
+				 * Filters the From Name
+				 * 
+				 * @since 2.5.0
+				 * @version 1.0.0
+				 */
+				return apply_filters( 'post_smtp_from_name', $this->options[PostmanOptions::MESSAGE_SENDER_NAME] ); 
+			
+			}
 		}
 		public function getClientId() {
 			if ( isset( $this->options [ PostmanOptions::CLIENT_ID ] ) ) {
@@ -481,7 +504,16 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		public function getReplyTo() {
 			if ( isset( $this->options [ PostmanOptions::REPLY_TO ] ) ) {
-				return $this->options [ PostmanOptions::REPLY_TO ]; }
+				
+				/**
+				 * Filters Reply-To
+				 * 
+				 * @since 2.5.0
+				 * @version 1.0.0
+				 */
+				return apply_filters( 'post_smtp_reply_to', $this->options[PostmanOptions::REPLY_TO] ); 
+			
+			}
 		}
 		public function getConnectionTimeout() {
 			if ( ! empty( $this->options [ self::CONNECTION_TIMEOUT ] ) ) {
@@ -522,6 +554,79 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
         }
 
 		/**
+		 * Gets Mailjet API key
+		 * 
+         * @since 2.7
+         * @version 1.0
+         */
+
+		public function getMailjetApiKey() {
+
+            if ( defined( 'POST_SMTP_API_KEY' ) ) {
+                return POST_SMTP_API_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::MAILJET_API_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::MAILJET_API_KEY] );
+            }
+
+        }
+
+		/**
+		 * Get SendPulse API key
+		 * 
+         * @since 2.7
+         * @version 1.0
+         */
+		public function getSendpulseApiKey() {
+
+            if ( defined( 'POST_SMTP_API_KEY' ) ) {
+                return POST_SMTP_API_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::SENDPULSE_API_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::SENDPULSE_API_KEY] );
+            }
+
+        }
+
+		/**
+		 * Gets Mailjet Secret key
+		 * 
+         * @since 2.7
+         * @version 1.0
+         */
+		public function getMailjetSecretKey() {
+
+            if ( defined( 'POST_SMTP_API_KEY' ) ) {
+                return POST_SMTP_API_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::MAILJET_SECRET_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::MAILJET_SECRET_KEY] );
+            }
+
+        }
+
+		/**
+		 * Gets SendPulse Secret key
+		 * 
+         * @since 2.7
+         * @version 1.0
+         */
+		public function getSendpulseSecretKey() {
+
+            if ( defined( 'POST_SMTP_SECRET_KEY' ) ) {
+                return POST_SMTP_SECRET_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::SENDPULSE_SECRET_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::SENDPULSE_SECRET_KEY] );
+            }
+
+        }
+
+		/**
 		 * Gets SparkPost API key
 		 * 
          * @since 2.2
@@ -538,6 +643,23 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 		
 		}
+
+
+		/**
+         * @since 2.6.0
+         * @version 1.0
+         */
+        public function getElasticEmailApiKey() {
+
+            if ( defined( 'POST_SMTP_API_KEY' ) ) {
+                return POST_SMTP_API_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::ELASTICEMAIL_API_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::ELASTICEMAIL_API_KEY] );
+            }
+
+        }
 
 		/**
 		 * (non-PHPdoc)

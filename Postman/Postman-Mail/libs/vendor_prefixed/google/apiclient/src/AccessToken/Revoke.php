@@ -56,7 +56,7 @@ class Revoke
                 $token = $token['access_token'];
             }
         }
-        $body = \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::streamFor(\http_build_query(array('token' => $token)));
+        $body = \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::streamFor(\http_build_query(['token' => $token]));
         $request = new \PostSMTP\Vendor\GuzzleHttp\Psr7\Request('POST', \PostSMTP\Vendor\Google\Client::OAUTH2_REVOKE_URI, ['Cache-Control' => 'no-store', 'Content-Type' => 'application/x-www-form-urlencoded'], $body);
         $httpHandler = \PostSMTP\Vendor\Google\Auth\HttpHandler\HttpHandlerFactory::build($this->http);
         $response = $httpHandler($request);
