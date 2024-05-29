@@ -212,6 +212,7 @@ class Post_SMTP_New_Wizard {
                                                 $url = isset( $urls[$transport->getSlug()] ) ? $urls[$transport->getSlug()] : $transport->getLogoURL();
                                                 $this->sockets[$transport->getSlug()] = $transport->getName();
                                                 $checked = $transport->getSlug() == $this->options->getTransportType() ? 'checked' : '';
+                                                $checked = !empty( sanitize_text_field( $_GET['socket'] ) ) && $transport->getSlug() == sanitize_text_field( $_GET['socket'] ) ? 'checked' : '';
                                                 $slug = $transport->getSlug();
                                                 $transport_name = $transport->getName();
 
