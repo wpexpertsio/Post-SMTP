@@ -34,8 +34,20 @@ class Post_SMTP_Mobile_Rest_API_V2 {
             'permission_callback'   => '__return_true',
         ) );
 
+		register_rest_route( 'post-smtp/v2', '/validate-license', array(
+            'methods'               => WP_REST_Server::READABLE,
+            'callback'              => array( $this, 'validate_license' ),
+            'permission_callback'   => '__return_true',
+        ) );
+
     }
 	
+	/**
+     * Get Logs | Route: /get-logs
+     * 
+     * @since 2.7.0
+     * @version 1.0.0
+     */
 	public function get_logs( WP_REST_Request $request ) {
 		
 		$args['order_by'] = 'time';
@@ -105,6 +117,56 @@ class Post_SMTP_Mobile_Rest_API_V2 {
 			
 		}
 		
+	}
+
+	/**
+     * Validat License | Route: /validate-license
+     * 
+     * @since 2.9.4
+     * @version 1.0.0
+     */
+	public function validate_license( WP_REST_Request $request ) {
+
+		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
+
+		/**
+		 * Validate License
+		 * 
+		 * @param bool $validate_license
+		 * 
+		 * @since 2.9.4
+		 */
+		$validate_license = apply_filters( 'post_smtp_mobile_validate_license', false );
+
+		if( post_smtp_mobile_validate( $fcm_token ) && $validate_license ) {
+			
+			$response = array();
+
+			/**
+			 * License Response
+			 * 
+			 * @param array $response
+			 * 
+			 * @since 2.9.4
+			 */
+			$response = apply_filters( 'post_smtp_mobile_license_response', $response );
+
+			if( !empty( $response ) ) {
+
+				wp_send_json_success(
+					$response,
+					200
+				);
+
+			}
+			
+		}
+
+		wp_send_json_error(
+			array( 'message' => 'License not found.' ),
+			404
+		);
+
 	}
 
 }
