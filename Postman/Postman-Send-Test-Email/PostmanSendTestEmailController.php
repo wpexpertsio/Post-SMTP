@@ -110,7 +110,7 @@ class PostmanSendTestEmailController {
 	 */
 	public function addEmailTestSubmenu() {
 		$page = add_submenu_page( 
-			'', 
+			' ', 
 			sprintf( '%s', esc_html__( 'Postman SMTP Setup', 'post-smtp' ) ), 
 				esc_html__( 'Postman SMTP', 'post-smtp' ), 
 				Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanSendTestEmailController::EMAIL_TEST_SLUG, array(
