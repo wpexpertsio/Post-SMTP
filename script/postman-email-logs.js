@@ -136,25 +136,27 @@ jQuery(document).ready(function($) {
 
 		var from = jQuery( '.ps-email-log-from' ).val();
 		var to = jQuery( '.ps-email-log-to' ).val();
+		var status = jQuery( '.ps-status-btn.active' ).data( 'status' );
+		status = status === 'all' ? '' : `&status=${status}`;
 
 		if( from && to ) {
 
-			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&from=${from}&to=${to}` ).load();
+			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&from=${from}&to=${to}${status}` ).load();
 
 		}
 		else if( from ) {
 
-			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&from=${from}` ).load();
+			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&from=${from}${status}` ).load();
 
 		}
 		else if( to ) {
 
-			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&to=${to}` ).load();
+			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}&to=${to}${status}` ).load();
 
 		}
 		else {
 
-			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}` ).load();
+			logsDT.ajax.url( `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}${status}` ).load();
 
 		}
 
