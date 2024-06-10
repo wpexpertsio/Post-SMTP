@@ -124,7 +124,7 @@ class PostmanSuggestProSocket {
                 </div>
             </div>
             <div style="margin: 11px 0;">
-                <a style="text-decoration:none; color:#231F20; font-size: 12px; display: block;" href="<?php echo esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=banner&utm_campaign=plugin' ); ?>"><span style="background: #000;color: #fff;text-decoration: none;padding: 10px;border-radius: 10px;">👉 <?php printf( '%s', esc_html( 'LEARN MORE', 'post-smtp' ) ); ?></span> </a>
+                <a style="text-decoration:none; color:#231F20; font-size: 12px; display: block;" href="<?php echo esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=banner&utm_campaign=plugin' ); ?>"><span style="background: #000;color: #fff;text-decoration: none;padding: 10px;border-radius: 10px;">👉 <?php printf( '%s', esc_html__( 'LEARN MORE', 'post-smtp' ) ); ?></span> </a>
             </div>
         </div>
         <?php
@@ -178,8 +178,8 @@ class PostmanSuggestProSocket {
 
             return sprintf( 
                 '👉 %s <b>%s</b>', 
-                esc_html( 'Get', 'post-smtp' ), 
-                esc_html( 'Pro Bundle', 'post-smtp' ) 
+                esc_html__( 'Get', 'post-smtp' ), 
+                esc_html__( 'Pro Bundle', 'post-smtp' ) 
             );
 
         }
