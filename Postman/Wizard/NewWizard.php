@@ -212,6 +212,7 @@ class Post_SMTP_New_Wizard {
                                                 $url = isset( $urls[$transport->getSlug()] ) ? $urls[$transport->getSlug()] : $transport->getLogoURL();
                                                 $this->sockets[$transport->getSlug()] = $transport->getName();
                                                 $checked = $transport->getSlug() == $this->options->getTransportType() ? 'checked' : '';
+                                                $checked = ( isset( $_GET['socket'] ) && !empty( sanitize_text_field( $_GET['socket'] ) ) && $transport->getSlug() == sanitize_text_field( $_GET['socket'] ) ) ? 'checked' : '';
                                                 $slug = $transport->getSlug();
                                                 $transport_name = $transport->getName();
 
@@ -1433,7 +1434,7 @@ class Post_SMTP_New_Wizard {
         $selected_region = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ]: '';
         
         $client_id = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] : '';
-        $client_secret = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] : '';
+        $client_secret = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) ? base64_decode( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) : '';
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
         $html = '
