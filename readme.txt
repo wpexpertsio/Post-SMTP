@@ -3,8 +3,8 @@ Plugin URI: https://postmansmtp.com/
 Contributors: wpexpertsio
 Tags: smtp, gmail smtp, email,  email logs, office 365
 Requires at least: 5.6.0
-Tested up to: 6.5.3
-Stable tag: 2.9.4
+Tested up to: 6.5.5
+Stable tag: 2.9.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -281,6 +281,11 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 Important: If you are using version 2.8.7 or lower of our plugin, please update to the latest version as soon as possible. This update contains an urgent security fix that prevents potential vulnerabilities and attacks. We apologize for any inconvenience this may cause you and we appreciate your cooperation. Thank you for using our plugin.
 
 == Changelog ==
+
+= 2.9.5 - 2024-06-25 =
+* Added: New Successful, Failed, and All email filter on email logs.
+* Added: Option to print email. 
+* Updated: The user interface of settings tabs
 
 = 2.9.4 - 2024-05-29 =
 * Security Improvement: Sanitized SQL queries suggested by Wordfence team.
