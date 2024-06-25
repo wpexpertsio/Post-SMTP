@@ -48,7 +48,7 @@ class StatusSolution {
 	}
 
 	private function make_clickable($url) {
-		return '<a target="_blank" href="' . esc_url($url ) . '">' . esc_html( 'Read here' ) . '</a>';
+		return '<a target="_blank" href="' . esc_url($url ) . '">' . esc_html__( 'Read here', 'post-smtp' ) . '</a>';
 	}
 
 	private function strExists( $value ) {

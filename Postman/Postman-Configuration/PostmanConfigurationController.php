@@ -667,7 +667,7 @@ class PostmanConfigurationController {
 			
 			?>
 			<h2><?php esc_html_e( 'Select notification service', 'post-smtp' ); ?></h2>
-			<p><?php printf( esc_html( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %s if required.', 'post-smtp' ), '<a href="'.$logs_url.'" target="_blank">log section</a>' ) ?></p>
+			<p><?php printf( esc_html__( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %s if required.', 'post-smtp' ), '<a href="'.$logs_url.'" target="_blank">log section</a>' ) ?></p>
 			<div class="ps-notify-radios">
 				<div class="ps-notify-radio-outer">
 					<div class="ps-notify-radio">

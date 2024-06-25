@@ -834,7 +834,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Mandrill' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://mandrillapp.com/settings/index' ),
-                esc_attr( 'API Key.' )
+                __( 'API Key.', 'post-smtp' )
             )
             .'
         </div>
@@ -879,7 +879,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'SendGrid' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://app.sendgrid.com/settings/api_keys' ),
-                esc_attr( 'API Key.' )
+                __( 'API Key.', 'post-smtp' )
             ).'
         </div>
         ';
@@ -925,7 +925,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Mailgun' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://app.mailgun.com/settings/api_security' ),
-                esc_attr( 'API Key.' )
+                __( 'API Key.', 'post-smtp' )
             )
             .'
         </div>
@@ -943,7 +943,7 @@ class Post_SMTP_New_Wizard {
                 '%1$s <a href="%2$s" target="_blank">%3$s</a>',
                 __( ' Follow this link to get the Mailgun', 'post-smtp' ),
                 esc_url( 'https://app.mailgun.com/app/sending/domains' ),
-                esc_attr( 'Domain Name.' )
+                __( 'Domain Name.', 'post-smtp' )
             )
             .'</span>
         </div>
@@ -1010,7 +1010,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Brevo' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://app.brevo.com/settings/keys/api' ),
-                esc_attr( 'API Key.' )
+                __( 'API Key.', 'post-smtp' )
             )
             .
         '</div>
@@ -1055,7 +1055,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Postmark' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://account.postmarkapp.com/api_tokens' ),
-                esc_attr( 'API Key or Server API Token.' )
+                __( 'API Key or Server API Token.', 'post-smtp' )
             )
             .'
         </div>
@@ -1100,7 +1100,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'SparkPost' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://app.sparkpost.com/account/api-keys' ),
-                esc_attr( 'API Key.' )
+                __( 'API Key.', 'post-smtp' )
             )
             .'
         </div>
@@ -1143,7 +1143,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Elastic Email' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://elasticemail.com/account#/settings/new/manage-api' ),
-                esc_attr( 'API Key.' )
+                __( 'API Key.', 'post-smtp' )
             )
             .
         '</div>
@@ -1194,7 +1194,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Mailjet' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://app.mailjet.com/account/apikeys' ),
-                esc_attr( 'Mailjet API and Access Key' )
+                __( 'Mailjet API and Access Key', 'post-smtp' )
             )
             .
         '</div>
@@ -1234,14 +1234,14 @@ class Post_SMTP_New_Wizard {
         sprintf(
             '<div class="ps-form-control-info"><a href="%1$s" target="_blank">%2$s</a> %3$s</div>',
             esc_url( 'https://sendpulse.com/features/transactional' ),
-            esc_attr( 'Click here' ),
+            __( 'Click here', 'post-smtp' ),
             __( 'to create an account at SendPulse', 'post-smtp' )
         ).
         sprintf(
             '<div class="ps-form-control-info">%1$s<a href="%2$s" target="_blank">%3$s</a></div>',
             __( 'If you are already logged in follow this ink to get your API ID from Sendpulse ', 'post-smtp' ),
             esc_url( 'https://login.sendpulse.com/settings/#api' ),
-            esc_attr( 'Get API ID' )
+            __( 'Get API ID', 'post-smtp' )
         ).
         '</div>'
         ;
@@ -1257,7 +1257,7 @@ class Post_SMTP_New_Wizard {
                 '<div class="ps-form-control-info">%1$s<a href="%2$s" target="_blank">%3$s</a></div>',
                 __( 'If you are already logged in follow this ink to get your API ID from Sendpulse ', 'post-smtp' ),
                 esc_url( 'https://login.sendpulse.com/settings/#api' ),
-                esc_attr( 'Get API Secret' )
+                __( 'Get API Secret', 'post-smtp' )
             )
             .
         '</div>
@@ -1308,7 +1308,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Amazon SES' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://us-east-1.console.aws.amazon.com/iamv2/home#/users' ),
-                esc_attr( 'Access Key ID and Sceret Access Key' )
+                __( 'Access Key ID and Sceret Access Key', 'post-smtp' )
             )
             .
         '</div>
