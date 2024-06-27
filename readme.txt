@@ -282,6 +282,11 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
+= 2.9.6 2024-06-27 =
+* Tweak - Some strings were not translatable.
+* Fix - Compatibility added for old PHP Versions.
+* Fix - Notice: Only variables should be passed by reference.
+
 = 2.9.5 - 2024-06-25 =
 * Added: New Successful, Failed, and All email filter on email logs.
 * Added: Option to print email. 
