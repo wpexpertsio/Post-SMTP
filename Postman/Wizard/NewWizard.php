@@ -479,8 +479,8 @@ class Post_SMTP_New_Wizard {
                 __( 'Take the', 'post-smtp' ),
                 esc_url( admin_url( 'admin.php?page=postman/port_test' ) ),
                 __( 'connectivity test', 'post-smtp' ),
-                __( 'of your site to get more information about this failure.', 'post-smtp' ),
-            ),
+                __( 'of your site to get more information about this failure.', 'post-smtp' )
+            )
         );
 
         if( class_exists( 'Post_Smtp_Office365' ) ) {
