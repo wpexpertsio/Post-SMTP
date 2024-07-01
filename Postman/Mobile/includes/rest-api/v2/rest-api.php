@@ -66,9 +66,14 @@ class Post_SMTP_Mobile_Rest_API_V2 {
 			
 		}
 		
-		if( empty( $query ) && !empty( $this->filter ) ) {
+		if( empty( $query ) && !empty( $this->filter ) && $this->filter !== 'all' ) {
 			
-			add_filter( 'post_smtp_get_logs_query_after_table', array( $this, 'filter_query' ) );
+			$args['status'] = $this->filter;
+			
+		}
+		else {
+			
+			$args['status'] = '';
 			
 		}
 		
