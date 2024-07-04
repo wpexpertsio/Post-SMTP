@@ -1,177 +1,61 @@
-transcript = false;
-jQuery(document).ready(
-		function() {
-			ready = 0;
-			jQuery(postman_email_test.recipient).focus();
-			jQuery("#postman_test_email_wizard")
-					.steps(
-							{
-								forceMoveForward : true,
-								showFinishButtonAlways : true,
-								bodyTag : "fieldset",
-								headerTag : "h5",
-								transitionEffect : "slideLeft",
-								stepsOrientation : "vertical",
-								autoFocus : true,
-								labels : {
-									current : post_smtp_localize.steps_current_step,
-									pagination : post_smtp_localize.steps_pagination,
-									finish : post_smtp_localize.steps_finish,
-									next : post_smtp_localize.steps_next,
-									previous : post_smtp_localize.steps_previous,
-									loading : post_smtp_localize.steps_loading
-								},
-								onStepChanging : function( event, currentIndex, newIndex ) {
-									
-									var response;
-									
-									response = handleStepChange(event, currentIndex, newIndex, jQuery(this) );
+( function( $ ) {
+	$( document ).ready( function( $e ) {
 
-									if( response ) {
-										
-										if( !jQuery( `#postman_test_email_wizard-t-${currentIndex} span` ).hasClass( 'dashicons' ) )
-											jQuery( `#postman_test_email_wizard-t-${currentIndex}` ).append( '<span class="ps-right dashicons dashicons-yes-alt"></span>' );
-									
-									}
-							
-									return response;
-								},
-								onInit : function() {
-									jQuery(postman_email_test.recipient)
-											.focus();
-									jQuery('li + li').addClass('disabled');
-								},
-								onStepChanged : function(event, currentIndex,
-										priorIndex) {
-									return postHandleStepChange(event,
-											currentIndex, priorIndex,
-											jQuery(this));
-								},
-								onFinishing : function(event, currentIndex) {
-									return true;
-								},
-								onFinished : function(event, currentIndex) {
-									if (ready == 0) {
-										return false;
-									} else {
-										var form = jQuery(this);
-										form.submit();
-									}
-								}
-							}).validate({
-						errorPlacement : function(error, element) {
-							element.before(error);
-						}
-					});
-		});
-function handleStepChange(event, currentIndex, newIndex, form) {
-	// Always allow going backward even if
-	// the current step contains invalid fields!
-	if (currentIndex > newIndex) {
-		return false;
-	}
+		$( document ).on( 'click', '.send-test-email .ps-next-button', function( e ) {
+			e.preventDefault();
 
-	// Clean up if user went backward
-	// before
-	if (currentIndex < newIndex) {
-		// To remove error styles
-		jQuery(".body:eq(" + newIndex + ") label.error", form).remove();
-		jQuery(".body:eq(" + newIndex + ") .error", form).removeClass("error");
-	}
+			var $this = $( this );
 
-	// Disable validation on fields that
-	// are disabled or hidden.
-	form.validate().settings.ignore = ":disabled,:hidden";
+			$( '#when-button-clicked' ).addClass( 'is-active' ).css( 'display', 'block' );
+			$( this ).attr( 'disabled', 'disabled' );
 
-	// Start validation; Prevent going
-	// forward if false
-	valid = form.valid();
-	if (!valid) {
-		return false;
-	}
+			$( '.ps-line' ).removeClass( 'need-more-line' );
+			$( '.ps-transcript' ).hide();
 
-	if (currentIndex === 0) {
-		ready = 0;
-		// this disables the finish button during the screen slide
-		jQuery('li').addClass('disabled');
-		jQuery('#postman_test_message_status').html(
-				postman_email_test.not_started);
-		jQuery('#postman_test_message_status').css('color', '');
-		jQuery('#postman_test_message_error_message').val('');
-		jQuery('#postman_test_message_transcript').val('');
-		hide(jQuery('#test-success'));
-		hide(jQuery('#test-fail'));
-	} else if (currentIndex === 1) {
-		return transcript;
-	}
+			let security = $( '#security' ).val(),
+				email = $( '#postman_test_options_test_email' ).val();
 
-	return true;
-}
-function postHandleStepChange(event, currentIndex, priorIndex, myself) {
-	if (currentIndex === 0) {
-	} else if (currentIndex === 1) {
-		// this is the second place I disable the finish button but Steps
-		// re-enables it after the screen slides
-		jQuery('li').addClass('disabled');
-		var data = {
-			'action' : 'postman_send_test_email',
-			'email' : jQuery(postman_email_test.recipient).val(),
-			'security' : jQuery('#security').val()
-		};
-		jQuery('#postman_test_message_status').html(postman_email_test.sending);
-		jQuery('#postman_test_message_status').css('color', 'blue');
-		// http://stackoverflow.com/questions/21987318/catch-handle-502-bad-gateway-error
-		jQuery
-				.ajax(
-						{
-							statusCode : {
-								502 : function() {
-									alert('The server returned "HTTP Error 502 Bad gateway". Contact your hosting provider to resolve the error.');
-								}
-							},
-							method : "POST",
-							url : ajaxurl,
-							data : data
-						}).done(function(response) {
-					handleResponse(response);
-				}).fail(
-						function(response) {
-							// handle ajax failure
-							jQuery('#postman_test_message_status').html(
-									postman_email_test.ajax_error);
-							jQuery('#postman_test_message_status').css('color',
-									'red');
-							jQuery('#postman_test_message_error_message').val(
-									postman_ajax_msg.bad_response + ":\n\n"
-											+ response.responseText);
-							jQuery('li + li').removeClass('disabled');
-						});
+			$.ajax( {
+				url	    : ajaxurl,
+				method  : 'POST',
+				data    : {
+					action	 : 'postman_send_test_email',
+					security : security,
+					email	 : email,
+				},
+				success : function( response ) {
+					$( '#when-button-clicked' ).removeClass( 'is-active' ).css( 'display', 'none' );
+					$this.removeAttr( 'disabled' );
+					if ( ! response.success ) {
+						var message = response.data.message;
+						var icon    = '<span class="dashicons dashicons-no-alt"></span>';
+						$( '.send-test-email .ps-success' ).empty();
+						$( '.send-test-email .ps-error' ).html( icon + message );
 
-	}
-	function handleResponse(response) {
-		if (postmanValidateAjaxResponse(response)) {
-			if (response.data.transcript
-					&& response.data.transcript.length != 0) {
-				// only enable the next button if there is a transcript
-				transcript = true;
-				jQuery('li').removeClass('disabled');
-			} else {
-				jQuery('li + li').removeClass('disabled');
-			}
-			if (response.success) {
-				jQuery('#postman_test_message_status').html(
-						postman_email_test.success);
-				jQuery('#postman_test_message_status').css('color', 'green');
-			} else {
-				jQuery('#postman_test_message_status').html(
-						postman_email_test.failed);
-				jQuery('#postman_test_message_status').css('color', 'red');
-			}
-			jQuery('#postman_test_message_error_message').val(
-					response.data.message);
-			jQuery('#postman_test_message_transcript').val(
-					response.data.transcript);
-		}
-		ready = 1;
-	}
-}
+						$( '#ps-transcript-container' ).hide();
+						$( '#ps-show-transcript' ).hide();
+					}
+
+					if ( response.success ) {
+						var message = response.data.message;
+						var icon    = '<span class="dashicons dashicons-yes-alt"></span>';
+						$( '.send-test-email .ps-error' ).empty();
+						$( '.send-test-email .ps-success' ).html( icon + message );
+
+						$( '#ps-transcript-container' ).show();
+						$( '#ps-show-transcript' ).show();
+
+						$( '.ps-transcript textarea' ).text( response.data.transcript );
+					}
+				},
+			} );
+		} );
+
+		$( document ).on( 'click', '.send-test-email #ps-show-transcript', function( e ) {
+			e.preventDefault();
+
+			$( '.ps-transcript' ).toggle();
+			$( '.ps-line' ).toggleClass( 'need-more-line' );
+		} );
+	} );
+} )( jQuery );

@@ -95,6 +95,9 @@ class Postman {
 		require_once 'Postman-Email-Health-Report/PostmanEmailReporting.php';
 		require_once 'Postman-Email-Health-Report/PostmanEmailReportSending.php';
 
+		// New Dashboard
+		require_once 'Dashboard/NewDashboard.php';
+
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
 				'name' => __( 'Postman SMTP', 'post-smtp' ),

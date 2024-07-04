@@ -194,7 +194,10 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		 * Options page callback
 		 */
 		public function outputDefaultContent() {
-
+			if ( apply_filters( 'post_smtp__new_dashboard', __return_false() ) ) {
+				do_action( 'post_smtp__new_dashboard_content' );
+			} else {
+				
 			// Set class property
 			print '<div class="wrap">';
 			print '<div class="ps-main-container-wrap">';
@@ -610,7 +613,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 	</div>
 
 			<?php
-
+			}
 		}
 
 		/**
