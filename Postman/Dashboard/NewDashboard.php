@@ -40,14 +40,17 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
             $app_connected      = get_option( 'post_smtp_mobile_app_connection' );
 	        $main_wp_configured = get_option( 'post_smtp_use_from_main_site' );
             $configured         = $transport->isConfiguredAndReady() ? 'true' : 'false';
-            $app_connected      = ! empty( $app_connected ) ? 'false' : 'true';
-	        $main_wp_configured = ! empty( $main_wp_configured ) ? 'false' : 'true';
+            $app_connected      = empty( $app_connected ) ? 'false' : 'true';
+	        $main_wp_configured = empty( $main_wp_configured ) ? 'false' : 'true';
+			$has_post_smtp_pro  = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
+			$has_post_smtp_pro  = in_array( 'post-smtp-pro/post-smtp-pro.php', $has_post_smtp_pro, true )
+				? 'true' : 'false';
 
 	        $ad_position = get_option('postman_dashboard_ad', 'maximize' );
             echo '<div id="post-smtp-app">
                 <post-smtp-app-wrapper
                     :post-smtp-configured="' . esc_attr( $configured ) . '"
-                    :post-smtp-pro="true"
+                    :post-smtp-pro="' . esc_attr( $has_post_smtp_pro ) . '"
                     :is-mobile-app-configured="' . esc_attr( $app_connected ) . '"
                     :is-main-wp-configured="' . esc_attr( $main_wp_configured ) . '"
                     :is-domain-spam-score-configured="false"
