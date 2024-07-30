@@ -171,7 +171,7 @@ class PostmanSendTestEmailController {
 						<table>
 							<tr>
 								<td class="ps-circle">
-									<span class="ps-tick dashicons dashicons-yes-alt"></span>
+									<span class="ps-tick dashicons dashicons-yes-alt birth-check"></span>
 								</td>
 								<td class="ps-text">
 									' . esc_html__( 'Send Test Email', 'post-smtp' ) . '
@@ -254,7 +254,7 @@ class PostmanSendTestEmailController {
 
 								<tr>
 									<td class="ps-circle">
-										<span class="ps-tick dashicons dashicons-yes-alt">
+										<span class="ps-tick dashicons dashicons-yes-alt ps-ste-bm">
 											<span class="ps-line"></span>
 										</span>
 									</td>

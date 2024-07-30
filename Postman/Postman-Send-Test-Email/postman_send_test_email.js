@@ -46,6 +46,7 @@
 						$( '#ps-show-transcript' ).show();
 
 						$( '.ps-transcript textarea' ).text( response.data.transcript );
+						$( '.ps-ste-bm' ).addClass( 'birth-check' )
 					}
 				},
 			} );

@@ -71,8 +71,20 @@
     display: inline-block;
     vertical-align: top;
     line-height: 1;
-    margin: 4.4px 4.6px;
+    margin: auto;
     background-color: #375caf;
+}
+
+.send-test-email  .ps-circle .birth-check.ps-tick::before {
+    content: '\f12a';
+    height: 35px;
+    width: 35px;
+    border-radius: 40px;
+    display: inline-block;
+    vertical-align: top;
+    line-height: 1;
+    margin: auto;
+    background-color: transparent;
 }
 
 .send-test-email .ps-text {
@@ -83,7 +95,7 @@
 
 .send-test-email .ps-footer {
     padding: 17px 0;
-    background: #f1f1f1;
+    /*background: #f1f1f1;*/
 }
 
 .send-test-email .ps-footer-content.float-left {
@@ -109,7 +121,7 @@
     position: absolute;
     width: 3px;
     height: 360px;
-    left: 23px;
+    left: 26px;
     bottom: 41px;
     background: #d9d9d9;
     z-index: -3;
@@ -169,4 +181,5 @@
 }
 
 
+/*# This is auto generated css by webpack please don't change anything */
 /*# sourceMappingURL=app.css.map*/
