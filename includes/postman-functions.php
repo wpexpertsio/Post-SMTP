@@ -211,7 +211,7 @@ function post_smtp_has_pro(){
             ||
             is_plugin_active( 'advance-email-delivery-and-logs-premium/post-smtp-advanced-email-delivery-and-logs.php' )
             ||
-            class_exists( 'Post_SMTP_Pro' )
+            is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' )
         ){
             return true;
         }
