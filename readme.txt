@@ -287,6 +287,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 * New: Added [pre_wp_mail](https://developer.wordpress.org/reference/hooks/pre_wp_mail/) filter.
 * Tweak: Sometimes Post SMTP was not detecting Post SMTP Pro.
 * Updated: Feedback SDK to the latest version.
+* Fix - Mailjet - Reply-To email was not working properly.
 
 = 2.9.7 - July 01, 2024 =
 * Fix: Logs filter was not working in [Post SMTP Mobile Application](https://postmansmtp.com/post-smtp-mobile-app/?utm_source=wp_org&utm_medium=changelog)
