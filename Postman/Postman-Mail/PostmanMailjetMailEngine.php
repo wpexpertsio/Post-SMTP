@@ -139,22 +139,15 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
         }
         
         // add the reply-to
-        $replyTo = $message->getReplyTo();
+        $get_reply_to = $message->getReplyTo();
 
-        $To=null;
-        if ( isset( $replyTo ) ) {
-            $To = !empty( $replyTo->getName() ) ? $replyTo->getName() . ' <' . $replyTo->getEmail() . '>' : $replyTo->getEmail();
+        $reply_to = '';
 
-            if(!empty($tos)){
+        if ( !empty( $get_reply_to ) ) {
 
-                $sendSmtpEmail['To'] = $sendSmtpEmail['To'] . ',' . $To;
+            $reply_to = !empty( $get_reply_to->getName() ) ? $get_reply_to->getName() . ' <' . $get_reply_to->getEmail() . '>' : $get_reply_to->getEmail();
 
-            }
-            else{
-
-                $sendSmtpEmail['To'] = $To;
-
-            }
+            $headers['Reply-To'] = $reply_to;
              
         }
 
