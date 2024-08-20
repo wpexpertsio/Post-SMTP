@@ -282,7 +282,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
-= 2.9.8 - August 05, 2024 =
+= 2.9.8 - August 21, 2024 =
 * New: Added SendGrid EU support.
 * New: Added [pre_wp_mail](https://developer.wordpress.org/reference/hooks/pre_wp_mail/) filter.
 * Tweak: Sometimes Post SMTP was not detecting Post SMTP Pro.
