@@ -10,6 +10,7 @@ jQuery(document).ready(function() {
 
 	// behavior for handling the user's transport change
 	PostmanSendGrid.prototype.handleTransportChange = function(transportName) {
+
 		if (transportName == 'sendgrid_api') {
 			hide('div.transport_setting');
 			hide('div.authentication_setting');
@@ -30,11 +31,13 @@ jQuery(document).ready(function() {
 
 	// add this class to the global transports
 	var transport = new PostmanSendGrid();
+
 	transports.push(transport);
 
 	// since we are initialize the screen, check if needs to be modded by this
 	// transport
 	var transportName = jQuery('select#input_transport_type').val();
+
 	transport.handleTransportChange(transportName);
 
 });

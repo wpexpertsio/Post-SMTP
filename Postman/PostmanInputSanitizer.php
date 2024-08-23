@@ -62,6 +62,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizePassword( 'Mailjet Secret Key', PostmanOptions::MAILJET_SECRET_KEY, $input, $new_input, $this->options->getMailjetSecretKey() );
 			$this->sanitizePassword( 'Sendpulse API Key', PostmanOptions::SENDPULSE_API_KEY, $input, $new_input, $this->options->getSendpulseApiKey() );
 			$this->sanitizePassword( 'Sendpulse Secret Key', PostmanOptions::SENDPULSE_SECRET_KEY, $input, $new_input, $this->options->getSendpulseSecretKey() );
+			$this->sanitizePassword( 'Smtp2go Api Key', PostmanOptions::SMTP2GO_API_KEY, $input, $new_input, $this->options->getSmtp2goApiKey() );
 			$this->sanitizePassword( 'Postmark API Key', PostmanOptions::POSTMARK_API_KEY, $input, $new_input, $this->options->getPostmarkApiKey() );
 			$this->sanitizePassword( 'SparkPost API Key', PostmanOptions::SPARKPOST_API_KEY, $input, $new_input, $this->options->getSparkPostApiKey() );
 			$this->sanitizePassword( 'Mailgun API Key', PostmanOptions::MAILGUN_API_KEY, $input, $new_input, $this->options->getMailgunApiKey() );

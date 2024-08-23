@@ -59,11 +59,12 @@ class Post_SMTP_New_Wizard {
         'sparkpost_api',
         'mailjet_api',
         'sendpulse_api',
+        'smtp2go_api',
         'office365_api',
         'aws_ses_api',
         'zohomail_api',
         'smtp',
-        'default'
+        'default',
     );
 
     /**
@@ -194,10 +195,11 @@ class Post_SMTP_New_Wizard {
                                                 'sparkpost_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sparkpost.png',
                                                 'mailjet_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailjet.png',
                                                 'sendpulse_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendpulse.png',
+                                                'smtp2go_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp2go.png',
                                                 'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/logo.png',
                                                 'elasticemail_api'  =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/elasticemail.png',
                                                 'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
-                                                'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png'
+                                                'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png',
                                             );
 
                                             $url = '';
@@ -216,8 +218,7 @@ class Post_SMTP_New_Wizard {
                                                 $slug = $transport->getSlug();
                                                 $transport_name = $transport->getName();
 
-                                            }
-                                            else {
+                                            } else {
                                                 
                                                 $transport_slug = $key;
 
@@ -262,7 +263,6 @@ class Post_SMTP_New_Wizard {
 
 
                                             }
-
                                             ?>
                                             <div class="ps-wizard-socket-radio-outer">
                                                 <div class="ps-wizard-socket-radio <?php echo !empty( $is_pro ) ? esc_attr( $is_pro ) . '-outer' : ''; ?>" <?php echo !empty( $is_pro ) ? 'data-url="' . esc_url( $product_url ) . '"' : ''; ?>>
@@ -422,7 +422,7 @@ class Post_SMTP_New_Wizard {
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-4">
                                 <div class="ps-wizard-congrates">
-                                    <h2>👏 <?php _e( 'Great you are all done!', 'post-smtp' ); ?></h1>
+                                    <h2>👏 <?php _e( 'Great you are all done!', 'post-smtp' ); ?></h2>
                                     <?php 
                                     printf( 
                                         '<a href="%1$s" style="font-size: 12px;">%2$s <b>%3$s</b> %4$s <b>%5$s</b> %6$s</a>', 
@@ -590,9 +590,8 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function render_socket_settings( $socket ) {
-
         switch ( $socket ) {
-            
+
             case 'default':
                 echo wp_kses( $this->render_default_settings(), $this->allowed_tags );
             break;
@@ -625,6 +624,9 @@ class Post_SMTP_New_Wizard {
             break;
             case 'sendpulse_api':
                 echo wp_kses( $this->render_sendpulse_settings(), $this->allowed_tags );
+            break;
+	        case 'smtp2go_api':
+		        echo wp_kses( $this->render_smtp2go_settings(), $this->allowed_tags );
             break;
             case 'elasticemail_api':
                 echo wp_kses( $this->render_elasticemail_settings(), $this->allowed_tags );
@@ -1521,6 +1523,41 @@ class Post_SMTP_New_Wizard {
 
     }
 
+    public function render_smtp2go_settings() {
+
+        ob_start();
+
+        $api_key = null === $this->options->getSmtp2GoApiKey() ? '' : esc_attr( $this->options->getSmtp2GoApiKey() );
+
+        printf(
+	        '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
+	        esc_url( 'https://www.smtp2go.com/' ),
+	        __( 'SMTP2Go', 'post-smtp' ),
+	        __( 'is known for its reliable email delivery service, featuring global infrastructure, real-time analytics, and robust security. If you’re just starting out, their free plan allows sending up to 1,000 emails per month.', 'post-smtp' ),
+	        __( 'Let’s get started with our', 'post-smtp' ),
+	        esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-smtp2go-with-post-smtp/' ),
+	        __( 'SMTP2GO Documentation', 'post-smtp' )
+        );
+
+        echo '<div class="ps-form-control">
+            <div><label>API Key</label></div>
+            <input type="text" class="ps-smtp2go-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SMTP2GO_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">';
+        printf(
+            '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
+	        __( 'Create an account at', 'post-smtp' ),
+	        esc_url( 'https://www.smtp2go.com/' ),
+	        esc_attr( 'SMTP2GO' ),
+	        __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+	        esc_url( 'https://app-eu.smtp2go.com/sending/apikeys/' ),
+	        __( 'API Key.', 'post-smtp' )
+        );
+
+        echo '</div>';
+
+        return ob_get_clean();
+
+    }
+
 
     /**
      * Save Wizard | AJAX Callback
@@ -1534,10 +1571,10 @@ class Post_SMTP_New_Wizard {
         parse_str( $_POST['FormData'], $form_data );
         $response = false;
 
-        if( 
+        if(
             isset( $_POST['action'] )
             &&
-            'ps-save-wizard' == $_POST['action'] 
+            'ps-save-wizard' == $_POST['action']
             &&
             wp_verify_nonce( $form_data['security'], 'post-smtp' )
         ) {
@@ -1545,6 +1582,8 @@ class Post_SMTP_New_Wizard {
             if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
 
                 $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
+
+
                 $options = get_option( PostmanOptions::POSTMAN_OPTIONS );
                 $_options = $options;
                 $options = $options ? $options : array();
@@ -1574,11 +1613,10 @@ class Post_SMTP_New_Wizard {
                 $sanitized['ses_region'] = isset( $sanitized['ses_region'] ) ? $sanitized['ses_region'] : '';
                 $sanitized['enc_type'] = 'tls';
                 $sanitized['auth_type'] = 'login';
-                
+                $sanitized[PostmanOptions::SMTP2GO_API_KEY] = isset( $sanitized[PostmanOptions::SMTP2GO_API_KEY] ) ? $sanitized[PostmanOptions::SMTP2GO_API_KEY] : '';
+
                 foreach( $sanitized as $key => $value ) {
-
                     $options[$key] = $value;
-
                 }
 
                 if( $options == $_options ) {
@@ -1588,12 +1626,13 @@ class Post_SMTP_New_Wizard {
                 } else {
 
                     $response = update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
-
                 }
-                
+
+
             }
-            
+
         }
+
 
         //Prevent redirection
         delete_transient( PostmanSession::ACTION );
