@@ -171,7 +171,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
                         <?php _e( 'Enable global settings', 'post-smtp' ); ?>
                     </th>
                     <td>
-                        <?php $checked = checked( $options['post_smtp_global_settings'], 1, false ); ?>
+                        <?php $checked = ( isset( $options['post_smtp_global_settings'] ) && checked( $options['post_smtp_global_settings'], 1, false ) ) ? checked( $options['post_smtp_global_settings'], 1, false ) : ''; ?>
                         <label for="post-smtp-global-settings">
                             <input id="post-smtp-global-settings" type="checkbox"
                                    name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_global_settings]"
