@@ -376,11 +376,11 @@
 
 .button-primary.ps-yellow-btn {
   border: #ff9900;
-  background: #ff9900;
-  border-radius: 0px;
-  line-height: 40px;
+  background: #fa8900;
+  border-radius: 50px;
+  line-height: 35px;
   width: 170px;
-  color: #000!important;
+  color: #000 !important;
 }
 
 .button-primary.ps-yellow-btn.focus, 
@@ -573,21 +573,22 @@
   position: absolute;
   width: 500px;
   height: 360px;
-  border-top: 3px solid #375caf;
   background: #fff;
   margin: auto;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
+  border-radius: 7px;
 }
 
 span.ps-pro-close-popup {
   position: absolute;
   right: 27px;
   top: 0;
-  color: #fff;
-  background: #bababa;
+  color: #222222;
+  border: 1px solid #e2e4ea;
+  border-radius: 50px;
 }
 
 .ps-pro-popup-body {
@@ -597,16 +598,25 @@ span.ps-pro-close-popup {
 }
 
 .ps-pro-popup-content {
-  width: 60%;
+  width: 75%;
   text-align: center;
-  font-weight: bolder;
-  margin: 30px auto;
+  margin: 50px auto;
+}
+
+.ps-pro-popup-content h1 {
+  color: #214A72;
+  font-weight: 400;
 }
 
 .ps-pro-popup-content p {
   font-size: 11px;
-  color: #000;
+  color: #6A788B;
   margin: 25px 0;
+  font-weight: 400;
+}
+
+.ps-pro-discount{
+  
 }
 
 .ps-wizard-connectivity-information {

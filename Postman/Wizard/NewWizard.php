@@ -115,15 +115,20 @@ class Post_SMTP_New_Wizard {
                         <span class="dashicons dashicons-no-alt ps-pro-close-popup"></span>
                         <div class="ps-pro-popup-content">
                             <img src="" class="ps-pro-for-img" />
-                            <h1><span class="ps-pro-for"></span> is a Pro feature</h1>
+                            <h1><span class="ps-pro-for"></span> is Pro feature</h1>
                             <p>
                                 We're sorry, the <span class="ps-pro-for"></span> mailer is not available on your plan. Please upgrade to the PRO plan to unlock all these awesome fetures.
                             </p>
                             <div>
-                                <a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank" class="button button-primary ps-yellow-btn ps-pro-product-url" style="color: #ffffff!important">UPGRADE TO PRO</a>
+                                <a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank" class="button button-primary ps-yellow-btn ps-pro-product-url" style="color: #ffffff!important; font-weight: 400;">Upgrade to PRO <span class="dashicons dashicons-arrow-right-alt2"></span></a>
+                            </div>
+                            <div class="ps-pro-promo-area">   
+                                <p>
+                                    <b>Bonus:</b> Upgrade now and get <span class="ps-pro-discount">25% off</span> on Post SMTP lifetime plans!
+                                </p>
                             </div>
                             <div>
-                                <a href="" class="ps-pro-close-popup" style="color: #c2c2c2; font-size: 10px;">Already purchased?</a>
+                                <a href="" class="ps-pro-close-popup" style="color: #6A788B; font-size: 10px; font-size: 12px;">Already purchased?</a>
                             </div>
                         </div>
                     </div>
