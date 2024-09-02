@@ -37,6 +37,12 @@ class PostmanSendGrid extends PostmanServiceRequest {
 
         $this->api_key = $api_key;
 
+        if( apply_filters( 'post_smtp_enable_sendgrid_eu', false ) ) {
+
+            $this->base_url = 'https://api.eu.sendgrid.com/v3/mail';
+
+        }
+
         parent::__construct( $this->base_url );
 
     }

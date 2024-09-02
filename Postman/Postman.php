@@ -73,6 +73,7 @@ class Postman {
         require_once 'Postman-Mail/PostmanPostmarkTransport.php';
         require_once 'Postman-Mail/PostmanSparkPostTransport.php';
         require_once 'Postman-Mail/PostmanElasticEmailTransport.php';
+        require_once 'Postman-Mail/PostmanSmtp2GoTransport.php';
         require_once 'PostmanOAuthToken.php';
 		require_once 'PostmanWpMailBinder.php';
 		require_once 'PostmanConfigTextHelper.php';
@@ -87,7 +88,7 @@ class Postman {
 		require_once 'Wizard/NewWizard.php';
 		//load MainWP Child Files
 		require_once 'Extensions/MainWP-Child/mainwp-child.php';
-		
+
 		//Mobile Application
 		require_once 'Mobile/mobile.php';
 
@@ -95,8 +96,9 @@ class Postman {
 		require_once 'Postman-Email-Health-Report/PostmanEmailReporting.php';
 		require_once 'Postman-Email-Health-Report/PostmanEmailReportSending.php';
 
-		// New Dashboard
+        // New Dashboard
 		require_once 'Dashboard/NewDashboard.php';
+
 
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
@@ -476,6 +478,7 @@ class Postman {
         $postman_transport_registry->registerTransport( new PostmanPostmarkTransport( $rootPluginFilenameAndPath ) );
         $postman_transport_registry->registerTransport( new PostmanSparkPostTransport( $rootPluginFilenameAndPath ) );
         $postman_transport_registry->registerTransport( new PostmanElasticEmailTransport( $rootPluginFilenameAndPath ) );
+        $postman_transport_registry->registerTransport( new PostmanSmtp2GoTransport( $rootPluginFilenameAndPath ) );
 
 		do_action( 'postsmtp_register_transport', $postman_transport_registry );
 	}
