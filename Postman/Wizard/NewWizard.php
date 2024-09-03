@@ -128,8 +128,11 @@ class Post_SMTP_New_Wizard {
                                 </p>
                                 <div class="ps-pro-coupon">
                                     <b>
-                                        Use Coupon: GETSMTPPRO
+                                        Use Coupon: <span class="ps-pro-coupon-code">GETSMTPPRO</span> <span class="dashicons dashicons-admin-page ps-click-to-copy"></span>
                                     </b>
+                                </div>
+                                <div id="ps-pro-code-copy-notification" style="display: none;position:absolute;color: #b3d5b6;border-radius:3px;right: 0;left: 0; bottom: -12px; margin: auto;width: 95px;font-size: 11px;background: #e1fde4;border: 1px solid #b3d5b6;line-height: 22px;">
+                                    Code Copied<span class="dashicons dashicons-yes"></span>
                                 </div>
                             </div>
                             <div>
