@@ -571,8 +571,8 @@
 
 .ps-pro-popup-outer {
   position: absolute;
-  width: 500px;
-  height: 360px;
+  width: 550px;
+  height: 400px;
   background: #fff;
   margin: auto;
   top: 0;
@@ -584,23 +584,23 @@
 
 span.ps-pro-close-popup {
   position: absolute;
-  right: 27px;
+  right: 18px;
   top: 0;
   color: #222222;
   border: 1px solid #e2e4ea;
   border-radius: 50px;
+  cursor: pointer;
 }
 
 .ps-pro-popup-body {
   position: relative;
-  cursor: pointer;
   line-height: 30px;
 }
 
 .ps-pro-popup-content {
-  width: 75%;
+  width: 92%;
   text-align: center;
-  margin: 50px auto;
+  margin: 15px auto;
 }
 
 .ps-pro-popup-content h1 {
@@ -613,10 +613,45 @@ span.ps-pro-close-popup {
   color: #6A788B;
   margin: 25px 0;
   font-weight: 400;
+  width: 75%;
+  margin: 25px auto;
 }
 
-.ps-pro-discount{
-  
+.ps-pro-promo-area {
+  background: #f0f6ff;
+  border-radius: 4px;
+  margin: 20px 0 5px 0;
+  padding: 12px 0px;
+}
+
+.ps-pro-promo-area p {
+  color: #214a72;
+  font-size: 12px;
+  margin: 0 auto;
+}
+
+.ps-pro-promo-area b {
+  font-weight: bolder;
+}
+
+.ps-pro-coupon {
+  background: #5e7cbf;
+  display: inline-block;
+  padding: 0px 14px;
+  border-radius: 7px;
+  margin-top: 10px;
+}
+
+.ps-pro-coupon b {
+  color: #fff;
+}
+
+.ps-pro-discount {
+  background: #121FCF;
+  background: linear-gradient(298.51deg, #8ED2F5 -7.43%, #46519E 78.45%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bolder;
 }
 
 .ps-wizard-connectivity-information {
