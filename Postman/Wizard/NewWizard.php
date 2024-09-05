@@ -232,7 +232,18 @@ class Post_SMTP_New_Wizard {
                                                 
                                                 $url = isset( $urls[$transport->getSlug()] ) ? $urls[$transport->getSlug()] : $transport->getLogoURL();
                                                 $this->sockets[$transport->getSlug()] = $transport->getName();
-                                                $checked = ( ( isset( $_GET['socket'] ) && !empty( sanitize_text_field( $_GET['socket'] ) ) && $transport->getSlug() == sanitize_text_field( $_GET['socket'] ) ) || $transport->getSlug() == $this->options->getTransportType() ) ? 'checked' : '';
+
+                                                if( isset( $_GET['socket'] ) && !empty( sanitize_text_field( $_GET['socket'] ) ) && $transport->getSlug() == sanitize_text_field( $_GET['socket'] ) ) {
+
+                                                    $checked = 'checked';
+
+                                                }
+                                                elseif( $transport->getSlug() == $this->options->getTransportType() && !is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' ) ) {
+
+                                                    $checked = 'checked';
+
+                                                }
+                                                
                                                 $slug = $transport->getSlug();
                                                 $transport_name = $transport->getName();
 
