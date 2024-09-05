@@ -48,23 +48,7 @@ class Post_SMTP_New_Wizard {
         )
     );
 
-    private $socket_sequence = array(
-        'gmail_api',
-        'sendinblue_api',
-        'sendgrid_api',
-        'mailgun_api',
-        'elasticemail_api',
-        'mandrill_api',
-        'postmark_api',
-        'sparkpost_api',
-        'mailjet_api',
-        'sendpulse_api',
-        'office365_api',
-        'aws_ses_api',
-        'zohomail_api',
-        'smtp',
-        'default'
-    );
+    private $socket_sequence = array();
 
     /**
      * Constructor for the class
@@ -74,6 +58,30 @@ class Post_SMTP_New_Wizard {
      */
     public function __construct() {
 
+        $this->socket_sequence = array(
+            'gmail_api',
+            'sendinblue_api',
+            'sendgrid_api',
+            'mailgun_api',
+            'elasticemail_api',
+            'mandrill_api',
+            'postmark_api',
+            'sparkpost_api',
+            'mailjet_api',
+            'sendpulse_api'
+        );
+        
+        if( !is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' ) ) {
+
+            $this->socket_sequence[] = 'office365_api';
+            $this->socket_sequence[] = 'aws_ses_api';
+            $this->socket_sequence[] = 'zohomail_api';
+
+        }
+
+        $this->socket_sequence[] = 'smtp';
+        $this->socket_sequence[] = 'default';
+        
         add_filter( 'post_smtp_legacy_wizard', '__return_false' );
         add_action( 'post_smtp_new_wizard', array( $this, 'load_wizard' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
