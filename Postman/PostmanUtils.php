@@ -213,7 +213,13 @@ class PostmanUtils {
 				'TiB',
 				'PiB',
 		);
-		return @round( $size / pow( 1024, ($i = floor( log( $size, 1024 ) )) ), 2 ) . ' ' . $unit [ $i ];
+		
+		$log = log( $size, 1024 );
+		$unit_key = floor( $log );
+		$pow = pow( 1024, $unit_key );
+		$pow = floor( $pow );
+
+		return @round( $size / $pow, 2 ) . ' ' . $unit[$unit_key];
 	}
 
 	/**
