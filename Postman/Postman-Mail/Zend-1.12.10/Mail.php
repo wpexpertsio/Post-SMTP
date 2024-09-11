@@ -1239,6 +1239,8 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
      */
     protected function _filterName($name)
     {
+        $name = $name == null ? '' : $name;
+        
         $rule = array("\r" => '',
                       "\n" => '',
                       "\t" => '',

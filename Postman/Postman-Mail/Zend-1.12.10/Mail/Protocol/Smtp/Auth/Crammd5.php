@@ -38,6 +38,11 @@
  */
 class Postman_Zend_Mail_Protocol_Smtp_Auth_Crammd5 extends Postman_Zend_Mail_Protocol_Smtp
 {
+
+    public $_username;
+
+    public $_password;
+
     /**
      * Constructor.
      *
