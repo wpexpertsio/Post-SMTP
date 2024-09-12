@@ -1376,7 +1376,7 @@ class Post_SMTP_New_Wizard {
             esc_url( 'https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/' ),
             __( 'Office 365', 'post-smtp' ),
             __( 'is a popular transactional email provider that sends more than 35 billion emails every month. If you\'re just starting out, the free plan allows you to send up to 100 emails each day without entering your credit card details', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/postman-smtp-documentation/pro-extensions/configure-office-365-integration/' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-configure-post-smtp-with-office-365/' ),
             __( 'Read how to setup Office 365', 'post-smtp' )
         );
 
@@ -1384,17 +1384,6 @@ class Post_SMTP_New_Wizard {
         <div class="ps-form-control">
             <div><label>'.__( 'Application (Client) ID', 'post-smtp' ).'</label></div>
             <input type="text" class="ps-office365-client-id" required data-error="'.__( 'Please enter Application (Client) ID.', 'post-smtp' ).'" name="postman_options[office365_app_id]" value="'.$app_client_id.'" placeholder="Application (Client) ID">
-            <span class="ps-form-control-info">'.
-            /**
-             * Translators: %1$s URL, %2$s URL Text, %3$s Text
-             */
-            sprintf(
-                '<a href="%1$s" target="_blank">%2$s</a> %3$s',
-                esc_url( 'https://postmansmtp.com/documentation/postman-smtp-documentation/pro-extensions/configure-office-365-integration/' ),
-                __( 'Follow this link', 'post-smtp' ),
-                __( 'to get Application (Client) ID for Office 365', 'post-smtp' )
-            )
-            .'</span>
         </div>
         ';
 
@@ -1402,17 +1391,6 @@ class Post_SMTP_New_Wizard {
         <div class="ps-form-control">
             <div><label>'.__( 'Client Secret (Value)', 'post-smtp' ).'</label></div>
             <input type="text" class="ps-office365-client-secret" required data-error="'.__( 'Please enter Client Secret (Value).', 'post-smtp' ).'" name="postman_options[office365_app_password]" value="'.$app_client_secret.'" placeholder="Client Secret (Value)">
-            <span class="ps-form-control-info">'.
-            /**
-             * Translators: %1$s URL, %2$s URL Text, %3$s Text
-             */
-            sprintf(
-                '<a href="%1$s" target="_blank">%2$s</a> %3$s',
-                esc_url( 'https://postmansmtp.com/documentation/postman-smtp-documentation/pro-extensions/configure-office-365-integration/' ),
-                __( 'Follow this link', 'post-smtp' ),
-                __( 'to get Client Secret (Value) for Office 365', 'post-smtp' )
-            )
-            .'</span>
         </div>
         ';
 
@@ -1421,17 +1399,6 @@ class Post_SMTP_New_Wizard {
         <div class="ps-form-control">
             <div><label>'.__( 'Redirect URI', 'post-smtp' ).'</label></div>
             <input type="text" readonly class="ps-office365-redirect-uri" value="'.$redirect_uri.'">
-            <span class="ps-form-control-info">'.
-            /**
-             * Translators: %1$s URL, %2$s URL Text, %3$s Text
-             */
-            sprintf(
-                '<a href="%1$s" target="_blank">%2$s</a> %3$s',
-                esc_url( 'https://postmansmtp.com/documentation/postman-smtp-documentation/pro-extensions/configure-office-365-integration/' ),
-                __( 'Follow this link', 'post-smtp' ),
-                __( 'to get Redirect URI for Office 365', 'post-smtp' )
-            )
-            .'</span>
         </div>
         ';
 
