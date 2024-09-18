@@ -7,6 +7,7 @@ class PostmanEmailQueryLog {
     public $table = 'post_smtp_logs';
     private $query = ''; 
     private $columns = array();
+    private $table_meta = 'post_smtp_logmeta';
 
 
     /**
@@ -20,6 +21,7 @@ class PostmanEmailQueryLog {
         global $wpdb;
         $this->db = $wpdb;
         $this->table = $this->db->prefix . $this->table;
+        $this->table_meta = $this->db->prefix . $this->table_meta;
 
         
     }
@@ -323,6 +325,26 @@ class PostmanEmailQueryLog {
             ARRAY_A
         );
 
+
+    }
+
+    /**
+     * Delete Log Meta
+     * 
+     * @param mixed $log_id
+     * @return mixed
+     */
+    public function delete_log_meta( $log_ids ) {
+
+        $log_ids = implode( ',', $log_ids );
+        $log_ids = $log_ids == -1 ? '' : "WHERE log_id IN ({$log_ids});";
+        
+        return $this->db->query(
+            $this->db->prepare(
+                "DELETE FROM %i {$log_ids}",
+                $this->table_meta
+            )
+        );
 
     }
 

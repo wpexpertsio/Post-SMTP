@@ -462,6 +462,8 @@ class PostmanEmailLogs {
                  * @version 1.0.0
                  */
                 do_action( 'postman_delete_logs_successfully', $args );
+                
+                $email_query_log->delete_log_meta( $args );
 
 				$response = array(
 					'success' => true,
