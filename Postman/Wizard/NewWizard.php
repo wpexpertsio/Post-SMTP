@@ -123,9 +123,11 @@ class Post_SMTP_New_Wizard {
                         <span class="dashicons dashicons-no-alt ps-pro-close-popup"></span>
                         <div class="ps-pro-popup-content">
                             <img src="" class="ps-pro-for-img" />
-                            <h1><span class="ps-pro-for"></span> is Pro feature</h1>
+                            <h1><span class="ps-pro-for"></span> is Pro Feature</h1>
                             <p>
-                                We're sorry, the <span class="ps-pro-for"></span> mailer is not available on your plan. Please upgrade to the PRO plan to unlock all these awesome fetures.
+                                We're sorry, the <span class="ps-pro-for"></span> mailer is not available on your plan.
+                                <br />
+                                Please upgrade to the PRO plan to unlock all these awesome features.
                             </p>
                             <div>
                                 <a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank" class="button button-primary ps-yellow-btn ps-pro-product-url" style="color: #ffffff!important; font-weight: 400;">Upgrade to PRO <span class="dashicons dashicons-arrow-right-alt2"></span></a>

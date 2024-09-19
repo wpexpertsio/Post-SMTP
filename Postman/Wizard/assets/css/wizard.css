@@ -391,10 +391,10 @@
   border-color: #000000;
 }
 
-.button-primary.ps-blue-btn .dashicons,
+.button-primary.ps-blue-btn .dashicons, 
 .button-primary.ps-yellow-btn .dashicons {
   vertical-align: middle;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .button-primary {
