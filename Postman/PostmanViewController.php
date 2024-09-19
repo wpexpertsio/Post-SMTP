@@ -542,7 +542,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 						print '</br><hr width="70%"></br>';
 						/* translators: where %s is the URL to the WordPress.org review and ratings page */
 						printf( 
-							'<p>%s <a href="%s">%s</a>%s</p>',
+							'<p>%s <a href="%s">%s</a> %s</p>',
 							esc_html__( 'Please consider', 'post-smtp' ),
 							esc_url( 'https://wordpress.org/support/plugin/post-smtp/reviews/?filter=5' ),
 							esc_html__( 'leaving a review', 'post-smtp' ),
@@ -563,7 +563,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					esc_html__( 'New for v1.9.8!', 'post-smtp' ),
 					esc_html__( ' Fallback - setup a second delivery method when the first one is failing', 'post-smtp' ),
 					esc_url( 'https://postmansmtp.com/post-smtp-1-9-7-the-smtp-fallback/' ),
-					esc_html__( 'Check the detailes here', 'post-smtp')
+					esc_html__( 'Check the details here', 'post-smtp')
 				);
 
 				?>
