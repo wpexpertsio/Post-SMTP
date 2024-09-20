@@ -104,7 +104,7 @@ class PostmanEmailQueryLog {
         //Search
         if( !empty( $args['search'] ) ) {
 
-            $this->query .= " WHERE";
+            $this->query .= strpos( $this->query, 'WHERE' ) !== FALSE ? ' AND' : ' WHERE';
             $counter = 1;
 
             foreach( $args['search_by'] as $key ) {
@@ -119,6 +119,8 @@ class PostmanEmailQueryLog {
 
         //Date Filter :)
         if( isset( $args['from'] ) && !empty( $args['from'] ) ) {
+
+            $clause_for_date = strpos( $this->query, 'WHERE' ) !== FALSE ? ' AND' : ' WHERE';
                 
             $this->query .= $this->db->prepare( 
                 " {$clause_for_date} pl.`time` >= %d",
