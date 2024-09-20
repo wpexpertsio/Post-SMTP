@@ -385,6 +385,15 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		 * Handles the authorization grant
 		 */
 		function handleAuthorizationGrant() {
+
+			if( apply_filters( 'post_smtp_gmail_api_auth_before_redirect', false ) ) {
+			
+				return;
+				
+			}
+			
+			do_action( 'post_smtp_gmail_api_auth_redirected' );
+			
 			$logger = $this->logger;
 			$options = $this->options;
 			$authorizationToken = $this->authorizationToken;

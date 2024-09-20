@@ -1614,6 +1614,8 @@ class Post_SMTP_New_Wizard {
 
                 }
 
+                do_action( 'post_smtp_saving_new_wizard', $options );
+
                 if( $options == $_options ) {
 
                     $response = true;
