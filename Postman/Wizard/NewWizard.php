@@ -196,7 +196,7 @@ class Post_SMTP_New_Wizard {
                                                 'mailjet_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailjet.png',
                                                 'sendpulse_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendpulse.png',
                                                 'smtp2go_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp2go.png',
-                                                'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/logo.png',
+                                                'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.png',
                                                 'elasticemail_api'  =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/elasticemail.png',
                                                 'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
                                                 'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png'
