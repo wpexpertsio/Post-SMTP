@@ -32,7 +32,6 @@ class PostmanEmailQueryLog {
      * 
      * @param $args String
      * @since 2.5.0
-     * @version 1.0.0
      */
     public function get_logs( $args = array() ) {
 
@@ -291,7 +290,7 @@ class PostmanEmailQueryLog {
      * @version 1.0.0
      */
     public function get_all_logs( $ids = array() ) {
-
+        
         $ids = implode( ',', $ids );
         $ids = $ids == -1 ? '' : "WHERE id IN ({$ids});";
 
@@ -301,7 +300,6 @@ class PostmanEmailQueryLog {
                 $this->table
             )
         );
-
 
     }
 

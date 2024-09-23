@@ -273,6 +273,12 @@ jQuery(document).ready(function($) {
 	jQuery( document ).on( 'click', '.ps-email-log-export-btn', function( e ) { 
 
 		var selected = [];
+		var filter = jQuery( '.ps-advance-log-filter' ).val();
+        var status = jQuery( '.ps-status-btn.active' ).data( 'status' );
+        var from = jQuery( '.ps-email-log-from' ).val();
+		var to = jQuery( '.ps-email-log-to' ).val();
+		var search = jQuery( '#ps-email-log_wrapper' ).find( "input[type='search']" ).val();
+		status = status === 'all' ? '' : status;
 
 		if( jQuery( this ).hasClass( 'ps-selected' ) ) {
 
@@ -295,10 +301,15 @@ jQuery(document).ready(function($) {
 			data: {
 				action: 'ps-export-email-logs',
 				security: logsDTSecirity,
-				selected: selected
+				selected: selected,
+				search: search,
+				filter_by: filter,
+				status: status,
+				from: from,
+				to: to
 			},
 			success: function( response ) {
-
+				
 				/**
 				 * Make CSV downloadable
 				 */

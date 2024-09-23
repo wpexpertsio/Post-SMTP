@@ -498,7 +498,6 @@ class PostmanEmailLogs {
 	 * Export Logs | AJAX callback
 	 * 
 	 * @since 2.5.0
-	 * @version 1.0.0
 	 */
 	public function export_log_ajax() {
 
@@ -525,8 +524,57 @@ class PostmanEmailLogs {
 
 			}
 
-			$email_query_log = new PostmanEmailQueryLog();
-			$logs = $email_query_log->get_all_logs( $args );
+            $query = array();
+
+            $query['columns'] = array(
+                'solution',
+                'success',
+                'from_header',
+                'to_header',
+                'cc_header',
+                'bcc_header',
+                'reply_to_header',
+                'transport_uri',
+                'original_to',
+                'original_subject',
+                'original_message',
+                'original_headers',
+                'session_transcript',
+                'time'
+            );
+
+            $query['search_by'] = array(
+                'original_subject',
+                'success',
+                'to_header'
+            );
+
+            $query['status'] = isset( $_POST['status'] ) ? sanitize_text_field( $_POST['status'] ) : '';
+            $query['search'] = sanitize_text_field( $_POST['search'] );
+
+            //Date Filter :)
+            if( isset( $_POST['from'] ) && !empty( $_POST['from'] ) ) {
+
+                $query['from'] = strtotime( sanitize_text_field( $_POST['from'] ) );
+
+            }
+
+            if( isset( $_POST['to'] ) && ! empty( $_POST['to'] ) ) {
+
+                $query['to'] = strtotime( sanitize_text_field( $_POST['to'] ) ) + 86400;
+
+            }
+
+            // Filter By Plugins
+            if( isset( $_POST['filter_by'] ) && ! empty( $_POST['filter_by'] ) ) {
+
+                $query['filter_by'] = sanitize_text_field( $_POST['filter_by'] );
+
+            }
+            
+            $email_query_log = new PostmanEmailQueryLog();
+            $logs = $email_query_log->get_logs( $query );
+
             $csv_headers = array(
                 'solution',
                 'response',
