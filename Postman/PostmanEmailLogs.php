@@ -365,7 +365,7 @@ class PostmanEmailLogs {
 
                 $row->time = date( "{$date_format} {$time_format}", $row->time );
 
-                if( $row->success == 1 ) {
+                if( $row->success == 1 || $row->success === 'Sent ( ** Fallback ** )' ) {
 
                     $row->success = '<span title="Success">Success</span>';
 
