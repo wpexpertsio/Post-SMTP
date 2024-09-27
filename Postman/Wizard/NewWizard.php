@@ -130,7 +130,7 @@ class Post_SMTP_New_Wizard {
                                 Please upgrade to the PRO plan to unlock all these awesome features.
                             </p>
                             <div>
-                                <a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank" class="button button-primary ps-yellow-btn ps-pro-product-url" style="color: #ffffff!important; font-weight: 400;">Upgrade to PRO <span class="dashicons dashicons-arrow-right-alt2"></span></a>
+                                <a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank" class="button button-primary ps-yellow-btn ps-pro-product-url" style="color: #ffffff!important; font-weight: 400; align-content: center;">Upgrade to PRO <span class="dashicons dashicons-arrow-right-alt2"></span></a>
                             </div>
                             <div class="ps-pro-promo-area">   
                                 <p>
