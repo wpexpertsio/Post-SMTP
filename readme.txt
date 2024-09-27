@@ -283,6 +283,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 == Changelog ==
 
 = 2.9.9 - September 11, 2024 =
+* Tweak: Typo fixes.
 * Tweak: Improved user interface in wizard.
 * Fix: PHP deprecated warning on 8.x.
 * Fix: Emails count was not accurate in [Weekly email](https://postmansmtp.com/post-smtp-release-v2-9-0-smtp-mailer-and-email-health-report/) in some cases.
