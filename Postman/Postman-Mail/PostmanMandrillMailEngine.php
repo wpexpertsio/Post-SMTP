@@ -74,7 +74,9 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 				if ( $this->logger->isInfo() ) {
 					$this->logger->info( sprintf( 'Message %d accepted for delivery', PostmanState::getInstance()->getSuccessfulDeliveries() + 1 ) );
 				}
-				$response_body = reset( json_decode( $result['body'] ) );
+
+				$response_body = json_decode( $result['body'] );
+				$response_body = reset( $response_body );
 				$email_status = $response_body->status;
 				$is_sent = ( $email_status == 'queued' OR $email_status == 'sent' );
 

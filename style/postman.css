@@ -638,11 +638,12 @@ section#delete_settings {
 .ui-state-default, 
 .ui-widget-content .ui-state-default, 
 .ui-widget-header .ui-state-default {
-    background-color: #fff;
+    background-color: #f9f9fa;
 }
 
 .ui-tabs .ui-tabs-nav li {
-    border: 1px solid #e6e6e6;
+    border: none;
+    margin-top: 5px;
 }
 
 .ui-widget-content .ui-state-default a {
@@ -655,27 +656,17 @@ section#delete_settings {
     font-weight: bold;
 }
 
-.ui-tabs .ui-tabs-nav li:first-child {
-    border-top-left-radius: 17px;
-}
-
-.ui-tabs .ui-tabs-nav li:last-child {
-    border-top-right-radius: 17px;
-}
-
-.ui-tabs .ui-tabs-nav li.visited-config-ui-tab {
-    background-color: #4db556;
+.ui-tabs .ui-tabs-nav li a:focus {
+    box-shadow: none;
 }
 
 .ui-tabs .ui-tabs-active,
 .ui-tabs .ui-tabs-nav li.visited-config-ui-tab.ui-tabs-active {
-    background: #466cff;
+    background: #ffffff;
 }
 
-.ui-tabs .ui-tabs-active a,
-.ui-tabs .ui-tabs-nav li.visited-config-ui-tab.ui-tabs-active a,
-.ui-tabs .ui-tabs-nav li.visited-config-ui-tab a {
-    color: #fff;
+.ui-tabs .ui-tabs-active a {
+    color: #375caf;
 }
 .ps-less-secure {
     color: red;
@@ -1437,6 +1428,10 @@ div#ps-email-log_length{
     margin: 3px 0;
 }
 
+.ps-email-log-status-buttons {
+    margin-top: 15px;
+}
+
 /* View And Session Transcript Popup */
 .ps-popup-wrap {
     width: 100%;
@@ -1464,7 +1459,7 @@ div#ps-email-log_length{
     overflow: auto;
 }
   
-.ps-popup-close-btn {
+.ps-popup-close-btn, .ps-print-email {
     text-align: center;
     width: 19px;
     height: 19px;
@@ -1473,11 +1468,28 @@ div#ps-email-log_length{
     top: 10px;
     right: 10px;
     border-radius: 1000px;
-    background: #dc3545;
     font-weight: bold;
     text-decoration: none;
-    color: #fff;
+    color: #000;
     line-height: 190%;
+}
+
+.ps-popup-close-btn {
+    top: 6px;
+}
+
+.ps-popup-close-btn span {
+    font-size: 27px;
+}
+
+.ps-popup-close-btn:hover {
+    color: #000;
+}
+
+.ps-print-email {
+    right: 33px;
+    background: none;
+    color: #000;
 }
 
 .transform-in, .transform-out {
@@ -1587,4 +1599,24 @@ div#ps-email-log_length{
 
 .ps-pro-icon {
     color: #fed90f;
+}
+
+.button.ps-status-btn {
+    border-radius: 50px;
+}
+
+.ps-status-btn {
+    background-color: #ffffff!important;
+    color: #000000!important;
+    border: 1px solid #4578ea!important;
+}
+
+.ps-status-btn.active {
+    background-color: #4578ea!important;;
+    color: #ffffff!important;
+    border: none;
+}
+
+.ps-status-btn:focus {
+    box-shadow: none!important;
 }

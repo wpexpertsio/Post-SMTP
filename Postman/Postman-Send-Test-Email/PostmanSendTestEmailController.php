@@ -110,7 +110,7 @@ class PostmanSendTestEmailController {
 	 */
 	public function addEmailTestSubmenu() {
 		$page = add_submenu_page( 
-			'', 
+			' ', 
 			sprintf( '%s', esc_html__( 'Postman SMTP Setup', 'post-smtp' ) ), 
 				esc_html__( 'Postman SMTP', 'post-smtp' ), 
 				Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanSendTestEmailController::EMAIL_TEST_SLUG, array(
@@ -222,7 +222,7 @@ class PostmanSendTestEmailController {
 			'<p>%s <b>%s</b> %s</p>', 
 			esc_html__( 'This is the conversation between Postman and the mail server. It can be useful for diagnosing problems.', 'post-smtp' ) ,
 			esc_html__( 'DO NOT', 'post-smtp' ),
-			esc_html__( 'post it on-line, it may contain your account password.', 'post-smtp' )
+			esc_html__( 'post it online, it may contain your account password.', 'post-smtp' )
 		);
 		print '<section>';
 		printf( '<p><label for="postman_test_message_transcript">%s</label></p>', esc_html__( 'Session Transcript', 'post-smtp' ) );

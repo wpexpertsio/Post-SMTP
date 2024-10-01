@@ -242,17 +242,17 @@ class PostmanConfigurationController {
 		PostmanViewController::outputChildPageHeader( __( 'Settings', 'post-smtp' ), 'advanced_config' );
 
 		$config_tabs = apply_filters( 'post_smtp_admin_tabs', array(
-		    'account_config' => __( 'Account', 'post-smtp' ),
-		    'fallback' => __( 'Fallback', 'post-smtp' ),
-		    'message_config' => __( 'Message', 'post-smtp' ),
-		    'logging_config' => __( 'Logging', 'post-smtp' ),
-		    'advanced_options_config' => __( 'Advanced', 'post-smtp' ),
+		    'connections_config' => sprintf( '<span class="dashicons dashicons-networking"></span> %s', __( 'Connections', 'post-smtp' ) ),
+		    'fallback' => sprintf( '<span class="dashicons dashicons-backup"></span> %s', __( 'Fallback', 'post-smtp' ) ),
+		    'message_config' => sprintf( '<span class="dashicons dashicons-email"></span> %s', __( 'Message', 'post-smtp' ) ),
+		    'logging_config' => sprintf( '<span class="dashicons dashicons-list-view"></span> %s', __( 'Logging', 'post-smtp' ) ),
+		    'advanced_options_config' => sprintf( '<span class="dashicons dashicons-admin-tools"></span> %s', __( 'Advanced', 'post-smtp' ) )
         ) );
 
 		print '<div id="config_tabs"><ul>';
 
 		foreach ( $config_tabs as $slug => $tab ) :
-            printf( '<li><a href="#%s">%s</a></li>', esc_attr( $slug ), esc_html( $tab ) );
+            printf( '<li><a href="#%s">%s</a></li>', esc_attr( $slug ), wp_kses_post( $tab ) );
         endforeach;
 
 		print '</ul>';
@@ -264,8 +264,8 @@ class PostmanConfigurationController {
 		// This prints out all hidden setting fields
 		settings_fields( PostmanAdminController::SETTINGS_GROUP_NAME );
 
-		// account_config
-		print '<section id="account_config">';
+		// connections_config
+		print '<section id="connections_config">';
 		if ( sizeof( PostmanTransportRegistry::getInstance()->getTransports() ) > 1 ) {
 			do_settings_sections( 'transport_options' );
 		} 
@@ -667,7 +667,7 @@ class PostmanConfigurationController {
 			
 			?>
 			<h2><?php esc_html_e( 'Select notification service', 'post-smtp' ); ?></h2>
-			<p><?php printf( esc_html( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %s if required.', 'post-smtp' ), '<a href="'.$logs_url.'" target="_blank">log section</a>' ) ?></p>
+			<p><?php printf( esc_html__( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %s if required.', 'post-smtp' ), '<a href="'.$logs_url.'" target="_blank">log section</a>' ) ?></p>
 			<div class="ps-notify-radios">
 				<div class="ps-notify-radio-outer">
 					<div class="ps-notify-radio">

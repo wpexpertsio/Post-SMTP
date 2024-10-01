@@ -3,8 +3,8 @@ Plugin URI: https://postmansmtp.com/
 Contributors: wpexpertsio
 Tags: smtp, gmail smtp, email,  email logs, office 365
 Requires at least: 5.6.0
-Tested up to: 6.5.3
-Stable tag: 2.9.4
+Tested up to: 6.6
+Stable tag: 2.9.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -281,6 +281,32 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 Important: If you are using version 2.8.7 or lower of our plugin, please update to the latest version as soon as possible. This update contains an urgent security fix that prevents potential vulnerabilities and attacks. We apologize for any inconvenience this may cause you and we appreciate your cooperation. Thank you for using our plugin.
 
 == Changelog ==
+
+= 2.9.9 - October 01, 2024 =
+* Tweak: Typo fixes.
+* Tweak: Improved user interface in wizard.
+* Fix: PHP deprecated warning on 8.x.
+* Fix: Emails count was not accurate in [Weekly email](https://postmansmtp.com/post-smtp-release-v2-9-0-smtp-mailer-and-email-health-report/) in some cases.
+
+= 2.9.8 - August 21, 2024 =
+* New: Added SendGrid EU support.
+* New: Added [pre_wp_mail](https://developer.wordpress.org/reference/hooks/pre_wp_mail/) filter.
+* Tweak: Sometimes Post SMTP was not detecting Post SMTP Pro.
+* Updated: Feedback SDK to the latest version.
+* Fix - Mailjet - Reply-To email was not working properly.
+
+= 2.9.7 - July 01, 2024 =
+* Fix: Logs filter was not working in [Post SMTP Mobile Application](https://postmansmtp.com/post-smtp-mobile-app/?utm_source=wp_org&utm_medium=changelog)
+
+= 2.9.6 2024-06-27 =
+* Tweak - Some strings were not translatable.
+* Fix - Compatibility added for old PHP Versions.
+* Fix - Notice: Only variables should be passed by reference.
+
+= 2.9.5 - 2024-06-25 =
+* Added: New Successful, Failed, and All email filter on email logs.
+* Added: Option to print email. 
+* Updated: The user interface of settings tabs
 
 = 2.9.4 - 2024-05-29 =
 * Security Improvement: Sanitized SQL queries suggested by Wordfence team.

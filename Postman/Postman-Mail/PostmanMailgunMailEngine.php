@@ -144,12 +144,11 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 				// add the From Header
 				$sender = $message->getFromAddress();
 				{
-					$senderEmail = $options->getMessageSenderEmail();
-					$senderName = $sender->getName();
-					assert( ! empty( $senderEmail ) );
+					
+					$senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+					$senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
 
-					$senderText = ! empty( $senderName ) ? $senderName : $senderEmail;
-					$this->mailgunMessage ['from'] = "{$senderText} <{$senderEmail}>";
+					$this->mailgunMessage ['from'] = "{$senderName} <{$senderEmail}>";
 					// now log it
 					$sender->log( $this->logger, 'From' );
 				}

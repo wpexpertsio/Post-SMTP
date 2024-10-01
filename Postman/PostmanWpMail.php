@@ -111,6 +111,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			 *        	subject, message, headers, and attachments values.
 			 */
 			$atts = apply_filters( 'wp_mail', compact( 'to', 'subject', 'message', 'headers', 'attachments' ) );
+
 			if ( isset( $atts ['to'] ) ) {
 				$to = $atts ['to'];
 			}

@@ -48,23 +48,7 @@ class Post_SMTP_New_Wizard {
         )
     );
 
-    private $socket_sequence = array(
-        'gmail_api',
-        'sendinblue_api',
-        'sendgrid_api',
-        'mailgun_api',
-        'elasticemail_api',
-        'mandrill_api',
-        'postmark_api',
-        'sparkpost_api',
-        'mailjet_api',
-        'sendpulse_api',
-        'office365_api',
-        'aws_ses_api',
-        'zohomail_api',
-        'smtp',
-        'default'
-    );
+    private $socket_sequence = array();
 
     /**
      * Constructor for the class
@@ -74,6 +58,30 @@ class Post_SMTP_New_Wizard {
      */
     public function __construct() {
 
+        $this->socket_sequence = array(
+            'gmail_api',
+            'sendinblue_api',
+            'sendgrid_api',
+            'mailgun_api',
+            'elasticemail_api',
+            'mandrill_api',
+            'postmark_api',
+            'sparkpost_api',
+            'mailjet_api',
+            'sendpulse_api'
+        );
+        
+        if( !is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' ) ) {
+
+            $this->socket_sequence[] = 'office365_api';
+            $this->socket_sequence[] = 'aws_ses_api';
+            $this->socket_sequence[] = 'zohomail_api';
+
+        }
+
+        $this->socket_sequence[] = 'smtp';
+        $this->socket_sequence[] = 'default';
+        
         add_filter( 'post_smtp_legacy_wizard', '__return_false' );
         add_action( 'post_smtp_new_wizard', array( $this, 'load_wizard' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
@@ -115,15 +123,30 @@ class Post_SMTP_New_Wizard {
                         <span class="dashicons dashicons-no-alt ps-pro-close-popup"></span>
                         <div class="ps-pro-popup-content">
                             <img src="" class="ps-pro-for-img" />
-                            <h1><span class="ps-pro-for"></span> is a Pro feature</h1>
+                            <h1><span class="ps-pro-for"></span> is Pro Feature</h1>
                             <p>
-                                We're sorry, the <span class="ps-pro-for"></span> mailer is not available on your plan. Please upgrade to the PRO plan to unlock all these awesome fetures.
+                                We're sorry, the <span class="ps-pro-for"></span> mailer is not available on your plan.
+                                <br />
+                                Please upgrade to the PRO plan to unlock all these awesome features.
                             </p>
                             <div>
-                                <a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank" class="button button-primary ps-yellow-btn ps-pro-product-url" style="color: #ffffff!important">UPGRADE TO PRO</a>
+                                <a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank" class="button button-primary ps-yellow-btn ps-pro-product-url" style="color: #ffffff!important; font-weight: 400; align-content: center;">Upgrade to PRO <span class="dashicons dashicons-arrow-right-alt2"></span></a>
+                            </div>
+                            <div class="ps-pro-promo-area">   
+                                <p>
+                                    <b>Bonus:</b> Upgrade now and get <span class="ps-pro-discount">25% off</span> on Post SMTP lifetime plans!
+                                </p>
+                                <div class="ps-pro-coupon">
+                                    <b>
+                                        Use Coupon: <span class="ps-pro-coupon-code">GETSMTPPRO</span> <span class="dashicons dashicons-admin-page ps-click-to-copy"></span>
+                                    </b>
+                                </div>
+                                <div id="ps-pro-code-copy-notification" style="display: none;position:absolute;color: #b3d5b6;border-radius:3px;right: 0;left: 0; bottom: -12px; margin: auto;width: 95px;font-size: 11px;background: #e1fde4;border: 1px solid #b3d5b6;line-height: 22px;">
+                                    Code Copied<span class="dashicons dashicons-yes"></span>
+                                </div>
                             </div>
                             <div>
-                                <a href="" class="ps-pro-close-popup" style="color: #c2c2c2; font-size: 10px;">Already purchased?</a>
+                                <a href="" class="ps-pro-close-popup" style="color: #6A788B; font-size: 10px; font-size: 12px;">Already purchased?</a>
                             </div>
                         </div>
                     </div>
@@ -211,7 +234,18 @@ class Post_SMTP_New_Wizard {
                                                 
                                                 $url = isset( $urls[$transport->getSlug()] ) ? $urls[$transport->getSlug()] : $transport->getLogoURL();
                                                 $this->sockets[$transport->getSlug()] = $transport->getName();
-                                                $checked = $transport->getSlug() == $this->options->getTransportType() ? 'checked' : '';
+
+                                                if( isset( $_GET['socket'] ) && !empty( sanitize_text_field( $_GET['socket'] ) ) && $transport->getSlug() == sanitize_text_field( $_GET['socket'] ) ) {
+
+                                                    $checked = 'checked';
+
+                                                }
+                                                elseif( $transport->getSlug() == $this->options->getTransportType() && !is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' ) ) {
+
+                                                    $checked = 'checked';
+
+                                                }
+                                                
                                                 $slug = $transport->getSlug();
                                                 $transport_name = $transport->getName();
 
@@ -226,7 +260,7 @@ class Post_SMTP_New_Wizard {
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Microsoft 365';
                                                     $is_pro = 'ps-pro-extension';
-                                                    $product_url = 'https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin';
+                                                    $product_url = 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_microsoft&utm_campaign=plugin';
 
                                                 }
                                                 if( $transport_slug == 'zohomail_api' ) {
@@ -235,7 +269,7 @@ class Post_SMTP_New_Wizard {
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Zoho';
                                                     $is_pro = 'ps-pro-extension';
-                                                    $product_url = 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin';
+                                                    $product_url = 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_zoho&utm_campaign=plugin';
 
                                                 }
                                                 if( !class_exists( 'Post_Smtp_Amazon_Ses' ) && $transport_slug == 'aws_ses_api' ) {
@@ -244,7 +278,7 @@ class Post_SMTP_New_Wizard {
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Amazon SES';
                                                     $is_pro = 'ps-pro-extension';
-                                                    $product_url = 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin';
+                                                    $product_url = 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_amazonses&utm_campaign=plugin';
 
                                                 }
 
@@ -470,8 +504,16 @@ class Post_SMTP_New_Wizard {
             'Step2E2'           => __( 'Please enter From Email.', 'post-smtp' ),
             'Step2E3'           => __( 'Please try again, something went wrong.', 'post-smtp' ),
             'Step3E4'           => __( 'Please enter recipient email address.', 'post-smtp' ),
-            'finish'           => __( 'Finish', 'post-smtp' ),
+            'finish'            => __( 'Finish', 'post-smtp' ),
             'adminURL'          => admin_url(),
+            'connectivityTestMsg'  => sprintf( 
+                '%1$s %2$s <a href="%3$s" target="_blank">%4$s</a> %5$s',
+                '<span class="dashicons dashicons-warning"></span>',
+                __( 'Take the', 'post-smtp' ),
+                esc_url( admin_url( 'admin.php?page=postman/port_test' ) ),
+                __( 'connectivity test', 'post-smtp' ),
+                __( 'of your site to get more information about this failure.', 'post-smtp' )
+            )
         );
 
         if( class_exists( 'Post_Smtp_Office365' ) ) {
@@ -826,7 +868,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Mandrill' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://mandrillapp.com/settings/index' ),
-                esc_attr( 'API Key.' )
+                __( 'API Key.', 'post-smtp' )
             )
             .'
         </div>
@@ -871,7 +913,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'SendGrid' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://app.sendgrid.com/settings/api_keys' ),
-                esc_attr( 'API Key.' )
+                __( 'API Key.', 'post-smtp' )
             ).'
         </div>
         ';
@@ -917,7 +959,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Mailgun' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://app.mailgun.com/settings/api_security' ),
-                esc_attr( 'API Key.' )
+                __( 'API Key.', 'post-smtp' )
             )
             .'
         </div>
@@ -935,7 +977,7 @@ class Post_SMTP_New_Wizard {
                 '%1$s <a href="%2$s" target="_blank">%3$s</a>',
                 __( ' Follow this link to get the Mailgun', 'post-smtp' ),
                 esc_url( 'https://app.mailgun.com/app/sending/domains' ),
-                esc_attr( 'Domain Name.' )
+                __( 'Domain Name.', 'post-smtp' )
             )
             .'</span>
         </div>
@@ -1002,7 +1044,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Brevo' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://app.brevo.com/settings/keys/api' ),
-                esc_attr( 'API Key.' )
+                __( 'API Key.', 'post-smtp' )
             )
             .
         '</div>
@@ -1047,7 +1089,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Postmark' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://account.postmarkapp.com/api_tokens' ),
-                esc_attr( 'API Key or Server API Token.' )
+                __( 'API Key or Server API Token.', 'post-smtp' )
             )
             .'
         </div>
@@ -1092,7 +1134,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'SparkPost' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://app.sparkpost.com/account/api-keys' ),
-                esc_attr( 'API Key.' )
+                __( 'API Key.', 'post-smtp' )
             )
             .'
         </div>
@@ -1135,7 +1177,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Elastic Email' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://elasticemail.com/account#/settings/new/manage-api' ),
-                esc_attr( 'API Key.' )
+                __( 'API Key.', 'post-smtp' )
             )
             .
         '</div>
@@ -1186,7 +1228,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Mailjet' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://app.mailjet.com/account/apikeys' ),
-                esc_attr( 'Mailjet API and Access Key' )
+                __( 'Mailjet API and Access Key', 'post-smtp' )
             )
             .
         '</div>
@@ -1226,14 +1268,14 @@ class Post_SMTP_New_Wizard {
         sprintf(
             '<div class="ps-form-control-info"><a href="%1$s" target="_blank">%2$s</a> %3$s</div>',
             esc_url( 'https://sendpulse.com/features/transactional' ),
-            esc_attr( 'Click here' ),
+            __( 'Click here', 'post-smtp' ),
             __( 'to create an account at SendPulse', 'post-smtp' )
         ).
         sprintf(
             '<div class="ps-form-control-info">%1$s<a href="%2$s" target="_blank">%3$s</a></div>',
             __( 'If you are already logged in follow this ink to get your API ID from Sendpulse ', 'post-smtp' ),
             esc_url( 'https://login.sendpulse.com/settings/#api' ),
-            esc_attr( 'Get API ID' )
+            __( 'Get API ID', 'post-smtp' )
         ).
         '</div>'
         ;
@@ -1249,7 +1291,7 @@ class Post_SMTP_New_Wizard {
                 '<div class="ps-form-control-info">%1$s<a href="%2$s" target="_blank">%3$s</a></div>',
                 __( 'If you are already logged in follow this ink to get your API ID from Sendpulse ', 'post-smtp' ),
                 esc_url( 'https://login.sendpulse.com/settings/#api' ),
-                esc_attr( 'Get API Secret' )
+                __( 'Get API Secret', 'post-smtp' )
             )
             .
         '</div>
@@ -1300,7 +1342,7 @@ class Post_SMTP_New_Wizard {
                 esc_attr( 'Amazon SES' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://us-east-1.console.aws.amazon.com/iamv2/home#/users' ),
-                esc_attr( 'Access Key ID and Sceret Access Key' )
+                __( 'Access Key ID and Sceret Access Key', 'post-smtp' )
             )
             .
         '</div>
@@ -1425,7 +1467,7 @@ class Post_SMTP_New_Wizard {
         $selected_region = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ]: '';
         
         $client_id = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] : '';
-        $client_secret = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] : '';
+        $client_secret = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) ? base64_decode( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) : '';
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
         $html = '

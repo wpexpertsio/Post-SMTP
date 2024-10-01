@@ -165,7 +165,7 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 				$from = strtotime( $from->format( 'Y-m-d H:i:s' ) );
 			}
 
-			$logs = $this->get_total_logs( $from, $to, 4 );
+			$logs = $this->get_total_logs( $from, $to );
 
 			include_once POST_SMTP_PATH . '/Postman/Postman-Email-Health-Report/PostmanReportTemplate.php';
 			$get_body = new PostmanReportTemplate();
