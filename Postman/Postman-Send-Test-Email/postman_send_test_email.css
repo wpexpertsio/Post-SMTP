@@ -1,3 +1,185 @@
-.wizard>.content {
-	min-height: 26em;
+/*!*******************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/css/app.css ***!
+  \*******************************************************************/
+
+  .float-left {
+	float: left;
 }
+
+.float-right {
+	float: right;
+}
+
+.send-test-email {
+	margin-top: 50px;
+}
+
+.send-test-email .ps-outer {
+	border: 2px solid #375caf;
+	border-radius: 7px;
+	width: 907px;
+	margin: 0 auto;
+}
+
+.ps-body-section {
+	margin: 25px 0;
+}
+
+.ps-body-section::after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.ps-body-section .ps-nav {
+	height: 350px;
+}
+
+.send-test-email .ps-nav table {
+	padding: 0 25px;
+}
+
+.send-test-email .ps-nav {
+	border-right: 1px solid #d9d9d9;
+	width: 32%;
+}
+
+.send-test-email .ps-nav table td {
+	padding: 12px 6px;
+	vertical-align: center;
+}
+
+.send-test-email .ps-circle {
+	text-align: center;
+}
+
+.send-test-email .ps-circle .ps-tick {
+	display: inline-block;
+	width: 48px;
+	height: 48px;
+	font-size: 44px;
+	color: #375caf;
+	position: relative;
+	z-index: 8;
+}
+
+.send-test-email .ps-circle .ps-tick::before {
+	content: '';
+	height: 35px;
+	width: 35px;
+	border-radius: 40px;
+	display: inline-block;
+	vertical-align: top;
+	line-height: 1;
+	margin: auto;
+	background-color: #375caf;
+}
+
+.send-test-email  .ps-circle .birth-check.ps-tick::before {
+	content: '\f12a';
+	height: 35px;
+	width: 35px;
+	border-radius: 40px;
+	display: inline-block;
+	vertical-align: top;
+	line-height: 1;
+	margin: auto;
+	background-color: transparent;
+}
+
+.send-test-email .ps-text {
+	padding: 12px 6px;
+	vertical-align: middle;
+	font-weight: 600;
+}
+
+.send-test-email .ps-footer {
+	padding: 17px 0;
+	/*background: #f1f1f1;*/
+}
+
+.send-test-email .ps-footer-content.float-left {
+	width: 32%;
+}
+
+.send-test-email .ps-footer-content .ps-nav table {
+	padding: 0 25px;
+}
+
+.send-test-email .ps-footer-content .ps-nav {
+	border: none;
+}
+
+.send-test-email .ps-footer::after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.send-test-email .ps-line::after {
+	content: '';
+	position: absolute;
+	width: 3px;
+	height: 360px;
+	left: 26px;
+	bottom: 41px;
+	background: #d9d9d9;
+	z-index: -3;
+}
+
+.send-test-email .ps-pages {
+	min-height: 351px;
+	width: 67%;
+}
+
+.send-test-email .ps-footer-content.float-right {
+	width: 67%;
+}
+
+.send-test-email .ps-footer-content .ps-step {
+	padding: 15px 10px;
+}
+
+.send-test-email .ps-screens-container {
+	padding: 0 25px;
+}
+
+.send-test-email .ps-blue-button {
+	border: #485b87;
+	background: #375caf;
+	border-radius: 0px;
+	line-height: 40px;
+	width: 184px;
+}
+
+.send-test-email .ps-blue-button:hover {
+	background: #4c6fbd;
+	border-color: #4c6fbd;
+}
+
+.send-test-email .ps-blue-button span {
+	vertical-align: middle;
+	font-size: 16px;
+}
+
+.send-test-email .ps-success {
+	font-weight: 600;
+	font-size: 12px;
+	display: inline-block;
+	color: green;
+}
+
+.send-test-email .ps-error {
+	font-weight: 600;
+	font-size: 12px;
+	display: inline-block;
+	color: red;
+}
+
+.need-more-line::after {
+	height: 486px !important;
+}
+
+
+/*# This is auto generated css by webpack please don't change anything */
+/*# sourceMappingURL=app.css.map*/

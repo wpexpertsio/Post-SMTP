@@ -678,4 +678,8 @@ span.ps-pro-close-popup {
   color: #E57373;
 }
 
+.ps-wizard-outer.smtp2go_api-outer .ps-wizard-footer-left .ps-wizard-line::after {
+  height: 557px;
+}
+
 /* Lets make wizard responsive */

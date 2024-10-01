@@ -217,7 +217,8 @@ class Post_SMTP_New_Wizard {
                                                 'sparkpost_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sparkpost.png',
                                                 'mailjet_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailjet.png',
                                                 'sendpulse_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendpulse.png',
-                                                'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/logo.png',
+                                                'smtp2go_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp2go.png',
+                                                'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.png',
                                                 'elasticemail_api'  =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/elasticemail.png',
                                                 'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
                                                 'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png'
@@ -671,7 +672,9 @@ class Post_SMTP_New_Wizard {
             case 'zohomail_api';
                 echo wp_kses( $this->render_zoho_settings(), $this->allowed_tags );
             break;
-
+            case 'smtp2go_api':
+	            echo wp_kses( $this->render_smtp2go_settings(), $this->allowed_tags );
+                break;
         }
 
     }
@@ -1552,6 +1555,39 @@ class Post_SMTP_New_Wizard {
 
         return $html;
 
+    }
+
+    public function render_smtp2go_settings() {
+	    ob_start();
+
+	    $api_key = null === $this->options->getSmtp2GoApiKey() ? '' : esc_attr( $this->options->getSmtp2GoApiKey() );
+
+	    printf(
+		    '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
+		    esc_url( 'https://www.smtp2go.com/' ),
+		    __( 'SMTP2Go', 'post-smtp' ),
+		    __( 'is known for its reliable email delivery service, featuring global infrastructure, real-time analytics, and robust security. If you’re just starting out, their free plan allows sending up to 1,000 emails per month.', 'post-smtp' ),
+		    __( 'Let’s get started with our', 'post-smtp' ),
+		    esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-smtp2go-with-post-smtp/' ),
+		    __( 'SMTP2GO Documentation', 'post-smtp' )
+	    );
+
+	    echo '<div class="ps-form-control">
+            <div><label>API Key</label></div>
+            <input type="text" class="ps-smtp2go-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SMTP2GO_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">';
+	    printf(
+		    '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
+		    __( 'Create an account at', 'post-smtp' ),
+		    esc_url( 'https://www.smtp2go.com/' ),
+		    esc_attr( 'SMTP2GO' ),
+		    __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+		    esc_url( 'https://app-eu.smtp2go.com/sending/apikeys/' ),
+		    __( 'API Key.', 'post-smtp' )
+	    );
+
+	    echo '</div>';
+
+	    return ob_get_clean();
     }
 
 
