@@ -283,7 +283,9 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 == Changelog ==
 
 = 3.0.0 - Oct 14, 2024 =
-* New - Launched all [New Post SMTP Dashboard](Link) for users' ease.
+* New: Introduced all [New Post SMTP Dashboard](Link) for users' ease.
+* New: Introduced new SMTP socket [SMTP2GO](Link)
+* New: Introduced new Send Mail user interface.
 
 = 2.9.9 - October 01, 2024 =
 * Tweak: Typo fixes.
