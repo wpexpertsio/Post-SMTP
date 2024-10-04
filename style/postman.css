@@ -1620,3 +1620,18 @@ div#ps-email-log_length{
 .ps-status-btn:focus {
     box-shadow: none!important;
 }
+
+.post-smtp-remove-webhook-url {
+    vertical-align: text-top;
+}
+
+.post-smtp-remove-webhook-url {
+    color: #999999;
+    border-radius: 50px;
+    margin-left: 6px;
+    cursor: pointer;
+}
+
+.post-smtp-webhook-urls input {
+    width: 400px;
+}
