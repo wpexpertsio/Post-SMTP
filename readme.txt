@@ -286,6 +286,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 * New: Introduced all [New Post SMTP Dashboard](Link) for users' ease.
 * New: Introduced new SMTP socket [SMTP2GO](Link)
 * New: Introduced new Send Mail user interface.
+* New: Introduced Webhook, so you can add Webhook URL to get notified when an email is failed [How to Setup Webhook URL](Link)
 
 = 2.9.9 - October 01, 2024 =
 * Tweak: Typo fixes.
