@@ -28,6 +28,7 @@ class PostmanSettingsRegistry {
 		// only administrators should be able to trigger this
 		if ( PostmanUtils::isAdmin() ) {
 			$sanitizer = new PostmanInputSanitizer();
+		
 			register_setting( PostmanAdminController::SETTINGS_GROUP_NAME, PostmanOptions::POSTMAN_OPTIONS, array(
 					$sanitizer,
 					'sanitize',

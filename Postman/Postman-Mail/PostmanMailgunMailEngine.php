@@ -4,6 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once 'Services/MailGun/Handler.php';
+require_once plugin_dir_path( __FILE__ ) . 'PostMailConnections.php';
 
 if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 
@@ -24,6 +25,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		private $apiKey;
 		private $domainName;
 		private $mailgunMessage;
+		private $existing_db_version = '';
 
 		/**
 		 *
@@ -32,8 +34,17 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		 */
 		function __construct( $apiKey, $domainName ) {
 			assert( ! empty( $apiKey ) );
-			$this->apiKey = $apiKey;
-			$this->domainName = $domainName;
+
+			if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+				$this->apiKey = $apiKey;
+				$this->domainName = $domainName;
+			} else {
+				$options = PostmanOptions::getInstance();
+				$mail_connections = new PostmanMailConnections();
+				$transport_type = $options->getTransportType();
+				$connection_details = $mail_connections->get_mail_connection_details( $transport_type );
+				$this->apiKey = $connection_details['mailgun_api_key'] ?? '';
+			}
 
 			// create the logger
 			$this->logger = new PostmanLogger( get_class( $this ) );

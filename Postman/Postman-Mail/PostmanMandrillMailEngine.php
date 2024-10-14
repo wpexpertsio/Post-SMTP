@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 
 	require_once 'Services/Mandrill/Handler.php'; 
+	require_once plugin_dir_path( __FILE__ ) . 'PostMailConnections.php';
 
 	/**
 	 * Sends mail with Mandrill API
@@ -23,6 +24,7 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 
 		private $apiKey;
 		private $mandrillMessage;
+		private $existing_db_version = '';
 
 		/**
 		 *
@@ -31,7 +33,15 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 		 */
 		function __construct( $apiKey ) {
 			assert( ! empty( $apiKey ) );
-			$this->apiKey = $apiKey;
+			if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+				$this->apiKey = $apiKey;
+			} else {
+				$options = PostmanOptions::getInstance();
+				$mail_connections = new PostmanMailConnections();
+				$transport_type = $options->getTransportType();
+				$connection_details = $mail_connections->get_mail_connection_details( $transport_type );
+				$this->apiKey = $connection_details['mandrill_api_key'] ?? '';
+			}
 
 			// create the logger
 			$this->logger = new PostmanLogger( get_class( $this ) );

@@ -188,11 +188,11 @@ function post_smtp_sanitize_array( $_array ) {
 endif;
 
 /**
-     * Check pro extenstions is activated or not
-     * 
-     * @since 2.8.6
-     * @version 1.0
-     */
+ * Check pro extenstions is activated or not
+ * 
+ * @since 2.8.6
+ * @version 1.0
+ */
 
 if( !function_exists( 'post_smtp_has_pro' )):
 function post_smtp_has_pro(){

@@ -1620,3 +1620,38 @@ div#ps-email-log_length{
 .ps-status-btn:focus {
     box-shadow: none!important;
 }
+
+.fallback_migration_form{
+    display: inline;
+}
+
+/* Styles for provider fields to align label and input properly */
+.provider-fields {
+    margin-top: 10px; /* Space between the dropdown and the form fields */
+}
+
+.provider-fields label {
+    margin-right: 10px; /* Space between the label and input */
+}
+
+.provider-fields input[type="text"] {
+    width: 70%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.provider-row th {
+    text-align: left; /* Align the label (in <th>) to the left */
+    padding-right: 20px;
+}
+
+.provider-row td {
+    padding-top: 10px;
+}
+
+/* .settings-hide .setting-form, .settings-hide .authentication_setting {
+    display:none !important;
+} */
+/* Styles for provider fields to align label and input properly */

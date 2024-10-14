@@ -128,6 +128,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
         const FALLBACK_SMTP_USE_AUTH = 'fallback_smtp_use_auth';
         const FALLBACK_SMTP_USERNAME = 'fallback_smtp_username';
         const FALLBACK_SMTP_PASSWORD = 'fallback_smtp_password';
+		const FALLBACK_SELECTED      = 'selected_fallback';
+		const POSTMAN_Primary_C      = 'primary_connection';
 
 		// defaults
 		const DEFAULT_TRANSCRIPT_SIZE = 128;
@@ -154,6 +156,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		// options data
 		private $options;
+
+		private $existing_db_version = '';
 
 		// singleton instance
 		public static function getInstance() {
@@ -341,13 +345,34 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			
 			}
 		}
+
 		public function getClientId() {
-			if ( isset( $this->options [ PostmanOptions::CLIENT_ID ] ) ) {
-				return $this->options [ PostmanOptions::CLIENT_ID ]; }
+			$this->existing_db_version = get_option( 'postman_db_version' );
+			$connections = get_option( 'postman_connections', array() );
+			
+			if( $this->existing_db_version != POST_SMTP_DB_VERSION ){
+				if ( isset( $this->options [ PostmanOptions::CLIENT_ID ] ) ) {
+					return $this->options [ PostmanOptions::CLIENT_ID ]; 
+				}
+			}else{
+				if ( isset( $connections['gmail_api']['oauth_client_id'] ) ) {
+					return $connections['gmail_api']['oauth_client_id'] ?? '';
+				}
+			}
+
 		}
 		public function getClientSecret() {
-			if ( isset( $this->options [ PostmanOptions::CLIENT_SECRET ] ) ) {
-				return $this->options [ PostmanOptions::CLIENT_SECRET ]; }
+			$this->existing_db_version = get_option( 'postman_db_version' );
+			if( $this->existing_db_version != POST_SMTP_DB_VERSION ){
+				if ( isset( $this->options [ PostmanOptions::CLIENT_SECRET ] ) ) {
+					return $this->options [ PostmanOptions::CLIENT_SECRET ]; 
+				}
+			}else{
+				$connections = get_option( 'postman_connections', array() );
+				if ( isset( $connections['gmail_api']['oauth_client_secret'] ) ) {
+					return $connections['gmail_api']['oauth_client_secret'] ?? '';
+				}
+			}
 		}
 
 		public function getTransportType() {
@@ -435,6 +460,12 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
         public function getFallbackSecurity() {
             if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_SECURITY ] ) ) {
                 return $this->options [ PostmanOptions::FALLBACK_SMTP_SECURITY ];
+            }
+        }
+
+		public function getSelectedFallback() {
+            if ( isset( $this->options [ PostmanOptions::FALLBACK_SELECTED ] ) ) {
+                return $this->options [ PostmanOptions::FALLBACK_SELECTED ];
             }
         }
 

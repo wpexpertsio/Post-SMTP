@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if( !class_exists( 'PostmanElasticEmailMailEngine' ) ):
     
 require 'Services/ElasticEmail/Handler.php'; 
+require_once plugin_dir_path( __FILE__ ) . 'PostMailConnections.php';
 
 class PostmanElasticEmailMailEngine implements PostmanMailEngine {
 
@@ -15,6 +16,8 @@ class PostmanElasticEmailMailEngine implements PostmanMailEngine {
 
     private $api_key;
 
+    private $existing_db_version = '';
+
 
     /**
      * @since 2.6.0
@@ -23,8 +26,18 @@ class PostmanElasticEmailMailEngine implements PostmanMailEngine {
     public function __construct( $api_key ) {
         
         assert( !empty( $api_key ) );
-        $this->api_key = $api_key;
-
+        // Decide which API key to use based on the DB version.
+        if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+            $this->api_key = $api_key;
+            $this->logger->debug( 'Using old API key.' );
+        } else {
+            $options = PostmanOptions::getInstance();
+            $transport_type = $options->getTransportType();
+            $this->existing_db_version = get_option( 'postman_db_version' );
+            $mail_connections = new PostmanMailConnections();
+            $connection_details = $mail_connections->get_mail_connection_details( $transport_type );
+            $this->api_key = $connection_details['elasticemail_api_key'] ?? '';
+        }
         // create the logger
         $this->logger = new PostmanLogger( get_class( $this ) );
         

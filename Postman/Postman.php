@@ -82,6 +82,9 @@ class Postman {
 		require_once 'Postman-Mail/PostmanContactForm7.php';
 		require_once 'Phpmailer/PostsmtpMailer.php';
 		//require_once 'Postman-Mail/PostmanWooCommerce.php';
+		require_once 'Postman-Fallback-Migration/PostmanFallbackMigration.php';
+
+		//Fallback Migration
 		require_once 'Postman-Mail/Services/PostmanServiceRequest.php';
 
 		//New Wizard

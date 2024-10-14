@@ -241,6 +241,9 @@ class PostmanConfigurationController {
 
 		PostmanViewController::outputChildPageHeader( __( 'Settings', 'post-smtp' ), 'advanced_config' );
 
+		$postman_db_version = get_option( 'postman_db_version' );
+		$provider_fields = $this->get_provider_fields();
+
 		$config_tabs = apply_filters( 'post_smtp_admin_tabs', array(
 		    'connections_config' => sprintf( '<span class="dashicons dashicons-networking"></span> %s', __( 'Connections', 'post-smtp' ) ),
 		    'fallback' => sprintf( '<span class="dashicons dashicons-backup"></span> %s', __( 'Fallback', 'post-smtp' ) ),
@@ -248,6 +251,11 @@ class PostmanConfigurationController {
 		    'logging_config' => sprintf( '<span class="dashicons dashicons-list-view"></span> %s', __( 'Logging', 'post-smtp' ) ),
 		    'advanced_options_config' => sprintf( '<span class="dashicons dashicons-admin-tools"></span> %s', __( 'Advanced', 'post-smtp' ) )
         ) );
+		$wizard_uri = admin_url( "admin.php?page=postman/configuration_wizard" );
+		// Check if the database version matches the defined constant.
+		$settings_class = ($postman_db_version == POST_SMTP_DB_VERSION) ? 'settings-hide' : '';
+		$selected_fallback_id = $this->options->getSelectedFallback();
+		$wizard_uri_with_id = add_query_arg( 'id', $selected_fallback_id, $wizard_uri ); // Append the ID to the URL
 
 		print '<div id="config_tabs"><ul>';
 
@@ -265,7 +273,8 @@ class PostmanConfigurationController {
 		settings_fields( PostmanAdminController::SETTINGS_GROUP_NAME );
 
 		// connections_config
-		print '<section id="connections_config">';
+		print '<section id="connections_config" class="' . esc_attr( $settings_class ) . '">';
+		print '<div class="setting-form">';
 		if ( sizeof( PostmanTransportRegistry::getInstance()->getTransports() ) > 1 ) {
 			do_settings_sections( 'transport_options' );
 		} 
@@ -277,56 +286,29 @@ class PostmanConfigurationController {
 				esc_attr( PostmanSmtpModuleTransport::SLUG ) 
 			);
 		}
-		print '<div id="smtp_config" class="transport_setting">';
-		do_settings_sections( PostmanAdminController::SMTP_OPTIONS );
 		print '</div>';
-		print '<div id="password_settings" class="authentication_setting non-oauth2">';
-		do_settings_sections( PostmanAdminController::BASIC_AUTH_OPTIONS );
-		print '</div>';
-		print '<div id="oauth_settings" class="authentication_setting non-basic">';
-		do_settings_sections( PostmanAdminController::OAUTH_AUTH_OPTIONS );
-		print '</div>';
-		print '<div id="mandrill_settings" class="authentication_setting non-basic non-oauth2">';
-		do_settings_sections( PostmanMandrillTransport::MANDRILL_AUTH_OPTIONS );
-		print '</div>';
-		print '<div id="sendgrid_settings" class="authentication_setting non-basic non-oauth2">';
-		do_settings_sections( PostmanSendGridTransport::SENDGRID_AUTH_OPTIONS );
-		print '</div>';
-		print '<div id="mailgun_settings" class="authentication_setting non-basic non-oauth2">';
-		do_settings_sections( PostmanMailgunTransport::MAILGUN_AUTH_OPTIONS );
-		print '</div>';
-        print '<div id="sendinblue_settings" class="authentication_setting non-basic non-oauth2">';
-        do_settings_sections( PostmanSendinblueTransport::SENDINBLUE_AUTH_OPTIONS );
-        print '</div>';
-		print '<div id="mailjet_settings" class="authentication_setting non-basic non-oauth2">';
-        do_settings_sections( PostmanMailjetTransport::MAILJET_AUTH_OPTIONS );
-		print '</div>';
-		print '<div id="sendpulse_settings" class="authentication_setting non-basic non-oauth2">';
-        do_settings_sections( PostmanSendpulseTransport::SENDPULSE_AUTH_OPTIONS );
-        print '</div>';
-        print '<div id="postmark_settings" class="authentication_setting non-basic non-oauth2">';
-        do_settings_sections( PostmanPostmarkTransport::POSTMARK_AUTH_OPTIONS );
-		print '</div>';
-		print '<div id="sparkpost_settings" class="authentication_setting non-basic non-oauth2">';
-        do_settings_sections( PostmanSparkPostTransport::SPARKPOST_AUTH_OPTIONS );
-        print '</div>';
-		print '<div id="elasticemail_settings" class="authentication_setting non-basic non-oauth2">';
-        do_settings_sections( PostmanElasticEmailTransport::ELASTICEMAIL_AUTH_OPTIONS );
-        print '</div>';
-
-		print '<div id="smtp2go_settings" class="authentication_setting non-basic non-oauth2">';
-		do_settings_sections( PostmanSmtp2GoTransport::SMTP2GO_AUTH_OPTIONS );
-		print '</div>';
+		if( $postman_db_version == POST_SMTP_DB_VERSION ){
+			$mail_connections = get_option( 'postman_connections', array() );
+	        // $this->render_connections_dropdown( $provider_fields, $provider_fields );
+				 $this->render_authentication_settings();
+		}else{
+			$this->render_authentication_settings();
+		}
 
 		do_action( 'post_smtp_settings_sections' );
 
 		print '</section>';
-        // end account config
+        // end account config.
+
 		?>
 
         <!-- Fallback Start -->
         <section id="fallback">
-            <h2><?php esc_html_e( 'Failed emails fallback', 'post-smtp' ); ?></h2>
+		<?php if( $postman_db_version == POST_SMTP_DB_VERSION ){ ?>
+			<a href="<?php echo esc_url( $wizard_uri ); ?>" class="button button-primary">Add Fallback</a>
+			<a href="<?php echo esc_url( $wizard_uri_with_id ); ?>"  id="editFallbackLink" class="button button-primary">Edit Fallback</a>
+		<?php } ?>
+		    <h2><?php esc_html_e( 'Failed emails fallback', 'post-smtp' ); ?></h2>
             <p><?php esc_html_e( 'By enable this option, if your email is fail to send Post SMTP will try to use the SMTP service you define here.', 'post-smtp' ); ?></p>
             <table class="form-table">
                 <tr valign="">
@@ -347,6 +329,21 @@ class PostmanConfigurationController {
                     </td>
                 </tr>
 
+		<?php if( $postman_db_version == POST_SMTP_DB_VERSION ){ 
+			$provider_fields = $this->get_provider_fields();
+			$mail_connections = get_option( 'postman_connections', array() );
+			// Filter out only those connections where the provider matches the provider_fields.
+			if ( isset( $mail_connections ) && is_array( $mail_connections ) ) {
+				$filtered_mail_connections = array_filter( $mail_connections, function( $connection ) use ( $provider_fields ) {
+					return isset( $connection['provider']) && 
+						!empty( $connection['provider'] ) && 
+						array_key_exists( $connection['provider'], $provider_fields );
+				});
+			} else {
+				$filtered_mail_connections = [];
+			}
+			$this->render_fallback_connections_dropdown( $filtered_mail_connections, $provider_fields );
+		}else{  ?>
                 <tr>
                     <th scope="row"><?php esc_html_e('Outgoing Mail Server', 'post-smtp' ); ?></th>
                     <?php $host = $this->options->getFallbackHostname(); ?>
@@ -436,7 +433,7 @@ class PostmanConfigurationController {
                         >
                     </td>
                 </tr>
-
+		<?php } ?>
             </table>
         </section>
         <!-- Fallback End -->
@@ -469,6 +466,351 @@ class PostmanConfigurationController {
 		print '</div>';
 		print '</div>';
 	}
+
+	/**
+	 * Renders the fallback connection dropdown and provider-specific fields.
+	 *
+	 * This function dynamically generates a dropdown for selecting fallback mail connections
+	 * and displays provider-specific fields based on the selected connection. It can be used 
+	 * to filter connections or show all connections depending on the input parameters.
+	 *
+	 * @param array $filtered_mail_connections The filtered mail connections.
+	 * @param array $provider_fields The provider-specific fields.
+	 * @param bool  $use_all_connections Whether to use all available connections.
+	 */
+	public function render_fallback_connections_dropdown( $filtered_mail_connections = array(), $provider_fields = array(), $use_all_connections = false ) { ?>
+	<tr>
+			<th scope="row"><?php esc_html_e( 'Fallback Connection', 'post-smtp' ); ?></th>
+			<td>
+				<select id="fallback-selected" name="postman_options[<?php esc_attr_e( 'selected_fallback', 'post-smtp' ); ?>]">
+					<?php
+					// Show a default option when no fallback is selected.
+					$selected_fallback = $this->options->getSelectedFallback();
+					?>
+					<option value="" <?php echo esc_attr( selected( $selected_fallback, null, false ) ); ?>>
+						<?php esc_html_e( 'Select a fallback', 'post-smtp' ); ?>
+					</option>
+					<?php
+					foreach ( $filtered_mail_connections as $index => $connection ) {
+						$selected = selected( $this->options->getSelectedFallback(), $index, false );
+						?>
+						<option value="<?php echo esc_attr( $index ); ?>" <?php echo esc_attr( $selected ); ?> data-provider="<?php echo esc_attr( $connection['provider'] ); ?>">
+							<?php echo esc_html( ucfirst( str_replace( '_', ' ', __( $connection['provider'], 'post-smtp' ) ) ) ); ?>
+						</option>
+						<?php
+					}
+					?>
+				</select>
+			</td>
+		</tr>
+	<?
+		// Loop through connections and render provider-specific fields.
+		foreach ( $filtered_mail_connections as $index => $connection ) {
+			$provider = $connection['provider'];
+			$fields   = isset( $provider_fields[ $provider ] ) ? $provider_fields[ $provider ] : array();
+			
+			echo '<tbody id="provider-fields-' . esc_attr( $provider ) . '-' . esc_attr( $index ) .'" class="provider-fields" style="display:none;">';
+
+			// Render each field for the provider.
+			foreach ( $fields as $key => $field ) {
+				if ( 'title' === $key ) {
+					$title = __( $field, 'post-smtp' );
+					?>
+					<tr class="provider-row">
+						<th colspan="2">
+							<h2 style="margin:0;"><?php echo esc_html( $title ); ?></h2>
+						</th>
+					</tr>
+					<?php
+				} else if ( 'description' === $key ) {
+					$description = __( $field, 'post-smtp' );
+					?>
+					<tr class="provider-row">
+						<td colspan="2">
+							<p><?php echo wp_kses_post( $description ); ?></p>
+						</td>
+					</tr>
+					<?php
+				} else if ( 'provider' === $key ) {
+					$provider_value = __( $field, 'post-smtp' );
+					?>
+					<td>
+						<input type="hidden" name="postman_connections[<?php echo esc_attr( $index ); ?>][<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $provider_value ); ?>" />
+					</td>
+					<?php
+				} else if ( 'sender_name' === $field || 'sender_email' === $field ) {
+					?>
+					<input type="hidden" name="postman_connections[<?php echo esc_attr( $index ); ?>][<?php echo esc_attr( $field ); ?>]" value="<?php echo esc_attr( $connection[ $field ] ?? '' ); ?>" />
+					<?php
+				} else {
+					$label = __( ucfirst( str_replace( '_', ' ', $field ) ), 'post-smtp' );
+					?>
+					<tr class="provider-row">
+						<th scope="row"><?php echo esc_html( $label ); ?>:</th>
+						<td>
+							<input type="text" name="postman_connections[<?php echo esc_attr( $index ); ?>][<?php echo esc_attr( $field ); ?>]" value="<?php echo esc_attr( $connection[ $field ] ?? '' ); ?>" />
+						</td>
+					</tr>
+					<?php
+				}
+			}
+
+			echo '</tbody>';
+		}
+	}
+
+	/**
+	 * Renders the mail connection dropdown and provider-specific fields.
+	 *
+	 * This function dynamically generates a dropdown for selecting mail connections
+	 * and displays provider-specific fields based on the selected connection. It can be used 
+	 * to filter connections or show all connections depending on the input parameters.
+	 *
+	 */
+	public function render_connections_dropdown( $mail_connections = array(), $provider_fields = array(), $use_all_connections = false ) { 
+		?>
+		<table class="form-table">
+                <tr>
+                    <th scope="row"><?php esc_html_e( 'Type', 'post-smtp' ); ?></th>
+                    <td>
+					<select id="input_transport_type" class="input_transport_type" name="postman_options[transport_type]">
+						<option class="input_tx_type_default" value="default">Default</option>
+						<option class="input_tx_type_smtp" value="smtp">Other SMTP</option>
+						<option class="input_tx_type_gmail_api" value="gmail_api">Gmail API</option>
+						<option class="input_tx_type_mandrill_api" value="mandrill_api" selected="selected">Mandrill API</option>
+						<option class="input_tx_type_sendgrid_api" value="sendgrid_api">SendGrid API</option>
+						<option class="input_tx_type_mailgun_api" value="mailgun_api">Mailgun API</option>
+						<option class="input_tx_type_sendinblue_api" value="sendinblue_api">Brevo</option>
+						<option class="input_tx_type_mailjet_api" value="mailjet_api">Mailjet</option>
+						<option class="input_tx_type_sendpulse_api" value="sendpulse_api">SendPulse</option>
+						<option class="input_tx_type_postmark_api" value="postmark_api">PostMark</option>
+						<option class="input_tx_type_sparkpost_api" value="sparkpost_api">SparkPost</option>
+						<option class="input_tx_type_elasticemail_api" value="elasticemail_api">Elastic Email</option>
+						<option class="input_tx_type_smtp2go_api" value="smtp2go_api">SMTP2Go</option>
+					</select>
+                    </td>
+                </tr>
+				<tr valign="">
+                    <th scope="row"><?php esc_html_e( 'Mailer Type', 'post-smtp' ); ?></th>
+                    <td>
+					<select id="input_smtp_mailers" class="input_smtp_mailers" name="postman_options[smtp_mailers]">
+						<option class="input_tx_type_phpmailer" value="phpmailer">PHPMailer</option>
+						<option class="input_tx_type_postsmtp" value="postsmtp">PostSMTP</option>
+					</select>
+					<p class="description" id="mailer-type-description">Beta Feature: ONLY change this to <strong>PHPMailer</strong> only if you see 
+					<code>wp_mail</code> conflict message, conflicts when another plugin is activated, and 
+					<strong><u>sometimes</u></strong> your mail marked as spam.</p>
+                    </td>
+                </tr>
+		</table>
+
+		<?
+		}
+
+
+	/**
+	 * Renders the authentication settings for various email providers.
+	 * This function generates HTML output for different email service authentication options,
+	 * such as SMTP, API-based authentication (SendGrid, Mandrill, etc.), OAuth2, and basic authentication.
+	 */
+	public function render_authentication_settings() {
+		
+		// Render the SMTP configuration section.
+		print '<div id="smtp_config" class="transport_setting">';
+		// Call the settings for SMTP transport from PostmanAdminController.
+		do_settings_sections( PostmanAdminController::SMTP_OPTIONS );
+		print '</div>';
+
+		// Render the Basic Authentication (non-OAuth2) settings.
+		print '<div id="password_settings" class="authentication_setting non-oauth2">';
+		// Call the settings for Basic Authentication from PostmanAdminController.
+		do_settings_sections( PostmanAdminController::BASIC_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the OAuth2 Authentication settings.
+		print '<div id="oauth_settings" class="authentication_setting non-basic">';
+		// Call the settings for OAuth2 Authentication from PostmanAdminController.
+		do_settings_sections( PostmanAdminController::OAUTH_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the Mandrill API settings
+		print '<div id="mandrill_settings" class="authentication_setting non-basic non-oauth2">';
+		// Call the settings for Mandrill API authentication from PostmanMandrillTransport
+		do_settings_sections( PostmanMandrillTransport::MANDRILL_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the SendGrid API settings.
+		print '<div id="sendgrid_settings" class="authentication_setting non-basic non-oauth2">';
+		// Call the settings for SendGrid API authentication from PostmanSendGridTransport.
+		do_settings_sections( PostmanSendGridTransport::SENDGRID_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the Mailgun API settings.
+		print '<div id="mailgun_settings" class="authentication_setting non-basic non-oauth2">';
+		// Call the settings for Mailgun API authentication from PostmanMailgunTransport.
+		do_settings_sections( PostmanMailgunTransport::MAILGUN_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the Sendinblue API settings
+		print '<div id="sendinblue_settings" class="authentication_setting non-basic non-oauth2">';
+		// Call the settings for Sendinblue API authentication from PostmanSendinblueTransport
+		do_settings_sections( PostmanSendinblueTransport::SENDINBLUE_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the Mailjet API settings.
+		print '<div id="mailjet_settings" class="authentication_setting non-basic non-oauth2">';
+		// Call the settings for Mailjet API authentication from PostmanMailjetTransport.
+		do_settings_sections( PostmanMailjetTransport::MAILJET_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the Sendpulse API settings.
+		print '<div id="sendpulse_settings" class="authentication_setting non-basic non-oauth2">';
+		// Call the settings for Sendpulse API authentication from PostmanSendpulseTransport.
+		do_settings_sections( PostmanSendpulseTransport::SENDPULSE_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the Postmark API settings.
+		print '<div id="postmark_settings" class="authentication_setting non-basic non-oauth2">';
+		// Call the settings for Postmark API authentication from PostmanPostmarkTransport.
+		do_settings_sections( PostmanPostmarkTransport::POSTMARK_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the SparkPost API settings.
+		print '<div id="sparkpost_settings" class="authentication_setting non-basic non-oauth2">';
+		// Call the settings for SparkPost API authentication from PostmanSparkPostTransport.
+		do_settings_sections( PostmanSparkPostTransport::SPARKPOST_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the Elastic Email API settings.
+		print '<div id="elasticemail_settings" class="authentication_setting non-basic non-oauth2">';
+		// Call the settings for Elastic Email API authentication from PostmanElasticEmailTransport.
+		do_settings_sections( PostmanElasticEmailTransport::ELASTICEMAIL_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the SMTP2GO API settings.
+		print '<div id="smtp2go_settings" class="authentication_setting non-basic non-oauth2">';
+		// Call the settings for SMTP2GO API authentication from PostmanSmtp2GoTransport.
+		do_settings_sections( PostmanSmtp2GoTransport::SMTP2GO_AUTH_OPTIONS );
+		print '</div>';
+	}
+
+	/**
+     * Get provider fields for various email service providers.
+     * 
+     * @return array The provider fields array.
+     */
+    public function get_provider_fields() {
+        $provider_fields = array(
+            'smtp' => array(
+                'provider' => 'smtp',
+                'title' => __( 'Transport Settings', 'post-smtp' ),
+                'description' => __( 'Configure the communication with the mail server.', 'post-smtp' ),
+                'enc_type',
+                'hostname',
+                'port',
+                'sender_name',
+                'sender_email',
+                'envelope_sender',
+                'basic_auth_username',
+                'basic_auth_password',
+            ),
+            'mandrill' => array(
+                'provider' => 'mandrill',
+                'title' => __( 'Authentication', 'post-smtp' ),
+                'description' => __( 'Create an account at <a href="https://mandrillapp.com" target="_blank">Mandrillapp.com</a> and enter <a href="https://mandrillapp.com/settings" target="_blank">an API key</a> below.', 'post-smtp' ),
+                'mandrill_api_key',
+                'sender_name',
+                'sender_email',
+            ),
+            'sendgrid_api' => array(
+                'provider' => 'sendgrid_api',
+                'title' => __( 'Authentication', 'post-smtp' ),
+                'description' => __( 'Create an account at <a href="https://sendgrid.com" target="_blank">SendGrid.com</a> and enter <a href="https://app.sendgrid.com/settings/api_keys" target="_blank">an API key</a> below.', 'post-smtp' ),
+                'sendgrid_api_key',
+                'sender_name',
+                'sender_email',
+            ),
+            'sendinblue_api' => array(
+                'provider' => 'sendinblue_api',
+                'title' => __( 'Authentication', 'post-smtp' ),
+                'description' => __( 'Create an account at <a href="https://www.brevo.com/" target="_blank">brevo.com (formerly Sendinblue)</a> and enter <a href="https://account.brevo.com/advanced/api" target="_blank">an API key</a> below.', 'post-smtp' ),
+                'sendinblue_api_key',
+                'sender_name',
+                'sender_email',
+            ),
+            'mailjet_api' => array(
+                'provider' => 'mailjet_api',
+                'title' => __( 'Authentication', 'post-smtp' ),
+                'description' => __( 'Create an account at <a href="https://app.mailjet.com" target="_blank">mailjet.com</a> and enter <a href="https://app.mailjet.com/account/apikeys" target="_blank">an API key and Secret Key</a> below.', 'post-smtp' ),
+                'mailjet_api_key',
+                'mailjet_secret_key',
+                'sender_name',
+                'sender_email',
+            ),
+            'sendpulse_api' => array(
+                'provider' => 'sendpulse_api',
+                'title' => __( 'Authentication', 'post-smtp' ),
+                'description' => __( 'Create an account at <a href="https://sendpulse.com/" target="_blank">sendpulse.com</a> and enter <a href="https://login.sendpulse.com/settings/#api" target="_blank">an API key and Secret</a> below.', 'post-smtp' ),
+                'sendpulse_api_key',
+                'sendpulse_secret_key',
+                'sender_name',
+                'sender_email',
+            ),
+            'postmark_api' => array(
+                'provider' => 'postmark_api',
+                'title' => __( 'Authentication', 'post-smtp' ),
+                'description' => __( 'Create an account at <a href="https://postmarkapp.com/" target="_blank">postmarkapp.com</a> and enter <a href="https://account.postmarkapp.com/sign_up" target="_blank">an API Token</a> below.', 'post-smtp' ),
+                'postmark_api_key',
+                'sender_name',
+                'sender_email',
+            ),
+            'sparkpost_api' => array(
+                'provider' => 'sparkpost_api',
+                'title' => __( 'Authentication', 'post-smtp' ),
+                'description' => __( 'Create an account at <a href="https://app.sparkpost.com/join" target="_blank">SparkPost</a> and enter <a href="https://app.sparkpost.com/account/api-keys" target="_blank">an API Key</a> below.', 'post-smtp' ),
+                'sparkpost_api_key',
+                'sender_name',
+                'sender_email',
+            ),
+            'mailgun_api' => array(
+                'provider' => 'mailgun_api',
+                'title' => __( 'Authentication', 'post-smtp' ),
+                'description' => __( 'Create an account at <a href="https://mailgun.com" target="_blank">mailgun.com</a> and enter <a href="https://app.mailgun.com/app/domains/" target="_blank">an API key</a> below.', 'post-smtp' ),
+                'mailgun_api_key',
+                'mailgun_domain_name',
+                'sender_name',
+                'sender_email',
+            ),
+            'elasticemail_api' => array(
+                'provider' => 'elasticemail_api',
+                'title' => __( 'Authentication', 'post-smtp' ),
+                'description' => __( 'Create an account at <a href="https://www.elasticemail.com/" target="_blank">elasticemail.com</a> and enter <a href="https://app.elasticemail.com/marketing/settings/new/create-api" target="_blank">an API key</a> below.', 'post-smtp' ),
+                'elasticemail_api_key',
+                'sender_name',
+                'sender_email',
+            ),
+            'smtp2go_api' => array(
+                'provider' => 'smtp2go_api',
+                'title' => __( 'Authentication', 'post-smtp' ),
+                'description' => __( 'Create an account at <a href="https://www.smtp2go.com/" target="_blank">smtp2go.com</a> and enter <a href="https://app-us.smtp2go.com/sending/apikeys/" target="_blank">an API key</a> below.', 'post-smtp' ),
+                'smtp2go_api_key',
+                'sender_name',
+                'sender_email',
+            ),
+            'gmail_api' => array(
+                'provider' => 'gmail_api',
+                'title' => __( 'Authentication', 'post-smtp' ),
+                'description' => __( '<b style="color:red">Attention!</b> Check this article how to configure Gmail/Gsuite OAuth:<a href="https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/" target="_blank">Read Here</a>', 'post-smtp' ),
+                'oauth_client_id',
+                'oauth_client_secret',
+                'basic_auth_username',
+                'basic_auth_password',
+            ),
+        );
+
+        return $provider_fields;
+    }
+
 
 	/**
 	 */

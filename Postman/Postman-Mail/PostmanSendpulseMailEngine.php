@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 
 	require 'Services/SendPulse/Handler.php';
+	require_once plugin_dir_path( __FILE__ ) . 'PostMailConnections.php';
 	class PostmanSendpulseMailEngine implements PostmanMailEngine {
 
 
@@ -17,6 +18,8 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 
 		private $secret_key;
 
+		private $existing_db_version = '';
+
 
 
 		/**
@@ -27,9 +30,20 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 		 */
 		public function __construct( $api_key, $secret_key ) {
 
-			$this->api_key = $api_key;
+			$this->existing_db_version = get_option( 'postman_db_version' );
+			
+			if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+				$this->api_key = $api_key;
+				$this->secret_key = $secret_key;
 
-			$this->secret_key = $secret_key;
+			} else {
+				$options = PostmanOptions::getInstance();
+				$mail_connections = new PostmanMailConnections();
+				$transport_type = $options->getTransportType();
+				$connection_details = $mail_connections->get_mail_connection_details( $transport_type );
+				$this->api_key = $connection_details['sendpulse_api_key'] ?? '';
+				$this->secret_key = $connection_details['sendpulse_secret_key'] ?? '';
+			}
 
 			// create the logger.
 			$this->logger = new PostmanLogger( get_class( $this ) );

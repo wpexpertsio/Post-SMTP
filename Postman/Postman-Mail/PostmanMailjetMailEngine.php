@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if( !class_exists( 'PostmanMailjetMailEngine' ) ):
     
 require 'Services/Mailjet/Handler.php'; 
+require_once plugin_dir_path( __FILE__ ) . 'PostMailConnections.php';
 
 class PostmanMailjetMailEngine implements PostmanMailEngine {
 
@@ -15,6 +16,7 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
 
     private $api_key;
     private $secret_key;
+    private $existing_db_version = '';
 
 
     /**
@@ -23,8 +25,17 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
      */
     public function __construct( $api_key, $secret_key ) {
         
-        $this->api_key = $api_key;
-        $this->secret_key = $secret_key;
+        if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+            $this->api_key = $api_key;
+            $this->secret_key = $secret_key;
+        } else {
+            $options = PostmanOptions::getInstance();
+            $mail_connections = new PostmanMailConnections();
+            $transport_type = $options->getTransportType();
+            $connection_details = $mail_connections->get_mail_connection_details( $transport_type );
+            $this->api_key = $connection_details['mailjet_api_key'] ?? '';
+            $this->secret_key = $connection_details['mailjet_secret_key'] ?? '';
+        }
 
         // create the logger
         $this->logger = new PostmanLogger( get_class( $this ) );

@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 	require_once 'Services/SendGrid/Handler.php';
+	require_once plugin_dir_path( __FILE__ ) . 'PostMailConnections.php';
 
 	/**
 	 * Sends mail with the SendGrid API
@@ -22,6 +23,7 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 		private $transcript;
 
 		private $apiKey;
+		private $existing_db_version = '';
 
 		/**
 		 *
@@ -30,7 +32,15 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 		 */
 		function __construct( $apiKey ) {
 			assert( ! empty( $apiKey ) );
-			$this->apiKey = $apiKey;
+			if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+				$this->apiKey = $apiKey;
+			} else {
+				$options = PostmanOptions::getInstance();
+				$mail_connections = new PostmanMailConnections();
+				$transport_type = $options->getTransportType();
+				$connection_details = $mail_connections->get_mail_connection_details( $transport_type );
+				$this->apiKey = $connection_details['sendgrid_api_key'] ?? '';
+			}
 
 			// create the logger
 			$this->logger = new PostmanLogger( get_class( $this ) );

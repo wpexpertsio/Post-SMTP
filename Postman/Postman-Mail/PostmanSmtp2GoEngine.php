@@ -10,15 +10,26 @@
 	if ( ! class_exists( 'PostmanSmtp2GoEngine' ) ) {
 
 		require_once 'Services/Smtp2Go/Handler.php';
+		require_once plugin_dir_path( __FILE__ ) . 'PostMailConnections.php';
 
 		class PostmanSmtp2GoEngine implements PostmanMailEngine {
 			protected $logger;
 			protected $transcript;
 			protected $apiKey;
+			protected $existing_db_version = '';
 
 			public function __construct( $apiKey ) {
 				assert( ! empty( $apiKey ) );
-				$this->apiKey = $apiKey;
+				if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+					$this->apiKey = $apiKey;
+	
+				} else {
+					$options = PostmanOptions::getInstance();
+					$mail_connections = new PostmanMailConnections();
+					$transport_type = $options->getTransportType();
+					$connection_details = $mail_connections->get_mail_connection_details( $transport_type );
+					$this->apiKey = $connection_details['smtp2go_api_key'] ?? '';
+				}
 
 				$this->logger = new PostmanLogger( get_class( $this ) );
 			}
