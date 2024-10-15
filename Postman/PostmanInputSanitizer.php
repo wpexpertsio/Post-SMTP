@@ -129,8 +129,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 
 		//	}else{
 			if( $postman_db_version == POST_SMTP_DB_VERSION ){
-				// die('ds');
-			//	update_option( 'postman_connections', $_REQUEST['postman_connections'] );
+				update_option( 'postman_connections', $_REQUEST['postman_connections'] );
 			}
 		//		return true;
 		//	}

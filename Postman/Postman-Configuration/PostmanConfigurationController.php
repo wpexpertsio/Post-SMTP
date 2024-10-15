@@ -495,7 +495,17 @@ class PostmanConfigurationController {
 						$selected = selected( $this->options->getSelectedFallback(), $index, false );
 						?>
 						<option value="<?php echo esc_attr( $index ); ?>" <?php echo esc_attr( $selected ); ?> data-provider="<?php echo esc_attr( $connection['provider'] ); ?>">
-							<?php echo esc_html( ucfirst( str_replace( '_', ' ', __( $connection['provider'], 'post-smtp' ) ) ) ); ?>
+					    <?php 
+							// Check if 'sender_email' exists.
+							$email = isset( $connection['sender_email'] ) ? $connection['sender_email'] : __('N/A', 'post-smtp'); 
+
+							// Generate the display text.
+							echo esc_html( 
+								ucfirst( 
+									str_replace('_', ' ', __( $connection['provider'] . ' ( ' . $email . ' ) ', 'post-smtp' )) 
+								) 
+							); 
+							?>
 						</option>
 						<?php
 					}

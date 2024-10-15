@@ -351,7 +351,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			$connections = get_option( 'postman_connections', array() );
 			
 			if( $this->existing_db_version != POST_SMTP_DB_VERSION ){
-				if ( isset( $this->options [ PostmanOptions::CLIENT_ID ] ) ) {
+				if ( isset( $this->options[ PostmanOptions::CLIENT_ID ] ) ) {
 					return $this->options [ PostmanOptions::CLIENT_ID ]; 
 				}
 			}else{

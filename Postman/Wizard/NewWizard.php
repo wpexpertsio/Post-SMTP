@@ -343,13 +343,16 @@ class Post_SMTP_New_Wizard {
                                         </p>
                                     </div>
                                     <div class="ps-wizard-step ps-wizard-step-2">
+                                    <?php if( isset( $_GET['id'] ) ){ ?>
+                                      <input type="hidden" name="postman_fallback_edit" value="<?php echo esc_attr(  $_GET['id'] ); ?>" >
+                                    <?php } ?>
                                         <a href="" data-step="1" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span>Back</a>
                                         <?php
                                         if( !empty( $this->sockets ) ) {
 
-                                            $this->render_name_email_settings();
-
-                                            foreach( $this->sockets as $key => $title ) {
+                                                $this->render_name_email_settings();
+                                         
+                                                foreach( $this->sockets as $key => $title ) {
 
                                                 $active_socket = ( isset( $_GET['socket'] ) && $_GET['socket'] == $key ) ? 'style="display: block;"' : '';
 
@@ -557,10 +560,16 @@ class Post_SMTP_New_Wizard {
      */
     public function render_name_email_settings() {
 
-        $from_name = null !== $this->options->getMessageSenderName() ? esc_attr( $this->options->getMessageSenderName() ) : '';
-        $from_email = null !== $this->options->getMessageSenderEmail() ? esc_attr( $this->options->getMessageSenderEmail() ) : '';
         $from_name_enforced = $this->options->isPluginSenderNameEnforced() ? 'checked' : '';
         $from_email_enforced = $this->options->isPluginSenderEmailEnforced() ? 'checked' : '';
+        $postman_connections = get_option( 'postman_connections' );
+        if( isset($_GET['id'] ) ) {
+            $from_email = $postman_connections[$_GET['id']]['sender_email'] ?? '';
+            $from_name = $postman_connections[$_GET['id']]['sender_name'] ?? '';
+         }else{
+            $from_name = null !== $this->options->getMessageSenderName() ? esc_attr( $this->options->getMessageSenderName() ) : '';
+            $from_email = null !== $this->options->getMessageSenderEmail() ? esc_attr( $this->options->getMessageSenderEmail() ) : '';
+         }
 
         $html = '
         <div class="ps-form-ui ps-name-email-settings">
@@ -854,7 +863,15 @@ class Post_SMTP_New_Wizard {
      */
     public function render_mandrill_settings() {
 
-        $api_key = null !== $this->options->getMandrillApiKey() ? esc_attr ( $this->options->getMandrillApiKey() ) : '';
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        $mail_connections = get_option( 'postman_connections' );
+        
+        // Check if 'id' exists and 'mandrill_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['mandrill_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getMandrillApiKey() ?? '' );
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
@@ -899,7 +916,15 @@ class Post_SMTP_New_Wizard {
      */
     public function render_sendgrid_settings() {
 
-        $api_key = null !== $this->options->getSendGridApiKey() ? esc_attr ( $this->options->getSendGridApiKey() ) : '';
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        $mail_connections = get_option( 'postman_connections' );
+        
+        // Check if 'id' exists and 'sendgrid_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['sendgrid_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getSendGridApiKey() ?? '' );
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
@@ -943,9 +968,21 @@ class Post_SMTP_New_Wizard {
      */
     public function render_mailgun_settings() {
 
-        $api_key = null !== $this->options->getMailgunApiKey() ? esc_attr ( $this->options->getMailgunApiKey() ) : '';
-        $domain_name = null !== $this->options->getMailgunDomainName() ? esc_attr ( $this->options->getMailgunDomainName() ) : '';
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        $domain_name = '';
+        $region = '';
+
+        $mail_connections = get_option( 'postman_connections' );
         $region = null !== $this->options->getMailgunRegion() ? ' checked' : '';
+        
+        // Check if 'id' exists and 'mailgun_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['mailgun_api_key'];
+            $domain_name = $mail_connections[$id]['mailgun_domain_name'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getMailgunApiKey() ?? '' );
+        $domain_name = $api_key ?: esc_attr( $this->options->getMailgunDomainName() ?? '' );
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
@@ -1030,7 +1067,13 @@ class Post_SMTP_New_Wizard {
      */
     public function render_brevo_settings() {
 
-        $api_key = null !== $this->options->getSendinblueApiKey() ? esc_attr ( $this->options->getSendinblueApiKey() ) : '';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['sendinblue_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getSendinblueApiKey() ?? '' );
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">Brevo</a> %2$s</p><p>%3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a>',
@@ -1075,7 +1118,15 @@ class Post_SMTP_New_Wizard {
      */
     public function render_postmark_settings() {
 
-        $api_key = null !== $this->options->getPostmarkApiKey() ? esc_attr ( $this->options->getPostmarkApiKey() ) : '';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        
+        // Check if 'id' exists and 'postmark_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['postmark_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getPostmarkApiKey() ?? '' );
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
@@ -1120,7 +1171,15 @@ class Post_SMTP_New_Wizard {
      */
     public function render_sparkpost_settings() {
 
-        $api_key = null !== $this->options->getSparkPostApiKey() ? esc_attr ( $this->options->getSparkPostApiKey() ) : '';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        
+        // Check if 'id' exists and 'sparkpost_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['sparkpost_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getSparkPostApiKey() ?? '' );
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
@@ -1164,7 +1223,15 @@ class Post_SMTP_New_Wizard {
      */
     public function render_elasticemail_settings() {
 
-        $api_key = null !== $this->options->getElasticEmailApiKey() ? esc_attr ( $this->options->getElasticEmailApiKey() ) : '';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        
+        // Check if 'id' exists and 'elasticemail_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['elasticemail_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getElasticEmailApiKey() ?? '' );
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">Elastic Email</a> %2$s</p><p>%3$s <a href="%4$s" target="_blank">%5$s</a>',
@@ -1206,9 +1273,19 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function render_mailjet_settings() {
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        $secret_key = '';
+        $mail_connections = get_option( 'postman_connections' );
+        
+        // Check if 'id' exists and 'mailjet_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['mailjet_api_key'];
+            $secret_key = $mail_connections[$id]['mailjet_secret_key'];
+        }
 
-        $api_key = null !== $this->options->getMailjetApiKey() ? esc_attr ( $this->options->getMailjetApiKey() ) : '';
-        $secret_key = null !== $this->options->getMailjetApiKey() ? esc_attr ( $this->options->getMailjetSecretKey() ) : '';
+        $api_key = $api_key ?: esc_attr( $this->options->getElasticEmailApiKey() ?? '' );
+        $secret_key = $api_key ?: esc_attr( $this->options->getMailjetSecretKey() ?? '' );
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">Mailjet</a> %2$s</p><p>%6$s<p>%3$s <a href="%4$s" target="_blank">%5$s</a>',
@@ -1257,9 +1334,18 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function render_sendpulse_settings() {
-
-        $api_key = null !== $this->options->getSendpulseApiKey() ? esc_attr ( $this->options->getSendpulseApiKey() ) : '';
-        $secret_key = null !== $this->options->getSendpulseSecretKey() ? esc_attr ( $this->options->getSendpulseSecretKey() ) : '';
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        $secret_key = '';
+        $mail_connections = get_option( 'postman_connections' );
+        
+        // Check if 'id' exists and 'sendpulse_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['sendpulse_api_key'];
+            $secret_key = $mail_connections[$id]['sendpulse_secret_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getSendpulseApiKey() ?? '' );
+        $secret_key = $api_key ?: esc_attr( $this->options->getSendpulseSecretKey() ?? '' );
 
         $html = sprintf(
             '<p>%1$s <a href="%2$s" target="_blank">SendPulse</a> %3$s</p><p>%4$s<p>%5$s <a href="%6$s" target="_blank">%7$s</a>',
@@ -1568,8 +1654,15 @@ class Post_SMTP_New_Wizard {
 
     public function render_smtp2go_settings() {
 	    ob_start();
-
-	    $api_key = null === $this->options->getSmtp2GoApiKey() ? '' : esc_attr( $this->options->getSmtp2GoApiKey() );
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        
+        // Check if 'id' exists and 'smtp2go_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['smtp2go_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getSmtp2GoApiKey() ?? '' );
 
 	    printf(
 		    '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
@@ -1699,8 +1792,17 @@ class Post_SMTP_New_Wizard {
                         if ( isset( $sanitized[$key] ) ) {
                             $new_connection[$key] = $sanitized[$key];
                         }
-                    } 
-                    $mail_connections[] = $new_connection; 
+                    }
+
+                    // Check if 'id' is set in the URL and update the specific connection.
+                    if ( isset( $form_data['postman_fallback_edit'] ) ) {
+                        $id = $form_data['postman_fallback_edit'];
+                        // Update the existing connection at the specified index.
+                        $mail_connections[$id] = array_merge( $mail_connections[$id], $new_connection );
+                    } else {
+                        // Add a new connection if 'id' is not provided or doesn't exist in the array.
+                        $mail_connections[] = $new_connection;
+                    }
                     // Save the new mail connections to the 'postman_connections' option.
                     $response =  update_option( 'postman_connections', $mail_connections );
 
