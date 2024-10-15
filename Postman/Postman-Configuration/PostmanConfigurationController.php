@@ -253,7 +253,7 @@ class PostmanConfigurationController {
         ) );
 		$wizard_uri = admin_url( "admin.php?page=postman/configuration_wizard" );
 		// Check if the database version matches the defined constant.
-		$settings_class = ($postman_db_version == POST_SMTP_DB_VERSION) ? 'settings-hide' : '';
+		$settings_class = ( $postman_db_version == POST_SMTP_DB_VERSION ) ? 'settings-hide' : '';
 		$selected_fallback_id = $this->options->getSelectedFallback();
 		$wizard_uri_with_id = add_query_arg( 'id', $selected_fallback_id, $wizard_uri ); // Append the ID to the URL
 
@@ -513,7 +513,7 @@ class PostmanConfigurationController {
 				</select>
 			</td>
 		</tr>
-	<?
+	<?php
 		// Loop through connections and render provider-specific fields.
 		foreach ( $filtered_mail_connections as $index => $connection ) {
 			$provider = $connection['provider'];
@@ -577,8 +577,7 @@ class PostmanConfigurationController {
 	 * to filter connections or show all connections depending on the input parameters.
 	 *
 	 */
-	public function render_connections_dropdown( $mail_connections = array(), $provider_fields = array(), $use_all_connections = false ) { 
-		?>
+	public function render_connections_dropdown( $mail_connections = array(), $provider_fields = array(), $use_all_connections = false ) {  ?>
 		<table class="form-table">
                 <tr>
                     <th scope="row"><?php esc_html_e( 'Type', 'post-smtp' ); ?></th>
@@ -613,10 +612,7 @@ class PostmanConfigurationController {
                     </td>
                 </tr>
 		</table>
-
-		<?
-		}
-
+	<?php }
 
 	/**
 	 * Renders the authentication settings for various email providers.
@@ -1193,7 +1189,6 @@ class PostmanConfigurationController {
 			do_action( 'post_smtp_new_wizard' );
 
 		}
-
 	}
 }
 
