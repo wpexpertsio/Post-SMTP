@@ -346,6 +346,11 @@ class Post_SMTP_New_Wizard {
                                     <?php if( isset( $_GET['id'] ) ){ ?>
                                       <input type="hidden" name="postman_fallback_edit" value="<?php echo esc_attr(  $_GET['id'] ); ?>" >
                                     <?php } ?>
+                                    <?php if( isset( $_GET['access_token'] ) || isset( $_GET['refresh_token'] ) ){ ?>
+                                      <input type="hidden" name="access_token" value="<?php echo esc_attr(  $_GET['access_token'] ); ?>" >
+                                      <input type="hidden" name="refresh_token" value="<?php echo esc_attr(  $_GET['refresh_token'] ); ?>" >
+                                      <input type="hidden" name="token_expires" value="<?php echo esc_attr(  $_GET['expires_in'] ); ?>" >
+                                    <?php } ?>
                                         <a href="" data-step="1" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span>Back</a>
                                         <?php
                                         if( !empty( $this->sockets ) ) {
@@ -1790,10 +1795,25 @@ class Post_SMTP_New_Wizard {
                     // Loop through the API keys and set the values from sanitized data.
                     foreach ( $api_keys as $key ) {
                         if ( isset( $sanitized[$key] ) ) {
-                            $new_connection[$key] = $sanitized[$key];
+                            $new_connection[$key] = sanitize_text_field( $sanitized[$key] );
                         }
                     }
 
+                        // Special handling for Zoho Mail fields.
+                    if ( 'zohomail_api' === $transport_type && isset( $form_data[ 'access_token' ] ) ) {
+                        // Extract from sanitized data for these fields.
+                        $new_connection['zohomail_client_id'] = $sanitized['zohomail_client_id'] ?? '';
+                        $new_connection['zohomail_client_secret'] = $sanitized['zohomail_client_secret'] ?? '';
+
+                        // Extract other Zoho values from $form_data.
+                        $zoho_fields = ['access_token', 'refresh_token', 'token_expires'];
+
+                        foreach ( $zoho_fields as $field ) {
+                            if ( isset( $form_data[ $field ] ) ) {
+                                $new_connection[ $field ] = sanitize_text_field( $form_data[ $field ] );
+                            }
+                        }
+                    }
                     // Check if 'id' is set in the URL and update the specific connection.
                     if ( isset( $form_data['postman_fallback_edit'] ) ) {
                         $id = $form_data['postman_fallback_edit'];

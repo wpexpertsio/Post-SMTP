@@ -253,7 +253,7 @@ class PostmanConfigurationController {
         ) );
 		$wizard_uri = admin_url( "admin.php?page=postman/configuration_wizard" );
 		// Check if the database version matches the defined constant.
-		$settings_class = ( $postman_db_version == POST_SMTP_DB_VERSION ) ? 'settings-hide' : '';
+		$settings_class = ($postman_db_version == POST_SMTP_DB_VERSION) ? 'settings-hide' : '';
 		$selected_fallback_id = $this->options->getSelectedFallback();
 		$wizard_uri_with_id = add_query_arg( 'id', $selected_fallback_id, $wizard_uri ); // Append the ID to the URL
 
@@ -521,9 +521,8 @@ class PostmanConfigurationController {
 			
 			echo '<tbody id="provider-fields-' . esc_attr( $provider ) . '-' . esc_attr( $index ) .'" class="provider-fields" style="display:none;">';
 
-			// Render each field for the provider.
-			foreach ( $fields as $key => $field ) {
-				if ( 'title' === $key ) {
+			foreach ( $fields as $key => $field ) :
+				if ( 'title' === $key ) :
 					$title = __( $field, 'post-smtp' );
 					?>
 					<tr class="provider-row">
@@ -532,7 +531,7 @@ class PostmanConfigurationController {
 						</th>
 					</tr>
 					<?php
-				} else if ( 'description' === $key ) {
+				elseif ( 'description' === $key ) :
 					$description = __( $field, 'post-smtp' );
 					?>
 					<tr class="provider-row">
@@ -541,30 +540,38 @@ class PostmanConfigurationController {
 						</td>
 					</tr>
 					<?php
-				} else if ( 'provider' === $key ) {
+				elseif ( 'provider' === $key ) :
 					$provider_value = __( $field, 'post-smtp' );
 					?>
 					<td>
-						<input type="hidden" name="postman_connections[<?php echo esc_attr( $index ); ?>][<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $provider_value ); ?>" />
+						<input type="hidden" 
+							name="postman_connections[<?php echo esc_attr( $index ); ?>][<?php echo esc_attr( $key ); ?>]" 
+							value="<?php echo esc_attr( $provider_value ); ?>" 
+						/>
 					</td>
 					<?php
-				} else if ( 'sender_name' === $field || 'sender_email' === $field ) {
+				elseif ( in_array( $field, array( 'sender_name', 'sender_email' ), true ) ) :
 					?>
-					<input type="hidden" name="postman_connections[<?php echo esc_attr( $index ); ?>][<?php echo esc_attr( $field ); ?>]" value="<?php echo esc_attr( $connection[ $field ] ?? '' ); ?>" />
-					<?php
-				} else {
+					<input type="hidden" 
+						name="postman_connections[<?php echo esc_attr( $index ); ?>][<?php echo esc_attr( $field ); ?>]" 
+						value="<?php echo esc_attr( $connection[ $field ] ?? '' ); ?>" 
+					/>
+					<?php else :
 					$label = __( ucfirst( str_replace( '_', ' ', $field ) ), 'post-smtp' );
 					?>
 					<tr class="provider-row">
 						<th scope="row"><?php echo esc_html( $label ); ?>:</th>
 						<td>
-							<input type="text" name="postman_connections[<?php echo esc_attr( $index ); ?>][<?php echo esc_attr( $field ); ?>]" value="<?php echo esc_attr( $connection[ $field ] ?? '' ); ?>" />
+							<input type="text" 
+								name="postman_connections[<?php echo esc_attr( $index ); ?>][<?php echo esc_attr( $field ); ?>]" 
+								value="<?php echo esc_attr( $connection[ $field ] ?? '' ); ?>" 
+							/>
 						</td>
 					</tr>
 					<?php
-				}
-			}
-
+				endif;
+			endforeach;
+			
 			echo '</tbody>';
 		}
 	}
@@ -577,7 +584,8 @@ class PostmanConfigurationController {
 	 * to filter connections or show all connections depending on the input parameters.
 	 *
 	 */
-	public function render_connections_dropdown( $mail_connections = array(), $provider_fields = array(), $use_all_connections = false ) {  ?>
+	public function render_connections_dropdown( $mail_connections = array(), $provider_fields = array(), $use_all_connections = false ) { 
+		?>
 		<table class="form-table">
                 <tr>
                     <th scope="row"><?php esc_html_e( 'Type', 'post-smtp' ); ?></th>
@@ -612,7 +620,10 @@ class PostmanConfigurationController {
                     </td>
                 </tr>
 		</table>
-	<?php }
+
+		<?php
+		}
+
 
 	/**
 	 * Renders the authentication settings for various email providers.
@@ -819,6 +830,7 @@ class PostmanConfigurationController {
 
 
 	/**
+	 * 
 	 */
 	public function outputWizardContent() {
 		
@@ -1018,6 +1030,7 @@ class PostmanConfigurationController {
 			$notification_emails = PostmanNotifyOptions::getInstance()->get_notification_email();
 			
 			?>
+
 			<h2><?php esc_html_e( 'Select notification service', 'post-smtp' ); ?></h2>
 			<p><?php printf( esc_html__( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %s if required.', 'post-smtp' ), '<a href="'.$logs_url.'" target="_blank">log section</a>' ) ?></p>
 			<div class="ps-notify-radios">
@@ -1178,8 +1191,7 @@ class PostmanConfigurationController {
 			print '</form>';
 			print '</div>';
 
-		}
-		else {
+		} else {
 
 			/**
 			 * Fires to load new wizard
@@ -1189,6 +1201,7 @@ class PostmanConfigurationController {
 			do_action( 'post_smtp_new_wizard' );
 
 		}
+
 	}
 }
 

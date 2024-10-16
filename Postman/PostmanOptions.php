@@ -469,6 +469,12 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
         }
 
+		public function getSelectedPrimary() {
+            if ( isset( $this->options [ PostmanOptions::POSTMAN_Primary_C ] ) ) {
+                return $this->options [ PostmanOptions::POSTMAN_Primary_C ];
+            }
+        }
+
         public function getFallbackAuth() {
             if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_USE_AUTH ] ) ) {
                 return $this->options [ PostmanOptions::FALLBACK_SMTP_USE_AUTH ];
