@@ -344,7 +344,7 @@ class Post_SMTP_New_Wizard {
                                     </div>
                                     <div class="ps-wizard-step ps-wizard-step-2">
                                     <?php if( isset( $_GET['id'] ) ){ ?>
-                                      <input type="hidden" name="postman_fallback_edit" value="<?php echo esc_attr(  $_GET['id'] ); ?>" >
+                                      <input type="hidden" class="postman_fallback_edit" name="postman_fallback_edit" value="<?php echo esc_attr(  $_GET['id'] ); ?>" >
                                     <?php } ?>
                                     <?php if( isset( $_GET['access_token'] ) || isset( $_GET['refresh_token'] ) ){ ?>
                                       <input type="hidden" name="access_token" value="<?php echo esc_attr(  $_GET['access_token'] ); ?>" >
@@ -1568,9 +1568,14 @@ class Post_SMTP_New_Wizard {
             'jp'        => __( 'Japan (JP)', 'postsmtp-zoho' ),
         );
         $selected_region = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ]: '';
-        
-        $client_id = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] : '';
-        $client_secret = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) ? base64_decode( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) : '';
+
+        if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
+            $client_id = get_transient('clientID') ?? '';
+            $client_secret = get_transient('clientSecret') ?? '';
+        }else{
+            $client_id = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] : '';
+            $client_secret = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) ? base64_decode( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) : '';
+        }
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
         $html = '
@@ -1822,6 +1827,7 @@ class Post_SMTP_New_Wizard {
                     } else {
                         // Add a new connection if 'id' is not provided or doesn't exist in the array.
                         $mail_connections[] = $new_connection;
+                        $id = array_key_last( $mail_connections );
                     }
                     // Save the new mail connections to the 'postman_connections' option.
                     $response =  update_option( 'postman_connections', $mail_connections );
@@ -1833,8 +1839,14 @@ class Post_SMTP_New_Wizard {
 
         //Prevent redirection.
         delete_transient( PostmanSession::ACTION );
-
-        wp_send_json( array(), 200 );
+        if( $this->existing_db_version === '1.0.1' ) {
+             wp_send_json( array(), 200 );
+        }else{
+            wp_send_json_success( array(
+                'index'   => $id,
+                'status'  => $response ? 'updated' : 'not_updated',
+            ) );
+        }
 
     }
 
@@ -1849,13 +1861,15 @@ class Post_SMTP_New_Wizard {
         $zoho_mailer = new PostSMTP_ZohoMail();
         $oauthClient = $zoho_mailer->zohomail_configuration();
         $PostmanOauthClient = new ZohoMailPostSMTP\ZohoMailOauth( $oauthClient );
+  
         $state = get_transient( PostSMTP_ZohoMail::STATE );
         // Save client state so we can validate in response
-        
         if ( $state === false ) {
             $state = bin2hex( random_bytes( 32 / 2 ) );
             set_transient( PostSMTP_ZohoMail::STATE, $state, 5 * MINUTE_IN_SECONDS );
         }
+
+    
         
         // // Generate the auth URL
         $redirect_url = $PostmanOauthClient->getZohoMailAuthURL( array(
