@@ -50,6 +50,32 @@ class PostmanSettingsRegistry {
                 'smtp_mailer_callback',
             ), 'transport_options', 'transport_section'  );
 
+			// Register the Manage Connections section.
+			add_settings_section(
+				'manage_connections_section',
+				__( 'Manage Connections', 'post-smtp' ),
+				array( $this, 'manage_connections_section_callback' ),
+				'manage_connections'
+			);
+
+			// Register the Primary Connection field.
+			add_settings_field(
+				'primary_connection',
+				__( 'Select Primary Connection', 'post-smtp' ),
+				array( $this, 'primary_connection_callback' ),
+				'manage_connections',
+				'manage_connections_section'
+			);
+
+			// Register the Add New Connection button as a field.
+			add_settings_field(
+				'add_new_connection',
+				'',
+				array( $this, 'add_new_connection_callback' ),
+				'manage_connections',
+				'manage_connections_section'
+			);
+			
 			// the Message From section
 			add_settings_section( PostmanAdminController::MESSAGE_FROM_SECTION, _x( 'From Address', 'The Message Sender Email Address', 'post-smtp' ), array(
 					$this,
@@ -267,6 +293,129 @@ class PostmanSettingsRegistry {
 		print '</select>';
 	}
 
+	/**
+	 * Callback for the Manage Connections section.
+	 */
+	public function manage_connections_section_callback() {
+		$wizard_uri = admin_url("admin.php?page=postman/configuration_wizard");
+		echo '<div style="margin-top: -36px;margin-left: 200px;" > <a style="color: #2271B1; font-weight:bold; font-size:10px" href="' . esc_url( $wizard_uri ) . '">' . esc_html__( 'Add New Connection', 'post-smtp' ) . '</a></div>';
+		echo '<p>' . esc_html__( 'You can select the primary connection and manage additional connections from here.', 'post-smtp' ) . '</p>';
+	}
+
+	/**
+	 * Callback for the Primary Connection field.
+	 */
+	public function primary_connection_callback() {
+		$connections = get_option( 'postman_connections', array() ); // Retrieve saved connections.
+		$primary_connection = $this->options->getSelectedPrimary();
+
+		echo '<select name="postman_options[primary_connection]" id="postman_primary_connection">';
+		// Display the "None" option as the default selection.
+		echo sprintf(
+			'<option value="" %s>%s</option>',
+			selected( $primary_connection, '', false ),
+			esc_html__( 'None', 'post-smtp' )
+		);
+
+		// Check if there are any saved connections to display.
+		if ( ! empty( $connections ) ) {
+			foreach ( $connections as $key => $connection ) {
+				$selected = selected( $primary_connection, $key, false );
+				$email = isset( $connection['sender_email'] ) ? $connection['sender_email'] : '';
+				echo sprintf(
+					'<option value="%s" %s>%s</option>',
+					esc_attr( $key ),
+					$selected,
+					esc_html(
+						ucfirst(
+							str_replace('_', ' ', __( $connection['provider'] . ' ( ' . $email . ' ) ', 'post-smtp' )) 
+						)
+					)
+				);
+			}
+		}
+
+		echo '</select>';
+
+		// Display a message if no connections are available.
+		if ( empty( $connections ) ) {
+			$wizard_uri = admin_url( "admin.php?page=postman/configuration_wizard" );
+			echo '<p class="description">' . esc_html__( 
+				'You haven’t added any SMTP connection yet. Click ', 
+				'post-smtp' 
+			) . '<strong><a href="' . esc_url( $wizard_uri ) . '">' . esc_html__( 'Add New Connection', 'post-smtp' ) . '</a></strong>' . esc_html__( ' option to get started.', 'post-smtp' ) . '</p>';
+		}else{
+			echo '<p class="description">' . esc_html__( 
+				'Selected connection will be used as the primary option for all your email deliveries.', 
+				'post-smtp' 
+			) . '</p>';
+		}
+	}
+
+
+	/**
+	 * Callback for the Add New Connection button.
+	 */
+	public function add_new_connection_callback() {
+		$connections = get_option( 'postman_connections', array() ); // Retrieve saved connections.
+		$wizard_uri = admin_url( "admin.php?page=postman/configuration_wizard" );
+		$primary_connection = $this->options->getSelectedPrimary();
+		$primary_fallback = $this->options->getSelectedFallback();	
+		// Check if connections exist
+		if ( !empty( $connections ) ) {
+			// Start outputting the div for existing connections
+			echo '<div style="background-color: white; padding: 20px; border-radius: 5px; margin-top: 20px;">';
+			echo '<h2>' . esc_html__( 'All Connections', 'post-smtp' ) . '</h2>';
+	
+			// Start the table
+			echo '<table class="widefat striped">';
+			echo '<thead>';
+			echo '</thead>';
+			echo '<tbody>';
+	
+			// Loop through the connections to populate the table
+			foreach ( $connections as $key => $connection ) {
+				$sender_email = esc_html( $connection['sender_email'] ?? '' ); // Use email from connection or an empty string
+				$provider_title = ucfirst(
+					str_replace(
+						'_', 
+						' ', 
+						__( str_replace('api', 'API', $connection['provider']), 'post-smtp' )
+					)
+				);
+				$status = ( $key == $primary_connection ) ? 'Primary' : ( ( $key == $primary_fallback ) ? 'Fallback' : 'None' );	
+			
+				echo '<tr>';
+				echo '<td>';
+				echo '<strong>' . esc_html( $provider_title ) . '</strong><br>'; // Bold main text
+				echo '<small>' . esc_html__( 'Selected as:', 'post-smtp' ) . ' ' . esc_html( $status ) . '</small>';
+				echo '</td>';
+				echo '<td>' . $sender_email . '</td>';
+				echo '<td>
+					<a href="' . esc_url( $wizard_uri ) . '&id=' . esc_attr( $key ) . '" class="button postman-add-connection-btn" id="add_new_connection">
+						<img src="' . esc_url( plugin_dir_url( dirname( __FILE__, 2 ) ) . 'Postman/Dashboard/assets/new.svg' ) . '" 
+							alt="' . esc_attr__( 'Edit With Wizard', 'post-smtp' ) . '" 
+							style="vertical-align: middle; margin-right: 5px;" /> 
+						' . esc_html__( 'Edit With Wizard', 'post-smtp' ) . '
+					</a>
+				</td>';
+				echo '</tr>';
+			}
+			echo '</tbody>';
+			echo '</table>';
+			?>
+			<div style="padding-top: 20px;"> 
+				<a href="<?php echo esc_url( $wizard_uri); ?>" class="button postman-add-connection-btn" id="add_new_connection">
+					<img src="<?php echo esc_url( plugin_dir_url( dirname( __FILE__, 2 ) ) . 'Postman/Dashboard/assets/new.svg' ); ?>" 
+						alt="<?php esc_attr_e( 'New', 'post-smtp' ); ?>" />
+					<?php esc_html_e( 'Add New Connection', 'post-smtp' ); ?>
+				</a>
+			</div>
+			<?php
+			echo '</div>'; 
+		}
+	}
+	
     /**
      * Get the settings option array and print one of its values
      */

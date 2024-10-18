@@ -365,8 +365,8 @@ jQuery(document).ready(function($) {
 	}
 
 	// Trigger the function on dropdown change.
-	$('#fallback-selected').on('change', showProviderFields);
+//	$('#fallback-selected').on('change', showProviderFields);
 
 	// Call the function on page load to show the initially selected provider fields.
-	showProviderFields();
+//	showProviderFields();
 });

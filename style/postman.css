@@ -1651,6 +1651,9 @@ div#ps-email-log_length{
     padding-top: 10px;
 }
 
+#connections_config .section_hide{
+    display: none !important;
+}
 /* .settings-hide .setting-form, .settings-hide .authentication_setting {
     display:none !important;
 } */

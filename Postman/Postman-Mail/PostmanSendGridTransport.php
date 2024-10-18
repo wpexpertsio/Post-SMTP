@@ -99,17 +99,20 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 	 * @see PostmanTransport::getMisconfigurationMessage()
 	 */
 	protected function validateTransportConfiguration() {
-		$messages = parent::validateTransportConfiguration ();
-		$apiKey = $this->options->getSendGridApiKey ();
-		if (empty ( $apiKey )) {
-			array_push ( $messages, __ ( 'API Key can not be empty', 'post-smtp' ) . '.' );
-			$this->setNotConfiguredAndReady ();
+		$postman_db_version = get_option( 'postman_db_version' );
+		if( $postman_db_version != POST_SMTP_DB_VERSION ){
+			$messages = parent::validateTransportConfiguration ();
+			$apiKey = $this->options->getSendGridApiKey ();
+			if (empty ( $apiKey )) {
+				array_push ( $messages, __ ( 'API Key can not be empty', 'post-smtp' ) . '.' );
+				$this->setNotConfiguredAndReady ();
+			}
+			if (! $this->isSenderConfigured ()) {
+				array_push ( $messages, __ ( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
+				$this->setNotConfiguredAndReady ();
+			}
+			return $messages;
 		}
-		if (! $this->isSenderConfigured ()) {
-			array_push ( $messages, __ ( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
-			$this->setNotConfiguredAndReady ();
-		}
-		return $messages;
 	}
 	
 	/**

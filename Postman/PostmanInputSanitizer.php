@@ -20,7 +20,6 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 		 *        	Contains all settings fields as array keys
 		 */
 		public function sanitize( $input ) {
-
 			$postman_db_version = get_option( 'postman_db_version' );
 			// if( $postman_db_version != POST_SMTP_DB_VERSION ){
 				if ( array_key_exists( 'external_option', $input ) ) {
@@ -90,6 +89,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 				$this->sanitizeInt( 'Transcript Size', PostmanOptions::TRANSCRIPT_SIZE, $input, $new_input );
 				$this->sanitizeString( 'Temporary Directory', PostmanOptions::TEMPORARY_DIRECTORY, $input, $new_input );
 				$this->sanitizeString( 'Selected Fallback', PostmanOptions::FALLBACK_SELECTED, $input, $new_input );
+				$this->sanitizeString( 'Primary Connection', PostmanOptions::PRIMARY_CONNECTION, $input, $new_input );
 
 				// Fallback
 				$this->sanitizeString( 'Use fallback', PostmanOptions::FALLBACK_SMTP_ENABLED, $input, $new_input );
@@ -129,7 +129,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 
 		//	}else{
 			if( $postman_db_version == POST_SMTP_DB_VERSION ){
-				update_option( 'postman_connections', $_REQUEST['postman_connections'] );
+			//	update_option( 'postman_connections', $_REQUEST['postman_connections'] );
 			}
 		//		return true;
 		//	}

@@ -145,17 +145,20 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 	 * @see PostmanAbstractModuleTransport::validateTransportConfiguration()
 	 */
 	protected function validateTransportConfiguration() {
-		$messages = parent::validateTransportConfiguration ();
-		$apiKey = $this->options->getMandrillApiKey ();
-		if (empty ( $apiKey )) {
-			array_push ( $messages, __ ( 'API Key can not be empty', 'post-smtp' ) . '.' );
-			$this->setNotConfiguredAndReady ();
+		$postman_db_version = get_option( 'postman_db_version' );
+		if( $postman_db_version != POST_SMTP_DB_VERSION ){
+			$messages = parent::validateTransportConfiguration ();
+			$apiKey = $this->options->getMandrillApiKey ();
+			if (empty ( $apiKey )) {
+				array_push ( $messages, __ ( 'API Key can not be empty', 'post-smtp' ) . '.' );
+				$this->setNotConfiguredAndReady ();
+			}
+			if (! $this->isSenderConfigured ()) {
+				array_push ( $messages, __ ( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
+				$this->setNotConfiguredAndReady ();
+			}
+			return $messages;
 		}
-		if (! $this->isSenderConfigured ()) {
-			array_push ( $messages, __ ( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
-			$this->setNotConfiguredAndReady ();
-		}
-		return $messages;
 	}
 	
 	/**

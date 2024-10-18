@@ -129,7 +129,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
         const FALLBACK_SMTP_USERNAME = 'fallback_smtp_username';
         const FALLBACK_SMTP_PASSWORD = 'fallback_smtp_password';
 		const FALLBACK_SELECTED      = 'selected_fallback';
-		const POSTMAN_Primary_C      = 'primary_connection';
+		const PRIMARY_CONNECTION     = 'primary_connection';
 
 		// defaults
 		const DEFAULT_TRANSCRIPT_SIZE = 128;
@@ -470,8 +470,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
         }
 
 		public function getSelectedPrimary() {
-            if ( isset( $this->options [ PostmanOptions::POSTMAN_Primary_C ] ) ) {
-                return $this->options [ PostmanOptions::POSTMAN_Primary_C ];
+            if ( isset( $this->options [ PostmanOptions::PRIMARY_CONNECTION ] ) ) {
+                return $this->options [ PostmanOptions::PRIMARY_CONNECTION ];
             }
         }
 

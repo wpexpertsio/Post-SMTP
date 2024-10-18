@@ -253,7 +253,8 @@ class PostmanConfigurationController {
         ) );
 		$wizard_uri = admin_url( "admin.php?page=postman/configuration_wizard" );
 		// Check if the database version matches the defined constant.
-		$settings_class = ($postman_db_version == POST_SMTP_DB_VERSION) ? 'settings-hide' : '';
+		$settings_class = ( $postman_db_version == POST_SMTP_DB_VERSION ) ? 'settings-hide' : '';
+		$section_hide = ( $postman_db_version == POST_SMTP_DB_VERSION ) ? 'style=display:none' : '';
 		$selected_fallback_id = $this->options->getSelectedFallback();
 		$wizard_uri_with_id = add_query_arg( 'id', $selected_fallback_id, $wizard_uri ); // Append the ID to the URL
 
@@ -274,7 +275,7 @@ class PostmanConfigurationController {
 
 		// connections_config
 		print '<section id="connections_config" class="' . esc_attr( $settings_class ) . '">';
-		print '<div class="setting-form">';
+		print '<div class="setting-form" ' . esc_attr( $section_hide ) . ' >';
 		if ( sizeof( PostmanTransportRegistry::getInstance()->getTransports() ) > 1 ) {
 			do_settings_sections( 'transport_options' );
 		} 
@@ -288,13 +289,12 @@ class PostmanConfigurationController {
 		}
 		print '</div>';
 		if( $postman_db_version == POST_SMTP_DB_VERSION ){
-			$mail_connections = get_option( 'postman_connections', array() );
-	        // $this->render_connections_dropdown( $provider_fields, $provider_fields );
-				 $this->render_authentication_settings();
+			print '<div class="setting-form">';
+			do_settings_sections( 'manage_connections' );
+			print '</div>';
 		}else{
 			$this->render_authentication_settings();
 		}
-
 		do_action( 'post_smtp_settings_sections' );
 
 		print '</section>';
@@ -305,8 +305,8 @@ class PostmanConfigurationController {
         <!-- Fallback Start -->
         <section id="fallback">
 		<?php if( $postman_db_version == POST_SMTP_DB_VERSION ){ ?>
-			<a href="<?php echo esc_url( $wizard_uri ); ?>" class="button button-primary">Add Fallback</a>
-			<a href="<?php echo esc_url( $wizard_uri_with_id ); ?>"  id="editFallbackLink" class="button button-primary">Edit Fallback</a>
+			<a style="display:none" href="<?php echo esc_url( $wizard_uri ); ?>" class="button button-primary">Add Fallback</a>
+			<a style="display:none" href="<?php echo esc_url( $wizard_uri_with_id ); ?>"  id="editFallbackLink" class="button button-primary">Edit Fallback</a>
 		<?php } ?>
 		    <h2><?php esc_html_e( 'Failed emails fallback', 'post-smtp' ); ?></h2>
             <p><?php esc_html_e( 'By enable this option, if your email is fail to send Post SMTP will try to use the SMTP service you define here.', 'post-smtp' ); ?></p>
@@ -332,16 +332,29 @@ class PostmanConfigurationController {
 		<?php if( $postman_db_version == POST_SMTP_DB_VERSION ){ 
 			$provider_fields = $this->get_provider_fields();
 			$mail_connections = get_option( 'postman_connections', array() );
+			$primary_connection = $this->options->getSelectedPrimary();
 			// Filter out only those connections where the provider matches the provider_fields.
 			if ( isset( $mail_connections ) && is_array( $mail_connections ) ) {
 				$filtered_mail_connections = array_filter( $mail_connections, function( $connection ) use ( $provider_fields ) {
 					return isset( $connection['provider']) && 
 						!empty( $connection['provider'] ) && 
 						array_key_exists( $connection['provider'], $provider_fields );
-				});
+				} );
 			} else {
 				$filtered_mail_connections = [];
 			}
+
+			$filtered_mail_connections = array_filter( $mail_connections, function ( $connection) use ( $provider_fields ) {
+				return isset( $connection['provider'] ) && 
+					   !empty( $connection['provider'] ) && 
+					   array_key_exists( $connection['provider'], $provider_fields );
+			});
+			
+			// Unset the primary connection from the filtered connections
+			if (isset( $filtered_mail_connections[$primary_connection] ) ) {
+				unset( $filtered_mail_connections[$primary_connection] );
+			}
+			
 			$this->render_fallback_connections_dropdown( $filtered_mail_connections, $provider_fields );
 		}else{  ?>
                 <tr>
@@ -631,7 +644,6 @@ class PostmanConfigurationController {
 	 * such as SMTP, API-based authentication (SendGrid, Mandrill, etc.), OAuth2, and basic authentication.
 	 */
 	public function render_authentication_settings() {
-		
 		// Render the SMTP configuration section.
 		print '<div id="smtp_config" class="transport_setting">';
 		// Call the settings for SMTP transport from PostmanAdminController.

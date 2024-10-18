@@ -316,17 +316,20 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
      * @version 1.0
 	 */
 	protected function validateTransportConfiguration() {
-		$messages = parent::validateTransportConfiguration ();
-		$apiKey = $this->options->getMailjetApiKey ();
-		if (empty ( $apiKey )) {
-			array_push ( $messages, __ ( 'API Key can not be empty', 'post-smtp' ) . '.' );
-			$this->setNotConfiguredAndReady ();
-		}
-		if (! $this->isSenderConfigured ()) {
-			array_push ( $messages, __ ( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
-			$this->setNotConfiguredAndReady ();
-		}
-		return $messages;
+        $postman_db_version = get_option( 'postman_db_version' );
+		if( $postman_db_version != POST_SMTP_DB_VERSION ){
+            $messages = parent::validateTransportConfiguration ();
+            $apiKey = $this->options->getMailjetApiKey ();
+            if (empty ( $apiKey )) {
+                array_push ( $messages, __ ( 'API Key can not be empty', 'post-smtp' ) . '.' );
+                $this->setNotConfiguredAndReady ();
+            }
+            if (! $this->isSenderConfigured ()) {
+                array_push ( $messages, __ ( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
+                $this->setNotConfiguredAndReady ();
+            }
+            return $messages;
+        }
 	}
 
     /**

@@ -370,14 +370,16 @@ class Postman {
 				// if the configuration is broken, and the user has started to configure the plugin
 				// show this error message
 				$messages = $transport->getConfigurationMessages();
-				foreach ( $messages as $message ) {
-					if ( $message ) {
-						// log the warning message
-						$this->logger->warn( sprintf( '%s Transport has a configuration problem: %s', $transport->getName(), $message ) );
+				if ( is_array( $messages ) && ! empty( $messages ) ) {
+					foreach ( $messages as $message ) {
+						if ( $message ) {
+							// log the warning message
+							$this->logger->warn( sprintf( '%s Transport has a configuration problem: %s', $transport->getName(), $message ) );
 
-						if ( PostmanUtils::isAdmin() && PostmanUtils::isCurrentPagePostmanAdmin() ) {
-							// on pages that are Postman admin pages only, show this error message
-							$this->messageHandler->addError( $message );
+							if ( PostmanUtils::isAdmin() && PostmanUtils::isCurrentPagePostmanAdmin() ) {
+								// on pages that are Postman admin pages only, show this error message
+								$this->messageHandler->addError( $message );
+							}
 						}
 					}
 				}
