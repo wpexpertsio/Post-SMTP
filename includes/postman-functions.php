@@ -228,3 +228,24 @@ function post_smtp_has_pro(){
 
 } 
 endif; 
+
+/**
+ * Check if the BFCM is active.
+ * 
+ * @since 2.9.10
+ */
+if( ! function_exists( 'is_bfcm' ) ):
+function is_bfcm() {
+
+    if( ! class_exists( 'Postman_Promotion_Manager' ) ) {
+
+        require_once POST_SMTP_PATH . '/Postman/Postman-Suggest-Pro/PostmanPromotionManager.php';
+
+    }
+
+    $promotion = Postman_Promotion_Manager::get_instance()->is_promotion_active( 'bfcm-2024' );
+
+    return $promotion;
+
+}
+endif;

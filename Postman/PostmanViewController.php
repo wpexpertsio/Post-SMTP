@@ -206,6 +206,16 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				esc_html__( 'Post SMTP Setup', 'post-smtp' )
 			);
 
+			if( is_bfcm() ) {
+
+				?>
+				<a href="http://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=dashboard&utm_campaign=bfcm2024" target="_blank">
+					<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/bfcm-2024/dashboard.png' ) ?>" style="width: 100%; margin-bottom: 15px;" />
+				</a>
+				<?php
+
+			}
+
 			//Top Notification message
 			if( !PostmanPreRequisitesCheck::isReady() ) {
 

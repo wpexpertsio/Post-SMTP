@@ -1,6 +1,17 @@
 <div class="wrap">
     <h1>Post SMTP Email Logs</h1>
     <?php 
+
+    if( is_bfcm() ) {
+
+        ?>
+        <a href="http://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=email_logs&utm_campaign=bfcm2024" target="_blank">
+            <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/bfcm-2024/dashboard.png' ) ?>" style="width: 100%; margin-bottom: 15px;" />
+        </a>
+        <?php
+
+    }
+
     /**
      * Fires before the logs table.
      * 
