@@ -351,6 +351,11 @@ class Post_SMTP_New_Wizard {
                                       <input type="hidden" name="refresh_token" value="<?php echo esc_attr(  $_GET['refresh_token'] ); ?>" >
                                       <input type="hidden" name="token_expires" value="<?php echo esc_attr(  $_GET['expires_in'] ); ?>" >
                                     <?php } ?>
+                                    <?php if( isset( $_GET['o_access_token'] ) || isset( $_GET['o_refresh_token'] ) ){ ?>
+                                      <input type="hidden" name="access_token" value="<?php echo esc_attr(  $_GET['o_access_token'] ); ?>" >
+                                      <input type="hidden" name="refresh_token" value="<?php echo esc_attr(  $_GET['o_refresh_token'] ); ?>" >
+                                      <input type="hidden" name="token_expires" value="<?php echo esc_attr(  $_GET['o_expires_in'] ); ?>" >
+                                    <?php } ?>
                                         <a href="" data-step="1" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span>Back</a>
                                         <?php
                                         if( !empty( $this->sockets ) ) {
@@ -1471,8 +1476,21 @@ class Post_SMTP_New_Wizard {
     public function render_office365_settings() {
 
         $options = get_option( PostmanOptions::POSTMAN_OPTIONS );
-        $app_client_id = isset( $options['office365_app_id'] ) ? base64_decode( $options['office365_app_id'] ) : '';
-        $app_client_secret = isset( $options['office365_app_password'] ) ? base64_decode( $options['office365_app_password'] ) : '';
+        if( $this->existing_db_version != POST_SMTP_DB_VERSION ){
+            $app_client_id = isset( $options['office365_app_id'] ) ? base64_decode( $options['office365_app_id'] ) : '';
+            $app_client_secret = isset( $options['office365_app_password'] ) ? base64_decode( $options['office365_app_password'] ) : '';    
+        }else{
+            $id = $_GET['id'] ?? null;
+            $mail_connections = get_option( 'postman_connections' );
+            if ( isset( $_GET['id'] ) ) {
+                $app_client_id = $mail_connections[$id]['office365_app_id'];
+                $app_client_secret = $mail_connections[$id]['office365_app_password'];
+            }else{
+                $office_auth = get_option( 'postman_office365_oauth' );
+                $app_client_id = $office_auth['OAUTH_CLIENT_ID'];
+                $app_client_secret = $office_auth['OAUTH_CLIENT_SECRET'];
+            }
+        }
         $redirect_uri = admin_url();
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
@@ -1781,21 +1799,21 @@ class Post_SMTP_New_Wizard {
                     $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
                     // Initialize the connections array.
                     $mail_connections = get_option( 'postman_connections' );
-
                     // Ensure $mail_connections is an array
                     if ( !is_array( $mail_connections ) ) {
                         $mail_connections = array();
                     }
-
                     // Get the transport type and corresponding API keys.
                     $transport_type = $sanitized['transport_type'] ?? '';
                     $api_keys = $this->get_transport_type_keys( $transport_type );
 
-                    $new_connection = array(
-                        'provider'     => $sanitized['transport_type'] ?? '',
-                        'sender_email' => $sanitized['sender_email'] ?? '',
-                        'sender_name'  => $sanitized['sender_name'] ?? '',
-                    );
+                    if( !empty( $api_keys ) ){
+                        $new_connection = array(
+                            'provider'     => $sanitized['transport_type'] ?? '',
+                            'sender_email' => $sanitized['sender_email'] ?? '',
+                            'sender_name'  => $sanitized['sender_name'] ?? '',
+                        );
+                    }
 
                     // Loop through the API keys and set the values from sanitized data.
                     foreach ( $api_keys as $key ) {
@@ -1803,12 +1821,16 @@ class Post_SMTP_New_Wizard {
                             $new_connection[$key] = sanitize_text_field( $sanitized[$key] );
                         }
                     }
-
                         // Special handling for Zoho Mail fields.
                     if ( 'zohomail_api' === $transport_type && isset( $form_data[ 'access_token' ] ) ) {
                         // Extract from sanitized data for these fields.
                         $new_connection['zohomail_client_id'] = $sanitized['zohomail_client_id'] ?? '';
                         $new_connection['zohomail_client_secret'] = $sanitized['zohomail_client_secret'] ?? '';
+                        $new_connection = array(
+                            'provider'     => $sanitized['transport_type'] ?? '',
+                            'sender_email' => $sanitized['sender_email'] ?? '',
+                            'sender_name'  => $sanitized['sender_name'] ?? '',
+                        );
 
                         // Extract other Zoho values from $form_data.
                         $zoho_fields = ['access_token', 'refresh_token', 'token_expires'];
@@ -1819,16 +1841,31 @@ class Post_SMTP_New_Wizard {
                             }
                         }
                     }
+                    if ( 'office365_api' === $transport_type && isset( $form_data[ 'access_token' ] ) ) {
+                        // Extract from sanitized data for these fields.
+                        $new_connection = array(
+                            'provider'     => $sanitized['transport_type'] ?? '',
+                            'sender_email' => $sanitized['sender_email'] ?? '',
+                            'sender_name'  => $sanitized['sender_name'] ?? '',
+                            'access_token' => $form_data[ 'access_token' ],
+                            'refresh_token' => $form_data[ 'refresh_token' ],
+                            'token_expires' => $form_data[ 'token_expires' ],
+                            'office365_app_id' => $sanitized[ 'office365_app_id' ],
+                            'office365_app_password' => $sanitized[ 'office365_app_password' ],
+                        );
+                    }
                     // Check if 'id' is set in the URL and update the specific connection.
                     if ( isset( $form_data['postman_fallback_edit'] ) ) {
                         $id = $form_data['postman_fallback_edit'];
                         // Update the existing connection at the specified index.
                         $mail_connections[$id] = array_merge( $mail_connections[$id], $new_connection );
                     } else {
-                        // Add a new connection if 'id' is not provided or doesn't exist in the array.
-                        $mail_connections[] = $new_connection;
-                        $id = array_key_last( $mail_connections );
+                        if ( !empty( $new_connection ) ) {
+                            $mail_connections[] = $new_connection;
+                            $id = array_key_last($mail_connections);
+                        }
                     }
+
                     // Save the new mail connections to the 'postman_connections' option.
                     $response =  update_option( 'postman_connections', $mail_connections );
 
@@ -1930,6 +1967,7 @@ class Post_SMTP_New_Wizard {
                 'basic_auth_username', 
                 'basic_auth_password', 
             ),
+            'aws_ses_api'  => array( 'ses_access_key_id', 'ses_secret_access_key', 'ses_region' ),
         );
 
         /**

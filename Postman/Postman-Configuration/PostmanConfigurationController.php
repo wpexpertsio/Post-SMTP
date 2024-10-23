@@ -835,6 +835,9 @@ class PostmanConfigurationController {
                 'basic_auth_username',
                 'basic_auth_password',
             ),
+			'aws_ses_api' => array(
+                'provider' => 'aws_ses_api',
+            ),
         );
 
         return $provider_fields;

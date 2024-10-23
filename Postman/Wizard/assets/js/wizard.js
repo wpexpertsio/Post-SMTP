@@ -388,6 +388,8 @@ jQuery( document ).ready(function() {
         var office365_app_password = jQuery( '.ps-office365-client-secret' ).val();
         var _button = jQuery( this ).html();
 
+        // Append or set clientID and clientSecret as query parameters
+
         if( office365_app_id == '' ) {
 
             jQuery( '.ps-office365-client-id' ).focus();
@@ -403,8 +405,9 @@ jQuery( document ).ready(function() {
 
         jQuery( this ).html( 'Redirecting...' );
 
-        var authURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?state=${PostSMTPWizard.office365State}&scope=openid profile offline_access Mail.Send Mail.Send.Shared&response_type=code&approval_prompt=auto&redirect_uri=${PostSMTPWizard.adminURL}&client_id=${office365_app_id}`;
-        
+         var authURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?state=${PostSMTPWizard.office365State}&scope=openid profile offline_access Mail.Send Mail.Send.Shared&response_type=code&approval_prompt=auto&redirect_uri=${PostSMTPWizard.adminURL}&client_id=${office365_app_id}`;
+
+
         jQuery.ajax( {
 
             url: ajaxurl,

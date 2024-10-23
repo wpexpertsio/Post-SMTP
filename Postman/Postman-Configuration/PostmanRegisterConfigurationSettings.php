@@ -364,7 +364,7 @@ class PostmanSettingsRegistry {
 		// Check if connections exist
 		if ( !empty( $connections ) ) {
 			// Start outputting the div for existing connections
-			echo '<div style="background-color: white; padding: 20px; border-radius: 5px; margin-top: 20px;">';
+			echo '<div style="background-color: white; padding: 20px; border-radius: 5px; margin-top: 20px;position: relative;left: -220px;">';
 			echo '<h2>' . esc_html__( 'All Connections', 'post-smtp' ) . '</h2>';
 	
 			// Start the table
