@@ -556,7 +556,7 @@ class Post_SMTP_New_Wizard {
         }
 
         wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), POST_SMTP_VER );
-        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), POST_SMTP_VER );
+        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), '3.0.11' );
         wp_localize_script( 'post-smtp-wizard', 'PostSMTPWizard', $localized );
 
     }
@@ -1420,6 +1420,13 @@ class Post_SMTP_New_Wizard {
         $access_key_id = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ] ) ? base64_decode( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ] ) : '';
         $access_key_secret = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ] ) ? base64_decode( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ] ) : '';
         $region = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] ) ? $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] : '';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        if ( isset( $_GET['id'] ) ) {
+            $access_key_id = $mail_connections[$id][ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ];
+            $access_key_secret = $mail_connections[$id][ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ];
+            $region = $mail_connections[$id][ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ];
+        }
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">Amazon Simple Email Service (Amazon SES)</a> %2$s</p><p>%3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a>',
