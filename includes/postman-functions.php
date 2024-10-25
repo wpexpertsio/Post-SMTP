@@ -234,12 +234,12 @@ endif;
  * 
  * @since 2.9.10
  */
-if( ! function_exists( 'is_bfcm' ) ):
-function is_bfcm() {
+if( ! function_exists( 'postman_is_bfcm' ) ):
+function postman_is_bfcm() {
 
-    if( ! class_exists( 'Postman_Promotion_Manager' ) ) {
+    if( get_transient( 'ps-skip-bfcm' ) || post_smtp_has_pro() ) {
 
-        require_once POST_SMTP_PATH . '/Postman/Postman-Suggest-Pro/PostmanPromotionManager.php';
+        return false;
 
     }
 

@@ -2,16 +2,6 @@
     <h1>Post SMTP Email Logs</h1>
     <?php 
 
-    if( is_bfcm() ) {
-
-        ?>
-        <a href="http://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=email_logs&utm_campaign=bfcm2024" target="_blank">
-            <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/bfcm-2024/dashboard.png' ) ?>" style="width: 100%; margin-bottom: 15px;" />
-        </a>
-        <?php
-
-    }
-
     /**
      * Fires before the logs table.
      * 
@@ -50,6 +40,18 @@
         <div class="ps-popup-box">
             <a class="ps-popup-close-btn ps-popup-close" href="#"><span class="dashicons dashicons-no-alt"></span></a>
             <div class="ps-popup-container"></div>
+            <?php
+            if( postman_is_bfcm() ) {
+
+            ?>
+            <a href="https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024" target="_blank">
+                <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/bfcm-2024/dashboard.png' ) ?>" style="width: 100%;" />
+            </a>
+            <a href="<?php echo admin_url( 'admin.php?action=ps-skip-bfcm' ); ?>" style="font-size: 10px;">Not interested, Hide for now.</a>
+            <?php
+
+            }
+            ?>
         </div>
     </div>
 </div>

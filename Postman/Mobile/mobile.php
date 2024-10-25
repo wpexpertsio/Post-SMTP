@@ -85,11 +85,29 @@ class Post_SMTP_Mobile {
      * @version 1.0.0
      */
     public function add_menu() {
+
+        if( postman_is_bfcm() ) {
+
+            $menu_text = sprintf( 
+            '%s<span class="dashicons dashicons-smartphone">', 
+        __( 'Mobile App', 'post-smtp' )
+            );
+
+        }
+        else {
+
+            $menu_text = sprintf( 
+            '%s<span class="dashicons dashicons-smartphone"></span><span class="menu-counter">%s</span>', 
+        __( 'Mobile App', 'post-smtp' ), 
+                __( 'New', 'post-smtp' ) 
+            );
+
+        }
         
         add_submenu_page( 
             PostmanViewController::POSTMAN_MENU_SLUG, 
             __( 'Mobile Application', 'post-smtp' ), 
-            sprintf( '%s<span class="dashicons dashicons-smartphone"></span><span class="menu-counter">%s</span>', __( 'Mobile App', 'post-smtp' ), __( 'New', 'post-smtp' ) ),
+            $menu_text,
             'manage_options', 
             admin_url( 'admin.php?page=postman/configuration#mobile-app' ),
             '',

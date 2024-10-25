@@ -206,16 +206,6 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				esc_html__( 'Post SMTP Setup', 'post-smtp' )
 			);
 
-			if( is_bfcm() ) {
-
-				?>
-				<a href="http://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=dashboard&utm_campaign=bfcm2024" target="_blank">
-					<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/bfcm-2024/dashboard.png' ) ?>" style="width: 100%; margin-bottom: 15px;" />
-				</a>
-				<?php
-
-			}
-
 			//Top Notification message
 			if( !PostmanPreRequisitesCheck::isReady() ) {
 
@@ -380,6 +370,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 								<img src="'.esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ).'" width="15" />
 								%2$s
 							</a>';
+							$tab_heading = postman_is_bfcm() ? __( 'Get More with Pro [24%OFF]', 'post-smtp' ) : __( 'Get More with Pro', 'post-smtp' );
 
 							$importTitle = __( 'Import', 'post-smtp' );
 							$exportTile = __( 'Export', 'post-smtp' );
@@ -403,40 +394,66 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 								
 								$badgesDisplay = "ps-dashboard-pro-hide";
 							}
+
+							if( postman_is_bfcm() ) {
+
+								echo '
+								<div>
+									<a href="'. admin_url( 'admin.php?action=ps-skip-bfcm' ).'">
+										<img src="'.esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ).'" width="15" />
+										'.esc_html__( 'Remove Pro discount tags, I\'m OK with the free version.', 'post-smtp' ).
+									'</a>
+								</div>';
+
+							}
 						?>
 					</div>
 				</div>
 				<div class="ps-setting-box">
 					<div>
 						<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/extentions.png' ) ?>" />
-						<h3 class="ps-ib ps-vm"><?php esc_html_e( 'Extensions', 'post-smtp' ); ?></h3>
+						<h3 class="ps-ib ps-vm"><?php echo $tab_heading; ?></h3>
 					</div> 
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" /><?php echo esc_html__( 'Microsoft 365/ Office 365', 'post-smtp' ); ?></a>
+						<a href="<?php echo postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : esc_url( 'https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank">
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" /><?php echo esc_html__( 'Microsoft 365 / Office 365', 'post-smtp' ); ?>
+						</a>
 						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Amazon SES', 'post-smtp' ); ?></a>
+						<a href="<?php echo postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' :  esc_url( 'https://postmansmtp.com/extensions/reporting-and-tracking-extension/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank">
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Email Report & Tracking', 'post-smtp' ); ?>
+						</a>
 						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/email-log-attachment/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Email Log attachment support', 'post-smtp' ); ?></a>
+						<a href="<?php echo postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : esc_url( 'https://postmansmtp.com/extensions/advanced-email-delivery/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank">
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Auto Resend Failed Emails', 'post-smtp' ); ?>
+						</a>
 						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/reporting-and-tracking-extension/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Report & Tracking', 'post-smtp' ); ?></a>
+						<a href="<?php echo postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : esc_url( 'https://postmansmtp.com/extensions/email-log-attachment/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank">
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Email Log Attachment', 'post-smtp' ); ?>
+						</a>
 						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/advanced-email-delivery/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Advanced Email Delivery & Logs', 'post-smtp' ); ?></a>
+						<a href="<?php echo postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : esc_url( 'https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank">
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Amazon SES', 'post-smtp' ); ?>
+						</a>
 						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/twilio-extension-pro/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Twilio', 'post-smtp' ); ?></a>
+						<a href="<?php echo postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : esc_url( 'https://postmansmtp.com/extensions/twilio-extension-pro/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank">
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'SMS Notification', 'post-smtp' ); ?>
+						</a>
 						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 					<div>
-						<a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/zoho-mail-pro-extension/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Zoho Mail', 'post-smtp' ); ?></a>
+						<a href="<?php echo postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : esc_url( 'https://postmansmtp.com/extensions/zoho-mail-pro-extension/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank">
+							<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Zoho Mail', 'post-smtp' ); ?>
+						</a>
 						<span class="<?php echo $badgesDisplay; ?>">Pro</span>
 					</div>
 				</div>
