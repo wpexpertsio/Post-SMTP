@@ -171,6 +171,12 @@ function postman_delete_log_meta( $log_id, $meta_key, $meta_value = '' ) {
 }
 endif;
 
+/**
+ * Sanitizes an array of values.
+ * 
+ * @since 2.7.0
+ * @version 1.0.0
+ */
 if( !function_exists( 'post_smtp_sanitize_array' ) ):
 function post_smtp_sanitize_array( $_array ) {
 
@@ -188,37 +194,58 @@ function post_smtp_sanitize_array( $_array ) {
 endif;
 
 /**
-     * Check pro extenstions is activated or not
-     * 
-     * @since 2.8.6
-     * @version 1.0
-     */
+ * Check pro extenstions is activated or not
+ * 
+ * @since 2.8.6
+ * @version 1.0
+ */
 
 if( !function_exists( 'post_smtp_has_pro' )):
 function post_smtp_has_pro(){
         
-        if( is_plugin_active( 'zoho-premium/postsmtp-extension-zoho-mail.php' ) 
-            ||
-            is_plugin_active( 'twilio-notifications-postsmtp-extension-premium/plugin.php' ) 
-            ||
-            is_plugin_active( 'post-smtp-extension-amazon-ses-premium/plugin.php' ) 
-            ||
-            is_plugin_active( 'report-and-tracking-addon-premium/post-smtp-report-and-tracking.php' ) 
-            ||
-            is_plugin_active( 'post-smtp-extension-office365-premium/plugin.php' ) 
-            ||
-            is_plugin_active( 'attachment-support-premium/post-smtp-attachment-support.php' ) 
-            ||
-            is_plugin_active( 'advance-email-delivery-and-logs-premium/post-smtp-advanced-email-delivery-and-logs.php' )
-            ||
-            is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' )
-        ){
-            return true;
-        }
-        else{
+    if( is_plugin_active( 'zoho-premium/postsmtp-extension-zoho-mail.php' ) 
+        ||
+        is_plugin_active( 'twilio-notifications-postsmtp-extension-premium/plugin.php' ) 
+        ||
+        is_plugin_active( 'post-smtp-extension-amazon-ses-premium/plugin.php' ) 
+        ||
+        is_plugin_active( 'report-and-tracking-addon-premium/post-smtp-report-and-tracking.php' ) 
+        ||
+        is_plugin_active( 'post-smtp-extension-office365-premium/plugin.php' ) 
+        ||
+        is_plugin_active( 'attachment-support-premium/post-smtp-attachment-support.php' ) 
+        ||
+        is_plugin_active( 'advance-email-delivery-and-logs-premium/post-smtp-advanced-email-delivery-and-logs.php' )
+        ||
+        is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' )
+    ){
+        return true;
+    }
+    else{
 
-            return false;
-        }
+        return false;
+    }
 
-    } 
+} 
 endif; 
+
+/**
+ * Check if the BFCM is active.
+ * 
+ * @since 2.9.10
+ */
+if( ! function_exists( 'postman_is_bfcm' ) ):
+function postman_is_bfcm() {
+
+    if( get_transient( 'ps-skip-bfcm' ) || post_smtp_has_pro() ) {
+
+        return false;
+
+    }
+
+    $promotion = Postman_Promotion_Manager::get_instance()->is_promotion_active( 'bfcm-2024' );
+
+    return $promotion;
+
+}
+endif;

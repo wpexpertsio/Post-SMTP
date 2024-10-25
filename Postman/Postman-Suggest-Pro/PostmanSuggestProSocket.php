@@ -216,7 +216,9 @@ class PostmanSuggestProSocket {
         
         if ( isset( $_GET['page'] ) && 'postman-pricing' === $_GET['page'] ) {
 
-            wp_redirect( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu&utm_campaign=plugin' );
+            $redirect_url = postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu&utm_campaign=plugin';
+
+            wp_redirect( $redirect_url );
             exit;
 
         }
@@ -230,13 +232,30 @@ class PostmanSuggestProSocket {
      * @version 1.0.0
      */
     public function add_menu() {
+
+        if( postman_is_bfcm() ) {
+
+            $menu_text = sprintf( 
+                '<span class="dashicons dashicons-superhero ps-pro-icon"></span>%1$s<span class="menu-counter"><b>%2$s</b></span>', 
+                __( 'Extensions', 'post-smtp' ),
+                '24%OFF'
+            );
+
+        }
+        else {
+
+            $menu_text = sprintf( '<span class="dashicons dashicons-superhero ps-pro-icon"></span> %1$s', __( 'Extensions', 'post-smtp' ) );
+
+        }
+
+        $redirect_url = postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu&utm_campaign=plugin';
         
         add_submenu_page( 
             PostmanViewController::POSTMAN_MENU_SLUG, 
-            __( 'Get Pro Bundle', 'post-smtp' ), 
-            sprintf( '<span class="dashicons dashicons-superhero-alt ps-pro-icon"></span> %1$s <b>%2$s</b>', __( 'Get', 'post-smtp' ), __( 'Pro Bundle', 'post-smtp' ) ),
+            __( 'Extensions', 'post-smtp' ), 
+            $menu_text,
             'manage_options', 
-            esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu&utm_campaign=plugin' ),
+            esc_url( $redirect_url ),
             '',
             99
         );

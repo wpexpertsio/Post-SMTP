@@ -372,6 +372,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 								<img src="'.esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ).'" width="15" />
 								%2$s
 							</a>';
+							$tab_heading = postman_is_bfcm() ? __( 'Get More with Pro [24%OFF]', 'post-smtp' ) : __( 'Get More with Pro', 'post-smtp' );
 
 					            $importTitle = __( 'Import', 'post-smtp' );
 					            $exportTile = __( 'Export', 'post-smtp' );

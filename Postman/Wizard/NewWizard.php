@@ -130,18 +130,31 @@ class Post_SMTP_New_Wizard {
                                 Please upgrade to the PRO plan to unlock all these awesome features.
                             </p>
                             <div>
-                                <a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank" class="button button-primary ps-yellow-btn ps-pro-product-url" style="color: #ffffff!important; font-weight: 400; align-content: center;">Upgrade to PRO <span class="dashicons dashicons-arrow-right-alt2"></span></a>
+                                <a href="<?php echo postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin'; ?>" target="_blank" class="button button-primary ps-yellow-btn ps-pro-product-url" style="color: #ffffff!important; font-weight: 400; align-content: center;">Upgrade to PRO <span class="dashicons dashicons-arrow-right-alt2"></span></a>
                             </div>
-                            <div class="ps-pro-promo-area">   
-                                <p>
-                                    <b>Bonus:</b> Upgrade now and get <span class="ps-pro-discount">25% off</span> on Post SMTP lifetime plans!
-                                </p>
-                                <div class="ps-pro-coupon">
-                                    <b>
-                                        Use Coupon: <span class="ps-pro-coupon-code">GETSMTPPRO</span> <span class="dashicons dashicons-admin-page ps-click-to-copy"></span>
+                            <div <?php echo postman_is_bfcm() ? 'style="background: url( '.esc_url( POST_SMTP_ASSETS . 'images/bfcm-2024/popup.png' ).' ); background-size: cover; margin: 20px 0 5px 0; padding: 16px 0px; position: relative;"' : 'class="ps-pro-promo-area"'; ?>>   
+                                <?php
+                                if( postman_is_bfcm() ) {
+                                    ?>
+                                    <p style="color: #fff; font-size: 14px; margin: 0 auto;">
+                                        <b style="color: #fbb81f;">24% OFF!</b> BFCM is here - Grab your deal before it's gone!🛍️
+                                    </p>
+                                    <?php
+                                }
+                                else {
+                                    ?>
+                                    <p>
+                                        <b>Bonus:</b> Upgrade now and get <span class="ps-pro-discount">25% off</span> on Post SMTP lifetime plans!
+                                    </p>
+                                    <?php
+                                }
+                                ?>
+                                <div <?php echo postman_is_bfcm() ? 'style="background: #fbb81f";' : '';  ?> class="ps-pro-coupon">
+                                    <b <?php echo postman_is_bfcm() ? 'style="color: #1a3b63";' : '';  ?>>
+                                        Use Coupon: <span class="ps-pro-coupon-code"><?php echo postman_is_bfcm() ? 'BFCM2024' : 'GETSMTPPRO'; ?></span> <span class="dashicons dashicons-admin-page ps-click-to-copy"></span>
                                     </b>
                                 </div>
-                                <div id="ps-pro-code-copy-notification" style="display: none;position:absolute;color: #b3d5b6;border-radius:3px;right: 0;left: 0; bottom: -12px; margin: auto;width: 95px;font-size: 11px;background: #e1fde4;border: 1px solid #b3d5b6;line-height: 22px;">
+                                <div id="ps-pro-code-copy-notification" style="display: none; position:absolute; color: #b3d5b6; border-radius:3px; right: 0;left: 0; bottom: -12px; margin: auto;width: 95px; font-size: 11px; border: 1px solid #b3d5b6; line-height: 22px; background: #e1fde4;">
                                     Code Copied<span class="dashicons dashicons-yes"></span>
                                 </div>
                             </div>
@@ -261,7 +274,7 @@ class Post_SMTP_New_Wizard {
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Microsoft 365';
                                                     $is_pro = 'ps-pro-extension';
-                                                    $product_url = 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_microsoft&utm_campaign=plugin';
+                                                    $product_url = postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_microsoft&utm_campaign=plugin';
 
                                                 }
                                                 if( $transport_slug == 'zohomail_api' ) {
@@ -270,7 +283,7 @@ class Post_SMTP_New_Wizard {
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Zoho';
                                                     $is_pro = 'ps-pro-extension';
-                                                    $product_url = 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_zoho&utm_campaign=plugin';
+                                                    $product_url = postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_zoho&utm_campaign=plugin';
 
                                                 }
                                                 if( !class_exists( 'Post_Smtp_Amazon_Ses' ) && $transport_slug == 'aws_ses_api' ) {
@@ -279,7 +292,7 @@ class Post_SMTP_New_Wizard {
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Amazon SES';
                                                     $is_pro = 'ps-pro-extension';
-                                                    $product_url = 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_amazonses&utm_campaign=plugin';
+                                                    $product_url = postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_amazonses&utm_campaign=plugin';
 
                                                 }
 
