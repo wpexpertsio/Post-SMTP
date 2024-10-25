@@ -41,7 +41,6 @@ class PostmanSuggestProSocket {
         
         add_filter( 'gettext', array( $this, 'change_fs_submenu_text' ), 10, 3 );
         add_action( 'admin_action_ps_skip_pro_banner', array( $this, 'skip_pro_banner' ) );
-        add_action( 'init', array( $this, 'init' ) );
         
     }
 
@@ -214,25 +213,6 @@ class PostmanSuggestProSocket {
     }
 
     /**
-     * Redirect
-     * 
-     * @since 2.6.3
-     * @version 1.0.0
-     */
-    public function init() {
-        
-        if ( isset( $_GET['page'] ) && 'postman-pricing' === $_GET['page'] ) {
-
-            $redirect_url = postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu&utm_campaign=plugin';
-
-            wp_redirect( $redirect_url );
-            exit;
-
-        }
-        
-    }
-
-    /**
      * Add menu
      * 
      * @since 2.8.6
@@ -254,23 +234,11 @@ class PostmanSuggestProSocket {
             $menu_text = sprintf( '<span class="dashicons dashicons-superhero ps-pro-icon"></span> %1$s', __( 'Extensions', 'post-smtp' ) );
 
         }
-
-        $redirect_url = postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu&utm_campaign=plugin';
-        
-        add_submenu_page( 
-            PostmanViewController::POSTMAN_MENU_SLUG, 
-            __( 'Extensions', 'post-smtp' ), 
-            $menu_text,
-            'manage_options', 
-            esc_url( $redirect_url ),
-            '',
-            99
-        );
         
         add_submenu_page(
-                PostmanViewController::POSTMAN_MENU_SLUG,
+            PostmanViewController::POSTMAN_MENU_SLUG,
             __( 'Extensions', 'post-smtp' ),
-            __( 'Extensions', 'post-smtp' ),
+            $menu_text,
             'manage_options',
             'extensions',
             array( $this, 'extensions' ),
