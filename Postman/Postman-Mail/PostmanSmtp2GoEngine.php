@@ -20,6 +20,7 @@
 
 			public function __construct( $apiKey ) {
 				assert( ! empty( $apiKey ) );
+				$this->existing_db_version = get_option( 'postman_db_version' );
 				if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
 					$this->apiKey = $apiKey;
 	

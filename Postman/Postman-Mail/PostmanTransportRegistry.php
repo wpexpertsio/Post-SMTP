@@ -107,6 +107,43 @@ class PostmanTransportRegistry {
 		return $transports ['default'];
 	}
 
+	
+	/**
+	 *
+	 * @param PostmanOptions    $options
+	 * @param PostmanOAuthToken $token
+	 * @return boolean
+	 */
+	public function getPrimaryConnection() {
+		$selectedTransport = PostmanOptions::getInstance()->getSelectedPrimaryName();
+		$transports = $this->getTransports();
+		if ( isset( $transports [ $selectedTransport ] ) ) {
+			$transport = $transports [ $selectedTransport ];
+			if ( $transport->getSlug() == $selectedTransport ) {
+				return $transport;
+			}
+		}
+		return $transports ['default'];
+	}
+
+	/**
+	 *
+	 * @param PostmanOptions    $options
+	 * @param PostmanOAuthToken $token
+	 * @return boolean
+	 */
+	public function getFallbackConnection() {
+		$selectedTransport = PostmanOptions::getInstance()->getSelectedFallbackName();
+		$transports = $this->getTransports();
+		if ( isset( $transports [ $selectedTransport ] ) ) {
+			$transport = $transports [ $selectedTransport ];
+			if ( $transport->getSlug() == $selectedTransport ) {
+				return $transport;
+			}
+		}
+		return $transports ['default'];
+	}
+
 	/**
 	 * Retrieve the transport Postman is currently configured with.
 	 *

@@ -16,7 +16,7 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
 
     private $api_key;
 
-    private $existing_db_version = '';
+    private $is_fallback;
 
 
     /**
@@ -25,18 +25,17 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
      */
     public function __construct( $api_key ) {
         
-        assert( !empty( $api_key ) );
-        $this->existing_db_version = get_option( 'postman_db_version' );
-        if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
-            $this->api_key = $api_key;
+        if ( is_array( $api_key ) ) {
+            // When passed as an array with additional data
+            assert( !empty( $api_key['api_key'] ) );
+            $this->api_key = $api_key['api_key'];
+            $this->is_fallback = $api_key['is_fallback'] ?? null;
         } else {
-            $options = PostmanOptions::getInstance();
-            $mail_connections = new PostmanMailConnections();
-            $transport_type = $options->getTransportType();
-            $connection_details = $mail_connections->get_mail_connection_details( $transport_type );
-            $this->api_key = $connection_details['sendinblue_api_key'] ?? '';
+            // When passed as a string (just the API key)
+            assert( !empty( $api_key ) );
+            $this->api_key = $api_key;
+            $this->is_fallback = null;
         }
-        
         // create the logger
         $this->logger = new PostmanLogger( get_class( $this ) );
         
@@ -89,6 +88,8 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
     public function send( PostmanMessage $message ) { 
 
         $options = PostmanOptions::getInstance();
+        $postman_db_version = get_option( 'postman_db_version' );
+        
         //Sendinblue preparation
         if ( $this->logger->isDebug() ) {
 
@@ -98,7 +99,18 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
 
         $sendinblue = new PostmanSendinblue( $this->api_key);
         $sender = $message->getFromAddress();
-        $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+        if( $postman_db_version != POST_SMTP_DB_VERSION ){
+            $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+        }else{
+            $connection_details  = get_option( 'postman_connections' );
+            if( $this->is_fallback == null ){
+                $primary = $options->getSelectedPrimary();
+                $senderEmail = $connection_details[$primary]['sender_email'];
+            }else{
+                $fallback = $options->getSelectedFallback();
+                $senderEmail = $connection_details[$fallback]['sender_email'];
+            }
+        }
         $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
         $headers = array();
         

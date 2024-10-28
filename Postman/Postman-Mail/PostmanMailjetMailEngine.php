@@ -24,7 +24,8 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
      * @version 1.0
      */
     public function __construct( $api_key, $secret_key ) {
-        
+         
+        $this->existing_db_version = get_option( 'postman_db_version' );
         if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
             $this->api_key = $api_key;
             $this->secret_key = $secret_key;

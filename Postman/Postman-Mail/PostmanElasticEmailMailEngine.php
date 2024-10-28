@@ -15,8 +15,7 @@ class PostmanElasticEmailMailEngine implements PostmanMailEngine {
     private $transcript;
 
     private $api_key;
-
-    private $existing_db_version = '';
+    private $is_fallback;
 
 
     /**
@@ -24,19 +23,17 @@ class PostmanElasticEmailMailEngine implements PostmanMailEngine {
      * @version 1.0
      */
     public function __construct( $api_key ) {
-        
-        assert( !empty( $api_key ) );
-        // Decide which API key to use based on the DB version.
-        if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
-            $this->api_key = $api_key;
-            $this->logger->debug( 'Using old API key.' );
+
+        if ( is_array( $api_key ) ) {
+            // When passed as an array with additional data.
+            assert( !empty( $api_key['api_key'] ) );
+            $this->api_key = $api_key['api_key'];
+            $this->is_fallback = $api_key['is_fallback'] ?? null;
         } else {
-            $options = PostmanOptions::getInstance();
-            $transport_type = $options->getTransportType();
-            $this->existing_db_version = get_option( 'postman_db_version' );
-            $mail_connections = new PostmanMailConnections();
-            $connection_details = $mail_connections->get_mail_connection_details( $transport_type );
-            $this->api_key = $connection_details['elasticemail_api_key'] ?? '';
+            // When passed as a string (just the API key).
+            assert( !empty( $api_key ) );
+            $this->api_key = $api_key;
+            $this->is_fallback = null;
         }
         // create the logger
         $this->logger = new PostmanLogger( get_class( $this ) );
@@ -91,6 +88,7 @@ class PostmanElasticEmailMailEngine implements PostmanMailEngine {
 
         $options = PostmanOptions::getInstance();
         $email_content = array();
+        $postman_db_version = get_option( 'postman_db_version' );
         
         //ElasticEmail preparation
         if ( $this->logger->isDebug() ) {
@@ -164,7 +162,18 @@ class PostmanElasticEmailMailEngine implements PostmanMailEngine {
         }
 
         $sender = $message->getFromAddress();
-        $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+        if( $postman_db_version != POST_SMTP_DB_VERSION ){
+            $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+        }else{
+            $connection_details  = get_option( 'postman_connections' );
+            if( $this->is_fallback == null ){
+                $primary = $options->getSelectedPrimary();
+                $senderEmail = $connection_details[$primary]['sender_email'];
+            }else{
+                $fallback = $options->getSelectedFallback();
+                $senderEmail = $connection_details[$fallback]['sender_email'];
+            }
+        }
         $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
 
         $replyTo = $message->getReplyTo();

@@ -73,13 +73,45 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	 * @see PostmanModuleTransport::createMailEngine()
 	 */
 	public function createMailEngine() {
-		$apiKey = $this->options->getMailgunApiKey();
-		$domainName = $this->options->getMailgunDomainName();
+		$existing_db_version = get_option( 'postman_db_version' );
+        $connection_details  = get_option( 'postman_connections' );
+
+		if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+			$apiKey = $this->options->getMailgunApiKey();
+			$domainName = $this->options->getMailgunDomainName();
+        } else {
+			$primary = $this->options->getSelectedPrimary();
+            $apiKey = $connection_details[$primary]['mailgun_api_key'];
+			$domainName = $connection_details[$primary]['mailgun_domain_name'];
+        }
 
 		require_once 'PostmanMailgunMailEngine.php';
 		$engine = new PostmanMailgunMailEngine( $apiKey, $domainName );
 		return $engine;
 	}
+
+	/**
+     * @since 3.0.1
+     * @version 1.0
+     */
+    public function createMailEngineFallback() {
+        
+        $connection_details  = get_option( 'postman_connections' );
+        $fallback = $this->options->getSelectedFallback();
+        $api_key = $connection_details[$fallback]['mailgun_api_key'];
+		$domainName = $connection_details[$fallback]['mailgun_domain_name'];
+            // Wrap the API key with additional data in an array
+        $api_credentials = [
+            'api_key' => $api_key,
+            'is_fallback' => 1
+        ];
+        require_once 'PostmanMailgunMailEngine.php';
+		$engine = new PostmanMailgunMailEngine( $api_credentials, $domainName );
+
+		return $engine;
+
+    }
+
 	public function getDeliveryDetails() {
 		/* translators: where (1) is the secure icon and (2) is the transport name */
 		return sprintf( __( 'Post SMTP will send mail via the <b>%1$s %2$s</b>.', 'post-smtp' ), '🔐', $this->getName() );

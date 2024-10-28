@@ -19,6 +19,7 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
     const PRIORITY = 50000;
     const SENDINBLUE_AUTH_OPTIONS = 'postman_sendinblue_auth_options';
     const SENDINBLUE_AUTH_SECTION = 'postman_sendinblue_auth_section';
+    private $existing_db_version = '';
 
     /**
      * PostmanSendinblueTransport constructor.
@@ -99,10 +100,38 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
      * @version 1.0
      */
     public function createMailEngine() {
+        
+        $existing_db_version = get_option( 'postman_db_version' );
+        $connection_details  = get_option( 'postman_connections' );
 
-        $api_key = $this->options->getSendinblueApiKey();
+        if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+            $api_key = $this->options->getSendinblueApiKey();
+        } else {
+            $primary = $this->options->getSelectedPrimary();
+            $api_key = $connection_details[$primary]['sendinblue_api_key'];
+        }
         require_once 'PostmanSendinblueMailEngine.php';
 		$engine = new PostmanSendinblueMailEngine( $api_key );
+
+		return $engine;
+
+    }
+
+    /**
+     * @since 3.0.1
+     * @version 1.0
+     */
+    public function createMailEngineFallback() {
+        
+        $connection_details  = get_option( 'postman_connections' );
+        $fallback = $this->options->getSelectedFallback();
+        $api_key = $connection_details[$fallback]['sendinblue_api_key'];
+        $api_credentials = [
+            'api_key' => $api_key,
+            'is_fallback' => 1
+        ];
+        require_once 'PostmanSendinblueMailEngine.php';
+		$engine = new PostmanSendinblueMailEngine( $api_credentials );
 
 		return $engine;
 

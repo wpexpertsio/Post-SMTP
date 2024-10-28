@@ -26,6 +26,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		private $domainName;
 		private $mailgunMessage;
 		private $existing_db_version = '';
+		private $is_fallback;
 
 		/**
 		 *
@@ -34,16 +35,18 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		 */
 		function __construct( $apiKey, $domainName ) {
 			assert( ! empty( $apiKey ) );
-
-			if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+			if ( is_array( $apiKey ) ) {
+				// When passed as an array with additional data.
+				assert( !empty( $apiKey['api_key'] ) );
+				$this->apiKey = $apiKey['api_key'];
+				$this->domainName = $domainName;
+				$this->is_fallback = $apiKey['is_fallback'] ?? null;
+			} else {
+				// When passed as a string (just the API key).
+				assert( !empty( $apiKey ) );
 				$this->apiKey = $apiKey;
 				$this->domainName = $domainName;
-			} else {
-				$options = PostmanOptions::getInstance();
-				$mail_connections = new PostmanMailConnections();
-				$transport_type = $options->getTransportType();
-				$connection_details = $mail_connections->get_mail_connection_details( $transport_type );
-				$this->apiKey = $connection_details['mailgun_api_key'] ?? '';
+				$this->is_fallback = null;
 			}
 
 			// create the logger
@@ -148,7 +151,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		}
 
 		private function get_email_body( $message ) {
-
+			$postman_db_version = get_option( 'postman_db_version' );
 			if( is_a( $message, 'PostmanMessage' ) ) {
 				$options = PostmanOptions::getInstance();
 
@@ -156,7 +159,18 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 				$sender = $message->getFromAddress();
 				{
 					
-					$senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+					if( $postman_db_version != POST_SMTP_DB_VERSION ){
+						$senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+					}else{
+						$connection_details  = get_option( 'postman_connections' );
+						if( $this->is_fallback == null ){
+							$primary = $options->getSelectedPrimary();
+							$senderEmail = $connection_details[$primary]['sender_email'];
+						}else{
+							$fallback = $options->getSelectedFallback();
+							$senderEmail = $connection_details[$fallback]['sender_email'];
+						}
+					}
 					$senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
 
 					$this->mailgunMessage ['from'] = "{$senderName} <{$senderEmail}>";

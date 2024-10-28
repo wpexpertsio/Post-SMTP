@@ -100,9 +100,38 @@ class PostmanElasticEmailTransport extends PostmanAbstractModuleTransport implem
      */
     public function createMailEngine() {
 
-        $api_key = $this->options->getElasticEmailApiKey();
+        $existing_db_version = get_option( 'postman_db_version' );
+        $connection_details  = get_option( 'postman_connections' );
+
+        if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+            $api_key = $this->options->getElasticEmailApiKey();
+        } else {
+            $primary = $this->options->getSelectedPrimary();
+            $api_key = $connection_details[$primary]['elasticemail_api_key'];
+        }
         require_once 'PostmanElasticEmailMailEngine.php';
 		$engine = new PostmanElasticEmailMailEngine( $api_key );
+
+		return $engine;
+
+    }
+
+    /**
+     * @since 3.0.1
+     * @version 1.0
+     */
+    public function createMailEngineFallback() {
+        
+        $connection_details  = get_option( 'postman_connections' );
+        $fallback = $this->options->getSelectedFallback();
+        $api_key = $connection_details[$fallback]['elasticemail_api_key'];
+            // Wrap the API key with additional data in an array
+        $api_credentials = [
+            'api_key' => $api_key,
+            'is_fallback' => 1
+        ];
+        require_once 'PostmanElasticEmailMailEngine.php';
+		$engine = new PostmanElasticEmailMailEngine( $api_credentials );
 
 		return $engine;
 

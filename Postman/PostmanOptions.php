@@ -475,6 +475,32 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
         }
 
+		public function getSelectedPrimaryName() {
+			$connections = get_option( 'postman_connections', array() );
+
+			$primary_connection_index = $this->getSelectedPrimary();
+
+			if ( isset( $connections[ $primary_connection_index ] ) ) {
+				return isset( $connections[ $primary_connection_index] [ 'provider' ] ) ? 
+					$connections[ $primary_connection_index ][ 'provider' ] : null;
+			}
+
+			return null;
+		}
+
+		public function getSelectedFallbackName() {
+			$connections = get_option( 'postman_connections', array() );
+
+			$fallback_connection_index = $this->getSelectedFallback();
+
+			if ( isset( $connections[ $fallback_connection_index ] ) ) {
+				return isset( $connections[ $fallback_connection_index] [ 'provider' ] ) ? 
+					$connections[ $fallback_connection_index ][ 'provider' ] : null;
+			}
+
+			return null;
+		}
+
         public function getFallbackAuth() {
             if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_USE_AUTH ] ) ) {
                 return $this->options [ PostmanOptions::FALLBACK_SMTP_USE_AUTH ];
