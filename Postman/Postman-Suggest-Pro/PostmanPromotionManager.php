@@ -72,7 +72,6 @@ class Postman_Promotion_Manager {
         if ( isset( $this->promotions[$promotion] ) ) {
 
             $current_time = time();
-            // $current_time = 1732752000;
 
             $start_time = $this->promotions[$promotion]['start_time'];
             $end_time = $this->promotions[$promotion]['end_time'];
