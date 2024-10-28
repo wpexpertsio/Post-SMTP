@@ -37,7 +37,7 @@
     </table>
 
     <div class="ps-popup-wrap">
-        <div class="ps-popup-box">
+        <div class="ps-popup-box" <?php echo postman_is_bfcm() ? 'style="height: 512px";' : '';  ?>>
             <a class="ps-popup-close-btn ps-popup-close" href="#"><span class="dashicons dashicons-no-alt"></span></a>
             <div class="ps-popup-container"></div>
             <?php
