@@ -29,6 +29,7 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
                     'nonce'          => wp_create_nonce( 'wp_rest' ),
 	                'admin_url'      => admin_url( 'admin.php' ),
 	                'page_hook'      => $hook,
+                    'is_bfcm'        => postman_is_bfcm()
                 )
             );
             
