@@ -17,19 +17,19 @@
 			protected $transcript;
 			protected $apiKey;
 			protected $existing_db_version = '';
+			private $is_fallback;
 
 			public function __construct( $apiKey ) {
-				assert( ! empty( $apiKey ) );
-				$this->existing_db_version = get_option( 'postman_db_version' );
-				if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
-					$this->apiKey = $apiKey;
-	
+				if ( is_array( $apiKey ) ) {
+					// When passed as an array with additional data
+					assert( !empty( $apiKey['api_key'] ) );
+					$this->apiKey = $apiKey['api_key'];
+					$this->is_fallback = $apiKey['is_fallback'] ?? null;
 				} else {
-					$options = PostmanOptions::getInstance();
-					$mail_connections = new PostmanMailConnections();
-					$transport_type = $options->getTransportType();
-					$connection_details = $mail_connections->get_mail_connection_details( $transport_type );
-					$this->apiKey = $connection_details['smtp2go_api_key'] ?? '';
+					// When passed as a string (just the API key)
+					assert( !empty( $apiKey ) );
+					$this->apiKey = $apiKey;
+					$this->is_fallback = null;
 				}
 
 				$this->logger = new PostmanLogger( get_class( $this ) );
@@ -37,12 +37,24 @@
 
 			public function send( $message ) {
 				$options = PostmanOptions::getInstance();
+				$postman_db_version = get_option( 'postman_db_version' );
 				$smtp2go = new PostmanSmtp2GoHandler( $this->apiKey );
 				$content = array();
 				$headers = array();
 
 				$sender = $message->getFromAddress();
-				$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+				if( $postman_db_version != POST_SMTP_DB_VERSION ){
+					$senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+				}else{
+					$connection_details  = get_option( 'postman_connections' );
+					if( $this->is_fallback == null ){
+						$primary = $options->getSelectedPrimary();
+						$senderEmail = $connection_details[$primary]['sender_email'];
+					}else{
+						$fallback = $options->getSelectedFallback();
+						$senderEmail = $connection_details[$fallback]['sender_email'];
+					}
+				}
 				$senderName = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
 
 				$content['sender'] = $senderName . '<' . $senderEmail . '>';

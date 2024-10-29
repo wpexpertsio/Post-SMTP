@@ -100,10 +100,40 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
      */
     public function createMailEngine() {
 
-        $api_key = $this->options->getMailjetApiKey();
-        $secret_key = $this->options->getMailjetSecretKey();
+        $existing_db_version = get_option( 'postman_db_version' );
+        $connection_details  = get_option( 'postman_connections' );
+
+        if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+            $api_key = $this->options->getMailjetApiKey();
+            $secret_key = $this->options->getMailjetSecretKey();
+        } else {
+            $primary = $this->options->getSelectedPrimary();
+            $api_key = $connection_details[$primary]['mailjet_api_key'];
+            $secret_key = $connection_details[$primary]['mailjet_secret_key'];
+        }
         require_once 'PostmanMailjetMailEngine.php';
 		$engine = new PostmanMailjetMailEngine( $api_key,$secret_key );
+
+		return $engine;
+
+    }
+
+        /**
+     * @since 3.0.1
+     * @version 1.0
+     */
+    public function createMailEngineFallback() {
+        
+        $connection_details  = get_option( 'postman_connections' );
+        $fallback = $this->options->getSelectedFallback();
+        $api_key = $connection_details[$fallback]['mailjet_api_key'];
+        $secret_key = $connection_details[$fallback]['mailjet_secret_key'];
+        $api_credentials = [
+            'api_key' => $api_key,
+            'is_fallback' => 1
+        ];
+        require_once 'PostmanMailjetMailEngine.php';
+		$engine = new PostmanMailjetMailEngine( $api_credentials,$secret_key );
 
 		return $engine;
 

@@ -73,11 +73,39 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 	 * @see PostmanModuleTransport::createMailEngine()
 	 */
 	public function createMailEngine() {
-		$apiKey = $this->options->getSendGridApiKey ();
+		$existing_db_version = get_option( 'postman_db_version' );
+		$connection_details  = get_option( 'postman_connections' );
+
+		if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+			$apiKey = $this->options->getSendGridApiKey ();
+		} else {
+			$primary = $this->options->getSelectedPrimary();
+			$apiKey = $connection_details[$primary]['sendgrid_api_key'];
+		}
 		require_once 'PostmanSendGridMailEngine.php';
 		$engine = new PostmanSendGridMailEngine ( $apiKey );
 		return $engine;
 	}
+	/**
+     * @since 3.0.1
+     * @version 1.0
+     */
+    public function createMailEngineFallback() {
+        
+        $connection_details  = get_option( 'postman_connections' );
+        $fallback = $this->options->getSelectedFallback();
+        $api_key = $connection_details[$fallback]['sendgrid_api_key'];
+        $api_credentials = [
+            'api_key' => $api_key,
+            'is_fallback' => 1
+        ];
+		require_once 'PostmanSendGridMailEngine.php';
+		$engine = new PostmanSendGridMailEngine ( $apiKey );
+
+		return $engine;
+
+    }
+
 	public function getDeliveryDetails() {
 		/* translators: where (1) is the secure icon and (2) is the transport name */
 		return sprintf ( __ ( 'Postman will send mail via the <b>%1$s %2$s</b>.', 'post-smtp' ), '🔐', $this->getName () );

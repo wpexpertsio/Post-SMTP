@@ -19,7 +19,6 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
     const PRIORITY = 50000;
     const SENDINBLUE_AUTH_OPTIONS = 'postman_sendinblue_auth_options';
     const SENDINBLUE_AUTH_SECTION = 'postman_sendinblue_auth_section';
-    private $existing_db_version = '';
 
     /**
      * PostmanSendinblueTransport constructor.

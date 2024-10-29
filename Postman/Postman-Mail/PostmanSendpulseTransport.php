@@ -106,12 +106,42 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		 */
 		public function createMailEngine() {
 
-			$api_key = $this->options->getSendpulseApiKey();
-			$secret_key = $this->options->getSendpulseSecretKey();
+			$existing_db_version = get_option( 'postman_db_version' );
+			$connection_details  = get_option( 'postman_connections' );
+	
+			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {			
+				$api_key = $this->options->getSendpulseApiKey();
+				$secret_key = $this->options->getSendpulseSecretKey();
+			} else {
+				$primary = $this->options->getSelectedPrimary();
+				$apiKey = $connection_details[$primary]['sendpulse_api_key'];
+				$secret_key = $connection_details[$primary]['sendpulse_secret_key'];
+			}
 			require_once 'PostmanSendpulseMailEngine.php';
 			$engine = new PostmanSendpulseMailEngine( $api_key, $secret_key );
 
 			return $engine;
+		}
+		
+		/**
+		 * @since 3.0.1
+		 * @version 1.0
+		 */
+		public function createMailEngineFallback() {
+			
+			$connection_details  = get_option( 'postman_connections' );
+			$fallback = $this->options->getSelectedFallback();
+			$api_key = $connection_details[$fallback]['sendpulse_api_key'];
+			$secret_key = $connection_details[$fallback]['sendpulse_secret_key'];
+			$api_credentials = [
+				'api_key' => $api_key,
+				'is_fallback' => 1
+			];
+			require_once 'PostmanSendpulseMailEngine.php';
+			$engine = new PostmanSendpulseMailEngine( $api_credentials, $secret_key );
+
+			return $engine;
+
 		}
 
 		/**

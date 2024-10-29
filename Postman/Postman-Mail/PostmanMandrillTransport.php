@@ -122,11 +122,40 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 	 * @see PostmanModuleTransport::createMailEngine()
 	 */
 	public function createMailEngine() {
-		$apiKey = $this->options->getMandrillApiKey ();
+		$existing_db_version = get_option( 'postman_db_version' );
+        $connection_details  = get_option( 'postman_connections' );
+
+        if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+			$apiKey = $this->options->getMandrillApiKey ();
+        } else {
+            $primary = $this->options->getSelectedPrimary();
+            $api_key = $connection_details[$primary]['mandrill_api_key'];
+        }
 		require_once 'PostmanMandrillMailEngine.php';
 		$engine = new PostmanMandrillMailEngine ( $apiKey );
 		return $engine;
 	}
+
+	    /**
+     * @since 3.0.1
+     * @version 1.0
+     */
+    public function createMailEngineFallback() {
+        
+        $connection_details  = get_option( 'postman_connections' );
+        $fallback = $this->options->getSelectedFallback();
+        $api_key = $connection_details[$fallback]['mandrill_api_key'];
+        $api_credentials = [
+            'api_key' => $api_key,
+            'is_fallback' => 1
+        ];
+        require_once 'PostmanMandrillMailEngine.php';
+		$engine = new PostmanMandrillMailEngine( $api_credentials );
+
+		return $engine;
+
+    }
+
 	
 	/**
 	 * This short description of the Transport State shows on the Summary screens

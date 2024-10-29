@@ -48,11 +48,35 @@
 			}
 
 			public function createMailEngine() {
-				$apiKey = $this->options->getSmtp2GoApiKey();
+				$existing_db_version = get_option( 'postman_db_version' );
+				$connection_details  = get_option( 'postman_connections' );
+		
+				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+					$apiKey = $this->options->getSmtp2GoApiKey();
+				} else {
+					$primary = $this->options->getSelectedPrimary();
+					$apiKey = $connection_details[$primary]['smtp2go_api_key'];
+				}
 				require_once 'PostmanSmtp2GoEngine.php';
 				$engine = new PostmanSmtp2GoEngine( $apiKey );
 
 				return $engine;
+			}
+
+			public function createMailEngineFallback() {
+        
+				$connection_details  = get_option( 'postman_connections' );
+				$fallback = $this->options->getSelectedFallback();
+				$api_key = $connection_details[$fallback]['smtp2go_api_key'];
+				$api_credentials = [
+					'api_key' => $api_key,
+					'is_fallback' => 1
+				];
+				require_once 'PostmanSmtp2GoEngine.php';
+				$engine = new PostmanSmtp2GoEngine( $api_credentials );
+		
+				return $engine;
+		
 			}
 
 			public function getDeliveryDetails() {

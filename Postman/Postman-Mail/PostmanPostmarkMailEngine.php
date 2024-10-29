@@ -16,23 +16,23 @@ class PostmanPostmarkMailEngine implements PostmanMailEngine {
 
     private $api_key;
 
-    private $existing_db_version = '';
+    private $is_fallback;
 
     /**
      * @since 2.2
      * @version 1.0
      */
     public function __construct( $api_key ) {
-        assert( !empty( $api_key ) );
-        $this->existing_db_version = get_option( 'postman_db_version' );
-        if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
-            $this->api_key = $api_key;
+        if ( is_array( $api_key ) ) {
+            // When passed as an array with additional data
+            assert( !empty( $api_key['api_key'] ) );
+            $this->api_key = $api_key['api_key'];
+            $this->is_fallback = $api_key['is_fallback'] ?? null;
         } else {
-            $options = PostmanOptions::getInstance();
-            $mail_connections = new PostmanMailConnections();
-            $transport_type = $options->getTransportType();
-            $connection_details = $mail_connections->get_mail_connection_details( $transport_type );
-            $this->api_key = $connection_details['postmark_api_key'] ?? '';
+            // When passed as a string (just the API key)
+            assert( !empty( $api_key ) );
+            $this->api_key = $api_key;
+            $this->is_fallback = null;
         }
 
         // create the logger
@@ -112,13 +112,24 @@ class PostmanPostmarkMailEngine implements PostmanMailEngine {
     }
 
     private function get_email_body( $message ) {
-
+        $postman_db_version = get_option( 'postman_db_version' );
         if( is_a( $message, 'PostmanMessage' ) ) {
 
             $options = PostmanOptions::getInstance();
             
             $sender = $message->getFromAddress();
-            $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+            if( $postman_db_version != POST_SMTP_DB_VERSION ){
+                $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+            }else{
+                $connection_details  = get_option( 'postman_connections' );
+                if( $this->is_fallback == null ){
+                    $primary = $options->getSelectedPrimary();
+                    $senderEmail = $connection_details[$primary]['sender_email'];
+                }else{
+                    $fallback = $options->getSelectedFallback();
+                    $senderEmail = $connection_details[$fallback]['sender_email'];
+                }
+            }
             
             $sender->log( $this->logger, 'From' );
 

@@ -96,7 +96,35 @@ if( !class_exists( 'PostmanPostmarkTransport' ) ):
 
          public function createMailEngine() {
 
-            $api_key = $this->options->getPostmarkApiKey();
+            $existing_db_version = get_option( 'postman_db_version' );
+            $connection_details  = get_option( 'postman_connections' );
+    
+            if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+                $api_key = $this->options->getPostmarkApiKey();
+            } else {
+                $primary = $this->options->getSelectedPrimary();
+                $api_key = $connection_details[$primary]['postmark_api_key'];
+            }
+            require_once 'PostmanPostmarkMailEngine.php';
+            $engine = new PostmanPostmarkMailEngine( $api_key );
+
+            return $engine;
+
+        }
+
+        /**
+         * @since 3.0.1
+         * @version 1.0
+         */
+        public function createMailEngineFallback() {
+            
+            $connection_details  = get_option( 'postman_connections' );
+            $fallback = $this->options->getSelectedFallback();
+            $api_key = $connection_details[$fallback]['postmark_api_key'];
+            $api_credentials = [
+                'api_key' => $api_key,
+                'is_fallback' => 1
+            ];
             require_once 'PostmanPostmarkMailEngine.php';
             $engine = new PostmanPostmarkMailEngine( $api_key );
 

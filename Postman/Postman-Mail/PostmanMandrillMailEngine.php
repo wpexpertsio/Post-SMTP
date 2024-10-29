@@ -24,7 +24,7 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 
 		private $apiKey;
 		private $mandrillMessage;
-		private $existing_db_version = '';
+		private $is_fallback;
 
 		/**
 		 *
@@ -32,16 +32,16 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 		 * @param mixed $accessToken
 		 */
 		function __construct( $apiKey ) {
-			assert( ! empty( $apiKey ) );
-			$this->existing_db_version = get_option( 'postman_db_version' );
-			if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
-				$this->apiKey = $apiKey;
+			if ( is_array( $apiKey ) ) {
+				// When passed as an array with additional data
+				assert( !empty( $api_key['api_key'] ) );
+				$this->apiKey = $apiKey['api_key'];
+				$this->is_fallback = $apiKey['is_fallback'] ?? null;
 			} else {
-				$options = PostmanOptions::getInstance();
-				$mail_connections = new PostmanMailConnections();
-				$transport_type = $options->getTransportType();
-				$connection_details = $mail_connections->get_mail_connection_details( $transport_type );
-				$this->apiKey = $connection_details['mandrill_api_key'] ?? '';
+				// When passed as a string (just the API key)
+				assert( !empty( $apiKey ) );
+				$this->apiKey = $apiKey;
+				$this->is_fallback = null;
 			}
 
 			// create the logger
@@ -167,6 +167,7 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 		 */
 		private function get_email_body( $message ) {
 			$options = PostmanOptions::getInstance();
+			$postman_db_version = get_option( 'postman_db_version' );
 
 			// add the Postman signature - append it to whatever the user may have set
 			if ( ! $options->isStealthModeEnabled() ) {
@@ -190,7 +191,18 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 			// add the From Header
 			$sender = $message->getFromAddress();
 			{
-				$senderEmail = PostmanOptions::getInstance()->getMessageSenderEmail();
+				if( $postman_db_version != POST_SMTP_DB_VERSION ){
+					$senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+				}else{
+					$connection_details  = get_option( 'postman_connections' );
+					if( $this->is_fallback == null ){
+						$primary = $options->getSelectedPrimary();
+						$senderEmail = $connection_details[$primary]['sender_email'];
+					}else{
+						$fallback = $options->getSelectedFallback();
+						$senderEmail = $connection_details[$fallback]['sender_email'];
+					}
+				}
 				$senderName = $sender->getName();
 				assert( ! empty( $senderEmail ) );
 				$this->mandrillMessage ['from_email'] = $senderEmail;

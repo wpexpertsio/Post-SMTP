@@ -243,19 +243,28 @@ class Post_SMTP_New_Wizard {
                                                 $this->sockets[$transport->getSlug()] = $transport->getName();
                                                 if( isset( $_GET['socket'] ) && !empty( sanitize_text_field( $_GET['socket'] ) ) && $transport->getSlug() == sanitize_text_field( $_GET['socket'] ) ) {
 
-                                                    $checked = 'checked';
+                                                   $checked = 'checked';
 
                                                 }
                                                 elseif( $transport->getSlug() == $this->options->getTransportType() && !is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' ) ) {
 
-                                                    $checked = 'checked';
+                                                    if( $db_version == POST_SMTP_DB_VERSION ){
+                                                        if ( isset( $id ) ) {
+                                                             $selected_connection = $postman_connections[$id]['provider'];
+                                                             if( $key == $selected_connection ){
+                                                                 $checked = 'checked';
+                                                             }
+                                                         }
+                                                     }else{
+                                                        $checked = 'checked';
+                                                     }
 
                                                 }
                                                 
                                                 $slug = $transport->getSlug();
                                                 $transport_name = $transport->getName();
 
-                                                if( $db_version == POST_SMTP_DB_VERSION ){;
+                                                if( $db_version == POST_SMTP_DB_VERSION ){
                                                    if ( isset( $id ) ) {
                                                         $selected_connection = $postman_connections[$id]['provider'];
                                                         if( $key == $selected_connection ){
@@ -797,9 +806,15 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function render_gmail_settings() {
-
+        
+        $id = $_GET['id'] ?? null;
         $client_id = null !== $this->options->getClientId() ? esc_attr ( $this->options->getClientId() ) : '';
         $client_secret = null !== $this->options->getClientSecret() ? esc_attr ( $this->options->getClientSecret() ) : '';
+        $mail_connections = get_option( 'postman_connections' );
+        if ( isset( $_GET['id'] ) ) {
+            $client_id = $mail_connections[$id][ 'oauth_client_id' ];
+            $client_secret = $mail_connections[$id][ 'oauth_client_secret' ];
+        }
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
         $html = '
