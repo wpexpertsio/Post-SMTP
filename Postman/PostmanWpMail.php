@@ -227,7 +227,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				// prepare the message
 				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
 					$message->validate( $transport );
-				}
+			    }
 
 				// send the message
 				if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {

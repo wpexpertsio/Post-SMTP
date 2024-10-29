@@ -1612,6 +1612,14 @@ class Post_SMTP_New_Wizard {
         if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
             $client_id = get_transient('clientID') ?? '';
             $client_secret = get_transient('clientSecret') ?? '';
+            if (empty( $client_id ) || empty( $client_secret ) ) {
+                $mail_connections = get_option('postman_connections');
+                $id = $_GET['id'] ?? null;
+                if ( isset( $mail_connections[$id] ) ) {
+                    $client_id = $mail_connections[$id]['zohomail_client_id'] ?? '';
+                    $client_secret = $mail_connections[$id]['zohomail_client_secret'] ?? '';
+                }
+            }
         }else{
             $client_id = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] : '';
             $client_secret = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) ? base64_decode( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) : '';
@@ -1816,6 +1824,7 @@ class Post_SMTP_New_Wizard {
                     
                 }
             }else{
+                $new_connection = [];
              // New save logic for versions other than 1.0.1.
                 if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
                     $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
@@ -1846,12 +1855,12 @@ class Post_SMTP_New_Wizard {
                         // Special handling for Zoho Mail fields.
                     if ( 'zohomail_api' === $transport_type && isset( $form_data[ 'access_token' ] ) ) {
                         // Extract from sanitized data for these fields.
-                        $new_connection['zohomail_client_id'] = $sanitized['zohomail_client_id'] ?? '';
-                        $new_connection['zohomail_client_secret'] = $sanitized['zohomail_client_secret'] ?? '';
                         $new_connection = array(
                             'provider'     => $sanitized['transport_type'] ?? '',
                             'sender_email' => $sanitized['sender_email'] ?? '',
                             'sender_name'  => $sanitized['sender_name'] ?? '',
+                            'zohomail_client_id' => $sanitized['zohomail_client_id'] ?? '',
+                            'zohomail_client_secret' => $sanitized['zohomail_client_secret'] ?? '',
                         );
 
                         // Extract other Zoho values from $form_data.
