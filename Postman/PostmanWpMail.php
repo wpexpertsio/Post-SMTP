@@ -219,7 +219,6 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			if ( $this->logger->isDebug() ) {
 				$this->logger->debug( 'testMode=' . $testMode );
 			}
-
 			// start the clock
 			$startTime = microtime( true ) * 1000;
 

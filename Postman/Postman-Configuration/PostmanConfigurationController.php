@@ -838,6 +838,15 @@ class PostmanConfigurationController {
 			'aws_ses_api' => array(
                 'provider' => 'aws_ses_api',
             ),
+			'aws_ses_api' => array(
+                'provider' => 'aws_ses_api',
+            ),
+			'zohomail_api' => array(
+                'provider' => 'zohomail_api',
+            ),
+			'office365_api' => array(
+                'provider' => 'office365_api',
+            ),
         );
 
         return $provider_fields;

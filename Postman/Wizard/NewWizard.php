@@ -1824,7 +1824,6 @@ class Post_SMTP_New_Wizard {
                     
                 }
             }else{
-                $new_connection = [];
              // New save logic for versions other than 1.0.1.
                 if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
                     $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
@@ -1861,6 +1860,7 @@ class Post_SMTP_New_Wizard {
                             'sender_name'  => $sanitized['sender_name'] ?? '',
                             'zohomail_client_id' => $sanitized['zohomail_client_id'] ?? '',
                             'zohomail_client_secret' => $sanitized['zohomail_client_secret'] ?? '',
+                            'timestamp'     => time() + 3600,
                         );
 
                         // Extract other Zoho values from $form_data.
@@ -1881,6 +1881,7 @@ class Post_SMTP_New_Wizard {
                             'access_token' => $form_data[ 'access_token' ],
                             'refresh_token' => $form_data[ 'refresh_token' ],
                             'token_expires' => $form_data[ 'token_expires' ],
+                            'timestamp'     => time() + 3600,
                             'office365_app_id' => $sanitized[ 'office365_app_id' ],
                             'office365_app_password' => $sanitized[ 'office365_app_password' ],
                         );
@@ -1896,7 +1897,6 @@ class Post_SMTP_New_Wizard {
                             $id = array_key_last($mail_connections);
                         }
                     }
-
                     // Save the new mail connections to the 'postman_connections' option.
                     $response =  update_option( 'postman_connections', $mail_connections );
 
