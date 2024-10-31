@@ -1826,6 +1826,7 @@ class Post_SMTP_New_Wizard {
             }else{
              // New save logic for versions other than 1.0.1.
                 if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
+                    $new_connection = [];
                     $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
                     // Initialize the connections array.
                     $mail_connections = get_option( 'postman_connections' );
