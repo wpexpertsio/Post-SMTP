@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 require_once 'PostmanModuleTransport.php';
@@ -10,11 +10,11 @@ require_once 'PostmanModuleTransport.php';
  * @author jasonhendriks
  */
 class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements PostmanModuleTransport {
-	const SLUG = 'mailgun_api';
-	const PORT = 443;
-	const HOST = 'api.mailgun.net';
-	const EU_REGION = 'api.eu.mailgun.net';
-	const PRIORITY = 47000;
+	const SLUG                 = 'mailgun_api';
+	const PORT                 = 443;
+	const HOST                 = 'api.mailgun.net';
+	const EU_REGION            = 'api.eu.mailgun.net';
+	const PRIORITY             = 47000;
 	const MAILGUN_AUTH_OPTIONS = 'postman_mailgun_auth_options';
 	const MAILGUN_AUTH_SECTION = 'postman_mailgun_auth_section';
 
@@ -26,10 +26,13 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 		parent::__construct( $rootPluginFilenameAndPath );
 
 		// add a hook on the plugins_loaded event
-		add_action( 'admin_init', array(
+		add_action(
+			'admin_init',
+			array(
 				$this,
 				'on_admin_init',
-		) );
+			)
+		);
 	}
 	public function getProtocol() {
 		return 'https';
@@ -74,16 +77,16 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	 */
 	public function createMailEngine() {
 		$existing_db_version = get_option( 'postman_db_version' );
-        $connection_details  = get_option( 'postman_connections' );
+		$connection_details  = get_option( 'postman_connections' );
 
 		if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-			$apiKey = $this->options->getMailgunApiKey();
+			$apiKey     = $this->options->getMailgunApiKey();
 			$domainName = $this->options->getMailgunDomainName();
-        } else {
-			$primary = $this->options->getSelectedPrimary();
-            $apiKey = $connection_details[$primary]['mailgun_api_key'];
-			$domainName = $connection_details[$primary]['mailgun_domain_name'];
-        }
+		} else {
+			$primary    = $this->options->getSelectedPrimary();
+			$apiKey     = $connection_details[ $primary ]['mailgun_api_key'];
+			$domainName = $connection_details[ $primary ]['mailgun_domain_name'];
+		}
 
 		require_once 'PostmanMailgunMailEngine.php';
 		$engine = new PostmanMailgunMailEngine( $apiKey, $domainName );
@@ -91,26 +94,25 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	}
 
 	/**
-     * @since 3.0.1
-     * @version 1.0
-     */
-    public function createMailEngineFallback() {
-        
-        $connection_details  = get_option( 'postman_connections' );
-        $fallback = $this->options->getSelectedFallback();
-        $api_key = $connection_details[$fallback]['mailgun_api_key'];
-		$domainName = $connection_details[$fallback]['mailgun_domain_name'];
-            // Wrap the API key with additional data in an array
-        $api_credentials = [
-            'api_key' => $api_key,
-            'is_fallback' => 1
-        ];
-        require_once 'PostmanMailgunMailEngine.php';
+	 * @since 3.0.1
+	 * @version 1.0
+	 */
+	public function createMailEngineFallback() {
+
+		$connection_details = get_option( 'postman_connections' );
+		$fallback           = $this->options->getSelectedFallback();
+		$api_key            = $connection_details[ $fallback ]['mailgun_api_key'];
+		$domainName         = $connection_details[ $fallback ]['mailgun_domain_name'];
+			// Wrap the API key with additional data in an array
+		$api_credentials = array(
+			'api_key'     => $api_key,
+			'is_fallback' => 1,
+		);
+		require_once 'PostmanMailgunMailEngine.php';
 		$engine = new PostmanMailgunMailEngine( $api_credentials, $domainName );
 
 		return $engine;
-
-    }
+	}
 
 	public function getDeliveryDetails() {
 		/* translators: where (1) is the secure icon and (2) is the transport name */
@@ -122,7 +124,7 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	 * @param mixed $data
 	 */
 	public function prepareOptionsForExport( $data ) {
-		$data = parent::prepareOptionsForExport( $data );
+		$data                                     = parent::prepareOptionsForExport( $data );
 		$data [ PostmanOptions::MAILGUN_API_KEY ] = PostmanOptions::getInstance()->getMailgunApiKey();
 		return $data;
 	}
@@ -134,9 +136,9 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	 */
 	protected function validateTransportConfiguration() {
 		$postman_db_version = get_option( 'postman_db_version' );
-		if( $postman_db_version != POST_SMTP_DB_VERSION ){
-			$messages = parent::validateTransportConfiguration();
-			$apiKey = $this->options->getMailgunApiKey();
+		if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+			$messages   = parent::validateTransportConfiguration();
+			$apiKey     = $this->options->getMailgunApiKey();
 			$domainName = $this->options->getMailgunDomainName();
 			if ( empty( $apiKey ) ) {
 				array_push( $messages, __( 'API Key can not be empty', 'post-smtp' ) . '.' );
@@ -162,17 +164,17 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	 * @see PostmanModuleTransport::getConfigurationBid()
 	 */
 	public function getConfigurationBid( PostmanWizardSocket $hostData, $userAuthOverride, $originalSmtpServer ) {
-		$recommendation = array();
-		$recommendation ['priority'] = 0;
+		$recommendation               = array();
+		$recommendation ['priority']  = 0;
 		$recommendation ['transport'] = self::SLUG;
-		$recommendation ['hostname'] = null; // scribe looks this
-		$recommendation ['label'] = $this->getName();
-		$recommendation['logo_url'] = $this->getLogoURL();
-		
+		$recommendation ['hostname']  = null; // scribe looks this
+		$recommendation ['label']     = $this->getName();
+		$recommendation['logo_url']   = $this->getLogoURL();
+
 		if ( $hostData->hostname == $this->getHostname() && $hostData->port == self::PORT ) {
 			$recommendation ['priority'] = self::PRIORITY;
 			/* translators: where variables are (1) transport name (2) host and (3) port */
-			$recommendation ['message'] = sprintf( __( ('Postman recommends the %1$s to host %2$s on port %3$d.') ), $this->getName(), $this->getHostname(), self::PORT );
+			$recommendation ['message'] = sprintf( __( ( 'Postman recommends the %1$s to host %2$s on port %3$d.' ) ), $this->getName(), $this->getHostname(), self::PORT );
 		}
 		return $recommendation;
 	}
@@ -193,11 +195,11 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 		$overrideItem = parent::createOverrideMenu( $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride );
 		// push the authentication options into the $overrideItem structure
 		$overrideItem ['auth_items'] = array(
-				array(
-                    'selected' => true,
-                    'name' => __( 'API Key', 'post-smtp' ),
-                    'value' => 'api_key',
-				),
+			array(
+				'selected' => true,
+				'name'     => __( 'API Key', 'post-smtp' ),
+				'value'    => 'api_key',
+			),
 		);
 		return $overrideItem;
 	}
@@ -224,25 +226,48 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	 */
 	public function addSettings() {
 		// the Mailgun Auth section
-		add_settings_section( PostmanMailgunTransport::MAILGUN_AUTH_SECTION, __( 'Authentication', 'post-smtp' ), array(
+		add_settings_section(
+			self::MAILGUN_AUTH_SECTION,
+			__( 'Authentication', 'post-smtp' ),
+			array(
 				$this,
 				'printMailgunAuthSectionInfo',
-		), PostmanMailgunTransport::MAILGUN_AUTH_OPTIONS );
+			),
+			self::MAILGUN_AUTH_OPTIONS
+		);
 
-		add_settings_field( PostmanOptions::MAILGUN_API_KEY, __( 'API Key', 'post-smtp' ), array(
+		add_settings_field(
+			PostmanOptions::MAILGUN_API_KEY,
+			__( 'API Key', 'post-smtp' ),
+			array(
 				$this,
 				'mailgun_api_key_callback',
-		), PostmanMailgunTransport::MAILGUN_AUTH_OPTIONS, PostmanMailgunTransport::MAILGUN_AUTH_SECTION );
+			),
+			self::MAILGUN_AUTH_OPTIONS,
+			self::MAILGUN_AUTH_SECTION
+		);
 
-		add_settings_field( PostmanOptions::MAILGUN_DOMAIN_NAME, __( 'Domain Name', 'post-smtp' ), array(
-			$this,
-			'mailgun_domain_name_callback',
-		), PostmanMailgunTransport::MAILGUN_AUTH_OPTIONS, PostmanMailgunTransport::MAILGUN_AUTH_SECTION );
+		add_settings_field(
+			PostmanOptions::MAILGUN_DOMAIN_NAME,
+			__( 'Domain Name', 'post-smtp' ),
+			array(
+				$this,
+				'mailgun_domain_name_callback',
+			),
+			self::MAILGUN_AUTH_OPTIONS,
+			self::MAILGUN_AUTH_SECTION
+		);
 
-		add_settings_field( PostmanOptions::MAILGUN_REGION, __( 'Mailgun Europe Region?', 'post-smtp' ), array(
-			$this,
-			'mailgun_region_callback',
-		), PostmanMailgunTransport::MAILGUN_AUTH_OPTIONS, PostmanMailgunTransport::MAILGUN_AUTH_SECTION );
+		add_settings_field(
+			PostmanOptions::MAILGUN_REGION,
+			__( 'Mailgun Europe Region?', 'post-smtp' ),
+			array(
+				$this,
+				'mailgun_region_callback',
+			),
+			self::MAILGUN_AUTH_OPTIONS,
+			self::MAILGUN_AUTH_SECTION
+		);
 	}
 	public function printMailgunAuthSectionInfo() {
 		/* Translators: Where (1) is the service URL and (2) is the service name and (3) is a api key URL */
@@ -272,11 +297,16 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	public function registerStylesAndScripts() {
 		// register the stylesheet and javascript external resources
 		$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
-		wp_register_script( 'postman_mailgun_script', plugins_url( 'Postman/Postman-Mail/postman_mailgun.js', $this->rootPluginFilenameAndPath ), array(
+		wp_register_script(
+			'postman_mailgun_script',
+			plugins_url( 'Postman/Postman-Mail/postman_mailgun.js', $this->rootPluginFilenameAndPath ),
+			array(
 				PostmanViewController::JQUERY_SCRIPT,
 				'jquery_validation',
 				PostmanViewController::POSTMAN_SCRIPT,
-		), $pluginData ['version'] );
+			),
+			$pluginData ['version']
+		);
 	}
 
 	/**
@@ -305,25 +335,23 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 
 	/**
 	 * Get Socket's logo
-	 * 
+	 *
 	 * @since 2.1
 	 * @version 1.0
 	 */
 	public function getLogoURL() {
 
-		return POST_SMTP_ASSETS . "images/logos/mailgun.png";
-
+		return POST_SMTP_ASSETS . 'images/logos/mailgun.png';
 	}
 
 	/**
 	 * Returns true, to prevent from errors because it's default Module Transport.
-	 * 
+	 *
 	 * @since 2.1.8
 	 * @version 1.0
 	 */
 	public function has_granted() {
 
 		return true;
-
 	}
 }

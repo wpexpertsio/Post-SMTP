@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 /*
  * Plugin Name: Post SMTP
@@ -27,72 +27,74 @@ if ( ! defined( 'ABSPATH' ) ) {
 // filter postman_module: implement this filter and return the instance of the module
 // filter postman_register_modules: apply this filter to register the module
 
-/** 
+/**
  * Freemius initialization
- * 
+ *
  * @since 2.1.1
  * @version 1.0
  */
 if ( ! function_exists( 'ps_fs' ) ) {
-    // Create a helper function for easy SDK access.
-    function ps_fs() {
-        global $ps_fs;
+	// Create a helper function for easy SDK access.
+	function ps_fs() {
+		global $ps_fs;
 
-        if ( ! isset( $ps_fs ) ) {
-            // Include Freemius SDK.
-            require_once dirname(__FILE__) . '/freemius/start.php';
+		if ( ! isset( $ps_fs ) ) {
+			// Include Freemius SDK.
+			require_once __DIR__ . '/freemius/start.php';
 
-            $ps_fs = fs_dynamic_init( array(
-                'id'                  => '10461',
-                'slug'                => 'post-smtp',
-                'type'                => 'plugin',
-                'public_key'          => 'pk_28fcefa3d0ae86f8cdf6b7f71c0cc',
-                'is_premium'          => false,
-                'has_addons'          => false,
-				'bundle_id' 		  => '10910',
-				'bundle_public_key'   => 'pk_c5110ef04ba30cd57dd970a269a1a',
-                'has_paid_plans'      => false,
-                'menu'                => array(
-                    'slug'           => 'postman',
-                    'first-path'     => 'admin.php?page=postman/configuration_wizard',
-                    'account'        => false,
-                ),
-            ) );
-        }
+			$ps_fs = fs_dynamic_init(
+				array(
+					'id'                => '10461',
+					'slug'              => 'post-smtp',
+					'type'              => 'plugin',
+					'public_key'        => 'pk_28fcefa3d0ae86f8cdf6b7f71c0cc',
+					'is_premium'        => false,
+					'has_addons'        => false,
+					'bundle_id'         => '10910',
+					'bundle_public_key' => 'pk_c5110ef04ba30cd57dd970a269a1a',
+					'has_paid_plans'    => false,
+					'menu'              => array(
+						'slug'       => 'postman',
+						'first-path' => 'admin.php?page=postman/configuration_wizard',
+						'account'    => false,
+					),
+				)
+			);
+		}
 
-        return $ps_fs;
-    }
+		return $ps_fs;
+	}
 
-    // Init Freemius.
-    ps_fs();
-    // Signal that SDK was initiated.
-    do_action( 'ps_fs_loaded' );
+	// Init Freemius.
+	ps_fs();
+	// Signal that SDK was initiated.
+	do_action( 'ps_fs_loaded' );
 }
 
 function ps_fs_custom_connect_message_on_update(
-    $message,
-    $user_first_name,
-    $product_title,
-    $user_login,
-    $site_link,
-    $freemius_link
+	$message,
+	$user_first_name,
+	$product_title,
+	$user_login,
+	$site_link,
+	$freemius_link
 ) {
-    return sprintf(
+	return sprintf(
 		'<div class="ps-optin-popup">' .
-        '<h1>' . __( 'Stay on the safe side', 'post-smtp' ) . '</h1>' .
-		'<p>'.__( 'Receive our plugin\'s alert in case of critical security and feature updates and allow non-sensitive diagnostic tracking.', 'post-smtp' ).'</p>' .
-		'</div>' . 
+		'<h1>' . __( 'Stay on the safe side', 'post-smtp' ) . '</h1>' .
+		'<p>' . __( 'Receive our plugin\'s alert in case of critical security and feature updates and allow non-sensitive diagnostic tracking.', 'post-smtp' ) . '</p>' .
+		'</div>' .
 		'<div style="clear: both;"></div>'
-    );
+	);
 }
- 
-ps_fs()->add_filter('connect_message', 'ps_fs_custom_connect_message_on_update', 10, 6);
+
+ps_fs()->add_filter( 'connect_message', 'ps_fs_custom_connect_message_on_update', 10, 6 );
 
 function ps_fs_custom_icon() {
-    return dirname( __FILE__ ) . '/assets/images/icons/optin.png';
+	return __DIR__ . '/assets/images/icons/optin.png';
 }
- 
-ps_fs()->add_filter( 'plugin_icon' , 'ps_fs_custom_icon' );
+
+ps_fs()->add_filter( 'plugin_icon', 'ps_fs_custom_icon' );
 
 
 /**
@@ -101,12 +103,12 @@ ps_fs()->add_filter( 'plugin_icon' , 'ps_fs_custom_icon' );
 
 define( 'POST_SMTP_BASE', __FILE__ );
 define( 'POST_SMTP_PATH', __DIR__ );
-define( 'POST_SMTP_URL', plugins_url('', POST_SMTP_BASE ) );
+define( 'POST_SMTP_URL', plugins_url( '', POST_SMTP_BASE ) );
 define( 'POST_SMTP_VER', '3.0.1' );
 define( 'POST_SMTP_DB_VERSION', '1.0.2' );
 define( 'POST_SMTP_ASSETS', plugin_dir_url( __FILE__ ) . 'assets/' );
 
-$postman_smtp_exist = in_array( 'postman-smtp/postman-smtp.php', (array) get_option( 'active_plugins', array() ) );
+$postman_smtp_exist   = in_array( 'postman-smtp/postman-smtp.php', (array) get_option( 'active_plugins', array() ) );
 $required_php_version = version_compare( PHP_VERSION, '5.6.0', '<' );
 
 if ( $postman_smtp_exist || $required_php_version ) {
@@ -172,16 +174,16 @@ function post_dismiss_not_configured() {
 			});
 		})(jQuery);
 	</script>
-<?php
+	<?php
 }
 add_action( 'admin_footer', 'post_dismiss_not_configured' );
 
 function post_smtp_general_scripts() {
-    $localize = include( POST_SMTP_PATH . '/Postman/Localize.php' );
-    wp_register_script( 'post-smtp-localize', POST_SMTP_URL . '/script/localize.js', [], false );
-    wp_localize_script( 'post-smtp-localize', 'post_smtp_localize', $localize );
-    wp_enqueue_script( 'post-smtp-localize' );
-    wp_enqueue_script( 'post-smtp-hooks', POST_SMTP_URL . '/script/post-smtp-hooks.js', [], false );
+	$localize = include POST_SMTP_PATH . '/Postman/Localize.php';
+	wp_register_script( 'post-smtp-localize', POST_SMTP_URL . '/script/localize.js', array(), false );
+	wp_localize_script( 'post-smtp-localize', 'post_smtp_localize', $localize );
+	wp_enqueue_script( 'post-smtp-localize' );
+	wp_enqueue_script( 'post-smtp-hooks', POST_SMTP_URL . '/script/post-smtp-hooks.js', array(), false );
 }
 add_action( 'admin_enqueue_scripts', 'post_smtp_general_scripts', 8 );
 
@@ -201,5 +203,5 @@ function post_smtp_start( $startingMemory ) {
 function post_setupPostman() {
 	require_once 'Postman/Postman.php';
 	$kevinCostner = new Postman( __FILE__, POST_SMTP_VER );
-	do_action( 'post_smtp_init');
+	do_action( 'post_smtp_init' );
 }

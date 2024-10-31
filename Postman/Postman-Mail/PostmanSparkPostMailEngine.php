@@ -1,267 +1,260 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
-if( !class_exists( 'PostmanSparkPostMailEngine' ) ):
+if ( ! class_exists( 'PostmanSparkPostMailEngine' ) ) :
 
-require_once 'Services/SparkPost/Handler.php'; 
-require_once plugin_dir_path( __FILE__ ) . 'PostMailConnections.php';
+	require_once 'Services/SparkPost/Handler.php';
+	require_once plugin_dir_path( __FILE__ ) . 'PostMailConnections.php';
 
-class PostmanSparkPostMailEngine implements PostmanMailEngine {
+	class PostmanSparkPostMailEngine implements PostmanMailEngine {
 
-    protected $logger;
+		protected $logger;
 
-    private $transcript;
+		private $transcript;
 
-    private $api_key;
+		private $api_key;
 
-    private $is_fallback;
+		private $is_fallback;
 
-    /**
-     * @since 2.2
-     * @version 1.0
-     */
-    public function __construct( $api_key ) {
-        if ( is_array( $api_key ) ) {
-            // When passed as an array with additional data
-            assert( !empty( $api_key['api_key'] ) );
-            $this->api_key = $api_key['api_key'];
-            $this->is_fallback = $api_key['is_fallback'] ?? null;
-        } else {
-            // When passed as a string (just the API key)
-            assert( !empty( $api_key ) );
-            $this->api_key = $api_key;
-            $this->is_fallback = null;
-        }
+		/**
+		 * @since 2.2
+		 * @version 1.0
+		 */
+		public function __construct( $api_key ) {
+			if ( is_array( $api_key ) ) {
+				// When passed as an array with additional data
+				assert( ! empty( $api_key['api_key'] ) );
+				$this->api_key     = $api_key['api_key'];
+				$this->is_fallback = $api_key['is_fallback'] ?? null;
+			} else {
+				// When passed as a string (just the API key)
+				assert( ! empty( $api_key ) );
+				$this->api_key     = $api_key;
+				$this->is_fallback = null;
+			}
 
-        // create the logger
-        $this->logger = new PostmanLogger( get_class( $this ) );
-        
-    }
+			// create the logger
+			$this->logger = new PostmanLogger( get_class( $this ) );
+		}
 
-    public function getTranscript() {
-        return $this->transcript;
-    }
+		public function getTranscript() {
+			return $this->transcript;
+		}
 
-    private function addAttachmentsToMail( PostmanMessage $message ) {
-        
-        $attachments = $message->getAttachments();
-        
-        if ( ! is_array( $attachments ) ) {
-            // WordPress may a single filename or a newline-delimited string list of multiple filenames
-            $attArray = explode( PHP_EOL, $attachments );
-        } else {
-            $attArray = $attachments;
-        }
-        // otherwise WordPress sends an array
-        $attachments = array();
-        foreach ( $attArray as $file ) {
-            if ( ! empty( $file ) ) {
-                $this->logger->debug( 'Adding attachment: ' . $file );
+		private function addAttachmentsToMail( PostmanMessage $message ) {
 
-                $file_name = basename( $file );
-                $file_type = wp_check_filetype( $file );
-                $attachments[] = array(
-                    'name' => $file_name,
-                    'type' => $file_type['type'],
-                    'data' => base64_encode( file_get_contents( $file ) )
-                );
-            }
-        }
+			$attachments = $message->getAttachments();
 
-        return $attachments;
+			if ( ! is_array( $attachments ) ) {
+				// WordPress may a single filename or a newline-delimited string list of multiple filenames
+				$attArray = explode( PHP_EOL, $attachments );
+			} else {
+				$attArray = $attachments;
+			}
+			// otherwise WordPress sends an array
+			$attachments = array();
+			foreach ( $attArray as $file ) {
+				if ( ! empty( $file ) ) {
+					$this->logger->debug( 'Adding attachment: ' . $file );
 
-    }
+					$file_name     = basename( $file );
+					$file_type     = wp_check_filetype( $file );
+					$attachments[] = array(
+						'name' => $file_name,
+						'type' => $file_type['type'],
+						'data' => base64_encode( file_get_contents( $file ) ),
+					);
+				}
+			}
 
-    public function send( PostmanMessage $message ) { 
+			return $attachments;
+		}
 
-        $options = PostmanOptions::getInstance();
-        $postman_db_version = get_option( 'postman_db_version' );
+		public function send( PostmanMessage $message ) {
 
-        if ( $this->logger->isDebug() ) {
-            $this->logger->debug( 'Creating SparkPost service with api_key=' . $this->api_key );
-        }
+			$options            = PostmanOptions::getInstance();
+			$postman_db_version = get_option( 'postman_db_version' );
 
-        $spark_post = new PostmanSparkPost( $this->api_key );
+			if ( $this->logger->isDebug() ) {
+				$this->logger->debug( 'Creating SparkPost service with api_key=' . $this->api_key );
+			}
 
-        $sender = $message->getFromAddress();
-        if( $postman_db_version != POST_SMTP_DB_VERSION ){
-            $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-        }else{
-            $connection_details  = get_option( 'postman_connections' );
-            if( $this->is_fallback == null ){
-                $primary = $options->getSelectedPrimary();
-                $senderEmail = $connection_details[$primary]['sender_email'];
-            }else{
-                $fallback = $options->getSelectedFallback();
-                $senderEmail = $connection_details[$fallback]['sender_email'];
-            }
-        }
-        $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
+			$spark_post = new PostmanSparkPost( $this->api_key );
 
-        $sender->log( $this->logger, 'From' );
+			$sender = $message->getFromAddress();
+			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+				$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+			} else {
+				$connection_details = get_option( 'postman_connections' );
+				if ( $this->is_fallback == null ) {
+					$primary     = $options->getSelectedPrimary();
+					$senderEmail = $connection_details[ $primary ]['sender_email'];
+				} else {
+					$fallback    = $options->getSelectedFallback();
+					$senderEmail = $connection_details[ $fallback ]['sender_email'];
+				}
+			}
+			$senderName = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
 
-        $body = [
-            'content' => [
-                'from' => [
-                    'name' => $senderName,
-                    'email' => $senderEmail,
-                ]
-            ]
-        ];
+			$sender->log( $this->logger, 'From' );
 
-        $body['content']['subject'] =  $message->getSubject();
+			$body = array(
+				'content' => array(
+					'from' => array(
+						'name'  => $senderName,
+						'email' => $senderEmail,
+					),
+				),
+			);
 
-        $htmlPart = $message->getBodyHtmlPart();
-        if ( ! empty( $htmlPart ) ) {
-            $this->logger->debug( 'Adding body as html' );
-            $body['content']['html'] = $htmlPart;
-        }
+			$body['content']['subject'] = $message->getSubject();
 
-        $textPart = $message->getBodyTextPart();
-        if ( ! empty( $textPart ) ) {
-            $this->logger->debug( 'Adding body as text' );
-            $body['content']['text'] = $textPart;
-        }
+			$htmlPart = $message->getBodyHtmlPart();
+			if ( ! empty( $htmlPart ) ) {
+				$this->logger->debug( 'Adding body as html' );
+				$body['content']['html'] = $htmlPart;
+			}
 
-        // add attachments
-        $this->logger->debug( 'Adding attachments' );
+			$textPart = $message->getBodyTextPart();
+			if ( ! empty( $textPart ) ) {
+				$this->logger->debug( 'Adding body as text' );
+				$body['content']['text'] = $textPart;
+			}
 
-        $attachments = $this->addAttachmentsToMail( $message );
-        $body['content']['attachments'] = $attachments;
+			// add attachments
+			$this->logger->debug( 'Adding attachments' );
 
-        $tos = array();
-        $duplicates = array();
+			$attachments                    = $this->addAttachmentsToMail( $message );
+			$body['content']['attachments'] = $attachments;
 
-        // add the to recipients
-        foreach ( (array)$message->getToRecipients() as $recipient ) {
-                    
-            if ( !array_key_exists( $recipient->getEmail(), $duplicates ) ) {
+			$tos        = array();
+			$duplicates = array();
 
-                $tos[] = array(
-                    'address' => array(
-                        'email' =>  $recipient->getEmail()
-                    ),
-                );
-                
-                $duplicates[] = $recipient->getEmail();
+			// add the to recipients
+			foreach ( (array) $message->getToRecipients() as $recipient ) {
 
-            }
+				if ( ! array_key_exists( $recipient->getEmail(), $duplicates ) ) {
 
-        }
+					$tos[] = array(
+						'address' => array(
+							'email' => $recipient->getEmail(),
+						),
+					);
 
-        $body['recipients'] = $tos;
+					$duplicates[] = $recipient->getEmail();
 
-        //Add cc
-        $cc = array();
-        $duplicates = array();
-        foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
+				}
+			}
 
-            if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
+			$body['recipients'] = $tos;
 
-                $recipient->log($this->logger, 'Cc');
+			// Add cc
+			$cc         = array();
+			$duplicates = array();
+			foreach ( (array) $message->getCcRecipients() as $recipient ) {
 
-                $cc[] = array(
-                    'address' => array(
-                        'email' =>  $recipient->getEmail()
-                    ),
-                );
-                
-                $duplicates[] = $recipient->getEmail();
+				if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 
-            }
+					$recipient->log( $this->logger, 'Cc' );
 
-        }
-        if( !empty( $cc ) ) {
-            $body['cc'] = $cc;
-        }
+					$cc[] = array(
+						'address' => array(
+							'email' => $recipient->getEmail(),
+						),
+					);
 
-        //Add bcc
-        $bcc = array();
-        $duplicates = array();
-        foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
+					$duplicates[] = $recipient->getEmail();
 
-            if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
+				}
+			}
+			if ( ! empty( $cc ) ) {
+				$body['cc'] = $cc;
+			}
 
-                $recipient->log($this->logger, 'Bcc');
-                $bcc[] = array(
-                    'address' => array(
-                        'email' =>  $recipient->getEmail()
-                    ),
-                );
+			// Add bcc
+			$bcc        = array();
+			$duplicates = array();
+			foreach ( (array) $message->getBccRecipients() as $recipient ) {
 
-                $duplicates[] = $recipient->getEmail();
+				if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 
-            }
+					$recipient->log( $this->logger, 'Bcc' );
+					$bcc[] = array(
+						'address' => array(
+							'email' => $recipient->getEmail(),
+						),
+					);
 
-        }
-        
-        if( !empty( $bcc ) ) {
-            $body['bcc'] = $bcc;
-        }
-        // add the reply-to
-        $replyTo = $message->getReplyTo();
-        // $replyTo is null or a PostmanEmailAddress object
-        if ( isset( $replyTo ) ) {
-            $body['content']['reply_to'] = $replyTo->getEmail();
-        }
+					$duplicates[] = $recipient->getEmail();
 
-        // add the Postman signature - append it to whatever the user may have set
-        if ( ! $options->isStealthModeEnabled() ) {
-            $pluginData = apply_filters( 'postman_get_plugin_metadata', null );
-            $headers['X-Mailer'] = sprintf( 'Postman SMTP %s for WordPress (%s)', $pluginData ['version'], 'https://wordpress.org/plugins/post-smtp/' );
-        }
+				}
+			}
 
-        foreach ( ( array ) $message->getHeaders() as $header ) {
-            $this->logger->debug( sprintf( 'Adding user header %s=%s', $header ['name'], $header ['content'] ) );
-            $headers[$header['name']] = $header ['content'];
-        }
+			if ( ! empty( $bcc ) ) {
+				$body['bcc'] = $bcc;
+			}
+			// add the reply-to
+			$replyTo = $message->getReplyTo();
+			// $replyTo is null or a PostmanEmailAddress object
+			if ( isset( $replyTo ) ) {
+				$body['content']['reply_to'] = $replyTo->getEmail();
+			}
 
-        // add the messageId
-        $messageId = $message->getMessageId();
-        if ( ! empty( $messageId ) ) {
-            $headers['message-id'] = $messageId;
-        }
+			// add the Postman signature - append it to whatever the user may have set
+			if ( ! $options->isStealthModeEnabled() ) {
+				$pluginData          = apply_filters( 'postman_get_plugin_metadata', null );
+				$headers['X-Mailer'] = sprintf( 'Postman SMTP %s for WordPress (%s)', $pluginData ['version'], 'https://wordpress.org/plugins/post-smtp/' );
+			}
 
-        $body['headers'] = $headers;
+			foreach ( (array) $message->getHeaders() as $header ) {
+				$this->logger->debug( sprintf( 'Adding user header %s=%s', $header ['name'], $header ['content'] ) );
+				$headers[ $header['name'] ] = $header ['content'];
+			}
 
-        // if the caller set a Content-Type header, use it
-        $contentType = $message->getContentType();
-        if ( ! empty( $contentType ) ) {
-            $this->logger->debug( 'Some header keys are reserved. You may not include any of the following reserved headers: x-sg-id, x-sg-eid, received, dkim-signature, Content-Type, Content-Transfer-Encoding, To, From, Subject, Reply-To, CC, BCC.' );
-        }
+			// add the messageId
+			$messageId = $message->getMessageId();
+			if ( ! empty( $messageId ) ) {
+				$headers['message-id'] = $messageId;
+			}
 
-        //Send Email
-        try {
+			$body['headers'] = $headers;
 
-            $response = $spark_post->send( $body );
+			// if the caller set a Content-Type header, use it
+			$contentType = $message->getContentType();
+			if ( ! empty( $contentType ) ) {
+				$this->logger->debug( 'Some header keys are reserved. You may not include any of the following reserved headers: x-sg-id, x-sg-eid, received, dkim-signature, Content-Type, Content-Transfer-Encoding, To, From, Subject, Reply-To, CC, BCC.' );
+			}
 
-            if ( $this->logger->isDebug() ) {
+			// Send Email
+			try {
 
-                $this->logger->debug( 'Sending mail' );
+				$response = $spark_post->send( $body );
 
-            }
-            
-            
-            $this->transcript = print_r( $response, true );
-            $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-            $this->transcript .= print_r( $body, true );
-            $this->logger->debug( 'Transcript=' . $this->transcript );
+				if ( $this->logger->isDebug() ) {
 
-        } catch ( Exception $e ) {
+					$this->logger->debug( 'Sending mail' );
 
-            $this->transcript = $e->getMessage();
-            $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-            $this->transcript .= print_r( $body, true );
-            $this->logger->debug( 'Transcript=' . $this->transcript );
+				}
 
-            throw $e;
+				$this->transcript  = print_r( $response, true );
+				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
+				$this->transcript .= print_r( $body, true );
+				$this->logger->debug( 'Transcript=' . $this->transcript );
 
-        }
+			} catch ( Exception $e ) {
 
-    }
-}
+				$this->transcript  = $e->getMessage();
+				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
+				$this->transcript .= print_r( $body, true );
+				$this->logger->debug( 'Transcript=' . $this->transcript );
+
+				throw $e;
+
+			}
+		}
+	}
 
 endif;

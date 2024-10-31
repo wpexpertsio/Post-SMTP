@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
@@ -31,7 +31,7 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 	require_once 'Zend-1.12.10/Mail/Protocol/Smtp/Auth/Plain.php';
 
 	/**
-	 * This class knows how to interface with Wordpress
+	 * This class knows how to interface with WordPress
 	 * including loading/saving to the database.
 	 *
 	 * The various Transports available:
@@ -87,7 +87,7 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			}
 
 			// add the headers - see http://framework.zend.com/manual/1.12/en/zend.mail.additional-headers.html
-			foreach ( ( array ) $message->getHeaders() as $header ) {
+			foreach ( (array) $message->getHeaders() as $header ) {
 				$this->logger->debug( sprintf( 'Adding user header %s=%s', $header ['name'], $header ['content'] ) );
 				$mail->addHeader( $header ['name'], $header ['content'], true );
 			}
@@ -108,17 +108,16 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			/**
 			 * If Sender and From are not same thn ADD Sender, otherwise do not add Sender
 			 * From RFC 2822 Section 3.6.2: https://www.rfc-editor.org/rfc/rfc2822#section-3.6.2
-			 * 
+			 *
 			 * @since 2.3.0
 			 */
-			if( !$this->is_from_and_sender_same( $message, $sender ) ) {
+			if ( ! $this->is_from_and_sender_same( $message, $sender ) ) {
 
 				// add the Sender Header, overriding what the user may have set
 				$mail->addHeader( 'Sender', $sender, false );
 
-			} 
+			}
 
-			
 			// from RFC 5321: http://tools.ietf.org/html/rfc5321#section-4.4
 			// A message-originating SMTP system SHOULD NOT send a message that
 			// already contains a Return-path header field.
@@ -126,19 +125,19 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			$mail->setReturnPath( $this->transport->getEnvelopeFromEmailAddress() );
 
 			// add the to recipients
-			foreach ( ( array ) $message->getToRecipients() as $recipient ) {
+			foreach ( (array) $message->getToRecipients() as $recipient ) {
 				$recipient->log( $this->logger, 'To' );
 				$mail->addTo( $recipient->getEmail(), $recipient->getName() );
 			}
 
 			// add the cc recipients
-			foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
+			foreach ( (array) $message->getCcRecipients() as $recipient ) {
 				$recipient->log( $this->logger, 'Cc' );
 				$mail->addCc( $recipient->getEmail(), $recipient->getName() );
 			}
 
 			// add the to recipients
-			foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
+			foreach ( (array) $message->getBccRecipients() as $recipient ) {
 				$recipient->log( $this->logger, 'Bcc' );
 				$mail->addBcc( $recipient->getEmail(), $recipient->getName() );
 			}
@@ -189,7 +188,7 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			$this->logger->debug( 'Create the Zend_Mail transport' );
 			$zendTransport = $this->transport->createZendMailTransport( $this->transport->getHostname(), array() );
 
-            $transport = $this->transport instanceof PostmanDefaultModuleTransport ? null : $zendTransport;
+			$transport = $this->transport instanceof PostmanDefaultModuleTransport ? null : $zendTransport;
 
 			try {
 				// send the message
@@ -201,10 +200,10 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 				// finally not supported??
 				if ( $zendTransport->getConnection() && ! PostmanUtils::isEmpty( $zendTransport->getConnection()->getLog() ) ) {
 					$this->transcript = $zendTransport->getConnection()->getLog();
-				} else if ( method_exists( $zendTransport, 'getTranscript' ) && ! PostmanUtils::isEmpty( $zendTransport->getTranscript() ) ) {
+				} elseif ( method_exists( $zendTransport, 'getTranscript' ) && ! PostmanUtils::isEmpty( $zendTransport->getTranscript() ) ) {
 					// then use the API response
 					$this->transcript = $zendTransport->getTranscript();
-				} else if ( method_exists( $zendTransport, 'getMessage' ) && ! PostmanUtils::isEmpty( $zendTransport->getMessage() ) ) {
+				} elseif ( method_exists( $zendTransport, 'getMessage' ) && ! PostmanUtils::isEmpty( $zendTransport->getMessage() ) ) {
 					// then use the Raw Message as the Transcript
 					$this->transcript = $zendTransport->getMessage();
 				}
@@ -212,10 +211,10 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 				// finally not supported??
 				if ( $zendTransport->getConnection() && ! PostmanUtils::isEmpty( $zendTransport->getConnection()->getLog() ) ) {
 					$this->transcript = $zendTransport->getConnection()->getLog();
-				} else if ( method_exists( $zendTransport, 'getTranscript' ) && ! PostmanUtils::isEmpty( $zendTransport->getTranscript() ) ) {
+				} elseif ( method_exists( $zendTransport, 'getTranscript' ) && ! PostmanUtils::isEmpty( $zendTransport->getTranscript() ) ) {
 					// then use the API response
 					$this->transcript = $zendTransport->getTranscript();
-				} else if ( method_exists( $zendTransport, 'getMessage' ) && ! PostmanUtils::isEmpty( $zendTransport->getMessage() ) ) {
+				} elseif ( method_exists( $zendTransport, 'getMessage' ) && ! PostmanUtils::isEmpty( $zendTransport->getMessage() ) ) {
 					// then use the Raw Message as the Transcript
 					$this->transcript = $zendTransport->getMessage();
 				}
@@ -244,7 +243,7 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			$sender = $message->getFromAddress();
 			// now log it and push it into the message
 			$senderEmail = $sender->getEmail();
-			$senderName = $sender->getName();
+			$senderName  = $sender->getName();
 			assert( ! empty( $senderEmail ) );
 			if ( ! empty( $senderName ) ) {
 				$mail->setFrom( $senderEmail, $senderName );
@@ -262,27 +261,25 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 
 		/**
 		 * Check Whather, From And Sender Are Same
-		 * 
+		 *
 		 * @param PostmanMessage $message
-		 * @param String $sender
+		 * @param String         $sender
 		 * @since 2.3.0
 		 * @version 1.0.0
 		 */
 		public function is_from_and_sender_same( PostmanMessage $message, $sender = '' ) {
 
-			$sender = empty( $sender ) ? $this->transport->getEnvelopeFromEmailAddress() : $sender;
-			$from = $message->getFromAddress();
+			$sender     = empty( $sender ) ? $this->transport->getEnvelopeFromEmailAddress() : $sender;
+			$from       = $message->getFromAddress();
 			$from_email = $from->getEmail();
 
-			if( $sender == $from_email ) {
+			if ( $sender == $from_email ) {
 
 				return true;
 
 			}
 
 			return false;
-
 		}
 	}
 }
-

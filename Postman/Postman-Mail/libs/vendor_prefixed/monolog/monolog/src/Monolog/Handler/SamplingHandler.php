@@ -25,75 +25,69 @@ use PostSMTP\Vendor\Monolog\Formatter\FormatterInterface;
  * @author Bryan Davis <bd808@wikimedia.org>
  * @author Kunal Mehta <legoktm@gmail.com>
  */
-class SamplingHandler extends \PostSMTP\Vendor\Monolog\Handler\AbstractHandler
-{
-    /**
-     * @var callable|HandlerInterface $handler
-     */
-    protected $handler;
-    /**
-     * @var int $factor
-     */
-    protected $factor;
-    /**
-     * @param callable|HandlerInterface $handler Handler or factory callable($record|null, $samplingHandler).
-     * @param int                       $factor  Sample factor
-     */
-    public function __construct($handler, $factor)
-    {
-        parent::__construct();
-        $this->handler = $handler;
-        $this->factor = $factor;
-        if (!$this->handler instanceof \PostSMTP\Vendor\Monolog\Handler\HandlerInterface && !\is_callable($this->handler)) {
-            throw new \RuntimeException("The given handler (" . \json_encode($this->handler) . ") is not a callable nor a Monolog\\Handler\\HandlerInterface object");
-        }
-    }
-    public function isHandling(array $record)
-    {
-        return $this->getHandler($record)->isHandling($record);
-    }
-    public function handle(array $record)
-    {
-        if ($this->isHandling($record) && \mt_rand(1, $this->factor) === 1) {
-            if ($this->processors) {
-                foreach ($this->processors as $processor) {
-                    $record = \call_user_func($processor, $record);
-                }
-            }
-            $this->getHandler($record)->handle($record);
-        }
-        return \false === $this->bubble;
-    }
-    /**
-     * Return the nested handler
-     *
-     * If the handler was provided as a factory callable, this will trigger the handler's instantiation.
-     *
-     * @return HandlerInterface
-     */
-    public function getHandler(array $record = null)
-    {
-        if (!$this->handler instanceof \PostSMTP\Vendor\Monolog\Handler\HandlerInterface) {
-            $this->handler = \call_user_func($this->handler, $record, $this);
-            if (!$this->handler instanceof \PostSMTP\Vendor\Monolog\Handler\HandlerInterface) {
-                throw new \RuntimeException("The factory callable should return a HandlerInterface");
-            }
-        }
-        return $this->handler;
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function setFormatter(\PostSMTP\Vendor\Monolog\Formatter\FormatterInterface $formatter)
-    {
-        $this->getHandler()->setFormatter($formatter);
-        return $this;
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormatter()
-    {
-        return $this->getHandler()->getFormatter();
-    }
+class SamplingHandler extends \PostSMTP\Vendor\Monolog\Handler\AbstractHandler {
+
+	/**
+	 * @var callable|HandlerInterface $handler
+	 */
+	protected $handler;
+	/**
+	 * @var int $factor
+	 */
+	protected $factor;
+	/**
+	 * @param callable|HandlerInterface $handler Handler or factory callable($record|null, $samplingHandler).
+	 * @param int                       $factor  Sample factor
+	 */
+	public function __construct( $handler, $factor ) {
+		parent::__construct();
+		$this->handler = $handler;
+		$this->factor  = $factor;
+		if ( ! $this->handler instanceof \PostSMTP\Vendor\Monolog\Handler\HandlerInterface && ! \is_callable( $this->handler ) ) {
+			throw new \RuntimeException( 'The given handler (' . \json_encode( $this->handler ) . ') is not a callable nor a Monolog\\Handler\\HandlerInterface object' );
+		}
+	}
+	public function isHandling( array $record ) {
+		return $this->getHandler( $record )->isHandling( $record );
+	}
+	public function handle( array $record ) {
+		if ( $this->isHandling( $record ) && \mt_rand( 1, $this->factor ) === 1 ) {
+			if ( $this->processors ) {
+				foreach ( $this->processors as $processor ) {
+					$record = \call_user_func( $processor, $record );
+				}
+			}
+			$this->getHandler( $record )->handle( $record );
+		}
+		return \false === $this->bubble;
+	}
+	/**
+	 * Return the nested handler
+	 *
+	 * If the handler was provided as a factory callable, this will trigger the handler's instantiation.
+	 *
+	 * @return HandlerInterface
+	 */
+	public function getHandler( array $record = null ) {
+		if ( ! $this->handler instanceof \PostSMTP\Vendor\Monolog\Handler\HandlerInterface ) {
+			$this->handler = \call_user_func( $this->handler, $record, $this );
+			if ( ! $this->handler instanceof \PostSMTP\Vendor\Monolog\Handler\HandlerInterface ) {
+				throw new \RuntimeException( 'The factory callable should return a HandlerInterface' );
+			}
+		}
+		return $this->handler;
+	}
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setFormatter( \PostSMTP\Vendor\Monolog\Formatter\FormatterInterface $formatter ) {
+		$this->getHandler()->setFormatter( $formatter );
+		return $this;
+	}
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getFormatter() {
+		return $this->getHandler()->getFormatter();
+	}
 }

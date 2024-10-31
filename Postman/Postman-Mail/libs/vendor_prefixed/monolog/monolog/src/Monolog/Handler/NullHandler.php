@@ -19,23 +19,21 @@ use PostSMTP\Vendor\Monolog\Logger;
  *
  * @author Jordi Boggiano <j.boggiano@seld.be>
  */
-class NullHandler extends \PostSMTP\Vendor\Monolog\Handler\AbstractHandler
-{
-    /**
-     * @param int $level The minimum logging level at which this handler will be triggered
-     */
-    public function __construct($level = \PostSMTP\Vendor\Monolog\Logger::DEBUG)
-    {
-        parent::__construct($level, \false);
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function handle(array $record)
-    {
-        if ($record['level'] < $this->level) {
-            return \false;
-        }
-        return \true;
-    }
+class NullHandler extends \PostSMTP\Vendor\Monolog\Handler\AbstractHandler {
+
+	/**
+	 * @param int $level The minimum logging level at which this handler will be triggered
+	 */
+	public function __construct( $level = \PostSMTP\Vendor\Monolog\Logger::DEBUG ) {
+		parent::__construct( $level, \false );
+	}
+	/**
+	 * {@inheritdoc}
+	 */
+	public function handle( array $record ) {
+		if ( $record['level'] < $this->level ) {
+			return \false;
+		}
+		return \true;
+	}
 }
