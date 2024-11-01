@@ -155,6 +155,7 @@ class PostmanSendTestEmailController {
 		$user_email = wp_get_current_user()->user_email;
 		
 		$nonce_field = wp_nonce_field( 'post-smtp', 'security', true, false );
+		
 		echo '
 		<div class="send-test-email">
 		

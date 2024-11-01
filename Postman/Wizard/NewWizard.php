@@ -379,6 +379,20 @@ class Post_SMTP_New_Wizard {
                                                 <span class="ps-form-control-info">Enter the email address where you want to send a test email message.</span>
                                                 <p class="ps-form-control-info">Are your WordPress emails getting broken? Check out our guide on <a href="https://postmansmtp.com/fix-for-broken-emails/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank">how to Fix Broken Emails</a>.</p>
                                             </div>
+                                            <?php 
+                                                $socket_aws = isset( $_GET['socket'] ) ? sanitize_text_field( $_GET['socket'] ) : '';
+                                                if ( $socket_aws === 'aws_ses_api' ) : ?>
+                                                    <div class="ps-form-note">
+                                                        <p><strong>⚠️ <?php esc_html_e( 'NOTE:', 'post-smtp' ); ?></strong> 
+                                                            <?php esc_html_e( 'If your account is still in Amazon SES sandbox mode. You can only send mail from verified email addresses.', 'post-smtp' ); ?>
+                                                        </p>
+                                                        <p>
+                                                            <a href="<?php echo esc_url( 'https://ap-northeast-3.console.aws.amazon.com/ses/home?region=ap-northeast-3#verified-senders-email:' ); ?>" class="anchor-aws" target="_blank">
+                                                                <?php esc_html_e( 'Click to verify Email From', 'post-smtp' ); ?>
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                <?php endif; ?>
                                             <button class="button button-primary ps-blue-btn ps-wizard-send-test-email" data-step="3">Send Test Email <span class="dashicons dashicons-email"></span></button>
                                             <div>
                                                 <p class="ps-wizard-error"></p>
@@ -1339,15 +1353,29 @@ class Post_SMTP_New_Wizard {
             __( 'Amazon SES Documentation', 'post-smtp' )
         );
 
-        $html .= '
-        <div class="ps-form-control">
-            <div><label>Access Key ID</label></div>
-            <input type="text" class="ps-amazon-key-id" required data-error="'.__( 'Please enter Access Key ID', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ) .']" value="'.$access_key_id.'" placeholder="Access Key ID"></div>';
+        $html .= sprintf(
+            '
+            <div class="ps-form-control">
+                <div><label>%1$s</label></div>
+                <input type="text" class="ps-amazon-key-id" required data-error="%2$s" name="postman_options[%3$s]" value="%4$s" placeholder="%1$s">
+                <p>%5$s <a class="anchor-aws" href="%6$s" target="_blank">%7$s</a></p>
+            </div>',
+            __( 'Access Key ID', 'post-smtp' ),
+            __( 'Please enter Access Key ID', 'post-smtp' ),
+            esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ),
+            esc_attr( $access_key_id ),
+            __( 'Click here to', 'post-smtp' ),
+            esc_url( 'https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials' ),
+            __( 'Get Access Key ID', 'post-smtp' )
+        );
+        
 
         $html .= '
         <div class="ps-form-control">
-            <div><label>Access Key Secret</label></div>
-            <input type="text" class="ps-amazon-key-secret" required data-error="'.__( 'Please enter Access Key Secret', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ) .']" value="'.$access_key_secret.'" placeholder="Access Key Secret">'.
+            <div><label>Secret Access Key</label></div>
+            <input type="text" class="ps-amazon-key-secret" required data-error="' . __( 'Please enter Access Key Secret', 'post-smtp' ) . '" name="postman_options[' . esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ) . ']" value="' . esc_attr( $access_key_secret ) . '" placeholder="Secret Access Key">
+            <p>' . __( 'Click here to', 'post-smtp' ) . ' <a href="https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials" target="_blank" class="anchor-aws" >' . __( 'Get Secret Access Key', 'post-smtp' ) . '</a></p>
+            ' .
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1355,20 +1383,43 @@ class Post_SMTP_New_Wizard {
                 '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
                 __( 'Create an account at', 'post-smtp' ),
                 esc_url( 'https://portal.aws.amazon.com/billing/signup?nc2=h_ct&src=header_signup&redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start/email' ),
-                esc_attr( 'Amazon SES' ),
+                __( 'Amazon SES', 'post-smtp' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://us-east-1.console.aws.amazon.com/iamv2/home#/users' ),
-                __( 'Access Key ID and Sceret Access Key', 'post-smtp' )
-            )
-            .
+                __( 'Access Key ID and Secret Access Key', 'post-smtp' )
+            ) .
         '</div>
-        ';
+    ';
+    
 
         $html .= '
-        <div class="ps-form-control">
-            <div><label>SES Region</label></div>
-            <input type="text" class="ps-amazon-region" required data-error="'.__( 'Please enter SES Region', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ) .']" value="'.$region.'" placeholder="SES Region"></div>
+            <div class="ps-form-control">
+                <div><label>SES Region</label></div>
+                <select class="ps-amazon-region" required data-error="' . __( 'Please enter SES Region', 'post-smtp' ) . '" name="postman_options[' . esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ) . ']">
+                    <option value="us-east-1" ' . selected( $region, 'us-east-1', false ) . '>US East (N. Virginia)</option>
+                    <option value="us-east-2" ' . selected( $region, 'us-east-2', false ) . '>US East (Ohio)</option>
+                    <option value="us-west-1" ' . selected( $region, 'us-west-1', false ) . '>US West (N. California)</option>
+                    <option value="us-west-2" ' . selected( $region, 'us-west-2', false ) . '>US West (Oregon)</option>
+                    <option value="af-south-1" ' . selected( $region, 'af-south-1', false ) . '>Cape Town South Africa</option>
+                    <option value="ca-central-1" ' . selected( $region, 'ca-central-1', false ) . '>Canada (Central)</option>
+                    <option value="eu-west-1" ' . selected( $region, 'eu-west-1', false ) . '>EU (Ireland)</option>
+                    <option value="eu-west-2" ' . selected( $region, 'eu-west-2', false ) . '>EU (London)</option>
+                    <option value="eu-west-3" ' . selected( $region, 'eu-west-3', false ) . '>EU (Paris)</option>
+                    <option value="eu-central-1" ' . selected( $region, 'eu-central-1', false ) . '>EU (Frankfurt)</option>
+                    <option value="eu-south-1" ' . selected( $region, 'eu-south-1', false ) . '>EU (Milan)</option>
+                    <option value="eu-north-1" ' . selected( $region, 'eu-north-1', false ) . '>EU (Stockholm)</option>
+                    <option value="ap-south-1" ' . selected( $region, 'ap-south-1', false ) . '>Asia Pacific (Mumbai)</option>
+                    <option value="ap-northeast-2" ' . selected( $region, 'ap-northeast-2', false ) . '>Asia Pacific (Seoul)</option>
+                    <option value="ap-southeast-1" ' . selected( $region, 'ap-southeast-1', false ) . '>Asia Pacific (Singapore)</option>
+                    <option value="ap-southeast-2" ' . selected( $region, 'ap-southeast-2', false ) . '>Asia Pacific (Sydney)</option>
+                    <option value="ap-northeast-1" ' . selected( $region, 'ap-northeast-1', false ) . '>Asia Pacific (Tokyo)</option>
+                    <option value="ap-northeast-3" ' . selected( $region, 'ap-northeast-3', false ) . '>Asia Pacific (Osaka)</option>
+                    <option value="sa-east-1" ' . selected( $region, 'sa-east-1', false ) . '>South America (São Paulo)</option>
+                    <option value="me-south-1" ' . selected( $region, 'me-south-1', false ) . '>Middle East (Bahrain)</option>
+                </select>
+            </div>
         ';
+
 
         return $html;
 
