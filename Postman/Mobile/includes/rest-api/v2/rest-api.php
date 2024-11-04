@@ -28,6 +28,8 @@ class Post_SMTP_Mobile_Rest_API_V2 {
      */
     public function register_routes() {
 		
+		$dashboard_rest_apis = new PSD_Rest_API();
+		
 		register_rest_route( 'post-smtp/v2', '/get-logs', array(
             'methods'               => WP_REST_Server::READABLE,
             'callback'              => array( $this, 'get_logs' ),
@@ -38,6 +40,12 @@ class Post_SMTP_Mobile_Rest_API_V2 {
             'methods'               => WP_REST_Server::READABLE,
             'callback'              => array( $this, 'validate_license' ),
             'permission_callback'   => '__return_true',
+        ) );
+		
+		register_rest_route( 'post-smtp/v2', '/get-emails-count', array(
+            'methods'               => WP_REST_Server::READABLE,
+            'callback'              => array( $dashboard_rest_apis, 'email_count' ),
+            'permission_callback'   => array( $this, 'validate' )
         ) );
 
     }
@@ -173,6 +181,24 @@ class Post_SMTP_Mobile_Rest_API_V2 {
 		);
 
 	}
+	
+	/**
+     * Validat Request
+     * 
+     * @since 3.1.0
+     * @version 1.0.0
+     */
+	public function validate( WP_REST_Request $request ) {
+		
+		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
+		
+		if( post_smtp_mobile_validate( $fcm_token ) ) {
+		
+			return true;
+			
+		}
+		
+	}	
 
 }
 
