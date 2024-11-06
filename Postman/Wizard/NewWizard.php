@@ -387,7 +387,7 @@ class Post_SMTP_New_Wizard {
                                                             <?php esc_html_e( 'If your account is still in Amazon SES sandbox mode. You can only send mail from verified email addresses.', 'post-smtp' ); ?>
                                                         </p>
                                                         <p>
-                                                            <a href="<?php echo esc_url( 'https://ap-northeast-3.console.aws.amazon.com/ses/home?region=ap-northeast-3#verified-senders-email:' ); ?>" class="anchor-aws" target="_blank">
+                                                            <a href="<?php echo esc_url( 'https://ap-northeast-3.console.aws.amazon.com/ses/home?region=ap-northeast-3#verified-senders-email:' ); ?>" class="ps-anchor-aws" target="_blank">
                                                                 <?php esc_html_e( 'Click to verify Email From', 'post-smtp' ); ?>
                                                             </a>
                                                         </p>
@@ -1342,6 +1342,28 @@ class Post_SMTP_New_Wizard {
         $access_key_id = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ] ) ? base64_decode( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ] ) : '';
         $access_key_secret = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ] ) ? base64_decode( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ] ) : '';
         $region = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] ) ? $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] : '';
+        $ses_regions = [
+            'us-east-1' => 'US East (N. Virginia)',
+            'us-east-2' => 'US East (Ohio)',
+            'us-west-1' => 'US West (N. California)',
+            'us-west-2' => 'US West (Oregon)',
+            'af-south-1' => 'Cape Town South Africa',
+            'ca-central-1' => 'Canada (Central)',
+            'eu-west-1' => 'EU (Ireland)',
+            'eu-west-2' => 'EU (London)',
+            'eu-west-3' => 'EU (Paris)',
+            'eu-central-1' => 'EU (Frankfurt)',
+            'eu-south-1' => 'EU (Milan)',
+            'eu-north-1' => 'EU (Stockholm)',
+            'ap-south-1' => 'Asia Pacific (Mumbai)',
+            'ap-northeast-2' => 'Asia Pacific (Seoul)',
+            'ap-southeast-1' => 'Asia Pacific (Singapore)',
+            'ap-southeast-2' => 'Asia Pacific (Sydney)',
+            'ap-northeast-1' => 'Asia Pacific (Tokyo)',
+            'ap-northeast-3' => 'Asia Pacific (Osaka)',
+            'sa-east-1' => 'South America (São Paulo)',
+            'me-south-1' => 'Middle East (Bahrain)'
+        ];
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">Amazon Simple Email Service (Amazon SES)</a> %2$s</p><p>%3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a>',
@@ -1358,7 +1380,7 @@ class Post_SMTP_New_Wizard {
             <div class="ps-form-control">
                 <div><label>%1$s</label></div>
                 <input type="text" class="ps-amazon-key-id" required data-error="%2$s" name="postman_options[%3$s]" value="%4$s" placeholder="%1$s">
-                <p>%5$s <a class="anchor-aws" href="%6$s" target="_blank">%7$s</a></p>
+                <p>%5$s <a class="ps-anchor-aws" href="%6$s" target="_blank">%7$s</a></p>
             </div>',
             __( 'Access Key ID', 'post-smtp' ),
             __( 'Please enter Access Key ID', 'post-smtp' ),
@@ -1374,7 +1396,7 @@ class Post_SMTP_New_Wizard {
         <div class="ps-form-control">
             <div><label>Secret Access Key</label></div>
             <input type="text" class="ps-amazon-key-secret" required data-error="' . __( 'Please enter Access Key Secret', 'post-smtp' ) . '" name="postman_options[' . esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ) . ']" value="' . esc_attr( $access_key_secret ) . '" placeholder="Secret Access Key">
-            <p>' . __( 'Click here to', 'post-smtp' ) . ' <a href="https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials" target="_blank" class="anchor-aws" >' . __( 'Get Secret Access Key', 'post-smtp' ) . '</a></p>
+            <p>' . __( 'Click here to', 'post-smtp' ) . ' <a href="https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials" target="_blank" class="ps-anchor-aws" >' . __( 'Get Secret Access Key', 'post-smtp' ) . '</a></p>
             ' .
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
@@ -1390,37 +1412,12 @@ class Post_SMTP_New_Wizard {
             ) .
         '</div>
     ';
-    
-
-        $html .= '
-            <div class="ps-form-control">
-                <div><label>SES Region</label></div>
-                <select class="ps-amazon-region" required data-error="' . __( 'Please enter SES Region', 'post-smtp' ) . '" name="postman_options[' . esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ) . ']">
-                    <option value="us-east-1" ' . selected( $region, 'us-east-1', false ) . '>US East (N. Virginia)</option>
-                    <option value="us-east-2" ' . selected( $region, 'us-east-2', false ) . '>US East (Ohio)</option>
-                    <option value="us-west-1" ' . selected( $region, 'us-west-1', false ) . '>US West (N. California)</option>
-                    <option value="us-west-2" ' . selected( $region, 'us-west-2', false ) . '>US West (Oregon)</option>
-                    <option value="af-south-1" ' . selected( $region, 'af-south-1', false ) . '>Cape Town South Africa</option>
-                    <option value="ca-central-1" ' . selected( $region, 'ca-central-1', false ) . '>Canada (Central)</option>
-                    <option value="eu-west-1" ' . selected( $region, 'eu-west-1', false ) . '>EU (Ireland)</option>
-                    <option value="eu-west-2" ' . selected( $region, 'eu-west-2', false ) . '>EU (London)</option>
-                    <option value="eu-west-3" ' . selected( $region, 'eu-west-3', false ) . '>EU (Paris)</option>
-                    <option value="eu-central-1" ' . selected( $region, 'eu-central-1', false ) . '>EU (Frankfurt)</option>
-                    <option value="eu-south-1" ' . selected( $region, 'eu-south-1', false ) . '>EU (Milan)</option>
-                    <option value="eu-north-1" ' . selected( $region, 'eu-north-1', false ) . '>EU (Stockholm)</option>
-                    <option value="ap-south-1" ' . selected( $region, 'ap-south-1', false ) . '>Asia Pacific (Mumbai)</option>
-                    <option value="ap-northeast-2" ' . selected( $region, 'ap-northeast-2', false ) . '>Asia Pacific (Seoul)</option>
-                    <option value="ap-southeast-1" ' . selected( $region, 'ap-southeast-1', false ) . '>Asia Pacific (Singapore)</option>
-                    <option value="ap-southeast-2" ' . selected( $region, 'ap-southeast-2', false ) . '>Asia Pacific (Sydney)</option>
-                    <option value="ap-northeast-1" ' . selected( $region, 'ap-northeast-1', false ) . '>Asia Pacific (Tokyo)</option>
-                    <option value="ap-northeast-3" ' . selected( $region, 'ap-northeast-3', false ) . '>Asia Pacific (Osaka)</option>
-                    <option value="sa-east-1" ' . selected( $region, 'sa-east-1', false ) . '>South America (São Paulo)</option>
-                    <option value="me-south-1" ' . selected( $region, 'me-south-1', false ) . '>Middle East (Bahrain)</option>
-                </select>
-            </div>
-        ';
-
-
+        $html .= '<div class="ps-form-control"><div><label>SES Region</label></div><select class="ps-amazon-region" required data-error="' . __( 'Please enter SES Region', 'post-smtp' ) . '" name="postman_options[' . esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ) . ']">';
+        foreach ( $ses_regions as $key => $label ) {
+            $html .= '<option value="' . esc_attr( $key ) . '" ' . selected( $region, $key, false ) . '>' . esc_html( $label ) . '</option>';
+        }
+        $html .= '</select></div>';
+        
         return $html;
 
     }
