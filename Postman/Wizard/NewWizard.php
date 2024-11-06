@@ -387,7 +387,7 @@ class Post_SMTP_New_Wizard {
                                                             <?php esc_html_e( 'If your account is still in Amazon SES sandbox mode. You can only send mail from verified email addresses.', 'post-smtp' ); ?>
                                                         </p>
                                                         <p>
-                                                            <a href="<?php echo esc_url( 'https://ap-northeast-3.console.aws.amazon.com/ses/home?region=ap-northeast-3#verified-senders-email:' ); ?>" class="ps-anchor-aws" target="_blank">
+                                                            <a href="<?php echo esc_url( 'https://console.aws.amazon.com/ses/home' ); ?>" class="ps-anchor-aws" target="_blank">
                                                                 <?php esc_html_e( 'Click to verify Email From', 'post-smtp' ); ?>
                                                             </a>
                                                         </p>
@@ -1387,7 +1387,7 @@ class Post_SMTP_New_Wizard {
             esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ),
             esc_attr( $access_key_id ),
             __( 'Click here to', 'post-smtp' ),
-            esc_url( 'https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials' ),
+            esc_url( 'https://console.aws.amazon.com/iam/home' ),
             __( 'Get Access Key ID', 'post-smtp' )
         );
         
@@ -1396,7 +1396,7 @@ class Post_SMTP_New_Wizard {
         <div class="ps-form-control">
             <div><label>Secret Access Key</label></div>
             <input type="text" class="ps-amazon-key-secret" required data-error="' . __( 'Please enter Access Key Secret', 'post-smtp' ) . '" name="postman_options[' . esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ) . ']" value="' . esc_attr( $access_key_secret ) . '" placeholder="Secret Access Key">
-            <p>' . __( 'Click here to', 'post-smtp' ) . ' <a href="https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials" target="_blank" class="ps-anchor-aws" >' . __( 'Get Secret Access Key', 'post-smtp' ) . '</a></p>
+            <p>' . __( 'Click here to', 'post-smtp' ) . ' <a href="https://console.aws.amazon.com/iam/home" target="_blank" class="ps-anchor-aws" >' . __( 'Get Secret Access Key', 'post-smtp' ) . '</a></p>
             ' .
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
@@ -1407,7 +1407,7 @@ class Post_SMTP_New_Wizard {
                 esc_url( 'https://portal.aws.amazon.com/billing/signup?nc2=h_ct&src=header_signup&redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start/email' ),
                 __( 'Amazon SES', 'post-smtp' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://us-east-1.console.aws.amazon.com/iamv2/home#/users' ),
+                esc_url( 'https://console.aws.amazon.com/iamv2/home#/users' ),
                 __( 'Access Key ID and Secret Access Key', 'post-smtp' )
             ) .
         '</div>
