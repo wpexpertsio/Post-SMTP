@@ -453,6 +453,8 @@ jQuery( document ).ready(function() {
 
         jQuery( this ).html( 'Redirecting...' );
 
+        redirectURI += (redirectURI.includes('?') ? '&' : '?') + 'client_id=' + encodeURIComponent(clientID) + '&client_secret=' + encodeURIComponent(clientSecret);
+
         jQuery.ajax( {
 
             url: ajaxurl,

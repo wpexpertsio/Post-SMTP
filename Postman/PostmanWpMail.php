@@ -227,7 +227,6 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
 					$message->validate( $transport );
 			    }
-
 				// send the message
 				if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {
 					if ( $transport->isLockingRequired() ) {
@@ -235,7 +234,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 						// may throw an exception attempting to contact the OAuth2 provider
 						$this->ensureAuthtokenIsUpdated( $transport, $options, $authorizationToken );
 					}
-
+				
 					$this->logger->debug( 'Sending mail' );
 
 					// may throw an exception attempting to contact the SMTP server
@@ -325,6 +324,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
                 $options->is_fallback = true;
 				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
 	                $status = $this->sendMessage( $postMessage, $log );
+					die('ahsan');
 				}else{
 					$status = $this->sendMessageFallback( $postMessage, $log );
 				}
@@ -359,9 +359,9 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 			// get primaryconnection and Config and engine
 			$transport = PostmanTransportRegistry::getInstance()->getFallbackConnection();
+		
 			// create the Mail Engine
 			$engine = $transport->createMailEngineFallback();
-
 			// add plugin-specific attributes to PostmanMessage
 			$message->addHeaders( $options->getAdditionalHeaders() );
 			$message->addTo( $options->getForcedToRecipients() );

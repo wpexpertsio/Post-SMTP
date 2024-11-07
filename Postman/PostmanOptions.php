@@ -347,31 +347,13 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		}
 
 		public function getClientId() {
-			$this->existing_db_version = get_option( 'postman_db_version' );
-			$connections = get_option( 'postman_connections', array() );
-			
-			if( $this->existing_db_version != POST_SMTP_DB_VERSION ){
-				if ( isset( $this->options[ PostmanOptions::CLIENT_ID ] ) ) {
+			if ( isset( $this->options[ PostmanOptions::CLIENT_ID ] ) ) {
 					return $this->options [ PostmanOptions::CLIENT_ID ]; 
-				}
-			}else{
-				if ( isset( $connections['gmail_api']['oauth_client_id'] ) ) {
-					return $connections['gmail_api']['oauth_client_id'] ?? '';
-				}
 			}
-
 		}
 		public function getClientSecret() {
-			$this->existing_db_version = get_option( 'postman_db_version' );
-			if( $this->existing_db_version != POST_SMTP_DB_VERSION ){
-				if ( isset( $this->options [ PostmanOptions::CLIENT_SECRET ] ) ) {
-					return $this->options [ PostmanOptions::CLIENT_SECRET ]; 
-				}
-			}else{
-				$connections = get_option( 'postman_connections', array() );
-				if ( isset( $connections['gmail_api']['oauth_client_secret'] ) ) {
-					return $connections['gmail_api']['oauth_client_secret'] ?? '';
-				}
+			if ( isset( $this->options [ PostmanOptions::CLIENT_SECRET ] ) ) {
+				return $this->options [ PostmanOptions::CLIENT_SECRET ]; 
 			}
 		}
 

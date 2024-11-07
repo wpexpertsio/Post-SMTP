@@ -4,7 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'PostmanAdminController' ) ) {
-
 	require_once 'PostmanOptions.php';
 	require_once 'PostmanState.php';
 	require_once 'PostmanState.php';
@@ -76,6 +75,17 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		private $wpMailBinder;
 
 		/**
+		 * Holds the existing database version.
+		 *
+		 * This property stores the current database version from the WordPress 
+		 * options table, allowing version checks to manage upgrades or compatibility 
+		 * checks within the plugin.
+		 *
+		 * @var string Database version.
+		 */
+		private $existing_db_version = '';
+
+		/**
 		 * Constructor
 		 *
 		 * @param mixed               $rootPluginFilenameAndPath
@@ -99,6 +109,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			$this->messageHandler = $messageHandler;
 			$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;
 			$this->wpMailBinder = $binder;
+			$this->existing_db_version = get_option( 'postman_db_version' );
 
 			// check if the user saved data, and if validation was successful
 			$session = PostmanSession::getInstance();
@@ -156,6 +167,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			) );
 
 			require_once( 'PostmanPluginFeedback.php' );
+
 		}
 
 
@@ -229,7 +241,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		public function on_init() {
 			// only administrators should be able to trigger this
 			if ( PostmanUtils::isAdmin() ) {
-								$transport = PostmanTransportRegistry::getInstance()->getCurrentTransport();
+				$transport = PostmanTransportRegistry::getInstance()->getCurrentTransport();
 				$this->oauthScribe = $transport->getScribe();
 
 				// register content handlers
@@ -388,30 +400,39 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			$logger = $this->logger;
 			$options = $this->options;
 			$authorizationToken = $this->authorizationToken;
+		
 			$logger->debug( 'Authorization in progress' );
 			$transactionId = PostmanSession::getInstance()->getOauthInProgress();
 			$message = '';
         	$redirect_uri = admin_url( "admin.php?page=postman/configuration_wizard&socket=gmail_api&step=2" );
-
+	
 			// begin transaction
 			PostmanUtils::lock();
 
 			$authenticationManager = PostmanAuthenticationManagerFactory::getInstance()->createAuthenticationManager();
+
 			try {
 				if ( $authenticationManager->processAuthorizationGrantCode( $transactionId ) ) {
 					$logger->debug( 'Authorization successful' );
 					// save to database
 					$authorizationToken->save();
+
 					$message = __( 'The OAuth 2.0 authorization was successful. Ready to send e-mail.', 'post-smtp' );
 					$this->messageHandler->addMessage( $message );
-
-					//Let's redirect to New Wizard
-					if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
-						
-						wp_redirect( "{$redirect_uri}&msg={$message}&success=1" );
+						if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
+							$token_details = PostmanOAuthToken::getInstance();
+							$accessToken = $token_details->getAccessToken();
+							$refreshToken = $token_details->getRefreshToken();
+							$expires_in = $token_details->getExpiryTime();
+							if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+							  wp_redirect( "{$redirect_uri}&msg={$message}&g_access_token={$accessToken}&g_refresh_token={$refreshToken}&g_expires_in={$expires_in}&success=1" );
+							}
+						}else{
+							if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+							  wp_redirect( "{$redirect_uri}&msg={$message}&success=1" );
+							}
+						}
 						exit();
-
-					}
 
 				} else {
 
@@ -475,7 +496,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		 */
 		public function handleOAuthPermissionRequestAction() {
 			$this->logger->debug( 'handling OAuth Permission request' );
-			$authenticationManager = PostmanAuthenticationManagerFactory::getInstance()->createAuthenticationManager();
+			$authenticationManager = PostmanAuthenticationManagerFactory::getInstance()->createAuthenticationManager();		
 			$transactionId = $authenticationManager->generateRequestTransactionId();
 			PostmanSession::getInstance()->setOauthInProgress( $transactionId );
 			$authenticationManager->requestVerificationCode( $transactionId );
