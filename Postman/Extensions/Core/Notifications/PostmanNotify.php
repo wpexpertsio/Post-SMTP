@@ -202,7 +202,7 @@ class PostmanNotify {
     /**
      * Webhook Alerts | Section call-back
      * 
-     * @since 3.1.0
+     * @since 3.0.0
      */
     public function webhook_alerts_section() {
 

@@ -319,6 +319,19 @@ jQuery( document ).ready(function() {
         jQuery( '.ps-wizard-success' ).html( 'Sending...' );
 
         jQuery.ajax( {
+            url: ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'ps-mail-test',
+                email: sendTo,  
+                security: security,
+            },
+            success: function( response ) {
+                console.log( 'Mail Tester', response );
+            }
+        } );
+
+        jQuery.ajax( {
 
             url: ajaxurl,
             type: 'POST',
