@@ -426,6 +426,11 @@
   font-weight: 600;;
 }
 
+.ps-loading-test-report {
+  display: inline-flex;
+  align-items: center;
+}
+
 .ps-wizard-pages {
   min-height: 351px;
 }

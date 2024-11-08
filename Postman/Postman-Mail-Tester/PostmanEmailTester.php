@@ -68,16 +68,40 @@ class Postman_Email_Tester {
 
             if( $test_email ) {
 
-                $response = wp_remote_post( "{$this->base_url}/test?test_email={$email}", $args );
-                $response_code = wp_remote_retrieve_response_code( $response );
-                $response_body = wp_remote_retrieve_body( $response );
+                $email_sent = wp_mail( $test_email, 'Test Email', 'This is a test email.' );
+                $email_sent = true;
+                $test_email = str_replace( '@smtper.postmansmtp.com', '', $test_email );
+                $test_email = 'postsmtp-2ce90514e5154c0bcb4c245f146a174d';
 
-                var_dump( $response_code, $response_body );die;
+                // Wait for 3 seconds
+                sleep( seconds: 3 );
+
+                if( $email_sent ) {
+
+                    $response = wp_remote_post( "{$this->base_url}/test?test_email={$test_email}&email={$email}", $args );
+                    $response_code = wp_remote_retrieve_response_code( $response );
+                    $response_body = wp_remote_retrieve_body( $response );
+
+                    if( $response_code == 200 ) {
+
+                        wp_send_json_success( 
+                            array(
+                                'message' => 'test_email_sent',
+                                'data'  => json_decode( $response_body )
+                            ),
+                            200
+                        );
+
+                    } 
+
+                }
 
             }
 
             wp_send_json_success( 
-                array(),
+                array(
+                    'message' => 'test_email_not_sent',
+                ),
                 200
             );
 

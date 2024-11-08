@@ -327,7 +327,16 @@ jQuery( document ).ready(function() {
                 security: security,
             },
             success: function( response ) {
+
+                jQuery( '.ps-loading-test-report' ).remove();
                 console.log( 'Mail Tester', response );
+
+                if( response.data.message === 'test_email_sent' ) {
+
+                    debugger
+
+                }
+
             }
         } );
 
@@ -347,6 +356,14 @@ jQuery( document ).ready(function() {
                 if( response.success === true ) {
 
                     jQuery( '.ps-wizard-success' ).html( `<span class="dashicons dashicons-yes"></span> ${response.data.message}` );
+                    jQuery( '.ps-wizard-success' ).after( 
+                        `<div class="ps-loading-test-report">
+                            <span class="spinner is-active" style="margin-left: 0;"></span>
+                            <p>
+                                Please wait, we are checking your email health.
+                            </p>
+                        </div>` 
+                    );
                     jQuery( '.ps-finish-wizard' ).html( `${PostSMTPWizard.finish} <span class="dashicons dashicons-arrow-right-alt">` );
 
                 }
