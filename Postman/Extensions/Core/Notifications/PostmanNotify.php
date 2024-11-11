@@ -413,7 +413,7 @@ class PostmanNotify {
 
 			}
 
-			if ( ! class_exists( 'PostSMTPTwilio' ) ) {
+			if ( post_smtp_has_pro() && ! class_exists( 'PostSMTPTwilio' ) ) {
 				?>
 				<a href="https://postmansmtp.com/extensions/twilio-extension-pro/" target="_blank">
 					<div class="ps-notify-radio-outer">
@@ -428,7 +428,7 @@ class PostmanNotify {
 				</a>
 				<?php
 			}
-			if ( isset( $options ) && ! array_key_exists( 'microsoft-teams', $options ) ) {
+			if ( post_smtp_has_pro() && isset( $options ) && ! array_key_exists( 'microsoft-teams', $options ) ) {
 				?>
 				<a href="https://postmansmtp.com/extensions/twilio-extension-pro/" target="_blank">
 					<div class="ps-notify-radio-outer">
