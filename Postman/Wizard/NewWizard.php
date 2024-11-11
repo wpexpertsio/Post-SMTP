@@ -1342,28 +1342,28 @@ class Post_SMTP_New_Wizard {
         $access_key_id = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ] ) ? base64_decode( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ] ) : '';
         $access_key_secret = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ] ) ? base64_decode( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ] ) : '';
         $region = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] ) ? $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] : '';
-        $ses_regions = [
-            'us-east-1' => 'US East (N. Virginia)',
-            'us-east-2' => 'US East (Ohio)',
-            'us-west-1' => 'US West (N. California)',
-            'us-west-2' => 'US West (Oregon)',
-            'af-south-1' => 'Cape Town South Africa',
-            'ca-central-1' => 'Canada (Central)',
-            'eu-west-1' => 'EU (Ireland)',
-            'eu-west-2' => 'EU (London)',
-            'eu-west-3' => 'EU (Paris)',
-            'eu-central-1' => 'EU (Frankfurt)',
-            'eu-south-1' => 'EU (Milan)',
-            'eu-north-1' => 'EU (Stockholm)',
-            'ap-south-1' => 'Asia Pacific (Mumbai)',
-            'ap-northeast-2' => 'Asia Pacific (Seoul)',
-            'ap-southeast-1' => 'Asia Pacific (Singapore)',
-            'ap-southeast-2' => 'Asia Pacific (Sydney)',
-            'ap-northeast-1' => 'Asia Pacific (Tokyo)',
-            'ap-northeast-3' => 'Asia Pacific (Osaka)',
-            'sa-east-1' => 'South America (São Paulo)',
-            'me-south-1' => 'Middle East (Bahrain)'
-        ];
+        $ses_regions = array(
+            'us-east-1'       => __( 'US East (N. Virginia)', 'text-domain' ),
+            'us-east-2'       => __( 'US East (Ohio)', 'text-domain' ),
+            'us-west-1'       => __( 'US West (N. California)', 'text-domain' ),
+            'us-west-2'       => __( 'US West (Oregon)', 'text-domain' ),
+            'af-south-1'      => __( 'Cape Town South Africa', 'text-domain' ),
+            'ca-central-1'    => __( 'Canada (Central)', 'text-domain' ),
+            'eu-west-1'       => __( 'EU (Ireland)', 'text-domain' ),
+            'eu-west-2'       => __( 'EU (London)', 'text-domain' ),
+            'eu-west-3'       => __( 'EU (Paris)', 'text-domain' ),
+            'eu-central-1'    => __( 'EU (Frankfurt)', 'text-domain' ),
+            'eu-south-1'      => __( 'EU (Milan)', 'text-domain' ),
+            'eu-north-1'      => __( 'EU (Stockholm)', 'text-domain' ),
+            'ap-south-1'      => __( 'Asia Pacific (Mumbai)', 'text-domain' ),
+            'ap-northeast-2'  => __( 'Asia Pacific (Seoul)', 'text-domain' ),
+            'ap-southeast-1'  => __( 'Asia Pacific (Singapore)', 'text-domain' ),
+            'ap-southeast-2'  => __( 'Asia Pacific (Sydney)', 'text-domain' ),
+            'ap-northeast-1'  => __( 'Asia Pacific (Tokyo)', 'text-domain' ),
+            'ap-northeast-3'  => __( 'Asia Pacific (Osaka)', 'text-domain' ),
+            'sa-east-1'       => __( 'South America (São Paulo)', 'text-domain' ),
+            'me-south-1'      => __( 'Middle East (Bahrain)', 'text-domain' ),
+        );
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">Amazon Simple Email Service (Amazon SES)</a> %2$s</p><p>%3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a>',
@@ -1410,14 +1410,14 @@ class Post_SMTP_New_Wizard {
                 esc_url( 'https://console.aws.amazon.com/iamv2/home#/users' ),
                 __( 'Access Key ID and Secret Access Key', 'post-smtp' )
             ) .
-        '</div>
-    ';
-        $html .= '<div class="ps-form-control"><div><label>SES Region</label></div><select class="ps-amazon-region" required data-error="' . __( 'Please enter SES Region', 'post-smtp' ) . '" name="postman_options[' . esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ) . ']">';
+        '</div>';
+        
+        $html .= '<div class="ps-form-control"><p> <span class="dashicons dashicons-info" style="margin-left: 5px; cursor: pointer" title="%s"></span> Select a region that you want to use with Amazon SES. For performance purposes, it\'s best to pick the region closest to the server this site is running on.</p><div><label>SES Region</label></div><select class="ps-amazon-region" required data-error="' . __( 'Please enter SES Region', 'post-smtp' ) . '" name="postman_options[' . esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ) . ']">';
         foreach ( $ses_regions as $key => $label ) {
             $html .= '<option value="' . esc_attr( $key ) . '" ' . selected( $region, $key, false ) . '>' . esc_html( $label ) . '</option>';
         }
         $html .= '</select></div>';
-        
+
         return $html;
 
     }
