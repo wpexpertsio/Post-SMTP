@@ -19,7 +19,8 @@ class Post_SMTP_New_Wizard {
             'checked'		=>	array(),
             'required'		=>	array(),
             'data-error'    =>  array(),
-            'readonly'      =>  array()
+            'readonly'      =>  array(),
+            'disabled'      =>  array()
         ),
         'div'           =>  array(
             'class'         =>  array()
@@ -45,7 +46,8 @@ class Post_SMTP_New_Wizard {
         'option'        =>  array(
             'value'         =>  array(),
             'selected'      => array()
-        )
+        ),
+        'hr'            =>  array()
     );
 
     private $socket_sequence = array();
@@ -786,6 +788,7 @@ class Post_SMTP_New_Wizard {
         $client_id = null !== $this->options->getClientId() ? esc_attr ( $this->options->getClientId() ) : '';
         $client_secret = null !== $this->options->getClientSecret() ? esc_attr ( $this->options->getClientSecret() ) : '';
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
+        $one_click = '';
 
         $html = '
         <p>'.sprintf(
@@ -798,13 +801,47 @@ class Post_SMTP_New_Wizard {
         </p>';
 
         $html .= __( 'The configuration steps are more technical than other options, so our detailed guide will walk you through the whole process.', 'post-smtp' );
+        $html .= '<hr />';
+
+        if( post_smtp_has_pro() ) {
+
+            $html .= sprintf(
+                '<h3>%1$s</h3>',
+                __( 'One-Click Setup', 'post-smtp' )
+            );
+
+        }
+        else {
+
+            $html .= sprintf(
+                '<h3>%1$s <span class="ps-wizard-pro-tag">%2$s</span></h3>',
+                __( 'One-Click Setup', 'post-smtp' ),
+                __( 'PRO', 'post-smtp' )
+            );
+            $one_click = 'disabled';
+
+        }
+
+        $html .= __( 'Enable the option for quick and easy way to connect with Google without the need of manually creating an app.', 'post-smtp' );
+
+        $html .= "<div>
+            <div class='ps-form-switch-control'>
+                <label class='ps-switch-1'>
+                    <input type='checkbox' class='ps-enable-gmail-one-click' ".$one_click.">
+                    <span class='slider round'></span>
+                </label> 
+            </div>
+        </div>";
+
+        $html .= '<hr />';
 
         $html .= '
         <p>'.sprintf(
-            '%1$s <a href="%2$s" target="_blank">%3$s</a>',
-            __( 'Let’s get started with our', 'post-smtp' ),
+            '%1$s <a href="%2$s" target="_blank">%3$s</a>%4$s',
+            __( 'Read our', 'post-smtp' ),
             esc_url( 'https://postmansmtp.com/documentation/sockets-addons/gmail/' ),
-            __( 'Gmail Documentation', 'post-smtp' )
+            __( 'Gmail setup documentation', 'post-smtp' ),
+            __( 'to learn how to create an app manually to generate the Client ID and Client Secret', 'post-smtp' )
         ).'
         </p>';
 

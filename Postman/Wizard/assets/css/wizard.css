@@ -682,4 +682,12 @@ span.ps-pro-close-popup {
   height: 557px;
 }
 
+.ps-wizard-pro-tag {
+  background: #ffbf00;
+  color: #ffffff;
+  font-size: 11px;
+  padding: 0px 8px;
+  border-radius: 50px;
+}
+
 /* Lets make wizard responsive */
