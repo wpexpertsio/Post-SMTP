@@ -280,7 +280,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 == Changelog ==
 
 = 2.9.10 - November 19, 2024 =
-* Logs Security Enhancement reported by [Patchstack](https://patchstack.com/database/vulnerability/post-smtp/wordpress-post-smtp-plugin-2-9-9-sql-injection-vulnerability)
+* Email logs search security enhancement in admin view reported by [Patchstack](https://patchstack.com/database/vulnerability/post-smtp/wordpress-post-smtp-plugin-2-9-9-sql-injection-vulnerability)
 
 = 2.9.9 - October 01, 2024 =
 * Tweak: Typo fixes.
