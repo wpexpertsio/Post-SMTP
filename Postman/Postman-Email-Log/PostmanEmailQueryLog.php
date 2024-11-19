@@ -107,7 +107,10 @@ class PostmanEmailQueryLog {
 
             foreach( $args['search_by'] as $key ) {
                 
-                $this->query .= " {$key} LIKE '%{$this->db->esc_like( $args["search"] )}%'";
+                $this->query .= $this->db->prepare( 
+                    " {$key} LIKE %s", 
+                    '%' . $this->db->esc_like( $args['search'] ) . '%' 
+                );
                 $this->query .= $counter != count( $args['search_by'] ) ? ' OR' : '';
                 $counter++;
 
