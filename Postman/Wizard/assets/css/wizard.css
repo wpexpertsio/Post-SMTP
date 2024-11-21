@@ -689,5 +689,49 @@ span.ps-pro-close-popup {
   padding: 0px 8px;
   border-radius: 50px;
 }
+.ps-enable-gmail-one-click.disabled {
+  pointer-events: all;
+  opacity: 0;
+  cursor: not-allowed;
+}
+.ps-hidden {
+  display: none;
+}
+.ps-gmail-btn{
+  background-color: #4285f4 !important;
+  border-radius: 0px !important;
+  line-height: 40px !important;
+  font-size: 15px !important;
+  width: 184px;;
+  display: inline-flex !important;
+  align-items: center;
+  text-decoration: none;
+}
 
-/* Lets make wizard responsive */
+.ps-gmail-btn::before {
+  content: '';
+  display: inline-block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 35px;
+  height: 20px;
+  margin-right: 10px;
+  background-color: white;
+  padding-top: 5px;
+}
+.ps-remove-gmail-btn{
+  background-color: #d63638 !important;
+  border-color: #d63638 !important;
+  color: #fff !important;
+  font-size: 14px !important;
+  font-weight: 500;
+  padding: 5px 10px !important;
+
+}
+.ps-disable-gmail-setup b{
+  display: inline-block;
+  margin-left: 30px;
+  margin-top: 10px;
+}
+
+/* Lets make wiz3rd responsive */

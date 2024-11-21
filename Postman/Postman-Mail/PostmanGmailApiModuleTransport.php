@@ -21,9 +21,11 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	const HOST = 'www.googleapis.com';
 	const ENCRYPTION_TYPE = 'ssl';
 	const PRIORITY = 49000;
+    private $gmail_oneclick_enabled = false;
 	public function __construct($rootPluginFilenameAndPath) {
 		parent::__construct ( $rootPluginFilenameAndPath );
-		
+		$this->gmail_oneclick_enabled = in_array( 'gmail-oneclick', get_option( 'post_smtp_pro', [] )['bonus_extensions'] ?? [] );
+
 		// add a hook on the plugins_loaded event
 		add_action ( 'admin_init', array (
 				$this,
@@ -51,6 +53,21 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	public function createMailEngine() {
 		require_once 'PostmanZendMailEngine.php';
 		return new PostmanZendMailEngine ( $this );
+	}
+
+	public function get_credentials() {
+		$api_url = 'https://wordpress-1158527-4960492.cloudwaysapps.com/wp-json/gmail-oauth/v1/get_credentials';
+		$response = wp_remote_get( $api_url );
+		if ( is_wp_error( $response ) ) {
+			error_log( 'Error fetching Gmail credentials: ' . $response->get_error_message() );
+			return null;
+		}
+		$data = json_decode( wp_remote_retrieve_body( $response ), true );
+		if ( empty( $data ) || ! is_array( $data ) ) {
+			error_log( 'Invalid response from Gmail credentials API.' );
+			return null;
+		}
+		return $data;
 	}
 	
 	/**
@@ -91,7 +108,20 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
         $client->setIncludeGrantedScopes( true );
         $client->setScopes( array( Gmail::MAIL_GOOGLE_COM ) );
         $client->setRedirectUri( $this->getScribe()->getCallbackUrl() );
-		
+        
+        if ( $this->gmail_oneclick_enabled ) {
+			$keys = $this->get_credentials();
+            $client = new Google_Client();
+            $client->setApplicationName( 'Post SMTP ' . POST_SMTP_VER );
+            $client->setAccessType( 'offline' );
+            $client->setApprovalPrompt( 'force' );
+            $client->setIncludeGrantedScopes( true );
+            $client->setScopes( array( Gmail::MAIL_GOOGLE_COM ) );
+            $client->addScope( 'https://www.googleapis.com/auth/gmail.metadata' );
+            $client->setRedirectUri( $keys['credentials']['url'] );
+            $client->setClientId( $keys['credentials']['key'] );
+        	$client->setClientSecret( $keys['credentials']['token'] );
+		}
 		try {
 			
 			//If Access Token Expired, get new one
@@ -123,6 +153,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		$token->id_token = null;
 		$token->created = 0;
 		$service = new Gmail( $client );
+     
 		$config [PostmanGmailApiModuleZendMailTransport::SERVICE_OPTION] = $service;
 		
 		return new PostmanGmailApiModuleZendMailTransport ( self::HOST, $config );

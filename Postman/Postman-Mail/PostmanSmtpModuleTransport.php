@@ -325,7 +325,8 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$transport = $this;
 		$this->options = $this->options;
 		$oauthScribe = $transport->getScribe();
-
+		$gmail_oneclick_enabled = in_array( 'gmail-oneclick', get_option( 'post_smtp_pro', [] )['bonus_extensions'] ?? [] );
+		
 		// Sanitize
 		add_settings_section( PostmanAdminController::SMTP_SECTION, __( 'Transport Settings', 'post-smtp' ), array(
 				$this,
@@ -378,6 +379,14 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 				'printOAuthSectionInfo',
 		), PostmanAdminController::OAUTH_AUTH_OPTIONS );
 
+		add_settings_field(
+			'enable_gmail_oneclick',
+			__( 'Enable One-Click Setup', 'post-smtp' ),
+			array( $this, 'renderGmailOneClickSwitch' ),
+			PostmanAdminController::OAUTH_AUTH_OPTIONS,
+			PostmanAdminController::OAUTH_SECTION
+		);
+
 		add_settings_field( 'callback_domain', sprintf( '<span id="callback_domain">%s</span>', $oauthScribe->getCallbackDomainLabel() ), array(
 				$this,
 				'callback_domain_callback',
@@ -397,6 +406,17 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 				$this,
 				'oauth_client_secret_callback',
 		), PostmanAdminController::OAUTH_AUTH_OPTIONS, PostmanAdminController::OAUTH_SECTION );
+
+		if( $gmail_oneclick_enabled && post_smtp_has_pro() ){
+			add_settings_field(
+				'gmail_auth_buttons',
+				__( 'Gmail Authorization', 'post-smtp' ),
+				array( $this, 'renderGmailAuthButtons' ),
+				PostmanAdminController::OAUTH_AUTH_OPTIONS,
+				PostmanAdminController::OAUTH_SECTION
+			);
+		}
+
 	}
 
 	/**
@@ -485,6 +505,56 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	public function oauth_client_secret_callback() {
 		printf( '<input type="text" onClick="this.setSelectionRange(0, this.value.length)" autocomplete="off" id="oauth_client_secret" name="postman_options[oauth_client_secret]" value="%s" size="60" class="required ps-w-75" placeholder="%s"/>', null !== $this->options->getClientSecret() ? esc_attr( $this->options->getClientSecret() ) : '', __( 'Required', 'post-smtp' ) );
 	}
+
+	public function renderGmailOneClickSwitch() {
+		$url = POST_SMTP_URL . '/Postman/Wizard/assets/images/google.png';
+		$data = array(
+			'transport_name' => 'One-Click Setup',
+			'product_url' => 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_microsoft&utm_campaign=plugin',
+		);
+		$json_data   = htmlspecialchars( json_encode( $data ), ENT_QUOTES, 'UTF-8' );
+		$is_checked  = get_option( 'enable_gmail_oneclick', false ) ? 'checked' : '';
+		$is_disabled = !post_smtp_has_pro() ? 'disabled' : '';
+		$class       = 'ps-enable-gmail-one-click' . ( !post_smtp_has_pro() ? ' disabled' : '' );
+	
+	    echo '<div class="ps-form-switch-control">
+			<label class="ps-switch-1">
+				<input type="hidden" id="ps-one-click-data" value="' . esc_attr( $json_data ) . '">
+				<input type="checkbox" class="' . esc_attr( $class ) . '" name="enable_gmail_oneclick" ' . $is_checked . ' ' . $is_disabled . '>
+				<span class="slider round"></span>
+			</label> 
+		</div>';
+	}
+
+	public function renderGmailAuthButtons() {
+		// Action URLs for buttons
+		$nonce = wp_create_nonce( 'remove_oauth_action' );
+		$postman_auth_token = get_option( 'postman_auth_token' );
+		$remove_auth_url = esc_url( add_query_arg(
+			array(
+				'_wpnonce' => $nonce,
+				'action'   => 'remove_oauth_action',
+			),
+			admin_url( 'admin-post.php' )
+		) );
+	
+		$auth_url = esc_url( admin_url( 'admin-post.php?action=postman/requestOauthGrant' ) );
+		if ( $postman_auth_token ) {
+			// Render buttons
+			echo '<a href="' . $remove_auth_url . '" class="button button-secondary ps-remove-gmail-btn">';
+			echo esc_html__( 'Remove Authorization', 'post-smtp' );
+			echo '</a>';
+			if ( isset( $postman_auth_token['user_email'] ) ) {
+				echo '<b>' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_auth_token['user_email'] ) ) . '</b>';
+			 }
+		}else{
+			echo '<a href="' . $auth_url . '" class="button button-primary ps-gmail-btn" id="ps-wizard-connect-gmail">';
+			echo esc_html__( 'Sign in with Google', 'post-smtp' );
+			echo '</a>';
+	
+		}
+	}
+	
 
 	/**
 	 * Print the Section text

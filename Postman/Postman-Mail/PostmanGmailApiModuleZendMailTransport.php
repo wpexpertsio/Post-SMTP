@@ -198,14 +198,15 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 			$googleApiMessage = new Message ();
 			$googleService = $this->_config [self::SERVICE_OPTION];
 			$googleClient = $googleService->getClient();
-
+		 //  var_dump($googleClient);
+ 
 			$file_size = strlen($message);
 
 			$result = array ();
 			try {
 				$googleClient->setDefer(true);
 				$result = $googleService->users_messages->send ( 'me', $googleApiMessage, array('uploadType' => 'resumable') );
-
+            
 				$chunkSizeBytes = 1 * 1024 * 1024;
 
 				// create mediafile upload

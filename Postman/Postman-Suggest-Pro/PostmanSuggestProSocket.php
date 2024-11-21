@@ -267,10 +267,10 @@ class PostmanSuggestProSocket {
 		    ),
 	    );
         $bonus            = array(
-            array(
-                'logo' => $images_url . 'logos/email-log-attachments.png',
-                'title' => esc_html__( 'Email Log Attachments', 'post-smtp' ),
-                'description' => esc_html__( 'View and resend any email attachment right from you email log screen to streamline email communication.', 'post-smtp' ),
+            'gmail-oneclick'      => array(
+                'logo'          => $images_url . 'logos/google.png',
+                'title'         => __( 'One-Click Setup', 'post-smtp-pro' ),
+                'description'   => __( 'View and resend any email attachment right from you email log screen to streamline email communication.', 'post-smtp-pro' )
             ),
             array(
                 'logo' => $images_url . 'logos/email-delivery-log.png',
