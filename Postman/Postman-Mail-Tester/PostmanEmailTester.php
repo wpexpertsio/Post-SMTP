@@ -71,7 +71,6 @@ class Postman_Email_Tester {
                 $email_sent = wp_mail( $test_email, 'Test Email', 'This is a test email.' );
                 $email_sent = true;
                 $test_email = str_replace( '@smtper.postmansmtp.com', '', $test_email );
-                $test_email = 'postsmtp-2ce90514e5154c0bcb4c245f146a174d';
 
                 // Wait for 3 seconds
                 sleep( seconds: 3 );

@@ -286,6 +286,10 @@
   height: 343px;
 }
 
+.ps-wizard-footer-left .ps-in-active-nav .ps-email-tester-line.ps-wizard-line:after {
+  height: 417px;
+}
+
 .ps-wizard-sockets {
   display: flex;
   margin: 15px 0 15px 0;
@@ -685,6 +689,81 @@ span.ps-pro-close-popup {
 
 .ps-wizard-outer.smtp2go_api-outer .ps-wizard-footer-left .ps-wizard-line::after {
   height: 557px;
+}
+
+.ps-dns-results p {
+  margin: 0;  
+}
+
+.ps-dns-heading {
+  border-left: 2px solid #3a5eaf;
+  background: #d8e1e8;
+  color: #585858;
+  padding: 7px 15px;
+}
+
+.ps-dns-results {
+  width: 510px;
+}
+
+.ps-dns-record {
+  border-left: 2px solid #d9d9d9;
+  border-bottom: 2px solid #d9d9d9;
+  padding: 12px 13px;
+  position: relative;
+}
+
+.ps-dns-record p {
+  color: #6E6E6E;
+  font-size: 11px;
+  font-weight: 450;
+}
+
+.ps-dns-record b {
+  color: #6E6E6E;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.ps-dns-footer {
+  font-size: 11px;
+  font-weight: bold;
+  color: #6E6E6E;
+  margin-top: 15px;
+  display: block;
+}
+
+.ps-dns-footer a {
+  color: #5171b9;
+  font-weight: bold;
+}
+
+.ps-dns-footer span {
+  font-size: 18px;
+  color: #375caf;
+  vertical-align: middle;
+}
+
+.ps-dns-pass {
+  color: #74B27B;
+}
+
+.ps-dns-fail {
+  color: #e57373;
+}
+
+.ps-dns-pass,
+.ps-dns-fail {
+  text-transform: capitalize;
+}
+
+.ps-dns-status-icon {
+  position: absolute;
+  left: -10px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  font-size: 17px;
 }
 
 /* Lets make wizard responsive */
