@@ -17,7 +17,7 @@ The world's leading WordPress SMTP plugin! Connect any SMTP, including Gmail SMT
 
 ###  WordPress Mail SMTP Plugin 
 
-https://www.youtube.com/watch?v=UDmwPG-RmDc
+https://www.youtube.com/watch?v=KOWGLQ0MaX0
 
 Are you facing the WordPress not sending emails issue❓ Don't worry! Install the Post SMTP Plugin for smooth WordPress email deliverability.
 
