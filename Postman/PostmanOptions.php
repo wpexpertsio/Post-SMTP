@@ -664,12 +664,12 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		/**
 		 * (non-PHPdoc)
-		 *
-		 * @see PostmanOptions::isSenderNameOverridePrevented()
+		 * 
 		 * @deprecated by isPluginSenderNameEnforced
+		 *
 		 */
 		public function isSenderNameOverridePrevented() {
-			return $this->isPluginSenderEmailEnforced();
+			return $this->isPluginSenderNameEnforced();
 		}
 		public function isPluginSenderEmailEnforced() {
 
