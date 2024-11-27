@@ -57,11 +57,11 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 				$interval = isset( $options['reporting_interval'] ) ? $options['reporting_interval'] : false;
 
 				if ( $interval ) {
-					$schedules = [
+					$schedules = array(
 						'd' => 'daily',
 						'w' => 'weekly',
 						'm' => 'monthly',
-					];
+					);
 
 					$schedule = isset( $schedules[ $interval ] ) ? $schedules[ $interval ] : false;
 
@@ -108,10 +108,10 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 		 * @return array Modified array of cron schedules with 'monthly' added.
 		 */
 		public function add_monthly_schedule( $schedules ) {
-			$schedules['monthly'] = [
+			$schedules['monthly'] = array(
 				'interval' => 30 * DAY_IN_SECONDS,
 				'display'  => __( 'Once Monthly', 'post-smtp' ),
-			];
+			);
 			return $schedules;
     	}
 

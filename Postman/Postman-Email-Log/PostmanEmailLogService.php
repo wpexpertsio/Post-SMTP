@@ -182,9 +182,8 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				 * @version 1.0.0
 				 */
 				$log_id = apply_filters( 'post_smtp_update_email_log_id', '' );
-
 				$log_id = $email_logs->save( $data, $log_id );
-
+				
 				/**
 				 * Fires after the email log is saved
 				 * 
