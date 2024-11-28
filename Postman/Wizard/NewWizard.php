@@ -910,29 +910,31 @@ public function render_gmail_settings() {
     // Remove OAuth action button
     $html .= '</div>';
     $html .= '<div class="ps-disable-gmail-setup ' . ( $gmail_oneclick_enabled ? '' : 'ps-hidden' ) . '">';
-    if ( $postman_auth_token ) {
-        $nonce = wp_create_nonce( 'remove_oauth_action' );
-        $action_url = esc_url( add_query_arg(
-            [
-                '_wpnonce' => $nonce,
-                'action' => 'remove_oauth_action',
-            ],
-            admin_url( 'admin-post.php' )
-        ) );
-        $html .= '<a href="' . $action_url . '" class="button button-secondary ps-remove-gmail-btn">';
-        $html .= esc_html__( 'Remove Authorization', 'post-smtp' );
-        $html .= '</a>';
-        if ( isset( $postman_auth_token['user_email'] ) ) {
-           $html .= '<b>' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_auth_token['user_email'] ) ) . '</b>';
-        }
-    }else {
-            $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
-            $html .= '<p>' . esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ) . '</p>';
-            $html .= '<input type="hidden" ' . esc_attr( $required ) . ' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) . '" />';
-            $html .= '<a href="' . esc_url( $auth_url ) . '" class="button button-primary ps-gmail-btn" id="ps-wizard-connect-gmail">';
-            $html .= esc_html__( 'Sign in with Google', 'post-smtp' );
+    if ( post_smtp_has_pro() ) {
+        if ( $postman_auth_token ) {
+            $nonce = wp_create_nonce( 'remove_oauth_action' );
+            $action_url = esc_url( add_query_arg(
+                [
+                    '_wpnonce' => $nonce,
+                    'action' => 'remove_oauth_action',
+                ],
+                admin_url( 'admin-post.php' )
+            ) );
+            $html .= '<a href="' . $action_url . '" class="button button-secondary ps-remove-gmail-btn">';
+            $html .= esc_html__( 'Remove Authorization', 'post-smtp' );
             $html .= '</a>';
-       }
+            if ( isset( $postman_auth_token['user_email'] ) ) {
+            $html .= '<b>' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_auth_token['user_email'] ) ) . '</b>';
+            }
+        }else {
+                $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
+                $html .= '<p>' . esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ) . '</p>';
+                $html .= '<input type="hidden" ' . esc_attr( $required ) . ' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) . '" />';
+                $html .= '<a href="' . esc_url( $auth_url ) . '" class="button button-primary ps-gmail-btn">';
+                $html .= esc_html__( 'Sign in with Google', 'post-smtp' );
+                $html .= '</a>';
+        }
+    }
 
     $html .= '</div>';
 

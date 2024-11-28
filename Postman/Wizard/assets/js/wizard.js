@@ -514,6 +514,7 @@ jQuery( document ).ready(function() {
     } );
 
     jQuery(document).on('click', '.ps-enable-gmail-one-click', function (e) {
+    	
         if (jQuery(this).hasClass('disabled')) {
             e.preventDefault();
             var data = jQuery('#ps-one-click-data').val();
@@ -527,10 +528,7 @@ jQuery( document ).ready(function() {
         }
         jQuery(this).prop('disabled', false);
         jQuery(this).removeClass('disabled'); 
-    });
-
-    jQuery(document).on('click', '.ps-enable-gmail-one-click', function () {
-
+        
         var enabled = jQuery(this).is(':checked');
         if (enabled) {
             jQuery('.ps-disable-gmail-setup').show();

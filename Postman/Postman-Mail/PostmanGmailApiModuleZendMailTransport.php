@@ -198,7 +198,6 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 			$googleApiMessage = new Message ();
 			$googleService = $this->_config [self::SERVICE_OPTION];
 			$googleClient = $googleService->getClient();
-		 //  var_dump($googleClient);
  
 			$file_size = strlen($message);
 

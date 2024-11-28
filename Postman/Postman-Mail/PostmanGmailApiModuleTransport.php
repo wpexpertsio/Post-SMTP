@@ -55,20 +55,6 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		return new PostmanZendMailEngine ( $this );
 	}
 
-	public function get_credentials() {
-		$api_url = 'https://wordpress-1158527-4960492.cloudwaysapps.com/wp-json/gmail-oauth/v1/get_credentials';
-		$response = wp_remote_get( $api_url );
-		if ( is_wp_error( $response ) ) {
-			error_log( 'Error fetching Gmail credentials: ' . $response->get_error_message() );
-			return null;
-		}
-		$data = json_decode( wp_remote_retrieve_body( $response ), true );
-		if ( empty( $data ) || ! is_array( $data ) ) {
-			error_log( 'Invalid response from Gmail credentials API.' );
-			return null;
-		}
-		return $data;
-	}
 	
 	/**
 	 * (non-PHPdoc)
@@ -110,14 +96,21 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
         $client->setRedirectUri( $this->getScribe()->getCallbackUrl() );
         
         if ( $this->gmail_oneclick_enabled ) {
-			$keys = $this->get_credentials();
-            $client = new Google_Client();
+			/**
+			 * Retrieve Gmail credentials via filter.
+			 *
+			 * Filters the Gmail credentials, including client ID (`key`), client secret (`token`), 
+			 * and redirect URI (`url`).
+			 *
+			 * @since 3.1.0
+			 */
+			$keys = apply_filters( 'post_smtp_get_credentials', '' );
+			$client = new Google_Client();
             $client->setApplicationName( 'Post SMTP ' . POST_SMTP_VER );
             $client->setAccessType( 'offline' );
             $client->setApprovalPrompt( 'force' );
             $client->setIncludeGrantedScopes( true );
             $client->setScopes( array( Gmail::MAIL_GOOGLE_COM ) );
-            $client->addScope( 'https://www.googleapis.com/auth/gmail.metadata' );
             $client->setRedirectUri( $keys['credentials']['url'] );
             $client->setClientId( $keys['credentials']['key'] );
         	$client->setClientSecret( $keys['credentials']['token'] );
@@ -126,13 +119,11 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 			
 			//If Access Token Expired, get new one
 			if( $client->isAccessTokenExpired() ) {
-				
 				$client->fetchAccessTokenWithRefreshToken( $authToken->getRefreshToken() );
 				
 			}
 			//Lets go with the old one
 			else {
-				
 				$client->setAccessToken( $authToken->getAccessToken() );
 				$client->setRefreshToken( $authToken->getRefreshToken() );
 				
