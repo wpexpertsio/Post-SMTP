@@ -287,6 +287,16 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 * New: Introduced new Send Mail user interface.
 * New: Introduced Webhook, so you can add Webhook URL to get notified when an email is failed [How to Setup Webhook URL](Link)
 
+= 2.9.12 - December 02, 2024 =
+* Enhancement - Regenerate QR Code Mobile Applicaion security enhancement in admin view reported by Patchstack.
+
+= 2.9.11 - November 21, 2024 =
+* Updated: Feedback SDK to the latest version.
+* Tweak: Failed email notification typo fixed.
+
+= 2.9.10 - November 19, 2024 =
+* Email logs search security enhancement in admin view reported by [Patchstack](https://patchstack.com/database/vulnerability/post-smtp/wordpress-post-smtp-plugin-2-9-9-sql-injection-vulnerability)
+
 = 2.9.9 - October 01, 2024 =
 * Tweak: Typo fixes.
 * Tweak: Improved user interface in wizard.
