@@ -166,6 +166,8 @@ class Post_SMTP_Mobile {
      */
     public function section() {
 
+        $nonce = wp_create_nonce( 'ps-regenerate-qrcode-nonce' );
+
         //Incompatible server
         if( function_exists( 'ImageCreate' ) ):
         ?>
@@ -205,7 +207,7 @@ class Post_SMTP_Mobile {
                         echo '<img src="data:image/jpeg;base64,'. $this->qr_code.'" width="300"/>'; 
                         ?>
                         <div>
-                            <a href="<?php echo esc_url( admin_url('admin-post.php?action=regenerate-qrcode') ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
+                            <a href="<?php echo esc_url( admin_url( "admin-post.php?action=regenerate-qrcode&_psnonce=$nonce" ) ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
                         </div>
                         <?php
 
@@ -374,6 +376,12 @@ class Post_SMTP_Mobile {
      * @version 1.0.0
      */
     public function regenerate_qrcode() {
+
+        if( ! isset( $_GET['ps-regenerate-qrcode-nonce'] ) || ! wp_verify_nonce( $_GET['_psnonce'], 'ps-regenerate-qrcode-nonce' ) ) {
+
+            die( 'Security Check' );
+
+        }
 
         if( isset( $_GET['action'] ) && $_GET['action'] === 'regenerate-qrcode' ) {
 
