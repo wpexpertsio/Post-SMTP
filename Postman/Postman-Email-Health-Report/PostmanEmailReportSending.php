@@ -49,6 +49,8 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 		 * a WordPress cron job accordingly. If a schedule already exists and its interval
 		 * is different from the new one, the existing schedule is unscheduled and a new
 		 * schedule is created.
+		 * @since 3.0.1
+		 * @version 3.0.1
 		 */
 		public function schedule_email_reporting() {
 			$options = get_option( 'postman_rat' );
@@ -90,6 +92,8 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 		 * This function checks if email reporting is enabled and retrieves the configured 
 		 * reporting interval. If both conditions are met, it triggers the email-sending 
 		 * functionality.
+		 *  @since 3.0.1
+		 *  @version 3.0.1
 		 */
 		public function handle_email_reporting() {
 			$options = get_option( 'postman_rat' );
@@ -106,6 +110,8 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 		 *
 		 * @param array $schedules The existing cron schedules.
 		 * @return array Modified array of cron schedules with 'monthly' added.
+		 * @since 3.0.1
+		 * @version 3.0.1
 		 */
 		public function add_monthly_schedule( $schedules ) {
 			$schedules['monthly'] = array(
