@@ -185,7 +185,7 @@ class PostmanSendTestEmailController {
 
 						<form action="' . esc_attr( $page_url ) . '" method="post" id="postman_test_email_wizard">
 
-							<div class="ps-screens-container">
+							<div style="overflow-y: scroll;max-height: 469px;" class="ps-screens-container">
 								<div class="ps-step">
 
 									<p>

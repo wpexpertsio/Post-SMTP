@@ -68,7 +68,8 @@ class Post_SMTP_New_Wizard {
             'postmark_api',
             'sparkpost_api',
             'mailjet_api',
-            'sendpulse_api'
+            'sendpulse_api',
+            'smtp2go_api',
         );
         
         if( !is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' ) ) {
