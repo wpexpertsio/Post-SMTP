@@ -383,14 +383,19 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				)
 			);
 
+			$current_time = current_time( 'timestamp' );
 			$data = array_map(
-				function( $log ) {
+				function( $log ) use ( $current_time ) {
+					// calculate time difference and convert it into h m or s
+					$time_diff = $current_time - $log->time;
+					$time_diff = human_time_diff( $log->time, $current_time );
+					
 					$data = array(
 						'id'            => $log->id,
 						'subject'       => $log->original_subject,
 						'sent_to'       => $log->to_header,
 						'status'        => 1 === absint( $log->success ) ? 'success' : 'failed',
-						'delivery_time' => gmdate( 'F d, Y h:i a', $log->time ),
+						'delivery_time' => $time_diff,
 						'opened'        => 'yes' === postman_get_log_meta( $log->id, 'opened_in_dashboard' ),
 					);
 
