@@ -623,7 +623,6 @@ jQuery(document).ready(function($) {
 	jQuery( document ).on( 'click', '.ps-email-log-resend', function( e ) {
 
 		e.preventDefault();
-		// var sendTo = jQuery( this ).closest( 'tr' ).find( 'td:nth-child(3)' ).text();
 		var sendTo = jQuery( this ).closest( 'tr' ).find( 'td:nth-child(3)' ).attr('title');
 		var currentRow = jQuery( this ).closest( 'tr' );
 
