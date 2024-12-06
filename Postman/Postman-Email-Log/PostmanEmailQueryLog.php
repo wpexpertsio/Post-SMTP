@@ -48,7 +48,7 @@ class PostmanEmailQueryLog {
         $args['search_by'] = array(
             'original_subject',
             'success',
-            'original_to'
+            'to_header'
         );
 
         if( !isset( $args['columns'] ) ) {
