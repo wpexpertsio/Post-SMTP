@@ -48,7 +48,7 @@ class PostmanEmailQueryLog {
         $args['search_by'] = array(
             'original_subject',
             'success',
-            'to_header'
+            'original_to'
         );
 
         if( !isset( $args['columns'] ) ) {
@@ -58,7 +58,8 @@ class PostmanEmailQueryLog {
                 'original_subject',
                 'to_header',
                 'success',
-                'time'
+                'time',
+                'original_to'
             );
 
         }
