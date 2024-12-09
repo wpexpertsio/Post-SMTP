@@ -86,7 +86,9 @@ class PostmanNotify {
         $webhook_urls = array();
         foreach ( $_POST['postman_options']['webhook_alerts_urls'] as $key => $url ) {
 
-            $webhook_urls[] = esc_url( $url );
+            if( ! empty( $url ) ) {
+                $webhook_urls[] = esc_url( $url );
+            }
 
         }
 
