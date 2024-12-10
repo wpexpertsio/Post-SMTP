@@ -377,7 +377,7 @@ class Post_SMTP_Mobile {
      */
     public function regenerate_qrcode() {
 
-        if( ! isset( $_GET['ps-regenerate-qrcode-nonce'] ) || ! wp_verify_nonce( $_GET['_psnonce'], 'ps-regenerate-qrcode-nonce' ) ) {
+        if( ! isset( $_GET['_psnonce'] ) || ! wp_verify_nonce( $_GET['_psnonce'], 'ps-regenerate-qrcode-nonce' ) ) {
 
             die( 'Security Check' );
 
