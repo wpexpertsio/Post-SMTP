@@ -97,7 +97,7 @@ class Postman {
 
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
-				'name' => _x( 'Postman SMTP', 'post-smtp' ),
+				'name' => _x( 'Postman SMTP', 'Post SMTP plugin name', 'post-smtp' ),
 				'version' => $version,
 		);
 
