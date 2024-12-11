@@ -36,6 +36,8 @@ class Postman {
 	private $wpMailBinder;
 	private $pluginData;
 	private $rootPluginFilenameAndPath;
+	private $version;
+    private $pluginName;
 
 	public static $rootPlugin;
 
@@ -50,6 +52,8 @@ class Postman {
 		assert( ! empty( $version ) );
 		$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;
 		self::$rootPlugin = $rootPluginFilenameAndPath;
+		$this->version = $version;
+		$this->pluginName = 'Postman SMTP';
 		
 		//Load helper functions file :D
 		require_once POST_SMTP_PATH . '/includes/postman-functions.php';
@@ -95,12 +99,6 @@ class Postman {
 		require_once 'Postman-Email-Health-Report/PostmanEmailReporting.php';
 		require_once 'Postman-Email-Health-Report/PostmanEmailReportSending.php';
 
-		// get plugin metadata - alternative to get_plugin_data
-		$this->pluginData = array(
-				'name' => _x( 'Postman SMTP', 'post-smtp' ),
-				'version' => $version,
-		);
-
 		// register the plugin metadata filter (part of the Postman API)
 		add_filter( 'postman_get_plugin_metadata', array(
 				$this,
@@ -110,7 +108,7 @@ class Postman {
 		// create an instance of the logger
 		$this->logger = new PostmanLogger( get_class( $this ) );
 		if ( $this->logger->isDebug() ) {
-			$this->logger->debug( sprintf( '%1$s v%2$s starting', $this->pluginData ['name'], $this->pluginData ['version'] ) );
+			$this->logger->debug( sprintf( '%1$s v%2$s starting', $this->pluginName, $this->version ) );
 		}
 
 		if ( isset( $_REQUEST ['page'] ) && $this->logger->isTrace() ) {
@@ -143,10 +141,10 @@ class Postman {
 		PostmanEmailLogPostType::automaticallyCreatePostType();
 
 		// run the DatastoreUpgrader any time there is a version mismatch
-		if ( PostmanState::getInstance()->getVersion() != $this->pluginData ['version'] ) {
+		if ( PostmanState::getInstance()->getVersion() != $this->version ) {
 			// manually trigger the activation hook
 			if ( $this->logger->isInfo() ) {
-				$this->logger->info( sprintf( 'Upgrading datastore from version %s to %s', PostmanState::getInstance()->getVersion(), $this->pluginData ['version'] ) );
+				$this->logger->info( sprintf( 'Upgrading datastore from version %s to %s', PostmanState::getInstance()->getVersion(), $this->version ) );
 			}
 			require_once 'PostmanInstaller.php';
 			$upgrader = new PostmanInstaller();
@@ -179,6 +177,9 @@ class Postman {
 				$this,
 				'on_wp_loaded',
 		) );
+		
+		 // Hook to register translations.
+		 add_action( 'init', array( $this, 'initializeTranslations' ) );
 
 		// hook on the acivation event
 		register_activation_hook( $rootPluginFilenameAndPath, array(
@@ -193,12 +194,27 @@ class Postman {
 		) );
 
 	}
-
+	
     function add_extension_headers($headers) {
         $headers[] = 'Class';
         $headers[] = 'Slug';
 
         return $headers;
+    }
+
+	/**
+	 * Initializes translations and plugin metadata.
+	 *
+	 * This method is hooked to the `init` action and ensures that all 
+	 * translation-related tasks and plugin metadata initialization 
+	 * occur at the correct time, after WordPress has fully loaded.
+	 */
+	public function initializeTranslations() {
+        // Load translated plugin metadata.
+        $this->pluginData = array(
+            'name'    => _x( $this->pluginName, 'plugin name', 'post-smtp' ),
+            'version' => $this->version,
+        );
     }
 
 	/**
@@ -222,6 +238,7 @@ class Postman {
 		}
 		
 	}
+
 
 	/**
 	 * Functions to execute on the wp_loaded event
@@ -413,7 +430,12 @@ class Postman {
 	 * @return multitype:unknown NULL
 	 */
 	public function getPluginMetaData() {
-		// get plugin metadata
+		if ( empty( $this->pluginData ) ) {
+			$this->pluginData = array(
+				'name'    => _x( $this->pluginName, 'plugin name', 'post-smtp' ),
+				'version' => $this->version,
+			);
+		}
 		return $this->pluginData;
 	}
 
@@ -514,7 +536,7 @@ class Postman {
 	 * @return string Plugin version
 	 */
 	function version_shortcode() {
-		return $this->pluginData ['version'];
+		return $this->version;
 	}
 }
 
@@ -533,3 +555,4 @@ if ( ! function_exists( 'str_getcsv' ) ) {
 		return PostmanUtils::postman_strgetcsv_impl( $string );
 	}
 }
+
