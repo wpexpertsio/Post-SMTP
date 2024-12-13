@@ -219,8 +219,8 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 	            }
 	            else {
 
-		            $ready_messsage = PostmanTransportRegistry::getInstance()->getReadyMessage();
-		            $statusMessage = $ready_messsage['message'];
+		            $ready_message = PostmanTransportRegistry::getInstance()->getReadyMessage();
+		            $statusMessage = $ready_message['message'];
 
 		            $transport = PostmanTransportRegistry::getInstance()->getSelectedTransport();
 
@@ -566,7 +566,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					            esc_html__( 'New for v1.9.8!', 'post-smtp' ),
 					            esc_html__( ' Fallback - setup a second delivery method when the first one is failing', 'post-smtp' ),
 					            esc_url( 'https://postmansmtp.com/post-smtp-1-9-7-the-smtp-fallback/' ),
-					            esc_html__( 'Check the detailes here', 'post-smtp')
+					            esc_html__( 'Check the details here', 'post-smtp')
 				            );
 
 			            ?>

@@ -396,7 +396,7 @@ class PostmanConfigurationController {
                                name="postman_options[<?php echo esc_attr( PostmanOptions::FALLBACK_FROM_EMAIL ); ?>]"
                         >
                         <br>
-                        <small><?php esc_html_e( "Use allowed email, for example: If you are using Gmail, type your Gmail adress.", 'post-smtp' ); ?></small>
+                        <small><?php esc_html_e( "Use allowed email, for example: If you are using Gmail, type your Gmail address.", 'post-smtp' ); ?></small>
                     </td>
                 </tr>
 
@@ -662,7 +662,7 @@ class PostmanConfigurationController {
 			}
 			print '</fieldset>';
 
-			// Wizard Step 5 - Notificiations
+			// Wizard Step 5 - Notifications
 			printf( '<h5>%s</h5>', esc_html__( 'Notifications', 'post-smtp' ) );
 			print '<fieldset>';
 			$logs_url = admin_url( 'admin.php?page=postman_email_log' );
@@ -978,7 +978,7 @@ class PostmanManageConfigurationAjaxHandler extends PostmanAbstractAjaxHandler {
 			$this->logger->trace( $winningRecommendation );
 		}
 
-		// create the reponse
+		// create the response
 		$response = array();
 		$configuration = array();
 		$response ['referer'] = 'wizard';
