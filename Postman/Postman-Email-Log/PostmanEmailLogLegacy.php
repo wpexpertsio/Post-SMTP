@@ -19,7 +19,7 @@ $testListTable->prepare_items();
 	<div class="ps-config-bar">
 		<p><?php
 
-		echo __( 'This is a record of deliveries made to the mail server. It does not neccessarily indicate sucessful delivery to the recipient.', 'post-smtp' )?></p>
+		echo __( 'This is a record of deliveries made to the mail server. It does not necessarily indicate successful delivery to the recipient.', 'post-smtp' )?></p>
 	</div>
 
 	<?php

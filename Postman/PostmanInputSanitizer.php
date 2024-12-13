@@ -78,7 +78,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizeString( 'Forced BCC Recipients', PostmanOptions::FORCED_BCC_RECIPIENTS, $input, $new_input );
 			$this->sanitizeTextarea( 'Additional Headers', PostmanOptions::ADDITIONAL_HEADERS, $input, $new_input );
 			$this->sanitizeInt( 'Read Timeout', PostmanOptions::READ_TIMEOUT, $input, $new_input );
-			$this->sanitizeInt( 'Conenction Timeout', PostmanOptions::CONNECTION_TIMEOUT, $input, $new_input );
+			$this->sanitizeInt( 'Connection Timeout', PostmanOptions::CONNECTION_TIMEOUT, $input, $new_input );
 			$this->sanitizeInt( 'Log Level', PostmanOptions::LOG_LEVEL, $input, $new_input );
 			$this->sanitizeString( 'Email Log Enabled', PostmanOptions::MAIL_LOG_ENABLED_OPTION, $input, $new_input );
 			$this->sanitizeLogMax( 'Email Log Max Entries', PostmanOptions::MAIL_LOG_MAX_ENTRIES, $input, $new_input );

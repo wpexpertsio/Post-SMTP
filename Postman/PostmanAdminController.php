@@ -344,7 +344,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			if ( wp_verify_nonce( $_REQUEST ['_wpnonce'], PostmanAdminController::PURGE_DATA_SLUG ) ) {
 				
 				/**
-				 * Fires before resetting pluign
+				 * Fires before resetting plugin
 				 * 
 				 * @since 2.1.4
 				 */
@@ -371,7 +371,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				$this->messageHandler->addMessage( __( 'Plugin data was removed.', 'post-smtp' ) );
 
 				/**
-				 * Fires after resetting pluign
+				 * Fires after resetting plugin
 				 * 
 				 * @since 2.1.4
 				 */

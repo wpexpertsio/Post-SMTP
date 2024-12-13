@@ -95,7 +95,7 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 		/**
 		 * presend function.
 		 *
-		 * uses the mailster_presend hook to apply setttings before each mail
+		 * uses the mailster_presend hook to apply settings before each mail
 		 *
 		 * @access public
 		 * @param mixed $mailobject

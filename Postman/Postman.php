@@ -352,7 +352,7 @@ class Postman {
 
 				$message .= '<br><strong>More info that may help</strong> - ' . $reflFunc->getFileName() . ':' . $reflFunc->getStartLine();
 
-				// PHPmailer Recommandation
+				// PHPmailer Recommendation
 				ob_start();
                 Postman::getMailerTypeRecommend();
                 $message .= ob_get_clean();
