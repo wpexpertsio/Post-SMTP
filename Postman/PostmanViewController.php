@@ -529,15 +529,15 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					            printf(
 						            '<p><span>%s</span></p>',
 						            sprintf(
-							            wp_kses_post( 'Let\'s get started! All users are strongly encouraged to <a href="%s">run the Setup Wizard</a>.', 'post-smtp' ),
+							            wp_kses( __( 'Let\'s get started! All users are strongly encouraged to <a href="%s">run the Setup Wizard</a>.', 'post-smtp' ), array( 'a' => array( 'href' => array() ) ) ),
 							            esc_url( $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG ) )
 						            )
 					            );
 					            printf(
 						            '<p><span>%s</span></p>',
 						            sprintf(
-							            wp_kses_post( 'Alternately, <a href="%s">manually configure</a> your own settings and/or modify advanced options.', 'post-smtp' ),
-							            esc_attr( $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_SLUG ) )
+							            wp_kses( __( 'Alternately, <a href="%s">manually configure</a> your own settings and/or modify advanced options.', 'post-smtp' ), array( 'a' => array( 'href' => array() ) ) ),
+							            esc_url( $this->getPageUrl( PostmanConfigurationController::CONFIGURATION_SLUG ) )
 						            )
 					            );
 				            } else {
