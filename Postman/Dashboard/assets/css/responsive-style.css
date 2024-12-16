@@ -1,0 +1,79 @@
+
+.header[data-v-65055dc1], 
+.container[data-v-64b6d796] {
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+.post-smtp-card-opened--pro[data-v-36caffee] {
+    background-position: 95% 10% !important;
+}
+
+#post-smtp-app .card-container {
+    gap: 15px;
+    display: flex;
+    justify-content: space-around;
+} 
+#post-smtp-app .card-container .post-smtp-card {
+    float: none;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 25px;
+}
+#post-smtp-app .card-container:after {
+    display: none;
+}
+#post-smtp-app .card-container .post-smtp-card .post-smtp-card-content-wrapper {
+    justify-content: flex-start;
+    width: auto;
+    height: 100%;
+    gap: 15px;
+}
+#post-smtp-app .card-container .post-smtp-card .post-smtp-card-content-wrapper .post-smtp-image-container {
+    margin: 0 !important;
+}
+#post-smtp-app .pro-features {
+    height: auto;
+}
+
+#post-smtp-app .pro-features .container {
+    box-sizing: border-box;
+    padding: 30px 40px;
+    gap: 40px;
+}
+
+#post-smtp-app .pro-features .container .header, 
+#post-smtp-app .pro-features .container .body, 
+#post-smtp-app .pro-features .container .footer {
+    margin: 0;
+}
+
+#post-smtp-app .pro-features .container .body .feature-block {margin: 0;gap: 10px;align-items: center;}
+
+#post-smtp-app .pro-features .container .body {
+    gap: 20px;
+}
+
+#post-smtp-app .pro-features .container .body .block-content {
+    margin: 0;
+}
+#post-smtp-app .documentation .content {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 25px;
+    gap: 24px;
+}
+#post-smtp-app .documentation .content .documentation {
+    float: none;
+    margin: 0;
+    width: 26.2%;
+}
+#post-smtp-app .documentation .body {
+    padding: 50px 0 25px;
+}
+@media only screen and (max-width: 1400px) {
+    #post-smtp-app .card-container .post-smtp-card {
+        padding: 20px 15px;
+    }
+}
+  
