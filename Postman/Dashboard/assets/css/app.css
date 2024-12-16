@@ -279,14 +279,14 @@
 }
 
 
-.mobile-wrapper[data-v-39efabc2] {
+.mobile-wrapper[data-v-3b84963c] {
 	background: linear-gradient(180deg, #FFFFFF 50%, #DCE7FF 100%);
 }
-.mobile-wrapper[data-v-39efabc2] * {
+.mobile-wrapper[data-v-3b84963c] * {
 	padding: 0;
 	margin: 0;
 }
-.mobile-header[data-v-39efabc2] {
+.mobile-header[data-v-3b84963c] {
 	font-family: Montserrat;
 	font-size: 14px;
 	font-weight: 500;
@@ -294,7 +294,7 @@
 	text-align: left;
 	color: #375CAF;
 }
-.mobile-header strong[data-v-39efabc2] {
+.mobile-header strong[data-v-3b84963c] {
 	font-family: Montserrat;
 	font-size: 14px;
 	font-weight: 700;
@@ -302,7 +302,7 @@
 	text-align: left;
 	color: #375CAF;
 }
-.post-smtp-main-wp-wrapper .main-wp-header h3[data-v-39efabc2] {
+.post-smtp-main-wp-wrapper .main-wp-header h3[data-v-3b84963c] {
 	color: #231F20;
 	font-family: Montserrat;
 	font-size: 14px;
@@ -310,7 +310,7 @@
 	font-weight: 500;
 	line-height: 130%; /* 18.2px */
 }
-.post-smtp-main-wp-wrapper .main-wp-header h3 span[data-v-39efabc2] {
+.post-smtp-main-wp-wrapper .main-wp-header h3 span[data-v-3b84963c] {
 	background: linear-gradient(269deg, #3662C7 18.26%, #32B495 47.83%, #B4D859 80.52%);
 	background-clip: text;
 	-webkit-background-clip: text;
@@ -321,7 +321,7 @@
 	font-weight: 700;
 	line-height: 130%;
 }
-.mobile-unstyles-list li[data-v-39efabc2] {
+.mobile-unstyles-list li[data-v-3b84963c] {
 	font-family: Montserrat;
 	font-size: 11px;
 	font-weight: 500;
@@ -331,22 +331,22 @@
 	margin-top: 10px;
 	list-style: url(../3fbf6e3924d7ed6d39ea.svg) inside;
 }
-.img-wrapper[data-v-39efabc2] {
+.img-wrapper[data-v-3b84963c] {
 	margin-top: 7px;
 }
-.img-wrapper[data-v-39efabc2]::after {
+.img-wrapper[data-v-3b84963c]::after {
 	content: "";
 	display: table;
 	clear: both;
 }
-.qrcode-img[data-v-39efabc2] {
+.qrcode-img[data-v-3b84963c] {
 	float: left;
 	margin-top: 47px;
 }
-.qrcode-mobile-app[data-v-39efabc2] {
+.qrcode-mobile-app[data-v-3b84963c] {
 	float: left;
 }
-.post-smtp-main-wp-wrapper[data-v-39efabc2] {
+.post-smtp-main-wp-wrapper[data-v-3b84963c] {
 	border-radius: 4px;
 	border: 1px solid #DCDFE5;
 	background: url( ../b5d4a4bc5f5d5c2cc5ec.png ), linear-gradient(180deg, #FFF 0%, #EDF2FE 100%);
@@ -354,10 +354,10 @@
 	background-position: right bottom;
 	background-repeat: no-repeat;
 }
-.main-wp-unstyled-list[data-v-39efabc2] {
+.main-wp-unstyled-list[data-v-3b84963c] {
 	margin-bottom: 86px;
 }
-.main-wp-unstyled-list li[data-v-39efabc2] {
+.main-wp-unstyled-list li[data-v-3b84963c] {
 	color: #646464;
 	font-family: Montserrat;
 	font-size: 11px;
@@ -367,7 +367,7 @@
 
 	list-style: url( ../9fd2c918204f11be1da3.svg ) inside;
 }
-.main-wp-footer a[data-v-39efabc2] {
+.main-wp-footer a[data-v-3b84963c] {
 	display: inline-flex;
 	padding: 10px 20px;
 	justify-content: center;
@@ -385,7 +385,7 @@
 	background: linear-gradient(312deg, #3662C7 21.21%, #32B495 64.57%, #B4D859 112.5%);
 	text-decoration: none;
 }
-.post-smtp-spam-score-wrapper[data-v-39efabc2] {
+.post-smtp-spam-score-wrapper[data-v-3b84963c] {
 	border-radius: 4px;
 	border: 1px solid #DCDFE5;
 	background: url( ../27b2ae161d3d48de6aa4.png ), linear-gradient(180deg, #FFF 0%, #EDF2FE 100%);
@@ -393,7 +393,7 @@
 	background-position: top right;
 	padding: 20px 25px;
 }
-.post-smtp-spam-score-header h2[data-v-39efabc2] {
+.post-smtp-spam-score-header h2[data-v-3b84963c] {
 	color: #231F20;
 	font-family: Montserrat;
 	font-size: 16px;
@@ -401,10 +401,10 @@
 	font-weight: 500;
 	line-height: 20.8px; /* 20.8px */
 }
-.post-smtp-spam-score-header h2 span[data-v-39efabc2] {
+.post-smtp-spam-score-header h2 span[data-v-3b84963c] {
 	font-weight: 700;
 }
-.post-smtp-spam-score-footer a[data-v-39efabc2] {
+.post-smtp-spam-score-footer a[data-v-3b84963c] {
 	padding: 10px 20px;
 
 	color: #FFF;
@@ -424,10 +424,10 @@
 
 	text-decoration: none;
 }
-.post-smtp-spam-score-list-unstyled[data-v-39efabc2] {
+.post-smtp-spam-score-list-unstyled[data-v-3b84963c] {
 	margin-bottom: 20px;
 }
-.post-smtp-spam-score-list-unstyled li[data-v-39efabc2] {
+.post-smtp-spam-score-list-unstyled li[data-v-3b84963c] {
 	color: #646464;
 	font-family: Montserrat;
 	font-size: 11px;

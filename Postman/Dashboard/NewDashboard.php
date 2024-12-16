@@ -34,6 +34,7 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
             );
             
             wp_enqueue_style('post-smtp-dashboard', POST_SMTP_URL . '/Postman/Dashboard/assets/css/app.css', array(), POST_SMTP_VER, 'all' );
+			wp_enqueue_style( 'post-smtp-dashboard-responsive', POST_SMTP_URL, '/Postman/Dashboard/css/responsive-style.css', array(), POST_SMTP_VER, 'all' );
         }
         
         public function dashboard_content() {
