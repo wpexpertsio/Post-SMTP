@@ -9,16 +9,18 @@
 }
 
 #post-smtp-app .card-container {
-    gap: 15px;
+    gap: 10px 1%;
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
 } 
 #post-smtp-app .card-container .post-smtp-card {
     float: none;
-    width: 100%;
+    width: 24%;
     height: auto;
     margin: 0;
     padding: 25px;
+    box-sizing: border-box;
 }
 #post-smtp-app .card-container:after {
     display: none;
@@ -48,10 +50,17 @@
     margin: 0;
 }
 
-#post-smtp-app .pro-features .container .body .feature-block {margin: 0;gap: 10px;align-items: center;}
+#post-smtp-app .pro-features .container .body .feature-block {
+    margin: 0;
+    gap: 10px;
+    align-items: center;
+    width: 23.5%;
+}
 
 #post-smtp-app .pro-features .container .body {
-    gap: 20px;
+    gap: 20px 2%;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 #post-smtp-app .pro-features .container .body .block-content {
@@ -61,12 +70,13 @@
     display: flex;
     flex-wrap: wrap;
     padding: 0 25px;
-    gap: 24px;
+    gap: 20px 2%;
 }
 #post-smtp-app .documentation .content .documentation {
     float: none;
     margin: 0;
-    width: 26.2%;
+    width: 31.9%;
+    box-sizing: border-box;
 }
 #post-smtp-app .documentation .body {
     padding: 50px 0 25px;
@@ -76,4 +86,89 @@
         padding: 20px 15px;
     }
 }
-  
+ 
+
+
+@media only screen and (max-width: 1300px) { 
+    #post-smtp-app .container[data-v-64b6d796] {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    #post-smtp-app .app-wrapper,
+    #post-smtp-app .app-sidebar {
+        float: none;
+        width: 100%;
+        margin: 0;
+    }
+    #post-smtp-app .app-wrapper {
+        
+    }
+    #post-smtp-app .app-sidebar {
+        
+    } 
+}
+
+@media only screen and (max-width: 1024px) {
+    #post-smtp-app .card-container .post-smtp-card {
+        width: 49%;
+    }
+    #post-smtp-app .pro-features .container .body{
+        justify-content: center;
+    }
+    #post-smtp-app .pro-features .container .body .feature-block {
+        width: 32%;
+    }
+    #post-smtp-app .documentation .content .documentation {
+        width: 49%;
+    }
+}
+@media only screen and (max-width: 767px) {
+    #post-smtp-app .pro-features .container .body .feature-block {
+        width: 49%;
+    }
+}
+@media only screen and (max-width: 575px) { 
+    #post-smtp-app .documentation .content .documentation {
+        width: 100%;
+    }
+    #post-smtp-app .email-menu-wrapper[data-v-383c7fd0] {
+        right: -10px;
+        top: -5px;
+    }
+    #post-smtp-app .post-smtp-logs-body {
+        overflow: scroll;
+    }
+}
+@media only screen and (max-width: 480px) { 
+    #post-smtp-app .pro-features .container .body .feature-block {
+        width: 100%;
+    }
+    #post-smtp-app .pro-features .container .body .feature-block {
+        width: 100%;
+        flex-direction: column;
+        justify-content: center;
+    }
+    #post-smtp-app .pro-features .container .body .block-content {
+        text-align: center;
+    }
+    #post-smtp-app .pro-features .container .body .block-content br {
+
+    }
+    #post-smtp-app .card-container .post-smtp-card {
+        width: 100%;
+    }
+    #post-smtp-app .post-smtp-selector-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    #post-smtp-app .post-smtp-selector-wrapper .wrapper,
+    #post-smtp-app .post-smtp-selector-wrapper a.re-launch-wizard{
+        float: none !important;
+        margin: 0 auto;
+    }
+    
+    
+}
