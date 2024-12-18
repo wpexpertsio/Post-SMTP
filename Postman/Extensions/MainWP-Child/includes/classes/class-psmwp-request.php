@@ -21,7 +21,7 @@ class Post_SMTP_MainWP_Child_Request {
 		
         if( $server ) {
             
-			$this->base_url = $server . 'wp-json/post-smtp-for-mainwp/v1/send-email';
+			$this->base_url = $server . 'index.php/wp-json/post-smtp-for-mainwp/v1/send-email';
 			
         }
 
