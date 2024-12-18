@@ -4,12 +4,12 @@ Contributors: wpexpertsio
 Tags: smtp, gmail smtp, email,  email logs, office 365
 Requires at least: 5.6.0
 Tested up to: 6.7
-Stable tag: 2.9.13
+Stable tag: 2.9.14
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-The world's leading WordPress SMTP plugin! Connect any SMTP, including Gmail SMTP, Microsoft 365, Brevo, SendGrid, Mailgun, Zoho, Amazon SES, and more.
+Improve WordPress email deliverability. Connect Gmail SMTP, Microsoft 365, Brevo, SendGrid, Mailgun, Zoho, Amazon SES, etc. #1 WordPress SMTP Plugin.
 
 == Description ==
 
@@ -278,6 +278,9 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 Important: If you are using version 2.8.7 or lower of our plugin, please update to the latest version as soon as possible. This update contains an urgent security fix that prevents potential vulnerabilities and attacks. We apologize for any inconvenience this may cause you and we appreciate your cooperation. Thank you for using our plugin.
 
 == Changelog ==
+
+= 2.9.14 - December 18, 2024 =
+* Tweak - WordPress 6.7 Transalation compatibility added.
 
 = 2.9.13 - December 10, 2024 =
 * Fix - Users were unable to regenerate [Mobile App](https://postmansmtp.com/post-smtp-mobile-app/) QR code in admin view.
