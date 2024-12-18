@@ -287,6 +287,12 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 * New: Introduced new Send Mail user interface.
 * New: Introduced Webhook, so you can add Webhook URL to get notified when an email is failed [How to Setup Webhook URL](Link)
 
+= 2.9.14 - December 18, 2024 =
+* Tweak - WordPress 6.7 Transalation compatibility added.
+
+= 2.9.13 - December 10, 2024 =
+* Fix - Users were unable to regenerate [Mobile App](https://postmansmtp.com/post-smtp-mobile-app/) QR code in admin view.
+
 = 2.9.12 - December 02, 2024 =
 * Enhancement - Regenerate QR Code Mobile Applicaion security enhancement in admin view reported by Patchstack.
 
