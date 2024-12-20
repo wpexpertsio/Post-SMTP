@@ -1,4 +1,6 @@
-
+#post-smtp-app .header div[data-v-65055dc1] img[data-v-65055dc1] {
+    width: 220px;
+}
 .header[data-v-65055dc1], 
 .container[data-v-64b6d796] {
     padding: 0 20px;
@@ -81,14 +83,15 @@
 #post-smtp-app .documentation .body {
     padding: 50px 0 25px;
 }
+#post-smtp-app .card-container .post-smtp-card * {
+    text-transform: capitalize;
+}
 @media only screen and (max-width: 1400px) {
     #post-smtp-app .card-container .post-smtp-card {
         padding: 20px 15px;
     }
 }
  
-
-
 @media only screen and (max-width: 1300px) { 
     #post-smtp-app .container[data-v-64b6d796] {
         display: flex;
@@ -170,5 +173,12 @@
         margin: 0 auto;
     }
     
-    
+    #post-smtp-app .post-smtp-notice {
+        flex-direction: column;
+        gap: 10px;
+        height: auto;
+        box-sizing: border-box;
+        width: 100%;
+        padding: 20px 10px;
+    }
 }
