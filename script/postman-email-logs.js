@@ -363,7 +363,8 @@ jQuery(document).ready(function($) {
 				if( response.success === true ) {
 
 					logsDT.ajax.reload( null, false );
-
+					jQuery( '.ps-email-log-export-btn .ps-btn-text' ).text( `Export All` );
+					jQuery( '.ps-email-log-delete-btn .ps-btn-text' ).text( `Delete All` );
 				}
 				else {
 
