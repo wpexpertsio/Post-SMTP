@@ -24,6 +24,7 @@
 					email	 : email,
 				},
 				success : function( response ) {
+					$( '.show-when-email-sent' ).css( 'display', 'block' );
 					$( '#when-button-clicked' ).removeClass( 'is-active' ).css( 'display', 'none' );
 					$this.removeAttr( 'disabled' );
 					if ( ! response.success ) {

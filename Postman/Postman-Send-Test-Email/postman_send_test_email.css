@@ -180,6 +180,12 @@
 	height: 491px !important;
 }
 
+.ps-ste-clearfix::after {
+	clear: both;
+	display: table;
+	content: '';
+}
+
 
 /*# This is auto generated css by webpack please don't change anything */
 /*# sourceMappingURL=app.css.map*/

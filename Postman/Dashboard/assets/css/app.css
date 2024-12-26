@@ -39,14 +39,14 @@
 }
 
 
-.settings__button[data-v-d8df5146] {
+.settings__button[data-v-46e71485] {
 	background: none;
 	border: none;
 	cursor: pointer;
 
 	padding-right: 16px;
 }
-.settings__button[data-v-d8df5146]:last-child {
+.settings__button[data-v-46e71485]:last-child {
 	padding-right: 0;
 }
 
@@ -203,7 +203,7 @@
 }
 
 
-.customer-support[data-v-6afd188b] {
+.customer-support[data-v-11888502] {
 	padding: 0 !important;
 	background: linear-gradient(180deg, #40518E 0%, #231F20 100%);
 	display: flex;
@@ -212,10 +212,10 @@
 	flex-direction: column;
 	height: 268px;
 }
-.customer-support-content[data-v-6afd188b] {
+.customer-support-content[data-v-11888502] {
 	width: 213px;
 }
-.customer-support-content p[data-v-6afd188b] {
+.customer-support-content p[data-v-11888502] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 500;
@@ -223,13 +223,13 @@
 	text-align: center;
 	color: #B8BDCA;
 }
-.troubleshooting[data-v-6afd188b] {
+.troubleshooting[data-v-11888502] {
 	padding: 0 !important;
 }
-.mb-24[data-v-6afd188b] {
+.mb-24[data-v-11888502] {
 	margin-bottom: 24px;
 }
-.troubleshooting-header[data-v-6afd188b] {
+.troubleshooting-header[data-v-11888502] {
 	border-radius: 4px 4px 0 0;
 	background: #EFF4FD;
 	padding: 16px 24px;
@@ -240,25 +240,25 @@
 	line-height: 20px;
 	color: #231F20;
 }
-.troubleshooting-content[data-v-6afd188b] {
+.troubleshooting-content[data-v-11888502] {
 	padding: 24px;
 }
-.troubleshoot.email[data-v-6afd188b] {
-	list-style: url(../c34cd1b2ca6f1ec46977.svg) inside;
+.troubleshoot.email[data-v-11888502] {
+	list-style: url(../57f4451f3be03da17463.svg) inside;
 }
-.troubleshoot.import-export[data-v-6afd188b] {
-	list-style: url(../ab4683e6647723934b06.svg) inside;
+.troubleshoot.import-export[data-v-11888502] {
+	list-style: url(../d0a8e6270627cef66c74.svg) inside;
 }
-.troubleshoot.connectivity[data-v-6afd188b] {
-	list-style: url(../c9bdfeedfc807a5015cc.svg) inside;
+.troubleshoot.connectivity[data-v-11888502] {
+	list-style: url(../5b76dc43e6c63f11fb6d.svg) inside;
 }
-.troubleshoot.diagnostic[data-v-6afd188b] {
-	list-style: url(../0a9f9bc45b15ab068aea.svg) inside;
+.troubleshoot.diagnostic[data-v-11888502] {
+	list-style: url(../258d1cba1f474caf0c4b.svg) inside;
 }
-.troubleshoot.reset[data-v-6afd188b] {
-	list-style: url(../5b3b23f40a94debde9f1.svg) inside;
+.troubleshoot.reset[data-v-11888502] {
+	list-style: url(../9fdeee5472f16554c9e9.svg) inside;
 }
-.troubleshoot a[data-v-6afd188b] {
+.troubleshoot a[data-v-11888502] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 400;
@@ -329,7 +329,7 @@
 	text-align: left;
 	color: #646464;
 	margin-top: 10px;
-	list-style: url(../3fbf6e3924d7ed6d39ea.svg) inside;
+	list-style: url(../2eb9c91de5efa416e660.svg) inside;
 }
 .img-wrapper[data-v-3b84963c] {
 	margin-top: 7px;
@@ -607,7 +607,7 @@
 	border: 1px solid #EBD3D3;
 }
 .post-smtp-card-opened--pro[data-v-36caffee] {
-	background: url( ../899ac40ae3c4456657ba.svg ), radial-gradient(95.39% 99.9% at 49.79% 0%, #FFD291 0%, #F9AA39 100%);
+	background: url( ../2b70fc947e7d243045cc.svg ), radial-gradient(95.39% 99.9% at 49.79% 0%, #FFD291 0%, #F9AA39 100%);
 	border: 1px solid #EBE1D3;
 	background-repeat: no-repeat;
 	background-position: 275px 10px, center;
@@ -1072,11 +1072,11 @@
 
 
 
-.pro-features[data-v-4f4dcf6f] * {
+.pro-features[data-v-61c7bfcd] * {
 	padding: 0;
 	margin: 0;
 }
-.pro-features[data-v-4f4dcf6f] {
+.pro-features[data-v-61c7bfcd] {
 	position: relative;
 	height: 397px;
 	background: url( ../1d1ed72328324fa15873.png ), url( ../bd29e69106d31e4a6f1f.png ), url( ../db67b70d37a34f75ab17.png ), linear-gradient(180deg, #375CAF 0%, #2C4A8C 100%);
@@ -1085,14 +1085,14 @@
 	background-size: auto, auto, cover, cover;
 	border-radius: 4px;
 }
-.container[data-v-4f4dcf6f] {
+.container[data-v-61c7bfcd] {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	padding: 38px 62px;
 	flex-direction: column;
 }
-.header h2[data-v-4f4dcf6f] {
+.header h2[data-v-61c7bfcd] {
 	background: -webkit-linear-gradient(270deg, #F9AA39 0%, #FFDAA5 100%);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
@@ -1102,10 +1102,10 @@
 	line-height: 25.83px;
 	text-align: center;
 }
-.d-inline-block[data-v-4f4dcf6f] {
+.d-inline-block[data-v-61c7bfcd] {
 	display: inline-block;
 }
-.header p[data-v-4f4dcf6f] {
+.header p[data-v-61c7bfcd] {
 	font-family: Poppins;
 	font-size: 16px;
 	font-weight: 400;
@@ -1119,16 +1119,16 @@
 
 	margin-left: 83px;
 }
-.header[data-v-4f4dcf6f] {
+.header[data-v-61c7bfcd] {
 	margin-bottom: 20px;
 }
-.footer[data-v-4f4dcf6f] {
+.footer[data-v-61c7bfcd] {
 	margin-top: 20px;
 }
-.create-container[data-v-4f4dcf6f] {
+.create-container[data-v-61c7bfcd] {
 	width: 56px;
 	height: 56px;
-	background: url( ../349dcbb416433fe72de2.svg );
+	background: url( ../86fe1bec08f081521e92.svg );
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: center;
@@ -1136,18 +1136,18 @@
 	justify-content: center;
 	align-items: center;
 }
-.body[data-v-4f4dcf6f] {
+.body[data-v-61c7bfcd] {
 	display: grid;
 	grid-template-columns: auto auto auto auto ;
 	width: 100%;
 }
-.feature-block[data-v-4f4dcf6f] {
+.feature-block[data-v-61c7bfcd] {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	margin-bottom: 20px;
 }
-.block-content[data-v-4f4dcf6f] {
+.block-content[data-v-61c7bfcd] {
 	margin-left: 20px;
 
 	font-family: Poppins;
@@ -1157,7 +1157,7 @@
 	text-align: left;
 	color: #E2E9FB;
 }
-.post-smtp-minimize-ad[data-v-4f4dcf6f] {
+.post-smtp-minimize-ad[data-v-61c7bfcd] {
 	position: absolute;
 	top: 20px;
 	right: 24px;
@@ -1171,10 +1171,10 @@
 
 	cursor: pointer;
 }
-.post-smtp-minimize-ad i[data-v-4f4dcf6f] {
+.post-smtp-minimize-ad i[data-v-61c7bfcd] {
 	margin-right: 10px;
 }
-.bcfm[data-v-4f4dcf6f] {
+.bcfm[data-v-61c7bfcd] {
 	background: url( ../e2f9e8c4d311f9c91473.png ), url( ../1d1ed72328324fa15873.png ), url( ../bd29e69106d31e4a6f1f.png ), url( ../db67b70d37a34f75ab17.png ), linear-gradient(180deg, #375CAF 0%, #2C4A8C 100%);
 	background-repeat: no-repeat;
 	background-position: top right, left bottom, right bottom, 0 0, 0 0;

@@ -159,7 +159,7 @@ class PostmanSendTestEmailController {
 		<div class="send-test-email">
 		
 		<div class="ps-logo">
-			<img src="https://postmansmtp.com/wp-content/uploads/2022/06/postman-smtp-mailer-1024x163.png" width="250px" alt="Post SMTP Logo">
+			<img src="https://postmansmtp.com/wp-content/uploads/2022/02/postmansmtp-blue.svg" width="250px" alt="Post SMTP Logo">
 		</div>
 		
 			<div class="ps-outer">
@@ -265,8 +265,12 @@ class PostmanSendTestEmailController {
 					
 					<div class="ps-footer-content float-right">
 						<div class="ps-step">
-
-
+						
+						<div class="ps-ste-clearfix">
+							<div class="ps-right">
+								<a href="' . esc_attr( add_query_arg( array( 'page' => 'postman' ), admin_url( 'admin.php' ) ) ) . '" class="button button-primary ps-blue-button show-when-email-sent" style="display: none;">Finish</a>
+							</div>
+						</div>
 
 						</div>
 					</div>
