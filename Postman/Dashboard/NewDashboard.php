@@ -29,19 +29,24 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
                     'nonce'          => wp_create_nonce( 'wp_rest' ),
 	                'admin_url'      => admin_url( 'admin.php' ),
 	                'page_hook'      => $hook,
-                    'is_bfcm'        => postman_is_bfcm()
                 )
             );
             
             wp_enqueue_style('post-smtp-dashboard', POST_SMTP_URL . '/Postman/Dashboard/assets/css/app.css', array(), POST_SMTP_VER, 'all' );
-			wp_enqueue_style( 'post-smtp-dashboard-responsive', POST_SMTP_URL. '/Postman/Dashboard/assets/css/responsive-style.css', array(), POST_SMTP_VER, 'all' );
         }
         
         public function dashboard_content() {
             $transport          = PostmanTransportRegistry::getInstance()->getActiveTransport();
+            $postman            = PostmanOptions::getInstance();
+            $postman_db_version = get_option( 'postman_db_version' );
             $app_connected      = get_option( 'post_smtp_mobile_app_connection' );
 	        $main_wp_configured = get_option( 'post_smtp_use_from_main_site' );
-            $configured         = $transport->isConfiguredAndReady() ? 'true' : 'false';
+            $primary_connection = $postman->getSelectedPrimary();
+            if( $postman_db_version != POST_SMTP_DB_VERSION ){
+                $configured         = $transport->isConfiguredAndReady() ? 'true' : 'false';
+            }else{
+                $configured = ($primary_connection !== '') ? 'true' : 'false';
+            }
             $app_connected      = empty( $app_connected ) ? 'false' : 'true';
 	        $main_wp_configured = empty( $main_wp_configured ) ? 'false' : 'true';
 			$has_post_smtp_pro  = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );

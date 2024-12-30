@@ -27,75 +27,80 @@ use PostSMTP\Vendor\Google\Service\Gmail\ListForwardingAddressesResponse;
  *   $forwardingAddresses = $gmailService->users_settings_forwardingAddresses;
  *  </code>
  */
-class UsersSettingsForwardingAddresses extends \PostSMTP\Vendor\Google\Service\Resource
-{
-    /**
-     * Creates a forwarding address. If ownership verification is required, a
-     * message will be sent to the recipient and the resource's verification status
-     * will be set to `pending`; otherwise, the resource will be created with
-     * verification status set to `accepted`. This method is only available to
-     * service account clients that have been delegated domain-wide authority.
-     * (forwardingAddresses.create)
-     *
-     * @param string $userId User's email address. The special value "me" can be
-     * used to indicate the authenticated user.
-     * @param ForwardingAddress $postBody
-     * @param array $optParams Optional parameters.
-     * @return ForwardingAddress
-     */
-    public function create($userId, \PostSMTP\Vendor\Google\Service\Gmail\ForwardingAddress $postBody, $optParams = [])
-    {
-        $params = ['userId' => $userId, 'postBody' => $postBody];
-        $params = \array_merge($params, $optParams);
-        return $this->call('create', [$params], \PostSMTP\Vendor\Google\Service\Gmail\ForwardingAddress::class);
-    }
-    /**
-     * Deletes the specified forwarding address and revokes any verification that
-     * may have been required. This method is only available to service account
-     * clients that have been delegated domain-wide authority.
-     * (forwardingAddresses.delete)
-     *
-     * @param string $userId User's email address. The special value "me" can be
-     * used to indicate the authenticated user.
-     * @param string $forwardingEmail The forwarding address to be deleted.
-     * @param array $optParams Optional parameters.
-     */
-    public function delete($userId, $forwardingEmail, $optParams = [])
-    {
-        $params = ['userId' => $userId, 'forwardingEmail' => $forwardingEmail];
-        $params = \array_merge($params, $optParams);
-        return $this->call('delete', [$params]);
-    }
-    /**
-     * Gets the specified forwarding address. (forwardingAddresses.get)
-     *
-     * @param string $userId User's email address. The special value "me" can be
-     * used to indicate the authenticated user.
-     * @param string $forwardingEmail The forwarding address to be retrieved.
-     * @param array $optParams Optional parameters.
-     * @return ForwardingAddress
-     */
-    public function get($userId, $forwardingEmail, $optParams = [])
-    {
-        $params = ['userId' => $userId, 'forwardingEmail' => $forwardingEmail];
-        $params = \array_merge($params, $optParams);
-        return $this->call('get', [$params], \PostSMTP\Vendor\Google\Service\Gmail\ForwardingAddress::class);
-    }
-    /**
-     * Lists the forwarding addresses for the specified account.
-     * (forwardingAddresses.listUsersSettingsForwardingAddresses)
-     *
-     * @param string $userId User's email address. The special value "me" can be
-     * used to indicate the authenticated user.
-     * @param array $optParams Optional parameters.
-     * @return ListForwardingAddressesResponse
-     */
-    public function listUsersSettingsForwardingAddresses($userId, $optParams = [])
-    {
-        $params = ['userId' => $userId];
-        $params = \array_merge($params, $optParams);
-        return $this->call('list', [$params], \PostSMTP\Vendor\Google\Service\Gmail\ListForwardingAddressesResponse::class);
-    }
+class UsersSettingsForwardingAddresses extends \PostSMTP\Vendor\Google\Service\Resource {
+
+	/**
+	 * Creates a forwarding address. If ownership verification is required, a
+	 * message will be sent to the recipient and the resource's verification status
+	 * will be set to `pending`; otherwise, the resource will be created with
+	 * verification status set to `accepted`. This method is only available to
+	 * service account clients that have been delegated domain-wide authority.
+	 * (forwardingAddresses.create)
+	 *
+	 * @param string            $userId User's email address. The special value "me" can be
+	 *            used to indicate the authenticated user.
+	 * @param ForwardingAddress $postBody
+	 * @param array             $optParams Optional parameters.
+	 * @return ForwardingAddress
+	 */
+	public function create( $userId, \PostSMTP\Vendor\Google\Service\Gmail\ForwardingAddress $postBody, $optParams = array() ) {
+		$params = array(
+			'userId'   => $userId,
+			'postBody' => $postBody,
+		);
+		$params = \array_merge( $params, $optParams );
+		return $this->call( 'create', array( $params ), \PostSMTP\Vendor\Google\Service\Gmail\ForwardingAddress::class );
+	}
+	/**
+	 * Deletes the specified forwarding address and revokes any verification that
+	 * may have been required. This method is only available to service account
+	 * clients that have been delegated domain-wide authority.
+	 * (forwardingAddresses.delete)
+	 *
+	 * @param string $userId User's email address. The special value "me" can be
+	 * used to indicate the authenticated user.
+	 * @param string $forwardingEmail The forwarding address to be deleted.
+	 * @param array  $optParams Optional parameters.
+	 */
+	public function delete( $userId, $forwardingEmail, $optParams = array() ) {
+		$params = array(
+			'userId'          => $userId,
+			'forwardingEmail' => $forwardingEmail,
+		);
+		$params = \array_merge( $params, $optParams );
+		return $this->call( 'delete', array( $params ) );
+	}
+	/**
+	 * Gets the specified forwarding address. (forwardingAddresses.get)
+	 *
+	 * @param string $userId User's email address. The special value "me" can be
+	 * used to indicate the authenticated user.
+	 * @param string $forwardingEmail The forwarding address to be retrieved.
+	 * @param array  $optParams Optional parameters.
+	 * @return ForwardingAddress
+	 */
+	public function get( $userId, $forwardingEmail, $optParams = array() ) {
+		$params = array(
+			'userId'          => $userId,
+			'forwardingEmail' => $forwardingEmail,
+		);
+		$params = \array_merge( $params, $optParams );
+		return $this->call( 'get', array( $params ), \PostSMTP\Vendor\Google\Service\Gmail\ForwardingAddress::class );
+	}
+	/**
+	 * Lists the forwarding addresses for the specified account.
+	 * (forwardingAddresses.listUsersSettingsForwardingAddresses)
+	 *
+	 * @param string $userId User's email address. The special value "me" can be
+	 * used to indicate the authenticated user.
+	 * @param array  $optParams Optional parameters.
+	 * @return ListForwardingAddressesResponse
+	 */
+	public function listUsersSettingsForwardingAddresses( $userId, $optParams = array() ) {
+		$params = array( 'userId' => $userId );
+		$params = \array_merge( $params, $optParams );
+		return $this->call( 'list', array( $params ), \PostSMTP\Vendor\Google\Service\Gmail\ListForwardingAddressesResponse::class );
+	}
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\Resource\UsersSettingsForwardingAddresses::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_Resource_UsersSettingsForwardingAddresses');
+\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\Resource\UsersSettingsForwardingAddresses::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_Resource_UsersSettingsForwardingAddresses' );

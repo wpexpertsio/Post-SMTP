@@ -141,6 +141,28 @@ jQuery( document ).ready(function() {
                         var _element = jQuery( '.ps-wizard-outer' ).removeClass();
                         jQuery( _element ).addClass( 'ps-wizard-outer' );
 
+                        const wizardStep = jQuery('.ps-wizard-step-2');
+                        const connectionIndex = response.data.index; // Adjust key name based on actual response structure.
+                    
+                        // Debugging: Log the extracted index to see if it has a value.
+                        console.log('Connection Index:', connectionIndex);
+                    
+                        // Use a more reliable check to handle 0 or null values.
+                        if (connectionIndex !== undefined && connectionIndex !== null) {
+                            if (wizardStep.find('.postman_fallback_edit').length) {
+                                wizardStep.find('.postman_fallback_edit').val(connectionIndex);
+                            } else {
+                                jQuery('<input>', {
+                                    type: 'hidden',
+                                    class: 'postman_fallback_edit',
+                                    name: 'postman_fallback_edit',
+                                    value: connectionIndex
+                                }).appendTo(wizardStep);
+                            }
+                        } else {
+                            console.error('Connection index is undefined or null!');
+                        }
+
                     },
                     error: function( response ) {
 
@@ -366,6 +388,8 @@ jQuery( document ).ready(function() {
         var office365_app_password = jQuery( '.ps-office365-client-secret' ).val();
         var _button = jQuery( this ).html();
 
+        // Append or set clientID and clientSecret as query parameters
+
         if( office365_app_id == '' ) {
 
             jQuery( '.ps-office365-client-id' ).focus();
@@ -381,8 +405,9 @@ jQuery( document ).ready(function() {
 
         jQuery( this ).html( 'Redirecting...' );
 
-        var authURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?state=${PostSMTPWizard.office365State}&scope=openid profile offline_access Mail.Send Mail.Send.Shared&response_type=code&approval_prompt=auto&redirect_uri=${PostSMTPWizard.adminURL}&client_id=${office365_app_id}`;
-        
+         var authURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?state=${PostSMTPWizard.office365State}&scope=openid profile offline_access Mail.Send Mail.Send.Shared&response_type=code&approval_prompt=auto&redirect_uri=${PostSMTPWizard.adminURL}&client_id=${office365_app_id}`;
+
+
         jQuery.ajax( {
 
             url: ajaxurl,
@@ -428,6 +453,8 @@ jQuery( document ).ready(function() {
 
         jQuery( this ).html( 'Redirecting...' );
 
+        redirectURI += (redirectURI.includes('?') ? '&' : '?') + 'client_id=' + encodeURIComponent(clientID) + '&client_secret=' + encodeURIComponent(clientSecret);
+
         jQuery.ajax( {
 
             url: ajaxurl,
@@ -456,6 +483,11 @@ jQuery( document ).ready(function() {
         var clientID = jQuery( '.ps-zoho-client-id' ).val();
         var clientSecret = jQuery( '.ps-zoho-client-secret' ).val();
         var redirectURI = jQuery( this ).attr( 'href' );
+        var url = new URL(redirectURI);
+        // Append or set clientID and clientSecret as query parameters
+        url.searchParams.set('clientID', clientID);
+        url.searchParams.set('clientSecret', clientSecret);
+        // Append clientID and clientSecret as query parameters
 
         if( clientID == '' ) {
 
@@ -483,8 +515,7 @@ jQuery( document ).ready(function() {
             },
 
             success: function( response ) {
-
-                window.location.assign( redirectURI );
+                window.location.assign( url.toString() );
 
             },
 

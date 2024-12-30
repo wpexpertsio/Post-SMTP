@@ -14,14 +14,13 @@ namespace PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves;
 
 use PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Prime;
 use PostSMTP\Vendor\phpseclib3\Math\BigInteger;
-class secp112r2 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Prime
-{
-    public function __construct()
-    {
-        // same modulo as secp112r1
-        $this->setModulo(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('DB7C2ABF62E35E668076BEAD208B', 16));
-        $this->setCoefficients(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('6127C24C05F38A0AAAF65C0EF02C', 16), new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('51DEF1815DB5ED74FCC34C85D709', 16));
-        $this->setBasePoint(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('4BA30AB5E892B4E1649DD0928643', 16), new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('ADCD46F5882E3747DEF36E956E97', 16));
-        $this->setOrder(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('36DF0AAFD8B8D7597CA10520D04B', 16));
-    }
+class secp112r2 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Prime {
+
+	public function __construct() {
+		// same modulo as secp112r1
+		$this->setModulo( new \PostSMTP\Vendor\phpseclib3\Math\BigInteger( 'DB7C2ABF62E35E668076BEAD208B', 16 ) );
+		$this->setCoefficients( new \PostSMTP\Vendor\phpseclib3\Math\BigInteger( '6127C24C05F38A0AAAF65C0EF02C', 16 ), new \PostSMTP\Vendor\phpseclib3\Math\BigInteger( '51DEF1815DB5ED74FCC34C85D709', 16 ) );
+		$this->setBasePoint( new \PostSMTP\Vendor\phpseclib3\Math\BigInteger( '4BA30AB5E892B4E1649DD0928643', 16 ), new \PostSMTP\Vendor\phpseclib3\Math\BigInteger( 'ADCD46F5882E3747DEF36E956E97', 16 ) );
+		$this->setOrder( new \PostSMTP\Vendor\phpseclib3\Math\BigInteger( '36DF0AAFD8B8D7597CA10520D04B', 16 ) );
+	}
 }

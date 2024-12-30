@@ -163,6 +163,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			}
 			// register the stylesheet and javascript external resources
 			$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
+			$wizard_uri = admin_url( "admin.php?page=postman/configuration_wizard" );
 			wp_register_style( PostmanViewController::POSTMAN_STYLE, plugins_url( 'style/postman.css', $this->rootPluginFilenameAndPath ), null, $pluginData ['version'] );
 			wp_register_style( 'jquery_ui_style', plugins_url( 'style/jquery-steps/jquery-ui.css', $this->rootPluginFilenameAndPath ), PostmanViewController::POSTMAN_STYLE, '1.1.0' );
 			wp_register_style( 'jquery_steps_style', plugins_url( 'style/jquery-steps/jquery.steps.css', $this->rootPluginFilenameAndPath ), PostmanViewController::POSTMAN_STYLE, '1.1.0' );
@@ -184,6 +185,11 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 					'bad_response' 			=>	__( 'An unexpected error occurred', 'post-smtp' ),
 					'corrupt_response' 		=>	__( 'Unexpected PHP messages corrupted the Ajax response', 'post-smtp' )
 			) );
+		
+			// Localize the wizard URL so it's available in JavaScript.
+			wp_localize_script(PostmanViewController::POSTMAN_SCRIPT, 'postmanData', array(
+				'wizardUrl' => esc_url($wizard_uri),
+			));
 
 			wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_ajax', array(
 				'lessSecureNotice'	=>	wp_create_nonce( 'less-secure-security' )
@@ -372,7 +378,6 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 								<img src="'.esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ).'" width="15" />
 								%2$s
 							</a>';
-							$tab_heading = postman_is_bfcm() ? __( 'Get More with Pro [24%OFF]', 'post-smtp' ) : __( 'Get More with Pro', 'post-smtp' );
 
 					            $importTitle = __( 'Import', 'post-smtp' );
 					            $exportTile = __( 'Export', 'post-smtp' );

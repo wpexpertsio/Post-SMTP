@@ -17,25 +17,23 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class ListSmimeInfoResponse extends \PostSMTP\Vendor\Google\Collection
-{
-    protected $collection_key = 'smimeInfo';
-    protected $smimeInfoType = \PostSMTP\Vendor\Google\Service\Gmail\SmimeInfo::class;
-    protected $smimeInfoDataType = 'array';
-    /**
-     * @param SmimeInfo[]
-     */
-    public function setSmimeInfo($smimeInfo)
-    {
-        $this->smimeInfo = $smimeInfo;
-    }
-    /**
-     * @return SmimeInfo[]
-     */
-    public function getSmimeInfo()
-    {
-        return $this->smimeInfo;
-    }
+class ListSmimeInfoResponse extends \PostSMTP\Vendor\Google\Collection {
+
+	protected $collection_key    = 'smimeInfo';
+	protected $smimeInfoType     = \PostSMTP\Vendor\Google\Service\Gmail\SmimeInfo::class;
+	protected $smimeInfoDataType = 'array';
+	/**
+	 * @param SmimeInfo[]
+	 */
+	public function setSmimeInfo( $smimeInfo ) {
+		$this->smimeInfo = $smimeInfo;
+	}
+	/**
+	 * @return SmimeInfo[]
+	 */
+	public function getSmimeInfo() {
+		return $this->smimeInfo;
+	}
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\ListSmimeInfoResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListSmimeInfoResponse');
+\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\ListSmimeInfoResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListSmimeInfoResponse' );

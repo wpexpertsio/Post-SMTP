@@ -186,9 +186,15 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// get the Options and AuthToken
 			$options = PostmanOptions::getInstance();
 			$authorizationToken = PostmanOAuthToken::getInstance();
+			$existing_db_version = get_option( 'postman_db_version' );
 
-			// get the transport and create the transportConfig and engine
-			$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
+			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+				// get the transport and create the transportConfig and engine
+				$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
+			}else{
+				// get primaryconnection and Config and engine
+				$transport = PostmanTransportRegistry::getInstance()->getPrimaryConnection();
+			}
 
 			// create the Mail Engine
 			$engine = $transport->createMailEngine();
@@ -202,7 +208,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// apply the WordPress filters
 			// may impact the from address, from email, charset and content-type
 			$message->applyFilters();
-
+		
 			// create the body parts (if they are both missing)
 			if ( $message->isBodyPartsEmpty() ) {
 				$message->createBodyParts();
@@ -213,15 +219,14 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			if ( $this->logger->isDebug() ) {
 				$this->logger->debug( 'testMode=' . $testMode );
 			}
-
 			// start the clock
 			$startTime = microtime( true ) * 1000;
 
 			try {
-
 				// prepare the message
-				$message->validate( $transport );
-
+				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+					$message->validate( $transport );
+			    }
 				// send the message
 				if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {
 					if ( $transport->isLockingRequired() ) {
@@ -229,7 +234,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 						// may throw an exception attempting to contact the OAuth2 provider
 						$this->ensureAuthtokenIsUpdated( $transport, $options, $authorizationToken );
 					}
-
+				
 					$this->logger->debug( 'Sending mail' );
 
 					// may throw an exception attempting to contact the SMTP server
@@ -241,7 +246,6 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 					 * @version 1.0.0
 					 */
                     if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) && apply_filters( 'post_smtp_send_email', true ) ) {
-
 						$engine->send( $message );
 
                     } else {
@@ -313,13 +317,17 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		}
 
 		private function fallback( $log, $postMessage,$options ) {
+			$existing_db_version = get_option( 'postman_db_version' );
 
             if ( ! $options->is_fallback && $options->getFallbackIsEnabled() && $options->getFallbackIsEnabled() == 'yes' ) {
 
                 $options->is_fallback = true;
-
-                $status = $this->sendMessage( $postMessage, $log );
-
+				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+	                $status = $this->sendMessage( $postMessage, $log );
+					die('ahsan');
+				}else{
+					$status = $this->sendMessageFallback( $postMessage, $log );
+				}
                 $options->is_fallback = false;
 
                 return $status;
@@ -330,6 +338,136 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 			return false;
         }
+
+		/**
+		 * A convenient place for any code to inject a constructed PostmanMessage
+		 * (for example, from MyMail)
+		 *
+		 * The body parts may be set already at this time.
+		 *
+		 * @param PostmanMessage $message
+		 * @return boolean
+		 */
+		public function sendMessageFallback( PostmanMessage $message, PostmanEmailLog $log ) {
+
+		    $this->apply_default_headers( $message );
+
+			// get the Options and AuthToken
+			$options = PostmanOptions::getInstance();
+			$authorizationToken = PostmanOAuthToken::getInstance();
+			$existing_db_version = get_option( 'postman_db_version' );
+
+			// get primaryconnection and Config and engine
+			$transport = PostmanTransportRegistry::getInstance()->getFallbackConnection();
+		
+			// create the Mail Engine
+			$engine = $transport->createMailEngineFallback();
+			// add plugin-specific attributes to PostmanMessage
+			$message->addHeaders( $options->getAdditionalHeaders() );
+			$message->addTo( $options->getForcedToRecipients() );
+			$message->addCc( $options->getForcedCcRecipients() );
+			$message->addBcc( $options->getForcedBccRecipients() );
+
+			// apply the WordPress filters
+			// may impact the from address, from email, charset and content-type
+			$message->applyFilters();
+		
+			// create the body parts (if they are both missing)
+			if ( $message->isBodyPartsEmpty() ) {
+				$message->createBodyParts();
+			}
+
+			// is this a test run?
+			$testMode = apply_filters( 'postman_test_email', false );
+			if ( $this->logger->isDebug() ) {
+				$this->logger->debug( 'testMode=' . $testMode );
+			}
+
+			// start the clock
+			$startTime = microtime( true ) * 1000;
+
+			try {
+				// prepare the message
+				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+					$message->validate( $transport );
+				}
+
+				// send the message
+				if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {
+					if ( $transport->isLockingRequired() ) {
+						PostmanUtils::lock();
+						// may throw an exception attempting to contact the OAuth2 provider
+						$this->ensureAuthtokenIsUpdated( $transport, $options, $authorizationToken );
+					}
+
+					$this->logger->debug( 'Sending mail' );
+
+					// may throw an exception attempting to contact the SMTP server
+					/**
+					 * Filters to send email or not
+					 * 
+					 * @param bool $send_email
+					 * @since 2.5.0
+					 * @version 1.0.0
+					 */
+                    if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) && apply_filters( 'post_smtp_send_email', true ) ) {
+						$engine->send( $message );
+
+                    } else {
+                        $this->transcript = 'Bypassed By MailControl For Post SMTP';
+                    }
+
+					// increment the success counter, unless we are just tesitng
+					if ( ! $testMode ) {
+						PostmanState::getInstance()->incrementSuccessfulDelivery();
+					}
+				}
+
+				// clean up
+				$this->postSend( $engine, $startTime, $options, $transport );
+
+                /**
+                 * Do stuff after successful delivery
+                 */
+                do_action( 'post_smtp_on_success', $log, $message, $engine->getTranscript(), $transport );
+
+				// return successful
+				return true;
+			} catch ( Exception $e ) {
+				// save the error for later
+				$this->exception = $e;
+
+				// write the error to the PHP log
+				$this->logger->error( get_class( $e ) . ' code=' . $e->getCode() . ' message=' . trim( $e->getMessage() ) );
+
+				// increment the failure counter, unless we are just tesitng
+				if ( ! $testMode && $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {
+					PostmanState::getInstance()->incrementFailedDelivery();
+				}
+
+				// clean up
+				$this->postSend( $engine, $startTime, $options, $transport );
+
+
+				$mail_error_data = array(
+					'to' => $message->getToRecipients(),
+					'subject' => $message->getSubject(),
+					'message' => $message->getBody(),
+					'headers' => $message->getHeaders(),
+					'attachments' => $message->getAttachments()
+				);
+				$mail_error_data['phpmailer_exception_code'] = $e->getCode();
+
+				do_action( 'wp_mail_failed', new WP_Error( 'wp_mail_failed', $e->getMessage(), $mail_error_data ) );
+
+				// return failure
+                if ( PostmanOptions::getInstance()->getSmtpMailer() == 'phpmailer' ) {
+                    throw new phpmailerException($e->getMessage(), $e->getCode());
+                }
+				return false;
+
+			}
+		}
 
 		/**
 		 * Clean up after sending the mail

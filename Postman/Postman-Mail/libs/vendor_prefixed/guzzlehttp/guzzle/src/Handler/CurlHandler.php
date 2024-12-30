@@ -13,31 +13,29 @@ use PostSMTP\Vendor\Psr\Http\Message\RequestInterface;
  *
  * @final
  */
-class CurlHandler
-{
-    /**
-     * @var CurlFactoryInterface
-     */
-    private $factory;
-    /**
-     * Accepts an associative array of options:
-     *
-     * - handle_factory: Optional curl factory used to create cURL handles.
-     *
-     * @param array{handle_factory?: ?CurlFactoryInterface} $options Array of options to use with the handler
-     */
-    public function __construct(array $options = [])
-    {
-        $this->factory = $options['handle_factory'] ?? new \PostSMTP\Vendor\GuzzleHttp\Handler\CurlFactory(3);
-    }
-    public function __invoke(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $options) : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
-    {
-        if (isset($options['delay'])) {
-            \usleep($options['delay'] * 1000);
-        }
-        $easy = $this->factory->create($request, $options);
-        \curl_exec($easy->handle);
-        $easy->errno = \curl_errno($easy->handle);
-        return \PostSMTP\Vendor\GuzzleHttp\Handler\CurlFactory::finish($this, $easy, $this->factory);
-    }
+class CurlHandler {
+
+	/**
+	 * @var CurlFactoryInterface
+	 */
+	private $factory;
+	/**
+	 * Accepts an associative array of options:
+	 *
+	 * - handle_factory: Optional curl factory used to create cURL handles.
+	 *
+	 * @param array{handle_factory?: ?CurlFactoryInterface} $options Array of options to use with the handler
+	 */
+	public function __construct( array $options = array() ) {
+		$this->factory = $options['handle_factory'] ?? new \PostSMTP\Vendor\GuzzleHttp\Handler\CurlFactory( 3 );
+	}
+	public function __invoke( \PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $options ): \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface {
+		if ( isset( $options['delay'] ) ) {
+			\usleep( $options['delay'] * 1000 );
+		}
+		$easy = $this->factory->create( $request, $options );
+		\curl_exec( $easy->handle );
+		$easy->errno = \curl_errno( $easy->handle );
+		return \PostSMTP\Vendor\GuzzleHttp\Handler\CurlFactory::finish( $this, $easy, $this->factory );
+	}
 }

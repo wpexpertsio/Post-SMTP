@@ -17,43 +17,39 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class ListCseIdentitiesResponse extends \PostSMTP\Vendor\Google\Collection
-{
-    protected $collection_key = 'cseIdentities';
-    protected $cseIdentitiesType = \PostSMTP\Vendor\Google\Service\Gmail\CseIdentity::class;
-    protected $cseIdentitiesDataType = 'array';
-    /**
-     * @var string
-     */
-    public $nextPageToken;
-    /**
-     * @param CseIdentity[]
-     */
-    public function setCseIdentities($cseIdentities)
-    {
-        $this->cseIdentities = $cseIdentities;
-    }
-    /**
-     * @return CseIdentity[]
-     */
-    public function getCseIdentities()
-    {
-        return $this->cseIdentities;
-    }
-    /**
-     * @param string
-     */
-    public function setNextPageToken($nextPageToken)
-    {
-        $this->nextPageToken = $nextPageToken;
-    }
-    /**
-     * @return string
-     */
-    public function getNextPageToken()
-    {
-        return $this->nextPageToken;
-    }
+class ListCseIdentitiesResponse extends \PostSMTP\Vendor\Google\Collection {
+
+	protected $collection_key        = 'cseIdentities';
+	protected $cseIdentitiesType     = \PostSMTP\Vendor\Google\Service\Gmail\CseIdentity::class;
+	protected $cseIdentitiesDataType = 'array';
+	/**
+	 * @var string
+	 */
+	public $nextPageToken;
+	/**
+	 * @param CseIdentity[]
+	 */
+	public function setCseIdentities( $cseIdentities ) {
+		$this->cseIdentities = $cseIdentities;
+	}
+	/**
+	 * @return CseIdentity[]
+	 */
+	public function getCseIdentities() {
+		return $this->cseIdentities;
+	}
+	/**
+	 * @param string
+	 */
+	public function setNextPageToken( $nextPageToken ) {
+		$this->nextPageToken = $nextPageToken;
+	}
+	/**
+	 * @return string
+	 */
+	public function getNextPageToken() {
+		return $this->nextPageToken;
+	}
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\ListCseIdentitiesResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListCseIdentitiesResponse');
+\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\ListCseIdentitiesResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListCseIdentitiesResponse' );

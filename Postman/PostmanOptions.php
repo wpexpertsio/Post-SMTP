@@ -128,6 +128,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
         const FALLBACK_SMTP_USE_AUTH = 'fallback_smtp_use_auth';
         const FALLBACK_SMTP_USERNAME = 'fallback_smtp_username';
         const FALLBACK_SMTP_PASSWORD = 'fallback_smtp_password';
+		const FALLBACK_SELECTED      = 'selected_fallback';
+		const PRIMARY_CONNECTION     = 'primary_connection';
 
 		// defaults
 		const DEFAULT_TRANSCRIPT_SIZE = 128;
@@ -154,6 +156,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		// options data
 		private $options;
+
+		private $existing_db_version = '';
 
 		// singleton instance
 		public static function getInstance() {
@@ -341,13 +345,16 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			
 			}
 		}
+
 		public function getClientId() {
-			if ( isset( $this->options [ PostmanOptions::CLIENT_ID ] ) ) {
-				return $this->options [ PostmanOptions::CLIENT_ID ]; }
+			if ( isset( $this->options[ PostmanOptions::CLIENT_ID ] ) ) {
+					return $this->options [ PostmanOptions::CLIENT_ID ]; 
+			}
 		}
 		public function getClientSecret() {
 			if ( isset( $this->options [ PostmanOptions::CLIENT_SECRET ] ) ) {
-				return $this->options [ PostmanOptions::CLIENT_SECRET ]; }
+				return $this->options [ PostmanOptions::CLIENT_SECRET ]; 
+			}
 		}
 
 		public function getTransportType() {
@@ -437,6 +444,44 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
                 return $this->options [ PostmanOptions::FALLBACK_SMTP_SECURITY ];
             }
         }
+
+		public function getSelectedFallback() {
+            if ( isset( $this->options [ PostmanOptions::FALLBACK_SELECTED ] ) ) {
+                return $this->options [ PostmanOptions::FALLBACK_SELECTED ];
+            }
+        }
+
+		public function getSelectedPrimary() {
+            if ( isset( $this->options [ PostmanOptions::PRIMARY_CONNECTION ] ) ) {
+                return $this->options [ PostmanOptions::PRIMARY_CONNECTION ];
+            }
+        }
+
+		public function getSelectedPrimaryName() {
+			$connections = get_option( 'postman_connections', array() );
+
+			$primary_connection_index = $this->getSelectedPrimary();
+
+			if ( isset( $connections[ $primary_connection_index ] ) ) {
+				return isset( $connections[ $primary_connection_index] [ 'provider' ] ) ? 
+					$connections[ $primary_connection_index ][ 'provider' ] : null;
+			}
+
+			return null;
+		}
+
+		public function getSelectedFallbackName() {
+			$connections = get_option( 'postman_connections', array() );
+
+			$fallback_connection_index = $this->getSelectedFallback();
+
+			if ( isset( $connections[ $fallback_connection_index ] ) ) {
+				return isset( $connections[ $fallback_connection_index] [ 'provider' ] ) ? 
+					$connections[ $fallback_connection_index ][ 'provider' ] : null;
+			}
+
+			return null;
+		}
 
         public function getFallbackAuth() {
             if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_USE_AUTH ] ) ) {

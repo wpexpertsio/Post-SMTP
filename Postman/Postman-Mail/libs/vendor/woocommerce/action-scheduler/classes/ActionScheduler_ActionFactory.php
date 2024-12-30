@@ -13,6 +13,7 @@ class ActionScheduler_ActionFactory {
 	 * @param array                    $args Args to pass to callbacks when the hook is triggered.
 	 * @param ActionScheduler_Schedule $schedule The action's schedule.
 	 * @param string                   $group A group to put the action in.
+	 *
 	 * phpcs:ignore Squiz.Commenting.FunctionComment.ExtraParamComment
 	 * @param int                      $priority The action priority.
 	 *

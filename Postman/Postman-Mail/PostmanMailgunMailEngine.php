@@ -1,9 +1,10 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 require_once 'Services/MailGun/Handler.php';
+require_once plugin_dir_path( __FILE__ ) . 'PostMailConnections.php';
 
 if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 
@@ -24,6 +25,8 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		private $apiKey;
 		private $domainName;
 		private $mailgunMessage;
+		private $existing_db_version = '';
+		private $is_fallback;
 
 		/**
 		 *
@@ -32,15 +35,26 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		 */
 		function __construct( $apiKey, $domainName ) {
 			assert( ! empty( $apiKey ) );
-			$this->apiKey = $apiKey;
-			$this->domainName = $domainName;
+			if ( is_array( $apiKey ) ) {
+				// When passed as an array with additional data.
+				assert( ! empty( $apiKey['api_key'] ) );
+				$this->apiKey      = $apiKey['api_key'];
+				$this->domainName  = $domainName;
+				$this->is_fallback = $apiKey['is_fallback'] ?? null;
+			} else {
+				// When passed as a string (just the API key).
+				assert( ! empty( $apiKey ) );
+				$this->apiKey      = $apiKey;
+				$this->domainName  = $domainName;
+				$this->is_fallback = null;
+			}
 
 			// create the logger
-			$this->logger = new PostmanLogger( get_class( $this ) );
+			$this->logger         = new PostmanLogger( get_class( $this ) );
 			$this->mailgunMessage = array(
-			    'from'    => '',
-			    'to'      => '',
-			    'subject' => '',
+				'from'    => '',
+				'to'      => '',
+				'subject' => '',
 			);
 		}
 
@@ -56,11 +70,11 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 			}
 
 			$options = PostmanOptions::getInstance();
-			$region = $options->getMailgunRegion();
-			
-			$mailgun  = new PostmanMailGun( $this->apiKey, $region, $this->domainName );
+			$region  = $options->getMailgunRegion();
+
+			$mailgun = new PostmanMailGun( $this->apiKey, $region, $this->domainName );
 			$this->get_email_body( $message );
-			$body       = $this->mailgunMessage;
+			$body = $this->mailgunMessage;
 
 			$result = array();
 			try {
@@ -74,11 +88,11 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 					$this->logger->info( sprintf( 'Message %d accepted for delivery', PostmanState::getInstance()->getSuccessfulDeliveries() + 1 ) );
 				}
 
-				$this->transcript = print_r( $result, true );
+				$this->transcript  = print_r( $result, true );
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 				$this->transcript .= print_r( $this->mailgunMessage, true );
 			} catch ( Exception $e ) {
-				$this->transcript = $e->getMessage();
+				$this->transcript  = $e->getMessage();
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 				$this->transcript .= print_r( $this->mailgunMessage, true );
 				throw $e;
@@ -88,7 +102,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		private function getRecipientVariables( $emails ) {
 			$recipient_variables = array();
 			foreach ( $emails as $key => $email ) {
-				$recipient_variables[$email] = array( 'id' => $key );
+				$recipient_variables[ $email ] = array( 'id' => $key );
 			}
 
 			return json_encode( $recipient_variables );
@@ -96,7 +110,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 
 		private function addHeader( $name, $value, $deprecated = '' ) {
 			if ( $value && ! empty( $value ) ) {
-				$this->mailgunMessage['h:' . $name] = preg_replace('/.*:\s?/', '', $value);
+				$this->mailgunMessage[ 'h:' . $name ] = preg_replace( '/.*:\s?/', '', $value );
 			}
 		}
 
@@ -107,7 +121,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		 */
 		private function addAttachmentsToMail( PostmanMessage $message ) {
 			$attachments = $message->getAttachments();
-			
+
 			if ( ! is_array( $attachments ) ) {
 				// WordPress may a single filename or a newline-delimited string list of multiple filenames
 				$attArray[] = explode( PHP_EOL, $attachments );
@@ -137,16 +151,27 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		}
 
 		private function get_email_body( $message ) {
-
-			if( is_a( $message, 'PostmanMessage' ) ) {
+			$postman_db_version = get_option( 'postman_db_version' );
+			if ( is_a( $message, 'PostmanMessage' ) ) {
 				$options = PostmanOptions::getInstance();
 
 				// add the From Header
 				$sender = $message->getFromAddress();
 				{
-					
-					$senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-					$senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
+
+				if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+					$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+				} else {
+					$connection_details = get_option( 'postman_connections' );
+					if ( $this->is_fallback == null ) {
+						$primary     = $options->getSelectedPrimary();
+						$senderEmail = $connection_details[ $primary ]['sender_email'];
+					} else {
+						$fallback    = $options->getSelectedFallback();
+						$senderEmail = $connection_details[ $fallback ]['sender_email'];
+					}
+				}
+					$senderName = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
 
 					$this->mailgunMessage ['from'] = "{$senderName} <{$senderEmail}>";
 					// now log it
@@ -155,7 +180,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 
 				// add the to recipients
 				$recipients = array();
-				foreach ( ( array ) $message->getToRecipients() as $recipient ) {
+				foreach ( (array) $message->getToRecipients() as $recipient ) {
 					$recipient->log( $this->logger, 'To' );
 					$recipients[] = $recipient->getEmail();
 				}
@@ -168,16 +193,16 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 
 				{ // add the message content
 					$textPart = $message->getBodyTextPart();
-					if ( ! empty( $textPart ) ) {
-						$this->logger->debug( 'Adding body as text' );
-						$this->mailgunMessage ['text'] = $textPart;
-					}
-					
+				if ( ! empty( $textPart ) ) {
+					$this->logger->debug( 'Adding body as text' );
+					$this->mailgunMessage ['text'] = $textPart;
+				}
+
 					$htmlPart = $message->getBodyHtmlPart();
-					if ( ! empty( $htmlPart ) ) {
-						$this->logger->debug( 'Adding body as html' );
-						$this->mailgunMessage ['html'] = $htmlPart;
-					}
+				if ( ! empty( $htmlPart ) ) {
+					$this->logger->debug( 'Adding body as html' );
+					$this->mailgunMessage ['html'] = $htmlPart;
+				}
 				}
 
 				// add the reply-to
@@ -194,7 +219,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 				}
 
 				// add the headers - see http://framework.zend.com/manual/1.12/en/zend.mail.additional-headers.html
-				foreach ( ( array ) $message->getHeaders() as $header ) {
+				foreach ( (array) $message->getHeaders() as $header ) {
 					$this->logger->debug( sprintf( 'Adding user header %s=%s', $header ['name'], $header ['content'] ) );
 					$this->addHeader( $header ['name'], $header ['content'], true );
 				}
@@ -214,7 +239,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 
 				// add the cc recipients
 				$recipients = array();
-				foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
+				foreach ( (array) $message->getCcRecipients() as $recipient ) {
 					$recipient->log( $this->logger, 'Cc' );
 					$recipients[] = $recipient->getEmail();
 				}
@@ -222,12 +247,12 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 
 				// add the bcc recipients
 				$recipients = array();
-				foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
+				foreach ( (array) $message->getBccRecipients() as $recipient ) {
 					$recipient->log( $this->logger, 'Bcc' );
 					$recipients[] = $recipient->getEmail();
 				}
 				$this->mailgunMessage['bcc'] = implode( ',', $recipients );
-				
+
 				// add attachments
 				$this->logger->debug( 'Adding attachments' );
 				$this->addAttachmentsToMail( $message );
@@ -244,4 +269,3 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 		}
 	}
 }
-

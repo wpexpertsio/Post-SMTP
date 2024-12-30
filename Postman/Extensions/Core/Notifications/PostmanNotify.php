@@ -7,7 +7,6 @@ require_once 'INotify.php';
 require_once 'PostmanMailNotify.php';
 require_once 'PostmanPushoverNotify.php';
 require_once 'PostmanSlackNotify.php';
-require_once 'PostmanWebhookAlertsNotify.php';
 require_once 'PostmanNotifyOptions.php';
 
 class PostmanNotify {
@@ -16,7 +15,6 @@ class PostmanNotify {
     const NOTIFICATIONS_SECTION = 'postman_notifications_section';
     const NOTIFICATIONS_PUSHOVER_CRED = 'postman_pushover_cred';
     const NOTIFICATIONS_SLACK_CRED = 'postman_slack_cred';
-    const NOTIFICATIONS_WEBHOOK_ALERT_URLS = 'postman_webhook_alerts_urls';
     const CHROME_EXTENSION = 'postman_chrome_extension';
     const NOTIFICATION_EMAIL = 'notification_email';
 
@@ -41,7 +39,6 @@ class PostmanNotify {
         $currentKey = $this->options->getNotificationService();
         $pushover = $currentKey == 'pushover' ? 'block' : 'none';
         $slack = $currentKey == 'slack' ? 'block' : 'none';
-        $webhook_alerts = $currentKey == 'webhook_alerts' ? 'block' : 'none';
         $notification_email = $currentKey == 'default' ? 'block' : 'none';
 
         echo '<div id="email_notify" style="display: '.$notification_email.';">';
@@ -54,10 +51,6 @@ class PostmanNotify {
 
         echo '<div id="slack_cred" style="display: ' . $slack . ';">';
         do_settings_sections( self::NOTIFICATIONS_SLACK_CRED );
-        echo '</div>';
-
-        echo '<div id="webhook_alert_urls" style="display: ' . $webhook_alerts . ';">';
-        do_settings_sections( self::NOTIFICATIONS_WEBHOOK_ALERT_URLS );
         echo '</div>';
 
         do_action( 'post_smtp_notification_settings' );
@@ -81,18 +74,6 @@ class PostmanNotify {
 
         //Email Notification
         $sanitizer->sanitizeString( 'Email Notification', PostmanNotifyOptions::NOTIFICATION_EMAIL, $input, $new_input, $this->options->get_notification_email() );
-
-        //Webhook Alerts
-        $webhook_urls = array();
-        foreach ( $_POST['postman_options']['webhook_alerts_urls'] as $key => $url ) {
-
-            if( ! empty( $url ) ) {
-                $webhook_urls[] = esc_url( $url );
-            }
-
-        }
-
-        update_option( PostmanWebhookAlertsNotify::WEBHOOK_OPTION, $webhook_urls );
 
         return $new_input;
     }
@@ -136,13 +117,6 @@ class PostmanNotify {
             $this,
             'slack_token_callback',
         ), self::NOTIFICATIONS_SLACK_CRED, 'slack_credentials' );
-
-        // Webhook Alerts
-        add_settings_section( 'webhook_alert_urls', _x( 'Webhook Alerts', 'Configuration Section Title', 'post-smtp' ), array(
-            $this,
-            'webhook_alerts_section'
-        ),
-        self::NOTIFICATIONS_WEBHOOK_ALERT_URLS );
 
         //Email Notification
         add_settings_section( 
@@ -202,40 +176,6 @@ class PostmanNotify {
     }
 
     /**
-     * Webhook Alerts | Section call-back
-     * 
-     * @since 3.1.0
-     */
-    public function webhook_alerts_section() {
-
-        $webhook_urls = get_option( PostmanWebhookAlertsNotify::WEBHOOK_OPTION );
-        $webhook_urls = $webhook_urls ? $webhook_urls : array( '' );
-        $i = 0;
-
-        echo "<table class='form-table post-smtp-webhook-urls'>";
-
-        do {
-
-            $remove_btn = $i  == 0 ? '' : '<span class="post-smtp-remove-webhook-url dashicons dashicons-trash"></span>';
-
-            echo "<tr class='post-smtp-webhook-url-container'>
-                    <th>".__( 'Webhook URL', 'post-smtp' )."</th>
-                    <td><input type='text' name='postman_options[webhook_alerts_urls][]' value='" . esc_url( $webhook_urls[$i] ) . "' />".$remove_btn."</td>
-                </tr>";
-
-            $i++;
-
-        } while ( $i < count( $webhook_urls ) );
-
-        echo "<tr>
-                <td></td>
-                <td><a href='' class='button button-primary post-smtp-add-webhook-url'>".__( 'Add Another Webhook URL', 'post-smtp' )."</a></td>
-            </tr>
-        </table>";
-
-    }
-
-    /**
      * @param PostmanEmailLog $log
      * @param PostmanMessage $message
      * @param string $transcript
@@ -243,7 +183,7 @@ class PostmanNotify {
      * @param string $errorMessage
      */
     public function notify ($log, $postmanMessage, $transcript, $transport, $errorMessage ) {
-        $message = __( 'You are getting this message because an error detected while delivered your email.', 'post-smtp' );
+        $message = __( 'You getting this message because an error detected while delivered your email.', 'post-smtp' );
         $message .= "\r\n" . sprintf( __( 'For the domain: %1$s','post-smtp' ), get_bloginfo('url') );
         $message .= "\r\n" . __( 'The log to paste when you open a support issue:', 'post-smtp' ) . "\r\n";
 
@@ -264,9 +204,6 @@ class PostmanNotify {
                     break;
                 case 'slack':
                     $notifyer = new PostmanSlackNotify;
-                    break;
-                case 'webhook_alerts':
-                    $notifyer = new PostmanWebhookAlertsNotify;
                     break;
                 default:
                     $notifyer = new PostmanMailNotify;
@@ -338,8 +275,7 @@ class PostmanNotify {
             'none'      => __( 'None', 'post-smtp' ),
             'default'   => __( 'Admin Email', 'post-smtp' ),
             'slack'     => __( 'Slack', 'post-smtp' ),
-            'pushover'  => __( 'Pushover', 'post-smtp' ),
-            'webhook_alerts'  => __( 'Webhook Alerts', 'post-smtp' )
+            'pushover'  => __( 'Pushover', 'post-smtp' )
         ) );
         $currentKey = $this->options->getNotificationService();
         $logs_url = admin_url( 'admin.php?page=postman_email_log' );
