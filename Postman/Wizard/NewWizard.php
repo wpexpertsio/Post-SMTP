@@ -170,7 +170,7 @@ class Post_SMTP_New_Wizard {
         <div class="wrap">
             <div class="ps-wizard">
                 <div class="ps-logo">
-                    <img src="https://postmansmtp.com/wp-content/uploads/2022/02/postmansmtp-blue.svg" width="250px" />
+                    <img src="<?php echo esc_attr( POST_SMTP_ASSETS ) . '/images/logos/post-smtp-logo-large.svg'; ?>" width="250px" />
                 </div>
                 <div class="ps-wizard-outer <?php echo esc_attr( $socket ); ?>">
                     <div class="ps-wizard-section">

@@ -159,7 +159,7 @@ class PostmanSendTestEmailController {
 		<div class="send-test-email">
 		
 		<div class="ps-logo">
-			<img src="https://postmansmtp.com/wp-content/uploads/2022/02/postmansmtp-blue.svg" width="250px" alt="Post SMTP Logo">
+			<img src="' . esc_attr( POST_SMTP_ASSETS ) . '/images/logos/post-smtp-logo-large.svg" width="250px" alt="Post SMTP Logo">
 		</div>
 		
 			<div class="ps-outer">
