@@ -189,11 +189,21 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$existing_db_version = get_option( 'postman_db_version' );
 
 			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-				// get the transport and create the transportConfig and engine
+				// get the transport and create the transportConfig and engine.
 				$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
 			}else{
-				// get primaryconnection and Config and engine
-				$transport = PostmanTransportRegistry::getInstance()->getPrimaryConnection();
+				// get primaryconnection and Config and engine.
+				$transport_registry = PostmanTransportRegistry::getInstance();
+				$transport = $transport_registry->getPrimaryConnection();
+			
+			/**
+			 * Allows modification of the primary transport in the else condition.
+			 *
+			 * @param PostmanTransportRegistry $transport_registry The full PostmanTransportRegistry instance.
+			 * @param mixed $transport The current primary transport instance.
+			 */
+			$transport = apply_filters( 'post_smtp_modify_primary_transport', $transport_registry, $transport );
+
 			}
 
 			// create the Mail Engine
@@ -324,7 +334,6 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
                 $options->is_fallback = true;
 				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
 	                $status = $this->sendMessage( $postMessage, $log );
-					die('ahsan');
 				}else{
 					$status = $this->sendMessageFallback( $postMessage, $log );
 				}

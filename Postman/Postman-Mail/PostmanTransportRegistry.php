@@ -107,7 +107,19 @@ class PostmanTransportRegistry {
 		return $transports ['default'];
 	}
 
+	/**
+	 * Get provider name by connection ID from WordPress options.
+	 *
+	 * @param int $connection_id The connection ID.
+	 * @return string|null The provider name or null if not found.
+	 */
+	public function get_provider_name_by_id( $connection_id ) {
+		// Retrieve postman_connections from WordPress options.
+		$connections = get_option( 'postman_connections', array() );
 
+		// Check if the connection ID exists and return the provider name.
+		return isset( $connections[$connection_id] ) ? $connections[$connection_id]['provider'] : null;
+	}
 	/**
 	 *
 	 * @param PostmanOptions    $options
