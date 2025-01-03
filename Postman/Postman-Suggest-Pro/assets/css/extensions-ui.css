@@ -200,3 +200,37 @@
     color: #ffffff;
     text-decoration: none;
 }
+/**/
+#wpbody-content .post-smtp-clearfix {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 28px;
+}
+
+#wpbody-content .post-smtp-clearfix .post-smtp-socket-wrapper {
+    float: none;
+    margin: 0;
+}
+#wpbody-content .post-smtp-clearfix .post-smtp-fr {
+    margin: 0 !important;
+}
+@media only screen and (max-width: 1360px) {
+    #wpbody-content .post-smtp-clearfix {
+        gap: 30px 2.5%;
+    }
+    #wpbody-content .post-smtp-clearfix .post-smtp-socket-wrapper {
+        width: 31.4%;
+    }
+}
+@media only screen and (max-width: 1200px) { 
+    #wpbody-content .post-smtp-clearfix .post-smtp-socket-wrapper {
+        width: 48.4%;
+    }
+}
+@media only screen and (max-width: 768px) { 
+    #wpbody-content .post-smtp-clearfix .post-smtp-socket-wrapper {
+        width: 100%;
+    }
+}
