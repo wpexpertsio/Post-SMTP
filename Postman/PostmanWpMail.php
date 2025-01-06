@@ -196,13 +196,13 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				$transport_registry = PostmanTransportRegistry::getInstance();
 				$transport = $transport_registry->getPrimaryConnection();
 			
-			/**
-			 * Allows modification of the primary transport in the else condition.
-			 *
-			 * @param PostmanTransportRegistry $transport_registry The full PostmanTransportRegistry instance.
-			 * @param mixed $transport The current primary transport instance.
-			 */
-			$transport = apply_filters( 'post_smtp_modify_primary_transport', $transport_registry, $transport );
+				/**
+				 * Allows modification of the primary transport in the else condition.
+				 *
+				 * @param PostmanTransportRegistry $transport_registry The full PostmanTransportRegistry instance.
+				 * @param mixed $transport The current primary transport instance.
+				 */
+				$transport = apply_filters( 'post_smtp_modify_primary_transport', $transport_registry, $transport, $message );
 
 			}
 
@@ -213,7 +213,8 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$message->addHeaders( $options->getAdditionalHeaders() );
 			$message->addTo( $options->getForcedToRecipients() );
 			$message->addCc( $options->getForcedCcRecipients() );
-			$message->addBcc( $options->getForcedBccRecipients() );
+			$message->addBcc($options->getForcedCcRecipients() );
+
 
 			// apply the WordPress filters
 			// may impact the from address, from email, charset and content-type
@@ -267,7 +268,6 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 						PostmanState::getInstance()->incrementSuccessfulDelivery();
 					}
 				}
-
 				// clean up
 				$this->postSend( $engine, $startTime, $options, $transport );
 
@@ -366,8 +366,16 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$authorizationToken = PostmanOAuthToken::getInstance();
 			$existing_db_version = get_option( 'postman_db_version' );
 
-			// get primaryconnection and Config and engine
-			$transport = PostmanTransportRegistry::getInstance()->getFallbackConnection();
+			$transport_registry = PostmanTransportRegistry::getInstance();
+			$transport = $transport_registry->getFallbackConnection();
+		
+			/**
+			 * Allows modification of the primary transport in the else condition.
+			 *
+			 * @param PostmanTransportRegistry $transport_registry The full PostmanTransportRegistry instance.
+			 * @param mixed $transport The current primary transport instance.
+			 */
+			$transport = apply_filters( 'post_smtp_modify_primary_transport', $transport_registry, $transport, $message );
 		
 			// create the Mail Engine
 			$engine = $transport->createMailEngineFallback();
