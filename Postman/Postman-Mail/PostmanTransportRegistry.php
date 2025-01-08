@@ -144,6 +144,23 @@ class PostmanTransportRegistry {
 	 * @param PostmanOAuthToken $token
 	 * @return boolean
 	 */
+	public function getConnectionByName( $name ) {
+		$transports        = $this->getTransports();
+		if ( isset( $transports [ $name ] ) ) {
+			$transport = $transports [ $name ];
+			if ( $transport->getSlug() == $name ) {
+				return $transport;
+			}
+		}
+		return $transports ['default'];
+	}
+
+	/**
+	 *
+	 * @param PostmanOptions    $options
+	 * @param PostmanOAuthToken $token
+	 * @return boolean
+	 */
 	public function getFallbackConnection() {
 		$selectedTransport = PostmanOptions::getInstance()->getSelectedFallbackName();
 		$transports        = $this->getTransports();

@@ -102,13 +102,22 @@ if ( ! class_exists( 'PostmanElasticEmailTransport' ) ) :
 
 			$existing_db_version = get_option( 'postman_db_version' );
 			$connection_details  = get_option( 'postman_connections' );
+			// Check if a transient for smart routing is set
+			$route_key = null;
+    		$route_key = get_transient( 'post_smtp_smart_routing_route' );
 
-			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-				$api_key = $this->options->getElasticEmailApiKey();
-			} else {
-				$primary = $this->options->getSelectedPrimary();
-				$api_key = $connection_details[ $primary ]['elasticemail_api_key'];
+			if( $route_key != null ){
+			    // Smart routing is enabled, use the connection associated with the route_key.
+				$api_key     = $connection_details[ $route_key ]['elasticemail_api_key'];
+			} else{
+				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+					$api_key = $this->options->getElasticEmailApiKey();
+				} else {
+					$primary = $this->options->getSelectedPrimary();
+					$api_key = $connection_details[ $primary ]['elasticemail_api_key'];
+				}
 			}
+
 			require_once 'PostmanElasticEmailMailEngine.php';
 			$engine = new PostmanElasticEmailMailEngine( $api_key );
 

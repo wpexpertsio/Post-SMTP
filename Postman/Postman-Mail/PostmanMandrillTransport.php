@@ -126,12 +126,20 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 	public function createMailEngine() {
 		$existing_db_version = get_option( 'postman_db_version' );
 		$connection_details  = get_option( 'postman_connections' );
+		// Check if a transient for smart routing is set
+		$route_key = null;
+		$route_key = get_transient( 'post_smtp_smart_routing_route' );	
 
-		if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-			$apiKey = $this->options->getMandrillApiKey();
-		} else {
-			$primary = $this->options->getSelectedPrimary();
-			$api_key = $connection_details[ $primary ]['mandrill_api_key'];
+		if( $route_key != null ){
+			// Smart routing is enabled, use the connection associated with the route_key.
+			$apiKey        = $connection_details[ $route_key ]['mandrill_api_key'];
+		}else{
+			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+				$apiKey    = $this->options->getMandrillApiKey();
+			} else {
+				$primary   = $this->options->getSelectedPrimary();
+				$apiKey    = $connection_details[ $primary ]['mandrill_api_key'];
+			}
 		}
 		require_once 'PostmanMandrillMailEngine.php';
 		$engine = new PostmanMandrillMailEngine( $apiKey );

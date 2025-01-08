@@ -258,6 +258,9 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 					 */
                     if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) && apply_filters( 'post_smtp_send_email', true ) ) {
 						$engine->send( $message );
+					    
+						// Success: Delete the transient after sending the email
+                        delete_transient( 'post_smtp_smart_routing_route' );
 
                     } else {
                         $this->transcript = 'Bypassed By MailControl For Post SMTP';
@@ -284,6 +287,9 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 				// write the error to the PHP log
 				$this->logger->error( get_class( $e ) . ' code=' . $e->getCode() . ' message=' . trim( $e->getMessage() ) );
+
+				// Failure: Delete the transient in case of an error
+        		delete_transient( 'post_smtp_smart_routing_route' );
 
 				// increment the failure counter, unless we are just tesitng
 				if ( ! $testMode && $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {

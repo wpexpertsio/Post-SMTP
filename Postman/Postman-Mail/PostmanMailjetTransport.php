@@ -102,15 +102,25 @@ if ( ! class_exists( 'PostmanMailjetTransport' ) ) :
 
 			$existing_db_version = get_option( 'postman_db_version' );
 			$connection_details  = get_option( 'postman_connections' );
-
-			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-				$api_key    = $this->options->getMailjetApiKey();
-				$secret_key = $this->options->getMailjetSecretKey();
-			} else {
-				$primary    = $this->options->getSelectedPrimary();
-				$api_key    = $connection_details[ $primary ]['mailjet_api_key'];
-				$secret_key = $connection_details[ $primary ]['mailjet_secret_key'];
+			// Check if a transient for smart routing is set
+			$route_key = null;
+			$route_key = get_transient( 'post_smtp_smart_routing_route' );
+			
+			if( $route_key != null ){
+				// Smart routing is enabled, use the connection associated with the route_key.
+				$api_key        = $connection_details[ $route_key ]['mailjet_api_key'];
+				$secret_key     = $connection_details[ $route_key ]['mailjet_secret_key'];
+			}else{
+				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+					$api_key    = $this->options->getMailjetApiKey();
+					$secret_key = $this->options->getMailjetSecretKey();
+				} else {
+					$primary    = $this->options->getSelectedPrimary();
+					$api_key    = $connection_details[ $primary ]['mailjet_api_key'];
+					$secret_key = $connection_details[ $primary ]['mailjet_secret_key'];
+				}
 			}
+
 			require_once 'PostmanMailjetMailEngine.php';
 			$engine = new PostmanMailjetMailEngine( $api_key, $secret_key );
 

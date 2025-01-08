@@ -97,11 +97,22 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		}else{
 			$connection_details = get_option( 'postman_connections' );
 			if ( $fakeConfig == null ) {
-				$primary = $options->getSelectedPrimary();
-				$client_id   = $connection_details[ $primary ]['oauth_client_id'];
-				$client_secret   = $connection_details[ $primary ]['oauth_client_secret'];
-				$access_token =  $connection_details[ $primary ]['access_token'];
-				$refresh_token =  $connection_details[ $primary ]['refresh_token'];
+				// Check if a transient for smart routing is set
+				$route_key = null; 
+				$route_key = get_transient( 'post_smtp_smart_routing_route' );
+				if( $route_key != null  ){
+					// Smart routing is enabled, use the connection associated with the route_key.
+					$client_id   = $connection_details[ $route_key ]['oauth_client_id'];
+					$client_secret   = $connection_details[ $route_key ]['oauth_client_secret'];
+					$access_token =  $connection_details[ $route_key ]['access_token'];
+					$refresh_token =  $connection_details[ $route_key ]['refresh_token'];
+				}else{ 
+					$primary = $options->getSelectedPrimary();
+					$client_id   = $connection_details[ $primary ]['oauth_client_id'];
+					$client_secret   = $connection_details[ $primary ]['oauth_client_secret'];
+					$access_token =  $connection_details[ $primary ]['access_token'];
+					$refresh_token =  $connection_details[ $primary ]['refresh_token'];
+				}
 			} else {
 				$fallback = $options->getSelectedFallback();
 				$client_id   = $connection_details[ $fallback ]['oauth_client_id'];

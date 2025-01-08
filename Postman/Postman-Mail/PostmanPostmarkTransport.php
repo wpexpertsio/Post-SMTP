@@ -98,13 +98,22 @@ if ( ! class_exists( 'PostmanPostmarkTransport' ) ) :
 
 			$existing_db_version = get_option( 'postman_db_version' );
 			$connection_details  = get_option( 'postman_connections' );
-
-			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-				$api_key = $this->options->getPostmarkApiKey();
-			} else {
-				$primary = $this->options->getSelectedPrimary();
-				$api_key = $connection_details[ $primary ]['postmark_api_key'];
+			
+			// Check if a transient for smart routing is set
+			$route_key = null;
+			$route_key = get_transient( 'post_smtp_smart_routing_route' );	
+			if( $route_key != null  ){
+				// Smart routing is enabled, use the connection associated with the route_key.
+				$api_key        = $connection_details[ $route_key ]['postmark_api_key'];
+			}else{
+				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+					$api_key = $this->options->getPostmarkApiKey();
+				} else {
+					$primary   = $this->options->getSelectedPrimary();
+					$api_key    = $connection_details[ $primary ]['postmark_api_key'];
+				}
 			}
+
 			require_once 'PostmanPostmarkMailEngine.php';
 			$engine = new PostmanPostmarkMailEngine( $api_key );
 

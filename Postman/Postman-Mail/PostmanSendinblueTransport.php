@@ -102,13 +102,18 @@ if ( ! class_exists( 'PostmanSendinblueTransport' ) ) :
 
 			$existing_db_version = get_option( 'postman_db_version' );
 			$connection_details  = get_option( 'postman_connections' );
-
-			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-				$api_key = $this->options->getSendinblueApiKey();
+			$route_key = null;
+			// Check if a transient for smart routing is set
+    		$route_key = get_transient( 'post_smtp_smart_routing_route' );
+	
+			if ( $route_key != null ) {
+				// Smart routing is enabled, use the connection associated with the route_key.
+				$api_key = $this->getApiKeyForRoute( $route_key, $connection_details );
 			} else {
-				$primary = $this->options->getSelectedPrimary();
-				$api_key = $connection_details[ $primary ]['sendinblue_api_key'];
+				// No smart routing, proceed with default connection selection.
+				$api_key = $this->getApiKeyForDefaultConnection( $existing_db_version, $connection_details );
 			}
+
 			require_once 'PostmanSendinblueMailEngine.php';
 			$engine = new PostmanSendinblueMailEngine( $api_key );
 
@@ -133,6 +138,49 @@ if ( ! class_exists( 'PostmanSendinblueTransport' ) ) :
 
 			return $engine;
 		}
+
+
+		/**
+		 * Retrieves the API key for a specific route.
+		 *
+		 * @since 3.0.1
+		 * @version 1.0
+		 *
+		 * @param string $route_key The route key used for smart routing.
+		 * @param array  $connection_details The array of connection details.
+		 *
+		 * @return string The API key for the specified route.
+		 */
+		private function getApiKeyForRoute( $route_key, $connection_details ) {
+			// Ensure the route exists in the connection details and return the corresponding API key.
+			if ( isset( $connection_details[ $route_key ] ) ) {
+				return $connection_details[ $route_key ]['sendinblue_api_key'];
+			}
+
+		}
+
+		/**
+		 * Retrieves the API key for the default connection selection.
+		 *
+		 * @since  3.0.1
+		 * @version 1.0
+		 *
+		 * @param string $existing_db_version The existing database version.
+		 * @param array  $connection_details The array of connection details.
+		 *
+		 * @return string The API key for the default connection.
+		 */
+		private function getApiKeyForDefaultConnection( $existing_db_version, $connection_details ) {
+			// Check if the database version is different to decide which connection to use.
+			if ( $existing_db_version !== POST_SMTP_DB_VERSION ) {
+				return $this->options->getSendinblueApiKey();
+			}
+
+			// Use the API key of the primary connection.
+			$primary = $this->options->getSelectedPrimary();
+			return isset( $connection_details[ $primary ] ) ? $connection_details[ $primary ]['sendinblue_api_key'] : ''; 
+		}
+
 
 		/**
 		 * @since 2.1
