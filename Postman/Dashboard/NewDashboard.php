@@ -19,22 +19,24 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
 		}
         
         public function admin_enqueue_scripts( $hook ) {
-            wp_enqueue_script( 'post-smtp-dashboard', POST_SMTP_URL . '/Postman/Dashboard/assets/js/app.js', array( 'wp-i18n' ), POST_SMTP_VER, true );
-            wp_localize_script(
-                'post-smtp-dashboard',
-                'postSmtpNewDashboard',
-                array(
-                    'plugin_dir_url' => plugin_dir_url( __FILE__ ),
-	                'json_url'       => rest_url( 'psd/v1' ),
-                    'nonce'          => wp_create_nonce( 'wp_rest' ),
-	                'admin_url'      => admin_url( 'admin.php' ),
-	                'page_hook'      => $hook,
-                    'is_bfcm'        => postman_is_bfcm()
-                )
-            );
-            
-            wp_enqueue_style('post-smtp-dashboard', POST_SMTP_URL . '/Postman/Dashboard/assets/css/app.css', array(), POST_SMTP_VER, 'all' );
-			wp_enqueue_style( 'post-smtp-dashboard-responsive', POST_SMTP_URL. '/Postman/Dashboard/assets/css/responsive-style.css', array(), POST_SMTP_VER, 'all' );
+			if ( 'toplevel_page_postman' === $hook ) {
+				wp_enqueue_script( 'post-smtp-dashboard', POST_SMTP_URL . '/Postman/Dashboard/assets/js/app.js', array( 'wp-i18n' ), POST_SMTP_VER, true );
+				wp_localize_script(
+					'post-smtp-dashboard',
+					'postSmtpNewDashboard',
+					array(
+						'plugin_dir_url' => plugin_dir_url( __FILE__ ),
+						'json_url'       => rest_url( 'psd/v1' ),
+						'nonce'          => wp_create_nonce( 'wp_rest' ),
+						'admin_url'      => admin_url( 'admin.php' ),
+						'page_hook'      => $hook,
+						'is_bfcm'        => postman_is_bfcm()
+					)
+				);
+
+				wp_enqueue_style( 'post-smtp-dashboard', POST_SMTP_URL . '/Postman/Dashboard/assets/css/app.css', array(), POST_SMTP_VER, 'all' );
+				wp_enqueue_style( 'post-smtp-dashboard-responsive', POST_SMTP_URL . '/Postman/Dashboard/assets/css/responsive-style.css', array(), POST_SMTP_VER, 'all' );
+			}
         }
         
         public function dashboard_content() {
