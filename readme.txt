@@ -280,8 +280,11 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 Important: If you are using version 2.8.7 or lower of our plugin, please update to the latest version as soon as possible. This update contains an urgent security fix that prevents potential vulnerabilities and attacks. We apologize for any inconvenience this may cause you and we appreciate your cooperation. Thank you for using our plugin.
 
 == Changelog ==
+= 3.0.1 - Jan 13, 2025 =
+* Fix: Fixed the UI conflict.
+* Fix: Fixed MySQL warning. 
 
-= 3.0.0 - Jan 07, 2024 =
+= 3.0.0 - Jan 07, 2025 =
 * New: Introduced all New Post SMTP Dashboard for users' ease.
 * New: Introduced new SMTP socket SMTP2GO.
 * New: Introduced new Send Mail user interface.
