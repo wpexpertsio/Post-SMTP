@@ -232,6 +232,8 @@ class Postman {
 	 * Initializes the plugin's translation system by loading the text domain.
 	 * This function is hooked into the 'init' action, ensuring that translations
 	 * are available as early as possible in the WordPress lifecycle.
+	 * 
+	 * @since 3.0.1
 	 */
 	public function initialize_plugin_translations() {
 		// Load the text domain.
