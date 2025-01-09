@@ -141,24 +141,25 @@ class PostmanEmailQueryLog {
 
         // Status Filter
         $clause_for_status = '';
-        if( !empty( $args['status'] ) ) {
+        if( isset( $args['status'] ) && !empty( $args['status'] ) ) {
 
             $clause_for_status = strpos( $this->query, 'WHERE' ) !== FALSE ? ' AND' : ' WHERE';
+            
+            if( $args['status'] == 'success' ) {
 
-        }
-        if( $args['status'] == 'success' ) {
-
-            $this->query .= "{$clause_for_status} `success` = 1 ";
-
-        }
-        elseif ( $args['status'] == 'failed' ) {
-
-            $this->query .= "{$clause_for_status} `success` != 1 ";
-
-        }
-        else {
-
-            $this->query .= '';
+                $this->query .= "{$clause_for_status} `success` = 1 ";
+    
+            }
+            elseif ( $args['status'] == 'failed' ) {
+    
+                $this->query .= "{$clause_for_status} `success` != 1 ";
+    
+            }
+            else {
+    
+                $this->query .= '';
+    
+            }
 
         }
 		

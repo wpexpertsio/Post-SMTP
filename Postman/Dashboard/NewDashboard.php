@@ -11,7 +11,9 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
             add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
             add_filter( 'post_smtp__new_dashboard', '__return_true' );
             add_action( 'post_smtp__new_dashboard_content', array( $this, 'dashboard_content' ) );
-            add_filter( 'post_smtp_dashboard_opened_emails_count', array( $this, 'opened_email_count' ), 10, 2 );
+            if ( post_smtp_has_pro() ) {
+                add_filter( 'post_smtp_dashboard_opened_emails_count', array( $this, 'opened_email_count' ), 10, 2 );
+             }
         }
 
 		private function include() {
