@@ -177,6 +177,8 @@ class Postman {
 				'on_plugins_loaded',
 		) );
 
+		add_action( 'init', array( $this, 'initialize_plugin_translations' ) );
+
 		//Conflicting with backupbuddy, will be removed soon 
         //add_filter( 'extra_plugin_headers', [ $this, 'add_extension_headers' ] );
 
@@ -218,15 +220,22 @@ class Postman {
 		// register the email transports
 		$this->registerTransports( $this->rootPluginFilenameAndPath );
 
-		// load the text domain
-		$this->loadTextDomain();
-
 		// register the setup_admin function on plugins_loaded because we need to call
 		// current_user_can to verify the capability of the current user
 		if ( PostmanUtils::isAdmin() && is_admin() ) {
 			$this->setup_admin();
 		}
 		
+	}
+
+	/**
+	 * Initializes the plugin's translation system by loading the text domain.
+	 * This function is hooked into the 'init' action, ensuring that translations
+	 * are available as early as possible in the WordPress lifecycle.
+	 */
+	public function initialize_plugin_translations() {
+		// Load the text domain.
+		$this->loadTextDomain();
 	}
 
 	/**
