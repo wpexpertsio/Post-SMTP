@@ -109,6 +109,20 @@ define( 'POST_SMTP_ASSETS', plugin_dir_url( __FILE__ ) . 'assets/' );
 $postman_smtp_exist = in_array( 'postman-smtp/postman-smtp.php', (array) get_option( 'active_plugins', array() ) );
 $required_php_version = version_compare( PHP_VERSION, '5.6.0', '<' );
 
+if( ! function_exists( 'post_smtp_load_textdomain' ) ):
+function post_smtp_load_textdomain() {
+	// had to hardcode the third parameter, Relative path to WP_PLUGIN_DIR,
+	// because __FILE__ returns the wrong path if the plugin is installed as a symlink
+	$shortLocale = substr( get_locale(), 0, 2 );
+	if ( $shortLocale != 'en' ) {
+		$langDir = 'post-smtp/Postman/languages';
+		$success = load_plugin_textdomain( 'post-smtp', false, $langDir );
+	}
+}
+endif;
+
+add_action( 'init', 'post_smtp_load_textdomain' );
+
 if ( $postman_smtp_exist || $required_php_version ) {
 	add_action( 'admin_init', 'post_smtp_plugin_deactivate' );
 
@@ -125,7 +139,7 @@ if ( $postman_smtp_exist || $required_php_version ) {
 
 
 function post_smtp_plugin_deactivate() {
-		deactivate_plugins( plugin_basename( __FILE__ ) );
+	deactivate_plugins( plugin_basename( __FILE__ ) );
 }
 
 function post_smtp_plugin_admin_notice_version() {
