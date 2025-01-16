@@ -283,6 +283,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 = 3.0.2 - Jan 17, 2025 =
 * Fix: MySQL warning was appearing in some cases. 
 * Fix: Translation warning was appearing in some cases.
+* Fix: There were few warnings from Webhook module.
 
 = 3.0.1 - Jan 14, 2025 =
 * Fix: Fixed the UI conflict.
