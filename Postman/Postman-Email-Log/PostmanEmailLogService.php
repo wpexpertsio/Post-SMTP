@@ -161,16 +161,16 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				$data['solution'] = apply_filters( 'post_smtp_log_solution', null, $new_status, $log, $message );
 				$data['success'] = empty( $new_status ) ? 1 : $new_status;
 				$data['from_header'] = $log->sender;
-				$data['to_header'] = !empty( $log->toRecipients ) ? sanitize_email( $log->toRecipients ) : '';
-				$data['cc_header'] = !empty( $log->ccRecipients ) ? sanitize_email( $log->ccRecipients ) : '';
-				$data['bcc_header'] = !empty( $log->bccRecipients ) ? sanitize_email( $log->bccRecipients ) : '';
-				$data['reply_to_header'] = !empty( $log->replyTo ) ? sanitize_email( $log->replyTo ) : '';
-				$data['transport_uri'] = !empty( $log->transportUri ) ? $log->transportUri : '';
-				$data['original_to'] = is_array( $log->originalTo ) ? implode( ',', sanitize_email( $log->originalTo ) ) : sanitize_email( $log->originalTo );
+				$data['to_header'] = !empty( $log->toRecipients ) ? implode( ',', array_map( 'sanitize_email', explode( ',', $log->toRecipients ) ) ) : '';
+                $data['cc_header'] = !empty( $log->ccRecipients ) ? implode( ',', array_map( 'sanitize_email', explode( ',', $log->ccRecipients ) ) ) : '';
+                $data['bcc_header'] = !empty( $log->bccRecipients ) ? implode( ',', array_map( 'sanitize_email', explode( ',', $log->bccRecipients ) ) ) : '';
+                $data['reply_to_header'] = !empty( $log->replyTo ) ? implode( ',', array_map( 'sanitize_email', explode( ',', $log->replyTo ) ) ) : '';
+                $data['transport_uri'] = !empty( $log->transportUri ) ? $log->transportUri : '';
+				$data['original_to'] = is_array( $log->originalTo ) ? implode( ',', $log->originalTo ) : $log->originalTo;
 				$data['original_subject'] = !empty( $log->originalSubject ) ? sanitize_text_field( $log->originalSubject ) : '';
-				$data['original_message'] = !empty( $log->originalMessage ) ? sanitize_textarea_field( $log->originalMessage ) : '';
-				$data['original_headers'] = is_array( $log->originalHeaders ) ? serialize( $log->originalHeaders ) : $log->originalHeaders;
-				$data['session_transcript'] = !empty( $log->sessionTranscript ) ? sanitize_textarea_field( $log->sessionTranscript ) : '';
+				$data['original_message'] = !empty( $log->originalMessage ) ? sanitize_textarea_field( $log->originalMessage ) : ''; $log->originalMessage;
+				$data['original_headers'] = is_array($log->originalHeaders) ? serialize( $log->originalHeaders ) : $log->originalHeaders;
+				$data['session_transcript'] = $log->sessionTranscript;
 
 				$email_logs = new PostmanEmailLogs();
 
