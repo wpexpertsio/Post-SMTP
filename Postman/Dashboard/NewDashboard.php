@@ -49,6 +49,7 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
         
         public function dashboard_content() {
             $transport          = PostmanTransportRegistry::getInstance()->getActiveTransport();
+			$postman_options    = get_option( 'postman_options', array() );
             $app_connected      = get_option( 'post_smtp_mobile_app_connection' );
 	        $main_wp_configured = get_option( 'post_smtp_use_from_main_site' );
             $configured         = $transport->isConfiguredAndReady() ? 'true' : 'false';
@@ -57,6 +58,8 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
 			$has_post_smtp_pro  = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
 			$has_post_smtp_pro  = in_array( 'post-smtp-pro/post-smtp-pro.php', $has_post_smtp_pro, true )
 				? 'true' : 'false';
+			$log_only_mode = is_array( $postman_options ) && isset( $postman_options['run_mode'] ) && 'log_only' === $postman_options['run_mode']
+				? 'true' : 'false' ;
 
 	        $ad_position = get_option('postman_dashboard_ad', 'maximize' );
             echo '<div id="post-smtp-app">
@@ -66,6 +69,7 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
                     :is-mobile-app-configured="' . esc_attr( $app_connected ) . '"
                     :is-main-wp-configured="' . esc_attr( $main_wp_configured ) . '"
                     :is-domain-spam-score-configured="false"
+                    :is-log-only-mode="' . esc_attr( $log_only_mode ) . '"
                     
                     ad-position="' . esc_attr( $ad_position ) . '"
                     
