@@ -106,13 +106,14 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 			 */
 			$keys = apply_filters( 'post_smtp_get_credentials', '' );
 			$client = new Google_Client();
-            $client->setApplicationName( 'Post SMTP ' . POST_SMTP_VER );
+            $client->setApplicationName( 'Post SMTP' );
+            $client->setPrompt( 'consent' );
             $client->setAccessType( 'offline' );
             $client->setApprovalPrompt( 'force' );
-            $client->setIncludeGrantedScopes( true );
-            $client->setScopes( array( Gmail::MAIL_GOOGLE_COM ) );
+          	$client->setScopes( 'https://www.googleapis.com/auth/gmail.send' );
+            $client->setScopes( 'https://www.googleapis.com/auth/userinfo.email' );
             $client->setRedirectUri( $keys['credentials']['url'] );
-            $client->setClientId( $keys['credentials']['key'] );
+			$client->setClientId( $keys['credentials']['key'] );
         	$client->setClientSecret( $keys['credentials']['token'] );
 		}
 		try {
