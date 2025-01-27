@@ -88,6 +88,7 @@ class Post_SMTP_New_Wizard {
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
         add_action( 'wp_ajax_ps-save-wizard', array( $this, 'save_wizard' ) );
         add_action( 'admin_action_zoho_auth_request', array( $this, 'auth_zoho' ) );
+		add_action( 'admin_init', array( $this, 'handle_office365_oauth_redirect' ) );
 
         if( isset( $_GET['wizard'] ) && $_GET['wizard'] == 'legacy' ) {
 
@@ -548,7 +549,7 @@ class Post_SMTP_New_Wizard {
         }
 
         wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), '1.5.4' );
-        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), '3.0.3' );
+        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), '3.0.4' );
         wp_localize_script( 'post-smtp-wizard', 'PostSMTPWizard', $localized );
 
     }
@@ -1398,8 +1399,9 @@ class Post_SMTP_New_Wizard {
 
         // Setup classes and attributes for form visibility
         $hidden_class = $office365_oneclick_enabled ? 'ps-hidden' : '';
-        $app_client_idrequired = $office365_oneclick_enabled ? '' : 'required';
-        $app_client_secret_required = $office365_oneclick_enabled ? '' : 'required';
+		// Conditional 'required' attribute for the fields
+		$client_secret_required = $office365_oneclick_enabled ? '' : 'required';
+		$client_id_required = $office365_oneclick_enabled ? '' : 'required';
         $one_click_class = 'ps-enable-office365-one-click';
         $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/google.png';
         $transport_name = __( 'One-Click Setup', 'post-smtp' );
@@ -1460,7 +1462,7 @@ class Post_SMTP_New_Wizard {
         $html .= '
         <div class="ps-form-control">
             <div><label>'.__( 'Application (Client) ID', 'post-smtp' ).'</label></div>
-            <input type="text" class="ps-office365-client-id" required data-error="'.__( 'Please enter Application (Client) ID.', 'post-smtp' ).'" name="postman_options[office365_app_id]" value="'.$app_client_id.'" placeholder="Application (Client) ID">
+            <input type="text" class="ps-office365-client-id" ' . $client_id_required . '  data-error="'.__( 'Please enter Application (Client) ID.', 'post-smtp' ).'" name="postman_options[office365_app_id]" value="'.$app_client_id.'" placeholder="Application (Client) ID">
             <span class="ps-form-control-info">'.
             /**
              * Translators: %1$s URL, %2$s URL Text, %3$s Text
@@ -1478,7 +1480,7 @@ class Post_SMTP_New_Wizard {
         $html .= '
         <div class="ps-form-control">
             <div><label>'.__( 'Client Secret (Value)', 'post-smtp' ).'</label></div>
-            <input type="text" class="ps-office365-client-secret" required data-error="'.__( 'Please enter Client Secret (Value).', 'post-smtp' ).'" name="postman_options[office365_app_password]" value="'.$app_client_secret.'" placeholder="Client Secret (Value)">
+            <input type="text" class="ps-office365-client-secret" ' . $client_secret_required . '  data-error="'.__( 'Please enter Client Secret (Value).', 'post-smtp' ).'" name="postman_options[office365_app_password]" value="'.$app_client_secret.'" placeholder="Client Secret (Value)">
             <span class="ps-form-control-info">'.
             /**
              * Translators: %1$s URL, %2$s URL Text, %3$s Text
@@ -1801,6 +1803,44 @@ class Post_SMTP_New_Wizard {
         wp_redirect( $redirect_url );
 
     }
+	
+	/**
+	 * Handles the Office 365 OAuth redirect, retrieves the token parameters from the URL,
+	 * saves them in WordPress options, and redirects the user to a settings page.
+	 *
+	 * This function is used when OAuth authorization is completed and the user is
+	 * redirected back with the access token, refresh token, expiration time, message, 
+	 * and user email. It sanitizes the URL parameters and saves them to the WordPress 
+	 * options table to be used later in the application.
+	 *
+	 * After processing, the user is redirected to a settings page for confirmation.
+	 */
+	public function handle_office365_oauth_redirect() {
+		// Check if the required OAuth parameters are present in the URL.
+		if ( isset( $_GET['action'] ) && $_GET['action'] === 'office365_oauth_redirect' ) {
+			// Sanitize and retrieve URL parameters
+			$access_token  = sanitize_text_field( $_GET['access_token'] );
+			$refresh_token = isset( $_GET['refresh_token'] ) ? sanitize_text_field( $_GET['refresh_token'] ) : null;
+			$expires_in    = isset( $_GET['expires_in'] ) ? intval( $_GET['expires_in'] ) : 0;
+			$msg           = isset( $_GET['msg'] ) ? sanitize_text_field( $_GET['msg'] ) : '';
+			$user_email    = isset( $_GET['user_email'] ) ? sanitize_email( $_GET['user_email'] ) : '';
+			$auth_token_expires = time() + $expires_in;
+
+			// Prepare the OAuth data array for storing in WordPress options
+			$oauth_data = array(
+				'access_token'      => $access_token,
+				'refresh_token'     => $refresh_token,
+				'auth_token_expires'=> $auth_token_expires,
+				'vendor_name'       => 'office365',
+				'user_email'        => $user_email,
+			);
+
+			// Save the OAuth parameters to the WordPress options table.
+			update_option( 'postman_office365_auth_token', $oauth_data );
+		}
+	}
+
+
 
 }
 
