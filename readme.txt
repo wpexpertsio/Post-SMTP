@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: smtp, gmail smtp, email,  email logs, office 365
 Requires at least: 5.6.0
 Tested up to: 6.7
-Stable tag: 3.0.1
+Stable tag: 3.0.2
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -284,6 +284,9 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 * Fix: MySQL warning was appearing in some cases. 
 * Fix: Translation warning was appearing in some cases.
 * Fix: There were few warnings from Webhook module.
+
+= 3.0.2 - Jan 27, 2025 =
+* Updated: Feedback SDK to the latest version.
 
 = 3.0.1 - Jan 14, 2025 =
 * Fix: Fixed the UI conflict.
