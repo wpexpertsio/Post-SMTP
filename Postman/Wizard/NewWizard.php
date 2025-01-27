@@ -547,8 +547,8 @@ class Post_SMTP_New_Wizard {
 
         }
 
-        wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), POST_SMTP_VER );
-        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), POST_SMTP_VER );
+        wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), '1.5.4' );
+        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), '3.0.3' );
         wp_localize_script( 'post-smtp-wizard', 'PostSMTPWizard', $localized );
 
     }
@@ -1383,14 +1383,71 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function render_office365_settings() {
-
         $options = get_option( PostmanOptions::POSTMAN_OPTIONS );
         $app_client_id = isset( $options['office365_app_id'] ) ? base64_decode( $options['office365_app_id'] ) : '';
         $app_client_secret = isset( $options['office365_app_password'] ) ? base64_decode( $options['office365_app_password'] ) : '';
         $redirect_uri = admin_url();
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
+     
+        // Retrieve options for premium features and extensions
+        $post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
+        $postman_office365_auth_token = get_option( 'postman_office365_auth_token' );
+        $extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : [];
+        $office365_oneclick_enabled = in_array( 'microsoft-one-click', $extensions );
+        $office365_auth_url = get_option( 'post_smtp_office365_auth_url' );
 
-        $html = sprintf(
+        // Setup classes and attributes for form visibility
+        $hidden_class = $office365_oneclick_enabled ? 'ps-hidden' : '';
+        $app_client_idrequired = $office365_oneclick_enabled ? '' : 'required';
+        $app_client_secret_required = $office365_oneclick_enabled ? '' : 'required';
+        $one_click_class = 'ps-enable-office365-one-click';
+        $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/google.png';
+        $transport_name = __( 'One-Click Setup', 'post-smtp' );
+        $product_url = postman_is_bfcm() ? 
+            'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 
+            'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_microsoft&utm_campaign=plugin';
+
+        // Prepare data for JSON encoding
+        $data = [
+            'url' => $url,
+            'transport_name' => $transport_name,
+            'product_url' => $product_url
+        ];
+        $json_data = htmlspecialchars( json_encode( $data ), ENT_QUOTES, 'UTF-8' );
+
+        
+        $html .= __( 'The configuration steps are more technical than other options, so our detailed guide will walk you through the whole process.', 'post-smtp' );
+        $html .= '<hr />';
+
+        if ( post_smtp_has_pro() ) {
+            $one_click = true;
+            $html .= sprintf( '<h3>%1$s</h3>', __( 'One-Click Setup', 'post-smtp' ) );
+        } else {
+            $html .= sprintf(
+                '<h3>%1$s <span class="ps-wizard-pro-tag">%2$s</span></h3>',
+                __( 'One-Click Setup', 'post-smtp' ),
+                __( 'PRO', 'post-smtp' )
+            );
+            $one_click = 'disabled';
+            $one_click_class .= ' disabled';
+        }
+
+        $html .= __( 'Enable the option for a quick and easy way to connect with Google without the need of manually creating an app.', 'post-smtp' );
+
+        // One-click switch control
+        $html .= "<div>
+            <div class='ps-form-switch-control'>
+                <label class='ps-switch-1'>
+                    <input type='hidden' id='ps-one-click-data' value='" . esc_attr( $json_data ) . "'>
+                    <input type='checkbox' class='$one_click_class' " . ( $office365_oneclick_enabled ? 'checked' : '' ) . ">
+                    <span class='slider round'></span>
+                </label> 
+            </div>
+        </div>";
+ 	  
+		$html .= '<div class="ps-disable-one-click-setup ' . ( $office365_oneclick_enabled ? 'ps-hidden' : '' ) . '">';
+		
+        $html .= sprintf(
             '<p><a href="%1$s" target="_blank">%2$s</a> %3$s </p><a href="%4$s" target="_blank">%5$s</a>',
             esc_url( 'https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account?icid=azurefreeaccount' ),
             __( 'Office 365', 'post-smtp' ),
@@ -1398,7 +1455,8 @@ class Post_SMTP_New_Wizard {
             esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-configure-post-smtp-with-office-365/' ),
             __( 'Read how to setup Office 365', 'post-smtp' )
         );
-
+       
+		
         $html .= '
         <div class="ps-form-control">
             <div><label>'.__( 'Application (Client) ID', 'post-smtp' ).'</label></div>
@@ -1459,7 +1517,38 @@ class Post_SMTP_New_Wizard {
         <p>'.__( 'Before continuing, you\'ll need to allow this plugin to send emails using your Office 365 account.', 'post-smtp' ).'</p>
         <input type="hidden" '.$required.' data-error="Please authenticate by clicking Connect to Office 365" />
         <a class="button button-primary ps-blue-btn" id="ps-wizard-connect-office365">Connect to Office 365</a>';
+	
+	$html .= '</div>';
+		
+	$html .= '<div class="ps-disable-office365-setup ' . ( $office365_oneclick_enabled ? '' : 'ps-hidden' ) . '">';
+    if ( post_smtp_has_pro() ) {
+        if ( $postman_office365_auth_token ) {
+            $nonce = wp_create_nonce( 'remove_365_oauth_action' );
+            $action_url = esc_url( add_query_arg(
+                [
+                    '_wpnonce' => $nonce,
+                    'action' => 'remove_365_oauth_action',
+                ],
+                admin_url( 'admin-post.php' )
+            ) );
+            $html .= '<a href="' . $action_url . '" class="button button-secondary ps-remove-office365-btn">';
+            $html .= esc_html__( 'Remove Authorization', 'post-smtp' );
+            $html .= '</a>';
+            if ( isset( $postman_office365_auth_token['user_email'] ) ) {
+            $html .= '<b>' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_office365_auth_token['user_email'] ) ) . '</b>';
+            }
+        }else {
+                $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
+                $html .= '<p>' . esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Office 365 API.', 'post-smtp' ) . '</p>';
+                $html .= '<input type="hidden" ' . esc_attr( $required ) . ' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Office 365 API', 'post-smtp' ) . '" />';
+                $html .= '<a href="' . esc_url( $office365_auth_url ) . '" class="button button-primary ps-office365-btn">';
+                $html .= esc_html__( 'Sign in with Microsoft', 'post-smtp' );
+                $html .= '</a>';
+        }
+    }
 
+    $html .= '</div>';
+        
         return $html;
 
     }

@@ -544,3 +544,16 @@ jQuery( document ).ready(function() {
     });
 
 } );
+
+jQuery(document).on('click', '.ps-enable-office365-one-click', function (e) {
+    	   
+    var enabled = jQuery(this).is(':checked');
+    if (enabled) {
+        jQuery('.ps-disable-one-click-setup').hide();
+        jQuery('.ps-disable-office365-setup').show();
+    } else {
+        jQuery('.ps-disable-office365-setup').hide();
+        jQuery('.ps-disable-one-click-setup').show();
+    }
+
+});
