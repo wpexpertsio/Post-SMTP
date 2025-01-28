@@ -401,14 +401,15 @@ class PostmanUtils {
 	 * @return string|mixed
 	 */
 	static function postmanGetServerName() {
-		if ( ! empty( $_SERVER ['SERVER_NAME'] ) ) {
-			$serverName = sanitize_text_field($_SERVER ['SERVER_NAME']);
-		} else if ( ! empty( $_SERVER ['HTTP_HOST'] ) ) {
-			$serverName = sanitize_text_field($_SERVER ['HTTP_HOST']);
-		} else {
-			$serverName = 'localhost.localdomain';
+		$serverName = 'localhost.localdomain';
+		if ( ! empty( $_SERVER['SERVER_NAME'] ) ) {
+			$serverName = sanitize_text_field( $_SERVER['SERVER_NAME'] );
+		} elseif ( ! empty( $_SERVER['HTTP_HOST'] ) ) {
+			$serverName = sanitize_text_field( $_SERVER['HTTP_HOST'] );
 		}
-		return $serverName;
+	
+		// Apply custom filter for plugins to override hostname.
+		return apply_filters( 'postman_server_hostname', $serverName );
 	}
 
 	/**
