@@ -469,13 +469,13 @@
 }
 
 
-.mb-24[data-v-8022fe78] {
+.mb-24[data-v-49a0d06a] {
 	margin-bottom: 24px;
 }
-.post-smtp-selector-wrapper[data-v-8022fe78] {
+.post-smtp-selector-wrapper[data-v-49a0d06a] {
 	position: relative;
 }
-.post-smtp-selector-wrapper a.re-launch-wizard[data-v-8022fe78] {
+.post-smtp-selector-wrapper a.re-launch-wizard[data-v-49a0d06a] {
 	float: right;
 	padding: 8px 16px;
 	background: #f3f7ff;
@@ -488,7 +488,7 @@
 	text-align: left;
 	text-decoration: none;
 }
-.post-smtp-selector-wrapper[data-v-8022fe78]::after {
+.post-smtp-selector-wrapper[data-v-49a0d06a]::after {
 	content: '';
 	clear: both;
 	display: table;
@@ -709,7 +709,7 @@
 }
 
 
-.post-smtp-button[data-v-2abb262d] {
+.post-smtp-button[data-v-950af6bc] {
 	display: inline-block;
 	padding: 8px 16px !important;
 	justify-content: center;
