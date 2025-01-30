@@ -26,6 +26,13 @@ class PostmanSendGrid extends PostmanServiceRequest {
      */
     private $base_url = 'https://api.sendgrid.com/v3/mail';
 
+     /**
+     * Options instance
+     * 
+     * @var PostmanOptions
+     */
+    private $options;
+
     /**
      * constructor PostmanSendGrid
      * 
@@ -36,13 +43,14 @@ class PostmanSendGrid extends PostmanServiceRequest {
     public function __construct( $api_key ) {
 
         $this->api_key = $api_key;
+        $this->options = PostmanOptions::getInstance();
+        $region = $this->options->getSendGridRegion();
 
-        if( apply_filters( 'post_smtp_enable_sendgrid_eu', false ) ) {
-
+        if ( 'EU' === $region || apply_filters( 'post_smtp_enable_sendgrid_eu', false ) ) {
             $this->base_url = 'https://api.eu.sendgrid.com/v3/mail';
-
         }
 
+        $this->base_url = apply_filters( 'post_smtp_sendgrid_base_url', $this->base_url, $region );
         parent::__construct( $this->base_url );
 
     }

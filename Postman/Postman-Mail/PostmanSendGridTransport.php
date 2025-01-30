@@ -189,6 +189,15 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 				$this,
 				'sendgrid_api_key_callback' 
 		), PostmanSendGridTransport::SENDGRID_AUTH_OPTIONS, PostmanSendGridTransport::SENDGRID_AUTH_SECTION );
+
+		add_settings_field(
+			PostmanOptions::SENDGRID_REGION,
+			__( 'Region', 'post-smtp' ),
+			array( $this, 'sendgrid_region_callback' ), 
+			PostmanSendGridTransport::SENDGRID_AUTH_OPTIONS,
+			PostmanSendGridTransport::SENDGRID_AUTH_SECTION
+		);
+
 	}
 	public function printSendGridAuthSectionInfo() {
 		/* Translators: Where (1) is the service URL and (2) is the service name and (3) is a api key URL */
@@ -200,6 +209,16 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 	public function sendgrid_api_key_callback() {
 		printf ( '<input type="password" autocomplete="off" id="sendgrid_api_key" name="postman_options[sendgrid_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getSendGridApiKey () ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getSendGridApiKey () ) ) : '', __ ( 'Required', 'post-smtp' ) );
 		print ' <input type="button" id="toggleSendGridApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
+	}
+
+	public function sendgrid_region_callback() {
+		$options = get_option( PostmanOptions::POSTMAN_OPTIONS );
+		$selected_region = isset( $options[ PostmanOptions::SENDGRID_REGION ] ) ? $options[ PostmanOptions::SENDGRID_REGION ] : 'AG';
+	
+		echo '<select name="postman_options[' . esc_attr( PostmanOptions::SENDGRID_REGION ) . ']">';
+		echo '<option value="AG"' . selected( $selected_region, 'AG', false ) . '>' . __( 'Default (AG)', 'post-smtp' ) . '</option>';
+		echo '<option value="EU"' . selected( $selected_region, 'EU', false ) . '>' . __( 'Europe (EU)', 'post-smtp' ) . '</option>';
+		echo '</select>';
 	}
 	
 	/**

@@ -89,6 +89,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const BASIC_AUTH_PASSWORD = 'basic_auth_password';
 		const MANDRILL_API_KEY = 'mandrill_api_key';
 		const SENDGRID_API_KEY = 'sendgrid_api_key';
+		const SENDGRID_REGION = 'sendgrid_region';
 		const SENDINBLUE_API_KEY = 'sendinblue_api_key';
 		const MAILJET_API_KEY = 'mailjet_api_key';
 		const MAILJET_SECRET_KEY = 'mailjet_secret_key';
@@ -482,6 +483,15 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 			if ( isset( $this->options [ PostmanOptions::SENDGRID_API_KEY ] ) ) {
 				return base64_decode( $this->options [ PostmanOptions::SENDGRID_API_KEY ] ); }
+		}
+		public function getSendGridRegion() {
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+				return POST_SMTP_API_KEY;
+			}
+
+			if ( isset( $this->options [ PostmanOptions::SENDGRID_REGION ] ) ) {
+				return esc_attr( $this->options[ PostmanOptions::SENDGRID_REGION ] );
+			}
 		}
 		public function getMailgunApiKey() {
 			if ( defined( 'POST_SMTP_API_KEY' ) ) {
