@@ -54,7 +54,6 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 		 */
 		public function schedule_email_reporting() {
 			$options = get_option( 'postman_rat' );
-
 			if ( $options && isset( $options['enable_email_reporting'] ) && $options['enable_email_reporting'] ) {
 				$interval = isset( $options['reporting_interval'] ) ? $options['reporting_interval'] : false;
 
@@ -66,10 +65,8 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 					);
 
 					$schedule = isset( $schedules[ $interval ] ) ? $schedules[ $interval ] : false;
-
 					if ( $schedule ) {
 						$timestamp = wp_next_scheduled( 'postman_rat_email_report' );
-
 						if ( $timestamp ) {
 							$current_interval = wp_get_schedule( 'postman_rat_email_report' );
 							if ( $current_interval !== $schedule ) {
@@ -82,6 +79,12 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 						$midnight = strtotime( 'tomorrow midnight', $current_time ) - 1;
 						wp_schedule_event( $current_time, $schedule, 'postman_rat_email_report' );
 					}
+				}
+			}else{
+				$interval = isset( $options['reporting_interval'] ) ? $options['reporting_interval'] : false;
+				$timestamp = wp_next_scheduled( 'postman_rat_email_report' );
+				if ( $timestamp ) {
+				  wp_unschedule_event( $timestamp, 'postman_rat_email_report' );
 				}
 			}
 		}
