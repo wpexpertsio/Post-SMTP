@@ -89,6 +89,7 @@ class Post_SMTP_New_Wizard {
         add_action( 'wp_ajax_ps-save-wizard', array( $this, 'save_wizard' ) );
         add_action( 'admin_action_zoho_auth_request', array( $this, 'auth_zoho' ) );
 		add_action( 'admin_init', array( $this, 'handle_office365_oauth_redirect' ) );
+		add_action( 'admin_post_remove_365_oauth_action', array( $this, 'post_smtp_remove_365_oauth_action' ) );
 
         if( isset( $_GET['wizard'] ) && $_GET['wizard'] == 'legacy' ) {
 
@@ -1537,7 +1538,7 @@ class Post_SMTP_New_Wizard {
             $html .= esc_html__( 'Remove Authorization', 'post-smtp' );
             $html .= '</a>';
             if ( isset( $postman_office365_auth_token['user_email'] ) ) {
-            $html .= '<b>' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_office365_auth_token['user_email'] ) ) . '</b>';
+              $html .= '<b>' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_office365_auth_token['user_email'] ) ) . '</b>';
             }
         }else {
                 $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
@@ -1805,6 +1806,29 @@ class Post_SMTP_New_Wizard {
     }
 	
 	/**
+	 * Handles the removal of Office 365 OAuth credentials from the WordPress database.
+	 *
+	 * This function processes a form submission to delete the stored OAuth access token
+	 * and user email associated with Office 365 API integration. It validates the request's
+	 * nonce for security, performs the deletion, and redirects the user back to the settings
+	 * page with a success message.
+	 */
+	public function post_smtp_remove_365_oauth_action() {
+		// Verify the nonce to ensure the request is secure and valid.
+		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'remove_365_oauth_action' ) ) {
+			wp_die( esc_html__( 'Nonce verification failed. Please try again.', 'post-smtp' ) );
+		}
+		// Remove the Office 365 OAuth access token option from the WordPress database.
+		delete_option( 'postman_office365_oauth' );
+
+		// Redirect the user back to the settings page with a success query parameter.
+		wp_redirect( admin_url( "admin.php?socket=office365_api&step=2&page=postman/configuration_wizard" ) );
+
+		// Terminate script execution to prevent further processing after the redirect.
+		exit;
+	}
+	
+	/**
 	 * Handles the Office 365 OAuth redirect, retrieves the token parameters from the URL,
 	 * saves them in WordPress options, and redirects the user to a settings page.
 	 *
@@ -1830,13 +1854,12 @@ class Post_SMTP_New_Wizard {
 			$oauth_data = array(
 				'access_token'      => $access_token,
 				'refresh_token'     => $refresh_token,
-				'auth_token_expires'=> $auth_token_expires,
-				'vendor_name'       => 'office365',
+				'token_expires'        => $auth_token_expires,
 				'user_email'        => $user_email,
 			);
 
 			// Save the OAuth parameters to the WordPress options table.
-			update_option( 'postman_office365_auth_token', $oauth_data );
+			update_option( 'postman_office365_oauth', $oauth_data );
 		}
 	}
 
