@@ -172,10 +172,10 @@ class Postman {
 		) );
 
 		// hook on the plugins_loaded event
-		add_action( 'plugins_loaded', array(
-				$this,
-				'on_plugins_loaded',
-		) );
+		add_action( 'init', array(
+			$this,
+			'on_init',
+		), 0 );
 
 		add_action( 'init', array( $this, 'initialize_plugin_translations' ) );
 
@@ -215,7 +215,7 @@ class Postman {
 	 * "After active plugins and pluggable functions are loaded"
 	 * ref: http://codex.wordpress.org/Plugin_API/Action_Reference#Actions_Run_During_a_Typical_Request
 	 */
-	public function on_plugins_loaded() {
+	public function on_init() {
 
 		// register the email transports
 		$this->registerTransports( $this->rootPluginFilenameAndPath );
