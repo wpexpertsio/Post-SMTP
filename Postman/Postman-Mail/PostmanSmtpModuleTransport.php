@@ -558,7 +558,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 			echo esc_html__( 'Remove Authorization', 'post-smtp' );
 			echo '</a>';
 			if ( isset( $postman_auth_token['user_email'] ) ) {
-				echo '<b>' . sprintf( esc_html__( 'Connected with: %s', 'post-smtp' ), esc_html( $postman_auth_token['user_email'] ) ) . '</b>';
+				echo '<b class="ps-connect-with">' . sprintf( esc_html__( 'Connected with: %s', 'post-smtp' ), esc_html( $postman_auth_token['user_email'] ) ) . '</b>';
 			}
 		} else {
 			echo '<a href="' . $auth_url . '" class="button button-primary ps-gmail-btn" id="ps-wizard-connect-gmail">';

@@ -726,13 +726,17 @@ span.ps-pro-close-popup {
   font-size: 14px !important;
   font-weight: 500;
   padding: 5px 10px !important;
+}
+.ps-wizard-socket .ps-remove-gmail-btn{
   margin-top:20px !important
-
 }
 .ps-disable-gmail-setup b{
   display: inline-block;
   margin-left: 30px;
   margin-top: 30px !important
+}
+.ps-connect-with{
+	margin-left: 20px;
 }
 
 /* Lets make wiz3rd responsive */
