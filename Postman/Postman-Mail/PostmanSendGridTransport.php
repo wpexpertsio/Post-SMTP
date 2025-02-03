@@ -211,12 +211,20 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 		print ' <input type="button" id="toggleSendGridApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 	}
 
+	/**
+	 * Renders the SendGrid region selection dropdown.
+	 *
+	 * Outputs a select box for users to choose the SendGrid region (Global or EU).
+	 *
+	 * @since 3.1.0
+	 * @version 1.0.0
+	 */
 	public function sendgrid_region_callback() {
 		$options = get_option( PostmanOptions::POSTMAN_OPTIONS );
-		$selected_region = isset( $options[ PostmanOptions::SENDGRID_REGION ] ) ? $options[ PostmanOptions::SENDGRID_REGION ] : 'AG';
+		$selected_region = isset( $options[ PostmanOptions::SENDGRID_REGION ] ) ? $options[ PostmanOptions::SENDGRID_REGION ] : 'Global';
 	
 		echo '<select name="postman_options[' . esc_attr( PostmanOptions::SENDGRID_REGION ) . ']">';
-		echo '<option value="AG"' . selected( $selected_region, 'AG', false ) . '>' . __( 'Default (AG)', 'post-smtp' ) . '</option>';
+		echo '<option value="Global"' . selected( $selected_region, 'Global', false ) . '>' . __( 'Global', 'post-smtp' ) . '</option>';
 		echo '<option value="EU"' . selected( $selected_region, 'EU', false ) . '>' . __( 'Europe (EU)', 'post-smtp' ) . '</option>';
 		echo '</select>';
 	}

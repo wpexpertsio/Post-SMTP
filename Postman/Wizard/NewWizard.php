@@ -941,7 +941,7 @@ class Post_SMTP_New_Wizard {
         $html .= '<div class="ps-form-control">';
         $html .= '<div><label>' . __( 'Region', 'post-smtp' ) . '</label></div>';
         $html .= '<select name="postman_options[' . esc_attr( PostmanOptions::SENDGRID_REGION ) . ']" class="ps-sendgrid-region">';
-        $html .= '<option value="AG" ' . selected( $selected_region, 'AG', false ) . '>' . __( 'Default (AG)', 'post-smtp' ) . '</option>';
+        $html .= '<option value="Global" ' . selected( $selected_region, 'Global', false ) . '>' . __( 'Global', 'post-smtp' ) . '</option>';
         $html .= '<option value="EU" ' . selected( $selected_region, 'EU', false ) . '>' . __( 'Europe (EU)', 'post-smtp' ) . '</option>';
         $html .= '</select>';
         $html .= '</div>';

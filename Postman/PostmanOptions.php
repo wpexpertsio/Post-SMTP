@@ -484,6 +484,17 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			if ( isset( $this->options [ PostmanOptions::SENDGRID_API_KEY ] ) ) {
 				return base64_decode( $this->options [ PostmanOptions::SENDGRID_API_KEY ] ); }
 		}
+
+		/**
+		 * Retrieves the configured SendGrid region.
+		 *
+		 * Checks if the `POST_SMTP_API_KEY` is defined or returns the region from options.
+		 *
+		 * @since 3.1.0
+		 * @version 1.0.0
+		 *
+		 * @return string|null The SendGrid region or null if not set.
+		 */
 		public function getSendGridRegion() {
 			if ( defined( 'POST_SMTP_API_KEY' ) ) {
 				return POST_SMTP_API_KEY;
@@ -492,6 +503,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			if ( isset( $this->options [ PostmanOptions::SENDGRID_REGION ] ) ) {
 				return esc_attr( $this->options[ PostmanOptions::SENDGRID_REGION ] );
 			}
+			
+			return null; // Default to null if no region is set.
 		}
 		public function getMailgunApiKey() {
 			if ( defined( 'POST_SMTP_API_KEY' ) ) {
