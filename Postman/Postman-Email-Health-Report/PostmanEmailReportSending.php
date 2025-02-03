@@ -36,53 +36,93 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 		 * @version 1.0.0
 		 */
 		public function __construct() {
-
-			add_action( 'init', array( $this, 'send_report' ) );
+			add_action( 'init', array( $this, 'schedule_email_reporting' ) );
+			add_action( 'postman_rat_email_report', array( $this,  'handle_email_reporting' ) );
+			add_filter( 'cron_schedules', array( $this, 'add_monthly_schedule' ) );
 		}
 
+
 		/**
-		 * Send the report
+		 * Schedules the email reporting cron event based on user-defined settings.
 		 *
-		 * @since 2.9.0
-		 * @version 1.0.0
+		 * This function retrieves the reporting interval from plugin options and schedules
+		 * a WordPress cron job accordingly. If a schedule already exists and its interval
+		 * is different from the new one, the existing schedule is unscheduled and a new
+		 * schedule is created.
+		 * @since 3.0.1
+		 * @version 3.0.1
 		 */
-		public function send_report() {
-
+		public function schedule_email_reporting() {
 			$options = get_option( 'postman_rat' );
+			if ( $options && isset( $options['enable_email_reporting'] ) && $options['enable_email_reporting'] ) {
+				$interval = isset( $options['reporting_interval'] ) ? $options['reporting_interval'] : false;
 
-			$enabled = ( $options && isset( $options['enable_email_reporting'] ) ) ? $options['enable_email_reporting'] : false;
+				if ( $interval ) {
+					$schedules = array(
+						'd' => 'daily',
+						'w' => 'weekly',
+						'm' => 'monthly',
+					);
 
-			$interval = ( $options && isset( $options['reporting_interval'] ) ) ? $options['reporting_interval'] : false;
-
-			$has_sent = get_transient( 'ps_rat_has_sent' );
-
-			// If transient expired, let's send :).
-			if ( $enabled && $interval && ! $has_sent ) {
-
-				$expiry_time = '';
-				$report_sent = $this->send_mail( $interval );
-
-				if ( $report_sent ) {
-
-					if ( $interval === 'd' ) {
-
-						$expiry_time = DAY_IN_SECONDS;
+					$schedule = isset( $schedules[ $interval ] ) ? $schedules[ $interval ] : false;
+					if ( $schedule ) {
+						$timestamp = wp_next_scheduled( 'postman_rat_email_report' );
+						if ( $timestamp ) {
+							$current_interval = wp_get_schedule( 'postman_rat_email_report' );
+							if ( $current_interval !== $schedule ) {
+								wp_unschedule_event( $timestamp, 'postman_rat_email_report' );
+							} else {
+								return;
+							}
+						}
+						$current_time = current_time( 'timestamp' );
+						$midnight = strtotime( 'tomorrow midnight', $current_time ) - 1;
+						wp_schedule_event( $current_time, $schedule, 'postman_rat_email_report' );
 					}
-					if ( $interval === 'w' ) {
-
-						$expiry_time = WEEK_IN_SECONDS;
-					}
-					if ( $interval === 'm' ) {
-
-						$expiry_time = MONTH_IN_SECONDS;
-					}
-
-					// Set Future Transient :D.
-					set_transient( 'ps_rat_has_sent', '1', $expiry_time );
+				}
+			}else{
+				$interval = isset( $options['reporting_interval'] ) ? $options['reporting_interval'] : false;
+				$timestamp = wp_next_scheduled( 'postman_rat_email_report' );
+				if ( $timestamp ) {
+				  wp_unschedule_event( $timestamp, 'postman_rat_email_report' );
 				}
 			}
 		}
 
+		/**
+		 * Handles the email reporting functionality triggered by the cron job.
+		 *
+		 * This function checks if email reporting is enabled and retrieves the configured 
+		 * reporting interval. If both conditions are met, it triggers the email-sending 
+		 * functionality.
+		 *  @since 3.0.1
+		 *  @version 3.0.1
+		 */
+		public function handle_email_reporting() {
+			$options = get_option( 'postman_rat' );
+			$enabled = isset( $options['enable_email_reporting'] ) ? $options['enable_email_reporting'] : false;
+			$interval = isset( $options['reporting_interval'] ) ? $options['reporting_interval'] : false;
+
+			if ( $enabled && $interval ) {
+				$report_sent = $this->send_mail( $interval );
+			}
+		}
+
+		/**
+		 * Add a custom monthly schedule to WordPress's cron system.
+		 *
+		 * @param array $schedules The existing cron schedules.
+		 * @return array Modified array of cron schedules with 'monthly' added.
+		 * @since 3.0.1
+		 * @version 3.0.1
+		 */
+		public function add_monthly_schedule( $schedules ) {
+			$schedules['monthly'] = array(
+				'interval' => 30 * DAY_IN_SECONDS,
+				'display'  => __( 'Once Monthly', 'post-smtp' ),
+			);
+			return $schedules;
+    	}
 
 		/**
 		 * Get total email count
