@@ -1393,7 +1393,7 @@ class Post_SMTP_New_Wizard {
      
         // Retrieve options for premium features and extensions
         $post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
-        $postman_office365_auth_token = get_option( 'postman_office365_auth_token' );
+        $postman_office365_auth_token = get_option( 'postman_office365_oauth' );
         $extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : [];
         $office365_oneclick_enabled = in_array( 'microsoft-one-click', $extensions );
         $office365_auth_url = get_option( 'post_smtp_office365_auth_url' );
