@@ -22,7 +22,7 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
         
         public function admin_enqueue_scripts( $hook ) {
 			if ( 'toplevel_page_postman' === $hook ) {
-				wp_enqueue_script( 'post-smtp-dashboard', POST_SMTP_URL . '/Postman/Dashboard/assets/js/app.js', array( 'wp-i18n' ), POST_SMTP_VER . '.1', true );
+				wp_enqueue_script( 'post-smtp-dashboard', POST_SMTP_URL . '/Postman/Dashboard/assets/js/app.js', array( 'wp-i18n' ), POST_SMTP_VER, true );
 				wp_localize_script(
 					'post-smtp-dashboard',
 					'postSmtpNewDashboard',
@@ -36,7 +36,7 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
 					)
 				);
 
-				wp_enqueue_style( 'post-smtp-dashboard', POST_SMTP_URL . '/Postman/Dashboard/assets/css/app.css', array(), POST_SMTP_VER . '.1', 'all' );
+				wp_enqueue_style( 'post-smtp-dashboard', POST_SMTP_URL . '/Postman/Dashboard/assets/css/app.css', array(), POST_SMTP_VER, 'all' );
 				wp_enqueue_style( 'post-smtp-dashboard-responsive', POST_SMTP_URL . '/Postman/Dashboard/assets/css/responsive-style.css', array(), POST_SMTP_VER, 'all' );
 			}
         }
