@@ -172,10 +172,10 @@ class Postman {
 		) );
 
 		// hook on the plugins_loaded event
-		add_action( 'plugins_loaded', array(
-				$this,
-				'on_plugins_loaded',
-		) );
+		add_action( 'init', array(
+			$this,
+			'on_init',
+		), 0 );
 
 		//Conflicting with backupbuddy, will be removed soon 
         //add_filter( 'extra_plugin_headers', [ $this, 'add_extension_headers' ] );
@@ -213,7 +213,7 @@ class Postman {
 	 * "After active plugins and pluggable functions are loaded"
 	 * ref: http://codex.wordpress.org/Plugin_API/Action_Reference#Actions_Run_During_a_Typical_Request
 	 */
-	public function on_plugins_loaded() {
+	public function on_init() {
 
 		// register the email transports
 		$this->registerTransports( $this->rootPluginFilenameAndPath );
