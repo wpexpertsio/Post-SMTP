@@ -223,6 +223,10 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	 */
 	protected function validateTransportConfiguration() {
 		$messages = parent::validateTransportConfiguration ();
+		$gmail_oneclick_enabled = in_array( 'gmail-oneclick', get_option( 'post_smtp_pro', [] )['bonus_extensions'] ?? [] );
+		if( $gmail_oneclick_enabled && post_smtp_has_pro() ){
+			return $messages;
+		}
 		if (empty ( $messages )) {
 			$this->setReadyForOAuthGrant ();
 			if ($this->isPermissionNeeded ()) {
