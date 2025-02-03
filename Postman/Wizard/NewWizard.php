@@ -905,7 +905,7 @@ class Post_SMTP_New_Wizard {
     public function render_sendgrid_settings() {
 
         $api_key = null !== $this->options->getSendGridApiKey() ? esc_attr ( $this->options->getSendGridApiKey() ) : '';
-
+        $selected_region = $this->options->getSendGridRegion() ? esc_attr( $this->options->getSendGridRegion() ) : 'AG';
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
             esc_url( 'https://sendgrid.com/' ),
@@ -915,6 +915,8 @@ class Post_SMTP_New_Wizard {
             esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendgrid-with-post-smtp/' ),
             __( 'SendGrid Documentation', 'post-smtp' )
         );
+
+
 
         $html .= '
         <div class="ps-form-control">
@@ -934,6 +936,16 @@ class Post_SMTP_New_Wizard {
             ).'
         </div>
         ';
+
+        // Region dropdown.
+        $html .= '<div class="ps-form-control">';
+        $html .= '<div><label>' . __( 'Region', 'post-smtp' ) . '</label></div>';
+        $html .= '<select name="postman_options[' . esc_attr( PostmanOptions::SENDGRID_REGION ) . ']" class="ps-sendgrid-region">';
+        $html .= '<option value="Global" ' . selected( $selected_region, 'Global', false ) . '>' . __( 'Global', 'post-smtp' ) . '</option>';
+        $html .= '<option value="EU" ' . selected( $selected_region, 'EU', false ) . '>' . __( 'Europe (EU)', 'post-smtp' ) . '</option>';
+        $html .= '</select>';
+        $html .= '</div>';
+
 
         return $html;
 
@@ -1647,6 +1659,7 @@ class Post_SMTP_New_Wizard {
                 $sanitized['postmark_api_key'] = isset( $sanitized['postmark_api_key'] ) ? $sanitized['postmark_api_key'] : '';
                 $sanitized['mailgun_api_key'] = isset( $sanitized['mailgun_api_key'] ) ? $sanitized['mailgun_api_key'] : '';
                 $sanitized[PostmanOptions::SENDGRID_API_KEY] = isset( $sanitized[PostmanOptions::SENDGRID_API_KEY] ) ? $sanitized[PostmanOptions::SENDGRID_API_KEY] : '';
+                $sanitized['sendgrid_region']  = isset( $sanitized['sendgrid_region'] ) ? $sanitized['sendgrid_region'] : '';
                 $sanitized['mandrill_api_key'] = isset( $sanitized['mandrill_api_key'] ) ? $sanitized['mandrill_api_key'] : '';
                 $sanitized['elasticemail_api_key'] = isset( $sanitized['elasticemail_api_key'] ) ? $sanitized['elasticemail_api_key'] : '';
                 $sanitized[PostmanOptions::MAILJET_API_KEY] = isset( $sanitized[PostmanOptions::MAILJET_API_KEY] ) ? $sanitized[PostmanOptions::MAILJET_API_KEY] : '';
@@ -1657,7 +1670,7 @@ class Post_SMTP_New_Wizard {
                 $sanitized['ses_region'] = isset( $sanitized['ses_region'] ) ? $sanitized['ses_region'] : '';
                 $sanitized['enc_type'] = 'tls';
                 $sanitized['auth_type'] = 'login';
-                
+   
                 foreach( $sanitized as $key => $value ) {
 
                     $options[$key] = $value;
@@ -1669,9 +1682,7 @@ class Post_SMTP_New_Wizard {
                     $response = true;
 
                 } else {
-
-                    $response = update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
-
+                    $response = update_option( PostmanOptions::POSTMAN_OPTIONS , $options );
                 }
                 
             }

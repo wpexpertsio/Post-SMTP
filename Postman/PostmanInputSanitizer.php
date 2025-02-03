@@ -54,6 +54,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizeString( 'Client ID', PostmanOptions::CLIENT_ID, $input, $new_input );
 			$this->sanitizeString( 'Client Secret', PostmanOptions::CLIENT_SECRET, $input, $new_input );
 			$this->sanitizeString( 'Username', PostmanOptions::BASIC_AUTH_USERNAME, $input, $new_input );
+			$this->sanitizeString( 'SendGrid Region', PostmanOptions::SENDGRID_REGION, $input, $new_input, $this->options->getSendGridRegion() );
 			$this->sanitizePassword( 'Password', PostmanOptions::BASIC_AUTH_PASSWORD, $input, $new_input, $this->options->getPassword() );
 			$this->sanitizePassword( 'Mandrill API Key', PostmanOptions::MANDRILL_API_KEY, $input, $new_input, $this->options->getMandrillApiKey() );
 			$this->sanitizePassword( 'SendGrid API Key', PostmanOptions::SENDGRID_API_KEY, $input, $new_input, $this->options->getSendGridApiKey() );
