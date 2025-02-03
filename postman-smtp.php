@@ -140,6 +140,12 @@ if ( $postman_smtp_exist || $required_php_version ) {
 
 function post_smtp_plugin_deactivate() {
 	deactivate_plugins( plugin_basename( __FILE__ ) );
+	
+	$timestamp = wp_next_scheduled( 'postman_rat_email_report' );
+	if ( $timestamp ) {
+		wp_unschedule_event( $timestamp, 'postman_rat_email_report' );
+	}
+
 }
 
 function post_smtp_plugin_admin_notice_version() {
