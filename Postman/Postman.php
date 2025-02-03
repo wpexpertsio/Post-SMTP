@@ -172,9 +172,9 @@ class Postman {
 		) );
 
 		// hook on the plugins_loaded event
-		add_action( 'plugins_loaded', array(
-				$this,
-				'on_init',
+		add_action( 'init', array(
+			$this,
+			'on_init',
 		), 0 );
 
 		add_action( 'init', array( $this, 'initialize_plugin_translations' ) );
