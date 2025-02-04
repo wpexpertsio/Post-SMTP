@@ -4,14 +4,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if (! class_exists ( "PostmanDashboardWidgetController" )) {
-	
+
 	//
 	class PostmanDashboardWidgetController {
 		private $rootPluginFilenameAndPath;
 		private $options;
 		private $authorizationToken;
 		private $wpMailBinder;
-		
+
 		/**
 		 * Start up
 		 */
@@ -24,32 +24,32 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 			$this->options = $options;
 			$this->authorizationToken = $authorizationToken;
 			$this->wpMailBinder = $binder;
-			
+
 			add_action ( 'wp_dashboard_setup', array (
 					$this,
-					'addDashboardWidget' 
+					'addDashboardWidget'
 			) );
-			
+
 			add_action ( 'wp_network_dashboard_setup', array (
 					$this,
-					'addNetworkDashboardWidget' 
+					'addNetworkDashboardWidget'
 			) );
-			
+
 			// dashboard glance mod
 			if ($this->options->isMailLoggingEnabled ()) {
 				add_filter ( 'dashboard_glance_items', array (
 						$this,
-						'customizeAtAGlanceDashboardWidget' 
+						'customizeAtAGlanceDashboardWidget'
 				), 10, 1 );
 			}
-			
+
 			// Postman API: register the human-readable plugin state
 			add_filter ( 'print_postman_status', array (
 					$this,
-					'print_postman_status' 
+					'print_postman_status'
 			) );
 		}
-		
+
 		/**
 		 * Add a widget to the dashboard.
 		 *
@@ -58,26 +58,26 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		public function addDashboardWidget() {
 			// only display to the widget to administrator
 			if (PostmanUtils::isAdmin ()) {
-				wp_add_dashboard_widget ( 'example_dashboard_widget', __ ( 'Postman SMTP', 'post-smtp' ), array (
+				wp_add_dashboard_widget ( 'post_smtp_dashboard_widget', __ ( 'Postman SMTP', 'post-smtp' ), array (
 						$this,
-						'printDashboardWidget' 
+						'printDashboardWidget'
 				) ); // Display function.
 			}
 		}
-		
+
 		/**
 		 * Add a widget to the network dashboard
 		 */
 		public function addNetworkDashboardWidget() {
 			// only display to the widget to administrator
 			if (PostmanUtils::isAdmin ()) {
-				wp_add_dashboard_widget ( 'example_dashboard_widget', __ ( 'Postman SMTP', 'post-smtp' ), array (
+				wp_add_dashboard_widget ( 'post_smtp_dashboard_widget', __ ( 'Postman SMTP', 'post-smtp' ), array (
 						$this,
-						'printNetworkDashboardWidget' 
+						'printNetworkDashboardWidget'
 				) ); // Display function.
 			}
 		}
-		
+
 		/**
 		 * Create the function to output the contents of our Dashboard Widget.
 		 */
@@ -90,7 +90,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 			apply_filters ( 'print_postman_status', null );
 			printf ( '<p>%s | %s</p>', $goToEmailLog, $goToSettings );
 		}
-		
+
 		/**
 		 * Print the human-readable plugin state
 		 */
@@ -112,48 +112,48 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 				printf ( '<p>%s</p>', $deliveryDetails );
 			}
 		}
-		
+
 		/**
 		 * Create the function to output the contents of our Dashboard Widget.
 		 */
 		public function printNetworkDashboardWidget() {
 			printf ( '<p class="wp-menu-image dashicons-before dashicons-email"> %s</p>', __ ( 'Postman is operating in per-site mode.', 'post-smtp' ) );
 		}
-		
+
 		/**
 		 * From http://www.hughlashbrooke.com/2014/02/wordpress-add-items-glance-widget/
 		 * http://coffeecupweb.com/how-to-add-custom-post-types-to-at-a-glance-dashboard-widget-in-wordpress/
 		 *
-		 * @param mixed $items        	
+		 * @param mixed $items
 		 * @return string
 		 */
 		function customizeAtAGlanceDashboardWidget($items = array()) {
 			// only modify the At-a-Glance for administrators
 			if (PostmanUtils::isAdmin ()) {
 				$post_types = array (
-						PostmanEmailLogPostType::POSTMAN_CUSTOM_POST_TYPE_SLUG 
+						PostmanEmailLogPostType::POSTMAN_CUSTOM_POST_TYPE_SLUG
 				);
-				
+
 				foreach ( $post_types as $type ) {
-					
+
 					if (! post_type_exists ( $type ))
 						continue;
-					
+
 					$num_posts = wp_count_posts ( $type );
-					
+
 					if ($num_posts) {
-						
+
 						$published = intval ( $num_posts->publish );
 						$privated = intval ( $num_posts->private );
 						$post_type = get_post_type_object ( $type );
-						
+
 						$text = _n ( '%s ' . $post_type->labels->singular_name, '%s ' . $post_type->labels->name, $privated, 'post-smtp' );
 						$text = sprintf ( $text, number_format_i18n ( $privated ) );
-						
+
 						$items [] = sprintf ( '<a class="%1$s-count" href="%3$s">%2$s</a>', $type, $text, PostmanUtils::getEmailLogPageUrl () ) . "\n";
 					}
 				}
-				
+
 				return $items;
 			}
 		}
