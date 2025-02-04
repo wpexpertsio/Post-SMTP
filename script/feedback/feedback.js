@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
 
-	$( '#the-list #postman-plugin-disbale-link' ).click(function(e) {
+	$( '#the-list #postman-plugin-disable-link' ).click(function(e) {
 		e.preventDefault();
 
 		var reason = $( '#postman-feedback-dialog-content .postman-reason' ),
@@ -88,7 +88,7 @@ jQuery(document).ready(function($) {
 				if ( reason ) {
 					input.attr('placeholder',reason);
 				} else {
-					input.attr('placeholder','Do you mind help and give more detailes?');
+					input.attr('placeholder','Do you mind help and give more details?');
 				}
 				wrap.show();
 			}
