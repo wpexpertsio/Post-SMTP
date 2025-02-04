@@ -24,20 +24,19 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-	
-	$QR_BASEDIR = dirname(__FILE__).DIRECTORY_SEPARATOR;
-	
-	// Required libs
-	
-	include $QR_BASEDIR."qrconst.php";
-	include $QR_BASEDIR."qrconfig.php";
-	include $QR_BASEDIR."qrtools.php";
-	include $QR_BASEDIR."qrspec.php";
-	include $QR_BASEDIR."qrimage.php";
-	include $QR_BASEDIR."qrinput.php";
-	include $QR_BASEDIR."qrbitstream.php";
-	include $QR_BASEDIR."qrsplit.php";
-	include $QR_BASEDIR."qrrscode.php";
-	include $QR_BASEDIR."qrmask.php";
-	include $QR_BASEDIR."qrencode.php";
 
+	$QR_BASEDIR = __DIR__ . DIRECTORY_SEPARATOR;
+
+	// Required libs
+
+	require $QR_BASEDIR . 'qrconst.php';
+	require $QR_BASEDIR . 'qrconfig.php';
+	require $QR_BASEDIR . 'qrtools.php';
+	require $QR_BASEDIR . 'qrspec.php';
+	require $QR_BASEDIR . 'qrimage.php';
+	require $QR_BASEDIR . 'qrinput.php';
+	require $QR_BASEDIR . 'qrbitstream.php';
+	require $QR_BASEDIR . 'qrsplit.php';
+	require $QR_BASEDIR . 'qrrscode.php';
+	require $QR_BASEDIR . 'qrmask.php';
+	require $QR_BASEDIR . 'qrencode.php';

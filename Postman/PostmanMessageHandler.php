@@ -1,115 +1,118 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
-if (! class_exists ( 'PostmanMessageHandler' )) {
-	
-	require_once ('PostmanSession.php');
+if ( ! class_exists( 'PostmanMessageHandler' ) ) {
+
+	require_once 'PostmanSession.php';
 	class PostmanMessageHandler {
-		
+
 		// The Session variables that carry messages
-		const ERROR_CLASS = 'error';
+		const ERROR_CLASS   = 'error';
 		const WARNING_CLASS = 'update-nag';
 		const SUCCESS_CLASS = 'updated';
 		private $logger;
-		
+
 		/**
 		 *
-		 * @param mixed $options        	
+		 * @param mixed $options
 		 */
 		function __construct() {
-			$this->logger = new PostmanLogger ( get_class ( $this ) );
-			
+			$this->logger = new PostmanLogger( get_class( $this ) );
+
 			// we'll let the 'init' functions run first; some of them may end the request
-			add_action ( 'admin_notices', Array (
+			add_action(
+				'admin_notices',
+				array(
 					$this,
-					'displayAllMessages' 
-			) );
+					'displayAllMessages',
+				)
+			);
 		}
-		
+
 		/**
 		 *
-		 * @param mixed $message        	
+		 * @param mixed $message
 		 */
-		public function addError($message) {
-			$this->storeMessage ( $message, 'error' );
-		}
-		/**
-		 *
-		 * @param mixed $message        	
-		 */
-		public function addWarning($message) {
-			$this->storeMessage ( $message, 'warning' );
+		public function addError( $message ) {
+			$this->storeMessage( $message, 'error' );
 		}
 		/**
 		 *
-		 * @param mixed $message        	
+		 * @param mixed $message
 		 */
-		public function addMessage($message) {
-			$this->storeMessage ( $message, 'notify' );
+		public function addWarning( $message ) {
+			$this->storeMessage( $message, 'warning' );
 		}
-		
+		/**
+		 *
+		 * @param mixed $message
+		 */
+		public function addMessage( $message ) {
+			$this->storeMessage( $message, 'notify' );
+		}
+
 		/**
 		 * store messages for display later
 		 *
-		 * @param mixed $message        	
-		 * @param mixed $type        	
+		 * @param mixed $message
+		 * @param mixed $type
 		 */
-		private function storeMessage($message, $type) {
-			$messageArray = array ();
-			$oldMessageArray = PostmanSession::getInstance ()->getMessage ();
-			if ($oldMessageArray) {
+		private function storeMessage( $message, $type ) {
+			$messageArray    = array();
+			$oldMessageArray = PostmanSession::getInstance()->getMessage();
+			if ( $oldMessageArray ) {
 				$messageArray = $oldMessageArray;
 			}
 			$weGotIt = false;
 			foreach ( $messageArray as $storedMessage ) {
-				if ($storedMessage ['message'] === $message) {
+				if ( $storedMessage ['message'] === $message ) {
 					$weGotIt = true;
 				}
 			}
-			if (! $weGotIt) {
-				$m = array (
-						'type' => $type,
-						'message' => $message 
+			if ( ! $weGotIt ) {
+				$m = array(
+					'type'    => $type,
+					'message' => $message,
 				);
-				array_push ( $messageArray, $m );
-				PostmanSession::getInstance ()->setMessage ( $messageArray );
+				array_push( $messageArray, $m );
+				PostmanSession::getInstance()->setMessage( $messageArray );
 			}
 		}
 		/**
 		 * Retrieve the messages and show them
 		 */
 		public function displayAllMessages() {
-			$messageArray = PostmanSession::getInstance ()->getMessage ();
-			if ($messageArray) {
-				PostmanSession::getInstance ()->unsetMessage ();
+			$messageArray = PostmanSession::getInstance()->getMessage();
+			if ( $messageArray ) {
+				PostmanSession::getInstance()->unsetMessage();
 				foreach ( $messageArray as $m ) {
 					$type = $m ['type'];
-					switch ($type) {
-						case 'error' :
+					switch ( $type ) {
+						case 'error':
 							$className = self::ERROR_CLASS;
 							break;
-						case 'warning' :
+						case 'warning':
 							$className = self::WARNING_CLASS;
 							break;
-						default :
+						default:
 							$className = self::SUCCESS_CLASS;
 							break;
 					}
 					$message = $m ['message'];
-					$this->printMessage ( $message, $className );
+					$this->printMessage( $message, $className );
 				}
 			}
 		}
-		
+
 		/**
 		 * putput message
 		 *
-		 * @param mixed $message        	
-		 * @param mixed $className        	
+		 * @param mixed $message
+		 * @param mixed $className
 		 */
-		public function printMessage($message, $className) {
-			printf ( '<div class="%s"><p>%s</p></div>', $className, $message );
+		public function printMessage( $message, $className ) {
+			printf( '<div class="%s"><p>%s</p></div>', $className, $message );
 		}
 	}
 }

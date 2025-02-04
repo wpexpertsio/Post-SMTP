@@ -7,7 +7,6 @@ if ( version_compare( get_bloginfo( 'version' ), '5.5-alpha', '<' ) ) {
 	if ( ! class_exists( '\PHPMailer', false ) ) {
 		require_once ABSPATH . WPINC . '/class-phpmailer.php';
 	}
-
 } else {
 	if ( ! class_exists( '\PHPMailer\PHPMailer\PHPMailer', false ) ) {
 		require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
@@ -27,11 +26,14 @@ if ( version_compare( get_bloginfo( 'version' ), '5.5-alpha', '<' ) ) {
 }
 
 
-add_action('plugins_loaded', function() {
-	global $phpmailer;
+add_action(
+	'plugins_loaded',
+	function () {
+		global $phpmailer;
 
-	$phpmailer = new PostsmtpMailer(true);
-});
+		$phpmailer = new PostsmtpMailer( true );
+	}
+);
 
 class PostsmtpMailer extends PHPMailer {
 
@@ -43,18 +45,16 @@ class PostsmtpMailer extends PHPMailer {
 
 	private $transcript = '';
 
-	public function __construct($exceptions = null)
-	{
-		parent::__construct($exceptions);
+	public function __construct( $exceptions = null ) {
+		parent::__construct( $exceptions );
 
 		$this->set_vars();
 		$this->hooks();
-
 	}
 
 	public function set_vars() {
-		$this->options = PostmanOptions::getInstance();
-		$this->Debugoutput = function($str, $level) {
+		$this->options     = PostmanOptions::getInstance();
+		$this->Debugoutput = function ( $str, $level ) {
 			$this->transcript .= $str;
 		};
 	}
@@ -67,7 +67,7 @@ class PostsmtpMailer extends PHPMailer {
 	}
 
 	public function get_mail_args( $atts ) {
-		$this->mail_args = array();
+		$this->mail_args   = array();
 		$this->mail_args[] = @$atts['to'];
 		$this->mail_args[] = @$atts['subject'];
 		$this->mail_args[] = @$atts['message'];
@@ -80,15 +80,15 @@ class PostsmtpMailer extends PHPMailer {
 	/**
 	 * @param PHPMailer $mail
 	 */
-	public function phpmailer_smtp_init($mail) {
+	public function phpmailer_smtp_init( $mail ) {
 		$mail->SMTPDebug = 3;
 		$mail->isSMTP();
 		$mail->Host = $this->options->getHostname();
 
 		if ( $this->options->getAuthenticationType() !== 'none' ) {
-			$mail->SMTPAuth   = true;
-			$mail->Username   = $this->options->getUsername();
-			$mail->Password   = $this->options->getPassword();
+			$mail->SMTPAuth = true;
+			$mail->Username = $this->options->getUsername();
+			$mail->Password = $this->options->getPassword();
 		}
 
 		if ( $this->options->getEncryptionType() !== 'none' ) {
@@ -98,13 +98,12 @@ class PostsmtpMailer extends PHPMailer {
 		$mail->Port = $this->options->getPort();
 
 		if ( $this->options->isPluginSenderEmailEnforced() ) {
-			$mail->setFrom( $this->options->getMessageSenderEmail() , $this->options->getMessageSenderName () );
+			$mail->setFrom( $this->options->getMessageSenderEmail(), $this->options->getMessageSenderName() );
 		}
 	}
 
-	public function send()
-	{
-		require_once dirname(__DIR__) . '/PostmanWpMail.php';
+	public function send() {
+		require_once dirname( __DIR__ ) . '/PostmanWpMail.php';
 
 		// create a PostmanWpMail instance
 		$postmanWpMail = new PostmanWpMail();
@@ -116,8 +115,8 @@ class PostsmtpMailer extends PHPMailer {
 		$postmanMessage = $postmanWpMail->processWpMailCall( $to, $subject, $body, $headers, $attachments );
 
 		// build the email log entry
-		$log = new PostmanEmailLog();
-		$log->originalTo = $to;
+		$log                  = new PostmanEmailLog();
+		$log->originalTo      = $to;
 		$log->originalSubject = $subject;
 		$log->originalMessage = $body;
 		$log->originalHeaders = $headers;
@@ -125,59 +124,57 @@ class PostsmtpMailer extends PHPMailer {
 		// get the transport and create the transportConfig and engine
 		$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
 
-		add_filter( 'postman_wp_mail_result', [ $this, 'postman_wp_mail_result' ] );
+		add_filter( 'postman_wp_mail_result', array( $this, 'postman_wp_mail_result' ) );
 
 		try {
 
 			$response = false;
 
 			if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) ) {
-				$result = $this->options->getTransportType() !== 'smtp' ?
+				$result       = $this->options->getTransportType() !== 'smtp' ?
 					$postmanWpMail->send( $to, $subject, $body, $headers, $attachments ) :
 					$response = $this->sendSmtp();
 
-					if( $response ) {
+				if ( $response ) {
 
-						do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport );
+					do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport );
 
-					}
-
+				}
 			}
 
 			return $result;
 
-		} catch (Exception $exc) {
+		} catch ( Exception $exc ) {
 
 			$this->error = $exc;
 
 			$this->mailHeader = '';
 
-			$this->setError($exc->getMessage());
+			$this->setError( $exc->getMessage() );
 
-            do_action( 'post_smtp_on_failed', $log, $postmanMessage,  $this->transcript, $transport, $exc->getMessage() );
+			do_action( 'post_smtp_on_failed', $log, $postmanMessage, $this->transcript, $transport, $exc->getMessage() );
 
-			if ($this->exceptions) {
+			if ( $this->exceptions ) {
 				throw $exc;
 			}
 			return false;
 		}
-
 	}
 
 	public function sendSmtp() {
-		if (!$this->preSend()) {
+		if ( ! $this->preSend() ) {
 			return false;
 		}
 		return $this->postSend();
 	}
 
 
-	public  function postman_wp_mail_result() {
-		$result = [
-			'time' => '',
-			'exception' => $this->error,
+	public function postman_wp_mail_result() {
+		$result = array(
+			'time'       => '',
+			'exception'  => $this->error,
 			'transcript' => $this->transcript,
-		];
+		);
 		return $result;
 	}
 }

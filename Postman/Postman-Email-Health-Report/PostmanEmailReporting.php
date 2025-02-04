@@ -22,7 +22,7 @@ if ( ! class_exists( 'PostmanEmailHealthReporting' ) ) :
 
 			if ( null == self::$instance ) {
 
-				self::$instance = new self;
+				self::$instance = new self();
 			}
 
 			return self::$instance;
@@ -71,7 +71,7 @@ if ( ! class_exists( 'PostmanEmailHealthReporting' ) ) :
 				if ( isset( $_POST['action'] ) && $_POST['action'] !== 'ps-save-wizard' ) {
 
 					$data['enable_email_reporting'] = isset( $_POST['enable_email_reporting'] ) ? 1 : 0;
-					$data['reporting_interval'] = isset( $_POST['reporting_interval'] ) ? sanitize_text_field( wp_unslash( $_POST['reporting_interval'] ) ) : 'w';
+					$data['reporting_interval']     = isset( $_POST['reporting_interval'] ) ? sanitize_text_field( wp_unslash( $_POST['reporting_interval'] ) ) : 'w';
 
 					update_option( 'postman_rat', $data );
 				}
@@ -89,10 +89,10 @@ if ( ! class_exists( 'PostmanEmailHealthReporting' ) ) :
 		public function section() {
 
 			$data = get_option( 'postman_rat' );
-			
-			$checked = ( isset( $data['enable_email_reporting'] ) && $data['enable_email_reporting'] === 1 ) ? 'checked' : '';
+
+			$checked           = ( isset( $data['enable_email_reporting'] ) && $data['enable_email_reporting'] === 1 ) ? 'checked' : '';
 			$selected_interval = ( isset( $data['reporting_interval'] ) ) ? $data['reporting_interval'] : 'w';
-			$selection = array(
+			$selection         = array(
 				'd' => __( 'Daily', 'post-smtp' ),
 				'w' => __( 'Weekly', 'post-smtp' ),
 				'm' => __( 'Monthly', 'post-smtp' ),
@@ -125,7 +125,7 @@ if ( ! class_exists( 'PostmanEmailHealthReporting' ) ) :
 
 									$selected = ( $selected_interval == $key ) ? 'selected' : $selected_interval;
 
-									echo '<option value="' . esc_attr( $key ) . '" ' . esc_attr( $selected ) . '>' . esc_attr__( $value , 'psrat' ) . '</option>';
+									echo '<option value="' . esc_attr( $key ) . '" ' . esc_attr( $selected ) . '>' . esc_attr__( $value, 'psrat' ) . '</option>';
 								}
 								?>
 							</select>

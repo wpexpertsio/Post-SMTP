@@ -1,15 +1,15 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 	class PostmanInputSanitizer {
 		private $logger;
 		private $options;
 		const VALIDATION_SUCCESS = 'validation_success';
-		const VALIDATION_FAILED = 'validation_failed';
+		const VALIDATION_FAILED  = 'validation_failed';
 		public function __construct() {
-			$this->logger = new PostmanLogger( get_class( $this ) );
+			$this->logger  = new PostmanLogger( get_class( $this ) );
 			$this->options = PostmanOptions::getInstance();
 		}
 
@@ -17,18 +17,18 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 		 * Sanitize each setting field as needed
 		 *
 		 * @param array $input
-		 *        	Contains all settings fields as array keys
+		 *          Contains all settings fields as array keys
 		 */
 		public function sanitize( $input ) {
-			
-		    if ( array_key_exists( 'external_option', $input ) ) {
-		        return $input;
-            }
+
+			if ( array_key_exists( 'external_option', $input ) ) {
+				return $input;
+			}
 
 			$this->logger->debug( 'Sanitizing data before storage' );
 
 			$new_input = array();
-			$success = true;
+			$success   = true;
 
 			$this->sanitizeString( 'Encryption Type', PostmanOptions::SECURITY_TYPE, $input, $new_input );
 			$this->sanitizeString( 'Hostname', PostmanOptions::HOSTNAME, $input, $new_input );
@@ -48,13 +48,12 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$new_input [ PostmanOptions::ENVELOPE_SENDER ] = $new_input [ PostmanOptions::MESSAGE_SENDER_EMAIL ];
 			$this->sanitizeString( 'Sender Email', PostmanOptions::ENVELOPE_SENDER, $input, $new_input );
 			$this->sanitizeString( 'Transport Type', PostmanOptions::TRANSPORT_TYPE, $input, $new_input );
-            $this->sanitizeString( 'SMTP Mailers', 'smtp_mailers', $input, $new_input );
+			$this->sanitizeString( 'SMTP Mailers', 'smtp_mailers', $input, $new_input );
 			$this->sanitizeString( 'Authorization Type', PostmanOptions::AUTHENTICATION_TYPE, $input, $new_input );
 			$this->sanitizeString( 'From Name', PostmanOptions::MESSAGE_SENDER_NAME, $input, $new_input );
 			$this->sanitizeString( 'Client ID', PostmanOptions::CLIENT_ID, $input, $new_input );
 			$this->sanitizeString( 'Client Secret', PostmanOptions::CLIENT_SECRET, $input, $new_input );
 			$this->sanitizeString( 'Username', PostmanOptions::BASIC_AUTH_USERNAME, $input, $new_input );
-			$this->sanitizeString( 'SendGrid Region', PostmanOptions::SENDGRID_REGION, $input, $new_input, $this->options->getSendGridRegion() );
 			$this->sanitizePassword( 'Password', PostmanOptions::BASIC_AUTH_PASSWORD, $input, $new_input, $this->options->getPassword() );
 			$this->sanitizePassword( 'Mandrill API Key', PostmanOptions::MANDRILL_API_KEY, $input, $new_input, $this->options->getMandrillApiKey() );
 			$this->sanitizePassword( 'SendGrid API Key', PostmanOptions::SENDGRID_API_KEY, $input, $new_input, $this->options->getSendGridApiKey() );
@@ -89,17 +88,17 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizeInt( 'Transcript Size', PostmanOptions::TRANSCRIPT_SIZE, $input, $new_input );
 			$this->sanitizeString( 'Temporary Directory', PostmanOptions::TEMPORARY_DIRECTORY, $input, $new_input );
 
-            // Fallback
-            $this->sanitizeString( 'Use fallback', PostmanOptions::FALLBACK_SMTP_ENABLED, $input, $new_input );
-            $this->sanitizeString( 'Fallback hostname', PostmanOptions::FALLBACK_SMTP_HOSTNAME, $input, $new_input );
-            $this->sanitizeInt( 'Fallback port', PostmanOptions::FALLBACK_SMTP_PORT, $input, $new_input );
-            $this->sanitizeString( 'Fallback security', PostmanOptions::FALLBACK_SMTP_SECURITY, $input, $new_input );
-            $this->sanitizeString( 'Fallback auth', PostmanOptions::FALLBACK_SMTP_USE_AUTH, $input, $new_input );
+			// Fallback
+			$this->sanitizeString( 'Use fallback', PostmanOptions::FALLBACK_SMTP_ENABLED, $input, $new_input );
+			$this->sanitizeString( 'Fallback hostname', PostmanOptions::FALLBACK_SMTP_HOSTNAME, $input, $new_input );
+			$this->sanitizeInt( 'Fallback port', PostmanOptions::FALLBACK_SMTP_PORT, $input, $new_input );
+			$this->sanitizeString( 'Fallback security', PostmanOptions::FALLBACK_SMTP_SECURITY, $input, $new_input );
+			$this->sanitizeString( 'Fallback auth', PostmanOptions::FALLBACK_SMTP_USE_AUTH, $input, $new_input );
 			$this->sanitizeString( 'Fallback username', PostmanOptions::FALLBACK_FROM_EMAIL, $input, $new_input );
-            $this->sanitizeString( 'Fallback username', PostmanOptions::FALLBACK_SMTP_USERNAME, $input, $new_input );
-            $this->sanitizePassword( 'Fallback password', PostmanOptions::FALLBACK_SMTP_PASSWORD, $input, $new_input, $this->options->getFallbackPassword() );
+			$this->sanitizeString( 'Fallback username', PostmanOptions::FALLBACK_SMTP_USERNAME, $input, $new_input );
+			$this->sanitizePassword( 'Fallback password', PostmanOptions::FALLBACK_SMTP_PASSWORD, $input, $new_input, $this->options->getFallbackPassword() );
 
-            $new_input = apply_filters( 'post_smtp_sanitize', $new_input, $input, $this );
+			$new_input = apply_filters( 'post_smtp_sanitize', $new_input, $input, $this );
 			delete_transient( 'sendpulse_token' );
 
 			if ( $new_input [ PostmanOptions::CLIENT_ID ] != $this->options->getClientId() || $new_input [ PostmanOptions::CLIENT_SECRET ] != $this->options->getClientSecret() || $new_input [ PostmanOptions::HOSTNAME ] != $this->options->getHostname() ) {
@@ -109,8 +108,8 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			}
 
 			// can we create a tmp file? - this code is duplicated in ActivationHandler
-			if( isset( $new_input [ PostmanOptions::TEMPORARY_DIRECTORY ] ) ) {
-				
+			if ( isset( $new_input [ PostmanOptions::TEMPORARY_DIRECTORY ] ) ) {
+
 				PostmanUtils::deleteLockFile( $new_input [ PostmanOptions::TEMPORARY_DIRECTORY ] );
 				$lockSuccess = PostmanUtils::createLockFile( $new_input [ PostmanOptions::TEMPORARY_DIRECTORY ] );
 				// &= does not work as expected in my PHP
@@ -159,10 +158,10 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			// if $action is not empty, then sanitize has already run
 			if ( ! empty( $action ) ) {
 				// use the already encoded password in the $input
-				$new_input[$key] = isset( $input[$key] ) ? $input[$key] : '';
+				$new_input[ $key ] = isset( $input[ $key ] ) ? $input[ $key ] : '';
 				// log it
 				$this->logger->debug( 'Warning, second sanitizePassword attempt detected' );
-			} else if ( isset( $input [ $key ] ) ) {
+			} elseif ( isset( $input [ $key ] ) ) {
 				if ( strlen( $input [ $key ] ) > 0 && preg_match( '/^\**$/', $input [ $key ] ) ) {
 					// if the password is all stars, then keep the existing password
 					$new_input [ $key ] = $existingPassword;
@@ -184,11 +183,11 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 				$value = absint( $input [ $key ] );
 				if ( $value <= 0 ) {
 					$new_input [ $key ] = PostmanOptions::getInstance()->getMailLoggingMaxEntries();
-					$h = new PostmanMessageHandler();
+					$h                  = new PostmanMessageHandler();
 					$h->addError( sprintf( '%s %s', __( 'Maximum Log Entries', 'post-smtp' ), __( 'must be greater than 0', 'post-smtp' ) ) );
 				} else {
 					$this->logSanitize( $desc, $input [ $key ] );
-					$new_input [ $key ] = absint($value);
+					$new_input [ $key ] = absint( $value );
 				}
 			}
 		}

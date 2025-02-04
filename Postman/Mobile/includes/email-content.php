@@ -1,51 +1,49 @@
 <?php
 
 class Post_SMTP_Email_Content {
-	
+
 	private $access_token = '';
-	private $log_id = '';
-	private $type = '';
-	
+	private $log_id       = '';
+	private $type         = '';
+
 	public function __construct() {
-		
-		if( 
-			is_admin()
+
+		if ( is_admin()
 			&&
-			isset( $_GET['access_token'] ) 
+			isset( $_GET['access_token'] )
 			&&
-			isset( $_GET['log_id'] ) 
+			isset( $_GET['log_id'] )
 			&&
-			isset( $_GET['type'] ) 
+			isset( $_GET['type'] )
 		) {
-			
+
 			$this->access_token = sanitize_text_field( $_GET['access_token'] );
-			$this->log_id = sanitize_text_field( $_GET['log_id'] );
-			$this->type = sanitize_text_field( $_GET['type'] );
-			
+			$this->log_id       = sanitize_text_field( $_GET['log_id'] );
+			$this->type         = sanitize_text_field( $_GET['type'] );
+
 			$this->render_html();
-			
+
 		}
-		
-	} 
-	
+	}
+
 	public function render_html() {
-		
+
 		$device = get_option( 'post_smtp_mobile_app_connection' );
-		
-		if( empty( $this->access_token ) ) {
-			
-			wp_send_json_error( 
+
+		if ( empty( $this->access_token ) ) {
+
+			wp_send_json_error(
 				array(
-					'error'	=>	'Auth token missing.'
-				), 
-				400 
+					'error' => 'Auth token missing.',
+				),
+				400
 			);
-			
+
 		}
-		//Valid Request
-		elseif( $device && isset( $device[$this->access_token] ) ) {
-			
-			if( !class_exists( 'PostmanEmailQueryLog' ) ) {
+		// Valid Request
+		elseif ( $device && isset( $device[ $this->access_token ] ) ) {
+
+			if ( ! class_exists( 'PostmanEmailQueryLog' ) ) {
 
 				require POST_SMTP_PATH . '/Postman/Postman-Email-Log/PostmanEmailQueryLog.php';
 
@@ -53,9 +51,9 @@ class Post_SMTP_Email_Content {
 
 			$logs_query = new PostmanEmailQueryLog();
 
-			if( $this->type == 'log' ) {
+			if ( $this->type == 'log' ) {
 
-					$log = $logs_query->get_log( 
+					$log = $logs_query->get_log(
 						$this->log_id,
 						array(
 							'from_header',
@@ -63,25 +61,25 @@ class Post_SMTP_Email_Content {
 							'time',
 							'original_subject',
 							'transport_uri',
-							'original_message'
+							'original_message',
 						)
 					);
-				
-					if( empty( $log ) ) {
-						
-						wp_send_json_error(
-							array(
-								'message'	=> "{$this->type} not found for id {$this->log_id}"
-							),
-							404
-						);
-						
-					}
-				
+
+				if ( empty( $log ) ) {
+
+					wp_send_json_error(
+						array(
+							'message' => "{$this->type} not found for id {$this->log_id}",
+						),
+						404
+					);
+
+				}
+
 					$date_format = get_option( 'date_format' );
 					$time_format = get_option( 'time_format' );
-			
-					?>
+
+				?>
 					<html>
 						<head>
 							<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -140,21 +138,21 @@ class Post_SMTP_Email_Content {
 					<?php
 					die;
 			}
-			
-			if( $this->type == 'transcript' ) {
 
-				$log = $logs_query->get_log( 
+			if ( $this->type == 'transcript' ) {
+
+				$log = $logs_query->get_log(
 					$this->log_id,
 					array(
-						'session_transcript'
+						'session_transcript',
 					)
 				);
 
-				if( empty( $log ) ) {
+				if ( empty( $log ) ) {
 
 					wp_send_json_error(
 						array(
-							'message'	=> "{$this->type} not found for id {$this->log_id}"
+							'message' => "{$this->type} not found for id {$this->log_id}",
 						),
 						404
 					);
@@ -188,21 +186,21 @@ class Post_SMTP_Email_Content {
 				<?php
 				die;
 			}
-			
-			if( $this->type == 'details' ) {
 
-				$log = $logs_query->get_log( 
+			if ( $this->type == 'details' ) {
+
+				$log = $logs_query->get_log(
 					$this->log_id,
 					array(
-						'success'
+						'success',
 					)
 				);
 
-				if( empty( $log ) ) {
+				if ( empty( $log ) ) {
 
 					wp_send_json_error(
 						array(
-							'message'	=> "{$this->type} not found for id {$this->log_id}"
+							'message' => "{$this->type} not found for id {$this->log_id}",
 						),
 						404
 					);
@@ -236,21 +234,17 @@ class Post_SMTP_Email_Content {
 				<?php
 				die;
 			}
-			
-		}
-		else {
-			
-			wp_send_json_error( 
+		} else {
+
+			wp_send_json_error(
 				array(
-					'error'	=>	'Invalid Auth Token.'
-				), 
-				401 
+					'error' => 'Invalid Auth Token.',
+				),
+				401
 			);
-			
+
 		}
-		
 	}
-	
 }
 
 new Post_SMTP_Email_Content();

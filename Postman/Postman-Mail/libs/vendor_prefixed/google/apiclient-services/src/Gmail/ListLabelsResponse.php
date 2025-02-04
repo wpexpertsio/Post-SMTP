@@ -17,25 +17,23 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class ListLabelsResponse extends \PostSMTP\Vendor\Google\Collection
-{
-    protected $collection_key = 'labels';
-    protected $labelsType = \PostSMTP\Vendor\Google\Service\Gmail\Label::class;
-    protected $labelsDataType = 'array';
-    /**
-     * @param Label[]
-     */
-    public function setLabels($labels)
-    {
-        $this->labels = $labels;
-    }
-    /**
-     * @return Label[]
-     */
-    public function getLabels()
-    {
-        return $this->labels;
-    }
+class ListLabelsResponse extends \PostSMTP\Vendor\Google\Collection {
+
+	protected $collection_key = 'labels';
+	protected $labelsType     = \PostSMTP\Vendor\Google\Service\Gmail\Label::class;
+	protected $labelsDataType = 'array';
+	/**
+	 * @param Label[]
+	 */
+	public function setLabels( $labels ) {
+		$this->labels = $labels;
+	}
+	/**
+	 * @return Label[]
+	 */
+	public function getLabels() {
+		return $this->labels;
+	}
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\ListLabelsResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListLabelsResponse');
+\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\ListLabelsResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListLabelsResponse' );

@@ -1,9 +1,9 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
-if (! class_exists ( 'PostmanSession' )) {
-	
+if ( ! class_exists( 'PostmanSession' ) ) {
+
 	/**
 	 * Persist session state to the database
 	 *
@@ -16,80 +16,77 @@ if (! class_exists ( 'PostmanSession' )) {
 	 * plugin's similiarily named variables.
 	 *
 	 * @author jasonhendriks
-	 *        
 	 */
 	class PostmanSession {
 		// length of time to keep items around
 		const MINUTES_IN_SECONDS = 60;
-		
-		//
-		const OAUTH_IN_PROGRESS = 'oauth_in_progress';
-		const ACTION = 'action';
-		const ERROR_MESSAGE = 'error_message';
-		
+
+				const OAUTH_IN_PROGRESS = 'oauth_in_progress';
+		const ACTION                    = 'action';
+		const ERROR_MESSAGE             = 'error_message';
+
 		// singleton instance
 		public static function getInstance() {
 			static $inst = null;
-			if ($inst === null) {
-				$inst = new PostmanSession ();
+			if ( $inst === null ) {
+				$inst = new PostmanSession();
 			}
 			return $inst;
 		}
-		
+
 		/**
 		 * OAuth is in progress $state is the randomly generated
 		 * transaction ID
 		 *
-		 * @param mixed $state        	
+		 * @param mixed $state
 		 */
 		public function isSetOauthInProgress() {
-			return get_transient ( self::OAUTH_IN_PROGRESS ) != false;
+			return get_transient( self::OAUTH_IN_PROGRESS ) != false;
 		}
-		public function setOauthInProgress($state) {
-			set_transient ( self::OAUTH_IN_PROGRESS, $state, 3 * self::MINUTES_IN_SECONDS );
+		public function setOauthInProgress( $state ) {
+			set_transient( self::OAUTH_IN_PROGRESS, $state, 3 * self::MINUTES_IN_SECONDS );
 		}
 		public function getOauthInProgress() {
-			return get_transient ( self::OAUTH_IN_PROGRESS );
+			return get_transient( self::OAUTH_IN_PROGRESS );
 		}
 		public function unsetOauthInProgress() {
-			delete_transient ( self::OAUTH_IN_PROGRESS );
+			delete_transient( self::OAUTH_IN_PROGRESS );
 		}
-		
+
 		/**
 		 * Sometimes I need to keep track of what I'm doing between requests
 		 *
-		 * @param mixed $action        	
+		 * @param mixed $action
 		 */
 		public function isSetAction() {
-			return get_transient ( self::ACTION ) != false;
+			return get_transient( self::ACTION ) != false;
 		}
-		public function setAction($action) {
-			set_transient ( self::ACTION, $action, 30 * self::MINUTES_IN_SECONDS );
+		public function setAction( $action ) {
+			set_transient( self::ACTION, $action, 30 * self::MINUTES_IN_SECONDS );
 		}
 		public function getAction() {
-			return get_transient ( self::ACTION );
+			return get_transient( self::ACTION );
 		}
 		public function unsetAction() {
-			delete_transient ( self::ACTION );
+			delete_transient( self::ACTION );
 		}
-		
+
 		/**
 		 * Sometimes I need to keep track of what I'm doing between requests
 		 *
-		 * @param mixed $message        	
+		 * @param mixed $message
 		 */
 		public function isSetErrorMessage() {
-			return get_transient ( self::ERROR_MESSAGE ) != false;
+			return get_transient( self::ERROR_MESSAGE ) != false;
 		}
-		public function setMessage($message) {
-			set_transient ( self::ERROR_MESSAGE, $message, 30 * self::MINUTES_IN_SECONDS );
+		public function setMessage( $message ) {
+			set_transient( self::ERROR_MESSAGE, $message, 30 * self::MINUTES_IN_SECONDS );
 		}
 		public function getMessage() {
-			return get_transient ( self::ERROR_MESSAGE );
+			return get_transient( self::ERROR_MESSAGE );
 		}
 		public function unsetMessage() {
-			delete_transient ( self::ERROR_MESSAGE );
+			delete_transient( self::ERROR_MESSAGE );
 		}
-		
 	}
 }

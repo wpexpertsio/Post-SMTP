@@ -7,16 +7,17 @@ require_once 'PostmanModuleTransport.php';
 
 /**
  * Postman Sendpulse
+ *
  * @since 2.9.0
  * @version 1.0
  */
 if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 	class PostmanSendpulseTransport extends PostmanAbstractModuleTransport implements PostmanModuleTransport {
 
-		const SLUG = 'sendpulse_api';
-		const PORT = 2525;
-		const HOST = 'smtp-pulse.com';
-		const PRIORITY = 52000;
+		const SLUG                   = 'sendpulse_api';
+		const PORT                   = 2525;
+		const HOST                   = 'smtp-pulse.com';
+		const PRIORITY               = 52000;
 		const SENDPULSE_AUTH_OPTIONS = 'postman_sendpulse_auth_options';
 		const SENDPULSE_AUTH_SECTION = 'postman_sendpulse_auth_section';
 
@@ -82,12 +83,12 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		 */
 		public function getConfigurationBid( PostmanWizardSocket $hostData, $userAuthOverride, $originalSmtpServer ) {
 
-			$recommendation = array();
-			$recommendation['priority'] = 0;
+			$recommendation              = array();
+			$recommendation['priority']  = 0;
 			$recommendation['transport'] = self::SLUG;
-			$recommendation['hostname'] = null; // scribe looks this.
-			$recommendation['label'] = $this->getName();
-			$recommendation['logo_url'] = $this->getLogoURL();
+			$recommendation['hostname']  = null; // scribe looks this.
+			$recommendation['label']     = $this->getName();
+			$recommendation['logo_url']  = $this->getLogoURL();
 
 			if ( $hostData->hostname == self::HOST && $hostData->port == self::PORT ) {
 				$recommendation['priority'] = self::PRIORITY;
@@ -106,7 +107,7 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		 */
 		public function createMailEngine() {
 
-			$api_key = $this->options->getSendpulseApiKey();
+			$api_key    = $this->options->getSendpulseApiKey();
 			$secret_key = $this->options->getSendpulseSecretKey();
 			require_once 'PostmanSendpulseMailEngine.php';
 			$engine = new PostmanSendpulseMailEngine( $api_key, $secret_key );
@@ -124,7 +125,7 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		}
 
 		/**
-		 * 
+		 *
 		 * @since 2.9.0
 		 * @version 1.0
 		 */
@@ -132,7 +133,7 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		}
 
 		/**
-		 * @param PostmanWizardSocket $socket
+		 * @param PostmanWizardSocket   $socket
 		 * @param $winningRecommendation
 		 * @param $userSocketOverride
 		 * @param $userAuthOverride
@@ -148,9 +149,9 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 			$overrideItem['auth_items'] = array(
 				array(
 					'selected' => true,
-					'name' => __( 'API Key', 'post-smtp' ),
-					'value' => 'api_key'
-				)
+					'name'     => __( 'API Key', 'post-smtp' ),
+					'value'    => 'api_key',
+				),
 			);
 
 			return $overrideItem;
@@ -209,8 +210,7 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		 * @since 2.9.0
 		 * @version 1.0
 		 */
-		public function printSendpulseAuthSectionInfo()
-		{
+		public function printSendpulseAuthSectionInfo() {
 
 			printf(
 				'<p id="wizard_sendpulse_auth_help">%s</p>',
@@ -329,8 +329,8 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		 * @version 1.0
 		 */
 		protected function validateTransportConfiguration() {
-			$messages = parent::validateTransportConfiguration();
-			$apiKey = $this->options->getSendpulseApiKey();
+			$messages  = parent::validateTransportConfiguration();
+			$apiKey    = $this->options->getSendpulseApiKey();
 			$secretKey = $this->options->getSendpulseSecretKey();
 			if ( empty( $apiKey ) ) {
 				array_push( $messages, __( 'ID Key can not be empty', 'post-smtp' ) . '.' );
@@ -355,7 +355,7 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		 * @version 1.0
 		 */
 		public function prepareOptionsForExport( $data ) {
-			$data = parent::prepareOptionsForExport( $data );
+			$data                                      = parent::prepareOptionsForExport( $data );
 			$data[ PostmanOptions::SENDPULSE_API_KEY ] = PostmanOptions::getInstance()->getSendpulseApiKey();
 			$data[ PostmanOptions::SENDPULSE_SECRET_KEY ] = PostmanOptions::getInstance()->getSendpulseSecretKey();
 			return $data;

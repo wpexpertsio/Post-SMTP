@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
+if ( ! class_exists( 'PostmanSendpulseMailEngine' ) ) :
 
 	require 'Services/SendPulse/Handler.php';
 	class PostmanSendpulseMailEngine implements PostmanMailEngine {
@@ -41,8 +41,7 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 		 * @since 2.9.0
 		 * @version 1.0
 		 */
-		public function getTranscript()
-		{
+		public function getTranscript() {
 			return $this->transcript;
 		}
 
@@ -52,7 +51,6 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 		 * @since 2.9.0
 		 * @version 1.0
 		 */
-
 		private function addAttachmentsToMail( PostmanMessage $message ) {
 
 			$attachments = $message->getAttachments();
@@ -68,15 +66,15 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 				if ( ! empty( $file ) ) {
 					$this->logger->debug( 'Adding attachment: ' . $file );
 
-					$file_name = basename( $file );
-					$file_parts = explode( '.', $file_name );
-					$file_type = wp_check_filetype( $file );
+					$file_name     = basename( $file );
+					$file_parts    = explode( '.', $file_name );
+					$file_type     = wp_check_filetype( $file );
 					$attachments[] = array(
-						'content' => base64_encode( file_get_contents( $file ) ),
-						'type' => $file_type['type'],
-						'file_name' => $file_name,
+						'content'     => base64_encode( file_get_contents( $file ) ),
+						'type'        => $file_type['type'],
+						'file_name'   => $file_name,
 						'disposition' => 'attachment',
-						'id' => $file_parts[0],
+						'id'          => $file_parts[0],
 					);
 				}
 			}
@@ -100,20 +98,20 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 				$this->logger->debug( 'Creating SendGrid service with apiKey=' . $this->apiKey );
 			}
 
-			$sendpulse = new PostmanSendpulse( $this->api_key, $this->secret_key );
-			$sender = $message->getFromAddress();
+			$sendpulse   = new PostmanSendpulse( $this->api_key, $this->secret_key );
+			$sender      = $message->getFromAddress();
 			$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-			$senderName = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
-			$headers = array();
+			$senderName  = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
+			$headers     = array();
 
-			$sender->log($this->logger, 'From');
+			$sender->log( $this->logger, 'From' );
 
 			$sendSmtpEmail['from'] = array(
-				'name'  =>  $senderName,
-				'email' =>  $senderEmail
+				'name'  => $senderName,
+				'email' => $senderEmail,
 			);
 
-			$tos = array();
+			$tos        = array();
 			$duplicates = array();
 
 			// add the to recipients.
@@ -122,12 +120,12 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 				if ( ! array_key_exists( $recipient->getEmail(), $duplicates ) ) {
 
 					$tos[] = array(
-						'email' =>  $recipient->getEmail()
+						'email' => $recipient->getEmail(),
 					);
 
 					if ( ! empty( $recipient->getName() ) ) {
 
-						$tos[$key]['name'] = $recipient->getName();
+						$tos[ $key ]['name'] = $recipient->getName();
 					}
 
 					$duplicates[] = $recipient->getEmail();
@@ -146,7 +144,7 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 			$htmlPart = $message->getBodyHtmlPart();
 			if ( ! empty( $htmlPart ) ) {
 				$this->logger->debug( 'Adding body as html' );
-				$htmlPart = base64_encode( $htmlPart );
+				$htmlPart              = base64_encode( $htmlPart );
 				$sendSmtpEmail['html'] = $htmlPart;
 			}
 
@@ -170,7 +168,7 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 
 			// add the Postman signature - append it to whatever the user may have set.
 			if ( ! $options->isStealthModeEnabled() ) {
-				$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
+				$pluginData          = apply_filters( 'postman_get_plugin_metadata', null );
 				$headers['X-Mailer'] = sprintf( 'Postman SMTP %s for WordPress (%s)', $pluginData['version'], 'https://wordpress.org/plugins/post-smtp/' );
 			}
 
@@ -190,10 +188,10 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 			// if the caller set a Content-Type header, use it.
 			$contentType = $message->getContentType();
 			if ( ! empty( $contentType ) ) {
-				$this->logger->debug('Some header keys are reserved. You may not include any of the following reserved headers: x-sg-id, x-sg-eid, received, dkim-signature, Content-Type, Content-Transfer-Encoding, To, From, Subject, Reply-To, CC, BCC.');
+				$this->logger->debug( 'Some header keys are reserved. You may not include any of the following reserved headers: x-sg-id, x-sg-eid, received, dkim-signature, Content-Type, Content-Transfer-Encoding, To, From, Subject, Reply-To, CC, BCC.' );
 			}
 
-			$cc = array();
+			$cc         = array();
 			$duplicates = array();
 			foreach ( (array) $message->getCcRecipients() as $recipient ) {
 
@@ -201,7 +199,7 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 
 					$recipient->log( $this->logger, 'Cc' );
 					$cc[] = array(
-						'email' =>  $recipient->getEmail(),
+						'email' => $recipient->getEmail(),
 					);
 
 					if ( ! empty( $recipient->getName() ) ) {
@@ -211,10 +209,11 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 					$duplicates[] = $recipient->getEmail();
 				}
 			}
-			if ( ! empty( $cc ) )
+			if ( ! empty( $cc ) ) {
 				$sendSmtpEmail['cc'] = $cc;
+			}
 
-			$bcc = array();
+			$bcc        = array();
 			$duplicates = array();
 			foreach ( (array) $message->getBccRecipients() as $recipient ) {
 
@@ -222,10 +221,10 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 
 					$recipient->log( $this->logger, 'Bcc' );
 					$bcc[] = array(
-						'email'  =>  $recipient->getEmail()
+						'email' => $recipient->getEmail(),
 					);
 
-					if (!empty($recipient->getName())) {
+					if ( ! empty( $recipient->getName() ) ) {
 						$bcc['name'] = $recipient->getName();
 					}
 
@@ -233,8 +232,9 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 				}
 			}
 
-			if ( ! empty( $bcc ) )
+			if ( ! empty( $bcc ) ) {
 				$sendSmtpEmail['bcc'] = $bcc;
+			}
 
 			// add attachments.
 			$this->logger->debug( 'Adding attachments' );
@@ -243,7 +243,7 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 			$attachments = $this->addAttachmentsToMail( $message );
 
 			if ( ! empty( $attachments ) ) {
-				$attachments_array = [];
+				$attachments_array = array();
 
 				foreach ( $attachments as $attachment ) {
 					$attachments_array[ $attachment['file_name'] ] = $attachment['content'];
@@ -265,13 +265,13 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 
 				$response = $sendpulse->send( $final_message );
 
-				$this->transcript = print_r( $response, true );
+				$this->transcript  = print_r( $response, true );
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 				$this->transcript .= print_r( $sendSmtpEmail, true );
 				$this->logger->debug( 'Transcript=' . $this->transcript );
 			} catch ( Exception $e ) {
 
-				$this->transcript = $e->getMessage();
+				$this->transcript  = $e->getMessage();
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 				$this->transcript .= print_r( $sendSmtpEmail, true );
 				$this->logger->debug( 'Transcript=' . $this->transcript );

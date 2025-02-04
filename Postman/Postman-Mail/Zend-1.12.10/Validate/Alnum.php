@@ -30,120 +30,115 @@ require_once 'Zend/Validate/Abstract.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Validate_Alnum extends Postman_Zend_Validate_Abstract
-{
-    const INVALID      = 'alnumInvalid';
-    const NOT_ALNUM    = 'notAlnum';
-    const STRING_EMPTY = 'alnumStringEmpty';
+class Postman_Zend_Validate_Alnum extends Postman_Zend_Validate_Abstract {
 
-    /**
-     * Whether to allow white space characters; off by default
-     *
-     * @var boolean
-     * @deprecated
-     */
-    public $allowWhiteSpace;
+	const INVALID      = 'alnumInvalid';
+	const NOT_ALNUM    = 'notAlnum';
+	const STRING_EMPTY = 'alnumStringEmpty';
 
-    /**
-     * Alphanumeric filter used for validation
-     *
-     * @var Postman_Zend_Filter_Alnum
-     */
-    protected static $_filter = null;
+	/**
+	 * Whether to allow white space characters; off by default
+	 *
+	 * @var boolean
+	 * @deprecated
+	 */
+	public $allowWhiteSpace;
 
-    /**
-     * Validation failure message template definitions
-     *
-     * @var array
-     */
-    protected $_messageTemplates = array(
-        self::INVALID      => "Invalid type given. String, integer or float expected",
-        self::NOT_ALNUM    => "'%value%' contains characters which are non alphabetic and no digits",
-        self::STRING_EMPTY => "'%value%' is an empty string",
-    );
+	/**
+	 * Alphanumeric filter used for validation
+	 *
+	 * @var Postman_Zend_Filter_Alnum
+	 */
+	protected static $_filter = null;
 
-    /**
-     * Sets default option values for this instance
-     *
-     * @param boolean|Postman_Zend_Config $allowWhiteSpace
-     */
-    public function __construct($allowWhiteSpace = false)
-    {
-        if ($allowWhiteSpace instanceof Postman_Zend_Config) {
-            $allowWhiteSpace = $allowWhiteSpace->toArray();
-        }
+	/**
+	 * Validation failure message template definitions
+	 *
+	 * @var array
+	 */
+	protected $_messageTemplates = array(
+		self::INVALID      => 'Invalid type given. String, integer or float expected',
+		self::NOT_ALNUM    => "'%value%' contains characters which are non alphabetic and no digits",
+		self::STRING_EMPTY => "'%value%' is an empty string",
+	);
 
-        if (is_array($allowWhiteSpace)) {
-            if (array_key_exists('allowWhiteSpace', $allowWhiteSpace)) {
-                $allowWhiteSpace = $allowWhiteSpace['allowWhiteSpace'];
-            } else {
-                $allowWhiteSpace = false;
-            }
-        }
+	/**
+	 * Sets default option values for this instance
+	 *
+	 * @param boolean|Postman_Zend_Config $allowWhiteSpace
+	 */
+	public function __construct( $allowWhiteSpace = false ) {
+		if ( $allowWhiteSpace instanceof Postman_Zend_Config ) {
+			$allowWhiteSpace = $allowWhiteSpace->toArray();
+		}
 
-        $this->allowWhiteSpace = (boolean) $allowWhiteSpace;
-    }
+		if ( is_array( $allowWhiteSpace ) ) {
+			if ( array_key_exists( 'allowWhiteSpace', $allowWhiteSpace ) ) {
+				$allowWhiteSpace = $allowWhiteSpace['allowWhiteSpace'];
+			} else {
+				$allowWhiteSpace = false;
+			}
+		}
 
-    /**
-     * Returns the allowWhiteSpace option
-     *
-     * @return boolean
-     */
-    public function getAllowWhiteSpace()
-    {
-        return $this->allowWhiteSpace;
-    }
+		$this->allowWhiteSpace = (bool) $allowWhiteSpace;
+	}
 
-    /**
-     * Sets the allowWhiteSpace option
-     *
-     * @param boolean $allowWhiteSpace
-     * @return Postman_Zend_Filter_Alnum Provides a fluent interface
-     */
-    public function setAllowWhiteSpace($allowWhiteSpace)
-    {
-        $this->allowWhiteSpace = (boolean) $allowWhiteSpace;
-        return $this;
-    }
+	/**
+	 * Returns the allowWhiteSpace option
+	 *
+	 * @return boolean
+	 */
+	public function getAllowWhiteSpace() {
+		return $this->allowWhiteSpace;
+	}
 
-    /**
-     * Defined by Postman_Zend_Validate_Interface
-     *
-     * Returns true if and only if $value contains only alphabetic and digit characters
-     *
-     * @param  string $value
-     * @return boolean
-     */
-    public function isValid($value)
-    {
-        if (!is_string($value) && !is_int($value) && !is_float($value)) {
-            $this->_error(self::INVALID);
-            return false;
-        }
+	/**
+	 * Sets the allowWhiteSpace option
+	 *
+	 * @param boolean $allowWhiteSpace
+	 * @return Postman_Zend_Filter_Alnum Provides a fluent interface
+	 */
+	public function setAllowWhiteSpace( $allowWhiteSpace ) {
+		$this->allowWhiteSpace = (bool) $allowWhiteSpace;
+		return $this;
+	}
 
-        $this->_setValue($value);
+	/**
+	 * Defined by Postman_Zend_Validate_Interface
+	 *
+	 * Returns true if and only if $value contains only alphabetic and digit characters
+	 *
+	 * @param  string $value
+	 * @return boolean
+	 */
+	public function isValid( $value ) {
+		if ( ! is_string( $value ) && ! is_int( $value ) && ! is_float( $value ) ) {
+			$this->_error( self::INVALID );
+			return false;
+		}
 
-        if ('' === $value) {
-            $this->_error(self::STRING_EMPTY);
-            return false;
-        }
+		$this->_setValue( $value );
 
-        if (null === self::$_filter) {
-            /**
-             * @see Postman_Zend_Filter_Alnum
-             */
-            require_once 'Zend/Filter/Alnum.php';
-            self::$_filter = new Postman_Zend_Filter_Alnum();
-        }
+		if ( '' === $value ) {
+			$this->_error( self::STRING_EMPTY );
+			return false;
+		}
 
-        self::$_filter->allowWhiteSpace = $this->allowWhiteSpace;
+		if ( null === self::$_filter ) {
+			/**
+			 * @see Postman_Zend_Filter_Alnum
+			 */
+			require_once 'Zend/Filter/Alnum.php';
+			self::$_filter = new Postman_Zend_Filter_Alnum();
+		}
 
-        if ($value != self::$_filter->filter($value)) {
-            $this->_error(self::NOT_ALNUM);
-            return false;
-        }
+		self::$_filter->allowWhiteSpace = $this->allowWhiteSpace;
 
-        return true;
-    }
+		if ( $value != self::$_filter->filter( $value ) ) {
+			$this->_error( self::NOT_ALNUM );
+			return false;
+		}
 
+		return true;
+	}
 }

@@ -1,112 +1,105 @@
 <?php
 
-if( ! class_exists( 'Postman_Promotion_Manager' ) ):
-class Postman_Promotion_Manager {
+if ( ! class_exists( 'Postman_Promotion_Manager' ) ) :
+	class Postman_Promotion_Manager {
 
-    /**
-     * The promotion manager instance.
-     *
-     * @var Postman_Promotion_Manager
-     */
-    private static $instance;
-    private $promotion;private $promotions = array(
-        'bfcm-2024' => array(
-            'title'         => 'Black Friday 2024',
-            'start_time'    => 1732752000,
-            'end_time'      => 1733270340,
-        )
-    );
+		/**
+		 * The promotion manager instance.
+		 *
+		 * @var Postman_Promotion_Manager
+		 */
+		private static $instance;
+		private $promotion;private $promotions = array(
+			'bfcm-2024' => array(
+				'title'      => 'Black Friday 2024',
+				'start_time' => 1732752000,
+				'end_time'   => 1733270340,
+			),
+		);
 
-    /**
-     * The promotion manager instance.
-     *
-     * @since 2.9.10
-     */
-    public static function get_instance() {
+		/**
+		 * The promotion manager instance.
+		 *
+		 * @since 2.9.10
+		 */
+		public static function get_instance() {
 
-        if ( ! isset( self::$instance ) ) {
+			if ( ! isset( self::$instance ) ) {
 
-            self::$instance = new Postman_Promotion_Manager();
+				self::$instance = new Postman_Promotion_Manager();
 
-        }
+			}
 
-        return self::$instance;
+			return self::$instance;
+		}
 
-    }
+		/**
+		 * The promotion manager constructor.
+		 *
+		 * @since 2.9.10
+		 */
+		public function __construct() {
 
-    /**
-     * The promotion manager constructor.
-     *
-     * @since 2.9.10
-     */
-    public function __construct() {
+			add_action( 'admin_action_ps-skip-bfcm', array( $this, 'skip_bfcm' ) );
+		}
 
-        add_action( 'admin_action_ps-skip-bfcm', array( $this, 'skip_bfcm' ) );
+		/**
+		 * Get the promotion.
+		 *
+		 * @since 2.9.10
+		 */
+		public function get_promotion( $promotion ) {
 
-    }
+			if ( ! isset( $this->promotions[ $promotion ] ) ) {
 
-    /**
-     * Get the promotion.
-     * 
-     * @since 2.9.10
-     */
-    public function get_promotion( $promotion ) {
+				return false;
 
-        if ( ! isset( $this->promotions[$promotion] ) ) {
+			}
 
-            return false;
+			return $this->promotions[ $promotion ];
+		}
 
-        }
+		/**
+		 * Check if the promotion is active.
+		 *
+		 * @since 2.9.10
+		 */
+		public function is_promotion_active( $promotion ) {
 
-        return $this->promotions[$promotion];
+			if ( isset( $this->promotions[ $promotion ] ) ) {
 
-    }
+				$current_time = time();
 
-    /**
-     * Check if the promotion is active.
-     * 
-     * @since 2.9.10
-     */
-    public function is_promotion_active( $promotion ) {
+				$start_time = $this->promotions[ $promotion ]['start_time'];
+				$end_time   = $this->promotions[ $promotion ]['end_time'];
 
-        if ( isset( $this->promotions[$promotion] ) ) {
+				if ( $current_time >= $start_time && $current_time <= $end_time ) {
 
-            $current_time = time();
+					return true;
 
-            $start_time = $this->promotions[$promotion]['start_time'];
-            $end_time = $this->promotions[$promotion]['end_time'];
+				}
+			}
 
-            if ( $current_time >= $start_time && $current_time <= $end_time ) {
+			return false;
+		}
 
-                return true;
+		/**
+		 * Skip the promotion | Action Callback
+		 *
+		 * @since 2.9.10
+		 */
+		public function skip_bfcm() {
 
-            }
+			if ( isset( $_GET['action'] ) && $_GET['action'] == 'ps-skip-bfcm' ) {
 
-        }
-        
-        return false;
+				set_transient( 'ps-skip-bfcm', true, 604800 );
 
-    }
+				wp_redirect( wp_get_referer() );
 
-    /**
-     * Skip the promotion | Action Callback
-     * 
-     * @since 2.9.10
-     */
-    public function skip_bfcm() {
+			}
+		}
+	}
 
-        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-skip-bfcm' ) {
-
-            set_transient( 'ps-skip-bfcm', true, 604800 );
-
-            wp_redirect( wp_get_referer() );
-
-        }
-
-    }
-
-}
-
-Postman_Promotion_Manager::get_instance();
+	Postman_Promotion_Manager::get_instance();
 
 endif;

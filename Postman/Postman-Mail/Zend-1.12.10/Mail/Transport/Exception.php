@@ -34,6 +34,5 @@
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Mail_Transport_Exception extends Postman_Zend_Mail_Exception
-{}
-
+class Postman_Zend_Mail_Transport_Exception extends Postman_Zend_Mail_Exception {
+}

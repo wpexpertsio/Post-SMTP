@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 require_once 'PostmanLogger.php';
 require_once 'PostmanState.php';
@@ -13,13 +13,13 @@ class PostmanUtils {
 	private static $logger;
 	private static $emailValidator;
 
-	const POSTMAN_SETTINGS_PAGE_STUB = 'postman';
-	const REQUEST_OAUTH2_GRANT_SLUG = 'postman/requestOauthGrant';
+	const POSTMAN_SETTINGS_PAGE_STUB  = 'postman';
+	const REQUEST_OAUTH2_GRANT_SLUG   = 'postman/requestOauthGrant';
 	const POSTMAN_EMAIL_LOG_PAGE_STUB = 'postman_email_log';
 
 	// redirections back to THIS SITE should always be relative because of IIS bug
 	const POSTMAN_EMAIL_LOG_PAGE_RELATIVE_URL = 'admin.php?page=postman_email_log';
-	const POSTMAN_HOME_PAGE_RELATIVE_URL = 'admin.php?page=postman';
+	const POSTMAN_HOME_PAGE_RELATIVE_URL      = 'admin.php?page=postman';
 
 	// custom admin post page
 	const ADMIN_POST_OAUTH2_GRANT_URL_PART = 'admin-post.php?action=postman/requestOauthGrant';
@@ -30,7 +30,7 @@ class PostmanUtils {
 	 * Initialize the Logger
 	 */
 	public static function staticInit() {
-		PostmanUtils::$logger = new PostmanLogger( 'PostmanUtils' );
+		self::$logger = new PostmanLogger( 'PostmanUtils' );
 	}
 
 	/**
@@ -68,7 +68,7 @@ class PostmanUtils {
 	}
 
 	public static function isCurrentPagePostmanAdmin( $page = 'postman' ) {
-		$result = (isset( $_REQUEST ['page'] ) && substr( $_REQUEST ['page'], 0, strlen( $page ) ) == $page);
+		$result = ( isset( $_REQUEST ['page'] ) && substr( $_REQUEST ['page'], 0, strlen( $page ) ) == $page );
 		return $result;
 	}
 	/**
@@ -80,7 +80,7 @@ class PostmanUtils {
 	 */
 	public static function startsWith( $haystack, $needle ) {
 		$length = strlen( $needle );
-		return (substr( $haystack, 0, $length ) === $needle);
+		return ( substr( $haystack, 0, $length ) === $needle );
 	}
 	/**
 	 * from http://stackoverflow.com/questions/834303/startswith-and-endswith-functions-in-php
@@ -94,25 +94,24 @@ class PostmanUtils {
 		if ( $length == 0 ) {
 			return true;
 		}
-		
-		if( $haystack == null ) {
-		    
-		    return false;
-		    
+
+		if ( $haystack == null ) {
+
+			return false;
+
 		}
-		
-		return (substr( $haystack, - $length ) === $needle);
+
+		return ( substr( $haystack, - $length ) === $needle );
 	}
 	public static function obfuscatePassword( $password ) {
 
-		if( empty( $password ) ) {
+		if ( empty( $password ) ) {
 
 			return '';
 
 		}
 
 		return str_repeat( '*', strlen( $password ) );
-
 	}
 	/**
 	 * Detect if the host is NOT a domain name
@@ -138,8 +137,8 @@ class PostmanUtils {
 	 * @return string the HTML body
 	 */
 	static function remotePostGetBodyOnly( $url, $parameters, array $headers = array() ) {
-		$response = PostmanUtils::remotePost( $url, $parameters, $headers );
-		$theBody = wp_remote_retrieve_body( $response );
+		$response = self::remotePost( $url, $parameters, $headers );
+		$theBody  = wp_remote_retrieve_body( $response );
 		return $theBody;
 	}
 
@@ -154,22 +153,22 @@ class PostmanUtils {
 	 */
 	static function remotePost( $url, $parameters = array(), array $headers = array() ) {
 		$args = array(
-				'timeout' => PostmanOptions::getInstance()->getConnectionTimeout(),
-				'headers' => $headers,
-				'body' => $parameters,
+			'timeout' => PostmanOptions::getInstance()->getConnectionTimeout(),
+			'headers' => $headers,
+			'body'    => $parameters,
 		);
-		if ( PostmanUtils::$logger->isTrace() ) {
-			PostmanUtils::$logger->trace( sprintf( 'Posting to %s', $url ) );
-			PostmanUtils::$logger->trace( 'Post header:' );
-			PostmanUtils::$logger->trace( $headers );
-			PostmanUtils::$logger->trace( 'Posting args:' );
-			PostmanUtils::$logger->trace( $parameters );
+		if ( self::$logger->isTrace() ) {
+			self::$logger->trace( sprintf( 'Posting to %s', $url ) );
+			self::$logger->trace( 'Post header:' );
+			self::$logger->trace( $headers );
+			self::$logger->trace( 'Posting args:' );
+			self::$logger->trace( $parameters );
 		}
 		$response = wp_remote_post( $url, $args );
 
 		// pre-process the response
 		if ( is_wp_error( $response ) ) {
-			PostmanUtils::$logger->error( $response->get_error_message() );
+			self::$logger->error( $response->get_error_message() );
 			throw new Exception( 'Error executing wp_remote_post: ' . $response->get_error_message() );
 		} else {
 			return $response;
@@ -183,8 +182,8 @@ class PostmanUtils {
 	 */
 	static function redirect( $url ) {
 		// redirections back to THIS SITE should always be relative because of IIS bug
-		if ( PostmanUtils::$logger->isTrace() ) {
-			PostmanUtils::$logger->trace( sprintf( "Redirecting to '%s'", $url ) );
+		if ( self::$logger->isTrace() ) {
+			self::$logger->trace( sprintf( "Redirecting to '%s'", $url ) );
 		}
 		wp_redirect( $url );
 		exit();
@@ -193,7 +192,7 @@ class PostmanUtils {
 		return filter_var( $var, FILTER_VALIDATE_BOOLEAN );
 	}
 	static function logMemoryUse( $startingMemory, $description ) {
-		PostmanUtils::$logger->trace( sprintf( $description . ' memory used: %s', PostmanUtils::roundBytes( memory_get_usage() - $startingMemory ) ) );
+		self::$logger->trace( sprintf( $description . ' memory used: %s', self::roundBytes( memory_get_usage() - $startingMemory ) ) );
 	}
 
 	/**
@@ -206,20 +205,20 @@ class PostmanUtils {
 	static function roundBytes( $size ) {
 		$size = intval( $size );
 		$unit = array(
-				'B',
-				'KiB',
-				'MiB',
-				'GiB',
-				'TiB',
-				'PiB',
+			'B',
+			'KiB',
+			'MiB',
+			'GiB',
+			'TiB',
+			'PiB',
 		);
-		
-		$log = log( $size, 1024 );
-		$unit_key = floor( $log );
-		$pow = pow( 1024, $unit_key );
-		$pow = floor( $pow );
 
-		return @round( $size / $pow, 2 ) . ' ' . $unit[$unit_key];
+		$log      = log( $size, 1024 );
+		$unit_key = floor( $log );
+		$pow      = pow( 1024, $unit_key );
+		$pow      = floor( $pow );
+
+		return @round( $size / $pow, 2 ) . ' ' . $unit[ $unit_key ];
 	}
 
 	/**
@@ -227,7 +226,7 @@ class PostmanUtils {
 	 */
 	static function unlock() {
 		if ( PostmanState::getInstance()->isFileLockingEnabled() ) {
-			PostmanUtils::deleteLockFile();
+			self::deleteLockFile();
 		}
 	}
 
@@ -242,12 +241,12 @@ class PostmanUtils {
 			$attempts = 0;
 			while ( true ) {
 				// create the semaphore
-				$lock = PostmanUtils::createLockFile();
+				$lock = self::createLockFile();
 				if ( $lock ) {
 					// if we got the lock, return
 					return;
 				} else {
-					$attempts ++;
+					++$attempts;
 					if ( $attempts >= 10 ) {
 						throw new Exception( sprintf( 'Could not create lockfile %s', '/tmp' . '/.postman.lock' ) );
 					}
@@ -258,16 +257,16 @@ class PostmanUtils {
 	}
 
 	static function lockFileExists() {
-		$path = PostmanUtils::calculateTemporaryLockPath( null );
+		$path = self::calculateTemporaryLockPath( null );
 
-		return file_exists($path);
+		return file_exists( $path );
 	}
 
 	static function deleteLockFile( $tempDirectory = null ) {
-		$path = PostmanUtils::calculateTemporaryLockPath( $tempDirectory );
+		$path    = self::calculateTemporaryLockPath( $tempDirectory );
 		$success = @unlink( $path );
-		if ( PostmanUtils::$logger->isTrace() ) {
-			PostmanUtils::$logger->trace( sprintf( 'Deleting file %s : %s', $path, $success ) );
+		if ( self::$logger->isTrace() ) {
+			self::$logger->trace( sprintf( 'Deleting file %s : %s', $path, $success ) );
 		}
 		return $success;
 	}
@@ -275,10 +274,10 @@ class PostmanUtils {
 		if ( self::lockFileExists() ) {
 			self::deleteLockFile();
 		}
-		$path = PostmanUtils::calculateTemporaryLockPath( $tempDirectory );
+		$path    = self::calculateTemporaryLockPath( $tempDirectory );
 		$success = @fopen( $path, 'xb' );
-		if ( PostmanUtils::$logger->isTrace() ) {
-			PostmanUtils::$logger->trace( sprintf( 'Creating file %s : %s', $path, $success ) );
+		if ( self::$logger->isTrace() ) {
+			self::$logger->trace( sprintf( 'Creating file %s : %s', $path, $success ) );
 		}
 		return $success;
 	}
@@ -291,7 +290,7 @@ class PostmanUtils {
 	 */
 	private static function calculateTemporaryLockPath( $tempDirectory ) {
 		if ( empty( $tempDirectory ) ) {
-			$options = PostmanOptions::getInstance();
+			$options       = PostmanOptions::getInstance();
 			$tempDirectory = $options->getTempDirectory();
 		}
 		$fullPath = sprintf( '%s/.postman_%s.lock', $tempDirectory, self::generateUniqueLockKey() );
@@ -304,7 +303,7 @@ class PostmanUtils {
 	 */
 	private static function generateUniqueLockKey() {
 		// for single sites, use the network_site_url to generate the key because
-		// it is unique for every wordpress site unlike the blog ID which may be the same
+		// it is unique for every WordPress site unlike the blog ID which may be the same
 		$key = hash( 'crc32', network_site_url( '/' ) );
 		// TODO for multisites
 		// if the subsite is sharing the config - use the network_site_url of site 0
@@ -320,7 +319,7 @@ class PostmanUtils {
 	 */
 	public static function isEmpty( $text ) {
 		// Function for basic field validation (present and neither empty nor only white space
-		return ( ! isset( $text ) || trim( $text ) === '');
+		return ( ! isset( $text ) || trim( $text ) === '' );
 	}
 
 	/**
@@ -339,7 +338,7 @@ class PostmanUtils {
 		 *
 		 * Good to know.
 		 */
-		$logger = PostmanUtils::$logger = new PostmanLogger( 'PostmanUtils' );
+		$logger = self::$logger = new PostmanLogger( 'PostmanUtils' );
 		if ( $logger->isTrace() ) {
 			$logger->trace( 'calling current_user_can' );
 		}
@@ -364,19 +363,19 @@ class PostmanUtils {
 		require_once 'Postman-Mail/Zend-1.12.10/Validate/Ip.php';
 		require_once 'Postman-Mail/Zend-1.12.10/Validate/Hostname.php';
 		require_once 'Postman-Mail/Zend-1.12.10/Validate/EmailAddress.php';
-		if ( ! isset( PostmanUtils::$emailValidator ) ) {
-			PostmanUtils::$emailValidator = new Postman_Zend_Validate_EmailAddress();
+		if ( ! isset( self::$emailValidator ) ) {
+			self::$emailValidator = new Postman_Zend_Validate_EmailAddress();
 		}
 		if ( strpos( $email, ',' ) !== false ) {
-		    $emails = explode(',', $email);
-		    $result = [];
-		    foreach ( $emails as $email ) {
-		        $result[] = PostmanUtils::$emailValidator->isValid( $email );
-            }
+			$emails = explode( ',', $email );
+			$result = array();
+			foreach ( $emails as $email ) {
+				$result[] = self::$emailValidator->isValid( $email );
+			}
 
-		    return ! in_array(false, $result );
-        }
-		return PostmanUtils::$emailValidator->isValid( $email );
+			return ! in_array( false, $result );
+		}
+		return self::$emailValidator->isValid( $email );
 	}
 
 	/**
@@ -402,9 +401,9 @@ class PostmanUtils {
 	 */
 	static function postmanGetServerName() {
 		if ( ! empty( $_SERVER ['SERVER_NAME'] ) ) {
-			$serverName = sanitize_text_field($_SERVER ['SERVER_NAME']);
-		} else if ( ! empty( $_SERVER ['HTTP_HOST'] ) ) {
-			$serverName = sanitize_text_field($_SERVER ['HTTP_HOST']);
+			$serverName = sanitize_text_field( $_SERVER ['SERVER_NAME'] );
+		} elseif ( ! empty( $_SERVER ['HTTP_HOST'] ) ) {
+			$serverName = sanitize_text_field( $_SERVER ['HTTP_HOST'] );
 		} else {
 			$serverName = 'localhost.localdomain';
 		}
@@ -418,7 +417,7 @@ class PostmanUtils {
 	 * @return boolean
 	 */
 	static function isGoogle( $hostname ) {
-		return PostmanUtils::endsWith( $hostname, 'gmail.com' ) || PostmanUtils::endsWith( $hostname, 'googleapis.com' );
+		return self::endsWith( $hostname, 'gmail.com' ) || self::endsWith( $hostname, 'googleapis.com' );
 	}
 
 	/**
@@ -427,15 +426,18 @@ class PostmanUtils {
 	 * @param mixed $callbackName
 	 */
 	public static function registerAdminMenu( $viewController, $callbackName ) {
-		$logger = PostmanUtils::$logger;
+		$logger = self::$logger;
 		if ( $logger->isTrace() ) {
 			$logger->trace( 'Registering admin menu ' . $callbackName );
 		}
-		
-		add_action( 'admin_menu', array(
+
+		add_action(
+			'admin_menu',
+			array(
 				$viewController,
 				$callbackName,
-		) );
+			)
+		);
 	}
 
 	/**
@@ -448,10 +450,13 @@ class PostmanUtils {
 		if ( is_admin() ) {
 			$fullname = 'wp_ajax_' . $actionName;
 			// $this->logger->debug ( 'Registering ' . 'wp_ajax_' . $fullname . ' Ajax handler' );
-			add_action( $fullname, array(
+			add_action(
+				$fullname,
+				array(
 					$class,
 					$callbackName,
-			) );
+				)
+			);
 		}
 	}
 
@@ -470,7 +475,7 @@ class PostmanUtils {
 	 * @return mixed
 	 */
 	public static function getRequestParameter( $parameterName ) {
-		$logger = PostmanUtils::$logger;
+		$logger = self::$logger;
 		if ( isset( $_POST [ $parameterName ] ) ) {
 			$value = sanitize_text_field( $_POST [ $parameterName ] );
 			if ( $logger->isTrace() ) {
@@ -482,23 +487,23 @@ class PostmanUtils {
 	}
 
 	public static function getServerName() {
-        $host = 'localhost';
-        
-        if (isset($_SERVER) and array_key_exists('SERVER_NAME', $_SERVER)) {
-            $host = $_SERVER['SERVER_NAME'];
-        } elseif (function_exists('gethostname') and gethostname() !== false) {
-            $host = gethostname();
-        } elseif (php_uname('n') !== false) {
-            $host = php_uname('n');
-        }
+		$host = 'localhost';
 
-        return str_replace('www.', '', $host );
+		if ( isset( $_SERVER ) and array_key_exists( 'SERVER_NAME', $_SERVER ) ) {
+			$host = $_SERVER['SERVER_NAME'];
+		} elseif ( function_exists( 'gethostname' ) and gethostname() !== false ) {
+			$host = gethostname();
+		} elseif ( php_uname( 'n' ) !== false ) {
+			$host = php_uname( 'n' );
+		}
+
+		return str_replace( 'www.', '', $host );
 	}
 
 	public static function getHost( $url ) {
 		$host = parse_url( trim( $url ), PHP_URL_HOST );
 
-		return str_replace('www.', '', $host );
+		return str_replace( 'www.', '', $host );
 	}
 }
 PostmanUtils::staticInit();

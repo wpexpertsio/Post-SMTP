@@ -23,9 +23,9 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				$this->namespace,
 				'/get-logs',
 				array(
-					'methods' => WP_REST_Server::READABLE,
-					'callback' => array( $this, 'get_logs' ),
-					'permission_callback' => array( $this, 'get_logs_permission' )
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_logs' ),
+					'permission_callback' => array( $this, 'get_logs_permission' ),
 				)
 			);
 
@@ -33,9 +33,9 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				$this->namespace,
 				'/get-details',
 				array(
-					'methods' => WP_REST_Server::READABLE,
-					'callback' => array( $this, 'get_details' ),
-					'permission_callback' => array( $this, 'get_logs_permission' )
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_details' ),
+					'permission_callback' => array( $this, 'get_logs_permission' ),
 				)
 			);
 
@@ -43,9 +43,9 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				$this->namespace,
 				'/resend-email',
 				array(
-					'methods' => WP_REST_Server::CREATABLE,
-					'callback' => array( $this, 'resend_email' ),
-					'permission_callback' => array( $this, 'get_logs_permission' )
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'resend_email' ),
+					'permission_callback' => array( $this, 'get_logs_permission' ),
 				)
 			);
 
@@ -53,9 +53,9 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				$this->namespace,
 				'email-count',
 				array(
-					'methods' => WP_REST_Server::READABLE,
-					'callback' => array( $this, 'email_count' ),
-					'permission_callback' => array( $this, 'get_logs_permission' )
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'email_count' ),
+					'permission_callback' => array( $this, 'get_logs_permission' ),
 				),
 			);
 
@@ -63,9 +63,9 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				$this->namespace,
 				'minimize-maximize-ad',
 				array(
-					'methods' => WP_REST_Server::CREATABLE,
-					'callback' => array( $this, 'minimize_maximize_ad' ),
-					'permission_callback' => array( $this, 'get_logs_permission' )
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'minimize_maximize_ad' ),
+					'permission_callback' => array( $this, 'get_logs_permission' ),
 				),
 			);
 
@@ -73,9 +73,9 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				$this->namespace,
 				'get-failed-logs',
 				array(
-					'methods' => WP_REST_Server::READABLE,
-					'callback' => array( $this, 'get_failed_logs' ),
-					'permission_callback' => array( $this, 'get_logs_permission' )
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_failed_logs' ),
+					'permission_callback' => array( $this, 'get_logs_permission' ),
 				)
 			);
 
@@ -83,9 +83,9 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				$this->namespace,
 				'/open-notification',
 				array(
-					'methods' => WP_REST_Server::CREATABLE,
-					'callback' => array( $this, 'open_notification' ),
-					'permission_callback' => array( $this, 'get_logs_permission' )
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'open_notification' ),
+					'permission_callback' => array( $this, 'get_logs_permission' ),
 				)
 			);
 
@@ -93,9 +93,9 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				$this->namespace,
 				'/remove-notification',
 				array(
-					'methods' => WP_REST_Server::CREATABLE,
-					'callback' => array( $this, 'remove_notification' ),
-					'permission_callback' => array( $this, 'get_logs_permission' )
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'remove_notification' ),
+					'permission_callback' => array( $this, 'get_logs_permission' ),
 				)
 			);
 		}
@@ -107,7 +107,7 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 		 */
 		public function get_logs( $request ) {
 
-			$logs_query = new PostmanEmailQueryLog;
+			$logs_query = new PostmanEmailQueryLog();
 
 			$data = $logs_query->get_logs(
 				array(
@@ -117,7 +117,7 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 			);
 			$data = array_slice( $data, 0, 4 );
 			$data = array_map(
-				function( $log ) {
+				function ( $log ) {
 					$data = array(
 						'id'            => $log->id,
 						'subject'       => $log->original_subject,
@@ -170,9 +170,9 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 					}
 				}
 
-				if( isset( $response['time'] ) ) {
+				if ( isset( $response['time'] ) ) {
 
-					//WordPress Date, Time Format
+					// WordPress Date, Time Format
 					$date_format = get_option( 'date_format' );
 					$time_format = get_option( 'time_format' );
 
@@ -219,7 +219,7 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				if ( ! empty( $recipient_email ) ) {
 					$emails = explode( ',', $recipient_email );
 					$to     = array_map(
-						function( $email ) {
+						function ( $email ) {
 							return sanitize_text_field( wp_unslash( $email ) );
 						},
 						$emails
@@ -242,9 +242,9 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 					$statusMessage = sprintf( __( 'Your message was delivered (%d ms) to the SMTP server! Congratulations :)', 'post-smtp' ), $result ['time'] );
 
 					$response = array(
-						'success'       => true,
-						'message'       => $statusMessage,
-						'transcript'    => $transcript,
+						'success'    => true,
+						'message'    => $statusMessage,
+						'transcript' => $transcript,
 					);
 
 					$logger->trace( 'RestAPI response' );
@@ -256,17 +256,16 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 
 					// compose the JSON response for the caller
 					$response = array(
-						'message' => $statusMessage,
+						'message'    => $statusMessage,
 						'transcript' => $transcript,
 					);
 					$logger->trace( 'RestAPI response' );
 					$logger->trace( $response );
 				}
-
 			} else {
 				$response = array(
 					'success' => false,
-					'message' => __( 'Error Resending Email', 'post-smtp' )
+					'message' => __( 'Error Resending Email', 'post-smtp' ),
 				);
 			}
 
@@ -280,7 +279,7 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 		 */
 		public function email_count( $request ) {
 			$period        = $request->get_param( 'period' );
-            $opened_emails = $request->get_param( 'opened' );
+			$opened_emails = $request->get_param( 'opened' );
 			$current_time  = current_time( 'timestamp' );
 
 			switch ( $period ) {
@@ -297,54 +296,58 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 					$filter = strtotime( '-1 month', $today );
 					break;
 			}
-            $logs_query = new PostmanEmailQueryLog;
-            $logs = $logs_query->get_logs(
-                array(
-                    'order' => 'desc',
-                    'order_by' => 'id',
-                    'to' => $current_time,
-                    'from' => $filter,
-                )
-            );
+			$logs_query = new PostmanEmailQueryLog();
+			$logs       = $logs_query->get_logs(
+				array(
+					'order'    => 'desc',
+					'order_by' => 'id',
+					'to'       => $current_time,
+					'from'     => $filter,
+				)
+			);
 
-            $success = $logs;
-            $success = array_filter($success, function ($log) {
-                return 1 === absint($log->success);
-            });
+			$success = $logs;
+			$success = array_filter(
+				$success,
+				function ( $log ) {
+					return 1 === absint( $log->success );
+				}
+			);
 
-            $failed = $logs;
-            $failed = array_filter($failed, function ($log) {
-                return 1 !== absint($log->success);
-            });
+			$failed = $logs;
+			$failed = array_filter(
+				$failed,
+				function ( $log ) {
+					return 1 !== absint( $log->success );
+				}
+			);
 
+			$data = array(
+				'success' => true,
+				'message' => 'Email count fetched successfully',
+				'status'  => 200,
+				'count'   => array(
+					'success' => count( $success ),
+					'failed'  => count( $failed ),
+					'total'   => count( $logs ),
+				),
+			);
 
-            $data = array(
-                'success' => true,
-                'message' => 'Email count fetched successfully',
-                'status'  => 200,
-                'count'   => array(
-                    'success' => count( $success ),
-                    'failed'  => count( $failed ),
-                    'total'   => count( $logs ),
-                ),
-            );
+			$opened_emails_count = apply_filters(
+				'post_smtp_dashboard_opened_emails_count',
+				0,
+				array(
+					'period'       => $period,
+					'current_time' => $current_time,
+					'filter'       => $filter,
+				)
+			);
 
-            $opened_emails_count = apply_filters(
-                'post_smtp_dashboard_opened_emails_count',
-                0,
-                array(
-                    'period'       => $period,
-                    'current_time' => $current_time,
-                    'filter'       => $filter,
-                )
-            );
+			if ( $opened_emails_count ) {
+				$data['count']['opened'] = $opened_emails_count;
+			}
 
-
-            if ( $opened_emails_count ) {
-                $data['count']['opened'] = $opened_emails_count;
-            }
-
-            return $data;
+			return $data;
 		}
 
 		/**
@@ -375,7 +378,7 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 		 * @return array
 		 */
 		public function get_failed_logs( $request ) {
-			$logs_query = new PostmanEmailQueryLog;
+			$logs_query = new PostmanEmailQueryLog();
 			$data       = $logs_query->get_logs(
 				array(
 					'order'    => 'desc',
@@ -384,12 +387,12 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 			);
 
 			$current_time = current_time( 'timestamp' );
-			$data = array_map(
-				function( $log ) use ( $current_time ) {
+			$data         = array_map(
+				function ( $log ) use ( $current_time ) {
 					// calculate time difference and convert it into h m or s
 					$time_diff = $current_time - $log->time;
 					$time_diff = human_time_diff( $log->time, $current_time );
-					
+
 					$data = array(
 						'id'            => $log->id,
 						'subject'       => $log->original_subject,
@@ -407,9 +410,9 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				},
 				$data
 			);
-			$data = array_filter(
+			$data         = array_filter(
 				$data,
-				function( $log ) {
+				function ( $log ) {
 					if ( 'failed' === $log['status'] ) {
 						$deleted_notification = postman_get_log_meta( $log['id'], 'notification_deleted' );
 						if ( ! $deleted_notification ) {
@@ -430,7 +433,6 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				'status'  => 200,
 				'logs'    => $data,
 			);
-
 		}
 
 		/**
@@ -475,7 +477,6 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				'message' => 'Notification removed successfully',
 				'status'  => 200,
 			);
-
 		}
 
 		/**

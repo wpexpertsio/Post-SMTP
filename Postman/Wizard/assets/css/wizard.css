@@ -1,685 +1,685 @@
 .admin_page_postman-configuration_wizard {
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
-  scrollbar-width: none;  /* Firefox */
+	-ms-overflow-style: none;  /* Internet Explorer 10+ */
+	scrollbar-width: none;  /* Firefox */
 }
-.admin_page_postman-configuration_wizard::-webkit-scrollbar { 
-  display: none;  /* Safari and Chrome */
+.admin_page_postman-configuration_wizard::-webkit-scrollbar {
+	display: none;  /* Safari and Chrome */
 }
 
 .ps-logo {
-  text-align: center;
-  margin: 50px 0;
+	text-align: center;
+	margin: 50px 0;
 }
 
 .ps-wizard-outer {
-  border: 2px solid #375caf;
-  border-radius: 7px;
-  width: 875px;
-  margin: 0 auto;
+	border: 2px solid #375caf;
+	border-radius: 7px;
+	width: 875px;
+	margin: 0 auto;
 }
 
 .ps-wizard-nav {
-  width: 32%;
-  float: left;
+	width: 32%;
+	float: left;
 }
 
 .ps-wizard-pages {
-  width: 67%;
-  float: right;
+	width: 67%;
+	float: right;
 }
 
 .ps-wizard-section {
-  margin: 25px 0;
+	margin: 25px 0;
 }
 
 .ps-wizard-footer {
-  background: #f1f1f1;
-  padding: 17px 0;
+	background: #f1f1f1;
+	padding: 17px 0;
 }
 
 .ps-wizard-nav {
-  border-right: 1px solid #d9d9d9;
+	border-right: 1px solid #d9d9d9;
 }
 
 .ps-wizard-section .ps-wizard-nav {
-  height: 484px;
+	height: 484px;
 }
 
 .smtp-outer .ps-wizard-section .ps-wizard-nav {
-  height: 978px;
+	height: 978px;
 }
 
 .gmail_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 1087px;
+	height: 1087px;
 }
 
 .mandrill_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
+	height: 676px;
 }
 
 .sendgrid_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
+	height: 676px;
 }
 
 .mailgun_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 904px;
+	height: 904px;
 }
 
 .sendinblue_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 724px;
+	height: 724px;
 }
 
 .postmark_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
+	height: 676px;
 }
 
 .sparkpost_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
+	height: 676px;
 }
 
 .elasticemail_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
+	height: 676px;
 }
 
 .office365_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 978px;
+	height: 978px;
 }
 
 .zohomail_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 1087px;
+	height: 1087px;
 }
 
 .aws_ses_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 887px;
+	height: 887px;
 }
 
 .mailjet_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 778px;
+	height: 778px;
 }
 
 .sendpulse_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 775px;
+	height: 775px;
 }
 
 .ps-wizard-footer .ps-wizard-nav {
-  border-right: none;
+	border-right: none;
 }
 
 .ps-wizard-nav table,
 .ps-wizard-footer table {
-  padding: 0 25px;
+	padding: 0 25px;
 }
 
 .ps-wizard-edit span {
-  color: #375caf;
-  font-size: 25px;
+	color: #375caf;
+	font-size: 25px;
 }
 
 .ps-wizard-nav table td,
 .ps-wizard-footer table td {
-  padding: 12px 6px;
-  vertical-align: middle;
+	padding: 12px 6px;
+	vertical-align: middle;
 }
 
 .ps-wizard-circle {
-  text-align: center;
+	text-align: center;
 }
 
 .ps-active-nav .ps-wizard-circle span.ps-tick:before {
-  background-color: #375caf;
+	background-color: #375caf;
 }
 
 .ps-in-active-nav  .ps-wizard-circle span.ps-tick:before {
-  background-color: #d9d9d9;
+	background-color: #d9d9d9;
 }
 
 .ps-active-nav .ps-wizard-circle span.ps-tick:before,
 .ps-in-active-nav .ps-wizard-circle span.ps-tick:before
- {
-  content: '';
-  height: 35px;
-  width: 35px;
-  border-radius: 40px;
-  display: inline-block;
-  vertical-align: top;
-  line-height: 1;
-  margin: 4.4px 4.6px;
+{
+	content: '';
+	height: 35px;
+	width: 35px;
+	border-radius: 40px;
+	display: inline-block;
+	vertical-align: top;
+	line-height: 1;
+	margin: 4.4px 4.6px;
 }
 
 .ps-active-nav .ps-wizard-circle span.ps-tick,
 .ps-in-active-nav .ps-wizard-circle span.ps-tick
- {
-  display: inline-table;
-  width: 48px;
-  height: 48px;
+{
+	display: inline-table;
+	width: 48px;
+	height: 48px;
 }
 
 .ps-wizard-circle span.ps-tick {
-  font-size: 44px;
-  display: inline-table;
-  color: #375caf;
+	font-size: 44px;
+	display: inline-table;
+	color: #375caf;
 }
 
 .ps-wizard-text {
-  font-weight: 600;
+	font-weight: 600;
 }
 
 .ps-wizard-footer-left {
-  width: 32%;
-  float: left;
+	width: 32%;
+	float: left;
 }
 
 .ps-wizard-footer-right {
-  float: right;
-  width: 67%;
+	float: right;
+	width: 67%;
 }
 
 .ps-in-active-nav .ps-wizard-edit,
 .ps-active-nav .ps-wizard-edit,
 .ps-wizard-footer .ps-in-active-nav .ps-wizard-text {
-  display: none;
+	display: none;
 }
 
 .ps-tick {
-  position: relative;
-  z-index: 8;
+	position: relative;
+	z-index: 8;
 }
 
 .ps-in-active-nav .ps-wizard-line:after,
 .ps-active-nav .ps-wizard-line:after {
-  content: '';
-  position: absolute;
-  width: 3px;
-  height: 39px;
-  left: 23px;
-  bottom: 41px;
-  z-index: -3;
+	content: '';
+	position: absolute;
+	width: 3px;
+	height: 39px;
+	left: 23px;
+	bottom: 41px;
+	z-index: -3;
 }
 
 .ps-in-active-nav .ps-wizard-line:after {
-  background: #d9d9d9;
+	background: #d9d9d9;
 }
 
 .ps-active-nav .ps-wizard-line:after,
 .ps-wizard-line:after {
-  background: #375caf;
+	background: #375caf;
 }
 
 .ps-wizard-footer .ps-active-nav .ps-wizard-line:after {
-  height: 342px;
+	height: 342px;
 }
 
 .ps-wizard-screens-container {
-  padding: 0 25px;
+	padding: 0 25px;
 }
 
 .ps-wizard-step {
-  display: none;
+	display: none;
 }
 
 .ps-wizard-pages p {
-  font-weight: 600;
-  font-size: 12px;
+	font-weight: 600;
+	font-size: 12px;
 }
 
 .ps-wizard-pages a {
-  color: #000;
+	color: #000;
 }
 
 .smtp-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 837px;
+	height: 837px;
 }
 
 .gmail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 946px;
+	height: 946px;
 }
 
 .mandrill_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 535px;
+	height: 535px;
 }
 
 .sendgrid_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 535px;
+	height: 535px;
 }
 
 .mailgun_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 763px;
+	height: 763px;
 }
 
 .sendinblue_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 583px;
+	height: 583px;
 }
 
 .postmark_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 535px;
+	height: 535px;
 }
 
 .sparkpost_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 535px;
+	height: 535px;
 }
 
 .elasticemail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 535px;
+	height: 535px;
 }
 
 .office365_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 837px;
+	height: 837px;
 }
 
 .zohomail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 946px;
+	height: 946px;
 }
 
 .aws_ses_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 746px;
+	height: 746px;
 }
 
 .mailjet_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 638px;
+	height: 638px;
 }
 
 .sendpulse_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 635px;
+	height: 635px;
 }
 
 .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 343px;
+	height: 343px;
 }
 
 .ps-wizard-sockets {
-  display: flex;
-  margin: 15px 0 15px 0;
+	display: flex;
+	margin: 15px 0 15px 0;
 }
 
 .ps-wizard-socket-radio label {
-  margin: 0;
-  overflow: hidden;
-  position: relative;
+	margin: 0;
+	overflow: hidden;
+	position: relative;
 }
 
 .ps-wizard-socket-radio img {
-  width: 31px;
-  cursor: pointer;
-  transition: transform 1s;
-  object-fit: cover;
-  padding: 8px 20px 3px 20px;
+	width: 31px;
+	cursor: pointer;
+	transition: transform 1s;
+	object-fit: cover;
+	padding: 8px 20px 3px 20px;
 }
 
 .ps-wizard-socket-tick-container {
-  transition: .5s ease;
-  opacity: 0;
-  position: absolute;
-  top: 29%;
-  left: 29%;
-  transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  cursor: pointer;
+	transition: .5s ease;
+	opacity: 0;
+	position: absolute;
+	top: 29%;
+	left: 29%;
+	transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	cursor: pointer;
 }
 
 .ps-wizard-socket-check:checked + label > .ps-wizard-socket-tick-container {
-  opacity: 1;
+	opacity: 1;
 }
 
 .ps-wizard-socket-radio {
-  border: 2px solid #000;
-  width: 100px;
-  height: 66px;
-  margin-right: 15px;
+	border: 2px solid #000;
+	width: 100px;
+	height: 66px;
+	margin-right: 15px;
 }
 
 .ps-wizard-socket-radio input {
-  display: none!important;
+	display: none!important;
 }
 
 .ps-wizard-socket-radio label {
-  margin: 0!important;
-  display: inline-block;
+	margin: 0!important;
+	display: inline-block;
 }
 
 .ps-wizard-socket-tick span {
-  font-size: 15px;
-  background-color: #4caf50;
-  color: #fff;
-  border-radius: 100%;
-  height: 15px;
-  width: 15px;
-  border: 2px solid #fff;
+	font-size: 15px;
+	background-color: #4caf50;
+	color: #fff;
+	border-radius: 100%;
+	height: 15px;
+	width: 15px;
+	border: 2px solid #fff;
 }
 
 .ps-wizard-socket-radio-outer {
-  text-align: center;
+	text-align: center;
 }
 
 .ps-wizard-sockets h4 {
-  margin: 0;
+	margin: 0;
 }
 
 .ps-wizard-socket-radio:has(.ps-wizard-socket-check:checked) {
-  border: 2px solid #4db556;
+	border: 2px solid #4db556;
 }
 
 .button-primary.ps-blue-btn {
-  border: #485b87;
-  background: #375caf;
-  border-radius: 0px;
-  line-height: 40px;
-  width: 184px;
+	border: #485b87;
+	background: #375caf;
+	border-radius: 0px;
+	line-height: 40px;
+	width: 184px;
 }
 
-.button-primary.ps-blue-btn.focus, 
-.button-primary.ps-blue-btn.hover, 
-.button-primary.ps-blue-btn:focus, 
+.button-primary.ps-blue-btn.focus,
+.button-primary.ps-blue-btn.hover,
+.button-primary.ps-blue-btn:focus,
 .button-primary.ps-blue-btn:hover {
-  background: #4c6fbd;
-  border-color: #4c6fbd;
+	background: #4c6fbd;
+	border-color: #4c6fbd;
 }
 
 .button-primary.ps-yellow-btn {
-  border: #ff9900;
-  background: #fa8900;
-  border-radius: 50px;
-  line-height: 35px;
-  width: 170px;
-  color: #000 !important;
+	border: #ff9900;
+	background: #fa8900;
+	border-radius: 50px;
+	line-height: 35px;
+	width: 170px;
+	color: #000 !important;
 }
 
-.button-primary.ps-yellow-btn.focus, 
-.button-primary.ps-yellow-btn.hover, 
-.button-primary.ps-yellow-btn:focus, 
+.button-primary.ps-yellow-btn.focus,
+.button-primary.ps-yellow-btn.hover,
+.button-primary.ps-yellow-btn:focus,
 .button-primary.ps-yellow-btn:hover {
-  background: #ffac31;
-  border-color: #000000;
+	background: #ffac31;
+	border-color: #000000;
 }
 
-.button-primary.ps-blue-btn .dashicons, 
+.button-primary.ps-blue-btn .dashicons,
 .button-primary.ps-yellow-btn .dashicons {
-  vertical-align: middle;
-  font-size: 15px;
+	vertical-align: middle;
+	font-size: 15px;
 }
 
 .button-primary {
-  text-align: center;
+	text-align: center;
 }
 
 .ps-wizard-footer-right button {
-  float: right;
+	float: right;
 }
 
 .ps-wizard-footer-right .ps-wizard-step-1,
-.ps-wizard-footer-right .ps-wizard-step-2, 
+.ps-wizard-footer-right .ps-wizard-step-2,
 .ps-wizard-footer-right .ps-wizard-step-3,
 .ps-wizard-footer-right .ps-wizard-step-4 {
-  padding: 15px 10px;
+	padding: 15px 10px;
 }
 
 .ps-wizard-error {
-  color: red;
+	color: red;
 }
 
 .ps-wizard-success {
-  color: green;
+	color: green;
 }
 
 .ps-wizard-error,
 .ps-wizard-success {
-  display: inline-block;
-  font-weight: 600;;
+	display: inline-block;
+	font-weight: 600;;
 }
 
 .ps-wizard-pages {
-  min-height: 351px;
+	min-height: 351px;
 }
 
 .ps-wizard-edit .dashicons-edit {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 .ps-wizard-socket {
-  display: none;
+	display: none;
 }
 
 .ps-wizard-back {
-  font-size: 12px;
-  text-decoration: none;
-  color: #375caf!important;
+	font-size: 12px;
+	text-decoration: none;
+	color: #375caf!important;
 }
 
 .ps-wizard-back span {
-  font-size: 13px;
-  vertical-align: sub;
+	font-size: 13px;
+	vertical-align: sub;
 }
 
 .ps-wizard-socket h3 {
-  margin: 5px 0;
+	margin: 5px 0;
 }
 
 .ps-form-ui label {
-  font-weight: 600;
+	font-weight: 600;
 }
 
-.ps-form-ui input[type="text"], 
+.ps-form-ui input[type="text"],
 .ps-form-ui select {
-  width: 100%!important;
-  max-width: 100%!important;
-  height: 37px;
-  margin-top: 5px;
-  border: 1px solid #000;
-  border-radius: 0;
+	width: 100%!important;
+	max-width: 100%!important;
+	height: 37px;
+	margin-top: 5px;
+	border: 1px solid #000;
+	border-radius: 0;
 }
 
 .ps-form-control {
-  margin-bottom: 25px;
+	margin-bottom: 25px;
 }
 
 .ps-form-control-info {
-  color: #979797;
-  font-size: 10px;
+	color: #979797;
+	font-size: 10px;
 }
 
 .ps-wizard-socket {
-  line-height: 22px;
+	line-height: 22px;
 }
 
 .ps-form-switch-control {
-  display: inline-block;
+	display: inline-block;
 }
 
 .ps-form-switch-control .ps-switch-1 input:checked + .slider {
-  background-color: #375caf;
+	background-color: #375caf;
 }
 
 .ps-wizard-congrates {
-  float: left;
+	float: left;
 }
 
 .ps-wizard-view-logs {
-  float: right;
+	float: right;
 }
 
 .ps-wizard-pages .ps-wizard-step-4 a {
-  color: #375caf;
+	color: #375caf;
 }
 
 .ps-wizard-card {
-    background: whitesmoke;
-    padding: 8px 15px;
+	background: whitesmoke;
+	padding: 8px 15px;
 }
 
 .ps-wizard-card p {
-  margin-bottom: 30px;
+	margin-bottom: 30px;
 }
 
 .ps-wizard-page-footer {
-  width: 875px;
-  text-align: center;
-  margin: 45px auto;
+	width: 875px;
+	text-align: center;
+	margin: 45px auto;
 }
 
 .ps-wizard-page-footer a {
-  margin: 0 25px;
-  color: #949494;
+	margin: 0 25px;
+	color: #949494;
 }
 
 .ps-wizard-footer .ps-active-nav .ps-wizard-circle span.ps-tick:before {
-  content: "\f12a";
-  background-color: transparent;
-  margin: 0;
-  height: auto;
-  width: auto;
+	content: "\f12a";
+	background-color: transparent;
+	margin: 0;
+	height: auto;
+	width: auto;
 }
 
 .ps-pro-extension-outer {
-  position: relative;
+	position: relative;
 }
 
 .ps-pro-extension-tag {
-  position: absolute;
-  left: 0;
-  top: 0;
-  background: #FF9900;
-  color: #ffffff;
+	position: absolute;
+	left: 0;
+	top: 0;
+	background: #FF9900;
+	color: #ffffff;
 }
 
 .ps-pro-extension-tag {
-  position: absolute;
-  left: 1px;
-  top: 1px;
-  background: #FF9900;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: bold;
-  font-family: sans-serif;
-  padding: 0px 3px;
+	position: absolute;
+	left: 1px;
+	top: 1px;
+	background: #FF9900;
+	color: #ffffff;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: sans-serif;
+	padding: 0px 3px;
 }
 
 .ps-pro-popup-overlay {
-  display: none;
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: #bfbfbfa1;
-  z-index: 9990;
+	display: none;
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background: #bfbfbfa1;
+	z-index: 9990;
 }
 
 .ps-pro-popup-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
+	position: relative;
+	width: 100%;
+	height: 100%;
 }
 
 .ps-pro-popup-outer {
-  position: absolute;
-  width: 550px;
-  height: 400px;
-  background: #fff;
-  margin: auto;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  border-radius: 7px;
+	position: absolute;
+	width: 550px;
+	height: 400px;
+	background: #fff;
+	margin: auto;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	border-radius: 7px;
 }
 
 span.ps-pro-close-popup {
-  position: absolute;
-  right: 18px;
-  top: 0;
-  color: #222222;
-  border: 1px solid #e2e4ea;
-  border-radius: 50px;
-  cursor: pointer;
+	position: absolute;
+	right: 18px;
+	top: 0;
+	color: #222222;
+	border: 1px solid #e2e4ea;
+	border-radius: 50px;
+	cursor: pointer;
 }
 
 .ps-pro-popup-body {
-  position: relative;
-  line-height: 30px;
+	position: relative;
+	line-height: 30px;
 }
 
 .ps-pro-popup-content {
-  width: 92%;
-  text-align: center;
-  margin: 15px auto;
+	width: 92%;
+	text-align: center;
+	margin: 15px auto;
 }
 
 .ps-pro-popup-content h1 {
-  color: #214A72;
-  font-weight: 400;
+	color: #214A72;
+	font-weight: 400;
 }
 
 .ps-pro-popup-content p {
-  font-size: 11px;
-  color: #6A788B;
-  margin: 25px 0;
-  font-weight: 400;
-  width: 75%;
-  margin: 25px auto;
+	font-size: 11px;
+	color: #6A788B;
+	margin: 25px 0;
+	font-weight: 400;
+	width: 75%;
+	margin: 25px auto;
 }
 
 .ps-pro-promo-area {
-  background: #f0f6ff;
-  border-radius: 6px;
-  margin: 20px 0 5px 0;
-  padding: 16px 0px;
-  position: relative;
+	background: #f0f6ff;
+	border-radius: 6px;
+	margin: 20px 0 5px 0;
+	padding: 16px 0px;
+	position: relative;
 }
 
 .ps-pro-promo-area p {
-  color: #214a72;
-  font-size: 12px;
-  margin: 0 auto;
+	color: #214a72;
+	font-size: 12px;
+	margin: 0 auto;
 }
 
 .ps-pro-promo-area b {
-  font-weight: bolder;
+	font-weight: bolder;
 }
 
 .ps-pro-coupon {
-  background: #5e7cbf;
-  display: inline-block;
-  padding: 0px 14px;
-  border-radius: 7px;
-  margin-top: 10px;
+	background: #5e7cbf;
+	display: inline-block;
+	padding: 0px 14px;
+	border-radius: 7px;
+	margin-top: 10px;
 }
 
 .ps-pro-coupon b {
-  color: #fff;
+	color: #fff;
 }
 
 .ps-pro-discount {
-  background: #121FCF;
-  background: linear-gradient(298.51deg, #8ED2F5 -7.43%, #46519E 78.45%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: bolder;
+	background: #121FCF;
+	background: linear-gradient(298.51deg, #8ED2F5 -7.43%, #46519E 78.45%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	font-weight: bolder;
 }
 #ps-pro-code-copy-notification .dashicons {
-  vertical-align: middle;
+	vertical-align: middle;
 }
 
 .ps-click-to-copy {
-  vertical-align: sub;
+	vertical-align: sub;
 }
 
 .ps-click-to-copy {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 .ps-wizard-connectivity-information {
-  border: 1px solid #EFB3B3;
-  padding: 8px;
-  background: #FFE4E4;
-  color: #000;
-  margin-top: 15px;
+	border: 1px solid #EFB3B3;
+	padding: 8px;
+	background: #FFE4E4;
+	color: #000;
+	margin-top: 15px;
 }
 
 .ps-wizard-connectivity-information .dashicons {
-  color: #E57373;
+	color: #E57373;
 }
 
 .ps-wizard-outer.smtp2go_api-outer .ps-wizard-footer-left .ps-wizard-line::after {
-  height: 557px;
+	height: 557px;
 }
 
 /* Lets make wizard responsive */

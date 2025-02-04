@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 class PostmanDiagnosticTestController {
 	const DIAGNOSTICS_SLUG = 'postman/diagnostics';
@@ -22,24 +22,30 @@ class PostmanDiagnosticTestController {
 		assert( PostmanUtils::isAdmin() );
 		assert( is_admin() );
 
-		$this->logger = new PostmanLogger( get_class( $this ) );
+		$this->logger                    = new PostmanLogger( get_class( $this ) );
 		$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;
-		$this->options = PostmanOptions::getInstance();
+		$this->options                   = PostmanOptions::getInstance();
 
 		// register the admin menu
 		PostmanUtils::registerAdminMenu( $this, 'addDiagnosticsSubmenu' );
 
 		// hook on the init event
-		add_action( 'init', array(
+		add_action(
+			'init',
+			array(
 				$this,
 				'on_init',
-		) );
+			)
+		);
 
 		// initialize the scripts, stylesheets and form fields
-		add_action( 'admin_init', array(
+		add_action(
+			'admin_init',
+			array(
 				$this,
 				'on_admin_init',
-		) );
+			)
+		);
 	}
 
 	/**
@@ -70,25 +76,40 @@ class PostmanDiagnosticTestController {
 
 		// register the javascript resource
 		$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
-		wp_register_script( 'postman_diagnostics_script', plugins_url( 'Postman/Postman-Diagnostic-Test/postman_diagnostics.js', $this->rootPluginFilenameAndPath ), array(
+		wp_register_script(
+			'postman_diagnostics_script',
+			plugins_url( 'Postman/Postman-Diagnostic-Test/postman_diagnostics.js', $this->rootPluginFilenameAndPath ),
+			array(
 				PostmanViewController::JQUERY_SCRIPT,
 				PostmanViewController::POSTMAN_SCRIPT,
-		), $pluginData ['version'] );
+			),
+			$pluginData ['version']
+		);
 	}
 
 	/**
 	 * Register the Diagnostics screen
 	 */
 	public function addDiagnosticsSubmenu() {
-		$page = add_submenu_page( ' ', sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ), __( 'Postman SMTP', 'post-smtp' ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanDiagnosticTestController::DIAGNOSTICS_SLUG, array(
+		$page = add_submenu_page(
+			' ',
+			sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ),
+			__( 'Postman SMTP', 'post-smtp' ),
+			Postman::MANAGE_POSTMAN_CAPABILITY_NAME,
+			self::DIAGNOSTICS_SLUG,
+			array(
 				$this,
 				'outputDiagnosticsContent',
-		) );
+			)
+		);
 		// When the plugin options page is loaded, also load the stylesheet
-		add_action( 'admin_print_styles-' . $page, array(
+		add_action(
+			'admin_print_styles-' . $page,
+			array(
 				$this,
 				'enqueueDiagnosticsScreenStylesheet',
-		) );
+			)
+		);
 	}
 	function enqueueDiagnosticsScreenStylesheet() {
 		wp_enqueue_style( PostmanViewController::POSTMAN_STYLE );
@@ -104,10 +125,10 @@ class PostmanDiagnosticTestController {
 		PostmanViewController::outputChildPageHeader( __( 'Diagnostic Test', 'post-smtp' ) );
 
 		?>
-        <form>
-            <?php wp_nonce_field('post-smtp', 'security' ); ?>
-        </form>
-        <?php
+		<form>
+			<?php wp_nonce_field( 'post-smtp', 'security' ); ?>
+		</form>
+		<?php
 
 		printf( '<h4>%s</h4>', __( 'Are you having issues with Postman?', 'post-smtp' ) );
 		/* translators: where %1$s and %2$s are the URLs to the Troubleshooting and Support Forums on WordPress.org */
@@ -133,9 +154,9 @@ class PostmanGetDiagnosticsViaAjax {
 	 * @param PostmanOptions $options
 	 */
 	function __construct() {
-		$this->options = PostmanOptions::getInstance();
+		$this->options            = PostmanOptions::getInstance();
 		$this->authorizationToken = PostmanOAuthToken::getInstance();
-		$this->diagnostics = '';
+		$this->diagnostics        = '';
 		PostmanUtils::registerAjaxHandler( 'postman_diagnostics', $this, 'getDiagnostics' );
 	}
 	private function addToDiagnostics( $header, $data ) {
@@ -145,8 +166,8 @@ class PostmanGetDiagnosticsViaAjax {
 	}
 	private function getActivePlugins() {
 		// from http://stackoverflow.com/questions/20488264/how-do-i-get-activated-plugin-list-in-wordpress-plugin-development
-		$apl = get_option( 'active_plugins' );
-		$plugins = get_plugins();
+		$apl        = get_option( 'active_plugins' );
+		$plugins    = get_plugins();
 		$pluginText = array();
 		foreach ( $apl as $p ) {
 			if ( isset( $plugins [ $p ] ) ) {
@@ -156,10 +177,10 @@ class PostmanGetDiagnosticsViaAjax {
 		return implode( ', ', $pluginText );
 	}
 	private function getPhpDependencies() {
-		$apl = PostmanPreRequisitesCheck::getState();
+		$apl        = PostmanPreRequisitesCheck::getState();
 		$pluginText = array();
 		foreach ( $apl as $p ) {
-			array_push( $pluginText, $p ['name'] . '=' . ($p ['ready'] ? 'Yes' : 'No') );
+			array_push( $pluginText, $p ['name'] . '=' . ( $p ['ready'] ? 'Yes' : 'No' ) );
 		}
 		return implode( ', ', $pluginText );
 	}
@@ -178,10 +199,10 @@ class PostmanGetDiagnosticsViaAjax {
 	 */
 	private function testConnectivity( PostmanModuleTransport $transport ) {
 		$hostname = $transport->getHostname( $this->options );
-		$port = $transport->getPort( $this->options );
+		$port     = $transport->getPort( $this->options );
 		if ( ! empty( $hostname ) && ! empty( $port ) ) {
 			$portTest = new PostmanPortTest( $transport->getHostname( $this->options ), $transport->getPort( $this->options ) );
-			$result = $portTest->genericConnectionTest( $this->options->getConnectionTimeout() );
+			$result   = $portTest->genericConnectionTest( $this->options->getConnectionTimeout() );
 			if ( $result ) {
 				return 'Yes';
 			} else {
@@ -204,10 +225,10 @@ class PostmanGetDiagnosticsViaAjax {
 			foreach ( $functions as $function ) {
 				$thing = $function ['function'];
 				if ( is_array( $thing ) ) {
-                    $name = get_class($thing [0]) . '->' . $thing [1];
-                    array_push($functionArray, $name);
-                } elseif ( is_object( $thing ) ) {
-                    array_push( $functionArray, 'Anonymous Function' );
+					$name = get_class( $thing [0] ) . '->' . $thing [1];
+					array_push( $functionArray, $name );
+				} elseif ( is_object( $thing ) ) {
+					array_push( $functionArray, 'Anonymous Function' );
 				} else {
 					array_push( $functionArray, $thing );
 				}
@@ -221,34 +242,34 @@ class PostmanGetDiagnosticsViaAjax {
 	 */
 	public function getDiagnostics() {
 
-	    check_admin_referer('post-smtp', 'security');
+		check_admin_referer( 'post-smtp', 'security' );
 
-		if( !current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
-			wp_send_json_error( 
+		if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
+			wp_send_json_error(
 				array(
-					'Message'	=>	'Unauthorized.'
-				), 
+					'Message' => 'Unauthorized.',
+				),
 				401
 			);
 		}
 
-	    $curl = curl_version();
+		$curl              = curl_version();
 		$transportRegistry = PostmanTransportRegistry::getInstance();
-        $this->addToDiagnostics( 'Mailer', PostmanOptions::getInstance()->getSmtpMailer() );
+		$this->addToDiagnostics( 'Mailer', PostmanOptions::getInstance()->getSmtpMailer() );
 		$this->addToDiagnostics( 'HostName', PostmanUtils::getServerName() );
 		$this->addToDiagnostics( 'cURL Version', $curl['version'] );
 		$this->addToDiagnostics( 'OpenSSL Version', $curl['ssl_version'] );
 		$this->addToDiagnostics( 'OS', php_uname() );
 		$this->addToDiagnostics( 'PHP', PHP_OS . ' ' . PHP_VERSION . ' ' . setlocale( LC_CTYPE, 0 ) );
 		$this->addToDiagnostics( 'PHP Dependencies', $this->getPhpDependencies() );
-		$this->addToDiagnostics( 'WordPress', (is_multisite() ? 'Multisite ' : '') . get_bloginfo( 'version' ) . ' ' . get_locale() . ' ' . get_bloginfo( 'charset', 'display' ) );
+		$this->addToDiagnostics( 'WordPress', ( is_multisite() ? 'Multisite ' : '' ) . get_bloginfo( 'version' ) . ' ' . get_locale() . ' ' . get_bloginfo( 'charset', 'display' ) );
 		$this->addToDiagnostics( 'WordPress Theme', wp_get_theme() );
 		$this->addToDiagnostics( 'WordPress Plugins', $this->getActivePlugins() );
 
-        $bindResult = apply_filters( 'postman_wp_mail_bind_status', null );
-        $wp_mail_file_name = 'n/a';
+		$bindResult        = apply_filters( 'postman_wp_mail_bind_status', null );
+		$wp_mail_file_name = 'n/a';
 		if ( class_exists( 'ReflectionFunction' ) ) {
-			$wp_mail = new ReflectionFunction( 'wp_mail' );
+			$wp_mail           = new ReflectionFunction( 'wp_mail' );
 			$wp_mail_file_name = realpath( $wp_mail->getFileName() );
 		}
 
@@ -265,35 +286,35 @@ class PostmanGetDiagnosticsViaAjax {
 			$s1 = $this->options->getEnvelopeSender();
 			$s2 = $this->options->getMessageSenderEmail();
 		if ( ! empty( $s1 ) || ! empty( $s2 ) ) {
-			$this->addToDiagnostics( 'Postman Sender Domain (Envelope|Message)', ($hostname = substr( strrchr( $this->options->getEnvelopeSender(), '@' ), 1 )) . ' | ' . ($hostname = substr( strrchr( $this->options->getMessageSenderEmail(), '@' ), 1 )) );
+			$this->addToDiagnostics( 'Postman Sender Domain (Envelope|Message)', ( $hostname = substr( strrchr( $this->options->getEnvelopeSender(), '@' ), 1 ) ) . ' | ' . ( $hostname = substr( strrchr( $this->options->getMessageSenderEmail(), '@' ), 1 ) ) );
 		}
 		}
-		$this->addToDiagnostics( 'Postman Prevent Message Sender Override (Email|Name)', ($this->options->isSenderEmailOverridePrevented() ? 'Yes' : 'No') . ' | ' . ($this->options->isSenderNameOverridePrevented() ? 'Yes' : 'No') );
+		$this->addToDiagnostics( 'Postman Prevent Message Sender Override (Email|Name)', ( $this->options->isSenderEmailOverridePrevented() ? 'Yes' : 'No' ) . ' | ' . ( $this->options->isSenderNameOverridePrevented() ? 'Yes' : 'No' ) );
 		{
 			// status of the active transport
 			$transport = $transportRegistry->getActiveTransport();
 			$this->addToDiagnostics( 'Postman Active Transport', sprintf( '%s (%s)', $transport->getName(), $transportRegistry->getPublicTransportUri( $transport ) ) );
-			$this->addToDiagnostics( 'Postman Active Transport Status (Ready|Connected)', ($transport->isConfiguredAndReady() ? 'Yes' : 'No') . ' | ' . ($this->testConnectivity( $transport )) );
+			$this->addToDiagnostics( 'Postman Active Transport Status (Ready|Connected)', ( $transport->isConfiguredAndReady() ? 'Yes' : 'No' ) . ' | ' . ( $this->testConnectivity( $transport ) ) );
 		}
 		if ( $transportRegistry->getActiveTransport() != $transportRegistry->getSelectedTransport() && $transportRegistry->getSelectedTransport() != null ) {
 			// status of the selected transport
 			$transport = $transportRegistry->getSelectedTransport();
 			$this->addToDiagnostics( 'Postman Selected Transport', sprintf( '%s (%s)', $transport->getName(), $transportRegistry->getPublicTransportUri( $transport ) ) );
-			$this->addToDiagnostics( 'Postman Selected Transport Status (Ready|Connected)', ($transport->isConfiguredAndReady() ? 'Yes' : 'No') . ' | ' . ($this->testConnectivity( $transport )) );
+			$this->addToDiagnostics( 'Postman Selected Transport Status (Ready|Connected)', ( $transport->isConfiguredAndReady() ? 'Yes' : 'No' ) . ' | ' . ( $this->testConnectivity( $transport ) ) );
 		}
-		$this->addToDiagnostics( 'Postman Deliveries (Success|Fail)', (PostmanState::getInstance()->getSuccessfulDeliveries()) . ' | ' . (PostmanState::getInstance()->getFailedDeliveries()) );
+		$this->addToDiagnostics( 'Postman Deliveries (Success|Fail)', ( PostmanState::getInstance()->getSuccessfulDeliveries() ) . ' | ' . ( PostmanState::getInstance()->getFailedDeliveries() ) );
 		if ( $this->options->getConnectionTimeout() != PostmanOptions::DEFAULT_TCP_CONNECTION_TIMEOUT || $this->options->getReadTimeout() != PostmanOptions::DEFAULT_TCP_READ_TIMEOUT ) {
 			$this->addToDiagnostics( 'Postman TCP Timeout (Connection|Read)', $this->options->getConnectionTimeout() . ' | ' . $this->options->getReadTimeout() );
 		}
 		if ( $this->options->isMailLoggingEnabled() != PostmanOptions::DEFAULT_MAIL_LOG_ENABLED || $this->options->getMailLoggingMaxEntries() != PostmanOptions::DEFAULT_MAIL_LOG_ENTRIES || $this->options->getTranscriptSize() != PostmanOptions::DEFAULT_TRANSCRIPT_SIZE ) {
-			$this->addToDiagnostics( 'Postman Email Log (Enabled|Limit|Transcript Size)', ($this->options->isMailLoggingEnabled() ? 'Yes' : 'No') . ' | ' . $this->options->getMailLoggingMaxEntries() . ' | ' . $this->options->getTranscriptSize() );
+			$this->addToDiagnostics( 'Postman Email Log (Enabled|Limit|Transcript Size)', ( $this->options->isMailLoggingEnabled() ? 'Yes' : 'No' ) . ' | ' . $this->options->getMailLoggingMaxEntries() . ' | ' . $this->options->getTranscriptSize() );
 		}
 		$this->addToDiagnostics( 'Postman Run Mode', $this->options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ? null : $this->options->getRunMode() );
 		$this->addToDiagnostics( 'Postman PHP LogLevel', $this->options->getLogLevel() == PostmanLogger::ERROR_INT ? null : $this->options->getLogLevel() );
 		$this->addToDiagnostics( 'Postman Stealth Mode', $this->options->isStealthModeEnabled() ? 'Yes' : null );
 		$this->addToDiagnostics( 'Postman File Locking (Enabled|Temp Dir)', PostmanState::getInstance()->isFileLockingEnabled() ? null : 'No' . ' | ' . $this->options->getTempDirectory() );
 		$response = array(
-				'message' => $this->diagnostics,
+			'message' => $this->diagnostics,
 		);
 		wp_send_json_success( $response );
 	}

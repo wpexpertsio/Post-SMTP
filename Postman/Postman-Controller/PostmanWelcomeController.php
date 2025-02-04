@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 class PostmanWelcomeController {
@@ -9,8 +9,8 @@ class PostmanWelcomeController {
 
 	public function __construct( $rootPluginFilenameAndPath ) {
 		$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;
-		$this->pluginUrl = plugins_url( 'style', $rootPluginFilenameAndPath );
-		$this->version = PostmanState::getInstance()->getVersion();
+		$this->pluginUrl                 = plugins_url( 'style', $rootPluginFilenameAndPath );
+		$this->version                   = PostmanState::getInstance()->getVersion();
 
 		add_action( 'admin_menu', array( $this, 'add_menus' ) );
 		add_action( 'admin_head', array( $this, 'admin_head' ) );
@@ -22,8 +22,8 @@ class PostmanWelcomeController {
 
 			// About
 			add_dashboard_page(
-				__( 'Welcome',  'post-smtp' ),
-				__( 'Welcome',  'post-smtp' ),
+				__( 'Welcome', 'post-smtp' ),
+				__( 'Welcome', 'post-smtp' ),
 				'manage_options',
 				'post-about',
 				array( $this, 'about_screen' )
@@ -31,8 +31,8 @@ class PostmanWelcomeController {
 
 			// Credits
 			add_dashboard_page(
-				__( 'Credits',  'post-smtp' ),
-				__( 'Credits',  'post-smtp' ),
+				__( 'Credits', 'post-smtp' ),
+				__( 'Credits', 'post-smtp' ),
 				'manage_options',
 				'post-credits',
 				array( $this, 'credits_screen' )
@@ -56,18 +56,18 @@ class PostmanWelcomeController {
 		?>
 		<style type="text/css">
 			.post-badge {
-			    position: absolute;
-			    top: 0;
-			    right: 0;	
-			    padding-top: 142px;
-			    height: 50px;
-			    width: 140px;
-			    color: #000;
-			    font-weight: bold;
-			    font-size: 14px;
-			    text-align: center;
-			    margin: 0 -5px;
-			    background: url( <?php echo $this->pluginUrl; ?>/images/badge.png) no-repeat;	
+				position: absolute;
+				top: 0;
+				right: 0;	
+				padding-top: 142px;
+				height: 50px;
+				width: 140px;
+				color: #000;
+				font-weight: bold;
+				font-size: 14px;
+				text-align: center;
+				margin: 0 -5px;
+				background: url( <?php echo $this->pluginUrl; ?>/images/badge.png) no-repeat;	
 			}	
 
 			.about-wrap [class$="-col"] {
@@ -77,7 +77,7 @@ class PostmanWelcomeController {
 		<div class="wrap about-wrap">
 			<h1><?php printf( esc_html__( 'Welcome to Post SMTP %s', 'post-smtp' ), $this->version ); ?></h1>
 			<div class="about-text"><?php printf( esc_html__( 'Thank you for updating! Post SMTP %s is bundled up and ready to take your SMTP needs to the next level!', 'post-smtp' ), $this->version ); ?><br>
-				<?php printf( '<strong>%s</strong>','Post SMTP support every SMTP service: Gmail/G-suite, SendGrid, Mandrill, Office365, and more...' ); ?>
+				<?php printf( '<strong>%s</strong>', 'Post SMTP support every SMTP service: Gmail/G-suite, SendGrid, Mandrill, Office365, and more...' ); ?>
 			</div>
 			<div class="post-badge"><?php printf( esc_html__( 'Version %s', 'post-smtp' ), $this->version ); ?></div>
 
@@ -116,14 +116,21 @@ class PostmanWelcomeController {
 
 				<div class="feature-section col one-col">
 					<div class="last-feature">
-						<p><?php esc_html_e( 'Easy-to-use, powerful Setup Wizard for perfect configuration,
+						<p>
+						<?php
+						esc_html_e(
+							'Easy-to-use, powerful Setup Wizard for perfect configuration,
 						Commercial-grade Connectivity Tester to diagnose server issues,
 						Log and resend all emails; see the exact cause of failed emails,
 						Supports International alphabets, HTML Mail and MultiPart/Alternative,
 						Supports forced recipients (cc, bcc, to) and custom email headers,
 						SASL Support: Plain/Login/CRAM-MD5/XOAUTH2 authentication,
 						Security Support: SMTPS and STARTTLS (SSL/TLS),
-						Copy configuration to other instances of Post.', 'post-smtp' ); ?></p>
+						Copy configuration to other instances of Post.',
+							'post-smtp'
+						);
+						?>
+							</p>
 					</div>
 				</div>
 
@@ -158,18 +165,18 @@ class PostmanWelcomeController {
 		?>
 		<style type="text/css">
 			.post-badge {
-			    position: absolute;
-			    top: 0;
-			    right: 0;	
-			    padding-top: 142px;
-			    height: 50px;
-			    width: 140px;
-			    color: #000;
-			    font-weight: bold;
-			    font-size: 14px;
-			    text-align: center;
-			    margin: 0 -5px;
-			    background: url( <?php echo $this->pluginUrl; ?>/images/badge.png) no-repeat;	
+				position: absolute;
+				top: 0;
+				right: 0;	
+				padding-top: 142px;
+				height: 50px;
+				width: 140px;
+				color: #000;
+				font-weight: bold;
+				font-size: 14px;
+				text-align: center;
+				margin: 0 -5px;
+				background: url( <?php echo $this->pluginUrl; ?>/images/badge.png) no-repeat;	
 			}			
 		</style>
 		<div class="wrap about-wrap">

@@ -36,27 +36,26 @@
  */
 
 /* pull in class */
-require_once (dirname ( __FILE__ ) . '/regDomain.class.php');
+require_once __DIR__ . '/regDomain.class.php';
 
 /* create global object */
-;
-function getRegisteredDomain($signingDomain, $fallback = TRUE) {
+function getRegisteredDomain( $signingDomain, $fallback = true ) {
 	/* pull in object */
-	$regDomainObj = new regDomain ();
+	$regDomainObj = new regDomain();
 	/* return object method */
-	return $regDomainObj->getRegisteredDomain ( $signingDomain, $fallback );
+	return $regDomainObj->getRegisteredDomain( $signingDomain, $fallback );
 }
-function validDomainPart($domPart) {
+function validDomainPart( $domPart ) {
 	/* pull in object */
-	$regDomainObj = new regDomain ();
+	$regDomainObj = new regDomain();
 	/* return object method */
-	return $regDomainObj->validDomainPart ( $domPart );
+	return $regDomainObj->validDomainPart( $domPart );
 }
 
 // recursive helper method
-function findRegisteredDomain($remainingSigningDomainParts, &$treeNode) {
+function findRegisteredDomain( $remainingSigningDomainParts, &$treeNode ) {
 	/* pull in object */
-	$regDomainObj = new regDomain ();
+	$regDomainObj = new regDomain();
 	/* return object method */
-	return $regDomainObj->findRegisteredDomain ( $remainingSigningDomainParts, $treeNode );
+	return $regDomainObj->findRegisteredDomain( $remainingSigningDomainParts, $treeNode );
 }

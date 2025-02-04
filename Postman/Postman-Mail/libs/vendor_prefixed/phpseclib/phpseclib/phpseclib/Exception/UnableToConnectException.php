@@ -17,6 +17,6 @@ namespace PostSMTP\Vendor\phpseclib3\Exception;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class UnableToConnectException extends \RuntimeException
-{
+class UnableToConnectException extends \RuntimeException {
+
 }

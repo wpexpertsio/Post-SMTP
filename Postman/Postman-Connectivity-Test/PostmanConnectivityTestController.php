@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 class PostmanConnectivityTestController {
@@ -23,22 +23,28 @@ class PostmanConnectivityTestController {
 		assert( PostmanUtils::isAdmin() );
 		assert( is_admin() );
 
-		$this->logger = new PostmanLogger( get_class( $this ) );
+		$this->logger                    = new PostmanLogger( get_class( $this ) );
 		$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;
 
 		PostmanUtils::registerAdminMenu( $this, 'addPortTestSubmenu' );
 
 		// hook on the init event
-		add_action( 'init', array(
+		add_action(
+			'init',
+			array(
 				$this,
 				'on_init',
-		) );
+			)
+		);
 
 		// initialize the scripts, stylesheets and form fields
-		add_action( 'admin_init', array(
+		add_action(
+			'admin_init',
+			array(
 				$this,
 				'on_admin_init',
-		) );
+			)
+		);
 	}
 
 	/**
@@ -68,27 +74,42 @@ class PostmanConnectivityTestController {
 		}
 		// register the stylesheet and javascript external resources
 		$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
-		wp_register_script( 'postman_port_test_script', plugins_url( 'Postman/Postman-Connectivity-Test/postman_port_test.js', $this->rootPluginFilenameAndPath ), array(
+		wp_register_script(
+			'postman_port_test_script',
+			plugins_url( 'Postman/Postman-Connectivity-Test/postman_port_test.js', $this->rootPluginFilenameAndPath ),
+			array(
 				PostmanViewController::JQUERY_SCRIPT,
 				'jquery_validation',
 				PostmanViewController::POSTMAN_SCRIPT,
 				'sprintf',
-		), $pluginData ['version'] );
+			),
+			$pluginData ['version']
+		);
 	}
 
 	/**
 	 * Register the Email Test screen
 	 */
 	public function addPortTestSubmenu() {
-		$page = add_submenu_page( ' ', sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ), __( 'Postman SMTP', 'post-smtp' ), Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanConnectivityTestController::PORT_TEST_SLUG, array(
+		$page = add_submenu_page(
+			' ',
+			sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ),
+			__( 'Postman SMTP', 'post-smtp' ),
+			Postman::MANAGE_POSTMAN_CAPABILITY_NAME,
+			self::PORT_TEST_SLUG,
+			array(
 				$this,
 				'outputPortTestContent',
-		) );
+			)
+		);
 		// When the plugin options page is loaded, also load the stylesheet
-		add_action( 'admin_print_styles-' . $page, array(
+		add_action(
+			'admin_print_styles-' . $page,
+			array(
 				$this,
 				'enqueuePortTestResources',
-		) );
+			)
+		);
 	}
 
 	/**
@@ -98,33 +119,41 @@ class PostmanConnectivityTestController {
 		wp_enqueue_script( 'postman_port_test_script' );
 		$warning = __( 'Warning', 'post-smtp' );
 
-        wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_email_test', array(
-            'recipient' => '#' . PostmanSendTestEmailController::RECIPIENT_EMAIL_FIELD_NAME,
-            'not_started' => _x( 'In Outbox', 'Email Test Status', 'post-smtp' ),
-            'sending' => _x( 'Sending...', 'Email Test Status', 'post-smtp' ),
-            'success' => _x( 'Success', 'Email Test Status', 'post-smtp' ),
-            'failed' => _x( 'Failed', 'Email Test Status', 'post-smtp' ),
-            'ajax_error' => __( 'Ajax Error', 'post-smtp' ),
-        ) );
-		PostmanConnectivityTestController::addLocalizeScriptForPortTest();
+		wp_localize_script(
+			PostmanViewController::POSTMAN_SCRIPT,
+			'postman_email_test',
+			array(
+				'recipient'   => '#' . PostmanSendTestEmailController::RECIPIENT_EMAIL_FIELD_NAME,
+				'not_started' => _x( 'In Outbox', 'Email Test Status', 'post-smtp' ),
+				'sending'     => _x( 'Sending...', 'Email Test Status', 'post-smtp' ),
+				'success'     => _x( 'Success', 'Email Test Status', 'post-smtp' ),
+				'failed'      => _x( 'Failed', 'Email Test Status', 'post-smtp' ),
+				'ajax_error'  => __( 'Ajax Error', 'post-smtp' ),
+			)
+		);
+		self::addLocalizeScriptForPortTest();
 	}
 	static function addLocalizeScriptForPortTest() {
-		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_port_test', array(
-				'in_progress' => _x( 'Checking..', 'The "please wait" message', 'post-smtp' ),
-				'open' => _x( 'Open', 'The port is open', 'post-smtp' ),
-				'closed' => _x( 'Closed', 'The port is closed', 'post-smtp' ),
-				'yes' => __( 'Yes', 'post-smtp' ),
-				'no' => __( 'No', 'post-smtp' ),
-			/* translators: where %d is a port number */
-			'blocked' => __( 'No outbound route between this site and the Internet on Port %d.', 'post-smtp' ),
-			/* translators: where %d is a port number and %s is a hostname */
-			'try_dif_smtp' => __( 'Port %d is open, but not to %s.', 'post-smtp' ),
-			/* translators: where %d is the port number and %s is the hostname */
-			'success' => __( 'Port %d can be used for SMTP to %s.', 'post-smtp' ),
-				'mitm' => sprintf( '%s: %s', __( 'Warning', 'post-smtp' ), __( 'connected to %1$s instead of %2$s.', 'post-smtp' ) ),
-			/* translators: where %d is a port number and %s is the URL for the Postman Gmail Extension */
-			'https_success' => __( 'Port %d can be used with the %s.', 'post-smtp' ),
-		) );
+		wp_localize_script(
+			PostmanViewController::POSTMAN_SCRIPT,
+			'postman_port_test',
+			array(
+				'in_progress'   => _x( 'Checking..', 'The "please wait" message', 'post-smtp' ),
+				'open'          => _x( 'Open', 'The port is open', 'post-smtp' ),
+				'closed'        => _x( 'Closed', 'The port is closed', 'post-smtp' ),
+				'yes'           => __( 'Yes', 'post-smtp' ),
+				'no'            => __( 'No', 'post-smtp' ),
+				/* translators: where %d is a port number */
+				'blocked'       => __( 'No outbound route between this site and the Internet on Port %d.', 'post-smtp' ),
+				/* translators: where %d is a port number and %s is a hostname */
+				'try_dif_smtp'  => __( 'Port %1$d is open, but not to %2$s.', 'post-smtp' ),
+				/* translators: where %d is the port number and %s is the hostname */
+				'success'       => __( 'Port %1$d can be used for SMTP to %2$s.', 'post-smtp' ),
+				'mitm'          => sprintf( '%s: %s', __( 'Warning', 'post-smtp' ), __( 'connected to %1$s instead of %2$s.', 'post-smtp' ) ),
+				/* translators: where %d is a port number and %s is the URL for the Postman Gmail Extension */
+				'https_success' => __( 'Port %1$d can be used with the %2$s.', 'post-smtp' ),
+			)
+		);
 	}
 
 	/**
@@ -143,7 +172,7 @@ class PostmanConnectivityTestController {
 	public function outputPortTestContent() {
 		print '<div class="wrap">';
 
-		wp_nonce_field('post-smtp', 'security');
+		wp_nonce_field( 'post-smtp', 'security' );
 
 		PostmanViewController::outputChildPageHeader( __( 'Connectivity Test', 'post-smtp' ) );
 
@@ -151,7 +180,7 @@ class PostmanConnectivityTestController {
 		print __( 'This test determines which well-known ports are available for Postman to use.', 'post-smtp' );
 		print '<form id="port_test_form_id" method="post">';
 
-		wp_nonce_field('post-smtp', 'security' );
+		wp_nonce_field( 'post-smtp', 'security' );
 
 		printf( '<label for="hostname">%s</label>', __( 'Outgoing Mail Server Hostname', 'post-smtp' ) );
 		$this->port_test_hostname_callback();
@@ -222,13 +251,13 @@ class PostmanPortTestAjaxController {
 	 */
 	function getPortsToTestViaAjax() {
 
-	    check_admin_referer('post-smtp', 'security');
+		check_admin_referer( 'post-smtp', 'security' );
 
-		if( !current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
-			wp_send_json_error( 
+		if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
+			wp_send_json_error(
 				array(
-					'Message'	=>	'Unauthorized.'
-				), 
+					'Message' => 'Unauthorized.',
+				),
 				401
 			);
 		}
@@ -239,9 +268,9 @@ class PostmanPortTestAjaxController {
 		if ( $this->logger->isDebug() ) {
 			$this->logger->debug( 'Probing available transports for sockets against hostname ' . $queryHostname );
 		}
-		$sockets = PostmanTransportRegistry::getInstance()->getSocketsForSetupWizardToProbe( $queryHostname, $originalSmtpServer );
+		$sockets  = PostmanTransportRegistry::getInstance()->getSocketsForSetupWizardToProbe( $queryHostname, $originalSmtpServer );
 		$response = array(
-				'hosts' => $sockets,
+			'hosts' => $sockets,
 		);
 		wp_send_json_success( $response );
 	}
@@ -251,22 +280,22 @@ class PostmanPortTestAjaxController {
 	 */
 	function runPortQuizTest() {
 
-	    check_admin_referer('post-smtp', 'security');
+		check_admin_referer( 'post-smtp', 'security' );
 
-		if( !current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
-			wp_send_json_error( 
+		if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
+			wp_send_json_error(
 				array(
-					'Message'	=>	'Unauthorized.'
-				), 
+					'Message' => 'Unauthorized.',
+				),
 				401
 			);
 		}
 
 		$hostname = 'portquiz.net';
-		$port = intval( PostmanUtils::getRequestParameter( 'port' ) );
+		$port     = intval( PostmanUtils::getRequestParameter( 'port' ) );
 		$this->logger->debug( 'testing TCP port: hostname ' . $hostname . ' port ' . $port );
 		$portTest = new PostmanPortTest( $hostname, $port );
-		$success = $portTest->genericConnectionTest();
+		$success  = $portTest->genericConnectionTest();
 		$this->buildResponse( $hostname, $port, $portTest, $success );
 	}
 
@@ -276,22 +305,22 @@ class PostmanPortTestAjaxController {
 	 */
 	function runSmtpTest() {
 
-	    check_admin_referer('post-smtp', 'security');
+		check_admin_referer( 'post-smtp', 'security' );
 
-		if( !current_user_can( 'delete_users' ) ) {
-			wp_send_json_error( 
+		if ( ! current_user_can( 'delete_users' ) ) {
+			wp_send_json_error(
 				array(
-					'Message'	=>	'Unauthorized.'
-				), 
+					'Message' => 'Unauthorized.',
+				),
 				401
 			);
 		}
 
-		$hostname = trim( PostmanUtils::getRequestParameter( 'hostname' ) );
-		$port = intval( PostmanUtils::getRequestParameter( 'port' ) );
-		$transport = empty( PostmanUtils::getRequestParameter( 'transport' ) ) ? '' : trim( PostmanUtils::getRequestParameter( 'transport' ) );
-		$timeout = PostmanUtils::getRequestParameter( 'timeout' );
-		$logo_url = PostmanUtils::getRequestParameter( 'logo_url' );
+		$hostname         = trim( PostmanUtils::getRequestParameter( 'hostname' ) );
+		$port             = intval( PostmanUtils::getRequestParameter( 'port' ) );
+		$transport        = empty( PostmanUtils::getRequestParameter( 'transport' ) ) ? '' : trim( PostmanUtils::getRequestParameter( 'transport' ) );
+		$timeout          = PostmanUtils::getRequestParameter( 'timeout' );
+		$logo_url         = PostmanUtils::getRequestParameter( 'logo_url' );
 		$data['logo_url'] = $logo_url;
 
 		$this->logger->trace( $timeout );
@@ -315,28 +344,28 @@ class PostmanPortTestAjaxController {
 	 */
 	function runSmtpsTest() {
 
-	    check_admin_referer('post-smtp', 'security');
+		check_admin_referer( 'post-smtp', 'security' );
 
-		if( !current_user_can( 'delete_users' ) ) {
-			wp_send_json_error( 
+		if ( ! current_user_can( 'delete_users' ) ) {
+			wp_send_json_error(
 				array(
-					'Message'	=>	'Unauthorized.'
-				), 
+					'Message' => 'Unauthorized.',
+				),
 				401
 			);
 		}
 
-		$hostname = trim( PostmanUtils::getRequestParameter( 'hostname' ) );
-		$port = intval( PostmanUtils::getRequestParameter( 'port' ) );
-		$transport = empty( PostmanUtils::getRequestParameter( 'transport' ) ) ? '' : trim( PostmanUtils::getRequestParameter( 'transport' ) );
-		$transportName = empty( PostmanUtils::getRequestParameter( 'transport_name' ) ) ? '' : trim( PostmanUtils::getRequestParameter( 'transport_name' ) );
-		$logo_url = PostmanUtils::getRequestParameter( 'logo_url' );
+		$hostname         = trim( PostmanUtils::getRequestParameter( 'hostname' ) );
+		$port             = intval( PostmanUtils::getRequestParameter( 'port' ) );
+		$transport        = empty( PostmanUtils::getRequestParameter( 'transport' ) ) ? '' : trim( PostmanUtils::getRequestParameter( 'transport' ) );
+		$transportName    = empty( PostmanUtils::getRequestParameter( 'transport_name' ) ) ? '' : trim( PostmanUtils::getRequestParameter( 'transport_name' ) );
+		$logo_url         = PostmanUtils::getRequestParameter( 'logo_url' );
 		$data['logo_url'] = $logo_url;
 
 		$this->logger->debug( sprintf( 'testing SMTPS socket %s:%s (%s)', $hostname, $port, $transport ) );
-		$portTest = new PostmanPortTest( $hostname, $port );
+		$portTest                = new PostmanPortTest( $hostname, $port );
 		$portTest->transportName = $transportName;
-		$success = $portTest->testSmtpsPorts();
+		$success                 = $portTest->testSmtpsPorts();
 		$this->buildResponse( $hostname, $port, $portTest, $success, $transport, $data );
 	}
 
@@ -350,25 +379,25 @@ class PostmanPortTestAjaxController {
 	private function buildResponse( $hostname, $port, PostmanPortTest $portTest, $success, $transport = '', $data = array() ) {
 		$this->logger->debug( sprintf( 'testing port result for %s:%s success=%s', $hostname, $port, $success ) );
 		$response = array(
-				'hostname'						=> $hostname,
-				'hostname_domain_only'			=> $portTest->hostnameDomainOnly,
-				'port'							=> $port,
-				'protocol'						=> $portTest->protocol,
-				'secure'						=> ($portTest->secure),
-				'mitm'							=> ($portTest->mitm),
-				'reported_hostname'				=> $portTest->reportedHostname,
-				'reported_hostname_domain_only' => $portTest->reportedHostnameDomainOnly,
-				'message' 						=> $portTest->getErrorMessage(),
-				'start_tls' 					=> $portTest->startTls,
-				'auth_plain' 					=> $portTest->authPlain,
-				'auth_login' 					=> $portTest->authLogin,
-				'auth_crammd5' 					=> $portTest->authCrammd5,
-				'auth_xoauth' 					=> $portTest->authXoauth,
-				'auth_none' 					=> $portTest->authNone,
-				'try_smtps' 					=> $portTest->trySmtps,
-				'success' 						=> $success,
-				'transport' 					=> $transport,
-				'data'							=> $data
+			'hostname'                      => $hostname,
+			'hostname_domain_only'          => $portTest->hostnameDomainOnly,
+			'port'                          => $port,
+			'protocol'                      => $portTest->protocol,
+			'secure'                        => ( $portTest->secure ),
+			'mitm'                          => ( $portTest->mitm ),
+			'reported_hostname'             => $portTest->reportedHostname,
+			'reported_hostname_domain_only' => $portTest->reportedHostnameDomainOnly,
+			'message'                       => $portTest->getErrorMessage(),
+			'start_tls'                     => $portTest->startTls,
+			'auth_plain'                    => $portTest->authPlain,
+			'auth_login'                    => $portTest->authLogin,
+			'auth_crammd5'                  => $portTest->authCrammd5,
+			'auth_xoauth'                   => $portTest->authXoauth,
+			'auth_none'                     => $portTest->authNone,
+			'try_smtps'                     => $portTest->trySmtps,
+			'success'                       => $success,
+			'transport'                     => $transport,
+			'data'                          => $data,
 		);
 
 		$this->logger->trace( 'Ajax response:' );

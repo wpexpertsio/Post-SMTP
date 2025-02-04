@@ -1,10 +1,10 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
-require_once( 'PostmanOAuthToken.php' );
-require_once( 'PostmanOptions.php' );
+require_once 'PostmanOAuthToken.php';
+require_once 'PostmanOptions.php';
 
 /**
  * If required, database upgrades are made during activation
@@ -28,20 +28,20 @@ class PostmanInstaller {
 	 * Handle activation of the plugin
 	 */
 	public function activatePostman() {
-		
-        delete_option( 'postman_release_version' );
-        delete_option( 'postman_dismiss_donation' );
+
+		delete_option( 'postman_release_version' );
+		delete_option( 'postman_dismiss_donation' );
 
 		$table_version = get_option( 'postman_db_version' );
 
-		//If no logs in _posts table
+		// If no logs in _posts table
 		global $wpdb;
 
-        $have_old_logs = $wpdb->get_results(
-            "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'postman_sent_mail' LIMIT 1;"
-        );
+		$have_old_logs = $wpdb->get_results(
+			"SELECT ID FROM {$wpdb->posts} WHERE post_type = 'postman_sent_mail' LIMIT 1;"
+		);
 
-		if( !class_exists( 'PostmanEmailLogs' ) ) {
+		if ( ! class_exists( 'PostmanEmailLogs' ) ) {
 
 			require 'PostmanEmailLogs.php';
 
@@ -54,46 +54,44 @@ class PostmanInstaller {
 		$logs_table = $wpdb->get_var( "SHOW TABLES LIKE '$logs_table'" );
 		$meta_table = $wpdb->get_var( "SHOW TABLES LIKE '$meta_table'" );
 
-		//Lets Install New Fresh Logs Table
-		//Doesn't have table? but wp_options has postman_db_version
-		if( ( empty( $have_old_logs ) && !$table_version ) || ( !$logs_table || !$meta_table ) ) {
+		// Lets Install New Fresh Logs Table
+		// Doesn't have table? but wp_options has postman_db_version
+		if ( ( empty( $have_old_logs ) && ! $table_version ) || ( ! $logs_table || ! $meta_table ) ) {
 
 			$email_logs->install_table();
 
 		}
-		//Need to Update Table?
-		elseif( $table_version && version_compare( POST_SMTP_DB_VERSION, $table_version, '>' ) ) {
-			
+		// Need to Update Table?
+		elseif ( $table_version && version_compare( POST_SMTP_DB_VERSION, $table_version, '>' ) ) {
+
 			$email_logs->update_table();
 
 		}
 
 		$options = get_option( PostmanOptions::POSTMAN_OPTIONS );
-		$args = array(
+		$args    = array(
 			'fallback_smtp_enabled' => 'no',
 		);
 
 		if ( empty( $options ) ) {
 			add_option( 'postman_options', $args );
 
-		} else {
-			if ( empty( $options['fallback_smtp_enabled'] ) ) {
-				$result = array_merge($options, $args);
+		} elseif ( empty( $options['fallback_smtp_enabled'] ) ) {
+				$result = array_merge( $options, $args );
 				update_option( PostmanOptions::POSTMAN_OPTIONS, $result );
-			}
 		}
 
 		if ( function_exists( 'is_multisite' ) && is_multisite() ) {
-			
+
 			$network_options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS );
 
-			if( isset( $network_options['post_smtp_global_settings']) ) {
-				$options['post_smtp_global_settings'] = '1';	
+			if ( isset( $network_options['post_smtp_global_settings'] ) ) {
+				$options['post_smtp_global_settings'] = '1';
 			}
 
-            $options['post_smtp_allow_overwrite'] = '1';
-            update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, $options );
-			
+			$options['post_smtp_allow_overwrite'] = '1';
+			update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, $options );
+
 			// handle network activation
 			// from https://wordpress.org/support/topic/new-function-wp_get_sites?replies=11
 			// run the activation function for each blog id
@@ -112,7 +110,6 @@ class PostmanInstaller {
 			$this->handleOptionUpdates();
 			$this->addCapability();
 		}
-
 	}
 
 
@@ -166,7 +163,7 @@ class PostmanInstaller {
 		// remove the custom capability from the administrator role
 		$role = get_role( Postman::ADMINISTRATOR_ROLE_NAME );
 		$role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
-        $role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
+		$role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
 	}
 
 	/**
@@ -175,13 +172,13 @@ class PostmanInstaller {
 	private function handleOptionUpdates() {
 		$this->logger->debug( 'Activating plugin' );
 		// prior to version 0.2.5, $authOptions did not exist
-		$authOptions = get_option( 'postman_auth_token' );
-		$options = get_option( 'postman_options' );
+		$authOptions  = get_option( 'postman_auth_token' );
+		$options      = get_option( 'postman_options' );
 		$postmanState = get_option( 'postman_state' );
-		if ( empty( $authOptions ) && ! (empty( $options )) && ! empty( $options ['access_token'] ) ) {
+		if ( empty( $authOptions ) && ! ( empty( $options ) ) && ! empty( $options ['access_token'] ) ) {
 			$this->logger->debug( 'Upgrading database: copying Authorization token from postman_options to postman_auth_token' );
 			// copy the variables from $options to $authToken
-			$authOptions ['access_token'] = $options ['access_token'];
+			$authOptions ['access_token']  = $options ['access_token'];
 			$authOptions ['refresh_token'] = $options ['refresh_token'];
 			// there was a bug where we weren't setting the expiry time
 			if ( ! empty( $options ['auth_token_expires'] ) ) {
@@ -205,29 +202,29 @@ class PostmanInstaller {
 				$this->logger->debug( 'Upgrading database: creating auth_type and enc_type from authorization_type' );
 				$authType = $options ['authorization_type'];
 				switch ( $authType ) {
-					case 'none' :
+					case 'none':
 						$options ['auth_type'] = 'none';
-						$options ['enc_type'] = 'none';
+						$options ['enc_type']  = 'none';
 						break;
-					case 'basic-ssl' :
+					case 'basic-ssl':
 						$options ['auth_type'] = 'login';
-						$options ['enc_type'] = 'ssl';
+						$options ['enc_type']  = 'ssl';
 						break;
-					case 'basic-tls' :
+					case 'basic-tls':
 						$options ['auth_type'] = 'login';
-						$options ['enc_type'] = 'tls';
+						$options ['enc_type']  = 'tls';
 						break;
-					case 'oauth2' :
+					case 'oauth2':
 						$options ['auth_type'] = 'oauth2';
-						$options ['enc_type'] = 'ssl';
+						$options ['enc_type']  = 'ssl';
 						break;
-					default :
+					default:
 				}
 				update_option( 'postman_options', $options );
 			}
 		}
 		// prior to 1.3.3, the version identifier was not stored and the passwords were plaintext
-		if ( isset( $options ['enc_type'] ) && ! (isset( $options ['version'] ) || isset( $postmanState ['version'] )) ) {
+		if ( isset( $options ['enc_type'] ) && ! ( isset( $options ['version'] ) || isset( $postmanState ['version'] ) ) ) {
 			$this->logger->debug( 'Upgrading database: added plugin version and encoding password' );
 			$options ['version'] = '1.3.3';
 			if ( isset( $options ['basic_auth_password'] ) ) {
@@ -243,9 +240,10 @@ class PostmanInstaller {
 			if ( isset( $authOptions ['access_token'] ) && isset( $options ['oauth_client_id'] ) ) {
 				// if there is a stored token..
 				if ( PostmanUtils::endsWith( $options ['oauth_client_id'], 'googleusercontent.com' ) ) {
-					$authOptions ['vendor_name'] = 'google'; } else if ( strlen( $options ['oauth_client_id'] < strlen( $options ['oauth_client_secret'] ) ) ) {
+					$authOptions ['vendor_name'] = 'google'; } elseif ( strlen( $options ['oauth_client_id'] < strlen( $options ['oauth_client_secret'] ) ) ) {
 					$authOptions ['vendor_name'] = 'microsoft';
-					} else { 					$authOptions ['vendor_name'] = 'yahoo'; }
+					} else {
+						$authOptions ['vendor_name'] = 'yahoo'; }
 					update_option( 'postman_auth_token', $authOptions );
 			}
 		}
@@ -265,11 +263,11 @@ class PostmanInstaller {
 			$stateCleared = false;
 			if ( ! isset( $postmanState ['delivery_success_total'] ) && isset( $postmanStats ['delivery_success_total'] ) ) {
 				$postmanState ['delivery_success_total'] = $postmanStats ['delivery_success_total'];
-				$stateCleared = true;
+				$stateCleared                            = true;
 			}
 			if ( ! isset( $postmanState ['delivery_fail_total'] ) && isset( $postmanStats ['delivery_fail_total'] ) ) {
 				$postmanState ['delivery_fail_total'] = $postmanStats ['delivery_fail_total'];
-				$stateCleared = true;
+				$stateCleared                         = true;
 			}
 			if ( $stateCleared ) {
 				delete_option( 'postman_stats' );
@@ -282,7 +280,7 @@ class PostmanInstaller {
 		// &= does not work as expected in my PHP
 		$lockSuccess = $lockSuccess && PostmanUtils::deleteLockFile();
 
-		if( $postmanState ) {
+		if ( $postmanState ) {
 
 			$postmanState ['locking_enabled'] = $lockSuccess;
 
@@ -295,7 +293,7 @@ class PostmanInstaller {
 		}
 		$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
 
-		if( $postmanState ) {
+		if ( $postmanState ) {
 
 			$postmanState ['version'] = $pluginData ['version'];
 
@@ -308,5 +306,4 @@ class PostmanInstaller {
 		PostmanState::getInstance()->reload();
 		PostmanOptions::getInstance()->reload();
 	}
-
 }

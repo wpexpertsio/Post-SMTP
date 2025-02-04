@@ -31,7 +31,7 @@
  * the most common identifier - the registered domain - finally.
  *
  * This function returns NULL if $signingDomain is TLD itself
- * 
+ *
  * $signingDomain has to be provided lowercase (!)
  */
 
@@ -40,81 +40,90 @@ class regDomain {
 	protected $tldTree = array();
 
 	/* main function */
-	public function getRegisteredDomain($signingDomain, $fallback = TRUE) {
-		$signingDomainParts = explode('.', $signingDomain);
+	public function getRegisteredDomain( $signingDomain, $fallback = true ) {
+		$signingDomainParts = explode( '.', $signingDomain );
 
-		$result = $this->findRegisteredDomain($signingDomainParts, $this->tldTree);
+		$result = $this->findRegisteredDomain( $signingDomainParts, $this->tldTree );
 
-		if ($result===NULL || $result=="") {
+		if ( $result === null || $result == '' ) {
 			// this is an invalid domain name
-			return NULL;
+			return null;
 		}
 
 		// assure there is at least 1 TLD in the stripped signing domain
-		if (!strpos($result, '.')) {
-			if ($fallback===FALSE) {
-				return NULL;
+		if ( ! strpos( $result, '.' ) ) {
+			if ( $fallback === false ) {
+				return null;
 			}
-			$cnt = count($signingDomainParts);
-			if ($cnt==1 || $signingDomainParts[$cnt-2]=="") return NULL;
-			if (!$this->validDomainPart($signingDomainParts[$cnt-2]) || !$this->validDomainPart($signingDomainParts[$cnt-1])) return NULL;
-			return $signingDomainParts[$cnt-2].'.'.$signingDomainParts[$cnt-1];
+			$cnt = count( $signingDomainParts );
+			if ( $cnt == 1 || $signingDomainParts[ $cnt - 2 ] == '' ) {
+				return null;
+			}
+			if ( ! $this->validDomainPart( $signingDomainParts[ $cnt - 2 ] ) || ! $this->validDomainPart( $signingDomainParts[ $cnt - 1 ] ) ) {
+				return null;
+			}
+			return $signingDomainParts[ $cnt - 2 ] . '.' . $signingDomainParts[ $cnt - 1 ];
 		}
 		return $result;
 	}
 
 	/* validate parts */
-	public function validDomainPart($domPart) {
+	public function validDomainPart( $domPart ) {
 		// see http://www.register.com/domain-extension-rules.rcmx
-		$len = strlen($domPart);
+		$len = strlen( $domPart );
 
 		// not more than 63 characters
-		if ($len>63) return FALSE;
+		if ( $len > 63 ) {
+			return false;
+		}
 
 		// not less than 1 characters --> there are TLD-specific rules that could be considered additionally
-		if ($len<1) return FALSE;
+		if ( $len < 1 ) {
+			return false;
+		}
 
 		// Use only letters, numbers, or hyphen ("-")
 		// not beginning or ending with a hypen (this is TLD specific, be aware!)
-		if (!preg_match("/^([a-z0-9])(([a-z0-9-])*([a-z0-9]))*$/", $domPart)) return FALSE;
+		if ( ! preg_match( '/^([a-z0-9])(([a-z0-9-])*([a-z0-9]))*$/', $domPart ) ) {
+			return false;
+		}
 
-		return TRUE;
+		return true;
 	}
 
 	/* recursive helper method */
-	public function findRegisteredDomain($remainingSigningDomainParts, &$treeNode) {
-		$sub = array_pop($remainingSigningDomainParts);
+	public function findRegisteredDomain( $remainingSigningDomainParts, &$treeNode ) {
+		$sub = array_pop( $remainingSigningDomainParts );
 
-		$result = NULL;
-		if (isset($treeNode['!'])) {
+		$result = null;
+		if ( isset( $treeNode['!'] ) ) {
 			return '#';
 		}
 
-		if (!$this->validDomainPart($sub)) {
-			return NULL;
+		if ( ! $this->validDomainPart( $sub ) ) {
+			return null;
 		}
 
-		if (is_array($treeNode) && array_key_exists($sub, $treeNode)) {
-			$result = $this->findRegisteredDomain($remainingSigningDomainParts, $treeNode[$sub]);
-		} else if (is_array($treeNode) && array_key_exists('*', $treeNode)) {
-			$result = $this->findRegisteredDomain($remainingSigningDomainParts, $treeNode['*']);
+		if ( is_array( $treeNode ) && array_key_exists( $sub, $treeNode ) ) {
+			$result = $this->findRegisteredDomain( $remainingSigningDomainParts, $treeNode[ $sub ] );
+		} elseif ( is_array( $treeNode ) && array_key_exists( '*', $treeNode ) ) {
+			$result = $this->findRegisteredDomain( $remainingSigningDomainParts, $treeNode['*'] );
 		} else {
 			return $sub;
 		}
 
 		// this is a hack 'cause PHP interpretes '' as NULL
-		if ($result == '#') {
+		if ( $result == '#' ) {
 			return $sub;
-		} else if (strlen($result)>0) {
-			return $result.'.'.$sub;
+		} elseif ( strlen( $result ) > 0 ) {
+			return $result . '.' . $sub;
 		}
-		return NULL;
+		return null;
 	}
 
 	/* load tld tree into object */
 	function __construct() {
 		/* include tld tree data */
-		include(dirname(__FILE__) . '/effectiveTLDs.inc.php');
+		include __DIR__ . '/effectiveTLDs.inc.php';
 	}
-
 }

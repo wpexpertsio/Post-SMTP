@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 if ( ! class_exists( 'PostmanAdminController' ) ) {
@@ -25,36 +25,36 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		const MANAGE_OPTIONS_PAGE_SLUG = 'postman/manage-options';
 
 		// NONCE NAMES
-		const PURGE_DATA_SLUG = 'postman_purge_data';
+		const PURGE_DATA_SLUG      = 'postman_purge_data';
 		const IMPORT_SETTINGS_SLUG = 'postman_import_settings';
 
 		// The Postman Group is used for saving data, make sure it is globally unique
 		const SETTINGS_GROUP_NAME = 'postman_group';
 
 		// a database entry specifically for the form that sends test e-mail
-		const TEST_OPTIONS = 'postman_test_options';
-		const SMTP_OPTIONS = 'postman_smtp_options';
-		const SMTP_SECTION = 'postman_smtp_section';
-		const BASIC_AUTH_OPTIONS = 'postman_basic_auth_options';
-		const BASIC_AUTH_SECTION = 'postman_basic_auth_section';
-		const OAUTH_AUTH_OPTIONS = 'postman_oauth_options';
-		const OAUTH_SECTION = 'postman_oauth_section';
-		const MESSAGE_SENDER_OPTIONS = 'postman_message_sender_options';
-		const MESSAGE_SENDER_SECTION = 'postman_message_sender_section';
-		const MESSAGE_FROM_OPTIONS = 'postman_message_from_options';
-		const MESSAGE_FROM_SECTION = 'postman_message_from_section';
-		const MESSAGE_OPTIONS = 'postman_message_options';
-		const MESSAGE_SECTION = 'postman_message_section';
-		const MESSAGE_HEADERS_OPTIONS = 'postman_message_headers_options';
-		const MESSAGE_HEADERS_SECTION = 'postman_message_headers_section';
-		const NETWORK_OPTIONS = 'postman_network_options';
-		const NETWORK_SECTION = 'postman_network_section';
-		const LOGGING_OPTIONS = 'postman_logging_options';
-		const LOGGING_SECTION = 'postman_logging_section';
-		const MULTISITE_OPTIONS = 'postman_multisite_options';
-		const MULTISITE_SECTION = 'postman_multisite_section';
-		const ADVANCED_OPTIONS = 'postman_advanced_options';
-		const ADVANCED_SECTION = 'postman_advanced_section';
+		const TEST_OPTIONS             = 'postman_test_options';
+		const SMTP_OPTIONS             = 'postman_smtp_options';
+		const SMTP_SECTION             = 'postman_smtp_section';
+		const BASIC_AUTH_OPTIONS       = 'postman_basic_auth_options';
+		const BASIC_AUTH_SECTION       = 'postman_basic_auth_section';
+		const OAUTH_AUTH_OPTIONS       = 'postman_oauth_options';
+		const OAUTH_SECTION            = 'postman_oauth_section';
+		const MESSAGE_SENDER_OPTIONS   = 'postman_message_sender_options';
+		const MESSAGE_SENDER_SECTION   = 'postman_message_sender_section';
+		const MESSAGE_FROM_OPTIONS     = 'postman_message_from_options';
+		const MESSAGE_FROM_SECTION     = 'postman_message_from_section';
+		const MESSAGE_OPTIONS          = 'postman_message_options';
+		const MESSAGE_SECTION          = 'postman_message_section';
+		const MESSAGE_HEADERS_OPTIONS  = 'postman_message_headers_options';
+		const MESSAGE_HEADERS_SECTION  = 'postman_message_headers_section';
+		const NETWORK_OPTIONS          = 'postman_network_options';
+		const NETWORK_SECTION          = 'postman_network_section';
+		const LOGGING_OPTIONS          = 'postman_logging_options';
+		const LOGGING_SECTION          = 'postman_logging_section';
+		const MULTISITE_OPTIONS        = 'postman_multisite_options';
+		const MULTISITE_SECTION        = 'postman_multisite_section';
+		const ADVANCED_OPTIONS         = 'postman_advanced_options';
+		const ADVANCED_SECTION         = 'postman_advanced_section';
 		const EMAIL_VALIDATION_SECTION = 'postman_email_validation_section';
 		const EMAIL_VALIDATION_OPTIONS = 'postman_email_validation_options';
 
@@ -78,7 +78,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		/**
 		 * Constructor
 		 *
-		 * @param mixed               $rootPluginFilenameAndPath
+		 * @param mixed                 $rootPluginFilenameAndPath
 		 * @param PostmanOptions        $options
 		 * @param PostmanOAuthToken     $authorizationToken
 		 * @param PostmanMessageHandler $messageHandler
@@ -93,12 +93,12 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			assert( PostmanUtils::isAdmin() );
 			assert( is_admin() );
 
-			$this->logger = new PostmanLogger( get_class( $this ) );
-			$this->options = $options;
-			$this->authorizationToken = $authorizationToken;
-			$this->messageHandler = $messageHandler;
+			$this->logger                    = new PostmanLogger( get_class( $this ) );
+			$this->options                   = $options;
+			$this->authorizationToken        = $authorizationToken;
+			$this->messageHandler            = $messageHandler;
 			$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;
-			$this->wpMailBinder = $binder;
+			$this->wpMailBinder              = $binder;
 
 			// check if the user saved data, and if validation was successful
 			$session = PostmanSession::getInstance();
@@ -130,95 +130,107 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 					return;
 				}
 			}
-            do_action('post_smtp_handle_oauth', $this->messageHandler );
+			do_action( 'post_smtp_handle_oauth', $this->messageHandler );
 
 			// continue to initialize the AdminController
-			add_action( 'init', array(
+			add_action(
+				'init',
+				array(
 					$this,
 					'on_init',
-			) );
+				)
+			);
 
-            // continue to initialize the AdminController
-            add_action( 'wpmu_options', array(
-                $this,
-                'wpmu_options',
-            ) );
+			// continue to initialize the AdminController
+			add_action(
+				'wpmu_options',
+				array(
+					$this,
+					'wpmu_options',
+				)
+			);
 
-            add_action( 'update_wpmu_options', array(
-                $this,
-                'update_wpmu_options',
-            ) );
+			add_action(
+				'update_wpmu_options',
+				array(
+					$this,
+					'update_wpmu_options',
+				)
+			);
 
 			// Adds "Settings" link to the plugin action page
-			add_filter( 'plugin_action_links_' . plugin_basename( $this->rootPluginFilenameAndPath ), array(
+			add_filter(
+				'plugin_action_links_' . plugin_basename( $this->rootPluginFilenameAndPath ),
+				array(
 					$this,
 					'postmanModifyLinksOnPluginsListPage',
-			) );
+				)
+			);
 
-			require_once( 'PostmanPluginFeedback.php' );
+			require_once 'PostmanPluginFeedback.php';
 		}
 
 
 		function wpmu_options() {
-		    $options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS );
-		    ?>
-            <input type="hidden" name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_global_settings]" value="null">
-            <input type="hidden" name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_allow_overwrite]" value="null">
-            <h2><?php _e( 'Post SMTP Settings', 'post-smtp' ); ?></h2>
-            <table id="menu" class="form-table">
-                <tr>
-                    <th scope="row">
-                        <?php _e( 'Enable global settings', 'post-smtp' ); ?>
-                    </th>
-                    <td>
-                        <?php $checked = checked( $options['post_smtp_global_settings'], 1, false ); ?>
-                        <label for="post-smtp-global-settings">
-                            <input id="post-smtp-global-settings" type="checkbox"
-                                   name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_global_settings]"
-                                   value="1"
-                                   <?php echo $checked; ?>
-                            >
-                            <p class="description">
-                                <?php _e('Same settings as the main site/blog (id:1)', 'post-smtp' ); ?>
-                            </p>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        <?php _e( 'Allow user to load saved options', 'post-smtp' ); ?>
-                    </th>
-                    <td>
-                        <?php $checked = checked( $options['post_smtp_allow_overwrite'], 1, false ); ?>
-                        <label for="post-smtp-allow-overwrite">
-                            <input id="post-smtp-allow-overwrite" type="checkbox"
-                                   name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_allow_overwrite]"
-                                   value="1"
-                                <?php echo $checked; ?>
-                            >
-                        </label>
-                    </td>
-                </tr>
-            </table>
-            <?php
-        }
+			$options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS );
+			?>
+			<input type="hidden" name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_global_settings]" value="null">
+			<input type="hidden" name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_allow_overwrite]" value="null">
+			<h2><?php _e( 'Post SMTP Settings', 'post-smtp' ); ?></h2>
+			<table id="menu" class="form-table">
+				<tr>
+					<th scope="row">
+						<?php _e( 'Enable global settings', 'post-smtp' ); ?>
+					</th>
+					<td>
+						<?php $checked = checked( $options['post_smtp_global_settings'], 1, false ); ?>
+						<label for="post-smtp-global-settings">
+							<input id="post-smtp-global-settings" type="checkbox"
+									name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_global_settings]"
+									value="1"
+									<?php echo $checked; ?>
+							>
+							<p class="description">
+								<?php _e( 'Same settings as the main site/blog (id:1)', 'post-smtp' ); ?>
+							</p>
+						</label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<?php _e( 'Allow user to load saved options', 'post-smtp' ); ?>
+					</th>
+					<td>
+						<?php $checked = checked( $options['post_smtp_allow_overwrite'], 1, false ); ?>
+						<label for="post-smtp-allow-overwrite">
+							<input id="post-smtp-allow-overwrite" type="checkbox"
+									name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_allow_overwrite]"
+									value="1"
+								<?php echo $checked; ?>
+							>
+						</label>
+					</td>
+				</tr>
+			</table>
+			<?php
+		}
 
-        function update_wpmu_options() {
-            $options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS );
-		    if ( isset( $_POST[ PostmanOptions::POSTMAN_NETWORK_OPTIONS ] ) ) {
-		        foreach ( $_POST[ PostmanOptions::POSTMAN_NETWORK_OPTIONS ] as $key => $value ) {
-                    $options[$key] = sanitize_text_field( $value );
+		function update_wpmu_options() {
+			$options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS );
+			if ( isset( $_POST[ PostmanOptions::POSTMAN_NETWORK_OPTIONS ] ) ) {
+				foreach ( $_POST[ PostmanOptions::POSTMAN_NETWORK_OPTIONS ] as $key => $value ) {
+					$options[ $key ] = sanitize_text_field( $value );
 
-                    if ( $value == 'null' ) {
-                        unset( $options[$key] );
-                    }
-                }
+					if ( $value == 'null' ) {
+						unset( $options[ $key ] );
+					}
+				}
 
-                update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, $options );
-            } else {
-                update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, array() );
-            }
-        }
+				update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, $options );
+			} else {
+				update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, array() );
+			}
+		}
 
 		/**
 		 * Functions to execute on the init event
@@ -230,7 +242,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			// only administrators should be able to trigger this
 			if ( PostmanUtils::isAdmin() ) {
 								$transport = PostmanTransportRegistry::getInstance()->getCurrentTransport();
-				$this->oauthScribe = $transport->getScribe();
+				$this->oauthScribe         = $transport->getScribe();
 
 				// register content handlers
 				$viewController = new PostmanViewController( $this->rootPluginFilenameAndPath, $this->options, $this->authorizationToken, $this->oauthScribe, $this );
@@ -271,10 +283,13 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		 */
 		private function registerInitFunction( $callbackName ) {
 			$this->logger->debug( 'Registering init function ' . $callbackName );
-			add_action( 'init', array(
+			add_action(
+				'init',
+				array(
 					$this,
 					$callbackName,
-			) );
+				)
+			);
 		}
 
 		/**
@@ -285,10 +300,13 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		 */
 		private function registerAdminPostAction( $actionName, $callbankName ) {
 			// $this->logger->debug ( 'Registering ' . $actionName . ' Action Post handler' );
-			add_action( 'admin_post_' . $actionName, array(
+			add_action(
+				'admin_post_' . $actionName,
+				array(
 					$this,
 					$callbankName,
-			) );
+				)
+			);
 		}
 
 		/**
@@ -301,9 +319,9 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			// only administrators should be able to trigger this
 			if ( PostmanUtils::isAdmin() ) {
 				$mylinks = array(
-                        //sprintf( '<a href="%s" target="_blank" class="postman_settings">%s</a>', 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehudahas@gmail.com&item_name=Donation+for+PostSMTP', __( 'Donate', 'post-smtp' ) ),
-						sprintf( '<a href="%s" class="postman_settings">%s</a>', PostmanUtils::getSettingsPageUrl(), __( 'Settings', 'post-smtp' ) ),
-						sprintf( '<a href="%s" class="postman_settings">%s</a>', 'https://postmansmtp.com', __( 'Visit us', 'post-smtp' ) ),
+					// sprintf( '<a href="%s" target="_blank" class="postman_settings">%s</a>', 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehudahas@gmail.com&item_name=Donation+for+PostSMTP', __( 'Donate', 'post-smtp' ) ),
+					sprintf( '<a href="%s" class="postman_settings">%s</a>', PostmanUtils::getSettingsPageUrl(), __( 'Settings', 'post-smtp' ) ),
+					sprintf( '<a href="%s" class="postman_settings">%s</a>', 'https://postmansmtp.com', __( 'Visit us', 'post-smtp' ) ),
 				);
 				return array_merge( $mylinks, $links );
 			}
@@ -325,8 +343,8 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		public function importSettingsAction() {
 			$this->logger->debug( 'is wpnonce import-settings?' );
 			$success = true;
-			if ( wp_verify_nonce( $_REQUEST ['_wpnonce'], PostmanAdminController::IMPORT_SETTINGS_SLUG ) ) {
-				$success = PostmanOptions::getInstance()->import( sanitize_textarea_field($_POST ['settings']) );
+			if ( wp_verify_nonce( $_REQUEST ['_wpnonce'], self::IMPORT_SETTINGS_SLUG ) ) {
+				$success = PostmanOptions::getInstance()->import( sanitize_textarea_field( $_POST ['settings'] ) );
 			} else {
 				$success = false;
 			}
@@ -341,29 +359,29 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		 */
 		public function handlePurgeDataAction() {
 			$this->logger->debug( 'is wpnonce purge-data?' );
-			if ( wp_verify_nonce( $_REQUEST ['_wpnonce'], PostmanAdminController::PURGE_DATA_SLUG ) ) {
-				
+			if ( wp_verify_nonce( $_REQUEST ['_wpnonce'], self::PURGE_DATA_SLUG ) ) {
+
 				/**
 				 * Fires before resetting pluign
-				 * 
+				 *
 				 * @since 2.1.4
 				 */
 				do_action( 'post_smtp_before_reset_plugin' );
-				
+
 				$this->logger->debug( 'Purging stored data' );
 				delete_option( PostmanOptions::POSTMAN_OPTIONS );
 				delete_option( PostmanOAuthToken::OPTIONS_NAME );
-				delete_option( PostmanAdminController::TEST_OPTIONS );
+				delete_option( self::TEST_OPTIONS );
 
-				//delete logs as well
-				if( !isset( $_REQUEST['ps_preserve_email_logs'] ) ) {
+				// delete logs as well
+				if ( ! isset( $_REQUEST['ps_preserve_email_logs'] ) ) {
 
 					$logPurger = new PostmanEmailLogPurger();
 					$logPurger->removeAll();
 
 				}
 
-				//delete postman health report settings on reset
+				// delete postman health report settings on reset
 				delete_option( 'postman_rat' );
 				delete_transient( 'ps_rat_has_sent' );
 				delete_transient( 'ps_rat_has_sent' );
@@ -372,7 +390,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 
 				/**
 				 * Fires after resetting pluign
-				 * 
+				 *
 				 * @since 2.1.4
 				 */
 				do_action( 'post_smtp_after_reset_plugin' );
@@ -385,13 +403,13 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		 * Handles the authorization grant
 		 */
 		function handleAuthorizationGrant() {
-			$logger = $this->logger;
-			$options = $this->options;
+			$logger             = $this->logger;
+			$options            = $this->options;
 			$authorizationToken = $this->authorizationToken;
 			$logger->debug( 'Authorization in progress' );
 			$transactionId = PostmanSession::getInstance()->getOauthInProgress();
-			$message = '';
-        	$redirect_uri = admin_url( "admin.php?page=postman/configuration_wizard&socket=gmail_api&step=2" );
+			$message       = '';
+			$redirect_uri  = admin_url( 'admin.php?page=postman/configuration_wizard&socket=gmail_api&step=2' );
 
 			// begin transaction
 			PostmanUtils::lock();
@@ -405,28 +423,26 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 					$message = __( 'The OAuth 2.0 authorization was successful. Ready to send e-mail.', 'post-smtp' );
 					$this->messageHandler->addMessage( $message );
 
-					//Let's redirect to New Wizard
-					if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
-						
+					// Let's redirect to New Wizard
+					if ( ! apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+
 						wp_redirect( "{$redirect_uri}&msg={$message}&success=1" );
 						exit();
 
 					}
-
 				} else {
 
 					$message = __( 'Your email provider did not grant Postman permission. Try again.', 'post-smtp' );
 
 					$this->messageHandler->addError( $message );
 
-					//Let's redirect to New Wizard
-					if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
-						
+					// Let's redirect to New Wizard
+					if ( ! apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+
 						wp_redirect( "{$redirect_uri}&msg={$message}" );
 						exit();
 
 					}
-
 				}
 			} catch ( PostmanStateIdMissingException $e ) {
 
@@ -434,14 +450,13 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 
 				$this->messageHandler->addError( $message );
 
-				//Let's redirect to New Wizard
-                if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
-                    
-                    wp_redirect( "{$redirect_uri}&msg={$message}" );
-                    exit();
+				// Let's redirect to New Wizard
+				if ( ! apply_filters( 'post_smtp_legacy_wizard', true ) ) {
 
-                }
+					wp_redirect( "{$redirect_uri}&msg={$message}" );
+					exit();
 
+				}
 			} catch ( Exception $e ) {
 				$logger->error( 'Error: ' . get_class( $e ) . ' code=' . $e->getCode() . ' message=' . $e->getMessage() );
 
@@ -450,14 +465,13 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				/* translators: %s is the error message */
 				$this->messageHandler->addError( $message );
 
-				//Let's redirect to New Wizard
-                if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
-                    
-                    wp_redirect( "{$redirect_uri}&msg={$message}" );
-                    exit();
+				// Let's redirect to New Wizard
+				if ( ! apply_filters( 'post_smtp_legacy_wizard', true ) ) {
 
-                }
+					wp_redirect( "{$redirect_uri}&msg={$message}" );
+					exit();
 
+				}
 			}
 
 			// clean-up
@@ -476,7 +490,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		public function handleOAuthPermissionRequestAction() {
 			$this->logger->debug( 'handling OAuth Permission request' );
 			$authenticationManager = PostmanAuthenticationManagerFactory::getInstance()->createAuthenticationManager();
-			$transactionId = $authenticationManager->generateRequestTransactionId();
+			$transactionId         = $authenticationManager->generateRequestTransactionId();
 			PostmanSession::getInstance()->setOauthInProgress( $transactionId );
 			$authenticationManager->requestVerificationCode( $transactionId );
 		}

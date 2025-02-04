@@ -18,8 +18,8 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 				$is_addonactivated = true;
 			}
 
-			$total = 0;
-			$sent = 0;
+			$total  = 0;
+			$sent   = 0;
 			$failed = 0;
 			$opened = 0;
 
@@ -55,8 +55,8 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 			 * @version 1.0.0
 			 */
 			$admin_email = apply_filters( 'postman_rat_reporting_email_to', get_option( 'admin_email' ) );
-			$admin_name = '';
-			$user = get_user_by( 'email', $admin_email );
+			$admin_name  = '';
+			$user        = get_user_by( 'email', $admin_email );
 
 			if ( $user ) {
 
@@ -70,10 +70,10 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 			 * @since 2.9.0
 			 * @version 1.0.0
 			 */
-			$site_title = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
-			$url = admin_url( "admin.php?page=post-smtp-email-reporting&from={$from}&to={$to}" );
+			$site_title    = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
+			$url           = admin_url( "admin.php?page=post-smtp-email-reporting&from={$from}&to={$to}" );
 			$extension_url = 'https://postmansmtp.com/pricing/?utm_source=wordpress&utm_medium=email&utm_campaign=email_report&utm_content=report_and_tracking';
-			$disable_url = 'https://postmansmtp.com/pricing/?utm_source=wordpress&utm_medium=email&utm_campaign=email_report&utm_content=email_health_report/';
+			$disable_url   = 'https://postmansmtp.com/pricing/?utm_source=wordpress&utm_medium=email&utm_campaign=email_report&utm_content=email_health_report/';
 
 			$body = "<!DOCTYPE html>
                     <html>
@@ -309,9 +309,9 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                             {$failed}
                                             </div>
                                         </div>";
-                                        if ( $is_addonactivated ) {
+			if ( $is_addonactivated ) {
 
-                                            $body .= "<div class='opened-pro inner-cards'>
+				$body .= "<div class='opened-pro inner-cards'>
                                                         <div class='ellipse ellipse-opened-pro'>
                                                             <div class='icon'>
                                                                 <img src='" . POST_SMTP_ASSETS . "images/reporting/opened-pro.png' />
@@ -325,10 +325,9 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                                         </div>
                                                     </div>";
 
-                                        }
-                                        else {
+			} else {
 
-                                            $body .= "<a href='{$extension_url}' target='_blank' style='text-decoration:none;'>
+				$body .= "<a href='{$extension_url}' target='_blank' style='text-decoration:none;'>
                                                         <div class='opened inner-cards'>
                                                             <div class='ellipse ellipse-opened'>
                                                                 <div class='icon'>
@@ -344,11 +343,11 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                                         </div>
                                                     </a>";
 
-                                        }
+			}
 
-                                    if ( $is_addonactivated ) {
+			if ( $is_addonactivated ) {
 
-                                        $body .= "</div>
+				$body .= "</div>
                                                 <div class='btn'>
                                                     <a href='{$url}' target='_blank'>View More Stats</a>
                                                 </div>
@@ -357,9 +356,9 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                                         <span><img src='" . POST_SMTP_ASSETS . "images/reporting/clock.png'></span> Last {$duration} top emails
                                                     </div>";
 
-                                        if ( ! empty( $logs ) ) {
+				if ( ! empty( $logs ) ) {
 
-                                            $body .= "<div>
+					$body .= "<div>
                                                         <table style='width:100%'>
                                                             <tr>
                                                                 <td class='heading' style='text-align: left; padding-left: 10px;'>Subject</td>
@@ -369,21 +368,20 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                                                 <td class='heading'>Opened</td>
                                                             </tr>";
 
-                                            if ( ! empty( $logs ) ) {
+					if ( ! empty( $logs ) ) {
 
-                                                $row = 1;
+						$row = 1;
 
-                                                foreach ( $logs as $log ) {
+						foreach ( $logs as $log ) {
 
-                                                    // Let break if greater than 3.
-                                                    if ( $row > 3 ) {
+							// Let break if greater than 3.
+							if ( $row > 3 ) {
 
-                                                        break;
+								break;
 
-                                                    } 
-                                                    else {
+							} else {
 
-                                                        $body .= "<tr>
+								$body .= "<tr>
                                                                     <td style='text-align: left; padding-left: 10px;'><div class='wrap-text'>{$log->subject}</div></td>
                                                                     <td>{$log->total}</td>
                                                                     <td>{$log->sent}</td>
@@ -391,35 +389,32 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                                                     <td>{$log->opened}</td>
                                                                 </tr>";
 
-                                                    }
+							}
+						}
+					}
 
-                                                }
-
-                                            }
-
-                                            $body .= "</table>
+					$body .= "</table>
                                                         <div class='btn' style='position: relative; margin-left: 10px; margin-top: 8px;'>
                                                             <a href='{$url}' target='_blank'>View More Emails ></a>
                                                         </div>
                                                     </div>";
 
-                                        }
+				}
 
-                                        if ( empty( $logs ) ) {
+				if ( empty( $logs ) ) {
 
-                                            $body .= "<div style='text-align: center; margin-top: 45px;'>No emails were sent last {$duration}</div>";
+					$body .= "<div style='text-align: center; margin-top: 45px;'>No emails were sent last {$duration}</div>";
 
-                                        }
+				}
 
-                                        $body .= "</div>
+				$body .= "</div>
                                                     <div class='bottom-text'>
                                                         This email was autogenerated and sent from <a href='{$url}' style='text-decoration:none;'>{$site_title}</a>
                                                     </div>";
 
-                                    } 
-                                    else {
+			} else {
 
-                                        $body .= "</div>
+				$body .= "</div>
                                                     <div class='table-display-free container'>
                                                         <div class='table-header-free'>
                                                             Unlock the Post SMTP Pro and enhance your email deliverability
@@ -448,17 +443,15 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                                         This email was auto-generated. You can disable it anytime you want. <a href='{$disable_url}' target='_blank'>Learn how?</a>
                                                     </div>";
 
-                                    }
+			}
 
-                        $body .= '</div>
+						$body .= '</div>
                             </div>
                         </body>
                     </html>';
 
 			return $body;
-
 		}
-
 	}
 
 endif;

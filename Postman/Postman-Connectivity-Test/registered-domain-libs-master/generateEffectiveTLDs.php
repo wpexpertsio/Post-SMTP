@@ -9,100 +9,96 @@
  *
  */
 
-header('Content-Type: text/html; charset=utf-8');
+header( 'Content-Type: text/html; charset=utf-8' );
 
-DEFINE('URL', 'http://mxr.mozilla.org/mozilla-central/source/netwerk/dns/effective_tld_names.dat?raw=1');
+DEFINE( 'URL', 'http://mxr.mozilla.org/mozilla-central/source/netwerk/dns/effective_tld_names.dat?raw=1' );
 
-$format = "php";
-if ($_SERVER['argc']>1) {
-	if ($_SERVER['argv'][1] == "perl") {
-		$format = "perl";
-	} else if ($_SERVER['argv'][1] == "c") {
-		$format = "c";
+$format = 'php';
+if ( $_SERVER['argc'] > 1 ) {
+	if ( $_SERVER['argv'][1] == 'perl' ) {
+		$format = 'perl';
+	} elseif ( $_SERVER['argv'][1] == 'c' ) {
+		$format = 'c';
 	}
 }
 
 /*
  * Does $search start with $startstring?
  */
-function startsWith($search, $startstring) {
-	return (substr($search, 0, strlen($startstring))==$startstring);
+function startsWith( $search, $startstring ) {
+	return ( substr( $search, 0, strlen( $startstring ) ) == $startstring );
 }
 
 /*
  * Does $search end with $endstring?
  */
-function endsWith($search, $endstring) {
-	return (substr($search, -strlen($endstring))==$endstring);
+function endsWith( $search, $endstring ) {
+	return ( substr( $search, -strlen( $endstring ) ) == $endstring );
 }
 
 
-function buildSubdomain(&$node, $tldParts) {
+function buildSubdomain( &$node, $tldParts ) {
 
-	$dom = trim(array_pop($tldParts));
+	$dom = trim( array_pop( $tldParts ) );
 
-	$isNotDomain = FALSE;
-	if (startsWith($dom, "!")) {
-		$dom = substr($dom, 1);
-		$isNotDomain = TRUE;
+	$isNotDomain = false;
+	if ( startsWith( $dom, '!' ) ) {
+		$dom         = substr( $dom, 1 );
+		$isNotDomain = true;
 	}
 
-	if (!array_key_exists($dom, $node)) {
-		if ($isNotDomain) {
-			$node[$dom] = array("!" => "");
+	if ( ! array_key_exists( $dom, $node ) ) {
+		if ( $isNotDomain ) {
+			$node[ $dom ] = array( '!' => '' );
 		} else {
-			$node[$dom] = array();
+			$node[ $dom ] = array();
 		}
 	}
 
-	if (!$isNotDomain && count($tldParts)>0) {
-		buildSubdomain($node[$dom], $tldParts);
+	if ( ! $isNotDomain && count( $tldParts ) > 0 ) {
+		buildSubdomain( $node[ $dom ], $tldParts );
 	}
 }
 
-function printNode($key, $valueTree, $isAssignment = false) {
+function printNode( $key, $valueTree, $isAssignment = false ) {
 
 	global $format;
 
-	if ($isAssignment) {
-		if ($format == "perl") {
+	if ( $isAssignment ) {
+		if ( $format == 'perl' ) {
 			echo "$key = {";
 		} else {
 			echo "$key = array(";
 		}
-	} else {
-		if (strcmp($key, "!")==0) {
-			if ($format == "perl") {
-				echo "'!' => {}";
-			} else {
-				echo "'!' => ''";
-			}
-			return;
+	} elseif ( strcmp( $key, '!' ) == 0 ) {
+		if ( $format == 'perl' ) {
+			echo "'!' => {}";
 		} else {
-			if ($format == "perl") {
-				echo "'$key' => {";
-			} else {
-				echo "'$key' => array(";
-			}
+			echo "'!' => ''";
 		}
+			return;
+	} elseif ( $format == 'perl' ) {
+			echo "'$key' => {";
+	} else {
+		echo "'$key' => array(";
 	}
 
-	$keys = array_keys($valueTree);
+	$keys = array_keys( $valueTree );
 
-	for ($i=0; $i<count($keys); $i++) {
+	for ( $i = 0; $i < count( $keys ); $i++ ) {
 
-		$key = $keys[$i];
+		$key = $keys[ $i ];
 
-		printNode($key, $valueTree[$key]);
+		printNode( $key, $valueTree[ $key ] );
 
-		if ($i+1 != count($valueTree)) {
+		if ( $i + 1 != count( $valueTree ) ) {
 			echo ",\n";
 		} else {
 			"\n";
 		}
 	}
 
-	if ($format == "perl") {
+	if ( $format == 'perl' ) {
 		echo '}';
 	} else {
 		echo ')';
@@ -111,30 +107,30 @@ function printNode($key, $valueTree, $isAssignment = false) {
 
 // sample: root(3:ac(5:com,edu,gov,net,ad(3:nom,co!,*)),de,com)
 
-function printNode_C($key, $valueTree) {
+function printNode_C( $key, $valueTree ) {
 
 	echo "$key";
 
-	$keys = array_keys($valueTree);
+	$keys = array_keys( $valueTree );
 
-	if (count($keys)>0) {
+	if ( count( $keys ) > 0 ) {
 
-		if (strcmp($keys['!'], "!")==0) {
-			echo "!";
+		if ( strcmp( $keys['!'], '!' ) == 0 ) {
+			echo '!';
 		} else {
 
-			echo "(".count($keys).":";
+			echo '(' . count( $keys ) . ':';
 
-			for ($i=0; $i<count($keys); $i++) {
+			for ( $i = 0; $i < count( $keys ); $i++ ) {
 
-				$key = $keys[$i];
+				$key = $keys[ $i ];
 
 				// if (count($valueTree[$key])>0) {
-					printNode_C($key, $valueTree[$key]);
+					printNode_C( $key, $valueTree[ $key ] );
 				// }
 
-				if ($i+1 != count($valueTree)) {
-					echo ",";
+				if ( $i + 1 != count( $valueTree ) ) {
+					echo ',';
 				}
 			}
 
@@ -145,69 +141,70 @@ function printNode_C($key, $valueTree) {
 
 // --- main ---
 
-error_reporting(E_ERROR);
+error_reporting( E_ERROR );
 
 $tldTree = array();
-$list = file_get_contents(URL);
+$list    = file_get_contents( URL );
 // $list = "bg\na.bg\n0.bg\n!c.bg\n";
-$lines = explode("\n", $list);
-$licence = TRUE;
+$lines   = explode( "\n", $list );
+$licence = true;
 
-if ($format == "php") echo "<?php\n";
+if ( $format == 'php' ) {
+	echo "<?php\n";
+}
 
-foreach ($lines as $line) {
-	$line = trim($line);
-	if ($line == "") {
-		if ($licence) {
-			$licence = FALSE;
+foreach ( $lines as $line ) {
+	$line = trim( $line );
+	if ( $line == '' ) {
+		if ( $licence ) {
+			$licence = false;
 			echo "\n";
 		}
 		continue;
 	}
-	if (startsWith($line, "//")) {
-		if ($licence) {
-			if ($format == "perl") {
-				echo "# ".substr($line, 2)."\n";
+	if ( startsWith( $line, '//' ) ) {
+		if ( $licence ) {
+			if ( $format == 'perl' ) {
+				echo '# ' . substr( $line, 2 ) . "\n";
 			} else {
-				echo $line."\n";
+				echo $line . "\n";
 			}
 		}
 		continue;
 	}
 
 	// this must be a TLD
-	$tldParts = preg_split('\.', $line);
-	buildSubdomain($tldTree, $tldParts);
+	$tldParts = preg_split( '\.', $line );
+	buildSubdomain( $tldTree, $tldParts );
 }
 
 // print_r($tldTree);
 
 /*
 $tldTree = array(
-	'de' => array(),		// test.agitos.de --> agitos.de
+	'de' => array(),        // test.agitos.de --> agitos.de
 	'uk' => array(
-		'co' => array(),	// test.agitos.co.uk --> agitos.co.uk
-		'xy' => array('!'),	// test.agitos.xy.uk --> xy.uk
-		'*' => array()		// test.agitos.ab.uk --> agitos.ab.uk
+		'co' => array(),    // test.agitos.co.uk --> agitos.co.uk
+		'xy' => array('!'), // test.agitos.xy.uk --> xy.uk
+		'*' => array()      // test.agitos.ab.uk --> agitos.ab.uk
 	)
 );
 */
 
-if ($format == "c") {
+if ( $format == 'c' ) {
 
-	echo "static const char tldString[] = \"";
-	printNode_C("root", $tldTree);
+	echo 'static const char tldString[] = "';
+	printNode_C( 'root', $tldTree );
 	echo "\";\n\n";
 
 } else {
 
-	if ($format == "perl") {
+	if ( $format == 'perl' ) {
 		print "package effectiveTLDs;\n\n";
 	}
-	printNode("\$tldTree", $tldTree, TRUE);
+	printNode( '$tldTree', $tldTree, true );
 	echo ";\n";
-	if ($format == "php") echo '?>' . "\n";
-
+	if ( $format == 'php' ) {
+		echo '?>' . "\n";
+	}
 }
-
-?>

@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 class PostmanPluginFeedback {
 	function __construct() {
@@ -27,18 +27,18 @@ class PostmanPluginFeedback {
 		}
 
 		$payload = array(
-			'reason' => sanitize_text_field( $_POST['reason'] ),
+			'reason'      => sanitize_text_field( $_POST['reason'] ),
 			'other_input' => isset( $_POST['other_input'] ) ? sanitize_text_field( $_POST['other_input'] ) : '',
 		);
 
 		if ( isset( $_POST['support'] ) ) {
 			$payload['support']['email'] = sanitize_email( $_POST['support']['email'] );
 			$payload['support']['title'] = sanitize_text_field( $_POST['support']['title'] );
-			$payload['support']['text'] = sanitize_textarea_field( $_POST['support']['text'] );
+			$payload['support']['text']  = sanitize_textarea_field( $_POST['support']['text'] );
 		}
 
-		$args = array(
-			'body' => $payload,
+		$args   = array(
+			'body'    => $payload,
 			'timeout' => 20,
 		);
 		$result = wp_remote_post( 'https://postmansmtp.com/feedback', $args );
@@ -86,11 +86,11 @@ class PostmanPluginFeedback {
 			}			
 
 			@keyframes rotate {
-			  0%    { transform: rotate(0deg); }
-			  100%  { transform: rotate(360deg); }
+				0%    { transform: rotate(0deg); }
+				100%  { transform: rotate(360deg); }
 			}			
 		</style>
-	<?php
+		<?php
 	}
 
 	function insert_deactivate_link_id( $links ) {
@@ -151,7 +151,7 @@ class PostmanPluginFeedback {
 				</div>				
 			</form>
 		</div>
-	<?php
+		<?php
 	}
 }
-//new PostmanPluginFeedback;
+// new PostmanPluginFeedback;

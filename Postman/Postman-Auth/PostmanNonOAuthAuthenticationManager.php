@@ -1,30 +1,30 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
-if (! class_exists ( "PostmanNonOAuthAuthenticationManager" )) {
-	
+if ( ! class_exists( 'PostmanNonOAuthAuthenticationManager' ) ) {
+
 	require_once 'PostmanAuthenticationManager.php';
 	class PostmanNonOAuthAuthenticationManager implements PostmanAuthenticationManager {
-		
+
 		/**
 		 */
 		public function isAccessTokenExpired() {
 			return false;
 		}
-		
+
 		/**
 		 * (non-PHPdoc)
 		 *
 		 * @see PostmanAuthenticationManager::requestVerificationCode()
 		 */
-		public function requestVerificationCode($transactionId) {
+		public function requestVerificationCode( $transactionId ) {
 			// otherwise known as IllegaStateException
-			assert ( false );
+			assert( false );
 		}
-		public function processAuthorizationGrantCode($transactionId) {
+		public function processAuthorizationGrantCode( $transactionId ) {
 			// otherwise known as IllegaStateException
-			assert ( false );
+			assert( false );
 		}
 		public function refreshToken() {
 			// no-op
@@ -40,7 +40,7 @@ if (! class_exists ( "PostmanNonOAuthAuthenticationManager" )) {
 		}
 		public function generateRequestTransactionId() {
 			// otherwise known as IllegaStateException
-			assert ( false );
+			assert( false );
 		}
 	}
 }

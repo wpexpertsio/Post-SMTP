@@ -1,27 +1,27 @@
 @import url(https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap);
 
-.post-smtp__wrapper[data-v-1cdaf3be] {
+.post-smtp__wrapper[data-v-64b6d796] {
 	background: #F9FBFF;
 }
-.mr-25[data-v-1cdaf3be] {
+.mr-25[data-v-64b6d796] {
 	margin-right: 25px;
 }
-.container[data-v-1cdaf3be] {
+.container[data-v-64b6d796] {
 	padding: 0 51px;
 }
-.mt-32[data-v-1cdaf3be] {
+.mt-32[data-v-64b6d796] {
 	margin-top: 32px;
 }
-.app-wrapper[data-v-1cdaf3be] {
+.app-wrapper[data-v-64b6d796] {
 	width: calc( 100% - 276px - 25px );
 }
-.app-sidebar[data-v-1cdaf3be] {
+.app-sidebar[data-v-64b6d796] {
 	width: 276px;
 }
-.float-left[data-v-1cdaf3be] {
+.float-left[data-v-64b6d796] {
 	float: left;
 }
-.clearfix[data-v-1cdaf3be]::after {
+.clearfix[data-v-64b6d796]::after {
 	clear: both;
 	content: "";
 	display: table;
@@ -203,7 +203,7 @@
 }
 
 
-.customer-support[data-v-747812a2] {
+.customer-support[data-v-11888502] {
 	padding: 0 !important;
 	background: linear-gradient(180deg, #40518E 0%, #231F20 100%);
 	display: flex;
@@ -212,10 +212,10 @@
 	flex-direction: column;
 	height: 268px;
 }
-.customer-support-content[data-v-747812a2] {
+.customer-support-content[data-v-11888502] {
 	width: 213px;
 }
-.customer-support-content p[data-v-747812a2] {
+.customer-support-content p[data-v-11888502] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 500;
@@ -223,13 +223,13 @@
 	text-align: center;
 	color: #B8BDCA;
 }
-.troubleshooting[data-v-747812a2] {
+.troubleshooting[data-v-11888502] {
 	padding: 0 !important;
 }
-.mb-24[data-v-747812a2] {
+.mb-24[data-v-11888502] {
 	margin-bottom: 24px;
 }
-.troubleshooting-header[data-v-747812a2] {
+.troubleshooting-header[data-v-11888502] {
 	border-radius: 4px 4px 0 0;
 	background: #EFF4FD;
 	padding: 16px 24px;
@@ -240,25 +240,25 @@
 	line-height: 20px;
 	color: #231F20;
 }
-.troubleshooting-content[data-v-747812a2] {
+.troubleshooting-content[data-v-11888502] {
 	padding: 24px;
 }
-.troubleshoot.email[data-v-747812a2] {
+.troubleshoot.email[data-v-11888502] {
 	list-style: url(../57f4451f3be03da17463.svg) inside;
 }
-.troubleshoot.import-export[data-v-747812a2] {
+.troubleshoot.import-export[data-v-11888502] {
 	list-style: url(../d0a8e6270627cef66c74.svg) inside;
 }
-.troubleshoot.connectivity[data-v-747812a2] {
+.troubleshoot.connectivity[data-v-11888502] {
 	list-style: url(../5b76dc43e6c63f11fb6d.svg) inside;
 }
-.troubleshoot.diagnostic[data-v-747812a2] {
+.troubleshoot.diagnostic[data-v-11888502] {
 	list-style: url(../258d1cba1f474caf0c4b.svg) inside;
 }
-.troubleshoot.reset[data-v-747812a2] {
+.troubleshoot.reset[data-v-11888502] {
 	list-style: url(../9fdeee5472f16554c9e9.svg) inside;
 }
-.troubleshoot a[data-v-747812a2] {
+.troubleshoot a[data-v-11888502] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 400;
@@ -469,13 +469,13 @@
 }
 
 
-.mb-24[data-v-49a0d06a] {
+.mb-24[data-v-acaba706] {
 	margin-bottom: 24px;
 }
-.post-smtp-selector-wrapper[data-v-49a0d06a] {
+.post-smtp-selector-wrapper[data-v-acaba706] {
 	position: relative;
 }
-.post-smtp-selector-wrapper a.re-launch-wizard[data-v-49a0d06a] {
+.post-smtp-selector-wrapper a.re-launch-wizard[data-v-acaba706] {
 	float: right;
 	padding: 8px 16px;
 	background: #f3f7ff;
@@ -488,7 +488,7 @@
 	text-align: left;
 	text-decoration: none;
 }
-.post-smtp-selector-wrapper[data-v-49a0d06a]::after {
+.post-smtp-selector-wrapper[data-v-acaba706]::after {
 	content: '';
 	clear: both;
 	display: table;
@@ -709,7 +709,7 @@
 }
 
 
-.post-smtp-button[data-v-950af6bc] {
+.post-smtp-button[data-v-9759029c] {
 	display: inline-block;
 	padding: 8px 16px !important;
 	justify-content: center;
@@ -1293,43 +1293,43 @@
 }
 
 .animated {
-    animation-duration: 0.5s;
+	animation-duration: 0.5s;
 }
 
 .slideIn {
-    animation-name: slideIn;
+	animation-name: slideIn;
 }
 
 .slideOut {
-    animation-name: slideOut;
+	animation-name: slideOut;
 }
 
 @keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-50%);
-    }
+	from {
+		opacity: 0;
+		transform: translateY(-50%);
+	}
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 @keyframes slideOut {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
+	from {
+		opacity: 1;
+		transform: translateY(0);
+	}
 
-    to {
-        opacity: 0;
-        transform: translateY(-50%);
-    }
+	to {
+		opacity: 0;
+		transform: translateY(-50%);
+	}
 }
 
 #wpcontent {
-    background: #F9FBFF;
+	background: #F9FBFF;
 }
 
 

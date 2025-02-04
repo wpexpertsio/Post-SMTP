@@ -4,27 +4,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class PostmanSendTestEmailController {
-	const EMAIL_TEST_SLUG = 'postman/email_test';
+	const EMAIL_TEST_SLUG            = 'postman/email_test';
 	const RECIPIENT_EMAIL_FIELD_NAME = 'postman_recipient_email';
-	
+
 	// logging
 	private $logger;
 	private $options;
 	private $allowed_tags = array(
-		'input'			=>	array(
-			'type'			=>	array(),
-			'id'			=>	array(),
-			'name'			=>	array(),
-			'value'			=>	array(),
-			'class'			=>	array(),
-			'placeholder'	=>	array(),
-			'size'			=>	array(),
-		)
+		'input' => array(
+			'type'        => array(),
+			'id'          => array(),
+			'name'        => array(),
+			'value'       => array(),
+			'class'       => array(),
+			'placeholder' => array(),
+			'size'        => array(),
+		),
 	);
-	
+
 	// Holds the values to be used in the fields callbacks
 	private $rootPluginFilenameAndPath;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -34,26 +34,32 @@ class PostmanSendTestEmailController {
 		assert( ! empty( $rootPluginFilenameAndPath ) );
 		assert( PostmanUtils::isAdmin() );
 		assert( is_admin() );
-		
-		$this->logger = new PostmanLogger( get_class( $this ) );
+
+		$this->logger                    = new PostmanLogger( get_class( $this ) );
 		$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;
-		$this->options = PostmanOptions::getInstance();
-		
+		$this->options                   = PostmanOptions::getInstance();
+
 		PostmanUtils::registerAdminMenu( $this, 'addEmailTestSubmenu' );
-		
+
 		// hook on the init event
-		add_action( 'init', array(
-			$this,
-			'on_init',
-		) );
-		
+		add_action(
+			'init',
+			array(
+				$this,
+				'on_init',
+			)
+		);
+
 		// initialize the scripts, stylesheets and form fields
-		add_action( 'admin_init', array(
-			$this,
-			'on_admin_init',
-		) );
+		add_action(
+			'admin_init',
+			array(
+				$this,
+				'on_admin_init',
+			)
+		);
 	}
-	
+
 	/**
 	 * Functions to execute on the init event
 	 *
@@ -64,14 +70,14 @@ class PostmanSendTestEmailController {
 		// register Ajax handlers
 		new PostmanSendTestEmailAjaxController();
 	}
-	
+
 	/**
 	 * Fires on the admin_init method
 	 */
 	public function on_admin_init() {
 		$this->registerStylesAndScripts();
 	}
-	
+
 	/**
 	 * Get the settings option array and print one of its values
 	 */
@@ -82,7 +88,7 @@ class PostmanSendTestEmailController {
 			esc_attr( wp_get_current_user()->user_email )
 		);
 	}
-	
+
 	/**
 	 * Register and add settings
 	 */
@@ -90,21 +96,26 @@ class PostmanSendTestEmailController {
 		if ( $this->logger->isTrace() ) {
 			$this->logger->trace( 'registerStylesAndScripts()' );
 		}
-		
+
 		$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
-		
+
 		// register the stylesheet resource
 		wp_register_style( 'postman_send_test_email', plugins_url( 'Postman/Postman-Send-Test-Email/postman_send_test_email.css', $this->rootPluginFilenameAndPath ), PostmanViewController::POSTMAN_STYLE, $pluginData ['version'] );
-		
+
 		// register the javascript resource
-		wp_register_script( 'postman_test_email_wizard_script', plugins_url( 'Postman/Postman-Send-Test-Email/postman_send_test_email.js', $this->rootPluginFilenameAndPath ), array(
-			PostmanViewController::JQUERY_SCRIPT,
-			'jquery_validation',
-			'jquery_steps_script',
-			PostmanViewController::POSTMAN_SCRIPT,
-		), $pluginData ['version'] );
+		wp_register_script(
+			'postman_test_email_wizard_script',
+			plugins_url( 'Postman/Postman-Send-Test-Email/postman_send_test_email.js', $this->rootPluginFilenameAndPath ),
+			array(
+				PostmanViewController::JQUERY_SCRIPT,
+				'jquery_validation',
+				'jquery_steps_script',
+				PostmanViewController::POSTMAN_SCRIPT,
+			),
+			$pluginData ['version']
+		);
 	}
-	
+
 	/**
 	 * Register the Email Test screen
 	 */
@@ -113,17 +124,23 @@ class PostmanSendTestEmailController {
 			' ',
 			sprintf( '%s', esc_html__( 'Postman SMTP Setup', 'post-smtp' ) ),
 			esc_html__( 'Postman SMTP', 'post-smtp' ),
-			Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanSendTestEmailController::EMAIL_TEST_SLUG, array(
-			$this,
-			'outputTestEmailContent',
-		) );
+			Postman::MANAGE_POSTMAN_CAPABILITY_NAME,
+			self::EMAIL_TEST_SLUG,
+			array(
+				$this,
+				'outputTestEmailContent',
+			)
+		);
 		// When the plugin options page is loaded, also load the stylesheet
-		add_action( 'admin_print_styles-' . $page, array(
-			$this,
-			'enqueueEmailTestResources',
-		) );
+		add_action(
+			'admin_print_styles-' . $page,
+			array(
+				$this,
+				'enqueueEmailTestResources',
+			)
+		);
 	}
-	
+
 	/**
 	 */
 	function enqueueEmailTestResources() {
@@ -131,17 +148,21 @@ class PostmanSendTestEmailController {
 		wp_enqueue_style( PostmanViewController::POSTMAN_STYLE );
 		wp_enqueue_style( 'postman_send_test_email' );
 		wp_enqueue_script( 'postman_test_email_wizard_script' );
-		wp_localize_script( PostmanViewController::POSTMAN_SCRIPT, 'postman_email_test', array(
-			'recipient' => '#' . self::RECIPIENT_EMAIL_FIELD_NAME,
-			'not_started' => _x( 'In Outbox', 'Email Test Status', 'post-smtp' ),
-			'sending' => _x( 'Sending...', 'Email Test Status', 'post-smtp' ),
-			'success' => _x( 'Success', 'Email Test Status', 'post-smtp' ),
-			//'failed' => _x( 'Failed', 'Email Test Status', 'post-smtp' ),
-			'failed' => sprintf( 'Failed - Check the plugin email log for more info: %s', '<a href="' . esc_url( admin_url( 'admin.php?page=postman_email_log' ) ) . '">Here</a>' ),
-			'ajax_error' => __( 'Ajax Error', 'post-smtp' ),
-		) );
+		wp_localize_script(
+			PostmanViewController::POSTMAN_SCRIPT,
+			'postman_email_test',
+			array(
+				'recipient'   => '#' . self::RECIPIENT_EMAIL_FIELD_NAME,
+				'not_started' => _x( 'In Outbox', 'Email Test Status', 'post-smtp' ),
+				'sending'     => _x( 'Sending...', 'Email Test Status', 'post-smtp' ),
+				'success'     => _x( 'Success', 'Email Test Status', 'post-smtp' ),
+				// 'failed' => _x( 'Failed', 'Email Test Status', 'post-smtp' ),
+				'failed'      => sprintf( 'Failed - Check the plugin email log for more info: %s', '<a href="' . esc_url( admin_url( 'admin.php?page=postman_email_log' ) ) . '">Here</a>' ),
+				'ajax_error'  => __( 'Ajax Error', 'post-smtp' ),
+			)
+		);
 	}
-	
+
 	/**
 	 */
 	public function outputTestEmailContent() {
@@ -151,9 +172,9 @@ class PostmanSendTestEmailController {
 			),
 			admin_url( 'admin.php' )
 		);
-		
+
 		$user_email = wp_get_current_user()->user_email;
-		
+
 		$nonce_field = wp_nonce_field( 'post-smtp', 'security', true, false );
 		echo '
 		<div class="send-test-email">
@@ -286,7 +307,7 @@ class PostmanSendTestEmailController {
  * @author jasonhendriks
  */
 class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
-	
+
 	/**
 	 * Constructor
 	 *
@@ -298,7 +319,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		parent::__construct();
 		PostmanUtils::registerAjaxHandler( 'postman_send_test_email', $this, 'sendTestEmailViaAjax' );
 	}
-	
+
 	/**
 	 * Yes, this procedure is just for testing.
 	 *
@@ -307,7 +328,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 	function test_mode() {
 		return true;
 	}
-	
+
 	/**
 	 * This Ajax sends a test email
 	 *
@@ -316,101 +337,107 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 	 * @version 1.0
 	 */
 	function sendTestEmailViaAjax() {
-		
-		check_admin_referer('post-smtp', 'security');
-		
-		if( !current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
+
+		check_admin_referer( 'post-smtp', 'security' );
+
+		if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
 			wp_send_json_error(
 				array(
-					'Message'	=>	'Unauthorized.'
+					'Message' => 'Unauthorized.',
 				),
 				401
 			);
 		}
-		
+
 		// get the email address of the recipient from the HTTP Request
 		$email = $this->getRequestParameter( 'email' );
-		
+
 		// get the name of the server from the HTTP Request
 		$serverName = PostmanUtils::postmanGetServerName();
-		
+
 		/* translators: where %s is the domain name of the site */
 		$subject = sprintf( _x( 'Postman SMTP Test (%s)', 'Test Email Subject', 'post-smtp' ), $serverName );
-		
+
 		// Postman API: indicate to Postman this is just for testing
-		add_filter( 'postman_test_email', array(
-			$this,
-			'test_mode',
-		) );
-		
+		add_filter(
+			'postman_test_email',
+			array(
+				$this,
+				'test_mode',
+			)
+		);
+
 		// this header specifies that there are many parts (one text part, one html part)
-		$header = 'Content-Type: multipart/alternative;' . "\r\n";
+		$header  = 'Content-Type: multipart/alternative;' . "\r\n";
 		$header .= 'MIME-Version: 1.0' . "\r\n";
-		
+
 		// createt the message content
 		$message = $this->createMessageContent();
-		
+
 		$email_args = apply_filters( 'postman_test_email_args', compact( 'email', 'subject', 'message', 'header' ) );
 		extract( $email_args );
-		
+
 		// send the message
 		$success = wp_mail( $email, $subject, $message, $header );
-		
+
 		// Postman API: remove the testing indicator
-		remove_filter( 'postman_test_email', array(
-			$this,
-			'test_mode',
-		) );
-		
+		remove_filter(
+			'postman_test_email',
+			array(
+				$this,
+				'test_mode',
+			)
+		);
+
 		// Postman API: retrieve the result of sending this message from Postman
 		$result = apply_filters( 'postman_wp_mail_result', null );
-		
+
 		// post-handling
 		if ( $success ) {
 			$this->logger->debug( 'Test Email delivered to server' );
 			// the message was sent successfully, generate an appropriate message for the user
 			$statusMessage = sprintf( __( 'Your message was delivered (%d ms) to the SMTP server! Congratulations :)', 'post-smtp' ), $result ['time'] );
-			
+
 			$this->logger->debug( 'statusmessage: ' . $statusMessage );
-			
+
 			// compose the JSON response for the caller
 			$response = array(
-				'message' => $statusMessage,
+				'message'    => $statusMessage,
 				'transcript' => $result ['transcript'],
 			);
-			
+
 			// log the response
 			if ( $this->logger->isTrace() ) {
 				$this->logger->trace( 'Ajax Response:' );
 				$this->logger->trace( $response );
 			}
-			
+
 			// send the JSON response
 			wp_send_json_success( $response );
 		} else {
 			$this->logger->error( 'Test Email NOT delivered to server - ' . $result ['exception']->getCode() );
 			// the message was NOT sent successfully, generate an appropriate message for the user
 			$statusMessage = $result ['exception']->getMessage();
-			
+
 			$this->logger->debug( 'statusmessage: ' . $statusMessage );
-			
+
 			// compose the JSON response for the caller
 			$response = array(
-				'message' => $statusMessage,
+				'message'    => $statusMessage,
 				'transcript' => $result ['transcript'],
 			);
-			
+
 			// log the response
 			if ( $this->logger->isTrace() ) {
 				$this->logger->trace( 'Ajax Response:' );
 				$this->logger->trace( $response );
 			}
-			
+
 			// send the JSON response
 			wp_send_json_error( $response );
 		}
 	}
-	
+
 	/**
 	 * Create the multipart message content
 	 *
@@ -419,16 +446,16 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 	private function createMessageContent() {
 		// Postman API: Get the plugin metadata
 		$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
-		
+
 		/*
 		translators: where %s is the Postman plugin version number (e.g. 1.4) */
 		// English - Mandarin - French - Hindi - Spanish - Portuguese - Russian - Japanese
 		// http://www.pinyin.info/tools/converter/chars2uninumbers.html
-		$greeting = 'Hello! - &#20320;&#22909; - Bonjour! - &#2344;&#2350;&#2360;&#2381;&#2340;&#2375; - ¡Hola! - Ol&#225; - &#1055;&#1088;&#1080;&#1074;&#1077;&#1090;! - &#20170;&#26085;&#12399;';
-		$sentBy = sprintf( _x( 'Sent by Postman %s', 'Test Email Tagline', 'post-smtp' ), $pluginData ['version'] );
-		$imageSource = __( 'Image source', 'post-smtp' );
+		$greeting       = 'Hello! - &#20320;&#22909; - Bonjour! - &#2344;&#2350;&#2360;&#2381;&#2340;&#2375; - ¡Hola! - Ol&#225; - &#1055;&#1088;&#1080;&#1074;&#1077;&#1090;! - &#20170;&#26085;&#12399;';
+		$sentBy         = sprintf( _x( 'Sent by Postman %s', 'Test Email Tagline', 'post-smtp' ), $pluginData ['version'] );
+		$imageSource    = __( 'Image source', 'post-smtp' );
 		$withPermission = __( 'Used with permission', 'post-smtp' );
-		$messageArray = array(
+		$messageArray   = array(
 			'Content-Type: text/plain; charset = "UTF-8"',
 			'Content-Transfer-Encoding: 8bit',
 			'',
