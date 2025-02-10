@@ -280,18 +280,13 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 Important: If you are using version 2.8.7 or lower of our plugin, please update to the latest version as soon as possible. This update contains an urgent security fix that prevents potential vulnerabilities and attacks. We apologize for any inconvenience this may cause you and we appreciate your cooperation. Thank you for using our plugin.
 
 == Changelog ==
-= 3.1.0 - Feb 04, 2025 =
+= 3.1.0 - Feb 10, 2025 =
 * New: Added SendGrid EU support.
 * Optimization: Improved email reporting.
 * Fix: Translation warning was appearing in some cases.
 * Fix: Security enhancement.
 * Fix: Prevent From Name was not working, if Prevent From Email was not enabled.
 * Fix: Send Test was not appearing in Log Only mode.
-
-= 3.0.2 - Jan 17, 2025 =
-* Fix: MySQL warning was appearing in some cases. 
-* Fix: Translation warning was appearing in some cases.
-* Fix: There were few warnings from Webhook module.
 
 = 3.0.2 - Jan 27, 2025 =
 * Updated: Feedback SDK to the latest version.
