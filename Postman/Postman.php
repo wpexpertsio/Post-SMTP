@@ -100,6 +100,9 @@ class Postman {
         // New Dashboard
 		require_once 'Dashboard/NewDashboard.php';
 
+		// Email Tester
+		require_once 'Postman-Mail-Tester/PostmanEmailTester.php';
+
 
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(

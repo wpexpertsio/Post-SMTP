@@ -63,7 +63,7 @@ jQuery( document ).ready( function() {
     /**
      * Webhook Alerts
      * 
-     * @since 3.1.0
+     * @since 3.0.0
      */
     jQuery( document ).on( 'click', '.post-smtp-add-webhook-url', function( e ) {
         e.preventDefault();

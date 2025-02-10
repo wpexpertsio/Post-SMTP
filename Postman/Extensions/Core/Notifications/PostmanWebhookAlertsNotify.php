@@ -15,7 +15,7 @@ class PostmanWebhookAlertsNotify implements Postman_Notify {
      * 
      * @return void
      * 
-     * @since 3.1.0
+     * @since 3.0.0
      */
     public function send_message( $message ) {
 
@@ -29,7 +29,7 @@ class PostmanWebhookAlertsNotify implements Postman_Notify {
              * @param bool $validate
              * @param string $webhook_url
              * 
-             * @since 3.1.0
+             * @since 3.0.0
              */
             $validate = apply_filters( 'post_smtp_validate_webhook_url', true, $webhook_url );
 
