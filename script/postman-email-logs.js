@@ -480,7 +480,7 @@ jQuery(document).ready(function($) {
 							</table>
 							<hr />
 							<div>
-								<iframe src="${response.data.log_url}" id="ps-email-body" width="100%" height="310px"></iframe>
+								<iframe src="${response.data.log_url}" id="ps-email-body" width="100%" height="310px" sandbox></iframe>
 							</div>
 						`;
 
