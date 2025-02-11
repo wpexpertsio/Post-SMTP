@@ -166,9 +166,9 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
                 $data['bcc_header'] = !empty( $log->bccRecipients ) ? implode( ',', array_map( 'sanitize_email', explode( ',', $log->bccRecipients ) ) ) : '';
                 $data['reply_to_header'] = !empty( $log->replyTo ) ? implode( ',', array_map( 'sanitize_email', explode( ',', $log->replyTo ) ) ) : '';
                 $data['transport_uri'] = !empty( $log->transportUri ) ? $log->transportUri : '';
-				$data['original_to'] = is_array( $log->originalTo ) ? implode( ',', array_map( 'sanitize_email', explode( ',', $log->originalTo ) ) ) : '';
+				$data['original_to'] = is_array( $log->originalTo ) ? implode( ',', $log->originalTo ) : $log->originalTo;
 				$data['original_subject'] = !empty( $log->originalSubject ) ? sanitize_text_field( $log->originalSubject ) : '';
-				$data['original_message'] = !empty( $log->originalMessage ) ? sanitize_textarea_field( $log->originalMessage ) : '';
+				$data['original_message'] = $log->originalMessage;
 				$data['original_headers'] = is_array($log->originalHeaders) ? serialize( $log->originalHeaders ) : $log->originalHeaders;
 				$data['session_transcript'] = $log->sessionTranscript;
 
