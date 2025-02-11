@@ -161,15 +161,15 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				$data['solution'] = apply_filters( 'post_smtp_log_solution', null, $new_status, $log, $message );
 				$data['success'] = empty( $new_status ) ? 1 : $new_status;
 				$data['from_header'] = $log->sender;
-				$data['to_header'] = !empty( $log->toRecipients ) ? implode( ',', array_map( 'sanitize_email', explode( ',', $log->toRecipients ) ) ) : '';
-                $data['cc_header'] = !empty( $log->ccRecipients ) ? implode( ',', array_map( 'sanitize_email', explode( ',', $log->ccRecipients ) ) ) : '';
-                $data['bcc_header'] = !empty( $log->bccRecipients ) ? implode( ',', array_map( 'sanitize_email', explode( ',', $log->bccRecipients ) ) ) : '';
-                $data['reply_to_header'] = !empty( $log->replyTo ) ? implode( ',', array_map( 'sanitize_email', explode( ',', $log->replyTo ) ) ) : '';
-                $data['transport_uri'] = !empty( $log->transportUri ) ? $log->transportUri : '';
+				$data['to_header'] = !empty( $log->toRecipients ) ? $log->toRecipients : '';
+				$data['cc_header'] = !empty( $log->ccRecipients ) ? $log->ccRecipients : '';
+				$data['bcc_header'] = !empty( $log->bccRecipients ) ? $log->bccRecipients : '';
+				$data['reply_to_header'] = !empty( $log->replyTo ) ? $log->replyTo : '';
+				$data['transport_uri'] = !empty( $log->transportUri ) ? $log->transportUri : '';
 				$data['original_to'] = is_array( $log->originalTo ) ? implode( ',', $log->originalTo ) : $log->originalTo;
-				$data['original_subject'] = !empty( $log->originalSubject ) ? sanitize_text_field( $log->originalSubject ) : '';
+				$data['original_subject'] = !empty( $log->originalSubject ) ? $log->originalSubject : '';
 				$data['original_message'] = $log->originalMessage;
-				$data['original_headers'] = is_array($log->originalHeaders) ? serialize( $log->originalHeaders ) : $log->originalHeaders;
+				$data['original_headers'] = is_array($log->originalHeaders) ? serialize($log->originalHeaders) : $log->originalHeaders;
 				$data['session_transcript'] = $log->sessionTranscript;
 
 				$email_logs = new PostmanEmailLogs();
