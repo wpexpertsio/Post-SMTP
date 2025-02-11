@@ -281,7 +281,9 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
-= 3.1.1 - Feb 10, 2025 =
+= 3.1.1 - Feb 11, 2025 =
+* Fix: Raw HTML was sent when resending emails from the log section.
+* Fix: AJAX error with some Form plugins.
 
 = 3.1.0 - Feb 10, 2025 =
 * New: Added SendGrid EU support.
