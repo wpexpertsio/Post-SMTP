@@ -134,6 +134,29 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		}
 
 		/**
+		 * Sanitizes a list of emails, handling both single and multiple email inputs.
+		 *
+		 * @param string|array $emails The email(s) to sanitize.
+		 * @return string Sanitized email(s) as a comma-separated string.
+		 * @since 3.1.2
+		 * @version 1.0.0
+		 */
+		public function sanitize_emails( $emails ) {
+			if ( empty( $emails ) ) {
+				return '';
+			}
+
+			$email_list = is_array( $emails ) ? $emails : explode( ',', $emails );
+
+			$sanitized_emails = array_map( function ( $email ) {
+				$email = trim( $email );
+				return filter_var( $email, FILTER_VALIDATE_EMAIL ) ? sanitize_email( $email ) : '';
+			}, $email_list );
+
+			return implode( ', ', array_filter( $sanitized_emails ) );
+		}
+
+		/**
 		 * Writes an email sending attempt to the Email Log
 		 *
 		 * From http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields
@@ -153,23 +176,21 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
             }
 
             $new_status = apply_filters( 'post_smtp_log_status', $new_status, $log, $message );
-			
 			//If Table exists, Insert Log into Table
 			if( $this->new_logging ) {
-
 				$data = array();
-				$data['solution'] = apply_filters( 'post_smtp_log_solution', null, $new_status, $log, $message );
-				$data['success'] = empty( $new_status ) ? 1 : $new_status;
-				$data['from_header'] = $log->sender;
-				$data['to_header'] = !empty( $log->toRecipients ) ? $log->toRecipients : '';
-				$data['cc_header'] = !empty( $log->ccRecipients ) ? $log->ccRecipients : '';
-				$data['bcc_header'] = !empty( $log->bccRecipients ) ? $log->bccRecipients : '';
-				$data['reply_to_header'] = !empty( $log->replyTo ) ? $log->replyTo : '';
-				$data['transport_uri'] = !empty( $log->transportUri ) ? $log->transportUri : '';
-				$data['original_to'] = is_array( $log->originalTo ) ? implode( ',', $log->originalTo ) : $log->originalTo;
-				$data['original_subject'] = !empty( $log->originalSubject ) ? $log->originalSubject : '';
+				$data['solution']         = apply_filters( 'post_smtp_log_solution', null, $new_status, $log, $message );
+				$data['success']          = empty( $new_status ) ? 1 : $new_status;
+				$data['from_header']      = $log->sender;
+				$data['to_header']        = $this->sanitize_emails( $log->toRecipients );
+				$data['cc_header']        = $this->sanitize_emails( $log->ccRecipients );
+				$data['bcc_header']       = $this->sanitize_emails( $log->bccRecipients );
+				$data['reply_to_header']  = $this->sanitize_emails( $log->replyTo );
+				$data['transport_uri']    = !empty( $log->transportUri ) ? $log->transportUri : '';
+				$data['original_to']      = $this->sanitize_emails( $log->originalTo );
+				$data['original_subject'] = !empty( $log->originalSubject ) ? sanitize_text_field( $log->originalSubject ) : '';
 				$data['original_message'] = $log->originalMessage;
-				$data['original_headers'] = is_array($log->originalHeaders) ? serialize($log->originalHeaders) : $log->originalHeaders;
+			    $data['original_headers'] = is_array( $log->originalHeaders ) ? serialize( $log->originalHeaders ) : $log->originalHeaders;
 				$data['session_transcript'] = $log->sessionTranscript;
 
 				$email_logs = new PostmanEmailLogs();
