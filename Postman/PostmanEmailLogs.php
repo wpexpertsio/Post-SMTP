@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require 'Postman-Email-Log/PostmanEmailQueryLog.php';
-require POST_SMTP_PATH . '/includes/lib/htmlpurifier/HTMLPurifier.auto.php';
+require POST_SMTP_PATH . '/includes/libs/HTMLPurifier/HTMLPurifier.auto.php';
 
 class PostmanEmailLogs {
 
