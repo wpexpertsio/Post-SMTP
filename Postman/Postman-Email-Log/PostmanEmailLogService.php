@@ -132,32 +132,29 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				$this->writeToEmailLog( $log,$message );
 			}
 		}
+
 		/**
-		 * Sanitizes emails, handling both single and multiple emails.
-		 * - Extracts emails from "Name <email@example.com>" format.
-		 * - Handles both string (comma-separated) and array inputs.
+		 * Sanitizes a list of emails, handling both single and multiple email inputs.
 		 *
-		 * @param string|array $email_field Email(s) to sanitize.
+		 * @param string|array $emails The email(s) to sanitize.
 		 * @return string Sanitized email(s) as a comma-separated string.
 		 * @since 3.1.2
 		 * @version 1.0.0
 		 */
-		function sanitize_emails( $email_field ) {
-			if ( empty( $email_field ) ) {
+		public function sanitize_emails( $emails ) {
+			if ( empty( $emails ) ) {
 				return '';
 			}
 
-			$emails = is_array( $email_field ) ? $email_field : explode( ',', $email_field );
+			$email_list = is_array( $emails ) ? $emails : explode( ',', $emails );
 
 			$sanitized_emails = array_map( function ( $email ) {
-			    $email = trim( $email );
-				return filter_var( $email, FILTER_VALIDATE_EMAIL) ? sanitize_email( $email ) : '';
-			}, $emails );
-
+				$email = trim( $email );
+				return filter_var( $email, FILTER_VALIDATE_EMAIL ) ? sanitize_email( $email ) : '';
+			}, $email_list );
 
 			return implode( ', ', array_filter( $sanitized_emails ) );
 		}
-
 
 		/**
 		 * Writes an email sending attempt to the Email Log
@@ -193,7 +190,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				$data['original_to']      = $this->sanitize_emails( $log->originalTo );
 				$data['original_subject'] = !empty( $log->originalSubject ) ? sanitize_text_field( $log->originalSubject ) : '';
 				$data['original_message'] = $log->originalMessage;
-			    $data['original_headers'] = is_array($log->originalHeaders) ? serialize($log->originalHeaders) : $log->originalHeaders;
+			    $data['original_headers'] = is_array( $log->originalHeaders ) ? serialize( $log->originalHeaders ) : $log->originalHeaders;
 				$data['session_transcript'] = $log->sessionTranscript;
 
 				$email_logs = new PostmanEmailLogs();
