@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require 'Postman-Email-Log/PostmanEmailQueryLog.php';
-require POST_SMTP_PATH . '/assets/lib/htmlpurifier/HTMLPurifier.auto.php';
+require POST_SMTP_PATH . '/includes/lib/htmlpurifier/HTMLPurifier.auto.php';
 
 class PostmanEmailLogs {
 
@@ -68,8 +68,7 @@ class PostmanEmailLogs {
             $log = $email_query_log->get_log( $id, '' );
             $header = $log['original_headers'];
             $msg = $log['original_message'];
-            $msg = preg_replace( "/<script\b[^>]*>(.*?)<\/script>/s", '', $msg );
- 			$msg = $this->ps_purify_html( $msg );
+ 			$msg = $this->purify_html( $msg );
            	echo ( isset ( $header ) && strpos( $header, "text/html" ) ) ? $msg : '<pre>' . $msg . '</pre>' ;
 
             die;
@@ -79,15 +78,16 @@ class PostmanEmailLogs {
     }
 	
     /**
-     * @since 3.1.2
-     * @version 1.0.0
      * 
      * Purifies and sanitizes HTML content using HTMLPurifier.
      *
      * @param string $html_content The potentially unsafe HTML content.
      * @return string The purified and sanitized HTML content.
+     * @since 3.1.2
+     * @version 1.0.0
+     * 
      */
-	public function ps_purify_html( $html_content ) {
+	public function purify_html( $html_content ) {
 		// Configure HTMLPurifier.
 		$config = HTMLPurifier_Config::createDefault();
 		$config->set('Core.Encoding', 'UTF-8');
