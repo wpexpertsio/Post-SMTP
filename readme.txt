@@ -281,7 +281,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
-= 3.1.2 - Feb 17, 2025 =
+= 3.1.2 - Feb 24, 2025 =
 * Enhancement: Email logs security enhancement.
 
 = 3.1.1 - Feb 11, 2025 =
