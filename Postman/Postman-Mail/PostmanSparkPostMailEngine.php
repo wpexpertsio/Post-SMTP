@@ -107,13 +107,15 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
 
         $attachments = $this->addAttachmentsToMail( $message );
         $body['content']['attachments'] = $attachments;
+		
+		// Initialize recipient array
 
         $tos = array();
         $duplicates = array();
-
+		$to_emails = array();
         // add the to recipients
         foreach ( (array)$message->getToRecipients() as $recipient ) {
-                    
+              $to_emails[] = $recipient->getEmail();    
             if ( !array_key_exists( $recipient->getEmail(), $duplicates ) ) {
 
                 $tos[] = array(
@@ -123,48 +125,43 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
                 );
                 
                 $duplicates[] = $recipient->getEmail();
-
             }
 
         }
 
         $body['recipients'] = $tos;
 
-        //Add cc
+       // Add cc
         $cc = array();
         $duplicates = array();
         foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
-
+			$cc_emails[] = $recipient->getEmail();
             if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
-
                 $recipient->log($this->logger, 'Cc');
-
                 $cc[] = array(
                     'address' => array(
-                        'email' =>  $recipient->getEmail()
+                        'email' =>  $recipient->getEmail(),
+						'header_to' => implode( ',', $to_emails )
                     ),
                 );
-                
                 $duplicates[] = $recipient->getEmail();
 
             }
 
-        }
-        if( !empty( $cc ) ) {
-            $body['cc'] = $cc;
         }
 
         //Add bcc
         $bcc = array();
         $duplicates = array();
         foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
-
+			$bcc_emails[] = $recipient->getEmail();
             if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 
                 $recipient->log($this->logger, 'Bcc');
                 $bcc[] = array(
                     'address' => array(
-                        'email' =>  $recipient->getEmail()
+                        'email' =>  $recipient->getEmail(),
+						 'header_to' => implode( ',', $to_emails )
                     ),
                 );
 
@@ -174,9 +171,16 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
 
         }
         
-        if( !empty( $bcc ) ) {
-            $body['bcc'] = $bcc;
-        }
+		if ( !empty( $cc ) && !empty( $bcc ) ) {
+			$body['recipients'] = array_merge( $tos, $cc, $bcc );
+			$body['content']['headers']['cc'] = implode( ',', $cc_emails );
+		} elseif ( !empty( $cc ) ) {
+			$body['recipients'] = array_merge( $tos, $cc );
+			$body['content']['headers']['cc'] = implode( ',', $cc_emails );
+		} elseif ( !empty( $bcc ) ) {
+			$body['recipients'] = array_merge( $tos, $bcc );
+		}
+		
         // add the reply-to
         $replyTo = $message->getReplyTo();
         // $replyTo is null or a PostmanEmailAddress object
@@ -211,8 +215,7 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
 
         //Send Email
         try {
-
-            $response = $spark_post->send( $body );
+			$response = $spark_post->send( $body );
 
             if ( $this->logger->isDebug() ) {
 
