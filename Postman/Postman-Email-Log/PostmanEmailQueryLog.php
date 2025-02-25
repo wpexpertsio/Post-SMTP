@@ -314,21 +314,36 @@ class PostmanEmailQueryLog {
      * @since 2.5.0
      * @version 1.0.0
      */
-    public function get_log( $id, $columns = array() ) {
+	public function get_log( $id, $columns = array() ) {
 
-        $columns = empty( $columns ) ? '*' : implode( ',', $columns );
+		$allowed_columns = array(
+			'id', 'solution', 'success', 'from_header', 'to_header', 'cc_header',
+			'bcc_header', 'reply_to_header', 'transport_uri', 'original_to', 
+			'original_subject', 'original_message', 'original_headers', 
+			'session_transcript', 'time'
+		);
 
-        return $this->db->get_row(
-            $this->db->prepare(
-                "SELECT {$columns} FROM %i WHERE id = %d",
-                $this->table,
-                $id
-            ),
-            ARRAY_A
-        );
+		// Validate and sanitize columns.
+		if ( empty( $columns ) || ! is_array( $columns ) ) {
+			$columns_sql = '*';
+		} else {
+			$safe_columns = array_intersect( $columns, $allowed_columns );
+			$columns_sql  = ! empty( $safe_columns ) ? implode( ', ', array_map( 'esc_sql', $safe_columns ) ) : '*';
+		}
+
+		// Sanitize table name.
+		$table = esc_sql( $this->table );
+
+		// Prepare and execute the query securely.
+		$query = $this->db->prepare(
+			"SELECT {$columns_sql} FROM {$table} WHERE id = %d",
+			$id
+		);
+
+		return $this->db->get_row( $query, ARRAY_A );
+	}
 
 
-    }
 
 }
 endif;
