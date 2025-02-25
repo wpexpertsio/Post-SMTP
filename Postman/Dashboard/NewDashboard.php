@@ -27,6 +27,7 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
 		}
         
         public function admin_enqueue_scripts( $hook ) {
+			$i18n = require_once POST_SMTP_PATH . '/Postman/Dashboard/includes/i18n.php';
 			if ( 'toplevel_page_postman' === $hook ) {
 				wp_enqueue_script( 'post-smtp-dashboard', POST_SMTP_URL . '/Postman/Dashboard/assets/js/app.js', array( 'wp-i18n' ), POST_SMTP_VER, true );
 				wp_localize_script(
@@ -38,7 +39,8 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
 						'nonce'          => wp_create_nonce( 'wp_rest' ),
 						'admin_url'      => admin_url( 'admin.php' ),
 						'page_hook'      => $hook,
-						'is_bfcm'        => postman_is_bfcm()
+						'is_bfcm'        => postman_is_bfcm(),
+						'i18n'           => $i18n,
 					)
 				);
 
