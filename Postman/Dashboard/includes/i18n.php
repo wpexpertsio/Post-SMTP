@@ -98,7 +98,7 @@ return array(
 						'href'  => 'https://postmansmtp.com/documentation/postman-smtp-documentation/email-logs/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
 					),
 				),
-				'view_more' => 'https://postmansmtp.com/documentation/postman-smtp-documentation/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+				'viewMore' => 'https://postmansmtp.com/documentation/postman-smtp-documentation/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
 			),
 			array(
 				'title'     => __( 'Socket', 'post-smtp' ),
@@ -116,7 +116,7 @@ return array(
 						'href'  => 'https://postmansmtp.com/documentation/sockets-addons/how-to-configure-post-smtp-with-office-365/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
 					),
 				),
-				'view_more' => 'https://postmansmtp.com/documentation/sockets-addons/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+				'viewMore' => 'https://postmansmtp.com/documentation/sockets-addons/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
 			),
 			array(
 				'title'     => __( 'Advance Functionality', 'post-smtp' ),
@@ -134,7 +134,7 @@ return array(
 						'href'  => 'https://postmansmtp.com/documentation/advance-functionality/email-log-attachment/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
 					),
 				),
-				'view_more' => 'https://postmansmtp.com/documentation/advance-functionality/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+				'viewMore' => 'https://postmansmtp.com/documentation/advance-functionality/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
 			),
 			array(
 				'title'     => __( 'Post SMTP Mobile App', 'post-smtp' ),
@@ -152,7 +152,7 @@ return array(
 						'href'  => 'https://postmansmtp.com/documentation/post-smtp-mobile-app/resend-failed-emails-88130/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
 					),
 				),
-				'view_more' => 'https://postmansmtp.com/documentation/post-smtp-mobile-app/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+				'viewMore' => 'https://postmansmtp.com/documentation/post-smtp-mobile-app/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
 			),
 			array(
 				'title'     => __( 'MainWP Extension', 'post-smtp' ),
@@ -166,7 +166,7 @@ return array(
 						'href'  => 'https://postmansmtp.com/documentation/mainwp-extension/configure-mainwp-dashboard-for-mainwp-post-smtp-extension/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
 					),
 				),
-				'view_more' => 'https://postmansmtp.com/documentation/mainwp-extension/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+				'viewMore' => 'https://postmansmtp.com/documentation/mainwp-extension/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
 			),
 			array(
 				'title'     => __( 'Tools and Troubleshooting', 'post-smtp' ),
@@ -180,7 +180,7 @@ return array(
 						'href'  => 'https://postmansmtp.com/documentation/tools-and-troubleshooting/how-to-get-a-connectivity-test-report/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
 					),
 				),
-				'view_more' => 'https://postmansmtp.com/documentation/tools-and-troubleshooting/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+				'viewMore' => 'https://postmansmtp.com/documentation/tools-and-troubleshooting/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
 			),
 		),
 	),
