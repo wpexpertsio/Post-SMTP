@@ -316,12 +316,23 @@ class PostmanEmailQueryLog {
      */
 	public function get_log( $id, $columns = array() ) {
 
-		$allowed_columns = array(
-			'id', 'solution', 'success', 'from_header', 'to_header', 'cc_header',
-			'bcc_header', 'reply_to_header', 'transport_uri', 'original_to', 
-			'original_subject', 'original_message', 'original_headers', 
-			'session_transcript', 'time'
-		);
+        $allowed_columns = array(
+            'id',
+            'solution',
+            'success',
+            'from_header',
+            'to_header',
+            'cc_header',
+            'bcc_header',
+            'reply_to_header',
+            'transport_uri',
+            'original_to',
+            'original_subject',
+            'original_message',
+            'original_headers',
+            'session_transcript',
+            'time',
+        );        
 
 		// Validate and sanitize columns.
 		if ( empty( $columns ) || ! is_array( $columns ) ) {
@@ -336,7 +347,8 @@ class PostmanEmailQueryLog {
 
 		// Prepare and execute the query securely.
 		$query = $this->db->prepare(
-			"SELECT {$columns_sql} FROM {$table} WHERE id = %d",
+			"SELECT {$columns_sql} FROM %i WHERE id = %d",
+            $table,
 			$id
 		);
 
