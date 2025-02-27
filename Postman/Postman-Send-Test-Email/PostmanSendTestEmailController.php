@@ -434,12 +434,12 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
         <thead>
             <tr>
                 <th>
-                    <a href="https://postmansmtp.com/"><img style="width: 160px;" src="https://postmansmtp.com/wp-content/uploads/2025/02/postman-logo-email.png"/></a>
+                    <a href="https://postmansmtp.com/"><img style="width: 160px;" src="'.esc_attr( POST_SMTP_ASSETS ).'/images/logos/postman-logo-email.png"/></a>
                 </th>
             </tr>
            
         </thead>
-        <tbody>
+        <tbody> 
             <tr>
                 <td style="padding: 0 20px;">Hey there 👋,</td>
             </tr>
@@ -450,7 +450,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
                 <td style="padding: 0 20px;">Thank you for using Post SMTP. Our mission is to enhance you email deliverability.</td>
             </tr>
             <tr>
-                <td><img style=" margin: 20px 0;" src="https://postmansmtp.com/wp-content/uploads/2025/02/post-man-banner.png"/></td>
+                <td><img style=" margin: 20px 0;" src="'.esc_attr( POST_SMTP_ASSETS ).'/images/logos/post-man-banner.png"/></td>
             </tr>
             <tr>
                 <td style="padding: 0 20px;font-size: 10px;">
