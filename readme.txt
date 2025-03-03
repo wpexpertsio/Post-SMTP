@@ -1,4 +1,4 @@
-=== Post SMTP - WordPress SMTP Plugin with Email Logs and Mobile App for Failure Notifications - Gmail SMTP, Office 365, Brevo, Mailgun, Amazon SES and more ===
+=== Post SMTP - WP SMTP Plugin with Email Logs and Mobile App for Failure Notifications - Gmail SMTP, Office 365, Brevo, Mailgun, Amazon SES and more ===
 Plugin URI: https://postmansmtp.com/
 Contributors: wpexpertsio
 Tags: smtp, gmail smtp, email,  email logs, office 365
