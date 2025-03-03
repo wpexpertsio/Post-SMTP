@@ -582,7 +582,7 @@ class Post_SMTP_New_Wizard {
                 <div>
                     <div class="ps-form-switch-control">
                         <label class="ps-switch-1">
-                            <input type="checkbox" '.$from_email_enforced.' name="postman_options['.esc_attr( PostmanOptions::PREVENT_MESSAGE_SENDER_EMAIL_OVERRIDE ).']" id="">
+                            <input type="checkbox" '.$from_email_enforced.' name="postman_options['.esc_attr( PostmanOptions::PREVENT_MESSAGE_SENDER_EMAIL_OVERRIDE ).']">
                             <span class="slider round"></span>
                         </label> 
                     </div>
@@ -606,7 +606,7 @@ class Post_SMTP_New_Wizard {
                 <div>
                     <div class="ps-form-switch-control">
                         <label class="ps-switch-1">
-                            <input type="checkbox" '.$from_name_enforced.' name="postman_options['.esc_attr( PostmanOptions::PREVENT_MESSAGE_SENDER_NAME_OVERRIDE ).']" id="">
+                            <input type="checkbox" '.$from_name_enforced.' name="postman_options['.esc_attr( PostmanOptions::PREVENT_MESSAGE_SENDER_NAME_OVERRIDE ).']">
                             <span class="slider round"></span>
                         </label> 
                     </div>
@@ -1017,7 +1017,7 @@ class Post_SMTP_New_Wizard {
             <div><label>Mailgun Europe Region?</label></div>
             <div class="ps-form-switch-control">
                 <label class="ps-switch-1">
-                    <input type="checkbox" '.$region.' name="postman_options['.esc_attr( PostmanOptions::MAILGUN_REGION ).']" id="">
+                    <input type="checkbox" '.$region.' name="postman_options['.esc_attr( PostmanOptions::MAILGUN_REGION ).']">
                     <span class="slider round"></span>
                 </label> 
             </div>
