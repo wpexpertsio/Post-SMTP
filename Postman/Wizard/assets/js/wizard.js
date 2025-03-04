@@ -585,7 +585,7 @@ jQuery( document ).ready(function() {
 
     });
 
-    const gmail_icon = PostSMTPWizardIcon.gmail_icon;
+    const gmail_icon = PostSMTPWizard.gmail_icon;
     const css = `
       .ps-gmail-btn::before {
           background-image: url( ${gmail_icon} );

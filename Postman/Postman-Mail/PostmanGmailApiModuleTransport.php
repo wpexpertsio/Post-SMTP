@@ -96,25 +96,8 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
         $client->setRedirectUri( $this->getScribe()->getCallbackUrl() );
         
         if ( $this->gmail_oneclick_enabled ) {
-			/**
-			 * Retrieve Gmail credentials via filter.
-			 *
-			 * Filters the Gmail credentials, including client ID (`key`), client secret (`token`), 
-			 * and redirect URI (`url`).
-			 *
-			 * @since 3.1.0
-			 */
-			$keys = apply_filters( 'post_smtp_get_credentials', '' );
-			$client = new Google_Client();
-            $client->setApplicationName( 'Post SMTP' );
-            $client->setPrompt( 'consent' );
-            $client->setAccessType( 'offline' );
-            $client->setApprovalPrompt( 'force' );
-          	$client->setScopes( 'https://www.googleapis.com/auth/gmail.send' );
-            $client->setScopes( 'https://www.googleapis.com/auth/userinfo.email' );
-            $client->setRedirectUri( $keys['credentials']['url'] );
-			$client->setClientId( $keys['credentials']['key'] );
-        	$client->setClientSecret( $keys['credentials']['token'] );
+			$config = [];
+			return new PostmanGmailApiModuleZendMailTransport ( self::HOST, $config );
 		}
 		try {
 			
@@ -223,10 +206,6 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	 */
 	protected function validateTransportConfiguration() {
 		$messages = parent::validateTransportConfiguration ();
-		$gmail_oneclick_enabled = in_array( 'gmail-oneclick', get_option( 'post_smtp_pro', [] )['bonus_extensions'] ?? [] );
-		if( $gmail_oneclick_enabled && post_smtp_has_pro() ){
-			return $messages;
-		}
 		if (empty ( $messages )) {
 			$this->setReadyForOAuthGrant ();
 			if ($this->isPermissionNeeded ()) {
