@@ -193,6 +193,31 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			}
 		}
 
+		/**
+		 * Sanitizes a URL field in an input array and stores the sanitized value in the output array.
+		 *
+		 * This function checks if the specified key exists in the input array and is not empty. 
+		 * If it does, it logs the original value for debugging or audit purposes, 
+		 * trims any leading or trailing whitespace, and sanitizes the URL.
+		 * The sanitized URL is then stored in the output array under the specified key.
+		 *
+		 * @param string $desc       Description or label of the field for logging purposes.
+		 * @param string $key        The key in the input array that corresponds to the URL field to be sanitized.
+		 * @param array  $input      The input array containing the data to be sanitized.
+		 * @param array  &$new_input The output array where the sanitized data will be stored by reference.
+		 *
+		 * @return void
+		 */
+		public function sanitizeUrl( $desc, $key, $input, &$new_input ) { 
+			if ( isset( $input[ $key ] ) && ! empty( $input[ $key ] ) ) {
+				// Log the sanitization process with the original value for auditing.
+				$this->logSanitize( $desc, $input[ $key ] );
+				
+				// Sanitize the URL by trimming whitespace and ensuring it is in a valid URL format.
+				$new_input[ $key ] = esc_url_raw( trim( $input[ $key ] ) );
+			}
+		}
+
 		private function sanitizeInt( $desc, $key, $input, &$new_input ) {
 			if ( isset( $input [ $key ] ) ) {
 				$this->logSanitize( $desc, $input [ $key ] );
