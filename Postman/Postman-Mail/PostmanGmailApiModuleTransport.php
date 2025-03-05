@@ -21,9 +21,11 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	const HOST = 'www.googleapis.com';
 	const ENCRYPTION_TYPE = 'ssl';
 	const PRIORITY = 49000;
+    private $gmail_oneclick_enabled = false;
 	public function __construct($rootPluginFilenameAndPath) {
 		parent::__construct ( $rootPluginFilenameAndPath );
-		
+		$this->gmail_oneclick_enabled = in_array( 'gmail-oneclick', get_option( 'post_smtp_pro', [] )['bonus_extensions'] ?? [] );
+
 		// add a hook on the plugins_loaded event
 		add_action ( 'admin_init', array (
 				$this,
@@ -52,6 +54,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		require_once 'PostmanZendMailEngine.php';
 		return new PostmanZendMailEngine ( $this );
 	}
+
 	
 	/**
 	 * (non-PHPdoc)
@@ -91,18 +94,20 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
         $client->setIncludeGrantedScopes( true );
         $client->setScopes( array( Gmail::MAIL_GOOGLE_COM ) );
         $client->setRedirectUri( $this->getScribe()->getCallbackUrl() );
-		
+        
+        if ( $this->gmail_oneclick_enabled ) {
+			$config = [];
+			return new PostmanGmailApiModuleZendMailTransport ( self::HOST, $config );
+		}
 		try {
 			
 			//If Access Token Expired, get new one
 			if( $client->isAccessTokenExpired() ) {
-				
 				$client->fetchAccessTokenWithRefreshToken( $authToken->getRefreshToken() );
 				
 			}
 			//Lets go with the old one
 			else {
-				
 				$client->setAccessToken( $authToken->getAccessToken() );
 				$client->setRefreshToken( $authToken->getRefreshToken() );
 				
@@ -123,6 +128,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		$token->id_token = null;
 		$token->created = 0;
 		$service = new Gmail( $client );
+     
 		$config [PostmanGmailApiModuleZendMailTransport::SERVICE_OPTION] = $service;
 		
 		return new PostmanGmailApiModuleZendMailTransport ( self::HOST, $config );

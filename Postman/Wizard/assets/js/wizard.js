@@ -1,5 +1,4 @@
 jQuery( document ).ready(function() {
-
     jQuery( '.ps-wizard-socket-check:checked' ).siblings( '.ps-wizard-socket-tick-container' ).css( { 'opacity': 1 } );
 
     jQuery( document ).on( 'click', '.ps-wizard-socket-radio label', function() {
@@ -514,6 +513,49 @@ jQuery( document ).ready(function() {
 
     } );
 
+    jQuery(document).on('click', '.ps-enable-gmail-one-click', function (e) {
+    	
+        if (jQuery(this).hasClass('disabled')) {
+            e.preventDefault();
+            var data = jQuery('#ps-one-click-data').val();
+            var parsedData = JSON.parse(data);
+            jQuery('.ps-pro-for-img').attr('src', parsedData.url);
+            jQuery('.ps-pro-product-url').attr('href', parsedData.product_url);
+            jQuery('.ps-pro-for').text(parsedData.transport_name);
+            jQuery( '.ps-pro-popup-overlay' ).fadeIn();
+    
+            return;
+        }
+        jQuery(this).prop('disabled', false);
+        jQuery(this).removeClass('disabled'); 
+        
+        var enabled = jQuery(this).is(':checked');
+        if (enabled) {
+            jQuery('.ps-disable-gmail-setup').show();
+            jQuery('.ps-disable-one-click-setup').hide();
+        } else {
+            jQuery('.ps-disable-one-click-setup').show();
+            jQuery('.ps-disable-gmail-setup').hide();
+        }
+        
+        jQuery.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            async: true,
+            data: {
+                action: 'update_post_smtp_pro_option',
+                enabled: enabled ? 'gmail-oneclick' : '',
+            },
+            success: function(response) {
+                if (response.success) {
+                    console.log('Option updated successfully!');
+                } else {
+                    console.log('Failed to update option.');
+                }
+            }
+        });
+    });
+
     jQuery( document ).on( 'click', '.ps-pro-close-popup', function( e ){
 
         e.preventDefault();
@@ -543,4 +585,33 @@ jQuery( document ).ready(function() {
 
     });
 
+    const gmail_icon = PostSMTPWizard.gmail_icon;
+    const css = `
+      .ps-gmail-btn::before {
+          background-image: url( ${gmail_icon} );
+      }
+      `;
+    const style = jQuery('<style>').text(css);
+    jQuery('head').append(style);
+
 } );
+
+jQuery(document).ready(function ($) {
+    const toggleFields = () => {
+        const isChecked = $('.ps-enable-gmail-one-click').is(':checked');
+
+        // Show/Hide Gmail Authorization button
+        jQuery('#ps-wizard-connect-gmail').closest('tr').toggle(isChecked);
+
+        // Show/Hide Client ID and Client Secret fields
+        jQuery('#oauth_client_id, #oauth_client_secret, #input_oauth_callback_domain, #input_oauth_redirect_url')
+            .closest('tr')
+            .toggle(!isChecked);
+    };
+
+    // Initialize visibility on page load
+    toggleFields();
+
+    // Listen for changes on the checkbox
+    jQuery('.ps-enable-gmail-one-click').on('change', toggleFields);
+});

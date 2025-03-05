@@ -63,6 +63,7 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 		private $logger;
 		private $message;
 		private $transcript;
+		private $api_base_url;
 		
 		/**
 		 * EOL character string used by transport
@@ -140,6 +141,16 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 			$this->_host = $host;
 			$this->_config = $config;
 			$this->logger = new PostmanLogger ( get_class ( $this ) );
+			// Define API base URL for middleware.
+			$this->api_base_url = 'https://connect.postmansmtp.com/wp-json/gmail-oauth/v1/send-email';
+			// Check if Gmail One Click is enabled.
+			$this->gmail_oneclick_enabled = in_array(
+				'gmail-oneclick',
+				isset( get_option( 'post_smtp_pro', array() )['bonus_extensions'] )
+					? get_option( 'post_smtp_pro', array() )['bonus_extensions']
+					: array(),
+				true
+			);
 		}
 		
 		/**
@@ -192,44 +203,67 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 			// Prepare the message in message/rfc822
 			$message = $this->header . Postman_Zend_Mime::LINEEND . $this->body;
 			$this->message = $message;
-
 			// The message needs to be encoded in Base64URL
 			$encodedMessage = rtrim ( strtr ( base64_encode ( $message ), '+/', '-_' ), '=' );
-			$googleApiMessage = new Message ();
-			$googleService = $this->_config [self::SERVICE_OPTION];
-			$googleClient = $googleService->getClient();
-
+		
+ 
 			$file_size = strlen($message);
 
 			$result = array ();
 			try {
-				$googleClient->setDefer(true);
-				$result = $googleService->users_messages->send ( 'me', $googleApiMessage, array('uploadType' => 'resumable') );
+				if ( $this->gmail_oneclick_enabled ) {
+				  // Prepare payload.
+					$payload = array(
+						'message' => $encodedMessage,
+						'headers' => $this->header,
+						'site_url'  => get_site_url(),
+					);
+					
+					$response = wp_remote_post(
+						$this->api_base_url,
+						array(
+							'method'    => 'POST',
+							'body'      => wp_json_encode( $payload ),
+							'headers'   => array(
+								'Content-Type' => 'application/json',
+							),
+							'timeout'   => 30,
+						)
+					);
 
-				$chunkSizeBytes = 1 * 1024 * 1024;
+					$body           = wp_remote_retrieve_body( $response );
+					$result_output  = json_decode( $body, true );
+					$result         = isset( $result_output['data'] ) ? $result_output['data'] : array();
+				}else{
+				    $googleApiMessage = new Message ();
+				    $googleService = $this->_config [self::SERVICE_OPTION];
+				    $googleClient = $googleService->getClient();
+				    $googleClient->setDefer(true);
+				    $result = $googleService->users_messages->send ( 'me', $googleApiMessage, array('uploadType' => 'resumable') );	
+					$chunkSizeBytes = 1 * 1024 * 1024;
 
-				// create mediafile upload
-				$media = new MediaFileUpload(
-					$googleClient,
-					$result,
-					'message/rfc822',
-					$message,
-					true,
-					$chunkSizeBytes
-				);
-				$media->setFileSize($file_size);
+					// create mediafile upload
+					$media = new MediaFileUpload(
+						$googleClient,
+						$result,
+						'message/rfc822',
+						$message,
+						true,
+						$chunkSizeBytes
+					);
+					$media->setFileSize($file_size);
 
-				$status = false;
-				while (! $status) {
-					$status = $media->nextChunk();
+					$status = false;
+					while (! $status) {
+						$status = $media->nextChunk();
+					}
+					$result = false;
+
+					// Reset to the client to execute requests immediately in the future.
+					$googleClient->setDefer(false);
+
+					$googleMessageId = $status->getId();
 				}
-				$result = false;
-
-				// Reset to the client to execute requests immediately in the future.
-				$googleClient->setDefer(false);
-
-				$googleMessageId = $status->getId();
-
 				if ($this->logger->isInfo ()) {
 					$this->logger->info ( sprintf ( 'Message %d accepted for delivery', PostmanState::getInstance ()->getSuccessfulDeliveries () + 1 ) );
 				}
