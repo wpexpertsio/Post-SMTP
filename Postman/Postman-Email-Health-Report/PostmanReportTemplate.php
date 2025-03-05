@@ -14,7 +14,6 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 
 			$is_addonactivated = false;
 			if ( is_plugin_active( 'report-and-tracking-addon-premium/post-smtp-report-and-tracking.php' ) ) {
-
 				$is_addonactivated = true;
 			}
 
@@ -76,32 +75,31 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 			$disable_url = 'https://postmansmtp.com/pricing/?utm_source=wordpress&utm_medium=email&utm_campaign=email_report&utm_content=email_health_report/';
 
 			$body = "<!DOCTYPE html>
-                    <html>
+                    <html >
                         <head>
-                            <style>
+                       <style>
                                 .outer-box {
                                     background-color: #f1f1f1;
                                     padding: 15px 0;
                                 }
                                 .main {
-                                    width: 490px;
+                                    width: 520px;
                                     background-color: #ffffff;
                                     margin: 0 auto;
                                     padding: 1px 0;
                                 }
                                 .container {
-                                    width: 80%;
-                                    margin: 0 auto;
+                                   
                                 }
                                 .logo {
-                                    margin-top: 36px;
+                                       margin: 36px 0 15px;
                                     text-align: center;
                                 }
                                 .text {
                                     font-size: 12px;
                                     font-weight: 400;
                                     line-height: 15px;
-                                    padding-top: 25px;
+                                    
                                 }
                                 .cards {
                                     margin-top: 20px;
@@ -112,25 +110,25 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                     box-sizing: border-box;
                                     text-align: center;
                                     width: 100px;
-                                    height: 120px;
                                     padding: 10px;
                                     border-radius: 5px;
-                                    margin: 0 2px;
+                                    margin: 0 4px;
+                                    background: #fff;
                                 }
                                 .total {
-                                    background: #eafff2;
+                                   
                                 }
                                 .sent {
-                                    background: #e8eff9;
+                                    
                                 }
                                 .failed {
-                                    background: #ffefe7;
+                                    
                                 }
                                 .opened-pro {
                                     background: #FFF5E9;
                                 }
                                 .opened{
-                                    background: #ffa41c;
+                                    background:linear-gradient(190deg, #FB9E1F, #FBBC1F)
                                 }
                                 .txt {
                                     font-size: 12px;
@@ -172,49 +170,46 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                 }
                                 .table-display {
                                     margin-top: 15px;
-                                    height: 153px;
-                                    width: 424px;
-                                    border: 1px solid #CDCDCD;
-                                    border-top: none;
-                                    margin-left: 32px;
-                                    border-radius: 10px;
                                 }
                                 .table-display-free {
-                                    margin-top: 25px;
-                                    height: 187px;
-                                    border: 1px solid #CDCDCD;
-                                    border-radius: 10px;
+                                   
+                                }
+                                .table-display tr {
+                                }
+                                .table-display tr th {
+
+                                }
+                                .table-display tr td, 
+                                .table-display tr th{
+                                    padding: 5px;
+                                    font-size: 12px;
+                                    
+                                }
+                                .table-display tr th {
+                                    font-weight: 600;
+                                }
+                                .table-display tr td {
+                                    font-weight: 400;
                                 }
                                 .table-header {
-                                    width: 100%;
-                                    height: 30px;
-                                    background-color: #3A5EAF;
-                                    color: white;
-                                    border-top-left-radius: 8px;
-                                    border-top-right-radius: 8px;
-                                    font-size: 12px;
+                                    color: #214a72;
+                                    text-align: center;
                                     display: flex;
-                                    line-height: 32px;
+                                    align-self: center;
+                                    justify-content: center;
                                 }
                                 .table-header span {
-                                    line-height: 20px;
-                                    margin: 8px;
+                                    display: flex;
+                                    margin: 0 auto;
+                                    gap: 5px;
                                 }
                                 .table-header-free{
-                                    width: 100%;
-                                    height: 30px;
-                                    background-color: #E8EFF9;
-                                    color: black;
-                                    border-top-left-radius: 8px;
-                                    border-top-right-radius: 8px;
-                                    font-size: 12px;
-                                    line-height: 32px;
-                                    text-align:center;
+                                   
                                 }
                                 table,
                                 td,
                                 th {
-                                    border-bottom: 1px solid #CDCDCD;
+                                   
                                     border-collapse: collapse;
                                     text-align: center;
                                 }
@@ -228,7 +223,6 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                     font-size: 11px;
                                     color: #151D48;
                                     line-height: 22px;
-                                    font-weight: 800;
                                 }
                                 .bottom-text {
                                     color: #375CAF;
@@ -241,7 +235,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                 }
                                 .wrap-text{
                                     white-space: nowrap; 
-                                    width: 100px; 
+                                    width: 200px; 
                                     overflow: hidden;
                                     text-overflow: ellipsis;
                                 }
@@ -255,6 +249,86 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                     padding-top: 4px;
                                     border-color: transparent;
                                 }
+                                .div_wrap.bg {
+                                    background: #f0f6ff;
+                                    border-radius: 6px;
+                                }
+                                .div_wrap {
+                                    width: 90%;
+                                    margin: 0 auto;
+                                    padding: 20px 25px;
+                                    box-sizing: border-box;
+                                }
+                                .inline-box {
+                                    display: flex;
+                                    align-items: center;
+                                }
+                                .inline-box .box.bleft {
+                                    width: 65%
+                                }
+                                .inline-box .box.bright {
+                                    width: 35%;
+                                    margin-top: 40px;
+                                }
+                                .inline-box .box.bleft h3{
+                                    color: #214a72;
+                                    text-align: left;
+                                    font-size: 12px;
+                                    margin: 0 0 10px 0;
+                                }
+                                .inline-box .box.bleft ul.icon-list {
+                                    padding: 0;
+                                    margin: 0;
+                                    list-style: none;
+                                    text-align: left;
+                                }
+                                .inline-box .box.bleft ul.icon-list li {
+                                    color:#7D98B2;
+                                    display: flex;
+                                    align-content: center;
+                                    gap: 9px;
+                                    font-size: 12px;
+                                    margin: 0;
+                                    padding: 5px 0; 
+                                }
+                                .inline-box .box.bleft ul.icon-list li span {
+                                    width: 15px;
+                                    height: 15px;
+                                    background: url('".POST_SMTP_ASSETS."images/reporting/list-icon.png');
+                                    margin-right: 6px;
+                                    border-radius: 100%;
+                                    background-size: 100%;
+                                }
+                                .inline-box .box.bleft ul.icon-list li img {
+                                    margin: 0 10px;
+                                }
+                                .inline-box .box.bright img{
+                                    width: 100%
+                                }
+                                .button.center{
+                                    text-align: center;
+                                }
+                                .button {
+                                    text-align: left;
+                                    display: block;
+                                    margin: 20px 0 0;
+
+                                }
+                                .button.bg a {
+                                    background: #375CAF;
+                                    color: #fff;
+                                }
+                               .button a {
+                                        background: #F0F6FF;
+                                        padding: 10px 30px;
+                                        text-decoration: none;
+                                        color: #3A5EAF;
+                                        font-size: 12px;
+                                        border-radius: 100px;
+                                        border: 1px solid;
+                                        display: inline-block;
+                                }
+                                
                             </style>
                         </head>
                         <body>
@@ -263,189 +337,210 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                     <div class='logo'>
                                     <img src='" . POST_SMTP_ASSETS . "images/reporting/post_logo.png' />
                                     </div>
-                                    <div class='text container'>
-                                        Hi {$admin_name}
-                                        <br>
-                                        <br>
-                                        Here is a quick overview of how your emails were performing in the past {$duration}
-                                    </div>
-                                    <div class='cards container'>
-                                        <div class='total inner-cards'>
-                                            <div class='ellipse ellipse-total'>
-                                                <div class='icon'>
-                                                <img src='" . POST_SMTP_ASSETS . "images/reporting/total.png' />
-                                                </div>
-                                            </div>
-                                            <div class='txt'>
-                                                Total
-                                            </div>
-                                            <div class='count'>
-                                            {$total}
-                                            </div>
+                                    <div class='div_wrap bg' style=''>
+                                        <div class='text container'>
+                                            <strong>Hi {$admin_name}</strong>
+                                            <br>
+                                            <br>
+                                            Here is a quick overview of how your emails were performing in the past {$duration}
                                         </div>
-                                        <div class='sent inner-cards'>
-                                            <div class='ellipse ellipse-sent'>
-                                                <div class='icon'>
-                                                <img src='" . POST_SMTP_ASSETS . "images/reporting/sent.png' />
+                                        <div class='cards container'>
+                                            <div class='total inner-cards'>
+                                                <div class='ellipse ellipse-total'>
+                                                    <div class='icon'>
+                                                    <img src='" . POST_SMTP_ASSETS . "images/reporting/total.png' />
+                                                    </div>
+                                                </div>
+                                                <div class='txt'>
+                                                    Total
+                                                </div>
+                                                <div class='count'>
+                                                {$total}
                                                 </div>
                                             </div>
-                                            <div class='txt'>
-                                                Sent
-                                            </div>
-                                            <div class='count'>
-                                            {$sent}
-                                            </div>
-                                        </div>
-                                        <div class='failed inner-cards'>
-                                            <div class='ellipse ellipse-failed'>
-                                                <div class='icon' >
-                                                <img src='" . POST_SMTP_ASSETS . "images/reporting/failed.png' />
+                                            <div class='sent inner-cards'>
+                                                <div class='ellipse ellipse-sent'>
+                                                    <div class='icon'>
+                                                    <img src='" . POST_SMTP_ASSETS . "images/reporting/sent.png' />
+                                                    </div>
+                                                </div>
+                                                <div class='txt'>
+                                                    Sent
+                                                </div>
+                                                <div class='count'>
+                                                {$sent}
                                                 </div>
                                             </div>
-                                            <div class='txt'>
-                                                Failed
-                                            </div>
-                                            <div class='count'>
-                                            {$failed}
-                                            </div>
-                                        </div>";
-                                        if ( $is_addonactivated ) {
+                                            <div class='failed inner-cards'>
+                                                <div class='ellipse ellipse-failed'>
+                                                    <div class='icon' >
+                                                    <img src='" . POST_SMTP_ASSETS . "images/reporting/failed.png' />
+                                                    </div>
+                                                </div>
+                                                <div class='txt'>
+                                                    Failed
+                                                </div>
+                                                <div class='count'>
+                                                {$failed}
+                                                </div>
+                                            </div>";
+                                            if ( $is_addonactivated ) {
 
-                                            $body .= "<div class='opened-pro inner-cards'>
-                                                        <div class='ellipse ellipse-opened-pro'>
-                                                            <div class='icon'>
-                                                                <img src='" . POST_SMTP_ASSETS . "images/reporting/opened-pro.png' />
-                                                            </div>
-                                                        </div>
-                                                        <div class='txt'>
-                                                            Opened
-                                                        </div>
-                                                        <div class='count'>
-                                                            {$opened}
-                                                        </div>
-                                                    </div>";
-
-                                        }
-                                        else {
-
-                                            $body .= "<a href='{$extension_url}' target='_blank' style='text-decoration:none;'>
-                                                        <div class='opened inner-cards'>
-                                                            <div class='ellipse ellipse-opened'>
+                                                $body .= "<div class='opened-pro inner-cards'>
+                                                            <div class='ellipse ellipse-opened-pro'>
                                                                 <div class='icon'>
-                                                                    <img src='" . POST_SMTP_ASSETS . "images/reporting/opened.png' />
+                                                                    <img src='" . POST_SMTP_ASSETS . "images/reporting/opened-pro.png' />
                                                                 </div>
                                                             </div>
-                                                            <div class='txt' style='color: white;'>
+                                                            <div class='txt'>
                                                                 Opened
                                                             </div>
                                                             <div class='count'>
-                                                                <img src='" . POST_SMTP_ASSETS . "images/reporting/lock.png' />
+                                                                {$opened}
                                                             </div>
-                                                        </div>
-                                                    </a>";
+                                                        </div>";
 
-                                        }
+                                            }
+                                            else {
 
-                                    if ( $is_addonactivated ) {
+                                                $body .= "<a href='{$extension_url}' target='_blank' style='text-decoration:none;'>
+                                                            <div class='opened inner-cards'>
+                                                                <div class='ellipse ellipse-opened'>
+                                                                    <div class='icon'>
+                                                                        <img src='" . POST_SMTP_ASSETS . "images/reporting/opened.png' />
+                                                                    </div>
+                                                                </div>
+                                                                <div class='txt' style='color: white;'>
+                                                                    Opened
+                                                                </div>
+                                                                <div class='count'>
+                                                                    <img src='" . POST_SMTP_ASSETS . "images/reporting/lock.png' />
+                                                                </div>
+                                                            </div>
+                                                        </a>";
 
-                                        $body .= "</div>
-                                                <div class='btn'>
-                                                    <a href='{$url}' target='_blank'>View More Stats</a>
-                                                </div>
-                                                <div class='table-display'>
-                                                    <div class='table-header'>
-                                                        <span><img src='" . POST_SMTP_ASSETS . "images/reporting/clock.png'></span> Last {$duration} top emails
-                                                    </div>";
+                                            }
 
-                                        if ( ! empty( $logs ) ) {
+                                        if ( $is_addonactivated ) {
 
-                                            $body .= "<div>
-                                                        <table style='width:100%'>
-                                                            <tr>
-                                                                <td class='heading' style='text-align: left; padding-left: 10px;'>Subject</td>
-                                                                <td class='heading'>Total</td>
-                                                                <td class='heading'>Sent</td>
-                                                                <td class='heading'>Failed</td>
-                                                                <td class='heading'>Opened</td>
-                                                            </tr>";
+                                            $body .= "</div>
+                                                    <div class='button bg center'>
+                                                        <a href='{$url}' target='_blank'>View More Stats</a>
+                                                    </div>
+                                                    </div>
+                                                    <div class='table-display'>
+                                                        <div class='table-header'>
+                                                            <span><img style='margin-right: 5px;' src='" . POST_SMTP_ASSETS . "images/reporting/dashicons-clock.png' width='20px'> Last {$duration} top emails</span>
+                                                        </div>";
 
                                             if ( ! empty( $logs ) ) {
 
-                                                $row = 1;
+                                                $body .= "<div class='div_wrap' style='padding: 10px 0;'>
+                                                            <table style='width:100%'>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th style='text-align: left; text-align: left; color: #151D48; font-size: 14px;' class=''>Subject</th>
+                                                                        <th style='color: #83F5AF;'>Total</th>
+                                                                        <th style='color: #98B9F9;'>Sent</th>
+                                                                        <th style='color: #FF955F'>Failed</th>
+                                                                        <th style='color: #FFAE3A;'>Opened</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                ";
 
-                                                foreach ( $logs as $log ) {
+                                                if ( ! empty( $logs ) ) {
 
-                                                    // Let break if greater than 3.
-                                                    if ( $row > 3 ) {
+                                                    $row = 1;
+                                                    $body .= "<tbody>";
+                                                    foreach ( $logs as $log ) {
 
-                                                        break;
+                                                        // Let break if greater than 3.
+                                                        if ( $row > 3 ) {
 
-                                                    } 
-                                                    else {
+                                                            break;
 
-                                                        $body .= "<tr>
-                                                                    <td style='text-align: left; padding-left: 10px;'><div class='wrap-text'>{$log->subject}</div></td>
-                                                                    <td>{$log->total}</td>
-                                                                    <td>{$log->sent}</td>
-                                                                    <td>{$log->failed}</td>
-                                                                    <td>{$log->opened}</td>
-                                                                </tr>";
+                                                        } 
+                                                        else {
+                                                            $body .= "
+                                                            <tr class='thead' style=' background: #F0F6FF; '>
+                                                            <td style='text-align: left;'><div class='wrap-text'>{$log->subject}</div></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>";
+                                                            $body .= "<tr>
+                                                                        <td style='text-align: left;'><div class='wrap-text'></div></td>
+                                                                        <td>{$log->total}</td>
+                                                                        <td>{$log->sent}</td>
+                                                                        <td>{$log->failed}</td>
+                                                                        <td>{$log->opened}</td>
+                                                                    </tr>";
+
+                                                        }
 
                                                     }
 
                                                 }
 
+                                                $body .= " </tbody></table>
+                                                            <div class='button bg center'>
+                                                                <a href='{$url}' target='_blank'>View More Email</a>
+                                                            </div>
+                                                        </div>";
+
                                             }
 
-                                            $body .= "</table>
-                                                        <div class='btn' style='position: relative; margin-left: 10px; margin-top: 8px;'>
-                                                            <a href='{$url}' target='_blank'>View More Emails ></a>
-                                                        </div>
-                                                    </div>";
+                                            if ( empty( $logs ) ) {
 
-                                        }
+                                                $body .= "<div style='text-align: center; margin-top: 45px;'>No emails were sent last {$duration}</div>";
 
-                                        if ( empty( $logs ) ) {
+                                            }
 
-                                            $body .= "<div style='text-align: center; margin-top: 45px;'>No emails were sent last {$duration}</div>";
+                                            $body .= "</div>
+                                                       <div class='div_wrap' style='text-align: center;'>
+                                                            This email was autogenerated and sent from <a href='{$url}' style='text-decoration:none;'>{$site_title}</a>
+                                                        </div>";
 
-                                        }
+                                        } 
+                                        else {
 
-                                        $body .= "</div>
-                                                    <div class='bottom-text'>
-                                                        This email was autogenerated and sent from <a href='{$url}' style='text-decoration:none;'>{$site_title}</a>
-                                                    </div>";
-
-                                    } 
-                                    else {
-
-                                        $body .= "</div>
-                                                    <div class='table-display-free container'>
+                                            $body .= "</div> 
+                                            </div> <!-- end div wrap -->
+                                                <div class='div_wrap'>
+                                                  <div class='table-display-free container'>
                                                         <div class='table-header-free'>
-                                                            Unlock the Post SMTP Pro and enhance your email deliverability
-                                                        </div>
-                                                        <div>
-                                                            <table style='width:100%; margin-top: 20px; border-bottom: none;' class='ps-features-table'>
-                                                                <tr>
-                                                                    <td><span style='margin-right: 9px;'><img src='" . POST_SMTP_ASSETS . "images/reporting/okay.png'></span>Open rate email tracking.</td>
-                                                                    <td><span style='margin-right: 9px;'><img src='" . POST_SMTP_ASSETS . "images/reporting/okay.png'></span>Connect any mailer of your choice.</td>                            
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><span style='margin-right: 9px;'><img src='" . POST_SMTP_ASSETS . "images/reporting/okay.png'></span>Email quota scheduling.</td>
-                                                                    <td><span style='margin-right: 9px;'><img src='" . POST_SMTP_ASSETS . "images/reporting/okay.png'></span>Multiple email failure alert options.</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><span style='margin-right: 9px;'><img src='" . POST_SMTP_ASSETS . "images/reporting/okay.png'></span>Auto-resend failed emails.</td>
-                                                                    <td><span style='margin-right: 9px;'><img src='" . POST_SMTP_ASSETS . "images/reporting/okay.png'></span>One-click email attachment resending.</td>
-                                                                </tr>
+                                                            <table>
+                                                            <tr>
+                                                                <td style='width: 100%;'>
+                                                                    <div class='inline-box'>
+                                                                        <div class='box bleft'>
+                                                                        <h3>Unlock the Post SMTP Pro and enhance your email deliverability</h3>
+                                                                            <ul class='icon-list'>
+                                                                                <li><span></span>More Pro Mailers <img src='".POST_SMTP_ASSETS."images/reporting/mailers.png'/></li>
+                                                                                <li><span></span>All mobile app premium features. </li>
+                                                                                <li><span></span>Auto-resend failed emails. </li>
+                                                                                <li><span></span>SMS Failure Notification.</li>
+                                                                            </ul>
+                                                                             <div class='button'>
+                                                                                <a href='#'>Learn more about PRO </a>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class='box bright'>
+                                                                            <img src='".POST_SMTP_ASSETS."images/reporting/email-fav.png'/>
+                                                                        </div>
+                                                                    </div>
+                                                                   
+                                                                    </td>
+                                                               
+                                                            </tr>
                                                             </table>
-                                                            <div class='btn' style='margin-left: 35% !important; background-color: #FA8900 !important; padding:3px !important;'>
-                                                                <a href='{$extension_url}' target='_blank'>Upgrade to PRO ></a>
-                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div class='bottom-text container'>
-                                                        This email was auto-generated. You can disable it anytime you want. <a href='{$disable_url}' target='_blank'>Learn how?</a>
+                                                </div>
+                                                  
+                                                    <div class='div_wrap' style='text-align: center;'>
+                                                        This email was auto-generated and learn how to <a href='{$disable_url}' target='_blank'><strong>disable it</strong></a>.
                                                     </div>";
 
                                     }
