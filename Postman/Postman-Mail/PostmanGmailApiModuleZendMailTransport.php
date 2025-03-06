@@ -234,6 +234,28 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 					$body           = wp_remote_retrieve_body( $response );
 					$result_output  = json_decode( $body, true );
 					$result         = isset( $result_output['data'] ) ? $result_output['data'] : array();
+   					
+					// ✅ Check for HTTP errors.
+					if ( is_wp_error( $response ) ) {
+						throw new Exception( 'Error in PostSMTP GMAIL API Request: ' . $response->get_error_message() );
+					}
+
+					$response_code = wp_remote_retrieve_response_code( $response );
+					$body = wp_remote_retrieve_body( $response );
+					$result_output = json_decode( $body, true );
+					if ( $response_code !== 200 || empty( $result_output ) ) {
+						
+    				$error_code = $response_code;
+
+			    	throw new Exception("PostSMTP GMAIL API Error: $error_message (HTTP Code: $error_code)");
+						
+					}
+					// ✅ Ensure email send response contains "data".
+					if ( !isset( $result_output['data'] ) ) {
+						throw new Exception( "PostSMTP GMAIL API Error: Missing 'data' key in response: " . print_r( $result_output, true ) );
+					}
+					
+					$result = $result_output['data'];
 				}else{
 				    $googleApiMessage = new Message ();
 				    $googleService = $this->_config [self::SERVICE_OPTION];

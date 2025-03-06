@@ -551,8 +551,9 @@ class Post_SMTP_New_Wizard {
             $localized['office365State'] = $state;
 
         }
-        $localized['gmail_icon'] = POST_SMTP_URL . '/Postman/Wizard/assets/images/gmail.png';
-
+        $gmail_icon_url = POST_SMTP_URL . '/Postman/Wizard/assets/images/gmail.png';
+		$localized['gmail_icon'] = $gmail_icon_url; 
+        
         wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), POST_SMTP_VER );
         wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), POST_SMTP_VER );
         wp_localize_script( 'post-smtp-wizard', 'PostSMTPWizard', $localized );
