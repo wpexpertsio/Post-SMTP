@@ -146,12 +146,25 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				return '';
 			}
 
-			$email_list = is_array( $emails ) ? $emails : explode( ',', $emails );
+			// Convert string to an array if necessary.
+			if ( is_string( $emails ) ) {
+				$emails = explode( ',', $emails );
+			}
+
+			if ( ! is_array( $emails ) ) {
+				return '';
+			}
 
 			$sanitized_emails = array_map( function ( $email ) {
 				$email = trim( $email );
+
+				// Extract email from "Name <email>" format.
+				if ( preg_match( '/<(.+?)>/', $email, $matches ) ) {
+					$email = $matches[1];
+				}
+
 				return filter_var( $email, FILTER_VALIDATE_EMAIL ) ? sanitize_email( $email ) : '';
-			}, $email_list );
+			}, $emails );
 
 			return implode( ', ', array_filter( $sanitized_emails ) );
 		}
