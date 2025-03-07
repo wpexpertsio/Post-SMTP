@@ -122,12 +122,16 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 						'id'            => $log->id,
 						'subject'       => $log->original_subject,
 						'sent_to'       => $log->to_header,
-						'status'        => 1 === absint( $log->success ) ? 'success' : 'failed',
 						'delivery_time' => gmdate( 'F d, Y h:i a', $log->time ),
 					);
 
-					if ( 1 !== absint( $log->success ) ) {
-						$data['error'] = $log->success;
+					if ( 1 === absint( $log->success ) ) {
+						$data['status'] = 'success';
+					} elseif ( 'In Queue' === $log->success ) {
+						$data['status'] = 'in_queue';
+					} else {
+						$data['status'] = 'failed';
+						$data['error']  = $log->success;
 					}
 
 					return $data;
@@ -314,7 +318,7 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 
             $failed = $logs;
             $failed = array_filter($failed, function ($log) {
-                return 1 !== absint($log->success);
+                return 1 !== absint($log->success) && 'In Queue' !== $log->success;
             });
 
 
