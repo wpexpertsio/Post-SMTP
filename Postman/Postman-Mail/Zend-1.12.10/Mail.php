@@ -1219,6 +1219,10 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
      */
     protected function _filterEmail($email)
     {
+		if ( is_null( $email ) )
+		{
+			return '';
+		}
         $rule = array("\r" => '',
                       "\n" => '',
                       "\t" => '',
@@ -1239,6 +1243,11 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
      */
     protected function _filterName($name)
     {
+		if ( is_null( $name ) )
+		{
+			return null;
+		}
+
         $rule = array("\r" => '',
                       "\n" => '',
                       "\t" => '',
@@ -1258,6 +1267,10 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
      */
     protected function _filterOther($data)
     {
+		if ( is_null( $data ) )
+		{
+			return '';
+		}
         $rule = array("\r" => '',
                       "\n" => '',
                       "\t" => '',
