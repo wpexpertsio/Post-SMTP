@@ -61,28 +61,27 @@ class Postman_Email_Tester {
         $response = wp_remote_post( "{$this->base_url}/get-email?test_email={$email}", $args );
         $response_code = wp_remote_retrieve_response_code( $response );
         $response_body = wp_remote_retrieve_body( $response );
+		 // Check if API has rate-limited the request
+		if( $response_code == 429 ) {
+			wp_send_json_error( array(
+				'message' => 'Too many requests',
+			), 429 );
+		}
 
         if( $response_code == 200 ) {
-            
             $test_email = json_decode( $response_body )->data->email;
-
             if( $test_email ) {
-
                 $email_sent = wp_mail( $test_email, 'Test Email', 'This is a test email.' );
                 $email_sent = true;
                 $test_email = str_replace( '@smtper.postmansmtp.com', '', $test_email );
 
                 // Wait for 3 seconds
-                sleep( seconds: 3 );
-
+                sleep( seconds: 5 );
                 if( $email_sent ) {
-
                     $response = wp_remote_post( "{$this->base_url}/test?test_email={$test_email}&email={$email}", $args );
                     $response_code = wp_remote_retrieve_response_code( $response );
                     $response_body = wp_remote_retrieve_body( $response );
-
                     if( $response_code == 200 ) {
-
                         wp_send_json_success( 
                             array(
                                 'message' => 'test_email_sent',
@@ -91,18 +90,15 @@ class Postman_Email_Tester {
                             200
                         );
 
-                    } 
+                    }else{
+						 wp_send_json_error( array(
+							'message' => 'test_email_not_sent',
+						), 400 );
+					}
 
                 }
 
             }
-
-            wp_send_json_success( 
-                array(
-                    'message' => 'test_email_not_sent',
-                ),
-                200
-            );
 
         }
 

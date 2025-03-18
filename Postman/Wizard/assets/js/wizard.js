@@ -319,6 +319,12 @@ jQuery( document ).ready(function() {
 
         jQuery( '.ps-wizard-error' ).html('');
         jQuery( '.ps-wizard-success' ).html( 'Sending...' );
+		jQuery( '.ps-wizard-health-report' ).html( 
+         `<div class="ps-loading-test-report">
+            <span class="spinner is-active" style="margin-left: 0;"></span>
+             <p>Please wait, we are checking your email health.</p>
+          </div>` 
+         );
 
         jQuery.ajax( {
             url: ajaxurl,
@@ -436,7 +442,21 @@ jQuery( document ).ready(function() {
 
                 }
 
-            }
+            },
+			error: function(jqXHR, textStatus, errorThrown) {
+				jQuery( '.ps-loading-test-report' ).remove();
+				if (jqXHR.status === 429) {
+					jQuery('.ps-wizard-health-report').after( 
+						`<div>
+							<b class="ps-dns-footer" style="padding-left: 12px;">Limit Exceed! Please try again later. 
+							<a href="https://postmansmtp.com/domain-health-checker/?utm_source=plugin&utm_medium=test_email_dns_check&utm_campaign=plugin" target="_blank">Click Here</a>
+							<span class="dashicons dashicons-external"></span></b>
+						</div>`
+					);
+				} else {
+					console.log("Error: ", errorThrown);
+				}
+			}
         } );
 
         jQuery.ajax( {
@@ -455,14 +475,6 @@ jQuery( document ).ready(function() {
                 if( response.success === true ) {
 
                     jQuery( '.ps-wizard-success' ).html( `<span class="dashicons dashicons-yes"></span> ${response.data.message}` );
-                    jQuery( '.ps-wizard-success' ).after( 
-                        `<div class="ps-loading-test-report">
-                            <span class="spinner is-active" style="margin-left: 0;"></span>
-                            <p>
-                                Please wait, we are checking your email health.
-                            </p>
-                        </div>` 
-                    );
                     jQuery( '.ps-finish-wizard' ).html( `${PostSMTPWizard.finish} <span class="dashicons dashicons-arrow-right-alt">` );
 
                 }

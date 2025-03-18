@@ -389,6 +389,7 @@ class Post_SMTP_New_Wizard {
                                             <div>
                                                 <p class="ps-wizard-error"></p>
                                                 <p class="ps-wizard-success"></p>
+                                                <p class="ps-wizard-health-report"></p>
                                             </div>
                                         </div>
                                     </div>
@@ -813,7 +814,7 @@ public function render_gmail_settings() {
     $transport_name = __( 'One-Click Setup', 'post-smtp' );
     $product_url = postman_is_bfcm() ? 
         'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 
-        'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_microsoft&utm_campaign=plugin';
+        'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_gmail_one_click&utm_campaign=plugin';
 
     // Prepare data for JSON encoding
     $data = [
