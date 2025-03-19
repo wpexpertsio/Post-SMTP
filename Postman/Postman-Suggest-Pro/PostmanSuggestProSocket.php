@@ -268,12 +268,17 @@ class PostmanSuggestProSocket {
 	    );
         $bonus            = array(
             'gmail-oneclick'      => array(
-                'logo'          => $images_url . 'logos/google.png',
+                'logo'          => $images_url . 'logos/google.svg',
                 'title'         => __( 'One-Click Setup', 'post-smtp-pro' ),
                 'description'   => __( 'View and resend any email attachment right from you email log screen to streamline email communication.', 'post-smtp-pro' )
             ),
+            'email-logs-attachment'      => array(
+                'logo'          => $images_url . 'logos/email-delivery-log.png',
+                'title'         => __( 'Email Log Attachment', 'post-smtp-pro' ),
+                'description'   => __( 'View and resend any email attachment right from you email log screen to streamline email communication.', 'post-smtp-pro' )
+            ),
             array(
-                'logo' => $images_url . 'logos/email-delivery-log.png',
+                'logo' => $images_url . 'logos/email-log-attachments.png',
                 'title' => esc_html__( 'Email Delivery and Logs', 'post-smtp' ),
                 'description' => esc_html__( 'Send emails from the back-end, manage your email quota, retry failed emails, and delete log history to optimize email delivery.', 'post-smtp' ),
             ),
