@@ -216,13 +216,6 @@
 #wpbody-content .post-smtp-clearfix .post-smtp-fr {
     margin: 0 !important;
 }
-.post-smtp-socket-footer .post-smtp-p-20:after {
-    display: none;
-}
-
-.post-smtp-socket-footer .post-smtp-p-20 {
-    justify-content: space-between;
-}
 @media only screen and (max-width: 1360px) {
     #wpbody-content .post-smtp-clearfix {
         gap: 30px 2.5%;
