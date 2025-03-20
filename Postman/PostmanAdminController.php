@@ -139,15 +139,17 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			) );
 
             // continue to initialize the AdminController
-            add_action( 'wpmu_options', array(
-                $this,
-                'wpmu_options',
-            ) );
+//             add_action( 'wpmu_options', array(
+//                 $this,
+//                 'wpmu_options',
+//             ) );
 
-            add_action( 'update_wpmu_options', array(
-                $this,
-                'update_wpmu_options',
-            ) );
+//             add_action( 'update_wpmu_options', array(
+//                 $this,
+//                 'update_wpmu_options',
+//             ) );
+			
+			add_action( 'network_admin_menu', array( $this, 'register_network_menu' ) ) ;
 
 			// Adds "Settings" link to the plugin action page
 			add_filter( 'plugin_action_links_' . plugin_basename( $this->rootPluginFilenameAndPath ), array(
@@ -157,68 +159,99 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 
 			require_once( 'PostmanPluginFeedback.php' );
 		}
+		
+		  /**
+		 * Register the network admin menu and submenu.
+		 */
+		public function register_network_menu() {
+			
+			add_menu_page(
+				__('Post SMTP', 'post-smtp'),
+				__('Post SMTP', 'post-smtp'),
+				'manage_network_options',
+				'post-smtp-network',
+				array( $this, 'network_settings_page' ),
+				'dashicons-email-alt'
+			);
+		}
+			
+			  /**
+			 * Display the network settings page.
+			 */
+			public function network_settings_page() {
+				?>
+				<div class="wrap">
+					<h1><?php _e('Post SMTP - Network Settings', 'post-smtp'); ?></h1>
+					<form method="post" action="">
+						<?php
+						if ( isset($_POST['submit'] ) ) {
+							$this->save_network_settings();
+							echo '<div id="message" class="updated notice is-dismissible"><p>' . __('Settings saved.', 'post-smtp') . '</p></div>';
+						}
 
-
-		function wpmu_options() {
-		    $options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS );
-		    ?>
-            <input type="hidden" name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_global_settings]" value="null">
-            <input type="hidden" name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_allow_overwrite]" value="null">
-            <h2><?php _e( 'Post SMTP Settings', 'post-smtp' ); ?></h2>
-            <table id="menu" class="form-table">
-                <tr>
-                    <th scope="row">
-                        <?php _e( 'Enable global settings', 'post-smtp' ); ?>
-                    </th>
-                    <td>
-                        <?php $checked = checked( $options['post_smtp_global_settings'], 1, false ); ?>
-                        <label for="post-smtp-global-settings">
-                            <input id="post-smtp-global-settings" type="checkbox"
-                                   name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_global_settings]"
-                                   value="1"
-                                   <?php echo $checked; ?>
-                            >
-                            <p class="description">
-                                <?php _e('Same settings as the main site/blog (id:1)', 'post-smtp' ); ?>
-                            </p>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        <?php _e( 'Allow user to load saved options', 'post-smtp' ); ?>
-                    </th>
-                    <td>
-                        <?php $checked = checked( $options['post_smtp_allow_overwrite'], 1, false ); ?>
-                        <label for="post-smtp-allow-overwrite">
-                            <input id="post-smtp-allow-overwrite" type="checkbox"
-                                   name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_allow_overwrite]"
-                                   value="1"
-                                <?php echo $checked; ?>
-                            >
-                        </label>
-                    </td>
-                </tr>
-            </table>
-            <?php
-        }
-
-        function update_wpmu_options() {
-            $options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS );
-		    if ( isset( $_POST[ PostmanOptions::POSTMAN_NETWORK_OPTIONS ] ) ) {
-		        foreach ( $_POST[ PostmanOptions::POSTMAN_NETWORK_OPTIONS ] as $key => $value ) {
-                    $options[$key] = sanitize_text_field( $value );
-
-                    if ( $value == 'null' ) {
-                        unset( $options[$key] );
-                    }
-                }
-
-                update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, $options );
-            } else {
-                update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, array() );
-            }
-        }
+						$this->network_settings_form();
+						?>
+						<p class="submit">
+							<input type="submit" name="submit" class="button-primary" value="<?php esc_attr_e('Save Changes', 'post-smtp'); ?>">
+						</p>
+					</form>
+				</div>
+				<?php
+			}
+			
+			 /**
+			 * Display the network settings form.
+			 */
+			private function network_settings_form() {
+				$options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, [] );
+				?>
+				<table class="form-table">
+					<tr>
+						<th scope="row"><?php _e( 'Enable global settings', 'post-smtp' ); ?></th>
+						<td>
+							<?php $checked = checked( $options['post_smtp_global_settings'] ?? '', 1, false ); ?>
+							<label for="post-smtp-global-settings">
+								<input id="post-smtp-global-settings" type="checkbox"
+									   name="<?php echo esc_attr( PostmanOptions::POSTMAN_NETWORK_OPTIONS ); ?>[post_smtp_global_settings]"
+									   value="1"
+									   <?php echo $checked; ?>
+								>
+								<p class="description"><?php _e( 'Same settings as the main site/blog (ID:1)', 'post-smtp' ); ?></p>
+							</label>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e( 'Allow user to load saved options', 'post-smtp' ); ?></th>
+						<td>
+							<?php $checked = checked( $options['post_smtp_allow_overwrite'] ?? '', 1, false ); ?>
+							<label for="post-smtp-allow-overwrite">
+								<input id="post-smtp-allow-overwrite" type="checkbox"
+									   name="<?php echo esc_attr( PostmanOptions::POSTMAN_NETWORK_OPTIONS ); ?>[post_smtp_allow_overwrite]"
+									   value="1"
+									   <?php echo $checked; ?>
+								>
+							</label>
+						</td>
+					</tr>
+				</table>
+				<?php
+			}
+		  
+		 /**
+		 * Save network settings.
+		 */
+		private function save_network_settings() {
+			$options = array();
+			if ( isset( $_POST[ PostmanOptions::POSTMAN_NETWORK_OPTIONS ] ) ) {
+				$post_data = $_POST[ PostmanOptions::POSTMAN_NETWORK_OPTIONS ];
+				foreach ( $post_data as $key => $value ) {
+					$options[ $key ] = sanitize_text_field( $value );
+				}		
+				update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, $options );
+			}else{
+				update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, $options );
+			}
+		}
 
 		/**
 		 * Functions to execute on the init event
