@@ -620,6 +620,7 @@ span.ps-pro-close-popup {
   font-size: 20px;
   margin: 15px 0;
   line-height: 26px;
+  padding: 0;
 }
 
 .ps-pro-popup-content p {

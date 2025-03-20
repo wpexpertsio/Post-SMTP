@@ -521,9 +521,9 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		);
 		$json_data   = htmlspecialchars( json_encode( $data ), ENT_QUOTES, 'UTF-8' );
 		$is_checked  = get_option( 'enable_gmail_oneclick', false ) ? 'checked' : '';
-		$is_disabled = ! post_smtp_has_pro() ? 'disabled' : '';
-		$class       = 'ps-enable-gmail-one-click' . ( ! post_smtp_has_pro() ? ' disabled' : '' );
-
+		//$is_disabled = ! post_smtp_has_pro() ? 'disabled' : '';
+		$class       = 'ps-enable-gmail-one-click ' . ( ! post_smtp_has_pro() ? ' disabled' : '' );
+		echo wizard_popup();
 		echo '<div class="ps-form-switch-control">
 			<label class="ps-switch-1">
 				<input type="hidden" id="ps-one-click-data" value="' . esc_attr( $json_data ) . '">
