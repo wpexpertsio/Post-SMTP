@@ -137,17 +137,6 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 					$this,
 					'on_init',
 			) );
-
-            // continue to initialize the AdminController
-//             add_action( 'wpmu_options', array(
-//                 $this,
-//                 'wpmu_options',
-//             ) );
-
-//             add_action( 'update_wpmu_options', array(
-//                 $this,
-//                 'update_wpmu_options',
-//             ) );
 			
 			add_action( 'network_admin_menu', array( $this, 'register_network_menu' ) ) ;
 
@@ -179,6 +168,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			 * Display the network settings page.
 			 */
 			public function network_settings_page() {
+				$main_site = get_main_site_id();
 				?>
 				<div class="wrap">
 					<h1><?php _e('Post SMTP - Network Settings', 'post-smtp'); ?></h1>
@@ -195,6 +185,15 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 							<input type="submit" name="submit" class="button-primary" value="<?php esc_attr_e('Save Changes', 'post-smtp'); ?>">
 						</p>
 					</form>
+					
+					<div class="updated notice">
+						<p><?php _e('To configure Post SMTP settings for the entire network, go to the main site\'s Post SMTP configuration page.', 'post-smtp'); ?></p>
+						<p>
+							<a href="<?php echo esc_url( get_site_url( get_main_site_id(), '/wp-admin/admin.php?page=postman' ) ); ?>" class="button button-secondary">
+								<?php _e('Go to Main Site Post SMTP Settings', 'post-smtp'); ?>
+							</a>
+						</p>
+					</div>
 				</div>
 				<?php
 			}
