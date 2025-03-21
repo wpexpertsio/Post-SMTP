@@ -381,7 +381,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 
 		add_settings_field(
 			'enable_gmail_oneclick',
-			__( 'Enable One-Click Setup <span class="ps-wizard-pro-tag">Pro</span>', 'post-smtp' ),
+			__( 'Enable One-Click Setup <span class="ps-wizard-pro-tag">PRO</span>', 'post-smtp' ),
 			array( $this, 'renderGmailOneClickSwitch' ),
 			PostmanAdminController::OAUTH_AUTH_OPTIONS,
 			PostmanAdminController::OAUTH_SECTION
