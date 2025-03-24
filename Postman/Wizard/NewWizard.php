@@ -120,58 +120,12 @@ class Post_SMTP_New_Wizard {
         $in_active = ( isset( $_GET['step'] ) && $_GET['step'] != 1 ) ? '' : 'ps-active-nav';
         $selected_tansport = $this->options->getTransportType();
         $socket = isset( $_GET['socket'] ) ? "{$_GET['socket']}-outer" : '';
+        
+        
+        echo wizard_popup();
         ?>
-
-        <div class="ps-pro-popup-overlay">
-            <div class="ps-pro-popup-container">
-                <div class="ps-pro-popup-outer">
-                    <div class="ps-pro-popup-body">
-                        <span class="dashicons dashicons-no-alt ps-pro-close-popup"></span>
-                        <div class="ps-pro-popup-content">
-                            <img src="" class="ps-pro-for-img" />
-                            <h1><span class="ps-pro-for"></span> is Pro Feature</h1>
-                            <p>
-                                We're sorry, the <span class="ps-pro-for"></span> mailer is not available on your plan.
-                                <br />
-                                Please upgrade to the PRO plan to unlock all these awesome features.
-                            </p>
-                            <div>
-                                <a href="<?php echo postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin'; ?>" target="_blank" class="button button-primary ps-yellow-btn ps-pro-product-url" style="color: #ffffff!important; font-weight: 400; align-content: center;">Upgrade to PRO <span class="dashicons dashicons-arrow-right-alt2"></span></a>
-                            </div>
-                            <div <?php echo postman_is_bfcm() ? 'style="background: url( '.esc_url( POST_SMTP_ASSETS . 'images/bfcm-2024/popup.png' ).' ); background-size: cover; margin: 20px 0 5px 0; padding: 16px 0px; position: relative;"' : 'class="ps-pro-promo-area"'; ?>>   
-                                <?php
-                                if( postman_is_bfcm() ) {
-                                    ?>
-                                    <p style="color: #fff; font-size: 14px; margin: 0 auto;">
-                                        <b style="color: #fbb81f;">24% OFF!</b> BFCM is here - Grab your deal before it's gone!🛍️
-                                    </p>
-                                    <?php
-                                }
-                                else {
-                                    ?>
-                                    <p>
-                                        <b>Bonus:</b> Upgrade now and get <span class="ps-pro-discount">25% off</span> on Post SMTP lifetime plans!
-                                    </p>
-                                    <?php
-                                }
-                                ?>
-                                <div <?php echo postman_is_bfcm() ? 'style="background: #fbb81f";' : '';  ?> class="ps-pro-coupon">
-                                    <b <?php echo postman_is_bfcm() ? 'style="color: #1a3b63";' : '';  ?>>
-                                        Use Coupon: <span class="ps-pro-coupon-code"><?php echo postman_is_bfcm() ? 'BFCM2024' : 'GETSMTPPRO'; ?></span> <span class="dashicons dashicons-admin-page ps-click-to-copy"></span>
-                                    </b>
-                                </div>
-                                <div id="ps-pro-code-copy-notification" style="display: none; position:absolute; color: #b3d5b6; border-radius:3px; right: 0;left: 0; bottom: -12px; margin: auto;width: 95px; font-size: 11px; border: 1px solid #b3d5b6; line-height: 22px; background: #e1fde4;">
-                                    Code Copied<span class="dashicons dashicons-yes"></span>
-                                </div>
-                            </div>
-                            <div>
-                                <a href="" class="ps-pro-close-popup" style="color: #6A788B; font-size: 10px; font-size: 12px;">Already purchased?</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+ 
+        
         <div class="wrap">
             <div class="ps-wizard">
                 <div class="ps-logo">
@@ -810,7 +764,7 @@ public function render_gmail_settings() {
     $client_id_required = $gmail_oneclick_enabled ? '' : 'required';
     $client_secret_required = $gmail_oneclick_enabled ? '' : 'required';
     $one_click_class = 'ps-enable-gmail-one-click';
-    $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/google.png';
+    $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/wizard-gogole.png';
     $transport_name = __( 'One-Click Setup', 'post-smtp' );
     $product_url = postman_is_bfcm() ? 
         'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 

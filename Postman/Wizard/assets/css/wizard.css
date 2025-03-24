@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 .admin_page_postman-configuration_wizard {
   -ms-overflow-style: none;  /* Internet Explorer 10+ */
   scrollbar-width: none;  /* Firefox */
@@ -593,8 +594,8 @@
 
 span.ps-pro-close-popup {
   position: absolute;
-  right: 18px;
-  top: 0;
+  right: 25px;
+  top: 25px;
   color: #222222;
   border: 1px solid #e2e4ea;
   border-radius: 50px;
@@ -607,14 +608,19 @@ span.ps-pro-close-popup {
 }
 
 .ps-pro-popup-content {
-  width: 92%;
+  width: 100%;
   text-align: center;
-  margin: 15px auto;
+  padding: 30px 90px 24px;
+  box-sizing: border-box;
 }
 
 .ps-pro-popup-content h1 {
   color: #214A72;
-  font-weight: 400;
+  font-weight: 500;
+  font-size: 20px;
+  margin: 15px 0;
+  line-height: 26px;
+  padding: 0;
 }
 
 .ps-pro-popup-content p {
@@ -627,10 +633,9 @@ span.ps-pro-close-popup {
 }
 
 .ps-pro-promo-area {
-  background: #f0f6ff;
-  border-radius: 6px;
-  margin: 20px 0 5px 0;
-  padding: 16px 0px;
+  margin: 10px 0;
+  display: flex;
+  justify-content: center;
   position: relative;
 }
 
@@ -647,9 +652,11 @@ span.ps-pro-close-popup {
 .ps-pro-coupon {
   background: #5e7cbf;
   display: inline-block;
-  padding: 0px 14px;
+  padding: 0px 35px 0 14px;
   border-radius: 7px;
-  margin-top: 10px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #5E7CBF;
 }
 
 .ps-pro-coupon b {
@@ -823,5 +830,68 @@ span.ps-pro-close-popup {
   margin: auto;
   font-size: 17px;
 }
+.ps-pro-popup-body .ps-pro-popup-content *:not(.dashicons){
+  font-family: "Poppins", sans-serif;
+}
+.ps-pro-popup-content h4 {
+  font-weight: 400;
+  font-size: 14px;
+  color: #6A788B;
+  margin: 0;
+  line-height: 100%;
+}
 
+.ps-pro-popup-content .smily strong {
+  background: -webkit-linear-gradient(0deg, #46519E 50%, #8ED2F5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+.ps-pro-popup-content .smily {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ps-pro-popup-body .ps-pro-popup-content strong {
+  font-weight: 700;
+}
+.ps-pro-coupon span.copy-icon {
+  position: absolute;
+  width: 25px;
+  height: 100%;
+  background: #D3E1FF;
+  right: 0;
+  display: flex;
+  top: 0;
+  align-items: center;
+  justify-content: center;
+  color: #5E7CBF;
+}
+.ps-pro-coupon span.copy-icon svg {
+  width: 15px;
+  height: 15px;
+}
+.ps-pro-popup-content a.button {
+  font-weight: 600;
+  color: #fff !important;
+  padding: 12px 28px;
+  width: auto;
+  line-height: normal;
+}
+div#ps-pro-code-copy-notification {
+  position: absolute;
+  color: rgb(179, 213, 182);
+  border-radius: 3px;
+  right: 0;
+  left: 85%;
+  bottom: 4px;
+  margin: auto;
+  width: 95px;
+  font-size: 11px;
+  border: 1px solid rgb(179, 213, 182);
+  line-height: 22px;
+  background: rgb(225, 253, 228);
+  display: none;
+}
 /* Lets make wizard responsive */

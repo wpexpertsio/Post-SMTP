@@ -381,7 +381,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 
 		add_settings_field(
 			'enable_gmail_oneclick',
-			__( 'Enable One-Click Setup', 'post-smtp' ),
+			__( 'Enable One-Click Setup <span class="ps-wizard-pro-tag">PRO</span>', 'post-smtp' ),
 			array( $this, 'renderGmailOneClickSwitch' ),
 			PostmanAdminController::OAUTH_AUTH_OPTIONS,
 			PostmanAdminController::OAUTH_SECTION
@@ -514,22 +514,23 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	 * @since 3.1.0
 	 */
 	public function renderGmailOneClickSwitch() {
-		$url = POST_SMTP_URL . '/Postman/Wizard/assets/images/google.png';
+		$url = POST_SMTP_URL . '/Postman/Wizard/assets/images/wizard-gogole.png';
 		$data = array(
 			'transport_name' => 'One-Click Setup',
 			'product_url'    => 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_gmail_one_click&utm_campaign=plugin',
 		);
 		$json_data   = htmlspecialchars( json_encode( $data ), ENT_QUOTES, 'UTF-8' );
 		$is_checked  = get_option( 'enable_gmail_oneclick', false ) ? 'checked' : '';
-		$is_disabled = ! post_smtp_has_pro() ? 'disabled' : '';
-		$class       = 'ps-enable-gmail-one-click' . ( ! post_smtp_has_pro() ? ' disabled' : '' );
-
+		//$is_disabled = ! post_smtp_has_pro() ? 'disabled' : '';
+		$class       = 'ps-enable-gmail-one-click ' . ( ! post_smtp_has_pro() ? ' disabled' : '' );
+		echo wizard_popup();
 		echo '<div class="ps-form-switch-control">
 			<label class="ps-switch-1">
 				<input type="hidden" id="ps-one-click-data" value="' . esc_attr( $json_data ) . '">
 				<input type="checkbox" class="' . esc_attr( $class ) . '" name="enable_gmail_oneclick" ' . $is_checked . ' ' . $is_disabled . '>
 				<span class="slider round"></span>
 			</label> 
+			<p>Enable the option for a quick and easy way to connect with Google without the need of manually creating an app.</p>
 		</div>';
 	}
 
