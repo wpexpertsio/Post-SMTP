@@ -75,7 +75,37 @@ if (! class_exists ( 'PostmanOAuthToken.php' )) {
 			$a [PostmanOAuthToken::REFRESH_TOKEN] = $this->getRefreshToken ();
 			$a [PostmanOAuthToken::EXPIRY_TIME] = $this->getExpiryTime ();
 			$a [PostmanOAuthToken::VENDOR_NAME] = $this->getVendorName ();
-			update_option ( PostmanOAuthToken::OPTIONS_NAME, $a );
+			if ( is_multisite() && $this->is_network_settings_enabled() ) {
+				// Get all child sites.
+				$sites = get_sites( array('fields' => 'ids') );
+				foreach ( $sites as $site_id ) {
+					switch_to_blog( $site_id );
+					update_option( PostmanOAuthToken::OPTIONS_NAME, $a );
+					restore_current_blog();
+				}
+			} else {
+				// Update for a single site.
+				update_option( PostmanOAuthToken::OPTIONS_NAME, $a );
+			}
+		}
+		
+		/**
+		 * Check if network-wide settings are enabled
+		 *
+		 * @return bool
+		 */
+		private function is_network_settings_enabled() {
+			if ( !is_multisite() ) {
+				return false;
+			}
+
+			$network_options = get_site_option( 'postman_network_options' );
+
+			if ( !empty( $network_options ) && is_array( $network_options ) ) {
+				return isset( $network_options['post_smtp_global_settings'] ) && $network_options['post_smtp_global_settings'] == '1';
+			}
+
+			return false;
 		}
 		public function getVendorName() {
 			return $this->vendorName;

@@ -1683,6 +1683,10 @@ class Post_SMTP_New_Wizard {
 
                 } else {
                     $response = update_option( PostmanOptions::POSTMAN_OPTIONS , $options );
+					// If network settings are enabled, update all child sites.
+                    if ( $this->is_network_settings_enabled() && $sanitized['transport_type'] == 'gmail_api' ) {
+						$this->update_all_sites( $options );
+					}
                 }
                 
             }
@@ -1695,6 +1699,41 @@ class Post_SMTP_New_Wizard {
         wp_send_json( array(), 200 );
 
     }
+	
+	/**
+	 * Check if network-wide settings are enabled
+	 *
+	 * @return bool
+	 */
+	private function is_network_settings_enabled() {
+		if ( !is_multisite() ) {
+			return false;
+		}
+
+		$network_options = get_site_option( 'postman_network_options' );
+
+		if ( !empty( $network_options ) && is_array( $network_options ) ) {
+			return isset( $network_options['post_smtp_global_settings'] ) && $network_options['post_smtp_global_settings'] == '1';
+		}
+
+		return false;
+	}
+	
+	/**
+	 * Update SMTP settings in all child sites
+	 */
+	private function update_all_sites( $options ) {
+		if ( !is_multisite() ) {
+			return;
+		}
+
+		$sites = get_sites( array( 'fields' => 'ids' ) );
+		foreach ( $sites as $site_id ) {
+			switch_to_blog( $site_id );
+ 			update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
+			restore_current_blog();
+		}
+	}
 
     /**
      * Redirect to Zoho Authentication
