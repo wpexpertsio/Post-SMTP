@@ -1684,9 +1684,18 @@ class Post_SMTP_New_Wizard {
                 } else {
                     $response = update_option( PostmanOptions::POSTMAN_OPTIONS , $options );
 					// If network settings are enabled, update all child sites.
-                    if ( $this->is_network_settings_enabled() && $sanitized['transport_type'] == 'gmail_api' ) {
-						$this->update_all_sites( $options );
+					if ( $this->is_network_settings_enabled() ) {
+
+						if ( $sanitized['transport_type'] == 'gmail_api' ) {
+							$this->update_gmail_sites( $options );
+						}
+
+						if ( $sanitized['transport_type'] == 'office365_api' ) {
+							$this->update_office365_sites( $options );
+						}
+
 					}
+
                 }
                 
             }
@@ -1722,7 +1731,7 @@ class Post_SMTP_New_Wizard {
 	/**
 	 * Update SMTP settings in all child sites
 	 */
-	private function update_all_sites( $options ) {
+	private function update_gmail_sites( $options ) {
 		if ( !is_multisite() ) {
 			return;
 		}
@@ -1733,6 +1742,27 @@ class Post_SMTP_New_Wizard {
  			update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
 			restore_current_blog();
 		}
+	}
+	
+	/**
+	 * Update Office 365 API settings in all child sites
+	 */
+	private function update_office365_sites( $options ) {
+
+		if ( ! is_multisite() ) {
+			return;
+		}
+
+		$sites = get_sites( array( 'fields' => 'ids' ) );
+
+		foreach ( $sites as $site_id ) {
+			switch_to_blog( $site_id );
+			update_option( 'transport_type', $options['transport_type'] );
+			update_option( 'office365_app_id', $options['office365_app_id'] );
+			update_option( 'office365_app_password', $options['office365_app_password'] );
+			restore_current_blog();
+		}
+
 	}
 
     /**
