@@ -763,7 +763,7 @@ public function render_gmail_settings() {
     $client_id_required = $gmail_oneclick_enabled ? '' : 'required';
     $client_secret_required = $gmail_oneclick_enabled ? '' : 'required';
     $one_click_class = 'ps-enable-gmail-one-click';
-    $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/wizard-gogole.png';
+    $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/wizard-google.png';
     $transport_name = __( 'One-Click Setup', 'post-smtp' );
     $product_url = postman_is_bfcm() ? 
         'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 
