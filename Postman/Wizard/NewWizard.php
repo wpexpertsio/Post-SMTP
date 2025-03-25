@@ -120,9 +120,8 @@ class Post_SMTP_New_Wizard {
         $in_active = ( isset( $_GET['step'] ) && $_GET['step'] != 1 ) ? '' : 'ps-active-nav';
         $selected_tansport = $this->options->getTransportType();
         $socket = isset( $_GET['socket'] ) ? "{$_GET['socket']}-outer" : '';
-        
-        
-        echo wizard_popup();
+        // Add popup trigger file
+        require_once POST_SMTP_PATH. '/Postman/Popup/popup.php';
         ?>
  
         

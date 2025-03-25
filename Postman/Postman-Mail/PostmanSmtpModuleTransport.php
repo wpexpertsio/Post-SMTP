@@ -523,14 +523,17 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$is_checked  = get_option( 'enable_gmail_oneclick', false ) ? 'checked' : '';
 		//$is_disabled = ! post_smtp_has_pro() ? 'disabled' : '';
 		$class       = 'ps-enable-gmail-one-click ' . ( ! post_smtp_has_pro() ? ' disabled' : '' );
-		echo wizard_popup();
+		
+		// Add popup trigger file
+		require_once POST_SMTP_PATH. '/Postman/Popup/popup.php';
+		
 		echo '<div class="ps-form-switch-control">
 			<label class="ps-switch-1">
 				<input type="hidden" id="ps-one-click-data" value="' . esc_attr( $json_data ) . '">
 				<input type="checkbox" class="' . esc_attr( $class ) . '" name="enable_gmail_oneclick" ' . $is_checked . ' ' . $is_disabled . '>
 				<span class="slider round"></span>
 			</label> 
-			<p>Enable the option for a quick and easy way to connect with Google without the need of manually creating an app.</p>
+			'.esc_html__('Enable the option for a quick and easy way to connect with Google without the need of manually creating an app.', 'post-smtp').'
 		</div>';
 	}
 
