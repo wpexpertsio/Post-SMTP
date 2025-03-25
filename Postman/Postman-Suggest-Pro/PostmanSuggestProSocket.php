@@ -268,7 +268,7 @@ class PostmanSuggestProSocket {
 	    );
         $bonus            = array(
             'gmail-oneclick'      => array(
-                'logo'          => $images_url . 'logos/Google.svg',
+                'logo'          => $images_url . 'logos/wizard-gogole.png',
                 'title'         => __( 'One-Click Setup', 'post-smtp-pro' ),
                 'description'   => __( 'Quick and easy way to configure the Google workspace / Gmail mailer in Post SMTP.', 'post-smtp-pro' )
             ),
