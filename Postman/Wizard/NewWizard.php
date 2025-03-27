@@ -1498,7 +1498,6 @@ class Post_SMTP_New_Wizard {
         $client_id = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] : '';
         $client_secret = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) ? base64_decode( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) : '';
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
-
         $html = '
         <p>'.sprintf(
             '<a href="%1$s" target="_blank">%2$s</a> %3$s',
@@ -1628,7 +1627,6 @@ class Post_SMTP_New_Wizard {
         $form_data = array();
         parse_str( $_POST['FormData'], $form_data );
         $response = false;
-
         if( 
             isset( $_POST['action'] )
             &&
@@ -1640,7 +1638,7 @@ class Post_SMTP_New_Wizard {
             if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
 
                 $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
-                $options = get_option( PostmanOptions::POSTMAN_OPTIONS );
+				$options = get_option( PostmanOptions::POSTMAN_OPTIONS );
                 $_options = $options;
                 $options = $options ? $options : array();
 
@@ -1654,6 +1652,8 @@ class Post_SMTP_New_Wizard {
                 //Encode API Keys
                 $sanitized['office365_app_id'] = isset( $sanitized['office365_app_id'] ) ? $sanitized['office365_app_id'] : '';
                 $sanitized['office365_app_password'] = isset( $sanitized['office365_app_password'] ) ? $sanitized['office365_app_password'] : '';
+				$sanitized['zohomail_client_id'] = isset( $sanitized['zohomail_client_id'] ) ? $sanitized['zohomail_client_id'] : '';
+                $sanitized['zohomail_client_secret'] = isset( $sanitized['zohomail_client_secret'] ) ? $sanitized['zohomail_client_secret'] : '';
                 $sanitized[PostmanOptions::SENDINBLUE_API_KEY] = isset( $sanitized[PostmanOptions::SENDINBLUE_API_KEY] ) ? $sanitized[PostmanOptions::SENDINBLUE_API_KEY] : '';
                 $sanitized['sparkpost_api_key'] = isset( $sanitized['sparkpost_api_key'] ) ? $sanitized['sparkpost_api_key'] : '';
                 $sanitized['postmark_api_key'] = isset( $sanitized['postmark_api_key'] ) ? $sanitized['postmark_api_key'] : '';
@@ -1670,6 +1670,7 @@ class Post_SMTP_New_Wizard {
                 $sanitized['ses_region'] = isset( $sanitized['ses_region'] ) ? $sanitized['ses_region'] : '';
                 $sanitized['enc_type'] = 'tls';
                 $sanitized['auth_type'] = 'login';
+
    
                 foreach( $sanitized as $key => $value ) {
 
@@ -1682,18 +1683,24 @@ class Post_SMTP_New_Wizard {
                     $response = true;
 
                 } else {
-                    $response = update_option( PostmanOptions::POSTMAN_OPTIONS , $options );
+					
 					// If network settings are enabled, update all child sites.
 					if ( $this->is_network_settings_enabled() ) {
 
 						if ( $sanitized['transport_type'] == 'gmail_api' ) {
-							$this->update_gmail_sites( $options );
+							$this->update_options_sites( $options );
 						}
 
 						if ( $sanitized['transport_type'] == 'office365_api' ) {
-							$this->update_office365_sites( $options );
+							$this->update_options_sites( $options );
+						}
+						
+						if ( $sanitized['transport_type'] == 'zohomail_api' ) {
+							$this->update_options_sites( $options );
 						}
 
+					}else{
+						 $response = update_option( PostmanOptions::POSTMAN_OPTIONS , $options );
 					}
 
                 }
@@ -1731,7 +1738,7 @@ class Post_SMTP_New_Wizard {
 	/**
 	 * Update SMTP settings in all child sites
 	 */
-	private function update_gmail_sites( $options ) {
+	private function update_options_sites( $options ) {
 		if ( !is_multisite() ) {
 			return;
 		}
@@ -1739,30 +1746,9 @@ class Post_SMTP_New_Wizard {
 		$sites = get_sites( array( 'fields' => 'ids' ) );
 		foreach ( $sites as $site_id ) {
 			switch_to_blog( $site_id );
- 			update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
+ 			update_option( PostmanOptions::POSTMAN_OPTIONS , $options );
 			restore_current_blog();
 		}
-	}
-	
-	/**
-	 * Update Office 365 API settings in all child sites
-	 */
-	private function update_office365_sites( $options ) {
-
-		if ( ! is_multisite() ) {
-			return;
-		}
-
-		$sites = get_sites( array( 'fields' => 'ids' ) );
-
-		foreach ( $sites as $site_id ) {
-			switch_to_blog( $site_id );
-			update_option( 'transport_type', $options['transport_type'] );
-			update_option( 'office365_app_id', $options['office365_app_id'] );
-			update_option( 'office365_app_password', $options['office365_app_password'] );
-			restore_current_blog();
-		}
-
 	}
 
     /**
