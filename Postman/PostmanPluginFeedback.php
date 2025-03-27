@@ -94,7 +94,7 @@ class PostmanPluginFeedback {
 	}
 
 	function insert_deactivate_link_id( $links ) {
-		$links['deactivate'] = str_replace( '<a', '<a id="postman-plugin-disbale-link"', $links['deactivate'] );
+		$links['deactivate'] = str_replace( '<a', '<a id="postman-plugin-disable-link"', $links['deactivate'] );
 
 		return $links;
 	}

@@ -18,7 +18,7 @@ class PostmanLogFields {
     );
 
     /**
-     * Exclude from Getting and Setting in JSON fromat
+     * Exclude from Getting and Setting in JSON format
      * 
      * @since 2.1
      */

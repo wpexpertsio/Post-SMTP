@@ -270,7 +270,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				PostmanLogFields::get_instance()->update( $post_id, 'transport_uri', $log->transportUri );
 
 				if ( ! $log->success || true ) {
-					// alwas add the meta data so we can re-send it
+					// always add the meta data so we can re-send it
 					PostmanLogFields::get_instance()->update( $post_id, 'original_to', $log->originalTo );
 					PostmanLogFields::get_instance()->update( $post_id, 'original_subject', $log->originalSubject );
 					PostmanLogFields::get_instance()->update( $post_id, 'original_message', $log->originalMessage );
