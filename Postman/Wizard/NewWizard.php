@@ -747,14 +747,13 @@ public function render_gmail_settings() {
     // Get the Client ID and Client Secret from options
     $client_id = ! is_null( $this->options->getClientId() ) ? esc_attr( $this->options->getClientId() ) : '';
     $client_secret = ! is_null( $this->options->getClientSecret() ) ? esc_attr( $this->options->getClientSecret() ) : '';
-
     // Check if the 'success' parameter exists in URL
     $required = isset( $_GET['success'] ) && $_GET['success'] == 1 ? '' : 'required';
 
     // Retrieve options for premium features and extensions
     $post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
     $postman_auth_token = get_option( 'postman_auth_token' );
-    $bonus_extensions = isset( $post_smtp_pro_options['bonus_extensions'] ) ? $post_smtp_pro_options['bonus_extensions'] : [];
+    $bonus_extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : [];
     $gmail_oneclick_enabled = in_array( 'gmail-oneclick', $bonus_extensions );
     $auth_url = get_option( 'post_smtp_gmail_auth_url' );
 
@@ -857,7 +856,7 @@ public function render_gmail_settings() {
     $html .= '
     <h3>' . __( 'Authorization (Required)', 'post-smtp' ) . '</h3>
     <p>' . __( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ) . '</p>
-    <input type="hidden" ' . esc_attr( $required ) . ' data-error="' . esc_attr( __( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) ) . '" />
+<input type="hidden"  class="ps-gmail-warning" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) ) . '" />
     <a href="' . esc_url( admin_url( 'admin-post.php?action=postman/requestOauthGrant' ) ) . '" class="button button-primary ps-blue-btn" id="ps-wizard-connect-gmail">' . __( 'Connect to Gmail API', 'post-smtp' ) . '</a>';
 
     // Remove OAuth action button
@@ -1761,11 +1760,11 @@ public function render_gmail_settings() {
         $enabled_value = sanitize_text_field( $_POST['enabled'] );
 
         if ( ! empty( $enabled_value ) ) {
-            if ( ! in_array( $enabled_value, $options['bonus_extensions'] ) ) {
-                $options['bonus_extensions'][] = $enabled_value;
+            if ( ! in_array( $enabled_value, $options['extensions'] ) ) {
+                $options['extensions'][] = $enabled_value;
             }
         } else {
-            $options['bonus_extensions'] = array_diff( $options['bonus_extensions'], ['gmail-oneclick'] );
+            $options['extensions'] = array_diff( $options['extensions'], ['gmail-oneclick'] );
         }
 
         update_option( 'post_smtp_pro', $options );
@@ -1841,25 +1840,24 @@ public function render_gmail_settings() {
         // Check if the required OAuth parameters are present in the URL.
         if ( isset( $_GET['action'] ) && $_GET['action'] === 'gmail_oauth_redirect' ) {
             // Sanitize and retrieve URL parameters
- 			$access_token  = sanitize_text_field( $_GET['access_token'] );
-            $refresh_token = isset( $_GET['refresh_token'] ) ? sanitize_text_field( $_GET['refresh_token'] ) : null;
+            $access_token  = isset( $_GET['access_token'] ) ? sanitize_text_field( $_GET['access_token'] ) : null;
+ 		    $refresh_token = isset( $_GET['refresh_token'] ) ? sanitize_text_field( $_GET['refresh_token'] ) : null;
             $expires_in    = isset( $_GET['expires_in'] ) ? intval( $_GET['expires_in'] ) : 0;
             $msg           = isset( $_GET['msg'] ) ? sanitize_text_field( $_GET['msg'] ) : '';
             $user_email    = isset( $_GET['user_email'] ) ? sanitize_email( $_GET['user_email'] ) : '';
             $auth_token_expires = time() + $expires_in;
 
-            $oauth_data = array(
-                'access_token'      => $access_token,
-                'refresh_token'     => $refresh_token,
-                'auth_token_expires'=> $auth_token_expires,
-                'vendor_name'       => 'google',
-                'user_email'        => $user_email,
-            );
-
-            // Save the OAuth parameters to the WordPress options table.
-            update_option( 'postman_auth_token', $oauth_data );
-
-
+			if ( $access_token ) {
+				$oauth_data = array(
+					'access_token'      => $access_token,
+					'refresh_token'     => $refresh_token,
+					'auth_token_expires'=> $auth_token_expires,
+					'vendor_name'       => 'google',
+					'user_email'        => $user_email,
+				);
+            	// Save the OAuth parameters to the WordPress options table.
+            	update_option( 'postman_auth_token', $oauth_data );
+			}
         }
     }
 

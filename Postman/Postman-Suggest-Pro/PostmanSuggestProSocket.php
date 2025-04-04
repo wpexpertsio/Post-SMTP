@@ -265,13 +265,14 @@ class PostmanSuggestProSocket {
 			    'title'       => esc_html__( 'Zoho Mail', 'post-smtp' ),
 			    'description' => esc_html__( 'Integrate your WordPress site with your Zoho Mail account to improve email deliverability.', 'post-smtp' ),
 		    ),
+				 'gmail-oneclick'      => array(
+					'logo'          => $images_url . 'logos/wizard-google.png',
+					'title'         => __( 'One-Click Setup', 'post-smtp-pro' ),
+					'description'   => __( 'Quick and easy way to configure the Google workspace / Gmail mailer in Post SMTP.', 'post-smtp-pro' )
+            ),
 	    );
         $bonus            = array(
-            'gmail-oneclick'      => array(
-                'logo'          => $images_url . 'logos/wizard-google.png',
-                'title'         => __( 'One-Click Setup', 'post-smtp-pro' ),
-                'description'   => __( 'Quick and easy way to configure the Google workspace / Gmail mailer in Post SMTP.', 'post-smtp-pro' )
-            ),
+           
             'email-logs-attachment'      => array(
                 'logo'          => $images_url . 'logos/email-delivery-log.png',
                 'title'         => __( 'Email Log Attachment', 'post-smtp-pro' ),

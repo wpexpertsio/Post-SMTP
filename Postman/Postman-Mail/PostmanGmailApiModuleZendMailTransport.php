@@ -146,8 +146,8 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 			// Check if Gmail One Click is enabled.
 			$this->gmail_oneclick_enabled = in_array(
 				'gmail-oneclick',
-				isset( get_option( 'post_smtp_pro', array() )['bonus_extensions'] )
-					? get_option( 'post_smtp_pro', array() )['bonus_extensions']
+				isset( get_option( 'post_smtp_pro', array() )['extensions'] )
+					? get_option( 'post_smtp_pro', array() )['extensions']
 					: array(),
 				true
 			);

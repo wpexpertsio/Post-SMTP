@@ -325,8 +325,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$transport = $this;
 		$this->options = $this->options;
 		$oauthScribe = $transport->getScribe();
-		$gmail_oneclick_enabled = in_array( 'gmail-oneclick', get_option( 'post_smtp_pro', [] )['bonus_extensions'] ?? [] );
-		
+		$gmail_oneclick_enabled = in_array( 'gmail-oneclick', get_option( 'post_smtp_pro', [] )['extensions'] ?? [] );
 		// Sanitize
 		add_settings_section( PostmanAdminController::SMTP_SECTION, __( 'Transport Settings', 'post-smtp' ), array(
 				$this,
@@ -407,7 +406,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 				'oauth_client_secret_callback',
 		), PostmanAdminController::OAUTH_AUTH_OPTIONS, PostmanAdminController::OAUTH_SECTION );
 
-		if( $gmail_oneclick_enabled && post_smtp_has_pro() ){
+		//if( $gmail_oneclick_enabled && post_smtp_has_pro() ){
 			add_settings_field(
 				'gmail_auth_buttons',
 				__( 'Gmail Authorization', 'post-smtp' ),
@@ -415,7 +414,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 				PostmanAdminController::OAUTH_AUTH_OPTIONS,
 				PostmanAdminController::OAUTH_SECTION
 			);
-		}
+	//	}
 
 	}
 
@@ -520,8 +519,12 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 			'product_url'    => 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_gmail_one_click&utm_campaign=plugin',
 		);
 		$json_data   = htmlspecialchars( json_encode( $data ), ENT_QUOTES, 'UTF-8' );
-		$is_checked  = get_option( 'enable_gmail_oneclick', false ) ? 'checked' : '';
-		//$is_disabled = ! post_smtp_has_pro() ? 'disabled' : '';
+		$post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
+		$bonus_extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : [];
+    	$gmail_oneclick_enabled = in_array( 'gmail-oneclick', $bonus_extensions );
+// 		$is_checked  = get_option( 'enable_gmail_oneclick', false ) ? 'checked' : '';
+		$is_checked  = $gmail_oneclick_enabled ? 'checked' : '';
+		$is_disabled = ! post_smtp_has_pro() ? 'disabled' : '';
 		$class       = 'ps-enable-gmail-one-click ' . ( ! post_smtp_has_pro() ? ' disabled' : '' );
 		
 		// Add popup trigger file
