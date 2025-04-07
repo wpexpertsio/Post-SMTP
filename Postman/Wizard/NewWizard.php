@@ -1670,7 +1670,6 @@ class Post_SMTP_New_Wizard {
                 $sanitized['ses_region'] = isset( $sanitized['ses_region'] ) ? $sanitized['ses_region'] : '';
                 $sanitized['enc_type'] = 'tls';
                 $sanitized['auth_type'] = 'login';
-
    
                 foreach( $sanitized as $key => $value ) {
 
@@ -1683,19 +1682,13 @@ class Post_SMTP_New_Wizard {
                     $response = true;
 
                 } else {
-					
 					// If network settings are enabled, update all child sites.
 					if ( $this->is_network_settings_enabled() ) {
-
-						if ( $sanitized['transport_type'] == 'gmail_api' ) {
-							$this->update_options_sites( $options );
-						}
-
-						if ( $sanitized['transport_type'] == 'office365_api' ) {
-							$this->update_options_sites( $options );
-						}
-						
-						if ( $sanitized['transport_type'] == 'zohomail_api' ) {
+						 // Define an array of valid transport types.
+						$valid_transport_types = ['gmail_api', 'office365_api', 'zohomail_api', 'aws_ses_api'];
+						// Check if the transport type is in the valid list.
+						if ( in_array( $sanitized['transport_type'], $valid_transport_types ) ) {
+							// Update options for the selected transport type
 							$this->update_options_sites( $options );
 						}
 
@@ -1742,8 +1735,9 @@ class Post_SMTP_New_Wizard {
 		if ( !is_multisite() ) {
 			return;
 		}
-
+	
 		$sites = get_sites( array( 'fields' => 'ids' ) );
+
 		foreach ( $sites as $site_id ) {
 			switch_to_blog( $site_id );
  			update_option( PostmanOptions::POSTMAN_OPTIONS , $options );
