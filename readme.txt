@@ -285,6 +285,9 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 * NEW - Introducing Email Tester to test your email deliverability.
 * FIX - Removed id duplication in the Wizard.
 
+= 3.1.4 - Apr 08, 2025 =
+* FIX - To column in email logs was empty in some cases.
+
 = 3.1.3 - Mar 03, 2025 =
 * Enhancement: Email logs security enhancement.
 
