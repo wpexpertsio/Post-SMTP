@@ -281,7 +281,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
-= 3.1.4 - Mar 11, 2025 =
+= 3.1.4 - Apr 08, 2025 =
 * FIX - To column in email logs was empty in some cases.
 
 = 3.1.3 - Mar 03, 2025 =
