@@ -177,35 +177,22 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 			$yesterday->setTime( 23, 59, 0 );
 			$to = strtotime( $yesterday->format( 'Y-m-d H:i:s' ) );
 			$from = '';
-
+			$current_time  = current_time( 'timestamp' );
 			$duration = '';
 
 			if ( $interval === 'd' ) {
-
-				$duration = 'day';
-				$date = new DateTime( date( 'Y-m-d', $to ) );
-				$date->setTime( 23, 59, 0 );
-				$from = $date->sub( new DateInterval( 'P1D' ) );
-				$from = strtotime( $from->format( 'Y-m-d H:i:s' ) );
+				$from = strtotime( 'today', $current_time );
 			}
 			if ( $interval === 'w' ) {
-
-				$duration = 'week';
-				$date = new DateTime( date( 'Y-m-d', $to ) );
-				$date->setTime( 23, 59, 0 );
-				$from = $date->sub( new DateInterval( 'P1W' ) );
-				$from = strtotime( $from->format( 'Y-m-d H:i:s' ) );
+				$today  = strtotime( 'today', $current_time );
+				$from = strtotime( '-7 days', $today );
 			}
 			if ( $interval === 'm' ) {
-
-				$duration = 'month';
-				$date = new DateTime( date( 'Y-m-d', $to ) );
-				$date->setTime( 23, 59, 0 );
-				$from = $date->sub( new DateInterval( 'P1M' ) );
-				$from = strtotime( $from->format( 'Y-m-d H:i:s' ) );
+				$today  = strtotime( 'today', $current_time );
+				$from = strtotime( '-1 month', $today );
 			}
 
-			$logs = $this->get_total_logs( $from, $to );
+			$logs = $this->get_total_logs( $from, $current_time );
 
 			include_once POST_SMTP_PATH . '/Postman/Postman-Email-Health-Report/PostmanReportTemplate.php';
 			$get_body = new PostmanReportTemplate();

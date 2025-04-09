@@ -83,6 +83,9 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                     background-color: #f1f1f1;
                                     padding: 15px 0;
                                 }
+                                .outer-box * {
+                                    font-family: Arial, Helvetica, sans-serif;
+                                }
                                 .main {
                                     width: 490px;
                                     background-color: #ffffff;
@@ -142,9 +145,9 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                     font-size: 27px;
                                     color: #151D48;
                                 }
-                                .ellipse {
+                                .ellipse, .ellipse img {
                                     width: 40px;
-                                    height: 40px;
+                                    height: 40px; 
                                     border-radius: 50%;
                                     display: inline-block;
                                 }
@@ -255,6 +258,86 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                     padding-top: 4px;
                                     border-color: transparent;
                                 }
+                                .div_wrap.bg {
+                                    background: #f0f6ff;
+                                    border-radius: 6px;
+                                }
+                                .div_wrap {
+                                    width: 90%;
+                                    margin: 0 auto;
+                                    padding: 20px;
+                                    box-sizing: border-box;
+                                }
+                                .inline-box {
+                                    display: flex;
+                                    align-items: center;
+                                }
+                                .inline-box .box.bleft {
+                                    width: 65%
+                                }
+                                .inline-box .box.bright {
+                                    width: 35%;
+                                    margin-top: 40px;
+                                }
+                                .inline-box .box.bleft h3{
+                                    color: #214a72;
+                                    text-align: left;
+                                    font-size: 12px;
+                                    margin: 0 0 10px 0;
+                                }
+                                .inline-box .box.bleft ul.icon-list {
+                                    padding: 0;
+                                    margin: 0;
+                                    list-style: none;
+                                    text-align: left;
+                                }
+                                .inline-box .box.bleft ul.icon-list li {
+                                    color:#7D98B2;
+                                    display: flex;
+                                    align-content: center;
+                                    gap: 9px;
+                                    font-size: 12px;
+                                    margin: 0;
+                                    padding: 5px 0; 
+                                }
+                                .inline-box .box.bleft ul.icon-list li span {
+                                    width: 15px;
+                                    height: 15px;
+                                    background: url('".POST_SMTP_ASSETS."images/reporting/list-icon.png');
+                                    margin-right: 6px;
+                                    border-radius: 100%;
+                                    background-size: 100%;
+                                }
+                                .inline-box .box.bleft ul.icon-list li img {
+                                    margin: 0 10px;
+                                }
+                                .inline-box .box.bright img{
+                                    width: 100%
+                                }
+                                .button.center{
+                                    text-align: center;
+                                }
+                                .button {
+                                    text-align: left;
+                                    display: block;
+                                    margin: 20px 0 0;
+
+                                }
+                                .button.bg a {
+                                    background: #375CAF;
+                                    color: #fff;
+                                }
+                               .button a {
+                                        background: #F0F6FF;
+                                        padding: 10px 30px;
+                                        text-decoration: none;
+                                        color: #3A5EAF;
+                                        font-size: 12px;
+                                        border-radius: 100px;
+                                        border: 1px solid;
+                                        display: inline-block;
+                                }
+                                
                             </style>
                         </head>
                         <body>
