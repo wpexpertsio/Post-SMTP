@@ -380,7 +380,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 
 		add_settings_field(
 			'enable_gmail_oneclick',
-			__( 'Enable One-Click Setup <span class="ps-wizard-pro-tag">PRO</span>', 'post-smtp' ),
+			__( 'Enable One-Click Setup '.(post_smtp_has_pro() ? '': '<span class="ps-wizard-pro-tag">PRO</span>').'', 'post-smtp' ),
 			array( $this, 'renderGmailOneClickSwitch' ),
 			PostmanAdminController::OAUTH_AUTH_OPTIONS,
 			PostmanAdminController::OAUTH_SECTION
@@ -530,7 +530,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		echo '<div class="ps-form-switch-control">
 			<label class="ps-switch-1">
 				<input type="hidden" id="ps-one-click-data" value="' . esc_attr( $json_data ) . '">
-				<input type="checkbox" class="' . esc_attr( $class ) . '" name="enable_gmail_oneclick" ' . $is_checked . ' ' . $is_disabled . '>
+				<input type="checkbox" class="' . esc_attr( $class ) . '" name="enable_gmail_oneclick" ' . $is_checked .'>
 				<span class="slider round"></span>
 			</label> 
 			'.esc_html__('Enable the option for a quick and easy way to connect with Google without the need of manually creating an app.', 'post-smtp').'
