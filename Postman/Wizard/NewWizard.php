@@ -429,7 +429,7 @@ class Post_SMTP_New_Wizard {
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-4">
                                 <div class="ps-wizard-congrates">
-                                    <h2>👏 <?php _e( 'Great you are all done!', 'post-smtp' ); ?></h1>
+                                    <h2>👏 <?php _e( 'Great you are all done!', 'post-smtp' ); ?></h2>
                                     <?php 
                                     printf( 
                                         '<a href="%1$s" style="font-size: 12px;">%2$s <b>%3$s</b> %4$s <b>%5$s</b> %6$s</a>', 
