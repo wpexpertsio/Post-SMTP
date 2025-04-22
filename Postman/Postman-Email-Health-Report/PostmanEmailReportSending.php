@@ -53,38 +53,20 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 		 * @version 3.0.1
 		 */
 		public function schedule_email_reporting() {
-			$options = get_option( 'postman_rat' );
-			if ( $options && isset( $options['enable_email_reporting'] ) && $options['enable_email_reporting'] ) {
-				$interval = isset( $options['reporting_interval'] ) ? $options['reporting_interval'] : false;
+			$options = get_option( 'postman_rat', array() );
+			if ( isset( $options['enable_email_reporting'] ) && $options['enable_email_reporting'] ) {
+				$schedules = array(
+					'd' => 'daily',
+					'w' => 'weekly',
+					'm' => 'monthly',
+				);
 
-				if ( $interval ) {
-					$schedules = array(
-						'd' => 'daily',
-						'w' => 'weekly',
-						'm' => 'monthly',
-					);
+				if ( isset( $options['reporting_interval'] ) && isset( $schedules[ $options['reporting_interval'] ] ) ) {
+					$schedule = $schedules[ $options['reporting_interval'] ];
 
-					$schedule = isset( $schedules[ $interval ] ) ? $schedules[ $interval ] : false;
-					if ( $schedule ) {
-						$timestamp = wp_next_scheduled( 'postman_rat_email_report' );
-						if ( $timestamp ) {
-							$current_interval = wp_get_schedule( 'postman_rat_email_report' );
-							if ( $current_interval !== $schedule ) {
-								wp_unschedule_event( $timestamp, 'postman_rat_email_report' );
-							} else {
-								return;
-							}
-						}
-						$current_time = current_time( 'timestamp' );
-						$midnight = strtotime( 'tomorrow midnight', $current_time ) - 1;
-						wp_schedule_event( $current_time, $schedule, 'postman_rat_email_report' );
+					if ( ! wp_next_scheduled( 'postman_rat_email_report' ) ) {
+						wp_schedule_event( current_time( 'timestamp' ), $schedule, 'postman_rat_email_report' );
 					}
-				}
-			}else{
-				$interval = isset( $options['reporting_interval'] ) ? $options['reporting_interval'] : false;
-				$timestamp = wp_next_scheduled( 'postman_rat_email_report' );
-				if ( $timestamp ) {
-				  wp_unschedule_event( $timestamp, 'postman_rat_email_report' );
 				}
 			}
 		}
