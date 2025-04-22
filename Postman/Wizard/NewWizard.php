@@ -768,6 +768,12 @@ public function render_gmail_settings() {
         'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 
         'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_gmail_one_click&utm_campaign=plugin';
 
+
+    if ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) {
+	    $client_id_required     = '';
+        $client_secret_required = '';
+    }
+
     // Prepare data for JSON encoding
     $data = [
         'url' => $url,
