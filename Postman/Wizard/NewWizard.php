@@ -1762,6 +1762,9 @@ public function render_gmail_settings() {
         }
 
         $options = get_option( 'post_smtp_pro', [] );
+        if ( ! isset( $options['extensions'] ) ) {
+            $options['extensions'] = [];
+        }
 
         $enabled_value = sanitize_text_field( $_POST['enabled'] );
 
