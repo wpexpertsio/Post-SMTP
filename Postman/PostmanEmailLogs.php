@@ -116,6 +116,9 @@ class PostmanEmailLogs {
 		$config->set( 'CSS.Trusted', false ); // Block dangerous inline styles.
 		$config->set( 'CSS.AllowedProperties', null ); // NULL means allow all CSS properties.
 
+        // this library is removing display:flex how can we fix it?
+        $config->set( 'CSS.AllowTricky', true );
+
 		// Initialize HTMLPurifier.
 		$purifier = new HTMLPurifier( $config);
 
