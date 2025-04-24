@@ -404,10 +404,13 @@ jQuery( document ).ready(function() {
                     if( dmarc === 'unkown' ) {
                         dmarcDescription = 'Your message failed the DMARC verification.';
                     }
-                    
 
-                    jQuery( '.ps-wizard-success:nth(0)' ).after( 
-                        `<div class="ps-dns-results">
+                    if( dmarc === 'fail' ) {
+                        dmarcDescription = 'Your message failed the DMARC verification.';
+                    }
+
+
+                    var ps_dns_results = `<div id="ps-dns-results__el_id" class="ps-dns-results">
                             <p class="ps-dns-heading">${title}</p>
                             <div class="ps-dns-record">
                                 ${spfIcon}
@@ -425,7 +428,12 @@ jQuery( document ).ready(function() {
                                 <p>DMARC record description: ${dmarcDescription}</p>
                             </div>
                             <b class="ps-dns-footer">To check and improve your email spam score! <a href="https://postmansmtp.com/domain-health-checker/?utm_source=plugin&utm_medium=test_email_dns_check&utm_campaign=plugin" target="_blank">Click Here</a><span class="dashicons dashicons-external"></span></b>
-                        </div>`
+                        </div>`;
+                    if ( jQuery( '#ps-dns-results__el_id' ).length ) {
+                        jQuery( '#ps-dns-results__el_id' ).remove();
+                    }
+                    jQuery( '.ps-wizard-success:nth(0)' ).after( 
+                        ps_dns_results
                     );
 
                     //jQuery( '.ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after' ).css( { 'height': '417px' } );
@@ -434,8 +442,12 @@ jQuery( document ).ready(function() {
                 }
                 else {
 
+                    if ( jQuery( '#ps-dns-results__el_id' ).length ) {
+                        jQuery( '#ps-dns-results__el_id' ).remove();
+                    }
+
                     jQuery( '.ps-wizard-success:nth(0)' ).after( 
-                        `<div>
+                        `<div id="ps-dns-results__el_id">
                             <b class="ps-dns-footer" style="padding-left: 12px;">Limit Exceed! To check and improve your email spam score! <a href="https://postmansmtp.com/domain-health-checker/?utm_source=plugin&utm_medium=test_email_dns_check&utm_campaign=plugin" target="_blank">Click Here</a><span class="dashicons dashicons-external"></span></b>
                         </div>`
                     );
@@ -446,8 +458,12 @@ jQuery( document ).ready(function() {
 			error: function(jqXHR, textStatus, errorThrown) {
 				jQuery( '.ps-loading-test-report' ).remove();
 				if (jqXHR.status === 429) {
+
+                    if ( jQuery( '#ps-dns-results__el_id' ).length ) {
+                        jQuery( '#ps-dns-results__el_id' ).remove();
+                    }
 					jQuery('.ps-wizard-health-report').after( 
-						`<div>
+						`<div id="ps-dns-results__el_id">
 							<b class="ps-dns-footer" style="padding-left: 12px;">Limit Exceed! Please try again later. 
 							<a href="https://postmansmtp.com/domain-health-checker/?utm_source=plugin&utm_medium=test_email_dns_check&utm_campaign=plugin" target="_blank">Click Here</a>
 							<span class="dashicons dashicons-external"></span></b>
