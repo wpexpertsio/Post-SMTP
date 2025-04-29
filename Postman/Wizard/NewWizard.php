@@ -1521,9 +1521,9 @@ class Post_SMTP_New_Wizard {
                 $app_client_id = $mail_connections[$id]['office365_app_id'];
                 $app_client_secret = $mail_connections[$id]['office365_app_password'];
             }else{
-                $office_auth = get_option( 'postman_office365_oauth' );
-                $app_client_id = $office_auth['OAUTH_CLIENT_ID'];
-                $app_client_secret = $office_auth['OAUTH_CLIENT_SECRET'];
+                $options           = get_option( PostmanOptions::POSTMAN_OPTIONS );
+				$app_client_id     = ( isset( $options['office365_app_id']  ) ? base64_decode( $options['office365_app_id']  ) : '' );
+				$app_client_secret = ( isset( $options['office365_app_password'] ) ? base64_decode( $options['office365_app_password'] ) : '' );
             }
         }
         $redirect_uri = admin_url();
@@ -1820,19 +1820,12 @@ class Post_SMTP_New_Wizard {
                     $sanitized['auth_type'] = 'login';
                     
                     foreach( $sanitized as $key => $value ) {
-
                         $options[$key] = $value;
-
                     }
-
                     if( $options == $_options ) {
-
                         $response = true;
-
                     } else {
-
                         $response = update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
-
                     }
                     
                 }
@@ -1841,6 +1834,7 @@ class Post_SMTP_New_Wizard {
                 if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
                     $new_connection = [];
                     $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
+		
                     // Initialize the connections array.
                     $mail_connections = get_option( 'postman_connections' );
                     // Ensure $mail_connections is an array
@@ -1889,9 +1883,9 @@ class Post_SMTP_New_Wizard {
                     if ( 'office365_api' === $transport_type && isset( $form_data[ 'access_token' ] ) ) {
                         // Extract from sanitized data for these fields.
                         $new_connection = array(
-                            'provider'     => $sanitized['transport_type'] ?? '',
-                            'sender_email' => $sanitized['sender_email'] ?? '',
-                            'sender_name'  => $sanitized['sender_name'] ?? '',
+                            'provider'     => $sanitized[ 'transport_type'] ?? '',
+                            'sender_email' => $sanitized[ 'sender_email'] ?? '',
+                            'sender_name'  => $sanitized[ 'sender_name'] ?? '',
                             'access_token' => $form_data[ 'access_token' ],
                             'refresh_token' => $form_data[ 'refresh_token' ],
                             'token_expires' => $form_data[ 'token_expires' ],
@@ -1914,6 +1908,16 @@ class Post_SMTP_New_Wizard {
                             'oauth_client_secret' => $sanitized[ 'oauth_client_secret' ],
                         );
                     }
+					if( 'office365_api' === $transport_type ){
+						$options = get_option( PostmanOptions::POSTMAN_OPTIONS, [] );
+						$options['office365_app_id'] = isset( $sanitized['office365_app_id'] )
+							? sanitize_text_field( $sanitized['office365_app_id'] )
+							: '';
+						$options['office365_app_password'] = isset( $sanitized['office365_app_password'] )
+							? sanitize_text_field( $sanitized['office365_app_password'] )
+							: '';
+						update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
+					}
                     // Check if 'id' is set in the URL and update the specific connection.
                     if ( isset( $form_data['postman_fallback_edit'] ) ) {
                         $id = $form_data['postman_fallback_edit'];
@@ -1925,7 +1929,8 @@ class Post_SMTP_New_Wizard {
                             $id = array_key_last($mail_connections);
                         }
                     }
-                    // Save the new mail connections to the 'postman_connections' option.
+					
+					// Save the new mail connections to the 'postman_connections' option.
                     $response =  update_option( 'postman_connections', $mail_connections );
 
                 }

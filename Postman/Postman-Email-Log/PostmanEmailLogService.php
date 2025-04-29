@@ -54,6 +54,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		private $logger;
 		private $inst;
 		public $new_logging = false;
+		private $existing_db_version = '';
 
 		/**
 		 * Constructor
@@ -156,11 +157,19 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 			
 			//If Table exists, Insert Log into Table
 			if( $this->new_logging ) {
-
+				$options = PostmanOptions::getInstance();
+				$connection_details = get_option( 'postman_connections' );
+				$this->existing_db_version = get_option( 'postman_db_version' );
+				if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+					$from =  $log->sender;
+				}else{
+					 $primary = $options->getSelectedPrimary();
+					$from = $connection_details[ $primary ]['sender_name'] . ' <' . $connection_details[ $primary ]['sender_email'] . '>';
+				}
 				$data = array();
 				$data['solution'] = apply_filters( 'post_smtp_log_solution', null, $new_status, $log, $message );
 				$data['success'] = empty( $new_status ) ? 1 : $new_status;
-				$data['from_header'] = $log->sender;
+				$data['from_header'] = $from;
 				$data['to_header'] = !empty( $log->toRecipients ) ? $log->toRecipients : '';
 				$data['cc_header'] = !empty( $log->ccRecipients ) ? $log->ccRecipients : '';
 				$data['bcc_header'] = !empty( $log->bccRecipients ) ? $log->bccRecipients : '';
