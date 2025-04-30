@@ -575,6 +575,13 @@ class PostmanSettingsRegistry {
 							style="vertical-align: middle; margin-right: 5px;" /> 
 						' . esc_html__( 'Edit With Wizard', 'post-smtp' ) . '
 					</a>
+					<a href="' . esc_url( $wizard_uri ) . '" 
+					   class="button postman-delete-connection-btn"
+					   style="background:red;color:white;border:red;" id="delete_connection"
+					   id="delete_connection" 
+					   data-id="' . esc_attr( $key ) . '">
+					   ' . esc_html__( 'Delete', 'post-smtp' ) . '
+					</a>
 				</td>';
 				echo '</tr>';
 			}

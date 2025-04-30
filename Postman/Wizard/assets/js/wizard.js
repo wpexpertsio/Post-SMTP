@@ -573,5 +573,27 @@ jQuery( document ).ready(function() {
         }, 2000);
 
     });
+	
+    jQuery('.postman-delete-connection-btn').click(function(e) {
+        e.preventDefault();
+        var connectionId = jQuery(this).data('id');
+        
+        if (!confirm('Are you sure you want to delete this connection?')) {
+            return;
+        }
+
+        jQuery.post(ajaxurl, {
+            action: 'postman_delete_connection',
+            connection_id: connectionId,
+            _wpnonce: PostSMTPWizard.delete_connection_nonce
+        }, function(response) {
+            if (response.success) {
+                alert('Connection deleted successfully.');
+                location.reload();
+            } else {
+                alert('Failed to delete connection.');
+            }
+        });
+    });
 
 } );

@@ -89,6 +89,8 @@ class Post_SMTP_New_Wizard {
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
         add_action( 'wp_ajax_ps-save-wizard', array( $this, 'save_wizard' ) );
         add_action( 'admin_action_zoho_auth_request', array( $this, 'auth_zoho' ) );
+		add_action( 'wp_ajax_postman_delete_connection', array( $this, 'postman_handle_delete_connection' ) );
+		add_action( 'wp_ajax_nopriv_postman_delete_connection', array( $this, 'postman_handle_delete_connection' ) );
 
         if( isset( $_GET['wizard'] ) && $_GET['wizard'] == 'legacy' ) {
 
@@ -570,7 +572,8 @@ class Post_SMTP_New_Wizard {
         }
 
         wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), POST_SMTP_VER );
-        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), '1.1.2' );
+        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), '1.1.4' );
+ 		$localized['delete_connection_nonce'] = wp_create_nonce( 'postman_delete_connection_nonce' );
         wp_localize_script( 'post-smtp-wizard', 'PostSMTPWizard', $localized );
 
     }
@@ -1834,6 +1837,7 @@ class Post_SMTP_New_Wizard {
                 if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
                     $new_connection = [];
                     $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
+					$options = get_option( PostmanOptions::POSTMAN_OPTIONS, [] );
 		
                     // Initialize the connections array.
                     $mail_connections = get_option( 'postman_connections' );
@@ -1909,7 +1913,12 @@ class Post_SMTP_New_Wizard {
                         );
                     }
 					if( 'office365_api' === $transport_type ){
-						$options = get_option( PostmanOptions::POSTMAN_OPTIONS, [] );
+						$options['sender_email'] = isset( $sanitized['sender_email'] )
+						? sanitize_text_field( $sanitized['sender_email'] )
+						: '';
+						$options['sender_name'] = isset( $sanitized['sender_name'] )
+						? sanitize_text_field( $sanitized['sender_name'] )
+						: '';
 						$options['office365_app_id'] = isset( $sanitized['office365_app_id'] )
 							? sanitize_text_field( $sanitized['office365_app_id'] )
 							: '';
@@ -1917,7 +1926,15 @@ class Post_SMTP_New_Wizard {
 							? sanitize_text_field( $sanitized['office365_app_password'] )
 							: '';
 						update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
-					}
+					}else{
+						$options['sender_email'] = isset( $sanitized['sender_email'] )
+						? sanitize_text_field( $sanitized['sender_email'] )
+						: '';
+						$options['sender_name'] = isset( $sanitized['sender_name'] )
+						? sanitize_text_field( $sanitized['sender_name'] )
+						: '';
+						update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
+					}					
                     // Check if 'id' is set in the URL and update the specific connection.
                     if ( isset( $form_data['postman_fallback_edit'] ) ) {
                         $id = $form_data['postman_fallback_edit'];
@@ -1929,7 +1946,6 @@ class Post_SMTP_New_Wizard {
                             $id = array_key_last($mail_connections);
                         }
                     }
-					
 					// Save the new mail connections to the 'postman_connections' option.
                     $response =  update_option( 'postman_connections', $mail_connections );
 
@@ -2038,6 +2054,37 @@ class Post_SMTP_New_Wizard {
         // Return the keys for the specific transport type, or an empty array if not found.
         return isset( $api_keys_definitions[ $transport_type ] ) ? $api_keys_definitions[ $transport_type ] : array();
     }
+	
+	/**
+	 * Handles the deletion of a specific SMTP connection via AJAX.
+	 *
+	 * - Verifies the nonce for security.
+	 * - Sanitizes and validates the incoming connection ID.
+	 * - Updates the 'postman_connections' option in the database.
+	 * - Optionally, can clear the primary/fallback setting if the deleted connection was selected.
+	 *
+	 * @return void Sends a JSON response back to the AJAX request.
+	 */
+	public function postman_handle_delete_connection() {
+		// Direct inline nonce verification.
+		check_ajax_referer( 'postman_delete_connection_nonce' );
+
+		$connection_id = sanitize_text_field( $_POST['connection_id'] ?? '' );
+
+		if ( $connection_id == '' ) {
+			wp_send_json_error( 'Invalid connection ID.' );
+		}
+
+		$connections = get_option( 'postman_connections', array() );
+
+		if ( isset( $connections[ $connection_id ] ) ) {
+			unset( $connections[ $connection_id ] );
+			update_option( 'postman_connections', $connections );
+			wp_send_json_success();
+		} else {
+			wp_send_json_error( 'Connection not found.' );
+		}
+	}
 
 }
 
