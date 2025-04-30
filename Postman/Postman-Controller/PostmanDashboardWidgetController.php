@@ -262,7 +262,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 								</a>
 								<h2><?php esc_html_e( 'To get Graphs Insights', 'post-smtp' ); ?></h2>
 								<p>
-									<a href="<?php echo esc_url( 'https://postmansmtp.com/pricing/' ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound ?>" target="_blank" rel="noopener noreferrer" class="button button-primary post_smtp_pro_btn button-hero">
+									<a href="<?php echo esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wp_dashboard_widget' ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound ?>" target="_blank" rel="noopener noreferrer" class="button button-primary post_smtp_pro_btn button-hero">
 										<?php esc_html_e( 'Upgrade to Post SMTP Pro ', 'post-smtp' ); ?><span class="dashicons dashicons-arrow-right-alt"></span>
 									</a>
 								</p>
