@@ -691,9 +691,14 @@ jQuery( document ).ready(function() {
         if (enabled) {
             jQuery('.ps-disable-gmail-setup').show();
             jQuery('.ps-disable-one-click-setup').hide();
+            jQuery('.ps-gmail-api-client-id').removeAttr('required');
+            jQuery('.ps-gmail-api-client-secret').removeAttr('required')
+			jQuery('#ps-gmail-auth-buttons').show();
         } else {
             jQuery('.ps-disable-one-click-setup').show();
             jQuery('.ps-disable-gmail-setup').hide();
+            jQuery('.ps-gmail-api-client-id').attr('required', 'required');
+            jQuery('#ps-gmail-auth-buttons').hide();
         }
         
         jQuery.ajax({

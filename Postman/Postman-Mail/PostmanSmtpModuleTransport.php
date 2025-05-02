@@ -405,15 +405,15 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 				$this,
 				'oauth_client_secret_callback',
 		), PostmanAdminController::OAUTH_AUTH_OPTIONS, PostmanAdminController::OAUTH_SECTION );
-
+		
+		$hide_style = $gmail_oneclick_enabled ? '' : 'style="display:none;"'; 
 		add_settings_field(
 			'gmail_auth_buttons',
-			__( 'Gmail Authorization', 'post-smtp' ),
+			'<span class="ps-disable-gmail-setup" '.  $hide_style .'  >' . __( 'Gmail Authorization', 'post-smtp' ) . '</span>',
 			array( $this, 'renderGmailAuthButtons' ),
 			PostmanAdminController::OAUTH_AUTH_OPTIONS,
 			PostmanAdminController::OAUTH_SECTION
 		);
-
 	}
 
 	/**
@@ -549,6 +549,9 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$nonce               = wp_create_nonce( 'remove_oauth_action' );
 		$postman_auth_token  = get_option( 'postman_auth_token' );
 		$auth_url = get_option( 'post_smtp_gmail_auth_url' );
+		$post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
+		$bonus_extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : array();
+		$gmail_oneclick_enabled = in_array( 'gmail-oneclick', $bonus_extensions );
 		$remove_auth_url     = esc_url( add_query_arg(
 			array(
 				'_wpnonce' => $nonce,
@@ -557,18 +560,33 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 			admin_url( 'admin-post.php' )
 		) );
 
-		if ( $postman_auth_token ) {
-			echo '<a href="' . $remove_auth_url . '" class="button button-secondary ps-remove-gmail-btn">';
+		// Determine whether to hide the entire Gmail auth section
+		$hide_style = $gmail_oneclick_enabled ? '' : 'style="display:none;"';
+
+		echo '<div id="ps-gmail-auth-buttons" ' . $hide_style . '>';
+
+		if ( ! empty( $postman_auth_token ) ) {
+			// Show the "Remove Authorization" button if token exists
+			echo '<a href="' . esc_url( $remove_auth_url ) . '" class="button button-secondary ps-remove-gmail-btn ps-disable-gmail-setup">';
 			echo esc_html__( 'Remove Authorization', 'post-smtp' );
 			echo '</a>';
+
+			// Show connected email
 			if ( isset( $postman_auth_token['user_email'] ) ) {
-				echo '<b class="ps-connect-with">' . sprintf( esc_html__( 'Connected with: %s', 'post-smtp' ), esc_html( $postman_auth_token['user_email'] ) ) . '</b>';
+				echo '<b class="ps-connect-with ps-disable-gmail-setup" style="position: relative; top: 10px;">' .
+					 sprintf( esc_html__( 'Connected with: %s', 'post-smtp' ), esc_html( $postman_auth_token['user_email'] ) ) .
+					 '</b>';
 			}
 		} else {
-			echo '<a href="' . $auth_url . '" class="button button-primary ps-gmail-btn" id="ps-wizard-connect-gmail">';
+			// Show the "Sign in with Google" button
+			echo '<a href="' . esc_url( $auth_url ) . '" class="button button-primary ps-gmail-btn" id="ps-wizard-connect-gmail">';
 			echo esc_html__( 'Sign in with Google', 'post-smtp' );
 			echo '</a>';
 		}
+
+		echo '</div>';
+
+
 	}
 	
 
