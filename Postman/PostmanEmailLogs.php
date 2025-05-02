@@ -312,9 +312,7 @@ class PostmanEmailLogs {
 
         }
         else {
-            if( isset( $data[ 'success' ] ) ) {   
-                return $this->db->insert( $this->db->prefix . $this->db_name, $data  ) ? $this->db->insert_id : false;
-            }
+            return $this->db->insert( $this->db->prefix . $this->db_name, $data  ) ? $this->db->insert_id : false;
         }
 
     }
