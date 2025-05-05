@@ -362,7 +362,7 @@ class PostmanSettingsRegistry {
 		$inputTranscriptSlug = PostmanOptions::TRANSCRIPT_SIZE;
 		$inputValue = $this->options->getTranscriptSize();
 		$inputDescription = __( 'Change this value if you can\'t see the beginning of the transcript because your messages are too big.', 'post-smtp' );
-		printf( '<input type="text" id="input%2$s" name="%1$s[%2$s]" value="%3$s"/><br/><span class="postman_input_description">%4$s</span>', $inputOptionsSlug, $inputTranscriptSlug, $inputValue, $inputDescription );
+		printf( '<input type="text" id="input%2$s" name="%1$s[%2$s]" value="%3$s"/><b> (KB) </b> <br/><span class="postman_input_description">%4$s</span>', $inputOptionsSlug, $inputTranscriptSlug, $inputValue, $inputDescription );
 	}
 
 	/**

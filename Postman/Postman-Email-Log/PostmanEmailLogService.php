@@ -65,6 +65,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 
 			add_action('post_smtp_on_success', array( $this, 'write_success_log' ), 10, 4 );
 			add_action('post_smtp_on_failed', array( $this, 'write_failed_log' ), 10, 5 );
+			
 
 		}
 
@@ -168,6 +169,31 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 
 			return implode( ', ', array_filter( $sanitized_emails ) );
 		}
+		
+		/**
+		 * Function to process and truncate transcription logs to fit within the user-defined size.
+		 * 
+		 * @param mixed $transcript The raw transcript data (could be string, array, object, etc.)
+		 * @param int $transcript_size The user-defined size limit in KB.
+		 * 
+		 * @return string The processed transcript, truncated if necessary.
+		 */
+		private function process_transcript_log( $transcript, $transcript_size ) {
+			// Convert size from KB to bytes.
+			$transcript_size_bytes = ( int ) $transcript_size * 1024;
+
+			// Convert the transcript to a plain text string.
+			$transcript_text = is_array( $transcript ) || is_object( $transcript ) 
+				? print_r( $transcript, true )
+				: ( string ) $transcript;
+
+			// Check the size of the transcript.
+			if ( strlen( $transcript_text ) > $transcript_size_bytes ) {
+				$transcript_text = substr( $transcript_text, 0, $transcript_size_bytes ) . '... [truncated]';
+			}
+
+			return $transcript_text;
+		}
 
 		/**
 		 * Writes an email sending attempt to the Email Log
@@ -177,6 +203,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		private function writeToEmailLog( PostmanEmailLog $log, PostmanMessage $message = null ) {
 
 		    $options = PostmanOptions::getInstance();
+			$transcript_size = $options->getTranscriptSize();
 
             $new_status = $log->statusMessage;
 
@@ -204,7 +231,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				$data['original_subject'] = !empty( $log->originalSubject ) ? sanitize_text_field( $log->originalSubject ) : '';
 				$data['original_message'] = $log->originalMessage;
 			    $data['original_headers'] = is_array( $log->originalHeaders ) ? serialize( $log->originalHeaders ) : $log->originalHeaders;
-				$data['session_transcript'] = $log->sessionTranscript;
+				$data['session_transcript'] = $this->process_transcript_log( $log->sessionTranscript, $transcript_size );
 
 				$email_logs = new PostmanEmailLogs();
 
