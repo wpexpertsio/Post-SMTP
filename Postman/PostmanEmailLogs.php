@@ -387,6 +387,12 @@ class PostmanEmailLogs {
 
             }
 
+            if( isset( $_GET['filter_by'] ) && !empty( $_GET['filter_by'] ) ) {
+
+                $query['filter_by'] = sanitize_text_field( $_GET['filter_by'] );
+
+            }
+
             $data = $logs_query->get_logs( $query );
 
             //WordPress Date, Time Format
