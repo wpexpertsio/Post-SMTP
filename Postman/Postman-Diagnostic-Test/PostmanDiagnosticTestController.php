@@ -104,17 +104,138 @@ class PostmanDiagnosticTestController {
 		PostmanViewController::outputChildPageHeader( __( 'Diagnostic Test', 'post-smtp' ) );
 
 		?>
+		<style>
+			.post_smtp_diagnostic_container {
+				background-color: #fff;
+				padding: 30px;
+				border-radius: 8px;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			}
+
+			.post_smtp_diagnostic_container h2 {
+				font-size: 24px;
+				margin-bottom: 20px;
+				color: #333;
+			}
+
+			#post_smtp_diagnostic_form .form-group {
+				margin-bottom: 15px;
+			}
+
+			#post_smtp_diagnostic_form .form-group label {
+				display: block;
+				font-weight: bold;
+				color: #333;
+				margin-bottom: 5px;
+			}
+
+			#post_smtp_diagnostic_form .form-group input[type="text"], #post_smtp_diagnostic_form .form-group input[type="email"], #post_smtp_diagnostic_form .form-group select {
+				width: 100%;
+				padding: 5px;
+				font-size: 14px;
+				border: 1px solid #ccc;
+				border-radius: 5px;
+				box-sizing: border-box;
+			}
+
+			#post_smtp_diagnostic_form .form-group .post-smtp-diagnostic-submit-btn {
+				background-color: #2271b1;
+				color: white;
+				padding: 8px 16px;
+				font-size: 14px;
+				border: none;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+
+			#post_smtp_diagnostic_form .form-group .post-smtp-diagnostic-submit-btn:hover {
+				background-color: #1a5a8f;
+			}
+			.report_sent_message{
+				display: none;
+				color: green;
+			}
+			.report_validation_error{
+				display: none;
+				color: red;
+			}
+			h3.diagnostic-report-heading {
+				align-items: center;
+				font-size: 18px;
+				font-weight: bold;
+			}
+			.copy_diagnostic_report{
+				background-color: #2271b1;
+				color: white;
+				padding: 5px 10px;
+				font-size: 14px;
+				border: none;
+				border-radius: 3px;
+				cursor: pointer;
+				margin-left: 5px;
+				font-weight: normal;
+			}
+			.copy_diagnostic_report:disabled{
+				background-color: #a0a0a0;
+				cursor: not-allowed;
+			}
+			.post-smtp-diagnostic-submit-btn:disabled{
+				background-color: #a0a0a0;
+				cursor: not-allowed;
+			}
+			hr {
+				border: none;
+				border-top: 1px solid #ddd;
+				margin: 25px 0; /* Space between divs */
+			}
+			@media (min-width: 800px) {
+				#post_smtp_diagnostic_form .form-group input[type="text"], #post_smtp_diagnostic_form .form-group input[type="email"], #post_smtp_diagnostic_form .form-group select {
+					width: 30%;
+				}
+			}
+		</style>
         <form>
             <?php wp_nonce_field('post-smtp', 'security' ); ?>
         </form>
-        <?php
 
-		printf( '<h4>%s</h4>', __( 'Are you having issues with Postman?', 'post-smtp' ) );
-		/* translators: where %1$s and %2$s are the URLs to the Troubleshooting and Support Forums on WordPress.org */
-		printf( '<p style="margin:0 10px">%s</p>', sprintf( __( 'Please check the <a href="%1$s">troubleshooting and error messages</a> page and the <a href="%2$s">support forum</a>.', 'post-smtp' ), 'https://wordpress.org/plugins/post-smtp/other_notes/', 'https://wordpress.org/support/plugin/post-smtp' ) );
-		printf( '<h4>%s</h4>', __( 'Diagnostic Test', 'post-smtp' ) );
-		printf( '<p style="margin:0 10px">%s</p><br/>', sprintf( __( 'If you write for help, please include the following:', 'post-smtp' ), 'https://wordpress.org/plugins/post-smtp/other_notes/', 'https://wordpress.org/support/plugin/post-smtp' ) );
-		printf( '<textarea readonly="readonly" id="diagnostic-text" cols="80" rows="15">%s</textarea>', _x( 'Checking..', 'The "please wait" message', 'post-smtp' ) );
+		<div class="post_smtp_diagnostic_container">
+			<form action="#" id="post_smtp_diagnostic_form" method="POST">
+				<h3><?php echo __( 'Send Diagnostic Report via Email', 'post-smtp' ); ?></h3>
+				<div class="form-group">
+					<label for="post-smtp-diagnostic-email-address"><?php echo __( 'Email Address', 'post-smtp' ); ?></label>
+					<input type="email" id="post-smtp-diagnostic-email-address" name="post_smtp_diagnostic_email_address" value="support@wpexperts.io" required>
+				</div>
+				<div class="form-group">
+					<label for="post-smtp-diagnostic-ticket-number"><?php echo __( 'Ticket Number / Forum Username', 'post-smtp' ); ?></label>
+					<input type="text" id="post-smtp-diagnostic-ticket-number" name="post_smtp_diagnostic_ticket_number" required placeholder="<?php echo __( 'Enter your ticket number or forum username', 'post-smtp' ); ?>">
+				</div>
+				<div class="form-group">
+					<p class="report_validation_error"><?php echo __( 'Please fill in all required fields.', 'post-smtp' ); ?></p>
+					<button type="submit" class="post-smtp-diagnostic-submit-btn"><?php echo __( 'Send', 'post-smtp' ); ?></button>
+					<p class="report_sent_message"><?php echo __( 'Diagnostic Report Sent Successfully.', 'post-smtp' ); ?></p>
+				</div>
+				<hr>
+				<div class="form-group">
+					<label for="post-smtp-diagnostic-ticket-number"><?php echo __( 'Are you having issues with Postman?', 'post-smtp' ); ?></label>
+					<?php
+					printf( '<p>%s</p>', sprintf( __( 'Please check the <a href="%1$s">troubleshooting and error messages</a> page and the <a href="%2$s">support forum</a>.', 'post-smtp' ), 'https://wordpress.org/plugins/post-smtp/other_notes/', 'https://wordpress.org/support/plugin/post-smtp' ) );
+					?>
+				</div>
+				<hr>
+				<div class="form-group copy_div">
+					<h3 class="diagnostic-report-heading">
+						<?php echo __( 'Diagnostic Test Report', 'post-smtp' ); ?>
+						<button type="submit" class="copy_diagnostic_report"><?php echo __( 'Copy Report', 'post-smtp' ); ?></button>
+					</h3>
+					<table id="diagnostic-text" border='1' cellpadding='10' cellspacing='0'>
+						<p class="fetching_diagnostic_report">Checking...</p>
+					</table>
+					<input type="hidden" class="diagnostic_report" value="<?php echo get_option( 'post_smtp_clean_diagnostic_report_data' ); ?>" >
+				</div>
+			</form>
+		</div>
+
+        <?php
 		print '</div>';
 	}
 }
@@ -136,11 +257,14 @@ class PostmanGetDiagnosticsViaAjax {
 		$this->options = PostmanOptions::getInstance();
 		$this->authorizationToken = PostmanOAuthToken::getInstance();
 		$this->diagnostics = '';
+		$this->cleanDiagnostics = '';
 		PostmanUtils::registerAjaxHandler( 'postman_diagnostics', $this, 'getDiagnostics' );
+		PostmanUtils::registerAjaxHandler( 'send_postman_diagnostics_data', $this, 'sendDiagnosticsReportViaEmail' );
 	}
 	private function addToDiagnostics( $header, $data ) {
 		if ( isset( $data ) ) {
-			$this->diagnostics .= sprintf( '%s: %s%s', $header, $data, PHP_EOL );
+			$this->cleanDiagnostics .= sprintf( '%s: %s%s', $header, $data, PHP_EOL );
+			$this->diagnostics .= "<tr><td><strong>" . esc_html( $header ) . ":</strong></td><td>" . esc_html( $data ) . "</td></tr>" . PHP_EOL;
 		}
 	}
 	private function getActivePlugins() {
@@ -219,6 +343,25 @@ class PostmanGetDiagnosticsViaAjax {
 
 	/**
 	 */
+	public function sendDiagnosticsReportViaEmail() {
+		check_admin_referer('post-smtp', 'security');
+		$message = '';
+		$username_or_ticket_number = sanitize_text_field( wp_unslash( $_POST[ 'username_or_ticket_number' ] ) );
+		$to = sanitize_text_field( wp_unslash( $_POST[ 'email' ] ) );
+		$subject = __( '[Post SMTP] Diagnostic Test Report (' . $username_or_ticket_number . ')', 'post-smtp' );
+		$message .= '<p><strong>Ticket Number/Forum Username: </strong>'. $username_or_ticket_number .'</p>';
+		$message .= '<h3>'. __( 'Diagnostic Test Report', 'post-smtp' ) .'</h3>
+					<table id="diagnostic-text" border="1" cellpadding="10" cellspacing="0">';
+		$message .= get_option( 'post_smtp_diagnostic_report_data' );
+		$message .= '</table>';
+		$headers = array('Content-Type: text/html; charset=UTF-8');
+		wp_mail( $to, $subject, $message, $headers );
+		echo 1;
+		wp_die();
+	}
+
+	/**
+	 */
 	public function getDiagnostics() {
 
 	    check_admin_referer('post-smtp', 'security');
@@ -292,6 +435,8 @@ class PostmanGetDiagnosticsViaAjax {
 		$this->addToDiagnostics( 'Postman PHP LogLevel', $this->options->getLogLevel() == PostmanLogger::ERROR_INT ? null : $this->options->getLogLevel() );
 		$this->addToDiagnostics( 'Postman Stealth Mode', $this->options->isStealthModeEnabled() ? 'Yes' : null );
 		$this->addToDiagnostics( 'Postman File Locking (Enabled|Temp Dir)', PostmanState::getInstance()->isFileLockingEnabled() ? null : 'No' . ' | ' . $this->options->getTempDirectory() );
+		update_option( 'post_smtp_diagnostic_report_data', $this->diagnostics );
+		update_option( 'post_smtp_clean_diagnostic_report_data', $this->cleanDiagnostics );
 		$response = array(
 				'message' => $this->diagnostics,
 		);
