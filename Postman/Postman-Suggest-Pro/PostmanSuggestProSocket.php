@@ -272,7 +272,7 @@ class PostmanSuggestProSocket {
             ),
 	    );
         
-        $bonus            = array(
+        $bonus = array(
            
             'email-logs-attachment'      => array(
                 'logo'          => $images_url . 'logos/email-delivery-log.png',
@@ -293,6 +293,16 @@ class PostmanSuggestProSocket {
                 'logo' => $images_url . 'logos/twilio-sms-notification.png',
                 'title' => esc_html__( 'Twilio SMS Notification', 'post-smtp' ),
                 'description' => esc_html__( 'Configure and receive all your WordPress email failure alerts through SMS by connecting your Twilio account.', 'post-smtp' ),
+            ),
+            array(
+                'logo' => $images_url . 'logos/email-delivery-and-logs.png',
+                'title' => esc_html__( 'Email Delivery and Logs', 'post-smtp' ),
+                'description' => esc_html__( 'Send emails from the back-end, manage your email quota, retry failed emails, and delete log history to optimize email delivery.', 'post-smtp' ),
+            ),
+            array(
+                'logo' => $images_url . 'logos/microsoft-teams.png',
+                'title' => esc_html__( 'Microsoft Teams Notification', 'post-smtp' ),
+                'description' => esc_html__( 'Set up and receive all your WordPress email failure alerts through webhook URL of your MS Teams.', 'post-smtp' ),
             ),
         );
         $features         = array(
