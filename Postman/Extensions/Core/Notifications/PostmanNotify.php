@@ -420,7 +420,7 @@ class PostmanNotify {
 
 			}
 
-			if ( ! post_smtp_has_pro() && ! class_exists( 'PostSMTPTwilio' ) ) {
+			if (  post_smtp_has_pro() && ! class_exists( 'PostSMTPTwilio' ) ) {
 				?>
 				<a href="https://postmansmtp.com/extensions/twilio-extension-pro/" target="_blank">
 					<div class="ps-notify-radio-outer">
@@ -437,7 +437,7 @@ class PostmanNotify {
 			}
 			if ( post_smtp_has_pro() && isset( $options ) && ! array_key_exists( 'microsoft-teams', $options ) ) {
 				?>
-				<a href="https://postmansmtp.com/extensions/twilio-extension-pro/" target="_blank">
+				<a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=ms_teams_notification_settings&utm_campaign=plugin" target="_blank">
 					<div class="ps-notify-radio-outer">
 						<div class="ps-notify-radio pro-container">
 							<label for="ps-notify-teams-pro">
