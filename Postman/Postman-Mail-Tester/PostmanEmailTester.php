@@ -76,7 +76,7 @@ class Postman_Email_Tester {
                 $test_email = str_replace( '@smtper.postmansmtp.com', '', $test_email );
 
                 // Wait for 3 seconds
-                sleep( seconds: 5 );
+                sleep( 5 );
                 if( $email_sent ) {
                     $response = wp_remote_post( "{$this->base_url}/test?test_email={$test_email}&email={$email}", $args );
                     $response_code = wp_remote_retrieve_response_code( $response );
