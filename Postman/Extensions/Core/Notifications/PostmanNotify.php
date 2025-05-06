@@ -401,6 +401,9 @@ class PostmanNotify {
 
 		<div class="ps-notify-radios">
 			<?php
+
+				
+
 			foreach ( $options as $key => $value ) {
 				$checked = $currentKey == $key ? 'checked' : '';
 				?>
@@ -420,7 +423,7 @@ class PostmanNotify {
 
 			}
 
-			if (  post_smtp_has_pro() && ! class_exists( 'PostSMTPTwilio' ) ) {
+			if ( ! class_exists( 'PostSMTPTwilio' ) ) {
 				?>
 				<a href="https://postmansmtp.com/extensions/twilio-extension-pro/" target="_blank">
 					<div class="ps-notify-radio-outer">
@@ -435,7 +438,7 @@ class PostmanNotify {
 				</a>
 				<?php
 			}
-			if ( post_smtp_has_pro() && isset( $options ) && ! array_key_exists( 'microsoft-teams', $options ) ) {
+			if (isset( $options ) && ! array_key_exists( 'microsoft-teams', $options ) ) {
 				?>
 				<a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=ms_teams_notification_settings&utm_campaign=plugin" target="_blank">
 					<div class="ps-notify-radio-outer">
