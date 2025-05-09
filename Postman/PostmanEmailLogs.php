@@ -486,11 +486,13 @@ class PostmanEmailLogs {
 		if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-delete-email-logs' ) {
 
 			$args = array();
+            $deleted_all = false;
 
 			//Delete all
 			if( !isset( $_POST['selected'] ) ) {
 
 				$args = array( -1 );
+                $deleted_all = true;
 
 			}
 			//Delete selected
@@ -516,7 +518,8 @@ class PostmanEmailLogs {
 
 				$response = array(
 					'success' => true,
-					'message' => __( 'Logs deleted successfully', 'post-smtp' )
+					'message' => __( 'Logs deleted successfully', 'post-smtp' ),
+                    'deleted_all' => $deleted_all
 				);
 
 			}
@@ -524,7 +527,8 @@ class PostmanEmailLogs {
 
 				$response = array(
 					'success' => false,
-					'message' => __( 'Error deleting logs', 'post-smtp' )
+					'message' => __( 'Error deleting logs', 'post-smtp' ),
+                    'deleted_all' => $deleted_all
 				);
 
 			}

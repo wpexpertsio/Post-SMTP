@@ -269,17 +269,24 @@ class PostmanEmailQueryLog {
      * @version 1.0.0
      */
     public function delete_logs( $ids = array() ) {
-        
-        $ids = implode( ',', $ids );
-        $ids = $ids == -1 ? '' : "WHERE id IN ({$ids});";
+		
+		$ids = implode( ',', $ids );	
+		$ids_log = $ids == -1 ? '' : "WHERE id IN ({$ids});";
+		$ids_meta_logs = $ids == -1 ? '' : "WHERE log_id IN ({$ids});";
 
+		$this->db->query( 
+			$this->db->prepare(
+			   "DELETE FROM %i {$ids_meta_logs}",
+				$this->meta_table
+			)
+		);
+		
         return $this->db->query(
             $this->db->prepare(
-                "DELETE FROM %i {$ids}",
+                "DELETE FROM %i {$ids_log}",
                 $this->table
             )
         );
-
     }
 
 

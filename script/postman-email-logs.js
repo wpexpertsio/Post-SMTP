@@ -363,6 +363,10 @@ jQuery(document).ready(function($) {
 				if( response.success === true ) {
 
 					logsDT.ajax.reload( null, false );
+					if( response.deleted_all ){
+						// Remove all options except "All".
+						jQuery('.ps-advance-log-filter option').not('[value="all"]').remove();
+					 }
 
 				}
 				else {
