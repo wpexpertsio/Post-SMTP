@@ -721,19 +721,6 @@ class PostmanConfigurationController {
 					</div>
 					<h4>Pushover</h4>
 				</div>
-				<?php if( !class_exists( 'PostSMTPTwilio' ) ): ?>
-				<a href="https://postmansmtp.com/extensions/twilio-extension-pro/" target="_blank">
-					<div class="ps-notify-radio-outer">
-						<div class="ps-notify-radio pro-container">
-							<label for="ps-notify-twilio-pro">
-								<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/pro.png' ) ?>" class="pro-icon" />
-								<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/twilio.png' ) ?>" />
-							</label>
-						</div>
-						<h4>Twilio(SMS)</h4>
-					</div>
-				</a>
-				<?php endif; ?>
 			</div>
 			<div id="email_notify" style="display: none;">
 				<input type="text" name="postman_options[notification_email]" value="<?php echo esc_attr( $notification_emails ); ?>" />
