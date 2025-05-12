@@ -71,6 +71,7 @@ class PostmanInstaller {
 		$options = get_option( PostmanOptions::POSTMAN_OPTIONS );
 		$args = array(
 			'fallback_smtp_enabled' => 'no',
+			'primary_connection' => 0,
 		);
 
 		if ( empty( $options ) ) {

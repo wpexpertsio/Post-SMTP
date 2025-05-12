@@ -196,13 +196,15 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				$transport_registry = PostmanTransportRegistry::getInstance();
 				$transport = $transport_registry->getPrimaryConnection();
 
-				/**
-				 * Allows modification of the primary transport in the else condition.
-				 *
-				 * @param PostmanTransportRegistry $transport_registry The full PostmanTransportRegistry instance.
-				 * @param mixed $transport The current primary transport instance.
-				 */
-				$transport = apply_filters( 'post_smtp_modify_primary_transport', $transport_registry, $transport, $message );
+				if ( is_array( $bonus_extensions ) && in_array( 'smart-routing', $bonus_extensions, true ) ) {
+					/**
+					 * Allows modification of the primary transport in the else condition.
+					 *
+					 * @param PostmanTransportRegistry $transport_registry The full PostmanTransportRegistry instance.
+					 * @param mixed $transport The current primary transport instance.
+					 */
+					$transport = apply_filters( 'post_smtp_modify_primary_transport', $transport_registry, $transport, $message );
+				}
 			
 			}
 		
@@ -375,13 +377,16 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$transport_registry = PostmanTransportRegistry::getInstance();
 			$transport = $transport_registry->getFallbackConnection();
 		
-			/**
-			 * Allows modification of the primary transport in the else condition.
-			 *
-			 * @param PostmanTransportRegistry $transport_registry The full PostmanTransportRegistry instance.
-			 * @param mixed $transport The current primary transport instance.
-			 */
-			$transport = apply_filters( 'post_smtp_modify_primary_transport', $transport_registry, $transport, $message );
+			if ( is_array( $bonus_extensions ) && in_array( 'smart-routing', $bonus_extensions, true ) ) {
+				/**
+				 * Allows modification of the primary transport in the else condition.
+				 *
+				 * @param PostmanTransportRegistry $transport_registry The full PostmanTransportRegistry instance.
+				 * @param mixed $transport The current primary transport instance.
+				 */
+				$transport = apply_filters( 'post_smtp_modify_primary_transport', $transport_registry, $transport, $message );
+			
+			}
 		
 			// create the Mail Engine
 			$engine = $transport->createMailEngineFallback();

@@ -561,7 +561,7 @@ class PostmanSettingsRegistry {
 					<p class="post-smtp-modal-desc">' . esc_html__( 'You can update the title for your connection here. This change will be saved permanently.', 'post-smtp' ) . '</p>
 					<input type="text" id="titleInput" class="post-smtp-modal-input" placeholder="' . esc_attr__( 'Enter new title', 'post-smtp' ) . '">
 				<input type="hidden" id="wizardValue" value="" class="post-smtp-modal-input" >
-					<button class="post-smtp-modal-save-btn">' . esc_html__( 'Save', 'post-smtp' ) . '</button>
+					<button type="button" class="post-smtp-modal-save-btn">' . esc_html__( 'Save', 'post-smtp' ) . '</button>
 				</div>
 			</div>';
 
@@ -599,7 +599,7 @@ class PostmanSettingsRegistry {
 
 			// Edit Title
 			printf(
-				'<a href="#" class="button post-smtp-modal-trigger-btn" data-wizard="%s" style="margin: 10px;" data-id="%s">%s</a>',
+				'<a href="#" class="button post-smtp-modal-trigger-btn" data-wizard="%s" style="margin: 10px;" >%s</a>',
 				esc_attr( $key ),
 				esc_attr( $key ),
 				esc_html__( 'Edit Title', 'post-smtp' )
@@ -607,8 +607,9 @@ class PostmanSettingsRegistry {
 
 			// Delete
 			printf(
-				'<a href="%s" class="button postman-delete-connection-btn" style="background: red; color: white; border: red; margin: 10px;">%s</a>',
+				'<a href="%s" class="button postman-delete-connection-btn" data-id="%s" style="background: red; color: white; border: red; margin: 10px;">%s</a>',
 				esc_url( $wizard_uri ),
+				esc_attr( $key ),
 				esc_html__( 'Delete', 'post-smtp' )
 			);
 

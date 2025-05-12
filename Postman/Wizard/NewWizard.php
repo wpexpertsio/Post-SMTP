@@ -748,6 +748,10 @@ class Post_SMTP_New_Wizard {
      */
     public function render_smtp_settings() {
         $mail_connections = get_option( 'postman_connections' );
+        $hostname = '';
+        $port = '';
+        $username = '';
+        $password = '';
         if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
             $mail_connections = get_option('postman_connections');
             $id = $_GET['id'] ?? null;
