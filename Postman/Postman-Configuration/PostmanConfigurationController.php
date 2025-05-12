@@ -540,6 +540,14 @@ class PostmanConfigurationController {
 					<?php
 					foreach ( $filtered_mail_connections as $index => $connection ) {
 						$selected = selected( $this->options->getSelectedFallback(), $index, false );
+										// Use provider_name if available, fallback to provider.
+						$raw_label = ! empty( $connection['provider_name'] ) ? $connection['provider_name'] : $connection['provider'];
+
+						// Format display label.
+						$label = ucfirst( str_replace( '_', ' ', __( str_replace( 'api', 'API', $raw_label ), 'post-smtp' ) ) );
+
+						// Sender email fallback.
+						$email = isset( $connection['sender_email'] ) ? $connection['sender_email'] : __( 'N/A', 'post-smtp' );
 						?>
 						<option value="<?php echo esc_attr( $index ); ?>" <?php echo esc_attr( $selected ); ?> data-provider="<?php echo esc_attr( $connection['provider'] ); ?>">
 						<?php
@@ -547,11 +555,7 @@ class PostmanConfigurationController {
 							$email = isset( $connection['sender_email'] ) ? $connection['sender_email'] : __( 'N/A', 'post-smtp' );
 
 							// Generate the display text.
-							echo esc_html(
-								ucfirst(
-									str_replace( '_', ' ', __( $connection['provider'] . ' ( ' . $email . ' ) ', 'post-smtp' ) )
-								)
-							);
+							echo esc_html( sprintf( '%s (%s)', $label, $email ) );
 						?>
 						</option>
 						<?php

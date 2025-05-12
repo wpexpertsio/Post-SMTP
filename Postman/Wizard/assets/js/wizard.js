@@ -573,7 +573,7 @@ jQuery( document ).ready(function() {
         }, 2000);
 
     });
-	
+	let activeEditButton;
     jQuery('.postman-delete-connection-btn').click(function(e) {
         e.preventDefault();
         var connectionId = jQuery(this).data('id');
@@ -595,5 +595,58 @@ jQuery( document ).ready(function() {
             }
         });
     });
+	
+    function openModal(wizardValue) {
+        jQuery('#editModal').css('display', 'flex');
+        jQuery('body').addClass('post-smtp-modal-open');
+		jQuery('#titleInput').val('');
+		jQuery('#wizardValue').val('');
+
+        jQuery('#wizardValue').val(wizardValue);
+    }
+
+    function closeModal(event) {
+        if (event) event.preventDefault();
+        jQuery('#editModal').hide();
+        jQuery('body').removeClass('post-smtp-modal-open');
+    }
+
+    // Open modal with wizard value
+    jQuery('.post-smtp-modal-trigger-btn').on('click', function() {
+		 activeEditButton = jQuery(this);
+        const wizardValue = jQuery(this).data('wizard');
+        openModal(wizardValue);
+    });
+
+    // Save title
+    jQuery('.post-smtp-modal-save-btn').on('click', saveTitle);
+
+    // Close modal
+    jQuery('.post-smtp-modal-close-btn').on('click', closeModal);
+	
+	function saveTitle() {
+		const title = jQuery('#titleInput').val();
+		const wizardIndex = jQuery('#wizardValue').val();
+
+		jQuery.ajax({
+			url: ajaxurl,
+			method: 'POST',
+			data: {
+				action: 'save_connection_title',
+				title: title,
+				index: wizardIndex,
+				_wpnonce: PostSMTPWizard.save_title_nonce
+			},
+			success: function(response) {
+				  activeEditButton.closest('tr').find('td:first strong').text(title);  
+				closeModal();
+			},
+			error: function(error) {
+				alert('Failed To Save Title');
+			}
+		});
+	}
+
+	
 
 } );

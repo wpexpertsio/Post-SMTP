@@ -242,23 +242,31 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 			if ( isset( $this->options [ self::RUN_MODE ] ) ) {
 				return $this->options [ self::RUN_MODE ];
-			} else { 				return self::DEFAULT_RUN_MODE; }
+			} else { 
+				return self::DEFAULT_RUN_MODE; 
+			}
 		}
 		public function getMailLoggingMaxEntries() {
 			if ( isset( $this->options [ PostmanOptions::MAIL_LOG_MAX_ENTRIES ] ) ) {
 				return $this->options [ PostmanOptions::MAIL_LOG_MAX_ENTRIES ];
-			} else { 				return self::DEFAULT_MAIL_LOG_ENTRIES; }
+			} else { 
+				return self::DEFAULT_MAIL_LOG_ENTRIES; 
+			}
 		}
 		public function getTranscriptSize() {
 			if ( isset( $this->options [ PostmanOptions::TRANSCRIPT_SIZE ] ) ) {
 				return $this->options [ PostmanOptions::TRANSCRIPT_SIZE ];
-			} else { 				return self::DEFAULT_TRANSCRIPT_SIZE; }
+			} else { 				
+				return self::DEFAULT_TRANSCRIPT_SIZE; 
+			}
 		}
 
 		public function getLogLevel() {
 			if ( isset( $this->options [ PostmanOptions::LOG_LEVEL ] ) ) {
 				return $this->options [ PostmanOptions::LOG_LEVEL ];
-			} else { 				return self::DEFAULT_LOG_LEVEL; }
+			} else { 				
+				return self::DEFAULT_LOG_LEVEL; 
+			}
 		}
 
 
@@ -276,7 +284,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		}
 		public function getAdditionalHeaders() {
 			if ( isset( $this->options [ self::ADDITIONAL_HEADERS ] ) ) {
-				return $this->options [ self::ADDITIONAL_HEADERS ]; }
+				return $this->options [ self::ADDITIONAL_HEADERS ]; 
+			}
 		}
 		public function getHostname() {
 
@@ -285,7 +294,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
 
 			if ( isset( $this->options [ PostmanOptions::HOSTNAME ] ) ) {
-				return $this->options [ PostmanOptions::HOSTNAME ]; }
+				return $this->options [ PostmanOptions::HOSTNAME ]; 
+			}
 		}
 
 		public function getPort() {
@@ -295,7 +305,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
 
 			if ( isset( $this->options [ PostmanOptions::PORT ] ) ) {
-				return $this->options [ PostmanOptions::PORT ]; }
+				return $this->options [ PostmanOptions::PORT ]; 
+			}
 		}
 
 		public function getEnvelopeSender() {
@@ -305,7 +316,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
 
 			if ( isset( $this->options [ PostmanOptions::ENVELOPE_SENDER ] ) ) {
-				return $this->options [ PostmanOptions::ENVELOPE_SENDER ]; }
+				return $this->options [ PostmanOptions::ENVELOPE_SENDER ]; 
+			}
 		}
 
 		public function getMessageSenderEmail() {

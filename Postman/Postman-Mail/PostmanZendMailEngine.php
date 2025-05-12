@@ -90,7 +90,7 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			$charset = $message->getCharset();
 			$this->logger->debug( 'Building Postman_Zend_Mail with charset=' . $charset );
 			$mail = new Postman_Zend_Mail( $charset );
-			
+
 			// add the Postman signature - append it to whatever the user may have set
 			if ( ! PostmanOptions::getInstance()->isStealthModeEnabled() ) {
 				$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
@@ -116,8 +116,6 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			$fromHeader->log( $this->logger, 'From' );
 
 			$sender = $this->transport->getFromEmailAddress();
-
-
 
 			/**
 			 * If Sender and From are not same thn ADD Sender, otherwise do not add Sender
@@ -207,7 +205,7 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 				$zendTransport = $this->transport->createZendMailTransport( $this->transport->getHostname(), $this->fallback_flag );
 			}
             $transport = $this->transport instanceof PostmanDefaultModuleTransport ? null : $zendTransport;
-			
+		
 			try {
 				// send the message
 				$this->logger->debug( 'Sending mail' );
@@ -226,6 +224,9 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 					$this->transcript = $zendTransport->getMessage();
 				}
 			} catch ( Exception $e ) {
+					echo "<pre>";
+					var_dump( $e );
+			die('ahsan');
 				// finally not supported??
 				if ( $zendTransport->getConnection() && ! PostmanUtils::isEmpty( $zendTransport->getConnection()->getLog() ) ) {
 					$this->transcript = $zendTransport->getConnection()->getLog();

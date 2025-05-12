@@ -195,7 +195,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				// get primaryconnection and Config and engine.
 				$transport_registry = PostmanTransportRegistry::getInstance();
 				$transport = $transport_registry->getPrimaryConnection();
-			
+
 				/**
 				 * Allows modification of the primary transport in the else condition.
 				 *
@@ -203,12 +203,12 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				 * @param mixed $transport The current primary transport instance.
 				 */
 				$transport = apply_filters( 'post_smtp_modify_primary_transport', $transport_registry, $transport, $message );
-
+			
 			}
-
+		
 			// create the Mail Engine
 			$engine = $transport->createMailEngine();
-
+		
 			// add plugin-specific attributes to PostmanMessage
 			$message->addHeaders( $options->getAdditionalHeaders() );
 			$message->addTo( $options->getForcedToRecipients() );

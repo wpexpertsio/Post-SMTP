@@ -574,6 +574,7 @@ class Post_SMTP_New_Wizard {
         wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), POST_SMTP_VER );
         wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), '1.1.4' );
  		$localized['delete_connection_nonce'] = wp_create_nonce( 'postman_delete_connection_nonce' );
+        $localized['save_title_nonce'] = wp_create_nonce( 'postman_save_title_nonce' );
         wp_localize_script( 'post-smtp-wizard', 'PostSMTPWizard', $localized );
 
     }
@@ -746,11 +747,22 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function render_smtp_settings() {
-
-        $hostname = null !== $this->options->getHostname() ? esc_attr ( $this->options->getHostname() ) : '';
-        $port = null !== $this->options->getPort() ? esc_attr ( $this->options->getPort() ) : '';
-        $username = null !== $this->options->getUsername() ? esc_attr ( $this->options->getUsername() ) : '';
-        $password = null !== $this->options->getPassword() ? esc_attr ( $this->options->getPassword() ) : '';
+        $mail_connections = get_option( 'postman_connections' );
+        if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
+            $mail_connections = get_option('postman_connections');
+            $id = $_GET['id'] ?? null;
+            if ( isset( $mail_connections[$id] ) ) {
+                $hostname = $mail_connections[$id]['hostname'] ?? '';;
+                $port     = $mail_connections[$id]['port'] ?? '';;
+                $username = $mail_connections[$id]['basic_auth_username'] ?? '';;
+                $password = $mail_connections[$id]['basic_auth_password'] ?? '';;    
+            }
+        }else{
+            $hostname = null !== $this->options->getHostname() ? esc_attr ( $this->options->getHostname() ) : '';
+            $port = null !== $this->options->getPort() ? esc_attr ( $this->options->getPort() ) : '';
+            $username = null !== $this->options->getUsername() ? esc_attr ( $this->options->getUsername() ) : '';
+            $password = null !== $this->options->getPassword() ? esc_attr ( $this->options->getPassword() ) : '';    
+        }
 
         $html = '
         <p>'.__( 'The SMTP option lets you send emails directly through an SMTP server instead of using a SMTP Server provider\'s API. This is easy and convenient, but it\'s less secure than the other mailers.', 'post-smtp' ).'</p>

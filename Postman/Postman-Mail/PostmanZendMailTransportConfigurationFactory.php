@@ -19,8 +19,8 @@ if ( ! class_exists( 'PostmanBasicAuthConfigurationFactory' ) ) {
 			// retrieve the hostname and port form the transport
 			$hostname     = $transport->getHostname();
 			$port         = $transport->getPort();
-			$securityType = $transport->getSecurityType();
-			$authType     = $transport->getAuthenticationType();
+			$securityType = $transport->getSecurityType() ?: 'tls';
+			$authType     = $transport->getAuthenticationType() ?: 'login';
 			$username     = $transport->getCredentialsId();
 			$password     = $transport->getCredentialsSecret();
 

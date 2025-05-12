@@ -9,6 +9,9 @@ class PostmanSettingsRegistry {
 
 	public function __construct() {
 		$this->options = PostmanOptions::getInstance();
+		  add_action( 'wp_ajax_save_connection_title', array( $this, 'save_connection_title' ) );
+		  add_action( 'wp_ajax_nopriv_save_connection_title', array( $this, 'save_connection_title' ) );
+		
 	}
 
 	/**
@@ -499,14 +502,18 @@ class PostmanSettingsRegistry {
 			foreach ( $connections as $key => $connection ) {
 				$selected = selected( $primary_connection, $key, false );
 				$email    = isset( $connection['sender_email'] ) ? $connection['sender_email'] : '';
+				// Use provider_name if available, fallback to provider.
+				$raw_label = ! empty( $connection['provider_name'] ) ? $connection['provider_name'] : $connection['provider'];
+				// Format label.
+				$label = ucfirst( str_replace( '_', ' ', __( str_replace( 'api', 'API', $raw_label ), 'post-smtp' ) ) );
+				$label_with_email = sprintf( '%s (%s)', $label, $email );
+
 				printf(
 					'<option value="%s" %s>%s</option>',
 					esc_attr( $key ),
 					$selected,
 					esc_html(
-						ucfirst(
-							str_replace( '_', ' ', __( $connection['provider'] . ' ( ' . $email . ' ) ', 'post-smtp' ) )
-						)
+						esc_html( $label_with_email )
 					)
 				);
 			}
@@ -534,71 +541,93 @@ class PostmanSettingsRegistry {
 	 * Callback for the Add New Connection button.
 	 */
 	public function add_new_connection_callback() {
-		$connections        = get_option( 'postman_connections', array() ); // Retrieve saved connections.
+		$connections        = get_option( 'postman_connections', array() );
 		$wizard_uri         = admin_url( 'admin.php?page=postman/configuration_wizard' );
 		$primary_connection = $this->options->getSelectedPrimary();
 		$primary_fallback   = $this->options->getSelectedFallback();
-		// Check if connections exist
-		if ( ! empty( $connections ) ) {
-			// Start outputting the div for existing connections
-			echo '<div style="background-color: white; padding: 20px; border-radius: 5px; margin-top: 20px;position: relative;left: -220px;">';
-			echo '<h2>' . esc_html__( 'All Connections', 'post-smtp' ) . '</h2>';
 
-			// Start the table
-			echo '<table class="widefat striped">';
-			echo '<thead>';
-			echo '</thead>';
-			echo '<tbody>';
-
-			// Loop through the connections to populate the table
-			foreach ( $connections as $key => $connection ) {
-				$sender_email   = esc_html( $connection['sender_email'] ?? '' ); // Use email from connection or an empty string
-				$provider_title = ucfirst(
-					str_replace(
-						'_',
-						' ',
-						__( str_replace( 'api', 'API', $connection['provider'] ), 'post-smtp' )
-					)
-				);
-				$status         = ( $key == $primary_connection ) ? 'Primary' : ( ( $key == $primary_fallback ) ? 'Fallback' : 'None' );
-
-				echo '<tr>';
-				echo '<td>';
-				echo '<strong>' . esc_html( $provider_title ) . '</strong><br>'; // Bold main text
-				echo '<small>' . esc_html__( 'Selected as:', 'post-smtp' ) . ' ' . esc_html( $status ) . '</small>';
-				echo '</td>';
-				echo '<td>' . $sender_email . '</td>';
-				echo '<td>
-					<a href="' . esc_url( $wizard_uri ) . '&id=' . esc_attr( $key ) . '" class="button postman-add-connection-btn" id="add_new_connection">
-						<img src="' . esc_url( plugin_dir_url( dirname( __DIR__, 1 ) ) . 'Postman/Dashboard/assets/new.svg' ) . '" 
-							alt="' . esc_attr__( 'Edit With Wizard', 'post-smtp' ) . '" 
-							style="vertical-align: middle; margin-right: 5px;" /> 
-						' . esc_html__( 'Edit With Wizard', 'post-smtp' ) . '
-					</a>
-					<a href="' . esc_url( $wizard_uri ) . '" 
-					   class="button postman-delete-connection-btn"
-					   style="background:red;color:white;border:red;" id="delete_connection"
-					   id="delete_connection" 
-					   data-id="' . esc_attr( $key ) . '">
-					   ' . esc_html__( 'Delete', 'post-smtp' ) . '
-					</a>
-				</td>';
-				echo '</tr>';
-			}
-			echo '</tbody>';
-			echo '</table>';
-			?>
-			<div style="padding-top: 20px;"> 
-				<a href="<?php echo esc_url( $wizard_uri ); ?>" class="button postman-add-connection-btn" id="add_new_connection">
-					<img src="<?php echo esc_url( plugin_dir_url( dirname( __DIR__, 1 ) ) . 'Postman/Dashboard/assets/new.svg' ); ?>" 
-						alt="<?php esc_attr_e( 'New', 'post-smtp' ); ?>" />
-					<?php esc_html_e( 'Add New Connection', 'post-smtp' ); ?>
-				</a>
-			</div>
-			<?php
-			echo '</div>';
+		if ( empty( $connections ) ) {
+			return;
 		}
+
+		echo '<div class="post-smtp-connections-wrapper" style="background-color: #fff; padding: 20px; border-radius: 5px; margin-top: 20px; position: relative; left: -220px;">';
+
+		// Modal HTML
+		echo '
+			<div class="post-smtp-modal-overlay" id="editModal">
+				<div class="post-smtp-modal">
+					<button class="post-smtp-modal-close-btn" type="button">X</button>
+					<h2 class="post-smtp-modal-title">' . esc_html__( 'Edit Title', 'post-smtp' ) . '</h2>
+					<p class="post-smtp-modal-desc">' . esc_html__( 'You can update the title for your connection here. This change will be saved permanently.', 'post-smtp' ) . '</p>
+					<input type="text" id="titleInput" class="post-smtp-modal-input" placeholder="' . esc_attr__( 'Enter new title', 'post-smtp' ) . '">
+				<input type="hidden" id="wizardValue" value="" class="post-smtp-modal-input" >
+					<button class="post-smtp-modal-save-btn">' . esc_html__( 'Save', 'post-smtp' ) . '</button>
+				</div>
+			</div>';
+
+		echo '<h2>' . esc_html__( 'All Connections', 'post-smtp' ) . '</h2>';
+
+		echo '<table class="widefat striped"><thead></thead><tbody>';
+
+		foreach ( $connections as $key => $connection ) {
+			$sender_email   = esc_html( $connection['sender_email'] ?? '' );
+			$provider_label = ucfirst( str_replace( '_', ' ', __( str_replace( 'api', 'API', $connection['provider'] ), 'post-smtp' ) ) );
+			$raw_label = isset( $connection['provider_name'] ) && ! empty( $connection['provider_name'] ) ? $connection['provider_name'] : $connection['provider'];
+
+			$provider_label = ucfirst( str_replace( '_', ' ', __( str_replace( 'api', 'API', $raw_label ), 'post-smtp' ) ) );
+			
+			$status         = ( $key == $primary_connection ) ? 'Primary' : ( ( $key == $primary_fallback ) ? 'Fallback' : 'None' );
+			echo '<tr><td>';
+			echo '<strong>' . esc_html( $provider_label ) . '</strong><br>';
+			echo '<small>' . esc_html__( 'Selected as:', 'post-smtp' ) . ' ' . esc_html( $status ) . '</small>';
+			echo '</td>';
+
+			echo '<td>' . $sender_email . '</td><td>';
+
+			// Edit with Wizard
+			printf(
+				'<a href="%s&id=%s" class="button postman-add-connection-btn"  style="margin: 10px;" id="add_new_connection">
+					<img src="%s" alt="%s" style="vertical-align: middle; margin-right: 5px;" />
+					%s
+				</a>',
+				esc_url( $wizard_uri ),
+				esc_attr( $key ),
+				esc_url( plugin_dir_url( dirname( __DIR__, 1 ) ) . 'Postman/Dashboard/assets/new.svg' ),
+				esc_attr__( 'Edit With Wizard', 'post-smtp' ),
+				esc_html__( 'Edit With Wizard', 'post-smtp' )
+			);
+
+			// Edit Title
+			printf(
+				'<a href="#" class="button post-smtp-modal-trigger-btn" data-wizard="%s" style="margin: 10px;" data-id="%s">%s</a>',
+				esc_attr( $key ),
+				esc_attr( $key ),
+				esc_html__( 'Edit Title', 'post-smtp' )
+			);
+
+			// Delete
+			printf(
+				'<a href="%s" class="button postman-delete-connection-btn" style="background: red; color: white; border: red; margin: 10px;">%s</a>',
+				esc_url( $wizard_uri ),
+				esc_html__( 'Delete', 'post-smtp' )
+			);
+
+			echo '</td></tr>';
+		}
+
+		echo '</tbody></table>';
+
+		// Add new connection button
+		echo '<div style="padding-top: 20px;">
+				<a href="' . esc_url( $wizard_uri ) . '" class="button postman-add-connection-btn">
+					<img src="' . esc_url( plugin_dir_url( dirname( __DIR__, 1 ) ) . 'Postman/Dashboard/assets/new.svg' ) . '" alt="' . esc_attr__( 'New', 'post-smtp' ) . '" />
+					' . esc_html__( 'Add New Connection', 'post-smtp' ) . '
+				</a>
+			</div>';
+
+		echo '</div>';
 	}
+
 
 	/**
 	 * Get the settings option array and print one of its values
@@ -819,4 +848,32 @@ class PostmanSettingsRegistry {
 
 		printf( '<input type="checkbox" id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]" %3$s /> %4$s', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::INCOMPATIBLE_PHP_VERSION, $this->options->is_php_compatibility_enabled() ? 'checked="checked"' : '', __( 'Only enable this option, if the email\'s header or body seems broken.', 'post-smtp' ) );
 	}
+	
+	/**
+     * Handles the AJAX request to save a wizard title.
+     *
+     * This function:
+     * - Verifies the nonce for security.
+     * - Checks if the current user has the required capability.
+     * - Retrieves and sanitizes the wizard title and index from the request.
+     * - Updates the corresponding entry in the `postman_connections` option.
+     * - Returns a success or error message via JSON.
+     */
+    public function save_connection_title() {
+
+        check_ajax_referer( 'postman_save_title_nonce' );
+
+        $title = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
+        $index = isset( $_POST['index'] ) ? intval( $_POST['index'] ) : -1;
+
+        $postman_connections = get_option( 'postman_connections', [] );
+
+        if ( isset( $postman_connections[ $index ] ) ) {
+            $postman_connections[ $index ]['provider_name'] = $title;
+            update_option( 'postman_connections', $postman_connections );
+            wp_send_json_success( [ 'message' => 'Wizard title saved successfully.' ] );
+        } else {
+            wp_send_json_error( [ 'message' => 'Invalid index.' ] );
+        }
+    }
 }

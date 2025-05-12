@@ -11,6 +11,8 @@ require_once 'PostmanModuleTransport.php';
  */
 class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport implements PostmanZendModuleTransport {
 	const SLUG = 'smtp';
+	protected $existing_db_version = '';
+	protected $connection_details = '';
 	public function __construct( $rootPluginFilenameAndPath ) {
 		parent::__construct( $rootPluginFilenameAndPath );
 
@@ -22,6 +24,8 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 				'on_admin_init',
 			)
 		);
+		$this->existing_db_version = get_option( 'postman_db_version' );
+		$this->connection_details  = get_option( 'postman_connections' );
 	}
 
 	/**
@@ -30,8 +34,24 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	 * @see PostmanModuleTransport::createMailEngine()
 	 */
 	public function createMailEngine() {
+		$fallback_flag = array(
+		 'is_fallback' => null,
+		);
 		require_once 'PostmanZendMailEngine.php';
-		return new PostmanZendMailEngine( $this );
+		return new PostmanZendMailEngine ( $this , $fallback_flag );
+	}
+	
+	/**
+	 * @since 3.0.1
+	 * @version 1.0
+	 */
+	public function createMailEngineFallback() {
+
+		$fallback_flag = array(
+            'is_fallback' => 1,
+        );
+		require_once 'PostmanZendMailEngine.php';
+		return new PostmanZendMailEngine ( $this , $fallback_flag );
 	}
 
 	/**
@@ -40,6 +60,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	 * @see PostmanZendModuleTransport::createZendMailTransport()
 	 */
 	public function createZendMailTransport( $fakeHostname, $fakeConfig ) {
+	
 		if ( PostmanOptions::AUTHENTICATION_TYPE_OAUTH2 == $this->getAuthenticationType() ) {
 			$config = PostmanOAuth2ConfigurationFactory::createConfig( $this );
 		} else {
@@ -63,31 +84,67 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		return 'Other SMTP';
 	}
 	public function getHostname() {
-		$this->options = $this->options;
-		return $this->options->getHostname();
+		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+			$this->options = $this->options;
+			return $this->options->getHostname();
+		}else{
+			$primary_connection = $this->options->getSelectedPrimary();
+			if (
+				isset($this->connection_details[$primary_connection]) &&
+				isset($this->connection_details[$primary_connection]['hostname'])
+			) {
+				return $this->connection_details[$primary_connection]['hostname'];
+			}
+		}
 	}
 	public function getPort() {
-		$this->options = $this->options;
-		return $this->options->getPort();
+		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+			$this->options = $this->options;
+			return $this->options->getPort();
+		}else{
+			$primary_connection = $this->options->getSelectedPrimary();
+			$port = $this->connection_details[$primary_connection]['port'];
+			return $port;
+		}
 	}
 	public function getAuthenticationType() {
 		return $this->options->getAuthenticationType();
 	}
 	public function getCredentialsId() {
 		$this->options = $this->options;
-		if ( $this->options->isAuthTypeOAuth2() ) {
-			return $this->options->getClientId();
-		} else {
-			return $this->options->getUsername();
+		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+			if ( $this->options->isAuthTypeOAuth2() ) {
+				return $this->options->getClientId();
+			} else {
+				return $this->options->getUsername();
+			}
+		}else{
+			if ( $this->options->isAuthTypeOAuth2() ) {
+				return $this->options->getClientId();
+			}else{
+				$primary_connection = $this->options->getSelectedPrimary();
+			    $port = $this->connection_details[$primary_connection]['basic_auth_username'];
+			    return $port;
+			}
 		}
 	}
 	public function getCredentialsSecret() {
 		$this->options = $this->options;
-		if ( $this->options->isAuthTypeOAuth2() ) {
-			return $this->options->getClientSecret();
-		} else {
-			return $this->options->getPassword();
-		}
+		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+			if ( $this->options->isAuthTypeOAuth2() ) {
+				return $this->options->getClientSecret();
+			} else {
+				return $this->options->getPassword();
+			}
+		}else{
+			if ( $this->options->isAuthTypeOAuth2() ) {
+				return $this->options->getClientSecret();
+			}else{
+				$primary_connection = $this->options->getSelectedPrimary();
+			    $port = $this->connection_details[$primary_connection]['basic_auth_password'];
+			    return $port;
+			}
+		}		
 	}
 
 	/**
