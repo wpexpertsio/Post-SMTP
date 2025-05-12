@@ -5,6 +5,7 @@ class PostmanEmailQueryLog {
 
     private $db = '';
     public $table = 'post_smtp_logs';
+    public $meta_table = 'post_smtp_logmeta';
     private $query = ''; 
     private $columns = array();
 
@@ -20,6 +21,7 @@ class PostmanEmailQueryLog {
         global $wpdb;
         $this->db = $wpdb;
         $this->table = $this->db->prefix . $this->table;
+        $this->meta_table = $this->db->prefix . $this->meta_table;
 
         
     }
