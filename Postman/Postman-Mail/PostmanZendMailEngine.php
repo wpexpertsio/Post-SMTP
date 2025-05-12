@@ -205,7 +205,6 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 				$zendTransport = $this->transport->createZendMailTransport( $this->transport->getHostname(), $this->fallback_flag );
 			}
             $transport = $this->transport instanceof PostmanDefaultModuleTransport ? null : $zendTransport;
-		
 			try {
 				// send the message
 				$this->logger->debug( 'Sending mail' );
@@ -224,9 +223,7 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 					$this->transcript = $zendTransport->getMessage();
 				}
 			} catch ( Exception $e ) {
-					echo "<pre>";
-					var_dump( $e );
-			die('ahsan');
+				
 				// finally not supported??
 				if ( $zendTransport->getConnection() && ! PostmanUtils::isEmpty( $zendTransport->getConnection()->getLog() ) ) {
 					$this->transcript = $zendTransport->getConnection()->getLog();

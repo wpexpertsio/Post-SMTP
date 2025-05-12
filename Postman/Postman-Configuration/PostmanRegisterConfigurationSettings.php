@@ -601,7 +601,6 @@ class PostmanSettingsRegistry {
 			printf(
 				'<a href="#" class="button post-smtp-modal-trigger-btn" data-wizard="%s" style="margin: 10px;" >%s</a>',
 				esc_attr( $key ),
-				esc_attr( $key ),
 				esc_html__( 'Edit Title', 'post-smtp' )
 			);
 

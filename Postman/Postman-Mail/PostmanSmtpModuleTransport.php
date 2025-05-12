@@ -84,33 +84,49 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		return 'Other SMTP';
 	}
 	public function getHostname() {
+		$route_key = null;
+    	$route_key = get_transient( 'post_smtp_smart_routing_route' );
 		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
 			$this->options = $this->options;
 			return $this->options->getHostname();
 		}else{
-			$primary_connection = $this->options->getSelectedPrimary();
-			if (
-				isset($this->connection_details[$primary_connection]) &&
-				isset($this->connection_details[$primary_connection]['hostname'])
-			) {
-				return $this->connection_details[$primary_connection]['hostname'];
+			if ( $route_key != null ) {
+				$hostname   = $this->connection_details[ $route_key ]['hostname'];
+				return $hostname;
+			}else{
+				$primary_connection = $this->options->getSelectedPrimary();
+				if (
+					isset($this->connection_details[$primary_connection]) &&
+					isset($this->connection_details[$primary_connection]['hostname'])
+				) {
+					return $this->connection_details[$primary_connection]['hostname'];
+				}
 			}
 		}
 	}
 	public function getPort() {
+		$route_key = null;
+    	$route_key = get_transient( 'post_smtp_smart_routing_route' );
 		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
 			$this->options = $this->options;
 			return $this->options->getPort();
 		}else{
-			$primary_connection = $this->options->getSelectedPrimary();
-			$port = $this->connection_details[$primary_connection]['port'];
-			return $port;
+			if ( $route_key != null ) {
+				$port   = $this->connection_details[ $route_key ]['port'];
+				return $port;
+			}else{
+				$primary_connection = $this->options->getSelectedPrimary();
+				$port = $this->connection_details[$primary_connection]['port'];
+				return $port;
+			}
 		}
 	}
 	public function getAuthenticationType() {
 		return $this->options->getAuthenticationType();
 	}
 	public function getCredentialsId() {
+		$route_key = null;
+    	$route_key = get_transient( 'post_smtp_smart_routing_route' );
 		$this->options = $this->options;
 		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
 			if ( $this->options->isAuthTypeOAuth2() ) {
@@ -122,13 +138,20 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 			if ( $this->options->isAuthTypeOAuth2() ) {
 				return $this->options->getClientId();
 			}else{
-				$primary_connection = $this->options->getSelectedPrimary();
-			    $port = $this->connection_details[$primary_connection]['basic_auth_username'];
-			    return $port;
+				if ( $route_key != null ) {
+					$basic_auth_username   = $this->connection_details[ $route_key ]['basic_auth_username'];
+					return $basic_auth_username;	
+				}else{
+					$primary_connection = $this->options->getSelectedPrimary();
+					$basic_auth_username = $this->connection_details[$primary_connection]['basic_auth_username'];
+					return $basic_auth_username;
+				}
 			}
 		}
 	}
 	public function getCredentialsSecret() {
+		$route_key = null;
+    	$route_key = get_transient( 'post_smtp_smart_routing_route' );
 		$this->options = $this->options;
 		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
 			if ( $this->options->isAuthTypeOAuth2() ) {
@@ -137,12 +160,18 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 				return $this->options->getPassword();
 			}
 		}else{
+			
 			if ( $this->options->isAuthTypeOAuth2() ) {
 				return $this->options->getClientSecret();
 			}else{
-				$primary_connection = $this->options->getSelectedPrimary();
-			    $port = $this->connection_details[$primary_connection]['basic_auth_password'];
-			    return $port;
+				if ( $route_key != null ) {
+					$basic_auth_password   = $this->connection_details[ $route_key ]['basic_auth_password'];
+					return $basic_auth_password;	
+				}else{
+					$primary_connection = $this->options->getSelectedPrimary();
+					$basic_auth_password = $this->connection_details[$primary_connection]['basic_auth_password'];
+					return $basic_auth_password;
+				}
 			}
 		}		
 	}
