@@ -292,6 +292,9 @@ class PostmanConfigurationController {
 		print '<div id="sendgrid_settings" class="authentication_setting non-basic non-oauth2">';
 		do_settings_sections( PostmanSendGridTransport::SENDGRID_AUTH_OPTIONS );
 		print '</div>';
+		print '<div id="mailersend_settings" class="authentication_setting non-basic non-oauth2">';
+		do_settings_sections( PostmanMailerSendTransport::MAILERSEND_AUTH_OPTIONS );
+		print '</div>';
 		print '<div id="mailgun_settings" class="authentication_setting non-basic non-oauth2">';
 		do_settings_sections( PostmanMailgunTransport::MAILGUN_AUTH_OPTIONS );
 		print '</div>';

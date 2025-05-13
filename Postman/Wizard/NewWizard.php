@@ -80,6 +80,7 @@ class Post_SMTP_New_Wizard {
 
         }
 
+        $this->socket_sequence[] = 'mailersend_api';
         $this->socket_sequence[] = 'smtp';
         $this->socket_sequence[] = 'default';
         
@@ -108,6 +109,7 @@ class Post_SMTP_New_Wizard {
     public function load_wizard() {
 
         $transports = PostmanTransportRegistry::getInstance()->getTransports();
+		
         //Not for wizard
         $settings_registry = new PostmanSettingsRegistry();
         $this->options = PostmanOptions::getInstance();
@@ -216,7 +218,7 @@ class Post_SMTP_New_Wizard {
                                         $row  = 0;
 
                                         $transports = array_merge( array_flip( $this->socket_sequence ), $transports );
-
+										
                                         foreach( $transports as $key => $transport ) {
 
                                             $urls = array(
@@ -225,6 +227,7 @@ class Post_SMTP_New_Wizard {
                                                 'gmail_api'         =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/gmail.png',
                                                 'mandrill_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mandrill.png',
                                                 'sendgrid_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendgrid.png',
+                                                'mailersend_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailersend.png',
                                                 'mailgun_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailgun.png',
                                                 'sendinblue_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/brevo.png',
                                                 'postmark_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/postmark.png',
@@ -656,6 +659,9 @@ class Post_SMTP_New_Wizard {
             case 'sendgrid_api';
                 echo wp_kses( $this->render_sendgrid_settings(), $this->allowed_tags );
             break;
+            case 'mailersend_api';
+                echo wp_kses( $this->render_mailersend_settings(), $this->allowed_tags );
+            break;
             case 'mailgun_api':
                 echo wp_kses( $this->render_mailgun_settings(), $this->allowed_tags );
             break;
@@ -946,6 +952,49 @@ class Post_SMTP_New_Wizard {
         $html .= '</select>';
         $html .= '</div>';
 
+
+        return $html;
+
+    }
+
+
+    /**
+     * Render MailerSend Settings
+     * 
+     * @since 2.7.0
+     * @version 1.0.0
+     */
+    public function render_mailersend_settings() {
+
+        $api_key = null !== $this->options->getMailerSendApiKey() ? esc_attr ( $this->options->getMailerSendApiKey() ) : '';
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
+            esc_url( 'https://mailersend.com/' ),
+            __( 'MailerSend', 'post-smtp' ),
+            __( 'is a popular transactional email provider that sends more than 35 billion emails every month. If you\'re just starting out, the free plan allows you to send up to 100 emails each day without entering your credit card details.', 'post-smtp' ),
+            __( 'Let’s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mailersend-with-post-smtp/' ),
+            __( 'MailerSend Documentation', 'post-smtp' )
+        );
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>API Key</label></div>
+            <input type="text" class="ps-mailersend-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILERSEND_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            /**
+             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
+             */
+            sprintf(
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
+                __( 'Create an account at', 'post-smtp' ),
+                esc_url( 'https://app.mailersend.com/' ),
+                esc_attr( 'MailerSend' ),
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+                esc_url( 'https://app.mailersend.com/api-tokens' ),
+                __( 'API Key.', 'post-smtp' )
+            ).'
+        </div>
+        ';
 
         return $html;
 
@@ -1638,12 +1687,13 @@ class Post_SMTP_New_Wizard {
         ) {
 
             if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
-
+				
                 $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
+				
                 $options = get_option( PostmanOptions::POSTMAN_OPTIONS );
                 $_options = $options;
                 $options = $options ? $options : array();
-
+				
                 //for the checkboxes
                 $sanitized['prevent_sender_email_override'] = isset( $sanitized['prevent_sender_email_override'] ) ? 1 : '';
                 $sanitized['prevent_sender_name_override'] = isset( $sanitized['prevent_sender_name_override'] ) ? 1 : '';
@@ -1661,6 +1711,7 @@ class Post_SMTP_New_Wizard {
                 $sanitized[PostmanOptions::SENDGRID_API_KEY] = isset( $sanitized[PostmanOptions::SENDGRID_API_KEY] ) ? $sanitized[PostmanOptions::SENDGRID_API_KEY] : '';
                 $sanitized['sendgrid_region']  = isset( $sanitized['sendgrid_region'] ) ? $sanitized['sendgrid_region'] : '';
                 $sanitized['mandrill_api_key'] = isset( $sanitized['mandrill_api_key'] ) ? $sanitized['mandrill_api_key'] : '';
+                $sanitized[PostmanOptions::MAILERSEND_API_KEY] = isset( $sanitized[PostmanOptions::MAILERSEND_API_KEY] ) ? $sanitized[PostmanOptions::MAILERSEND_API_KEY] : '';
                 $sanitized['elasticemail_api_key'] = isset( $sanitized['elasticemail_api_key'] ) ? $sanitized['elasticemail_api_key'] : '';
                 $sanitized[PostmanOptions::MAILJET_API_KEY] = isset( $sanitized[PostmanOptions::MAILJET_API_KEY] ) ? $sanitized[PostmanOptions::MAILJET_API_KEY] : '';
                 $sanitized[PostmanOptions::MAILJET_SECRET_KEY] = isset( $sanitized[PostmanOptions::MAILJET_SECRET_KEY] ) ? $sanitized[PostmanOptions::MAILJET_SECRET_KEY] : '';
@@ -1670,17 +1721,12 @@ class Post_SMTP_New_Wizard {
                 $sanitized['ses_region'] = isset( $sanitized['ses_region'] ) ? $sanitized['ses_region'] : '';
                 $sanitized['enc_type'] = 'tls';
                 $sanitized['auth_type'] = 'login';
-   
                 foreach( $sanitized as $key => $value ) {
-
                     $options[$key] = $value;
-
                 }
-
+				
                 if( $options == $_options ) {
-
                     $response = true;
-
                 } else {
                     $response = update_option( PostmanOptions::POSTMAN_OPTIONS , $options );
                 }
@@ -1688,7 +1734,6 @@ class Post_SMTP_New_Wizard {
             }
             
         }
-
         //Prevent redirection
         delete_transient( PostmanSession::ACTION );
 
