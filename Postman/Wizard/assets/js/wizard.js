@@ -664,9 +664,21 @@ jQuery( document ).ready(function() {
         var productURL = jQuery( this ).data( 'url' );
         imgSrc = imgSrc.replace( '.png', '-popup.png' );
 
+        console.log(placeholder);
+        // placeholder = "Google Mailer Setup?";
+        if(placeholder == "Amazon SES") {
+            placeholder = 'Amazon SES Mailer?';
+        }
+        if(placeholder == "Zoho") {
+            placeholder = 'Zoho Mailer?';
+        }
+        if(placeholder == "Microsoft 365") {
+            placeholder = 'Microsoft 365 Mailer?';
+        }
+
         jQuery( '.ps-pro-for-img' ).attr( 'src', imgSrc );
         jQuery( '.ps-pro-product-url' ).attr( 'href', productURL );
-        jQuery( '.ps-pro-for' ).text( placeholder );
+        jQuery( '.ps-pro-for' ).html( placeholder );
         jQuery( '.ps-pro-popup-overlay' ).fadeIn();
 
     } );
@@ -677,9 +689,13 @@ jQuery( document ).ready(function() {
             e.preventDefault();
             var data = jQuery('#ps-one-click-data').val();
             var parsedData = JSON.parse(data);
+            console.log(parsedData);
+
+            
+
             jQuery('.ps-pro-for-img').attr('src', parsedData.url);
             jQuery('.ps-pro-product-url').attr('href', parsedData.product_url);
-            jQuery('.ps-pro-for').text(parsedData.transport_name);
+            jQuery('.ps-pro-for').html(parsedData.transport_name);
             jQuery( '.ps-pro-popup-overlay' ).fadeIn();
     
             return;
