@@ -235,7 +235,7 @@ class PostmanMailerSendTransport extends PostmanAbstractModuleTransport implemen
 	/**
 	 * Get Socket's logo
 	 * 
-	 * @since 2.1
+	 * @since 3.3.0
 	 * @version 1.0
 	 */
 	public function getLogoURL() {
@@ -248,7 +248,7 @@ class PostmanMailerSendTransport extends PostmanAbstractModuleTransport implemen
 	/**
 	 * Returns true, to prevent from errors because it's default Module Transport.
 	 * 
-	 * @since 2.1.8
+	 * @since 3.3.0
 	 * @version 1.0
 	 */
 	public function has_granted() {

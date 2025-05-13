@@ -5,7 +5,7 @@ class PostmanMailerSend extends PostmanServiceRequest {
     /**
      * Success Code
      * 
-     * @since 2.4
+     * @since 3.3.0
      * @version 1.0
      */
     private $email_sent_code = 202;
@@ -13,7 +13,7 @@ class PostmanMailerSend extends PostmanServiceRequest {
     /**
      * API Key
      * 
-     * @since 2.4
+     * @since 3.3.0
      * @version 1.0
      */
     private $api_key = '';
@@ -21,7 +21,7 @@ class PostmanMailerSend extends PostmanServiceRequest {
     /**
      * Base URL
      * 
-     * @since 2.4
+     * @since 3.3.0
      * @version 1.0
      */
     private $base_url = 'https://api.mailersend.com/v1/';
@@ -37,20 +37,13 @@ class PostmanMailerSend extends PostmanServiceRequest {
      * constructor PostmanMailerSend
      * 
      * @param $api_key
-     * @since 2.4
+     * @since 3.3.0
      * @version 1.0
      */
     public function __construct( $api_key ) {
 
         $this->api_key = $api_key;
         $this->options = PostmanOptions::getInstance();
-        // $region = $this->options->getMailerSendRegion();
-
-        // if ( 'EU' === $region || apply_filters( 'post_smtp_enable_mailersend_eu', false ) ) {
-            // $this->base_url = 'https://api.mailersend.com/v1/';
-        // }
-
-        // $this->base_url = apply_filters( 'post_smtp_mailersend_base_url', $this->base_url, $region );
         parent::__construct( $this->base_url );
 
     }
@@ -58,7 +51,7 @@ class PostmanMailerSend extends PostmanServiceRequest {
     /**
      * Prepares Header for Request
      * 
-     * @since 2.4
+     * @since 3.3.0
      * @version 1.0
      */
     private function get_headers() {
@@ -74,7 +67,7 @@ class PostmanMailerSend extends PostmanServiceRequest {
      * Sends Email using MailerSend email end point
      * 
      * @param $api_key
-     * @since 2.4
+     * @since 3.3.0
      * @version 1.0
      */
     public function send( $content ) {

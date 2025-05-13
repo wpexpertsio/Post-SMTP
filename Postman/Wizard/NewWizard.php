@@ -961,7 +961,7 @@ class Post_SMTP_New_Wizard {
     /**
      * Render MailerSend Settings
      * 
-     * @since 2.7.0
+     * @since 3.3.0
      * @version 1.0.0
      */
     public function render_mailersend_settings() {
