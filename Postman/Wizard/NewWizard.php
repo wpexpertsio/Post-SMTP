@@ -72,14 +72,9 @@ class Post_SMTP_New_Wizard {
             'smtp2go_api',
         );
         
-        if( !is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' ) ) {
-
-            $this->socket_sequence[] = 'office365_api';
-            $this->socket_sequence[] = 'aws_ses_api';
-            $this->socket_sequence[] = 'zohomail_api';
-
-        }
-
+        $this->socket_sequence[] = 'office365_api';
+        $this->socket_sequence[] = 'aws_ses_api';
+        $this->socket_sequence[] = 'zohomail_api';
         $this->socket_sequence[] = 'smtp';
         $this->socket_sequence[] = 'default';
         
@@ -88,6 +83,9 @@ class Post_SMTP_New_Wizard {
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
         add_action( 'wp_ajax_ps-save-wizard', array( $this, 'save_wizard' ) );
         add_action( 'admin_action_zoho_auth_request', array( $this, 'auth_zoho' ) );
+        add_action( 'wp_ajax_ps_handle_update_extension', array( $this,'ps_handle_update_extension')  );
+        add_action( 'wp_ajax_nopriv_ps_handle_update_extension', array( $this,'ps_handle_update_extension' ) );
+
 
         if( isset( $_GET['wizard'] ) && $_GET['wizard'] == 'legacy' ) {
 
@@ -96,7 +94,6 @@ class Post_SMTP_New_Wizard {
         }
 
         $this->options_array = get_option( PostmanOptions::POSTMAN_OPTIONS );
-        
     }
 
     /**
@@ -216,9 +213,7 @@ class Post_SMTP_New_Wizard {
                                         $row  = 0;
 
                                         $transports = array_merge( array_flip( $this->socket_sequence ), $transports );
-
                                         foreach( $transports as $key => $transport ) {
-
                                             $urls = array(
                                                 'default'           =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.png',
                                                 'smtp'              =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.png',
@@ -244,12 +239,13 @@ class Post_SMTP_New_Wizard {
                                             $transport_name = '';
                                             $is_pro = '';
                                             $product_url = '';
+                                            $class_ajax = '';
+                                            $data_id = '';
 
                                             if( is_object( $transport ) ) {
                                                 
                                                 $url = isset( $urls[$transport->getSlug()] ) ? $urls[$transport->getSlug()] : $transport->getLogoURL();
                                                 $this->sockets[$transport->getSlug()] = $transport->getName();
-
                                                 if( isset( $_GET['socket'] ) && !empty( sanitize_text_field( $_GET['socket'] ) ) && $transport->getSlug() == sanitize_text_field( $_GET['socket'] ) ) {
 
                                                     $checked = 'checked';
@@ -264,37 +260,70 @@ class Post_SMTP_New_Wizard {
                                                 $slug = $transport->getSlug();
                                                 $transport_name = $transport->getName();
 
+                                                // Amazon SES
+                                                if ( $slug === 'aws_ses_api' ) {
+                                                    $class_ajax = 'ps-update-extension';
+                                                    $data_id = 'amazon-ses';
+                                                }
+                                                // Zoho
+                                                if ( $slug === 'zohomail_api' ) {
+                                                    $class_ajax = 'ps-update-extension';
+                                                    $data_id = 'zoho-mail';
+                                                }
+                                                // Office 365
+                                                if ( $slug === 'office365_api' ) {
+                                                    $class_ajax = 'ps-update-extension';
+                                                    $data_id = 'microsoft-365';
+                                                }
+
+
                                             }
                                             else {
-                                                
                                                 $transport_slug = $key;
-
-                                                if( $transport_slug == 'office365_api' ) {
-                                                    
+                                                // Office 365
+                                                if ( $transport_slug === 'office365_api' ) {
                                                     $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.png';
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Microsoft 365';
-                                                    $is_pro = 'ps-pro-extension';
-                                                    $product_url = postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_microsoft&utm_campaign=plugin';
-
+                                                    $class_ajax = 'ps-update-extension';
+                                                    $data_id = 'microsoft-365';
+                                                    $this->sockets[$slug] = $transport_name;
+                                                    if ( !class_exists( 'Post_Smtp_Office365' ) && !post_smtp_has_pro() ) {
+                                                        $is_pro = 'ps-pro-extension';
+                                                        $product_url = postman_is_bfcm()
+                                                            ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024'
+                                                            : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_microsoft&utm_campaign=plugin';
+                                                    }
                                                 }
-                                                if( $transport_slug == 'zohomail_api' ) {
-                                                    
+                                                // Zoho
+                                                if ( $transport_slug === 'zohomail_api' ) {
                                                     $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png';
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Zoho';
-                                                    $is_pro = 'ps-pro-extension';
-                                                    $product_url = postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_zoho&utm_campaign=plugin';
-
+                                                    $class_ajax = 'ps-update-extension';
+                                                    $data_id = 'zoho-mail';
+                                                    $this->sockets[$slug] = $transport_name;
+                                                    if ( !class_exists( 'PostSMTP_ZohoMail' ) && !post_smtp_has_pro() ) {
+                                                        $is_pro = 'ps-pro-extension';
+                                                        $product_url = postman_is_bfcm()
+                                                            ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024'
+                                                            : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_zoho&utm_campaign=plugin';
+                                                    }
                                                 }
-                                                if( !class_exists( 'Post_Smtp_Amazon_Ses' ) && $transport_slug == 'aws_ses_api' ) {
-                                                    
+                                                // Amazon SES
+                                                if ( $transport_slug === 'aws_ses_api' ) {
                                                     $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png';
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Amazon SES';
-                                                    $is_pro = 'ps-pro-extension';
-                                                    $product_url = postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_amazonses&utm_campaign=plugin';
-
+                                                    $class_ajax = 'ps-update-extension';
+                                                    $data_id = 'amazon-ses';
+                                                    $this->sockets[$slug] = $transport_name;
+                                                    if ( !class_exists( 'Post_Smtp_Amazon_Ses' ) && !post_smtp_has_pro() ) {     
+                                                        $is_pro = 'ps-pro-extension';
+                                                        $product_url = postman_is_bfcm()
+                                                            ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024'
+                                                            : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_amazonses&utm_campaign=plugin';
+                                                    }
                                                 }
 
                                             }
@@ -310,10 +339,9 @@ class Post_SMTP_New_Wizard {
 
 
                                             }
-
                                             ?>
                                             <div class="ps-wizard-socket-radio-outer">
-                                                <div class="ps-wizard-socket-radio <?php echo !empty( $is_pro ) ? esc_attr( $is_pro ) . '-outer' : ''; ?>" <?php echo !empty( $is_pro ) ? 'data-url="' . esc_url( $product_url ) . '"' : ''; ?>>
+                                                <div class="ps-wizard-socket-radio <?php echo !empty( $class_ajax ) ? esc_attr( $class_ajax )  : '' ; ?> <?php echo !empty( $is_pro ) ? esc_attr( $is_pro ) . '-outer' : ''; ?>" <?php echo !empty( $is_pro ) ? 'data-url="' . esc_url( $product_url ) . '"' : ''; ?> <?php echo !empty( $data_id ) ? 'data-id="' . esc_attr( $data_id ) . '"' : '' ; ?> >
                                                     <?php if( !empty( $is_pro ) ): ?>
                                                         <span class="<?php echo $is_pro . '-tag' ?>">PRO</span>
                                                     <?php endif; ?>
@@ -355,9 +383,8 @@ class Post_SMTP_New_Wizard {
                                             $this->render_name_email_settings();
 
                                             foreach( $this->sockets as $key => $title ) {
-
+                                   
                                                 $active_socket = ( isset( $_GET['socket'] ) && $_GET['socket'] == $key ) ? 'style="display: block;"' : '';
-
                                                 ?>
                                                 <div class="ps-form-ui ps-wizard-socket <?php echo esc_attr( $key ); ?>" <?php echo $active_socket; ?>>
                                                     <h3><?php echo $title == 'Default' ? '' : esc_attr( $title ); ?></h3>
@@ -548,7 +575,7 @@ class Post_SMTP_New_Wizard {
         }
 
         wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), POST_SMTP_VER );
-        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), POST_SMTP_VER );
+        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), '1.2.6' );
         wp_localize_script( 'post-smtp-wizard', 'PostSMTPWizard', $localized );
 
     }
@@ -1338,9 +1365,9 @@ class Post_SMTP_New_Wizard {
      */
     public function render_amazonses_settings() {
 
-        $access_key_id = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ] ) ? base64_decode( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ] ) : '';
-        $access_key_secret = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ] ) ? base64_decode( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ] ) : '';
-        $region = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] ) ? $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] : '';
+        $access_key_id = isset( $this->options_array[ 'ses_access_key_id' ] ) ? base64_decode( $this->options_array[ 'ses_access_key_id' ] ) : '';
+        $access_key_secret = isset( $this->options_array[ 'ses_secret_access_key' ] ) ? base64_decode( $this->options_array[ 'ses_secret_access_key' ] ) : '';
+        $region = isset( $this->options_array[ 'ses_region' ] ) ? $this->options_array[ 'ses_region' ] : '';
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">Amazon Simple Email Service (Amazon SES)</a> %2$s</p><p>%3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a>',
@@ -1355,12 +1382,12 @@ class Post_SMTP_New_Wizard {
         $html .= '
         <div class="ps-form-control">
             <div><label>Access Key ID</label></div>
-            <input type="text" class="ps-amazon-key-id" required data-error="'.__( 'Please enter Access Key ID', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ) .']" value="'.$access_key_id.'" placeholder="Access Key ID"></div>';
+            <input type="text" class="ps-amazon-key-id" required data-error="'.__( 'Please enter Access Key ID', 'post-smtp' ).'" name="postman_options['. esc_attr( 'ses_access_key_id' ) .']" value="'.$access_key_id.'" placeholder="Access Key ID"></div>';
 
         $html .= '
         <div class="ps-form-control">
             <div><label>Access Key Secret</label></div>
-            <input type="text" class="ps-amazon-key-secret" required data-error="'.__( 'Please enter Access Key Secret', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ) .']" value="'.$access_key_secret.'" placeholder="Access Key Secret">'.
+            <input type="text" class="ps-amazon-key-secret" required data-error="'.__( 'Please enter Access Key Secret', 'post-smtp' ).'" name="postman_options['. esc_attr( 'ses_secret_access_key' ) .']" value="'.$access_key_secret.'" placeholder="Access Key Secret">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1380,7 +1407,7 @@ class Post_SMTP_New_Wizard {
         $html .= '
         <div class="ps-form-control">
             <div><label>SES Region</label></div>
-            <input type="text" class="ps-amazon-region" required data-error="'.__( 'Please enter SES Region', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ) .']" value="'.$region.'" placeholder="SES Region"></div>
+            <input type="text" class="ps-amazon-region" required data-error="'.__( 'Please enter SES Region', 'post-smtp' ).'" name="postman_options['. esc_attr( 'ses_region' ) .']" value="'.$region.'" placeholder="SES Region"></div>
         ';
 
         return $html;
@@ -1493,10 +1520,10 @@ class Post_SMTP_New_Wizard {
             'com.au'    => __( 'Australia (AU)', 'postsmtp-zoho' ),
             'jp'        => __( 'Japan (JP)', 'postsmtp-zoho' ),
         );
-        $selected_region = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ]: '';
+        $selected_region = isset( $this->options_array[ 'zohomail_region' ] ) ? $this->options_array['zohomail_region' ]: '';
         
-        $client_id = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] : '';
-        $client_secret = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) ? base64_decode( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) : '';
+        $client_id = isset( $this->options_array[ 'zohomail_client_id' ] ) ? $this->options_array[ 'zohomail_client_id' ] : '';
+        $client_secret = isset( $this->options_array[ 'zohomail_client_secret' ] ) ? base64_decode( $this->options_array[ 'zohomail_client_secret' ] ) : '';
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
         $html = '
@@ -1536,14 +1563,14 @@ class Post_SMTP_New_Wizard {
         $html .= '
         <div class="ps-form-control">
             <div><label>Client ID</label></div>
-            <input type="text" class="ps-zoho-client-id" required data-error="'.__( 'Please enter Client ID.', 'post-smtp' ).'" name="postman_options['. esc_attr( ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ) .']" value="'.$client_id.'" placeholder="Client ID">
+            <input type="text" class="ps-zoho-client-id" required data-error="'.__( 'Please enter Client ID.', 'post-smtp' ).'" name="postman_options['. esc_attr( 'zohomail_client_id' ) .']" value="'.$client_id.'" placeholder="Client ID">
         </div>
         ';
 
         $html .= '
         <div class="ps-form-control">
             <div><label>Client Secret</label></div>
-            <input type="text" class="ps-zoho-client-secret" required data-error="'.__( 'Please enter Client Secret.', 'post-smtp' ).'" name="postman_options['. esc_attr( ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ) .']" value="'.$client_secret.'" placeholder="Client Secret">
+            <input type="text" class="ps-zoho-client-secret" required data-error="'.__( 'Please enter Client Secret.', 'post-smtp' ).'" name="postman_options['. esc_attr( 'zohomail_client_secret' ) .']" value="'.$client_secret.'" placeholder="Client Secret">
             <div class="ps-form-control-info">
             '.sprintf(
                 '%1$s <a href="%2$s" target="_blank">%3$s</a>',
@@ -1722,6 +1749,38 @@ class Post_SMTP_New_Wizard {
 
         wp_redirect( $redirect_url );
 
+    }
+
+    /**
+     * Handle AJAX request to update a Post SMTP extension.
+     *
+     * This function processes both authenticated (wp_ajax_) and unauthenticated (wp_ajax_nopriv_) AJAX requests.
+     * It receives a `data_id` via POST and performs actions like activating, downloading, or updating the corresponding extension.
+     *
+     * @since 3.4.0
+     *
+     * @return void Outputs a JSON success response with a message.
+     */
+    public function ps_handle_update_extension() {
+        $data_id = isset( $_POST['data_id'] ) ? sanitize_text_field( $_POST['data_id'] ) : '';
+        // Proceed only if Pro plugin is installed
+        if ( ! function_exists( 'post_smtp_has_pro' ) || ! post_smtp_has_pro() ) {
+            wp_send_json_error( [
+                'message' => 'Post SMTP Pro is not active.',
+            ] );
+        }
+        $pro_options = get_option( 'post_smtp_pro', [] );
+        if ( ! is_array( $pro_options ) ) {
+            $pro_options = [];
+        }
+        if ( ! isset( $pro_options['extensions'] ) || ! is_array( $pro_options['extensions'] ) ) {
+            $pro_options['extensions'] = [];
+        }
+        $pro_options['extensions'] = [ $data_id ];
+        update_option( 'post_smtp_pro', $pro_options );
+        wp_send_json_success( [
+            'message' => 'Extension "' . $data_id . '" updated successfully!',
+        ] );
     }
 
 }

@@ -543,4 +543,22 @@ jQuery( document ).ready(function() {
 
     });
 
+    jQuery( '.ps-update-extension' ).click( function(e) {
+        var dataId = jQuery(this).data('id');
+        jQuery.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'ps_handle_update_extension',
+                data_id: dataId
+            },
+            success: function(response) {
+            },
+            error: function(xhr) {
+                console.log('Error:', xhr.responseText);
+            }
+        });
+
+    });
+
 } );
