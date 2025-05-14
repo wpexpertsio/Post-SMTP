@@ -223,3 +223,35 @@ function post_setupPostman() {
 	$kevinCostner = new Postman( __FILE__, POST_SMTP_VER );
 	do_action( 'post_smtp_init');
 }
+
+
+register_activation_hook( __FILE__, 'post_smtp_activation_redirect' );
+
+/**
+ * Sets a transient to trigger redirect after plugin activation.
+ * Avoids running on network admin or CLI.
+ */
+function post_smtp_activation_redirect() {
+	if ( ! is_network_admin() && ! defined( 'WP_CLI' ) ) {
+		set_transient( '_post_smtp_do_activation_redirect', true, 30 );
+	}
+}
+
+// Hook into admin_init to check transient and perform redirect.
+add_action( 'admin_init', 'post_smtp_redirect_to_dashboard' );
+
+/**
+ * Redirects user to the Post SMTP dashboard page on plugin activation.
+ * Prevents redirect on multisite network admin or bulk activations.
+ */
+function post_smtp_redirect_to_dashboard() {
+	if ( get_transient( '_post_smtp_do_activation_redirect' ) ) {
+		delete_transient( '_post_smtp_do_activation_redirect' );
+
+		if ( is_network_admin() || isset( $_GET['activate-multi'] ) ) {
+			return;
+		}
+		wp_safe_redirect( admin_url( 'admin.php?page=postman' ) );
+		exit;
+	}
+}
