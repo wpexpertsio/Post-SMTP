@@ -565,7 +565,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 
 		echo '<div id="ps-gmail-auth-buttons" ' . $hide_style . '>';
 
-		if ( ! empty( $postman_auth_token ) ) {
+		if ( ! empty( $postman_auth_token ) && isset( $postman_auth_token['user_email'] ) ) {
 			// Show the "Remove Authorization" button if token exists
 			echo '<a href="' . esc_url( $remove_auth_url ) . '" class="button button-secondary ps-remove-gmail-btn ps-disable-gmail-setup">';
 			echo esc_html__( 'Remove Authorization', 'post-smtp' );

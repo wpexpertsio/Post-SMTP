@@ -869,7 +869,7 @@ public function render_gmail_settings() {
     $html .= '</div>';
     $html .= '<div class="ps-disable-gmail-setup ' . ( $gmail_oneclick_enabled ? '' : 'ps-hidden' ) . '">';
     if ( post_smtp_has_pro() ) {
-        if ( $postman_auth_token ) {
+        if ( $postman_auth_token && isset( $postman_auth_token['user_email'] ) ) {
             $nonce = wp_create_nonce( 'remove_oauth_action' );
             $action_url = esc_url( add_query_arg(
                 [

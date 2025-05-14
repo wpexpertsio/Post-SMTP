@@ -401,9 +401,6 @@ class PostmanNotify {
 
 		<div class="ps-notify-radios">
 			<?php
-
-				
-
 			foreach ( $options as $key => $value ) {
 				$checked = $currentKey == $key ? 'checked' : '';
 				?>
@@ -423,7 +420,7 @@ class PostmanNotify {
 
 			}
 
-			if ( ! class_exists( 'PostSMTPTwilio' ) ) {
+			if ( ! class_exists( 'PostSMTPTwilio' )  && ! post_smtp_has_pro() ) {
 				?>
 				<a href="https://postmansmtp.com/extensions/twilio-extension-pro/" target="_blank">
 					<div class="ps-notify-radio-outer">
@@ -438,7 +435,37 @@ class PostmanNotify {
 				</a>
 				<?php
 			}
-			if (isset( $options ) && ! array_key_exists( 'microsoft-teams', $options ) ) {
+		
+			if ( ! class_exists( 'PostSMTPTwilio' ) && post_smtp_has_pro() ) {
+				?>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=post-smtp-pro' ) ); ?>" target="_blank">
+					<div class="ps-notify-radio-outer">
+						<div class="ps-notify-radio pro-container">
+							<label for="ps-notify-twilio-pro">
+								<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/twilio.png' ); ?>" />
+							</label>
+						</div>
+						<h4>Twilio(SMS)</h4>
+					</div>
+				</a>
+				<?php
+			}
+			
+			if ( ! array_key_exists( 'microsoft-teams', $options ) && post_smtp_has_pro() ) {
+				?>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=post-smtp-pro' ) ); ?>" target="_blank">
+					<div class="ps-notify-radio-outer">
+						<div class="ps-notify-radio pro-container">
+							<label for="ps-notify-teams-pro">
+								<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/microsoft-teams.png' ); ?>" />
+							</label>
+						</div>
+						<h4>Teams</h4>
+					</div>
+				</a>
+				<?php
+			}
+			if ( ! array_key_exists( 'microsoft-teams', $options ) && ! post_smtp_has_pro() ) {
 				?>
 				<a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=ms_teams_notification_settings&utm_campaign=plugin" target="_blank">
 					<div class="ps-notify-radio-outer">
