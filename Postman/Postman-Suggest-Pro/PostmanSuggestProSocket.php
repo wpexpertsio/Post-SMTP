@@ -280,9 +280,9 @@ class PostmanSuggestProSocket {
                 'description'   => __( 'View and resend any email attachment right from you email log screen to streamline email communication.', 'post-smtp-pro' )
             ),
             array(
-                'logo' => $images_url . 'logos/email-log-attachments.png',
-                'title' => esc_html__( 'Email Delivery and Logs', 'post-smtp' ),
-                'description' => esc_html__( 'Send emails from the back-end, manage your email quota, retry failed emails, and delete log history to optimize email delivery.', 'post-smtp' ),
+                'logo' => $images_url . 'logos/advance-logs-filter.svg',
+                'title' => esc_html__( 'Advance Logs\' Filter', 'post-smtp-pro' ),
+                'description' => esc_html__( 'Get more advance logs filter with all technical details', 'post-smtp' ),
             ),
             array(
                 'logo' => $images_url . 'logos/report-tracking.png',
@@ -397,7 +397,7 @@ class PostmanSuggestProSocket {
                         <div class="post-smtp-socket-wrapper post-smtp-fl post-smtp-disabled">
 
                             <div class="post-smtp-p-20">
-                                <img src="<?php echo esc_attr( $socket['logo'] ); ?>" alt="<?php echo esc_attr( $socket['title'] ); ?>" />
+                                <img style="width: 50px;" src="<?php echo esc_attr( $socket['logo'] ); ?>" alt="<?php echo esc_attr( $socket['title'] ); ?>" />
 
                                 <h2 class="post-smtp-h2">
                                     <?php echo esc_attr( $socket['title'] ); ?>
