@@ -187,6 +187,8 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$options = PostmanOptions::getInstance();
 			$authorizationToken = PostmanOAuthToken::getInstance();
 			$existing_db_version = get_option( 'postman_db_version' );
+			$pro_options = get_option( 'post_smtp_pro', [] );
+			$bonus_extensions = isset( $pro_options['bonus_extensions'] ) ? $pro_options['bonus_extensions'] : [];
 
 			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
 				// get the transport and create the transportConfig and engine.
@@ -195,8 +197,8 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				// get primaryconnection and Config and engine.
 				$transport_registry = PostmanTransportRegistry::getInstance();
 				$transport = $transport_registry->getPrimaryConnection();
-
 				if ( is_array( $bonus_extensions ) && in_array( 'smart-routing', $bonus_extensions, true ) ) {
+				
 					/**
 					 * Allows modification of the primary transport in the else condition.
 					 *
@@ -376,6 +378,8 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 			$transport_registry = PostmanTransportRegistry::getInstance();
 			$transport = $transport_registry->getFallbackConnection();
+			$pro_options = get_option( 'post_smtp_pro', [] );
+			$bonus_extensions = isset( $pro_options['bonus_extensions'] ) ? $pro_options['bonus_extensions'] : [];
 		
 			if ( is_array( $bonus_extensions ) && in_array( 'smart-routing', $bonus_extensions, true ) ) {
 				/**

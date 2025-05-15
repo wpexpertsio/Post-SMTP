@@ -131,13 +131,6 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 					PostmanSession::getInstance()->setAction( self::VALIDATION_FAILED );
 				}
 
-		//	}else{
-			if( $postman_db_version == POST_SMTP_DB_VERSION ){
-			//	update_option( 'postman_connections', $_REQUEST['postman_connections'] );
-			}
-		//		return true;
-		//	}
-
 			return $new_input;
 		}
 

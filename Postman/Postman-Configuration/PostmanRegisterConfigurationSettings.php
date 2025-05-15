@@ -478,7 +478,7 @@ class PostmanSettingsRegistry {
 	 */
 	public function manage_connections_section_callback() {
 		$wizard_uri = admin_url( 'admin.php?page=postman/configuration_wizard' );
-		echo '<div style="margin-top: -36px;margin-left: 200px;" > <a style="color: #2271B1; font-weight:bold; font-size:10px" href="' . esc_url( $wizard_uri ) . '">' . esc_html__( 'Add New Connection', 'post-smtp' ) . '</a></div>';
+		echo '<div style="margin-top: -36px;margin-left: 200px;" > <a style="color: #2271B1; font-weight:bold; font-size:12px" href="' . esc_url( $wizard_uri ) . '">' . esc_html__( 'Add New Connection', 'post-smtp' ) . '</a></div>';
 		echo '<p>' . esc_html__( 'You can select the primary connection and manage additional connections from here.', 'post-smtp' ) . '</p>';
 	}
 

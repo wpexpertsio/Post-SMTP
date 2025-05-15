@@ -352,6 +352,8 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		 * This function handle the request to purge plugin data
 		 */
 		public function handlePurgeDataAction() {
+			$postman_options = [];
+            $postman_options['primary_connection'] = 0;
 			$this->logger->debug( 'is wpnonce purge-data?' );
 			if ( wp_verify_nonce( $_REQUEST ['_wpnonce'], PostmanAdminController::PURGE_DATA_SLUG ) ) {
 				
@@ -363,9 +365,13 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				do_action( 'post_smtp_before_reset_plugin' );
 				
 				$this->logger->debug( 'Purging stored data' );
+				delete_option( 'postman_connections' );
+				delete_option( 'ps_smart_routing' );
+				delete_option( 'ps_smart_routing_enable' );
 				delete_option( PostmanOptions::POSTMAN_OPTIONS );
 				delete_option( PostmanOAuthToken::OPTIONS_NAME );
 				delete_option( PostmanAdminController::TEST_OPTIONS );
+                update_option( 'postman_options' , $postman_options );
 
 				//delete logs as well
 				if( !isset( $_REQUEST['ps_preserve_email_logs'] ) ) {
