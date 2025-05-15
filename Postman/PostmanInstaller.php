@@ -83,7 +83,7 @@ class PostmanInstaller {
 			}
 		}
 
-		if ( function_exists( 'is_multisite' ) && is_multisite() ) {
+		if ( is_multisite() && is_network_admin() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) ) {
 			
 			$network_options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS );
 
@@ -120,7 +120,7 @@ class PostmanInstaller {
 	 * Handle deactivation of the plugin
 	 */
 	public function deactivatePostman() {
-		if ( function_exists( 'is_multisite' ) && is_multisite() ) {
+		if ( is_multisite() && is_network_admin() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) ) {
 			// handle network deactivation
 			// from https://wordpress.org/support/topic/new-function-wp_get_sites?replies=11
 			// run the deactivation function for each blog id
