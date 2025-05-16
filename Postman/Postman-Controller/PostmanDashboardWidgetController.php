@@ -267,6 +267,19 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 								</p>
 							</div>
 						</div>
+						<?php } else if ( ! class_exists( 'Post_SMTP_Report_And_Tracking' ) ) { ?>
+						<div class="post-smtp-dash-widget-chart-upgrade">
+							<div class="post-smtp-dash-widget-modal">
+								<?php $extension_page_url = '<a href="'.PostmanUtils::getPageUrl ( 'post-smtp-pro' ).'" target="_blank" rel="noopener noreferrer">Reporting and Tracking</a>' ?>
+								<p>
+									<?php printf(
+										/* translators: %s is the link text */
+										esc_html__( 'Activate %s Extension to get Graphs Insights', 'post-smtp' ),
+										$extension_page_url
+									); ?>
+								</p>
+							</div>
+						</div>
 						<?php } ?>
 						<div class="post-smtp-dash-widget-overlay"></div>
 					</div>
