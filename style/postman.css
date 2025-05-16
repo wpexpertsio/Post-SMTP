@@ -1635,3 +1635,92 @@ div#ps-email-log_length{
 .post-smtp-webhook-urls input {
     width: 400px;
 }
+
+.post_smtp_diagnostic_container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post_smtp_diagnostic_container h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+#post_smtp_diagnostic_form .form-group {
+    margin-bottom: 15px;
+}
+
+#post_smtp_diagnostic_form .form-group label {
+    display: block;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+#post_smtp_diagnostic_form .form-group input[type="text"], #post_smtp_diagnostic_form .form-group input[type="email"], #post_smtp_diagnostic_form .form-group select {
+    width: 100%;
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+#post_smtp_diagnostic_form .form-group .post-smtp-diagnostic-submit-btn {
+    background-color: #2271b1;
+    color: white;
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#post_smtp_diagnostic_form .form-group .post-smtp-diagnostic-submit-btn:hover {
+    background-color: #1a5a8f;
+}
+.report_sent_message{
+    display: none;
+    color: green;
+}
+.report_validation_error{
+    display: none;
+    color: red;
+}
+h3.diagnostic-report-heading {
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+.copy_diagnostic_report{
+    background-color: #2271b1;
+    color: white;
+    padding: 5px 10px;
+    font-size: 14px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-left: 5px;
+    font-weight: normal;
+}
+.copy_diagnostic_report:disabled{
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+}
+.post-smtp-diagnostic-submit-btn:disabled{
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+}
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 25px 0; /* Space between divs */
+}
+@media (min-width: 800px) {
+    #post_smtp_diagnostic_form .form-group input[type="text"], #post_smtp_diagnostic_form .form-group input[type="email"], #post_smtp_diagnostic_form .form-group select {
+        width: 30%;
+    }
+}

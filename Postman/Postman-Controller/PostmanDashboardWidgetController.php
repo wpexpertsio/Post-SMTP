@@ -60,7 +60,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		/**
 		 * Save a widget meta for a current user using AJAX.
 		 *
-		 * @since 2.9.0
+		 * @since 1.4.0
 		 */
 		public function post_smtp_save_widget_meta_ajax() {
 
@@ -81,7 +81,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		/**
 		 * Get/set a widget meta.
 		 *
-		 * @since 2.9.0
+		 * @since 1.4.0
 		 *
 		 * @param string $action Possible value: 'get' or 'set'.
 		 * @param string $meta   Meta name.
@@ -118,7 +118,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		/**
 		 * Get the widget meta value.
 		 *
-		 * @since 3.9.0
+		 * @since 1.4.0
 		 *
 		 * @param string $meta Meta name.
 		 *
@@ -148,7 +148,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		/**
 		 * Retrieve the meta key.
 		 *
-		 * @since 3.9.0
+		 * @since 1.4.0
 		 *
 		 * @param string $meta Meta name.
 		 *
@@ -163,15 +163,17 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		 * Add a widget to the dashboard.
 		 *
 		 * This function is hooked into the 'wp_dashboard_setup' action below.
+		 * 
+		 * @since 1.4.0
 		 */
 		public function dasboardWidgetsScripts( $hook ) {
 			if ( 'index.php' === $hook ) {
-				// Enqueue Chart.js (with the built-in Luxon adapter)
-				wp_enqueue_script( 'chart-js', 'https://cdn.jsdelivr.net/npm/chart.js@3.x.x', array(), '3.x.x', true );
+				// Enqueue Chart.js (with the built-in Luxon adapter).
+				wp_enqueue_script( 'chart-js', POST_SMTP_URL . '/Postman/Postman-Controller/assets/js/chart.min.js', array(), '', true );
 
-				// Enqueue Moment.js Adapter (chartjs-adapter-moment)
-				wp_enqueue_script( 'moment-js', 'https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0', array( 'chart-js' ), '1.0.0', true );
-				// Enqueue your custom script that depends on both Chart.js and Luxon
+				// Enqueue Moment.js Adapter (chartjs-adapter-moment).
+				wp_enqueue_script( 'moment-js', POST_SMTP_URL . '/Postman/Postman-Controller/assets/js/moment.min.js', array( 'chart-js' ), '1.0.0', true );
+				// Enqueue your custom script that depends on both Chart.js and Luxon.
 				wp_enqueue_script( 'post-smtp-wp-dashboard-widget', POST_SMTP_URL . '/Postman/Postman-Controller/assets/js/post-smtp-wp-dashboard.js', array( 'jquery', 'chart-js', 'moment-js' ), POST_SMTP_VER, true );
 				wp_localize_script(
 					'post-smtp-wp-dashboard-widget',
@@ -199,10 +201,8 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 						$this,
 						'printDashboardWidget' 
 				) ); // Display function.
-				$has_post_smtp_pro  = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
-				$has_post_smtp_pro  = in_array( 'post-smtp-pro/post-smtp-pro.php', $has_post_smtp_pro, true )
-					? true : false;
-				if ( ! $has_post_smtp_pro ) {
+
+				if ( ! post_smtp_has_pro() ) {
 					$widget_key = 'post_smtp_reports_widget_lite';
 				} else {
 					$widget_key = 'post_smtp_reports_widget';
@@ -244,17 +244,16 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		
 		/**
 		 * Create the function to output the contents of our Dashboard Widget.
+		 * 
+		 * @since 1.4.0
 		 */
 		public function printStatsDashboardWidget() {
-			$has_post_smtp_pro  = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
-			$has_post_smtp_pro  = in_array( 'post-smtp-pro/post-smtp-pro.php', $has_post_smtp_pro, true )
-				? true : false;
 			?>
 			<div class="post-smtp-dash-widget post-smtp-dash-widget--lite">
 				<div class="post-smtp-dash-widget-chart-block-container">
 					<div class="post-smtp-dash-widget-block post-smtp-dash-widget-chart-block">
 						<canvas id="post-smtp-dash-widget-chart" width="554" height="291"></canvas>
-						<?php if ( ! $has_post_smtp_pro ) { ?>
+						<?php if ( ! post_smtp_has_pro() ) { ?>
 						<div class="post-smtp-dash-widget-chart-upgrade">
 							<div class="post-smtp-dash-widget-modal">
 								<a href="#" class="post-smtp-dash-widget-dismiss-chart-upgrade">
@@ -315,7 +314,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		/**
 		 * Email types select HTML.
 		 *
-		 * @since 2.9.0
+		 * @since 1.4.0
 		 */
 		private function emailTypesSelectHtml( $has_post_smtp_pro ) {
 
@@ -346,7 +345,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		/**
 		 * Email types select HTML.
 		 *
-		 * @since 2.9.0
+		 * @since 1.4.0
 		 */
 		private function viewFullEmailLogs() {
 			$goToEmailLog = sprintf ( '%s', _x ( 'View Full Log', 'The log of Emails that have been delivered', 'post-smtp' ) );
@@ -359,7 +358,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		/**
 		 * Timespan select HTML.
 		 *
-		 * @since 2.9.0
+		 * @since 1.4.0
 		 */
 		private function TimespanSelectHtml( $has_post_smtp_pro ) {
 			// Check if Post SMTP Pro is available, disable options if not
@@ -383,7 +382,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		/**
 		 * Widget settings HTML.
 		 *
-		 * @since 2.9.0
+		 * @since 1.4.0
 		 */
 		private function widgetSettingsHtml( $has_post_smtp_pro ) {
 			
@@ -424,7 +423,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		/**
 		 * Email statistics block.
 		 *
-		 * @since 2.9.0
+		 * @since 1.4.0
 		 */
 		private function emailStatsBlock( $has_post_smtp_pro ) {
 			
@@ -462,14 +461,14 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 					)
 				);
 			}
-			// Loop through logs to count sent and failed emails
+			// Loop through logs to count sent and failed emails.
 			foreach( $logs as $log ) {
 				if (isset($log->success)) {
-					// Check if success is a truthy value (e.g., 1 for success)
+					// Check if success is a truthy value (e.g., 1 for success).
 					if ($log->success == 1) {
 						$sent_count++;
 					} else {
-						// If success contains an error message or a falsy value, consider it failed
+						// If success contains an error message or a falsy value, consider it failed.
 						$failed_count++;
 					}
 				}
@@ -479,19 +478,19 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 			$output_data['sent_emails'] = array(
 				'type'  => 'sent',
 				'icon'  => esc_url( POST_SMTP_URL . "/Postman/Postman-Controller/assets/images/sent.svg" ),
-				'title' => 'Sent '. $sent_count, // Show the actual count of sent emails
+				'title' => 'Sent '. $sent_count, // Show the actual count of sent emails.
 			);
 
 			$output_data['failed_emails'] = array(
 				'type'  => 'failed',
 				'icon'  => esc_url( POST_SMTP_URL . "/Postman/Postman-Controller/assets/images/failed.svg" ),
-				'title' => 'Failed '. $failed_count, // Show the actual count of failed emails
+				'title' => 'Failed '. $failed_count, // Show the actual count of failed emails.
 			);
 			if ( $has_post_smtp_pro ){
 				$output_data['opened_emails'] = array(
 					'type'  => 'opened',
 					'icon'  => esc_url( POST_SMTP_URL . "/Postman/Postman-Controller/assets/images/opend.svg" ),
-					'title' => 'Opened '. $opened_count, // Show the actual count of failed emails
+					'title' => 'Opened '. $opened_count, // Show the actual count of failed emails.
 				);
 			}
 			?>
@@ -513,11 +512,6 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 							continue;
 						}
 
-						// Make some exceptions for mailers without send confirmation functionality.
-						// if ( Helpers::mailer_without_send_confirmation() ) {
-							// $per_row = 3;
-						// }
-						// $per_row = 3;
 						// Create new row after every $per_row cells.
 						if ( $count !== 0 && $count % $per_row === 0 ) {
 							echo '</tr><tr>';
