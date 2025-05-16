@@ -273,19 +273,19 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 				</div>
 				<div class="post-smtp-dash-widget-block post-smtp-dash-widget-block-settings">
 					<div>
-						<?php $this->emailTypesSelectHtml( $has_post_smtp_pro ); ?>
+						<?php $this->emailTypesSelectHtml(); ?>
 						<?php $this->viewFullEmailLogs(); ?>
 					</div>
 					<div>
 						<?php
-							$this->TimespanSelectHtml( $has_post_smtp_pro );
-							$this->widgetSettingsHtml( $has_post_smtp_pro );
+							$this->TimespanSelectHtml();
+							$this->widgetSettingsHtml();
 						?>
 					</div>
 				</div>
 
 				<div id="post-smtp-dash-widget-email-stats-block" class="post-smtp-dash-widget-block post-smtp-dash-widget-email-stats-block">
-					<?php $this->emailStatsBlock( $has_post_smtp_pro ); ?>
+					<?php $this->emailStatsBlock(); ?>
 				</div>
 				<div id="post-smtp-dash-widget-upgrade-footer" class="post-smtp-dash-widget-block post-smtp-dash-widget-upgrade-footer post-smtp-dash-widget-upgrade-footer--">
 					<p>
@@ -316,13 +316,13 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		 *
 		 * @since 1.4.0
 		 */
-		private function emailTypesSelectHtml( $has_post_smtp_pro ) {
+		private function emailTypesSelectHtml() {
 
 			$options = array(
 				'sent_emails'   => esc_html__( 'Sent Emails', 'post-smtp' ),
 				'failed_emails' => esc_html__( 'Failed Emails', 'post-smtp' ),
 			);
-			if ( ! $has_post_smtp_pro ) {
+			if ( ! post_smtp_has_pro() ) {
 				$disabled = 'disabled';
 			} else {
 				$disabled = '';
@@ -360,13 +360,13 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		 *
 		 * @since 1.4.0
 		 */
-		private function TimespanSelectHtml( $has_post_smtp_pro ) {
+		private function TimespanSelectHtml() {
 			// Check if Post SMTP Pro is available, disable options if not
-			$disabled = $has_post_smtp_pro ? '' : 'disabled';
+			$disabled = post_smtp_has_pro() ? '' : 'disabled';
 			?>
 			<select id="post-smtp-dash-widget-timespan" class="post-smtp-dash-widget-select-timespan" title="<?php esc_attr_e( 'Select timespan', 'post-smtp' ); ?>">
 				<?php 
-					if ( ! $has_post_smtp_pro ) { ?>
+					if ( ! post_smtp_has_pro() ) { ?>
 						<option value=""><?php esc_html_e( 'Select a timespan', 'post-smtp' ); ?></option>
 					<?php } 
 					foreach ( [ 7, 14, 30 ] as $option ) : ?>
@@ -384,11 +384,11 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		 *
 		 * @since 1.4.0
 		 */
-		private function widgetSettingsHtml( $has_post_smtp_pro ) {
+		private function widgetSettingsHtml() {
 			
 			$chart_style = $this->post_smtp_get_widget_meta( 'chart_style' );
 
-			if ( ! $has_post_smtp_pro ) {
+			if ( ! post_smtp_has_pro() ) {
 				$disabled = 'disabled';
 			} else {
 				$disabled = '';
@@ -425,7 +425,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		 *
 		 * @since 1.4.0
 		 */
-		private function emailStatsBlock( $has_post_smtp_pro ) {
+		private function emailStatsBlock() {
 			
 			$logs_query = new PostmanEmailQueryLog;
 			$logs = $logs_query->get_logs();
@@ -445,7 +445,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 			$sent_count = 0;
 			$failed_count = 0;
 			
-			if ( $has_post_smtp_pro ){
+			if ( post_smtp_has_pro() ){
 				$opened_count = 0;
 				// $opened_email = new Post_SMTP_New_Dashboard;
 				$current_time  = current_time( 'timestamp' );
@@ -486,7 +486,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 				'icon'  => esc_url( POST_SMTP_URL . "/Postman/Postman-Controller/assets/images/failed.svg" ),
 				'title' => 'Failed '. $failed_count, // Show the actual count of failed emails.
 			);
-			if ( $has_post_smtp_pro ){
+			if ( post_smtp_has_pro() ){
 				$output_data['opened_emails'] = array(
 					'type'  => 'opened',
 					'icon'  => esc_url( POST_SMTP_URL . "/Postman/Postman-Controller/assets/images/opend.svg" ),
@@ -500,7 +500,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 					<?php
 					$count   = 0;
 					$per_row = 3;
-					if ( $has_post_smtp_pro ) {
+					if ( post_smtp_has_pro() ) {
 						$per_row = 4;
 					}
 					foreach ( array_values( $output_data ) as $stats ) :
