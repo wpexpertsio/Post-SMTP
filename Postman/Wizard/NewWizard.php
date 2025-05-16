@@ -891,6 +891,7 @@ public function render_gmail_settings() {
                 $html .= '<a href="' . esc_url( $auth_url ) . '" class="button button-primary ps-gmail-btn">';
                 $html .= esc_html__( 'Sign in with Google', 'post-smtp' );
                 $html .= '</a>';
+                $html .= "<p>By signing in with Google, you can send emails using different 'From' addresses. To do this, disable the 'Force From Email' setting and use your registered aliases as the 'From' address across your WordPress site.</p> <p>Removing the OAuth connection will give you the ability to redo the OAuth connection or link to another Google account.</p>";
         }
     }
 
