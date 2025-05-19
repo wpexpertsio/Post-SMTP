@@ -102,7 +102,7 @@ ps_fs()->add_filter( 'plugin_icon' , 'ps_fs_custom_icon' );
 define( 'POST_SMTP_BASE', __FILE__ );
 define( 'POST_SMTP_PATH', __DIR__ );
 define( 'POST_SMTP_URL', plugins_url('', POST_SMTP_BASE ) );
-define( 'POST_SMTP_VER', '3.2.0' );
+define( 'POST_SMTP_VER', '3.3.0' );
 define( 'POST_SMTP_DB_VERSION', '1.0.1' );
 define( 'POST_SMTP_ASSETS', plugin_dir_url( __FILE__ ) . 'assets/' );
 
