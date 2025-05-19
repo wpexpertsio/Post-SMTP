@@ -52,6 +52,8 @@ Ultimately, the Post SMTP helps you fix all your issues related to [WordPress no
 == ⚡ Features That Make Post SMTP Stand Out ==
 ✅ **Quick Setup Wizard:** Easy-to-use and powerful 3-Step Setup Wizard for quick SMTP configuration.
 
+✅ **SPF, DKIM & DMARC Checks:** Keep an eye on domain’s reputation with out built-in Spam Score Checker that looks at your DNS records..
+
 ✅ **Detailed Email Logs:** Quickly view, filter, and check the status of all your WordPress emails and error messages with a simple click, ensuring your email logs are always up to date.
 
 ✅ **Post SMTP Mobile App [NEW]:** You get an App for monitoring your WordPress emails on the go. You can connect multiple WordPress sites, view detailed email logs, check email errors, and resend them with a single tap directly from your mobile.
@@ -137,6 +139,10 @@ Connect your Zoho mail personal or business account with WordPress via Post SMTP
 
 == ⚡ Added Benefits of Getting Post SMTP Pro ==
 The Post SMTP Pro gives you an edge that makes your WordPress email management and performance reporting a breeze! With Post SMTP Pro, you get the following additional perks:
+
+✅ **Google (Gmail) SMTP One-Click:** Upgrade now for a worry-less Google SMTP integration. Activate Gmail One-Click and let Post SMTP Setup Wizard handle all the API-related technicalities.
+
+✅ **Microsoft Teams Notifications:** You asked and we delivered. Receive up-to-date notifications about your email activities on Microsoft Teams with a simple web-hook.
 
 ✅ **Native SMTP Integration:** If you are a user of Microsoft 365, Amazon SES, or Zoho Mail, then you can securely configure your SMTP account with WordPress using APIs.
 
@@ -272,7 +278,7 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 4. Post New Setup Wizard (Step -03) - Send test email
 5. Detailed Email Logs - View failed and successfully sent emails, resend, preview, and analyze error details
 6. Post SMTP Mobile App Screen - Scan the QR code from the mobile app and connect it to track your WordPress emails.
-7. Post SMTP Settings - Set email failure alerts on Slack, Email, Twilio, and Chrome extension
+7. Post SMTP Settings - Set email failure alerts on Microsoft Teams, Slack, Admin Email, Twilio, and Chrome extension
 
 ## Upgrade Notice ##
 
