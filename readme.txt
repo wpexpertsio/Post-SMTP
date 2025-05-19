@@ -3,7 +3,7 @@ Plugin URI: https://postmansmtp.com/
 Contributors: wpexpertsio
 Tags: smtp, gmail smtp, email,  email logs, office 365
 Requires at least: 5.6.0
-Tested up to: 6.7
+Tested up to: 6.8
 Stable tag: 3.2.0
 Requires PHP: 7.0
 License: GPLv2 or later
@@ -281,7 +281,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
-= 3.2.0 - Mar 10, 2025 =
+= 3.2.0 - May 19, 2025 =
 * NEW - Introducing Email Tester to test your email deliverability.
 * FIX - Removed id duplication in the Wizard.
 
