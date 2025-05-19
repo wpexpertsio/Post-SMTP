@@ -428,6 +428,36 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		$sentBy = sprintf( _x( 'Sent by Postman %s', 'Test Email Tagline', 'post-smtp' ), $pluginData ['version'] );
 		$imageSource = __( 'Image source', 'post-smtp' );
 		$withPermission = __( 'Used with permission', 'post-smtp' );
+		$emailBody = '
+		<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+		<table style="width:470px;margin: 50px auto; color: #7D98B2;font-size: 12px;">
+        <thead>
+            <tr>
+                <th>
+                    <a href="https://postmansmtp.com/"><img style="width: 160px;" src="'.esc_attr( POST_SMTP_ASSETS ).'/images/logos/postman-logo-email.png"/></a>
+                </th>
+            </tr>
+           
+        </thead>
+        <tbody> 
+            <tr>
+                <td style="padding: 0 20px;">Hey there 👋,</td>
+            </tr>
+            <tr>
+               <td style="padding: 0 20px;"><h3 style=" color: #214A72; font-size: 16px; font-weight: 600;">Congrats! Your test email was sent successfully</h3></td>
+            </tr>
+            <tr>
+                <td style="padding: 0 20px;">Thank you for using Post SMTP. Our mission is to enhance you email deliverability.</td>
+            </tr>
+            <tr>
+                <td><img style=" margin: 20px 0;" src="'.esc_attr( POST_SMTP_ASSETS ).'/images/logos/post-man-banner.png"/></td>
+            </tr>
+            <tr>
+                <td style="padding: 0 20px;font-size: 10px;">
+                    This email was sent from your website XXXXXXX to test your email functionality.
+                </td>
+            </tr>
+        </tbod';
 		$messageArray = array(
 			'Content-Type: text/plain; charset = "UTF-8"',
 			'Content-Transfer-Encoding: 8bit',
@@ -451,29 +481,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 			'</head>',
 			'<body class="wporg-notification">',
 			'	<div style="background: #e8f6fe; font-family: &amp; quot; Helvetica Neue&amp;quot; , Helvetica ,Arial,sans-serif; font-size: 14px; color: #666; text-align: center; margin: 0; padding: 0">',
-			'		<table border="0" cellspacing="0" cellpadding="0" bgcolor="#e8f6fe"	style="background: #e8f6fe; width: 100%;">',
-			'			<tbody>',
-			'				<tr>',
-			'					<td>',
-			'						<table border="0" cellspacing="0" cellpadding="0" align="center" style="padding: 0px; width: 100%;"">',
-			'							<tbody>',
-			'								<tr>',
-			'									<td>',
-			'										<div style="max-width: 600px; height: 400px; margin: 0 auto; overflow: hidden;background-image:url(\'https://ps.w.org/postman-smtp/assets/email/poofytoo.png\');background-repeat: no-repeat;">',
-			sprintf( '											<div style="margin:50px 0 0 300px; width:300px; font-size:2em;">%s</div>', $greeting ),
-			sprintf( '											<div style="text-align:right;font-size: 1.4em; color:black;margin:150px 0 0 200px;">%s', $sentBy ),
-			'												<br/>',
-			'											</div>',
-			'										</div>',
-			'									</td>',
-			'								</tr>',
-			'							</tbody>',
-			'						</table>',
-			sprintf( '						<br><span style="font-size:0.9em;color:#94c0dc;">%s: poofytoo - %s</span>', $imageSource, $withPermission ),
-			'					</td>',
-			'				</tr>',
-			'			</tbody>',
-			'		</table>',
+			$emailBody,
 			'</body>',
 			'</html>',
 		);
