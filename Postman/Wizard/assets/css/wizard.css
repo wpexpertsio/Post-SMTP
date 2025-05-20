@@ -62,6 +62,10 @@
   height: 676px;
 }
 
+.mailersend_api-outer .ps-wizard-section .ps-wizard-nav {
+  height: 676px;
+}
+
 .mailgun_api-outer .ps-wizard-section .ps-wizard-nav {
   height: 904px;
 }
@@ -240,6 +244,10 @@
 }
 
 .sendgrid_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
+  height: 608px;
+}
+
+.mailersend_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
   height: 608px;
 }
 
