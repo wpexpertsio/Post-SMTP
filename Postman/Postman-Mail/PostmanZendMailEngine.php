@@ -80,7 +80,29 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 		 */
 		public function send( PostmanMessage $message ) {
 			$this->logger->debug( 'Prepping Zend' );
-			$envelopeFrom = new PostmanEmailAddress( $this->transport->getEnvelopeFromEmailAddress() );
+			$options            = PostmanOptions::getInstance();
+
+			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+				$sender = $this->transport->getFromEmailAddress();
+			} else {
+				$connection_details = get_option( 'postman_connections' );
+				if ( $this->is_fallback == null ) {
+					$route_key = null;
+					$route_key = get_transient( 'post_smtp_smart_routing_route' );
+					if( $route_key != null ){
+						$sender     = $connection_details[ $route_key ]['sender_email'];
+					}else{
+						$primary     = $options->getSelectedPrimary();
+						$sender = $connection_details[ $primary ]['sender_email'];
+					}
+				} else {
+					$fallback    = $options->getSelectedFallback();
+					$sender = $connection_details[ $fallback ]['sender_email'];
+				}
+			}
+
+			$envelopeFrom = new PostmanEmailAddress( $sender );
+
 			if ( $this->transport->isEnvelopeFromValidationSupported() ) {
 				// validate the envelope from since we didn't do it in the Message
 				$envelopeFrom->validate( 'Envelope From' );
@@ -115,7 +137,6 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 	
 			$fromHeader->log( $this->logger, 'From' );
 
-			$sender = $this->transport->getFromEmailAddress();
 
 			/**
 			 * If Sender and From are not same thn ADD Sender, otherwise do not add Sender
@@ -267,11 +288,11 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 				if ( $this->fallback_flag == null ) {
 					$primary = $options->getSelectedPrimary();
 					$senderName   = $connection_details[ $primary ]['sender_name'];
-					$senderEmai   = $connection_details[ $primary ]['sender_email'];
+					$senderEmail   = $connection_details[ $primary ]['sender_email'];
 				} else {
 					$fallback = $options->getSelectedFallback();
 					$senderName   = $connection_details[ $fallback ]['sender_name'];
-					$senderEmai   = $connection_details[ $fallback ]['sender_email'];
+					$senderEmail   = $connection_details[ $fallback ]['sender_email'];
 				}
 			}
 			assert( ! empty( $senderEmail ) );

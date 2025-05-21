@@ -13,6 +13,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	const SLUG = 'smtp';
 	protected $existing_db_version = '';
 	protected $connection_details = '';
+	protected $fallback;
 	public function __construct( $rootPluginFilenameAndPath ) {
 		parent::__construct( $rootPluginFilenameAndPath );
 
@@ -37,6 +38,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$fallback_flag = array(
 		 'is_fallback' => null,
 		);
+		$this->fallback = null;
 		require_once 'PostmanZendMailEngine.php';
 		return new PostmanZendMailEngine ( $this , $fallback_flag );
 	}
@@ -50,6 +52,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$fallback_flag = array(
             'is_fallback' => 1,
         );
+		$this->fallback = 1;
 		require_once 'PostmanZendMailEngine.php';
 		return new PostmanZendMailEngine ( $this , $fallback_flag );
 	}
@@ -83,6 +86,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	public function getName() {
 		return 'Other SMTP';
 	}
+	
 	public function getHostname() {
 		$route_key = null;
     	$route_key = get_transient( 'post_smtp_smart_routing_route' );
@@ -90,40 +94,51 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 			$this->options = $this->options;
 			return $this->options->getHostname();
 		}else{
-			if ( $route_key != null ) {
-				$hostname   = $this->connection_details[ $route_key ]['hostname'];
-				return $hostname;
-			}else{
-				$primary_connection = $this->options->getSelectedPrimary();
-				if (
-					isset($this->connection_details[$primary_connection]) &&
-					isset($this->connection_details[$primary_connection]['hostname'])
-				) {
-					return $this->connection_details[$primary_connection]['hostname'];
+			if ( $this->fallback == null ) {
+				$route_key = null;
+				$route_key = get_transient( 'post_smtp_smart_routing_route' );
+				if( $route_key != null ){
+					$hostname     = $this->connection_details[ $route_key ]['hostname'];
+				}else{
+					$primary     = $this->options->getSelectedPrimary();
+					$hostname    = $this->connection_details[ $primary ]['hostname'];
 				}
+			} else {
+				$fallback    = $this->options->getSelectedFallback();
+				$hostname    = $this->connection_details[ $fallback ]['hostname'];
 			}
+			return $hostname;
 		}
 	}
+	
 	public function getPort() {
 		$route_key = null;
     	$route_key = get_transient( 'post_smtp_smart_routing_route' );
 		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
 			$this->options = $this->options;
-			return $this->options->getPort();
+			return $this->options->getHostname();
 		}else{
-			if ( $route_key != null ) {
-				$port   = $this->connection_details[ $route_key ]['port'];
-				return $port;
-			}else{
-				$primary_connection = $this->options->getSelectedPrimary();
-				$port = $this->connection_details[$primary_connection]['port'];
-				return $port;
+			if ( $this->fallback == null ) {
+				$route_key = null;
+				$route_key = get_transient( 'post_smtp_smart_routing_route' );
+				if( $route_key != null ){
+					$port     = $this->connection_details[ $route_key ]['port'];
+				}else{
+					$primary     = $this->options->getSelectedPrimary();
+					$port    = $this->connection_details[ $primary ]['port'];
+				}
+			} else {
+				$fallback    = $this->options->getSelectedFallback();
+				$port    = $this->connection_details[ $fallback ]['port'];
 			}
+			return $port;
 		}
 	}
+
 	public function getAuthenticationType() {
 		return $this->options->getAuthenticationType();
 	}
+
 	public function getCredentialsId() {
 		$route_key = null;
     	$route_key = get_transient( 'post_smtp_smart_routing_route' );
@@ -138,17 +153,24 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 			if ( $this->options->isAuthTypeOAuth2() ) {
 				return $this->options->getClientId();
 			}else{
-				if ( $route_key != null ) {
-					$basic_auth_username   = $this->connection_details[ $route_key ]['basic_auth_username'];
-					return $basic_auth_username;	
-				}else{
-					$primary_connection = $this->options->getSelectedPrimary();
-					$basic_auth_username = $this->connection_details[$primary_connection]['basic_auth_username'];
-					return $basic_auth_username;
+				if ( $this->fallback == null ) {
+					$route_key = null;
+					$route_key = get_transient( 'post_smtp_smart_routing_route' );
+					if( $route_key != null ){
+						$basic_auth_username     = $this->connection_details[ $route_key ]['basic_auth_username'];
+					}else{
+						$primary     = $this->options->getSelectedPrimary();
+						$basic_auth_username    = $this->connection_details[ $primary ]['basic_auth_username'];
+					}
+				} else {
+					$fallback    = $this->options->getSelectedFallback();
+					$basic_auth_username    = $this->connection_details[ $fallback ]['basic_auth_username'];
 				}
+				return $basic_auth_username;
 			}
 		}
 	}
+
 	public function getCredentialsSecret() {
 		$route_key = null;
     	$route_key = get_transient( 'post_smtp_smart_routing_route' );
@@ -164,14 +186,20 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 			if ( $this->options->isAuthTypeOAuth2() ) {
 				return $this->options->getClientSecret();
 			}else{
-				if ( $route_key != null ) {
-					$basic_auth_password   = $this->connection_details[ $route_key ]['basic_auth_password'];
-					return $basic_auth_password;	
-				}else{
-					$primary_connection = $this->options->getSelectedPrimary();
-					$basic_auth_password = $this->connection_details[$primary_connection]['basic_auth_password'];
-					return $basic_auth_password;
+				if ( $this->fallback == null ) {
+					$route_key = null;
+					$route_key = get_transient( 'post_smtp_smart_routing_route' );
+					if( $route_key != null ){
+						$basic_auth_password     = $this->connection_details[ $route_key ]['basic_auth_password'];
+					}else{
+						$primary     = $this->options->getSelectedPrimary();
+						$basic_auth_password    = $this->connection_details[ $primary ]['basic_auth_password'];
+					}
+				} else {
+					$fallback    = $this->options->getSelectedFallback();
+					$basic_auth_password    = $this->connection_details[ $fallback ]['basic_auth_password'];
 				}
+				return $basic_auth_password;
 			}
 		}		
 	}

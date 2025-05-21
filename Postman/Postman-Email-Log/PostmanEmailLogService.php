@@ -164,7 +164,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 					$from =  $log->sender;
 				}else{
 					 $primary = $options->getSelectedPrimary();
-					$from = $connection_details[ $primary ]['sender_name'] . ' <' . $connection_details[ $primary ]['sender_email'] . '>';
+					 $from = $connection_details[ $primary ]['sender_name'] . ' <' . $connection_details[ $primary ]['sender_email'] . '>';
 				}
 				$data = array();
 				$data['solution'] = apply_filters( 'post_smtp_log_solution', null, $new_status, $log, $message );
