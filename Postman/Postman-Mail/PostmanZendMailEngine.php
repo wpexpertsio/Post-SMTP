@@ -81,12 +81,13 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 		public function send( PostmanMessage $message ) {
 			$this->logger->debug( 'Prepping Zend' );
 			$options            = PostmanOptions::getInstance();
+			$postman_db_version = get_option( 'postman_db_version' );
 
 			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
 				$sender = $this->transport->getFromEmailAddress();
 			} else {
 				$connection_details = get_option( 'postman_connections' );
-				if ( $this->is_fallback == null ) {
+				if ( $this->fallback_flag == null ) {
 					$route_key = null;
 					$route_key = get_transient( 'post_smtp_smart_routing_route' );
 					if( $route_key != null ){
@@ -136,7 +137,6 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			$fromHeader = $this->addFrom( $message, $mail );
 	
 			$fromHeader->log( $this->logger, 'From' );
-
 
 			/**
 			 * If Sender and From are not same thn ADD Sender, otherwise do not add Sender
@@ -225,7 +225,9 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			}else{
 				$zendTransport = $this->transport->createZendMailTransport( $this->transport->getHostname(), $this->fallback_flag );
 			}
-            $transport = $this->transport instanceof PostmanDefaultModuleTransport ? null : $zendTransport;
+            
+			$transport = $this->transport instanceof PostmanDefaultModuleTransport ? null : $zendTransport;
+
 			try {
 				// send the message
 				$this->logger->debug( 'Sending mail' );
@@ -286,9 +288,16 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			}else{
 				$connection_details = get_option( 'postman_connections' );
 				if ( $this->fallback_flag == null ) {
-					$primary = $options->getSelectedPrimary();
-					$senderName   = $connection_details[ $primary ]['sender_name'];
-					$senderEmail   = $connection_details[ $primary ]['sender_email'];
+					$route_key = null;
+					$route_key = get_transient( 'post_smtp_smart_routing_route' );
+					if( $route_key != null ){
+						$senderName   = $connection_details[ $route_key ]['sender_name'];
+						$senderEmail   = $connection_details[ $route_key ]['sender_email'];
+					}else{
+						$primary = $options->getSelectedPrimary();
+						$senderName   = $connection_details[ $primary ]['sender_name'];
+						$senderEmail   = $connection_details[ $primary ]['sender_email'];
+					}
 				} else {
 					$fallback = $options->getSelectedFallback();
 					$senderName   = $connection_details[ $fallback ]['sender_name'];

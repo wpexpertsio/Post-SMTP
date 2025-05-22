@@ -87,29 +87,39 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		return 'Other SMTP';
 	}
 	
+	
+	
 	public function getHostname() {
-		$route_key = null;
-    	$route_key = get_transient( 'post_smtp_smart_routing_route' );
-		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
-			$this->options = $this->options;
+		$route_key = get_transient('post_smtp_smart_routing_route');
+
+		if ($this->existing_db_version != POST_SMTP_DB_VERSION) {
 			return $this->options->getHostname();
-		}else{
-			if ( $this->fallback == null ) {
-				$route_key = null;
-				$route_key = get_transient( 'post_smtp_smart_routing_route' );
-				if( $route_key != null ){
-					$hostname     = $this->connection_details[ $route_key ]['hostname'];
-				}else{
-					$primary     = $this->options->getSelectedPrimary();
-					$hostname    = $this->connection_details[ $primary ]['hostname'];
+		} else {
+			if ( $this->fallback === null ) {
+				$route_key = get_transient('post_smtp_smart_routing_route');
+				
+				if ( $route_key !== false && isset( $this->connection_details[$route_key] ) && is_array( $this->connection_details[$route_key] ) ) {
+					$hostname = $this->connection_details[$route_key]['hostname'];
+				} else {
+					$primary = $this->options->getSelectedPrimary();
+					if ( isset( $this->connection_details[$primary] ) && is_array( $this->connection_details[$primary])) {
+						$hostname = $this->connection_details[$primary]['hostname'];
+					} else {
+						$hostname = '';
+					}
 				}
 			} else {
-				$fallback    = $this->options->getSelectedFallback();
-				$hostname    = $this->connection_details[ $fallback ]['hostname'];
+				$fallback = $this->options->getSelectedFallback();
+				if ( isset( $this->connection_details[$fallback] ) && is_array( $this->connection_details[$fallback] ) ) {
+					$hostname = $this->connection_details[$fallback]['hostname'];
+				} else {
+					$hostname = '';
+				}
 			}
 			return $hostname;
 		}
 	}
+
 	
 	public function getPort() {
 		$route_key = null;
