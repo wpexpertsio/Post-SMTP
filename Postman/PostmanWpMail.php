@@ -209,10 +209,10 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				}
 			
 			}
-	
+		
 			// create the Mail Engine
 			$engine = $transport->createMailEngine();
-		
+
 			// add plugin-specific attributes to PostmanMessage
 			$message->addHeaders( $options->getAdditionalHeaders() );
 			$message->addTo( $options->getForcedToRecipients() );
@@ -263,8 +263,6 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
                     if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) && apply_filters( 'post_smtp_send_email', true ) ) {
 						$engine->send( $message );
 					    
-						// Success: Delete the transient after sending the email
-                        delete_transient( 'post_smtp_smart_routing_route' );
 
                     } else {
                         $this->transcript = 'Bypassed By MailControl For Post SMTP';
@@ -277,11 +275,15 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				}
 				// clean up
 				$this->postSend( $engine, $startTime, $options, $transport );
+			
 
                 /**
                  * Do stuff after successful delivery
                  */
                 do_action( 'post_smtp_on_success', $log, $message, $engine->getTranscript(), $transport );
+				
+				// Success: Delete the transient after sending the email
+                 delete_transient( 'post_smtp_smart_routing_route' );
 
 				// return successful
 				return true;
