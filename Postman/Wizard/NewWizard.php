@@ -509,7 +509,7 @@ class Post_SMTP_New_Wizard {
 		$localized['gmail_icon'] = $gmail_icon_url; 
         
         wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), POST_SMTP_VER );
-        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), '1.2.4' );
+        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), POST_SMTP_VER );
         wp_localize_script( 'post-smtp-wizard', 'PostSMTPWizard', $localized );
 
     }
@@ -878,12 +878,12 @@ public function render_gmail_settings() {
                 ],
                 admin_url( 'admin-post.php' )
             ) );
-            $html .= '<a href="' . $action_url . '" class="button button-secondary ps-remove-gmail-btn ps-disable-gmail-setup">';
+			if ( isset( $postman_auth_token['user_email'] ) ) {
+            	$html .= ' <span class="icon-circle"><span class="icon-check"></span> </span> <b class= "ps-wizard-success">' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_auth_token['user_email'] ) ) . '</b>';
+            }
+            $html .= '<a href="' . $action_url . '" class="ps-remove-gmail-btn ps-disable-gmail-setup wizard-btn-css">';
             $html .= esc_html__( 'Remove Authorization', 'post-smtp' );
             $html .= '</a>';
-            if ( isset( $postman_auth_token['user_email'] ) ) {
-            $html .= '<b>' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_auth_token['user_email'] ) ) . '</b>';
-            }
         }else {
                 $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
                 $html .= '<p>' . esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ) . '</p>';
