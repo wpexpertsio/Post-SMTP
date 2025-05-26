@@ -1,43 +1,34 @@
-/*!***************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./src/app.css ***!
-  \***************************************************************/
 @import url(https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap);
-/*!**************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-app-wrapper.vue?vue&type=style&index=0&id=7c6051c6&scoped=true&lang=css ***!
-  \**************************************************************************************************************************************************************************************************************************************************************************/
 
-.post-smtp__wrapper[data-v-7c6051c6] {
+.post-smtp__wrapper[data-v-0c10f342] {
 	background: #F9FBFF;
 }
-.mr-25[data-v-7c6051c6] {
+.mr-25[data-v-0c10f342] {
 	margin-right: 25px;
 }
-.container[data-v-7c6051c6] {
+.container[data-v-0c10f342] {
 	padding: 0 51px;
 }
-.mt-32[data-v-7c6051c6] {
+.mt-32[data-v-0c10f342] {
 	margin-top: 32px;
 }
-.app-wrapper[data-v-7c6051c6] {
+.app-wrapper[data-v-0c10f342] {
 	width: calc( 100% - 276px - 25px );
 }
-.app-sidebar[data-v-7c6051c6] {
+.app-sidebar[data-v-0c10f342] {
 	width: 276px;
 }
-.float-left[data-v-7c6051c6] {
+.float-left[data-v-0c10f342] {
 	float: left;
 }
-.clearfix[data-v-7c6051c6]::after {
+.clearfix[data-v-0c10f342]::after {
 	clear: both;
 	content: "";
 	display: table;
 }
 
-/*!*********************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-header.vue?vue&type=style&index=0&id=77ec4cc7&scoped=true&lang=css ***!
-  \*********************************************************************************************************************************************************************************************************************************************************************/
 
-.header[data-v-77ec4cc7] {
+.header[data-v-65055dc1] {
 	height: 84px;
 	flex-shrink: 0;
 	background: #ffffff;
@@ -47,26 +38,20 @@
 	padding: 0 40px;
 }
 
-/*!***********************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-settings.vue?vue&type=style&index=0&id=154e6add&scoped=true&lang=css ***!
-  \***********************************************************************************************************************************************************************************************************************************************************************/
 
-.settings__button[data-v-154e6add] {
+.settings__button[data-v-46e71485] {
 	background: none;
 	border: none;
 	cursor: pointer;
 
 	padding-right: 16px;
 }
-.settings__button[data-v-154e6add]:last-child {
+.settings__button[data-v-46e71485]:last-child {
 	padding-right: 0;
 }
 
-/*!****************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-settings-menu.vue?vue&type=style&index=0&id=1ad9a302&scoped=true&lang=css ***!
-  \****************************************************************************************************************************************************************************************************************************************************************************/
 
-.post-smtp-settings-menu-wrapper[data-v-1ad9a302] {
+.post-smtp-settings-menu-wrapper[data-v-01624a62] {
 	width: 190px;
 	height: 312px;
 
@@ -79,24 +64,24 @@
 	top: 60px;
 	right: 41px;
 }
-.post-smtp-dropdown-menu[data-v-1ad9a302] {
+.post-smtp-dropdown-menu[data-v-01624a62] {
 	width: 100%;
 	height: 52px;
 }
-.post-smtp-button[data-v-1ad9a302]:hover {
+.post-smtp-button[data-v-01624a62]:hover {
 	background: #375CAF;
 	color: #fff;
 }
-.post-smtp-button:hover img[data-v-1ad9a302] {
+.post-smtp-button:hover img[data-v-01624a62] {
 	filter: invert(100%);
 }
-.post-smtp-button img[fallback="true"][data-v-1ad9a302] {
+.post-smtp-button img[fallback="true"][data-v-01624a62] {
 	filter: invert(100%);
 }
-.post-smtp-button:hover img[fallback="true"][data-v-1ad9a302] {
+.post-smtp-button:hover img[fallback="true"][data-v-01624a62] {
 	filter: invert(0);
 }
-.post-smtp-button[data-v-1ad9a302] {
+.post-smtp-button[data-v-01624a62] {
 	display: block;
 	padding: 0 20px;
 	line-height: 52px;
@@ -109,15 +94,12 @@
 	text-decoration: none;
 }
 
-/*!*******************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-notification-bar.vue?vue&type=style&index=0&id=69c37c2a&scoped=true&lang=css ***!
-  \*******************************************************************************************************************************************************************************************************************************************************************************/
 
-.post-smtp-notification-bar-wrapper[data-v-69c37c2a] * {
+.post-smtp-notification-bar-wrapper[data-v-a0f5f30c] * {
 	padding: 0;
 	margin: 0;
 }
-.post-smtp-notification-bar-wrapper[data-v-69c37c2a] {
+.post-smtp-notification-bar-wrapper[data-v-a0f5f30c] {
 	width: 380px;
 	max-height: 320px;
 
@@ -130,7 +112,7 @@
 	overflow-y: auto;
 	z-index: 1;
 }
-.post-smtp-notification-wrapper[data-v-69c37c2a] {
+.post-smtp-notification-wrapper[data-v-a0f5f30c] {
 	width: calc( 100% - 4px );
 
 	border-radius: 0 4px 0 0;
@@ -140,20 +122,20 @@
 
 	position: relative;
 }
-[post-smtp-opened="false"][data-v-69c37c2a] {
+[post-smtp-opened="false"][data-v-a0f5f30c] {
 	border-left: none;
 	cursor: default;
 }
-.post-smtp-notification-content-wrapper[data-v-69c37c2a] {
+.post-smtp-notification-content-wrapper[data-v-a0f5f30c] {
 	padding: 16px 20px;
 	border-bottom: 1px solid #E5E9F1;
 }
-.post-smtp-notification-content-wrapper[data-v-69c37c2a]::after {
+.post-smtp-notification-content-wrapper[data-v-a0f5f30c]::after {
 	content: '';
 	display: table;
 	clear: both;
 }
-.post-smtp-notification-title[data-v-69c37c2a] {
+.post-smtp-notification-title[data-v-a0f5f30c] {
 	color: #8B8F9A;
 	font-family: Poppins;
 	font-size: 14px;
@@ -161,10 +143,10 @@
 	font-weight: 500;
 	line-height: 20px; /* 142.857% */
 }
-[post-smtp-opened="true"] .post-smtp-notification-title[data-v-69c37c2a] {
+[post-smtp-opened="true"] .post-smtp-notification-title[data-v-a0f5f30c] {
 	color: #B25858;
 }
-.post-smtp-notification-content[data-v-69c37c2a] {
+.post-smtp-notification-content[data-v-a0f5f30c] {
 	color: #8B8F9A;
 	font-family: Poppins;
 	font-size: 12px;
@@ -174,13 +156,13 @@
 
 	margin-top: 4px;
 }
-[post-smtp-opened="true"] .post-smtp-notification-content[data-v-69c37c2a] {
+[post-smtp-opened="true"] .post-smtp-notification-content[data-v-a0f5f30c] {
 	color: #231F20;
 }
-.mt-10[data-v-69c37c2a] {
+.mt-10[data-v-a0f5f30c] {
 	margin-top: 10px;
 }
-.notification-timeline[data-v-69c37c2a] {
+.notification-timeline[data-v-a0f5f30c] {
 	color: #8B8F9A;
 	text-align: right;
 	font-family: Poppins;
@@ -189,42 +171,39 @@
 	font-weight: 400;
 	line-height: 20px; /* 181.818% */
 }
-.left-side-content[data-v-69c37c2a] {
+.left-side-content[data-v-a0f5f30c] {
 	width: 70%;
 	float: left;
 }
-.full-width-content[data-v-69c37c2a] {
+.full-width-content[data-v-a0f5f30c] {
 	display: block;
 }
-.clearfix[data-v-69c37c2a] {
+.clearfix[data-v-a0f5f30c] {
 	clear: both;
 	display: table;
 }
-.full-width-content[data-v-69c37c2a]::after {
+.full-width-content[data-v-a0f5f30c]::after {
 	content: '';
 	display: table;
 	clear: both;
 }
-.right-side-content[data-v-69c37c2a] {
+.right-side-content[data-v-a0f5f30c] {
 	width: 30%;
 	float: right;
 }
-.right-side-content[data-v-69c37c2a]::after {
+.right-side-content[data-v-a0f5f30c]::after {
 	content: '';
 	display: table;
 	clear: both;
 }
-.notification-bin[data-v-69c37c2a] {
+.notification-bin[data-v-a0f5f30c] {
 	display: block;
 	width: 16px;
 	height: 16px;
 }
 
-/*!**********************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-sidebar.vue?vue&type=style&index=0&id=292dae12&scoped=true&lang=css ***!
-  \**********************************************************************************************************************************************************************************************************************************************************************/
 
-.customer-support[data-v-292dae12] {
+.customer-support[data-v-ae87a46a] {
 	padding: 0 !important;
 	background: linear-gradient(180deg, #40518E 0%, #231F20 100%);
 	display: flex;
@@ -233,10 +212,10 @@
 	flex-direction: column;
 	height: 268px;
 }
-.customer-support-content[data-v-292dae12] {
+.customer-support-content[data-v-ae87a46a] {
 	width: 213px;
 }
-.customer-support-content p[data-v-292dae12] {
+.customer-support-content p[data-v-ae87a46a] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 500;
@@ -244,13 +223,13 @@
 	text-align: center;
 	color: #B8BDCA;
 }
-.troubleshooting[data-v-292dae12] {
+.troubleshooting[data-v-ae87a46a] {
 	padding: 0 !important;
 }
-.mb-24[data-v-292dae12] {
+.mb-24[data-v-ae87a46a] {
 	margin-bottom: 24px;
 }
-.troubleshooting-header[data-v-292dae12] {
+.troubleshooting-header[data-v-ae87a46a] {
 	border-radius: 4px 4px 0 0;
 	background: #EFF4FD;
 	padding: 16px 24px;
@@ -261,25 +240,25 @@
 	line-height: 20px;
 	color: #231F20;
 }
-.troubleshooting-content[data-v-292dae12] {
+.troubleshooting-content[data-v-ae87a46a] {
 	padding: 24px;
 }
-.troubleshoot.email[data-v-292dae12] {
+.troubleshoot.email[data-v-ae87a46a] {
 	list-style: url(../57f4451f3be03da17463.svg) inside;
 }
-.troubleshoot.import-export[data-v-292dae12] {
+.troubleshoot.import-export[data-v-ae87a46a] {
 	list-style: url(../d0a8e6270627cef66c74.svg) inside;
 }
-.troubleshoot.connectivity[data-v-292dae12] {
+.troubleshoot.connectivity[data-v-ae87a46a] {
 	list-style: url(../5b76dc43e6c63f11fb6d.svg) inside;
 }
-.troubleshoot.diagnostic[data-v-292dae12] {
+.troubleshoot.diagnostic[data-v-ae87a46a] {
 	list-style: url(../258d1cba1f474caf0c4b.svg) inside;
 }
-.troubleshoot.reset[data-v-292dae12] {
+.troubleshoot.reset[data-v-ae87a46a] {
 	list-style: url(../9fdeee5472f16554c9e9.svg) inside;
 }
-.troubleshoot a[data-v-292dae12] {
+.troubleshoot a[data-v-ae87a46a] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 400;
@@ -288,32 +267,26 @@
 	text-decoration: underline;
 }
 
-/*!*********************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-widget.vue?vue&type=style&index=0&id=2083de04&scoped=true&lang=css ***!
-  \*********************************************************************************************************************************************************************************************************************************************************************/
 
-.widget-wrapper[data-v-2083de04] {
+.widget-wrapper[data-v-61b1c642] {
 	border: 1px solid #DCDFE5;
 	margin-bottom: 24px;
 	padding: 20px 0 0 24px;
 	border-radius: 4px;
 }
-.widget-wrapper[data-v-2083de04]:last-child {
+.widget-wrapper[data-v-61b1c642]:last-child {
 	margin-bottom: 0;
 }
 
-/*!******************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-ads.vue?vue&type=style&index=0&id=4cf3df34&scoped=true&lang=css ***!
-  \******************************************************************************************************************************************************************************************************************************************************************/
 
-.mobile-wrapper[data-v-4cf3df34] {
+.mobile-wrapper[data-v-dd9fb678] {
 	background: linear-gradient(180deg, #FFFFFF 50%, #DCE7FF 100%);
 }
-.mobile-wrapper[data-v-4cf3df34] * {
+.mobile-wrapper[data-v-dd9fb678] * {
 	padding: 0;
 	margin: 0;
 }
-.mobile-header[data-v-4cf3df34] {
+.mobile-header[data-v-dd9fb678] {
 	font-family: Montserrat;
 	font-size: 14px;
 	font-weight: 500;
@@ -321,7 +294,7 @@
 	text-align: left;
 	color: #375CAF;
 }
-.mobile-header strong[data-v-4cf3df34] {
+.mobile-header strong[data-v-dd9fb678] {
 	font-family: Montserrat;
 	font-size: 14px;
 	font-weight: 700;
@@ -329,7 +302,7 @@
 	text-align: left;
 	color: #375CAF;
 }
-.post-smtp-main-wp-wrapper .main-wp-header h3[data-v-4cf3df34] {
+.post-smtp-main-wp-wrapper .main-wp-header h3[data-v-dd9fb678] {
 	color: #231F20;
 	font-family: Montserrat;
 	font-size: 14px;
@@ -337,7 +310,7 @@
 	font-weight: 500;
 	line-height: 130%; /* 18.2px */
 }
-.post-smtp-main-wp-wrapper .main-wp-header h3 span[data-v-4cf3df34] {
+.post-smtp-main-wp-wrapper .main-wp-header h3 span[data-v-dd9fb678] {
 	background: linear-gradient(269deg, #3662C7 18.26%, #32B495 47.83%, #B4D859 80.52%);
 	background-clip: text;
 	-webkit-background-clip: text;
@@ -348,7 +321,7 @@
 	font-weight: 700;
 	line-height: 130%;
 }
-.mobile-unstyles-list li[data-v-4cf3df34] {
+.mobile-unstyles-list li[data-v-dd9fb678] {
 	font-family: Montserrat;
 	font-size: 11px;
 	font-weight: 500;
@@ -358,22 +331,22 @@
 	margin-top: 10px;
 	list-style: url(../2eb9c91de5efa416e660.svg) inside;
 }
-.img-wrapper[data-v-4cf3df34] {
+.img-wrapper[data-v-dd9fb678] {
 	margin-top: 7px;
 }
-.img-wrapper[data-v-4cf3df34]::after {
+.img-wrapper[data-v-dd9fb678]::after {
 	content: "";
 	display: table;
 	clear: both;
 }
-.qrcode-img[data-v-4cf3df34] {
+.qrcode-img[data-v-dd9fb678] {
 	float: left;
 	margin-top: 47px;
 }
-.qrcode-mobile-app[data-v-4cf3df34] {
+.qrcode-mobile-app[data-v-dd9fb678] {
 	float: left;
 }
-.post-smtp-main-wp-wrapper[data-v-4cf3df34] {
+.post-smtp-main-wp-wrapper[data-v-dd9fb678] {
 	border-radius: 4px;
 	border: 1px solid #DCDFE5;
 	background: url( ../b5d4a4bc5f5d5c2cc5ec.png ), linear-gradient(180deg, #FFF 0%, #EDF2FE 100%);
@@ -381,10 +354,10 @@
 	background-position: right bottom;
 	background-repeat: no-repeat;
 }
-.main-wp-unstyled-list[data-v-4cf3df34] {
+.main-wp-unstyled-list[data-v-dd9fb678] {
 	margin-bottom: 86px;
 }
-.main-wp-unstyled-list li[data-v-4cf3df34] {
+.main-wp-unstyled-list li[data-v-dd9fb678] {
 	color: #646464;
 	font-family: Montserrat;
 	font-size: 11px;
@@ -394,7 +367,7 @@
 
 	list-style: url( ../9fd2c918204f11be1da3.svg ) inside;
 }
-.main-wp-footer a[data-v-4cf3df34] {
+.main-wp-footer a[data-v-dd9fb678] {
 	display: inline-flex;
 	padding: 10px 20px;
 	justify-content: center;
@@ -412,7 +385,7 @@
 	background: linear-gradient(312deg, #3662C7 21.21%, #32B495 64.57%, #B4D859 112.5%);
 	text-decoration: none;
 }
-.post-smtp-spam-score-wrapper[data-v-4cf3df34] {
+.post-smtp-spam-score-wrapper[data-v-dd9fb678] {
 	border-radius: 4px;
 	border: 1px solid #DCDFE5;
 	background: url( ../27b2ae161d3d48de6aa4.png ), linear-gradient(180deg, #FFF 0%, #EDF2FE 100%);
@@ -420,7 +393,7 @@
 	background-position: top right;
 	padding: 20px 25px;
 }
-.post-smtp-spam-score-header h2[data-v-4cf3df34] {
+.post-smtp-spam-score-header h2[data-v-dd9fb678] {
 	color: #231F20;
 	font-family: Montserrat;
 	font-size: 16px;
@@ -428,10 +401,10 @@
 	font-weight: 500;
 	line-height: 20.8px; /* 20.8px */
 }
-.post-smtp-spam-score-header h2 span[data-v-4cf3df34] {
+.post-smtp-spam-score-header h2 span[data-v-dd9fb678] {
 	font-weight: 700;
 }
-.post-smtp-spam-score-footer a[data-v-4cf3df34] {
+.post-smtp-spam-score-footer a[data-v-dd9fb678] {
 	padding: 10px 20px;
 
 	color: #FFF;
@@ -451,10 +424,10 @@
 
 	text-decoration: none;
 }
-.post-smtp-spam-score-list-unstyled[data-v-4cf3df34] {
+.post-smtp-spam-score-list-unstyled[data-v-dd9fb678] {
 	margin-bottom: 20px;
 }
-.post-smtp-spam-score-list-unstyled li[data-v-4cf3df34] {
+.post-smtp-spam-score-list-unstyled li[data-v-dd9fb678] {
 	color: #646464;
 	font-family: Montserrat;
 	font-size: 11px;
@@ -465,11 +438,8 @@
 	list-style: url(../ff6653d27332dc8ab22a.svg) inside;
 }
 
-/*!*********************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-button.vue?vue&type=style&index=0&id=176cb6ec&scoped=true&lang=css ***!
-  \*********************************************************************************************************************************************************************************************************************************************************************/
 
-.btn[data-v-176cb6ec] {
+.btn[data-v-e27b9696] {
 	cursor: pointer;
 	display: block;
 	padding: 12px 32px 12px 32px;
@@ -478,7 +448,7 @@
 
 	text-decoration: none;
 }
-.btn-secondary[data-v-176cb6ec] {
+.btn-secondary[data-v-e27b9696] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 500;
@@ -486,7 +456,7 @@
 	text-align: left;
 	color: #FFFFFF;
 }
-.btn-get-pro[data-v-176cb6ec] {
+.btn-get-pro[data-v-e27b9696] {
 	background: linear-gradient(270deg, #F9AA39 0%, #FFDAA5 100%);
 	font-family: Poppins;
 	font-size: 14px;
@@ -498,17 +468,14 @@
 	display: block;
 }
 
-/*!************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-dashboard.vue?vue&type=style&index=0&id=dd15bc6c&scoped=true&lang=css ***!
-  \************************************************************************************************************************************************************************************************************************************************************************/
 
-.mb-24[data-v-dd15bc6c] {
+.mb-24[data-v-49a0d06a] {
 	margin-bottom: 24px;
 }
-.post-smtp-selector-wrapper[data-v-dd15bc6c] {
+.post-smtp-selector-wrapper[data-v-49a0d06a] {
 	position: relative;
 }
-.post-smtp-selector-wrapper a.re-launch-wizard[data-v-dd15bc6c] {
+.post-smtp-selector-wrapper a.re-launch-wizard[data-v-49a0d06a] {
 	float: right;
 	padding: 8px 16px;
 	background: #f3f7ff;
@@ -521,17 +488,14 @@
 	text-align: left;
 	text-decoration: none;
 }
-.post-smtp-selector-wrapper[data-v-dd15bc6c]::after {
+.post-smtp-selector-wrapper[data-v-49a0d06a]::after {
 	content: '';
 	clear: both;
 	display: table;
 }
 
-/*!****************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-days-selector.vue?vue&type=style&index=0&id=74eec84b&scoped=true&lang=css ***!
-  \****************************************************************************************************************************************************************************************************************************************************************************/
 
-.wrapper[data-v-74eec84b] {
+.wrapper[data-v-4ac3e1ba] {
 	width: 177px;
 	height: 32px;
 	top: 146px;
@@ -540,7 +504,7 @@
 	background: #FFFFFF;
 	border: 1px solid #DCDFE5
 }
-.days-selector[data-v-74eec84b] {
+.days-selector[data-v-4ac3e1ba] {
 	margin: 4px 0 0 2px;
 
 	cursor: pointer;
@@ -561,37 +525,34 @@
 	outline: none;
 	background: none;
 }
-.days-selector.active[data-v-74eec84b] {
+.days-selector.active[data-v-4ac3e1ba] {
 	border-radius: 12px;
 	background: #F3F7FF;
 	color: #375CAF;
 }
-.disabled[data-v-74eec84b] {
+.disabled[data-v-4ac3e1ba] {
 	pointer-events: none;
 }
-.disabled .days-selector[data-v-74eec84b] {
+.disabled .days-selector[data-v-4ac3e1ba] {
 	cursor: not-allowed;
 }
-.disabled .days-selector.active[data-v-74eec84b] {
+.disabled .days-selector.active[data-v-4ac3e1ba] {
 	background: none;
 	cursor: not-allowed;
 	color: #44566C;
 }
 
-/*!******************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-cards-container.vue?vue&type=style&index=0&id=526405cd&scoped=true&lang=css ***!
-  \******************************************************************************************************************************************************************************************************************************************************************************/
 
-.card-container[data-v-526405cd] * {
+.card-container[data-v-43d56e5c] * {
 	padding: 0;
 	margin: 0;
 }
-.card-container[data-v-526405cd]::after {
+.card-container[data-v-43d56e5c]::after {
 	content: "";
 	display: table;
 	clear: both;
 }
-.post-smtp-content-lighter[data-v-526405cd] {
+.post-smtp-content-lighter[data-v-43d56e5c] {
 	color: #231F20;
 	font-family: Poppins;
 	font-size: 10px;
@@ -599,7 +560,7 @@
 	font-weight: 500;
 	line-height: 13px;
 }
-.pro-content-header[data-v-526405cd] {
+.pro-content-header[data-v-43d56e5c] {
 	color: #5A3F17;
 	text-align: center;
 	font-family: Poppins;
@@ -608,7 +569,7 @@
 	font-weight: 600;
 	line-height: 14px; /* 100% */
 }
-.pro-content[data-v-526405cd] {
+.pro-content[data-v-43d56e5c] {
 	color: #5A3F17;
 	text-align: center;
 	font-family: Poppins;
@@ -618,43 +579,40 @@
 	line-height: 13px; /* 118.182% */
 	text-decoration-line: underline;
 }
-.post-smtp-card-box[is-pro="true"] .post-smtp-content-lighter[data-v-526405cd] {
+.post-smtp-card-box[is-pro="true"] .post-smtp-content-lighter[data-v-43d56e5c] {
 	color: #fff;
 }
 
-/*!*******************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-card.vue?vue&type=style&index=0&id=ed21e76c&scoped=true&lang=css ***!
-  \*******************************************************************************************************************************************************************************************************************************************************************/
 
-.post-smtp-card[data-v-ed21e76c] {
+.post-smtp-card[data-v-36caffee] {
 	width: calc( 25% - 16px + 2px );
 	height: 140px;
 	border-radius: 4px;
 	float: left;
 	margin-right: 16px;
 }
-.post-smtp-card[data-v-ed21e76c]:last-child {
+.post-smtp-card[data-v-36caffee]:last-child {
 	margin-right: 0;
 }
-.post-smtp-card-all[data-v-ed21e76c] {
+.post-smtp-card-all[data-v-36caffee] {
 	background: #EDF4FF;
 	border: 1px solid #D3DDEB;
 }
-.post-smtp-card-success[data-v-ed21e76c] {
+.post-smtp-card-success[data-v-36caffee] {
 	background: #EDFFEF;
 	border: 1px solid #D3EBD6;
 }
-.post-smtp-card-failed[data-v-ed21e76c] {
+.post-smtp-card-failed[data-v-36caffee] {
 	background: #FFEDED;
 	border: 1px solid #EBD3D3;
 }
-.post-smtp-card-opened--pro[data-v-ed21e76c] {
+.post-smtp-card-opened--pro[data-v-36caffee] {
 	background: url( ../2b70fc947e7d243045cc.svg ), radial-gradient(95.39% 99.9% at 49.79% 0%, #FFD291 0%, #F9AA39 100%);
 	border: 1px solid #EBE1D3;
 	background-repeat: no-repeat;
 	background-position: 275px 10px, center;
 }
-.post-smtp-card-content-wrapper[data-v-ed21e76c] {
+.post-smtp-card-content-wrapper[data-v-36caffee] {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -663,7 +621,7 @@
 	width: 100%;
 	height: 100%;
 }
-.post-smtp-image-container[data-v-ed21e76c] {
+.post-smtp-image-container[data-v-36caffee] {
 	margin-right: 15px;
 
 	width: 42px;
@@ -675,49 +633,49 @@
 
 	border-radius: 50%;
 }
-.post-smtp-card-all .post-smtp-image-container[data-v-ed21e76c] {
+.post-smtp-card-all .post-smtp-image-container[data-v-36caffee] {
 	background: url( ../5228f6e3f64c7ce0d516.png );
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
 }
-.post-smtp-card-success .post-smtp-image-container[data-v-ed21e76c] {
+.post-smtp-card-success .post-smtp-image-container[data-v-36caffee] {
 	background: url( ../33faa49fa2c81c425660.png );
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
 }
-.post-smtp-card-failed .post-smtp-image-container[data-v-ed21e76c] {
+.post-smtp-card-failed .post-smtp-image-container[data-v-36caffee] {
 	background: url( ../080727baa513e48c626e.png );
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
 }
-.post-smtp-card-opened--pro .post-smtp-image-container[data-v-ed21e76c] {
+.post-smtp-card-opened--pro .post-smtp-image-container[data-v-36caffee] {
 	background: url( ../1f30527ba4ffa819f296.png );
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
 }
-.post-smtp-card-pro.post-smtp-card-all .post-smtp-image-container[data-v-ed21e76c] {
+.post-smtp-card-pro.post-smtp-card-all .post-smtp-image-container[data-v-36caffee] {
 	background: url( ../acc721b33f3d1b7d3795.png );
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
 }
-.post-smtp-card-pro.post-smtp-card-success .post-smtp-image-container[data-v-ed21e76c] {
+.post-smtp-card-pro.post-smtp-card-success .post-smtp-image-container[data-v-36caffee] {
 	background: url( ../0762235fe75fa43063e7.png );
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
 }
-.post-smtp-card-pro.post-smtp-card-failed .post-smtp-image-container[data-v-ed21e76c] {
+.post-smtp-card-pro.post-smtp-card-failed .post-smtp-image-container[data-v-36caffee] {
 	background: url( ../1c7dc8d09d20ecab18fb.png );
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
 }
-.post-smtp-count[data-v-ed21e76c] {
+.post-smtp-count[data-v-36caffee] {
 	color: #231F20;
 	font-family: Poppins;
 	font-size: 20px;
@@ -725,7 +683,7 @@
 	font-weight: 600;
 	line-height: 20px; /* 100% */
 }
-.post-smtp-content[data-v-ed21e76c] {
+.post-smtp-content[data-v-36caffee] {
 	color: #231F20;
 	font-family: Poppins;
 	font-size: 11px;
@@ -733,28 +691,25 @@
 	font-weight: 500;
 	line-height: 13px; /* 118.182% */
 }
-.post-smtp-card-pro .post-smtp-count[data-v-ed21e76c],
-.post-smtp-card-pro .post-smtp-content[data-v-ed21e76c] {
+.post-smtp-card-pro .post-smtp-count[data-v-36caffee],
+.post-smtp-card-pro .post-smtp-content[data-v-36caffee] {
 	color: #fff;
 }
-.post-smtp-card-pro.post-smtp-card-all[data-v-ed21e76c] {
+.post-smtp-card-pro.post-smtp-card-all[data-v-36caffee] {
 	background: #6291D9;
 }
-.post-smtp-card-pro.post-smtp-card-success[data-v-ed21e76c] {
+.post-smtp-card-pro.post-smtp-card-success[data-v-36caffee] {
 	background: #74B27B;
 }
-.post-smtp-card-pro.post-smtp-card-failed[data-v-ed21e76c] {
+.post-smtp-card-pro.post-smtp-card-failed[data-v-36caffee] {
 	background: #E57373;
 }
-.post-smtp-card-pro.post-smtp-card-opened--pro[data-v-ed21e76c] {
+.post-smtp-card-pro.post-smtp-card-opened--pro[data-v-36caffee] {
 	background: radial-gradient(95.39% 99.9% at 49.79% 0%, #FFD291 0%, #F9AA39 100%);
 }
 
-/*!**********************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-banners.vue?vue&type=style&index=0&id=5de74806&scoped=true&lang=css ***!
-  \**********************************************************************************************************************************************************************************************************************************************************************/
 
-.post-smtp-button[data-v-5de74806] {
+.post-smtp-button[data-v-950af6bc] {
 	display: inline-block;
 	padding: 8px 16px !important;
 	justify-content: center;
@@ -775,15 +730,12 @@
 	line-height: 18px; /* 150% */
 }
 
-/*!*********************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-notice.vue?vue&type=style&index=0&id=933438dc&scoped=true&lang=css ***!
-  \*********************************************************************************************************************************************************************************************************************************************************************/
 
-.post-smtp-notice-wrapper[data-v-933438dc] * {
+.post-smtp-notice-wrapper[data-v-d473dc1c] * {
 	padding: 0;
 	margin: 0;
 }
-.post-smtp-notice[data-v-933438dc] {
+.post-smtp-notice[data-v-d473dc1c] {
 	width: calc( 100% - 33px );
 	height: 44px;
 	padding: 5px 16px 5px 16px;
@@ -791,17 +743,17 @@
 	justify-content: space-between;
 	align-items: center;
 }
-.post-smtp-notice-success[data-v-933438dc] {
+.post-smtp-notice-success[data-v-d473dc1c] {
 	border-radius: 4px;
 	border: 1px solid #DDE6E0;
 	background: #F4F9F6;
 }
-.post-smtp-notice-warning[data-v-933438dc] {
+.post-smtp-notice-warning[data-v-d473dc1c] {
 	border-radius: 4px;
 	border: 1px solid #E6DDDD;
 	background: #F9F4F4;
 }
-.post-smtp-notice-content[data-v-933438dc] {
+.post-smtp-notice-content[data-v-d473dc1c] {
 	color: #263E30;
 	font-family: Poppins;
 	font-size: 12px;
@@ -809,27 +761,24 @@
 	font-weight: 400;
 	line-height: 18px;
 }
-.post-smtp-notice-content strong[data-v-933438dc] {
+.post-smtp-notice-content strong[data-v-d473dc1c] {
 	font-weight: 600;
 
 	padding-right: 4px;
 }
-.post-smtp-notice-icon[data-v-933438dc] {
+.post-smtp-notice-icon[data-v-d473dc1c] {
 	margin-right: 8px;
 }
 
-/*!***************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-logs-section.vue?vue&type=style&index=0&id=2d372481&scoped=true&lang=css ***!
-  \***************************************************************************************************************************************************************************************************************************************************************************/
 
-.post-smtp-logs-wrapper[data-v-2d372481] * {
+.post-smtp-logs-wrapper[data-v-7a7fbb2a] * {
 	padding: 0;
 	margin: 0;
 }
-.post-smtp-logs-wrapper[data-v-2d372481] {
+.post-smtp-logs-wrapper[data-v-7a7fbb2a] {
 	width: 100%;
 }
-.post-smtp-logs-header[data-v-2d372481] {
+.post-smtp-logs-header[data-v-7a7fbb2a] {
 	width: calc( 100% - 2px - 48px );
 	height: calc( 52px - 1px - 32px );
 
@@ -841,7 +790,7 @@
 	border-left: 1px solid #DCDFE5;
 	background: #EFF4FD;
 }
-.post-smtp-logs-body[data-v-2d372481] {
+.post-smtp-logs-body[data-v-7a7fbb2a] {
 	width: calc( 100% - 2px );
 
 	border-radius: 0px 0px 4px 4px;
@@ -850,23 +799,23 @@
 	border-left: 1px solid #DCDFE5;
 	background: #FFF;
 }
-.post-smtp-logs-body th[data-v-2d372481],
-.post-smtp-logs-body td[data-v-2d372481] {
+.post-smtp-logs-body th[data-v-7a7fbb2a],
+.post-smtp-logs-body td[data-v-7a7fbb2a] {
 	height: 48px;
 	padding: 0 16px;
 }
-.post-smtp-logs-header[data-v-2d372481]::after {
+.post-smtp-logs-header[data-v-7a7fbb2a]::after {
 	content: '';
 	display: block;
 	clear: both;
 }
-.float-left[data-v-2d372481] {
+.float-left[data-v-7a7fbb2a] {
 	float: left;
 }
-.float-right[data-v-2d372481] {
+.float-right[data-v-7a7fbb2a] {
 	float: right;
 }
-.post-smtp-logs-header h2[data-v-2d372481] {
+.post-smtp-logs-header h2[data-v-7a7fbb2a] {
 	color: #231F20;
 	text-align: center;
 	font-family: Poppins;
@@ -875,7 +824,7 @@
 	font-weight: 600;
 	line-height: 20px; /* 125% */
 }
-.post-smtp-logs-header a[data-v-2d372481] {
+.post-smtp-logs-header a[data-v-7a7fbb2a] {
 	color: #375CAF;
 	text-align: center;
 	font-family: Poppins;
@@ -885,10 +834,10 @@
 	line-height: 20px; /* 166.667% */
 	text-decoration-line: underline;
 }
-.post-smtp-logs-body table[data-v-2d372481] {
+.post-smtp-logs-body table[data-v-7a7fbb2a] {
 	width: 100%;
 }
-.post-smtp-logs-body table thead th[data-v-2d372481] {
+.post-smtp-logs-body table thead th[data-v-7a7fbb2a] {
 	color: #231F20;
 	text-align: center;
 	font-family: Poppins;
@@ -897,7 +846,7 @@
 	font-weight: 500;
 	line-height: 14px; /* 100% */
 }
-.post-smtp-logs-body table tbody td[data-v-2d372481] {
+.post-smtp-logs-body table tbody td[data-v-7a7fbb2a] {
 	color: #646464;
 	font-family: Poppins;
 	font-size: 12px;
@@ -907,13 +856,13 @@
 
 	border-bottom: 1px solid #DCDFE5;
 }
-.post-smtp-logs-body table tbody tr:last-child td[data-v-2d372481] {
+.post-smtp-logs-body table tbody tr:last-child td[data-v-7a7fbb2a] {
 	border-bottom: none;
 }
-.post-smtp-logs-body table tbody td[data-v-2d372481] {
+.post-smtp-logs-body table tbody td[data-v-7a7fbb2a] {
 	text-align: left;
 }
-.post-smtp-status[data-v-2d372481] {
+.post-smtp-status[data-v-7a7fbb2a] {
 	display: inline-flex;
 	padding: 4px;
 	flex-direction: column;
@@ -927,19 +876,19 @@
 	border-radius: 14px;
 	width: 62px;
 }
-.post-smtp-status.post-smtp-success[data-v-2d372481] {
+.post-smtp-status.post-smtp-success[data-v-7a7fbb2a] {
 	color: #74B27B;
 	background: #EDFFEF;
 }
-.post-smtp-status.post-smtp-failed[data-v-2d372481] {
+.post-smtp-status.post-smtp-failed[data-v-7a7fbb2a] {
 	color: #E57373;
 	background: #FFEDED;
 }
-.post-smtp-status-wrapper[data-v-2d372481] {
+.post-smtp-status-wrapper[data-v-7a7fbb2a] {
 	width: 100%;
 	position: relative;
 }
-.post-smtp-logs-empty[data-v-2d372481] {
+.post-smtp-logs-empty[data-v-7a7fbb2a] {
 	width: 100%;
 	height: 300px;
 
@@ -948,14 +897,14 @@
 	align-items: center;
 	flex-direction: column;
 }
-.post-smtp-logs-empty .post-smtp-logs-head[data-v-2d372481] {}
-.post-smtp-logs-empty .post-smtp-logs-content[data-v-2d372481] {
+.post-smtp-logs-empty .post-smtp-logs-head[data-v-7a7fbb2a] {}
+.post-smtp-logs-empty .post-smtp-logs-content[data-v-7a7fbb2a] {
 	text-align: center;
 
 	margin-bottom: 16px;
 	margin-top: 24px;
 }
-.post-smtp-logs-empty .post-smtp-logs-content h3[data-v-2d372481] {
+.post-smtp-logs-empty .post-smtp-logs-content h3[data-v-7a7fbb2a] {
 	color: #646464;
 	text-align: center;
 	font-family: Poppins;
@@ -965,7 +914,7 @@
 	line-height: 14px; /* 100% */
 	margin-bottom: 8px;
 }
-.post-smtp-logs-empty .post-smtp-logs-content p[data-v-2d372481] {
+.post-smtp-logs-empty .post-smtp-logs-content p[data-v-7a7fbb2a] {
 	color: #646464;
 	text-align: center;
 	font-family: Poppins;
@@ -974,7 +923,7 @@
 	font-weight: 400;
 	line-height: 18px; /* 150% */
 }
-.post-smtp-logs-empty .post-smtp-logs-footer a[data-v-2d372481] {
+.post-smtp-logs-empty .post-smtp-logs-footer a[data-v-7a7fbb2a] {
 	display: block;
 	color: #FFF;
 	font-family: Poppins;
@@ -994,11 +943,8 @@
 	text-decoration: none;
 }
 
-/*!******************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-log-action-menu.vue?vue&type=style&index=0&id=2855847a&scoped=true&lang=css ***!
-  \******************************************************************************************************************************************************************************************************************************************************************************/
 
-.post-smtp-log-action-menu-wrapper[data-v-2855847a] {
+.post-smtp-log-action-menu-wrapper[data-v-24f2e844] {
 	display: inline-flex;
 	padding: 16px 20px;
 	flex-direction: column;
@@ -1018,7 +964,7 @@
 
 	width: 100px;
 }
-.post-smtp-log-action-menu-wrapper a[data-v-2855847a] {
+.post-smtp-log-action-menu-wrapper a[data-v-24f2e844] {
 	color: #231F20;
 	font-family: Poppins;
 	font-size: 12px;
@@ -1028,16 +974,16 @@
 
 	text-decoration: none;
 }
-.post-smtp-link i[data-v-2855847a] {
+.post-smtp-link i[data-v-24f2e844] {
 	margin-right: 6px;
 }
-.post-smtp-link[data-v-2855847a] {
+.post-smtp-link[data-v-24f2e844] {
 	margin-bottom: 12px;
 }
-.post-smtp-link[data-v-2855847a]:last-child {
+.post-smtp-link[data-v-24f2e844]:last-child {
 	margin-bottom: 0;
 }
-.post-smtp-error-details[data-v-2855847a] {
+.post-smtp-error-details[data-v-24f2e844] {
 	width: 100%;
 	height: 100%;
 	position: fixed;
@@ -1050,7 +996,7 @@
 	backdrop-filter: blur( 1px );
 	z-index: 99999;
 }
-.post-smtp-details-wrapper[data-v-2855847a] {
+.post-smtp-details-wrapper[data-v-24f2e844] {
 	width: 700px;
 	height: 500px;
 	padding: 20px;
@@ -1059,7 +1005,7 @@
 	overflow: auto;
 	position: relative;
 }
-.post-smtp-close-button[data-v-2855847a] {
+.post-smtp-close-button[data-v-24f2e844] {
 	position: absolute;
 	top: 10px;
 	right: 10px;
@@ -1067,7 +1013,7 @@
 	color: #231F20;
 	text-decoration: none;
 }
-.resend-email-wrapper[data-v-2855847a] {
+.resend-email-wrapper[data-v-24f2e844] {
 	width: 100%;
 	height: 500px;
 
@@ -1075,44 +1021,44 @@
 	justify-content: center;
 	align-items: center;
 }
-.form-group[data-v-2855847a] {
+.form-group[data-v-24f2e844] {
 	width: 100%;
 }
-.form-group label[data-v-2855847a] {
+.form-group label[data-v-24f2e844] {
 	display: block;
 	margin-bottom: 6px;
 }
-.form-group textarea[data-v-2855847a] {
+.form-group textarea[data-v-24f2e844] {
 	width: 100%;
 	height: 100px;
 	padding: 10px;
 	border: 1px solid #ccc;
 	border-radius: 4px;
 }
-.form-control[data-v-2855847a] {
+.form-control[data-v-24f2e844] {
 	width: 100%;
 	height: 40px;
 	padding: 10px;
 	border: 1px solid #ccc;
 	border-radius: 4px;
 }
-.post-smtp-button[data-v-2855847a] {
+.post-smtp-button[data-v-24f2e844] {
 	padding: 10px 20px;
 	border: none;
 	border-radius: 4px;
 	cursor: pointer;
 }
-.post-smtp-button.primary[data-v-2855847a] {
+.post-smtp-button.primary[data-v-24f2e844] {
 	background: #0073aa;
 	color: #fff;
 }
-.email-menu-wrapper[data-v-2855847a] {
+.email-menu-wrapper[data-v-24f2e844] {
 	position: absolute;
 	right: 27px;
 	top: 0px;
 	cursor: pointer;
 }
-.email-menu-action[data-v-2855847a]::after {
+.email-menu-action[data-v-24f2e844]::after {
 
 
 	content: '';
@@ -1125,15 +1071,12 @@
 }
 
 
-/*!***************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-pro-features.vue?vue&type=style&index=0&id=64cc4817&scoped=true&lang=css ***!
-  \***************************************************************************************************************************************************************************************************************************************************************************/
 
-.pro-features[data-v-64cc4817] * {
+.pro-features[data-v-61c7bfcd] * {
 	padding: 0;
 	margin: 0;
 }
-.pro-features[data-v-64cc4817] {
+.pro-features[data-v-61c7bfcd] {
 	position: relative;
 	height: 397px;
 	background: url( ../1d1ed72328324fa15873.png ), url( ../bd29e69106d31e4a6f1f.png ), url( ../db67b70d37a34f75ab17.png ), linear-gradient(180deg, #375CAF 0%, #2C4A8C 100%);
@@ -1142,14 +1085,14 @@
 	background-size: auto, auto, cover, cover;
 	border-radius: 4px;
 }
-.container[data-v-64cc4817] {
+.container[data-v-61c7bfcd] {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	padding: 38px 62px;
 	flex-direction: column;
 }
-.header h2[data-v-64cc4817] {
+.header h2[data-v-61c7bfcd] {
 	background: -webkit-linear-gradient(270deg, #F9AA39 0%, #FFDAA5 100%);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
@@ -1159,10 +1102,10 @@
 	line-height: 25.83px;
 	text-align: center;
 }
-.d-inline-block[data-v-64cc4817] {
+.d-inline-block[data-v-61c7bfcd] {
 	display: inline-block;
 }
-.header p[data-v-64cc4817] {
+.header p[data-v-61c7bfcd] {
 	font-family: Poppins;
 	font-size: 16px;
 	font-weight: 400;
@@ -1176,13 +1119,13 @@
 
 	margin-left: 83px;
 }
-.header[data-v-64cc4817] {
+.header[data-v-61c7bfcd] {
 	margin-bottom: 20px;
 }
-.footer[data-v-64cc4817] {
+.footer[data-v-61c7bfcd] {
 	margin-top: 20px;
 }
-.create-container[data-v-64cc4817] {
+.create-container[data-v-61c7bfcd] {
 	width: 56px;
 	height: 56px;
 	background: url( ../86fe1bec08f081521e92.svg );
@@ -1193,18 +1136,18 @@
 	justify-content: center;
 	align-items: center;
 }
-.body[data-v-64cc4817] {
+.body[data-v-61c7bfcd] {
 	display: grid;
 	grid-template-columns: auto auto auto auto ;
 	width: 100%;
 }
-.feature-block[data-v-64cc4817] {
+.feature-block[data-v-61c7bfcd] {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	margin-bottom: 20px;
 }
-.block-content[data-v-64cc4817] {
+.block-content[data-v-61c7bfcd] {
 	margin-left: 20px;
 
 	font-family: Poppins;
@@ -1214,7 +1157,7 @@
 	text-align: left;
 	color: #E2E9FB;
 }
-.post-smtp-minimize-ad[data-v-64cc4817] {
+.post-smtp-minimize-ad[data-v-61c7bfcd] {
 	position: absolute;
 	top: 20px;
 	right: 24px;
@@ -1228,25 +1171,22 @@
 
 	cursor: pointer;
 }
-.post-smtp-minimize-ad i[data-v-64cc4817] {
+.post-smtp-minimize-ad i[data-v-61c7bfcd] {
 	margin-right: 10px;
 }
-.bcfm[data-v-64cc4817] {
+.bcfm[data-v-61c7bfcd] {
 	background: url( ../e2f9e8c4d311f9c91473.png ), url( ../1d1ed72328324fa15873.png ), url( ../bd29e69106d31e4a6f1f.png ), url( ../db67b70d37a34f75ab17.png ), linear-gradient(180deg, #375CAF 0%, #2C4A8C 100%);
 	background-repeat: no-repeat;
 	background-position: top right, left bottom, right bottom, 0 0, 0 0;
 	background-size: auto, auto, auto, cover, cover;
 }
 
-/*!********************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-guide.vue?vue&type=style&index=0&id=39e9fd32&scoped=true&lang=css ***!
-  \********************************************************************************************************************************************************************************************************************************************************************/
 
-.documentation[data-v-39e9fd32] * {
+.documentation[data-v-4cecbb7c] * {
 	padding: 0;
 	margin: 0;
 }
-.header[data-v-39e9fd32] {
+.header[data-v-4cecbb7c] {
 	border-radius: 4px 4px 0 0;
 	border-width: 1px 1px 0 1px;
 	border-style: solid;
@@ -1254,7 +1194,7 @@
 	padding: 16px 24px;
 	background: #FFFFFF;
 }
-.header h3[data-v-39e9fd32] {
+.header h3[data-v-4cecbb7c] {
 	font-family: Poppins;
 	font-size: 16px;
 	font-weight: 600;
@@ -1262,62 +1202,59 @@
 	text-align: left;
 	color: #231F20;
 }
-.float-left[data-v-39e9fd32] {
+.float-left[data-v-4cecbb7c] {
 	float: left;
 }
-.float-right[data-v-39e9fd32] {
+.float-right[data-v-4cecbb7c] {
 	float: right;
 }
-.header[data-v-39e9fd32]::after {
+.header[data-v-4cecbb7c]::after {
 	content: '';
 	display: block;
 	clear: both;
 }
-.transform-image[data-v-39e9fd32] {
+.transform-image[data-v-4cecbb7c] {
 	transform: rotate(0deg);
 	transition: transform 0.5s;
 }
-.maximize[data-v-39e9fd32] {
+.maximize[data-v-4cecbb7c] {
 	transform: rotate(180deg);
 }
-.minimize[data-v-39e9fd32] {
+.minimize[data-v-4cecbb7c] {
 	transform: rotate(0deg);
 }
-.body[data-v-39e9fd32] {
+.body[data-v-4cecbb7c] {
 	background: #EFF4FD;
 	border-width: 0 1px 1px 1px;
 	border-style: solid;
 	border-color: #DCDFE5;
 	padding: 48px 0;
 }
-.body[data-v-39e9fd32] {
+.body[data-v-4cecbb7c] {
 	width: calc( 100% - 2px );
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
-.content[data-v-39e9fd32] {
+.content[data-v-4cecbb7c] {
 	display: grid;
 	grid-template-columns: auto auto auto;
 }
-.content[data-v-39e9fd32]::after {
+.content[data-v-4cecbb7c]::after {
 	content: '';
 	display: block;
 	clear: both;
 }
 
-/*!****************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-documentation.vue?vue&type=style&index=0&id=37ef17f0&scoped=true&lang=css ***!
-  \****************************************************************************************************************************************************************************************************************************************************************************/
 
-.documentation[data-v-37ef17f0] {
+.documentation[data-v-826bc4c8] {
 	width: 222px;
 	float: left;
 	padding: 20px;
 	background: #ffffff;
 	margin: 0 24px 24px 0;
 }
-.documentation h3[data-v-37ef17f0] {
+.documentation h3[data-v-826bc4c8] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 500;
@@ -1325,22 +1262,22 @@
 	text-align: left;
 	color: #231F20;
 }
-.doc-unstyled-list[data-v-37ef17f0] {
+.doc-unstyled-list[data-v-826bc4c8] {
 	margin-top: 20px;
 	margin-bottom: 22px;
 }
-.doc-unstyled-list li[data-v-37ef17f0] {
+.doc-unstyled-list li[data-v-826bc4c8] {
 	line-height: 18px;
 	margin: 10px 0;
 }
-.doc-unstyled-list li a[data-v-37ef17f0] {
+.doc-unstyled-list li a[data-v-826bc4c8] {
 	font-family: Poppins;
 	font-size: 12px;
 	font-weight: 400;
 	text-align: left;
 	color: #375CAF;
 }
-.view-more-button[data-v-37ef17f0] {
+.view-more-button[data-v-826bc4c8] {
 	font-family: Poppins;
 	font-size: 12px;
 	font-weight: 500;
@@ -1349,15 +1286,12 @@
 	color: #375CAF;
 	text-decoration: none;
 }
-.clearfix[data-v-37ef17f0]::after {
+.clearfix[data-v-826bc4c8]::after {
 	content: "";
 	clear: both;
 	display: table;
 }
 
-/*!*******************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./src/app.css (1) ***!
-  \*******************************************************************/
 .animated {
     animation-duration: 0.5s;
 }
@@ -1398,5 +1332,12 @@
     background: #F9FBFF;
 }
 
+.gmail-one-click{
+    width:274px
+}
+.gmail-wrapper{
+    padding: 0px !important;
+    border-bottom: none !important;
+}
 
 /*# sourceMappingURL=app.css.map*/

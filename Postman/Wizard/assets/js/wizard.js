@@ -793,3 +793,24 @@ jQuery(document).ready(function ($) {
     // Listen for changes on the checkbox
     jQuery('.ps-enable-gmail-one-click').on('change', toggleFields);
 });
+
+// ============================
+// Tooltip GIF on Hover Script
+// ============================
+// This script shows a tooltip with a GIF when hovering over elements with the class "gmail-hoverr".
+// The image is set via the data-tooltip-image attribute.
+// The tooltip is positioned to the right of the hovered element.
+
+jQuery(document).ready(function (jQuery) {
+  jQuery('.gmail-hoverr').on('mouseenter', function () {
+    var offset = jQuery(this).offset();
+
+    jQuery('#gif-tooltip').css({
+      display: 'block'
+    });
+  });
+
+  jQuery('.gmail-hoverr').on('mouseleave', function () {
+    jQuery('#gif-tooltip').hide();
+  });
+});

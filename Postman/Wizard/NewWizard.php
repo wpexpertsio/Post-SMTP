@@ -509,7 +509,7 @@ class Post_SMTP_New_Wizard {
 		$localized['gmail_icon'] = $gmail_icon_url; 
         
         wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), POST_SMTP_VER );
-        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), POST_SMTP_VER );
+        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), '1.23.4' );
         wp_localize_script( 'post-smtp-wizard', 'PostSMTPWizard', $localized );
 
     }
@@ -781,7 +781,9 @@ public function render_gmail_settings() {
         'product_url' => $product_url
     ];
     $json_data = htmlspecialchars( json_encode( $data ), ENT_QUOTES, 'UTF-8' );
-
+    echo '<div id="gif-tooltip" style="display: none; position: absolute; z-index: 9999;">
+        <img id="tooltip-img" src="' . esc_attr( POST_SMTP_ASSETS ) . '/images/gif/gmail_oneclick.gif" alt="Tooltip GIF" style="width: 300px; height: auto;" />
+    </div>';
     // Begin HTML output
     $html = '<p>' . sprintf(
         /* translators: %1$s: Google link, %2$s: Gmail mailer name, %3$s: Description */
@@ -794,13 +796,13 @@ public function render_gmail_settings() {
 
     $html .= __( 'The configuration steps are more technical than other options, so our detailed guide will walk you through the whole process.', 'post-smtp' );
     $html .= '<hr />';
-
     if ( post_smtp_has_pro() ) {
         $one_click = true;
         $html .= sprintf( '<h3>%1$s</h3>', __( 'One-Click Setup', 'post-smtp' ) );
     } else {
+        $html .= '<div class="gmail-hoverr">';
         $html .= sprintf(
-            '<h3>%1$s <span class="ps-wizard-pro-tag">%2$s</span></h3>',
+            '<h3 class="%1$s" >%1$s <span class="ps-wizard-pro-tag">%2$s</span></h3>',
             __( 'One-Click Setup', 'post-smtp' ),
             __( 'PRO', 'post-smtp' )
         );
@@ -808,7 +810,7 @@ public function render_gmail_settings() {
         $one_click_class .= ' disabled';
     }
 
-    $html .= __( 'Enable the option for a quick and easy way to connect with Google without the need of manually creating an app.', 'post-smtp' );
+    $html .= __( '<p>Enable the option for a quick and easy way to connect with Google without the need of manually creating an app. <p>', 'post-smtp' );
 
     // One-click switch control
     $html .= "<div>
@@ -820,7 +822,9 @@ public function render_gmail_settings() {
             </label> 
         </div>
     </div>";
-
+     if ( !post_smtp_has_pro() ) {
+        $html .= '</div>';
+     }
     // Client ID and Secret inputs
     $html .= '<div class="ps-disable-one-click-setup ' . ( $gmail_oneclick_enabled ? 'ps-hidden' : '' ) . '">
         <p>' . sprintf(
