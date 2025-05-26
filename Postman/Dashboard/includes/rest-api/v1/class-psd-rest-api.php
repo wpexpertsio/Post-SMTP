@@ -488,7 +488,7 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 		 * @return bool
 		 */
 		public function get_logs_permission() {
-			return is_user_logged_in();
+			return is_user_logged_in() && current_user_can( 'manage_options' );
 		}
 	}
 
