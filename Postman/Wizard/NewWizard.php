@@ -781,9 +781,7 @@ public function render_gmail_settings() {
         'product_url' => $product_url
     ];
     $json_data = htmlspecialchars( json_encode( $data ), ENT_QUOTES, 'UTF-8' );
-    echo '<div id="gif-tooltip" style="display: none; position: absolute; z-index: 9999;">
-        <img id="tooltip-img" src="' . esc_attr( POST_SMTP_ASSETS ) . '/images/gif/gmail_oneclick.gif" alt="Tooltip GIF" style="width: 300px; height: auto;" />
-    </div>';
+
     // Begin HTML output
     $html = '<p>' . sprintf(
         /* translators: %1$s: Google link, %2$s: Gmail mailer name, %3$s: Description */
@@ -800,7 +798,6 @@ public function render_gmail_settings() {
         $one_click = true;
         $html .= sprintf( '<h3>%1$s</h3>', __( 'One-Click Setup', 'post-smtp' ) );
     } else {
-        $html .= '<div class="gmail-hoverr">';
         $html .= sprintf(
             '<h3 class="%1$s" >%1$s <span class="ps-wizard-pro-tag">%2$s</span></h3>',
             __( 'One-Click Setup', 'post-smtp' ),
@@ -822,9 +819,6 @@ public function render_gmail_settings() {
             </label> 
         </div>
     </div>";
-     if ( !post_smtp_has_pro() ) {
-        $html .= '</div>';
-     }
     // Client ID and Secret inputs
     $html .= '<div class="ps-disable-one-click-setup ' . ( $gmail_oneclick_enabled ? 'ps-hidden' : '' ) . '">
         <p>' . sprintf(
