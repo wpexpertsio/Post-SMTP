@@ -820,7 +820,8 @@ public function render_gmail_settings() {
     // One-click switch control
     $html .= "<div>
         <div class='ps-form-switch-control'>
-            <label class='ps-switch-1'>
+            <label class='ps-switch-1 gmail-onceclick'>
+               
                 <input type='hidden' id='ps-one-click-data' value='" . esc_attr( $json_data ) . "'>
                 <input type='checkbox' class='$one_click_class' " . ( $gmail_oneclick_enabled ? 'checked' : '' ) . ">
                 <span class='slider round'></span>
