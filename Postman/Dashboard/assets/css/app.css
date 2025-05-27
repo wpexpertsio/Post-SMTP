@@ -1,27 +1,27 @@
 @import url(https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap);
 
-.post-smtp__wrapper[data-v-1cdaf3be] {
+.post-smtp__wrapper[data-v-0c10f342] {
 	background: #F9FBFF;
 }
-.mr-25[data-v-1cdaf3be] {
+.mr-25[data-v-0c10f342] {
 	margin-right: 25px;
 }
-.container[data-v-1cdaf3be] {
+.container[data-v-0c10f342] {
 	padding: 0 51px;
 }
-.mt-32[data-v-1cdaf3be] {
+.mt-32[data-v-0c10f342] {
 	margin-top: 32px;
 }
-.app-wrapper[data-v-1cdaf3be] {
+.app-wrapper[data-v-0c10f342] {
 	width: calc( 100% - 276px - 25px );
 }
-.app-sidebar[data-v-1cdaf3be] {
+.app-sidebar[data-v-0c10f342] {
 	width: 276px;
 }
-.float-left[data-v-1cdaf3be] {
+.float-left[data-v-0c10f342] {
 	float: left;
 }
-.clearfix[data-v-1cdaf3be]::after {
+.clearfix[data-v-0c10f342]::after {
 	clear: both;
 	content: "";
 	display: table;
@@ -203,7 +203,7 @@
 }
 
 
-.customer-support[data-v-747812a2] {
+.customer-support[data-v-ae87a46a] {
 	padding: 0 !important;
 	background: linear-gradient(180deg, #40518E 0%, #231F20 100%);
 	display: flex;
@@ -212,10 +212,10 @@
 	flex-direction: column;
 	height: 268px;
 }
-.customer-support-content[data-v-747812a2] {
+.customer-support-content[data-v-ae87a46a] {
 	width: 213px;
 }
-.customer-support-content p[data-v-747812a2] {
+.customer-support-content p[data-v-ae87a46a] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 500;
@@ -223,13 +223,13 @@
 	text-align: center;
 	color: #B8BDCA;
 }
-.troubleshooting[data-v-747812a2] {
+.troubleshooting[data-v-ae87a46a] {
 	padding: 0 !important;
 }
-.mb-24[data-v-747812a2] {
+.mb-24[data-v-ae87a46a] {
 	margin-bottom: 24px;
 }
-.troubleshooting-header[data-v-747812a2] {
+.troubleshooting-header[data-v-ae87a46a] {
 	border-radius: 4px 4px 0 0;
 	background: #EFF4FD;
 	padding: 16px 24px;
@@ -240,25 +240,25 @@
 	line-height: 20px;
 	color: #231F20;
 }
-.troubleshooting-content[data-v-747812a2] {
+.troubleshooting-content[data-v-ae87a46a] {
 	padding: 24px;
 }
-.troubleshoot.email[data-v-747812a2] {
+.troubleshoot.email[data-v-ae87a46a] {
 	list-style: url(../57f4451f3be03da17463.svg) inside;
 }
-.troubleshoot.import-export[data-v-747812a2] {
+.troubleshoot.import-export[data-v-ae87a46a] {
 	list-style: url(../d0a8e6270627cef66c74.svg) inside;
 }
-.troubleshoot.connectivity[data-v-747812a2] {
+.troubleshoot.connectivity[data-v-ae87a46a] {
 	list-style: url(../5b76dc43e6c63f11fb6d.svg) inside;
 }
-.troubleshoot.diagnostic[data-v-747812a2] {
+.troubleshoot.diagnostic[data-v-ae87a46a] {
 	list-style: url(../258d1cba1f474caf0c4b.svg) inside;
 }
-.troubleshoot.reset[data-v-747812a2] {
+.troubleshoot.reset[data-v-ae87a46a] {
 	list-style: url(../9fdeee5472f16554c9e9.svg) inside;
 }
-.troubleshoot a[data-v-747812a2] {
+.troubleshoot a[data-v-ae87a46a] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 400;
@@ -279,14 +279,14 @@
 }
 
 
-.mobile-wrapper[data-v-3b84963c] {
+.mobile-wrapper[data-v-a0f92582] {
 	background: linear-gradient(180deg, #FFFFFF 50%, #DCE7FF 100%);
 }
-.mobile-wrapper[data-v-3b84963c] * {
+.mobile-wrapper[data-v-a0f92582] * {
 	padding: 0;
 	margin: 0;
 }
-.mobile-header[data-v-3b84963c] {
+.mobile-header[data-v-a0f92582] {
 	font-family: Montserrat;
 	font-size: 14px;
 	font-weight: 500;
@@ -294,7 +294,7 @@
 	text-align: left;
 	color: #375CAF;
 }
-.mobile-header strong[data-v-3b84963c] {
+.mobile-header strong[data-v-a0f92582] {
 	font-family: Montserrat;
 	font-size: 14px;
 	font-weight: 700;
@@ -302,7 +302,7 @@
 	text-align: left;
 	color: #375CAF;
 }
-.post-smtp-main-wp-wrapper .main-wp-header h3[data-v-3b84963c] {
+.post-smtp-main-wp-wrapper .main-wp-header h3[data-v-a0f92582] {
 	color: #231F20;
 	font-family: Montserrat;
 	font-size: 14px;
@@ -310,7 +310,7 @@
 	font-weight: 500;
 	line-height: 130%; /* 18.2px */
 }
-.post-smtp-main-wp-wrapper .main-wp-header h3 span[data-v-3b84963c] {
+.post-smtp-main-wp-wrapper .main-wp-header h3 span[data-v-a0f92582] {
 	background: linear-gradient(269deg, #3662C7 18.26%, #32B495 47.83%, #B4D859 80.52%);
 	background-clip: text;
 	-webkit-background-clip: text;
@@ -321,7 +321,7 @@
 	font-weight: 700;
 	line-height: 130%;
 }
-.mobile-unstyles-list li[data-v-3b84963c] {
+.mobile-unstyles-list li[data-v-a0f92582] {
 	font-family: Montserrat;
 	font-size: 11px;
 	font-weight: 500;
@@ -331,22 +331,22 @@
 	margin-top: 10px;
 	list-style: url(../2eb9c91de5efa416e660.svg) inside;
 }
-.img-wrapper[data-v-3b84963c] {
+.img-wrapper[data-v-a0f92582] {
 	margin-top: 7px;
 }
-.img-wrapper[data-v-3b84963c]::after {
+.img-wrapper[data-v-a0f92582]::after {
 	content: "";
 	display: table;
 	clear: both;
 }
-.qrcode-img[data-v-3b84963c] {
+.qrcode-img[data-v-a0f92582] {
 	float: left;
 	margin-top: 47px;
 }
-.qrcode-mobile-app[data-v-3b84963c] {
+.qrcode-mobile-app[data-v-a0f92582] {
 	float: left;
 }
-.post-smtp-main-wp-wrapper[data-v-3b84963c] {
+.post-smtp-main-wp-wrapper[data-v-a0f92582] {
 	border-radius: 4px;
 	border: 1px solid #DCDFE5;
 	background: url( ../b5d4a4bc5f5d5c2cc5ec.png ), linear-gradient(180deg, #FFF 0%, #EDF2FE 100%);
@@ -354,10 +354,10 @@
 	background-position: right bottom;
 	background-repeat: no-repeat;
 }
-.main-wp-unstyled-list[data-v-3b84963c] {
+.main-wp-unstyled-list[data-v-a0f92582] {
 	margin-bottom: 86px;
 }
-.main-wp-unstyled-list li[data-v-3b84963c] {
+.main-wp-unstyled-list li[data-v-a0f92582] {
 	color: #646464;
 	font-family: Montserrat;
 	font-size: 11px;
@@ -367,7 +367,7 @@
 
 	list-style: url( ../9fd2c918204f11be1da3.svg ) inside;
 }
-.main-wp-footer a[data-v-3b84963c] {
+.main-wp-footer a[data-v-a0f92582] {
 	display: inline-flex;
 	padding: 10px 20px;
 	justify-content: center;
@@ -385,7 +385,7 @@
 	background: linear-gradient(312deg, #3662C7 21.21%, #32B495 64.57%, #B4D859 112.5%);
 	text-decoration: none;
 }
-.post-smtp-spam-score-wrapper[data-v-3b84963c] {
+.post-smtp-spam-score-wrapper[data-v-a0f92582] {
 	border-radius: 4px;
 	border: 1px solid #DCDFE5;
 	background: url( ../27b2ae161d3d48de6aa4.png ), linear-gradient(180deg, #FFF 0%, #EDF2FE 100%);
@@ -393,7 +393,7 @@
 	background-position: top right;
 	padding: 20px 25px;
 }
-.post-smtp-spam-score-header h2[data-v-3b84963c] {
+.post-smtp-spam-score-header h2[data-v-a0f92582] {
 	color: #231F20;
 	font-family: Montserrat;
 	font-size: 16px;
@@ -401,10 +401,10 @@
 	font-weight: 500;
 	line-height: 20.8px; /* 20.8px */
 }
-.post-smtp-spam-score-header h2 span[data-v-3b84963c] {
+.post-smtp-spam-score-header h2 span[data-v-a0f92582] {
 	font-weight: 700;
 }
-.post-smtp-spam-score-footer a[data-v-3b84963c] {
+.post-smtp-spam-score-footer a[data-v-a0f92582] {
 	padding: 10px 20px;
 
 	color: #FFF;
@@ -424,10 +424,10 @@
 
 	text-decoration: none;
 }
-.post-smtp-spam-score-list-unstyled[data-v-3b84963c] {
+.post-smtp-spam-score-list-unstyled[data-v-a0f92582] {
 	margin-bottom: 20px;
 }
-.post-smtp-spam-score-list-unstyled li[data-v-3b84963c] {
+.post-smtp-spam-score-list-unstyled li[data-v-a0f92582] {
 	color: #646464;
 	font-family: Montserrat;
 	font-size: 11px;
@@ -1332,5 +1332,21 @@
     background: #F9FBFF;
 }
 
+.gmail-one-click{
+    width:274px
+}
+.gmail-wrapper{
+    padding: 0px !important;
+    border-bottom: none !important;
+}
+a.gmail-click:active, a.gmail-click:visited{
+    color: #fff;
+    text-decoration: none;
+}
+a.gmail-click:hover,a.gmail-click:focus{
+    color: #fff;
+    text-decoration: none;
+    box-shadow: none;
+}
 
 /*# sourceMappingURL=app.css.map*/

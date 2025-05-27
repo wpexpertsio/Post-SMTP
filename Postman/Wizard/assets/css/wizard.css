@@ -236,7 +236,7 @@
 }
 
 .gmail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 946px;
+  height: 1100px;
 }
 
 .mandrill_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
@@ -756,8 +756,9 @@ span.ps-pro-close-popup {
 }
 .ps-disable-gmail-setup b{
   display: inline-block;
-  margin-left: 30px;
-  margin-top: 30px !important
+  margin-left: 5px;
+  margin-top: 30px !important;
+ color: green;
 }
 .ps-connect-with{
 	margin-left: 20px;
@@ -903,3 +904,33 @@ div#ps-pro-code-copy-notification {
   display: none;
 }
 /* Lets make wizard responsive */
+
+.wizard-btn-css{
+	background: none !important;
+	color: red !important;
+    font-size: 10px !important;
+    margin-left: 100px; 
+}
+.wizard-btn{
+	margin-left: 0px !important;
+}
+.icon-circle {
+  width: 24px;
+  height: 24px;
+  background-color: #28a745;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.icon-check {
+  width: 6px;
+  height: 12px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  display: inline-block;
+}
