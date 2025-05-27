@@ -454,7 +454,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
             </tr>
             <tr>
                 <td style="padding: 0 20px;font-size: 10px;">
-                    This email was sent from your website XXXXXXX to test your email functionality.
+                    This email was sent from your website <a href="'.home_url().'" target="_blank"><strong>'.get_bloginfo().'</strong></a> to test your email functionality.
                 </td>
             </tr>
         </tbod';
