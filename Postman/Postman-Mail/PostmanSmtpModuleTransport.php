@@ -528,7 +528,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		require_once POST_SMTP_PATH. '/Postman/Popup/popup.php';
 		
 		echo '<div class="ps-form-switch-control">
-			<label class="ps-switch-1 gmail-onceclick">
+			<label class="ps-switch-1 ps_gmail-onceclick">
 				<input type="hidden" id="ps-one-click-data" value="' . esc_attr( $json_data ) . '">
 				<input type="checkbox" class="' . esc_attr( $class ) . '" name="enable_gmail_oneclick" ' . $is_checked .'>
 				<span class="slider round"></span>
