@@ -1724,10 +1724,10 @@ hr {
         width: 30%;
     }
 }
-label.ps-switch-1.ps_gmail-onceclick {
+label.ps-switch-1.ps-gmail-one-click {
    position: relative;
 }
-label.ps-switch-1.ps_gmail-onceclick:hover:before {
+label.ps-switch-1.ps-gmail-one-click:hover:before {
     content: "";
     position: absolute;
     left: 160px;
