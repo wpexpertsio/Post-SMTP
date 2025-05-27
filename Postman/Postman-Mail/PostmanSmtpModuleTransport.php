@@ -102,7 +102,11 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 					$hostname = $this->connection_details[$route_key]['hostname'];
 				} else {
 					$primary = $this->options->getSelectedPrimary();
-					if ( isset( $this->connection_details[$primary] ) && is_array( $this->connection_details[$primary])) {
+					if (
+						isset( $this->connection_details[ $primary ] ) &&
+						is_array( $this->connection_details[ $primary ] ) &&
+						isset( $this->connection_details[ $primary ]['hostname'] )
+					) {
 						$hostname = $this->connection_details[$primary]['hostname'];
 					} else {
 						$hostname = '';
@@ -110,7 +114,11 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 				}
 			} else {
 				$fallback = $this->options->getSelectedFallback();
-				if ( isset( $this->connection_details[$fallback] ) && is_array( $this->connection_details[$fallback] ) ) {
+					if (
+						isset( $this->connection_details[ $fallback ] ) &&
+						is_array( $this->connection_details[ $fallback ] ) &&
+						isset( $this->connection_details[ $fallback ]['hostname'] )
+					){
 					$hostname = $this->connection_details[$fallback]['hostname'];
 				} else {
 					$hostname = '';

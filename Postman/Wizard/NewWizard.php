@@ -1785,203 +1785,202 @@ class Post_SMTP_New_Wizard {
 
     /**
      * Save Wizard | AJAX Callback
-     * 
+     *
      * @since 2.7.0
-     * @version 1.0.0
+     * @version 1.1.0
      */
     public function save_wizard() {
 
         $form_data = array();
         parse_str( $_POST['FormData'], $form_data );
-        $response = false;
 
-        if( 
-            isset( $_POST['action'] )
-            &&
-            'ps-save-wizard' == $_POST['action'] 
-            &&
+        if (
+            isset( $_POST['action'] ) &&
+            'ps-save-wizard' === $_POST['action'] &&
             wp_verify_nonce( $form_data['security'], 'post-smtp' )
         ) {
+            $response = false;
 
-            if( $this->existing_db_version === '1.0.1' ) {
+            if ( $this->existing_db_version === '1.0.1' ) {
+                $response = $this->handle_legacy_save( $form_data );
+                wp_send_json( array(), 200 );
+            } else {
+                $response_data = $this->handle_new_version_save( $form_data );
+                wp_send_json_success( $response_data );
+            }
+        }
 
-                if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
+        // Fallback response
+        wp_send_json_error();
+    }
 
-                    $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
-                    $options = get_option( PostmanOptions::POSTMAN_OPTIONS );
-                    $_options = $options;
-                    $options = $options ? $options : array();
+    /**
+     * Handle saving for version 1.0.1
+     *
+     * @since 2.7.0
+     * @version
+     */
+    private function handle_legacy_save( $form_data ) {
 
-                    //for the checkboxes
-                    $sanitized['prevent_sender_email_override'] = isset( $sanitized['prevent_sender_email_override'] ) ? 1 : '';
-                    $sanitized['prevent_sender_name_override'] = isset( $sanitized['prevent_sender_name_override'] ) ? 1 : '';
-                    
-                    //Envelop Email Address
-                    $sanitized['envelope_sender'] = isset( $sanitized['sender_email'] ) ? $sanitized['sender_email'] : '';
+        if ( ! isset( $form_data['postman_options'] ) || empty( $form_data['postman_options'] ) ) {
+            return false;
+        }
 
-                    //Encode API Keys
-                    $sanitized['office365_app_id'] = isset( $sanitized['office365_app_id'] ) ? $sanitized['office365_app_id'] : '';
-                    $sanitized['office365_app_password'] = isset( $sanitized['office365_app_password'] ) ? $sanitized['office365_app_password'] : '';
-                    $sanitized[PostmanOptions::SENDINBLUE_API_KEY] = isset( $sanitized[PostmanOptions::SENDINBLUE_API_KEY] ) ? $sanitized[PostmanOptions::SENDINBLUE_API_KEY] : '';
-                    $sanitized['sparkpost_api_key'] = isset( $sanitized['sparkpost_api_key'] ) ? $sanitized['sparkpost_api_key'] : '';
-                    $sanitized['postmark_api_key'] = isset( $sanitized['postmark_api_key'] ) ? $sanitized['postmark_api_key'] : '';
-                    $sanitized['mailgun_api_key'] = isset( $sanitized['mailgun_api_key'] ) ? $sanitized['mailgun_api_key'] : '';
-                    $sanitized[PostmanOptions::SENDGRID_API_KEY] = isset( $sanitized[PostmanOptions::SENDGRID_API_KEY] ) ? $sanitized[PostmanOptions::SENDGRID_API_KEY] : '';
-                    $sanitized['mandrill_api_key'] = isset( $sanitized['mandrill_api_key'] ) ? $sanitized['mandrill_api_key'] : '';
-                    $sanitized['elasticemail_api_key'] = isset( $sanitized['elasticemail_api_key'] ) ? $sanitized['elasticemail_api_key'] : '';
-                    $sanitized[PostmanOptions::MAILJET_API_KEY] = isset( $sanitized[PostmanOptions::MAILJET_API_KEY] ) ? $sanitized[PostmanOptions::MAILJET_API_KEY] : '';
-                    $sanitized[PostmanOptions::MAILJET_SECRET_KEY] = isset( $sanitized[PostmanOptions::MAILJET_SECRET_KEY] ) ? $sanitized[PostmanOptions::MAILJET_SECRET_KEY] : '';
-                    $sanitized['basic_auth_password'] = isset( $sanitized['basic_auth_password'] ) ? $sanitized['basic_auth_password'] : '';
-                    $sanitized['ses_access_key_id'] = isset( $sanitized['ses_access_key_id'] ) ? $sanitized['ses_access_key_id'] : '';
-                    $sanitized['ses_secret_access_key'] = isset( $sanitized['ses_secret_access_key'] ) ? $sanitized['ses_secret_access_key'] : '';
-                    $sanitized['ses_region'] = isset( $sanitized['ses_region'] ) ? $sanitized['ses_region'] : '';
-                    $sanitized['enc_type'] = 'tls';
-                    $sanitized['auth_type'] = 'login';
-                    
-                    foreach( $sanitized as $key => $value ) {
-                        $options[$key] = $value;
-                    }
-                    if( $options == $_options ) {
-                        $response = true;
-                    } else {
-                        $response = update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
-                    }
-                    
-                }
-            }else{
-             // New save logic for versions other than 1.0.1.
-                if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
-                    $new_connection = [];
-                    $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
-					$options = get_option( PostmanOptions::POSTMAN_OPTIONS, [] );
-		
-                    // Initialize the connections array.
-                    $mail_connections = get_option( 'postman_connections' );
-                    // Ensure $mail_connections is an array
-                    if ( !is_array( $mail_connections ) ) {
-                        $mail_connections = array();
-                    }
-                    // Get the transport type and corresponding API keys.
-                    $transport_type = $sanitized['transport_type'] ?? '';
-                    $api_keys = $this->get_transport_type_keys( $transport_type );
+        $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
+        $options = get_option( PostmanOptions::POSTMAN_OPTIONS, array() );
+        $original_options = $options;
 
-                    if( !empty( $api_keys ) ){
-                        $new_connection = array(
-                            'provider'     => $sanitized['transport_type'] ?? '',
-                            'sender_email' => $sanitized['sender_email'] ?? '',
-                            'sender_name'  => $sanitized['sender_name'] ?? '',
-                        );
-                    }
+        // Normalize checkboxes
+        $sanitized['prevent_sender_email_override'] = isset( $sanitized['prevent_sender_email_override'] ) ? 1 : '';
+        $sanitized['prevent_sender_name_override'] = isset( $sanitized['prevent_sender_name_override'] ) ? 1 : '';
+        $sanitized['envelope_sender'] = isset( $sanitized['sender_email'] ) ? $sanitized['sender_email'] : '';
 
-                    // Loop through the API keys and set the values from sanitized data.
-                    foreach ( $api_keys as $key ) {
-                        if ( isset( $sanitized[$key] ) ) {
-                            $new_connection[$key] = sanitize_text_field( $sanitized[$key] );
-                        }
-                    }
-                        // Special handling for Zoho Mail fields.
-                    if ( 'zohomail_api' === $transport_type && isset( $form_data[ 'access_token' ] ) ) {
-                        // Extract from sanitized data for these fields.
-                        $new_connection = array(
-                            'provider'     => $sanitized['transport_type'] ?? '',
-                            'sender_email' => $sanitized['sender_email'] ?? '',
-                            'sender_name'  => $sanitized['sender_name'] ?? '',
-                            'zohomail_client_id' => $sanitized['zohomail_client_id'] ?? '',
-                            'zohomail_client_secret' => $sanitized['zohomail_client_secret'] ?? '',
-                            'timestamp'     => time() + 3600,
-                        );
+        // Map of keys to preserve
+        $keys = array(
+            'office365_app_id', 'office365_app_password', PostmanOptions::SENDINBLUE_API_KEY,
+            'sparkpost_api_key', 'postmark_api_key', 'mailgun_api_key',
+            PostmanOptions::SENDGRID_API_KEY, 'mandrill_api_key', 'elasticemail_api_key',
+            PostmanOptions::MAILJET_API_KEY, PostmanOptions::MAILJET_SECRET_KEY,
+            'basic_auth_password', 'ses_access_key_id', 'ses_secret_access_key', 'ses_region'
+        );
 
-                        // Extract other Zoho values from $form_data.
-                        $zoho_fields = ['access_token', 'refresh_token', 'token_expires'];
+        foreach ( $keys as $key ) {
+            $sanitized[ $key ] = isset( $sanitized[ $key ] ) ? $sanitized[ $key ] : '';
+        }
 
-                        foreach ( $zoho_fields as $field ) {
-                            if ( isset( $form_data[ $field ] ) ) {
-                                $new_connection[ $field ] = sanitize_text_field( $form_data[ $field ] );
-                            }
-                        }
-                    }
-                    if ( 'office365_api' === $transport_type && isset( $form_data[ 'access_token' ] ) ) {
-                        // Extract from sanitized data for these fields.
-                        $new_connection = array(
-                            'provider'     => $sanitized[ 'transport_type'] ?? '',
-                            'sender_email' => $sanitized[ 'sender_email'] ?? '',
-                            'sender_name'  => $sanitized[ 'sender_name'] ?? '',
-                            'access_token' => $form_data[ 'access_token' ],
-                            'refresh_token' => $form_data[ 'refresh_token' ],
-                            'token_expires' => $form_data[ 'token_expires' ],
-                            'timestamp'     => time() + 3600,
-                            'office365_app_id' => $sanitized[ 'office365_app_id' ],
-                            'office365_app_password' => $sanitized[ 'office365_app_password' ],
-                        );
-                    }
-                    if ( 'gmail_api' === $transport_type && isset( $form_data[ 'access_token' ] ) ) {
-                        // Extract from sanitized data for these fields.
-                        $new_connection = array(
-                            'provider'     => $sanitized['transport_type'] ?? '',
-                            'sender_email' => $sanitized['sender_email'] ?? '',
-                            'sender_name'  => $sanitized['sender_name'] ?? '',
-                            'access_token' => $form_data[ 'access_token' ],
-                            'refresh_token' => $form_data[ 'refresh_token' ],
-                            'auth_token_expires' => $form_data[ 'token_expires' ],
-                            'timestamp'     => time() + 3600,
-                            'oauth_client_id' => $sanitized[ 'oauth_client_id' ],
-                            'oauth_client_secret' => $sanitized[ 'oauth_client_secret' ],
-                        );
-                    }
-					if( 'office365_api' === $transport_type ){
-						$options['sender_email'] = isset( $sanitized['sender_email'] )
-						? sanitize_text_field( $sanitized['sender_email'] )
-						: '';
-						$options['sender_name'] = isset( $sanitized['sender_name'] )
-						? sanitize_text_field( $sanitized['sender_name'] )
-						: '';
-						$options['office365_app_id'] = isset( $sanitized['office365_app_id'] )
-							? sanitize_text_field( $sanitized['office365_app_id'] )
-							: '';
-						$options['office365_app_password'] = isset( $sanitized['office365_app_password'] )
-							? sanitize_text_field( $sanitized['office365_app_password'] )
-							: '';
-						update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
-					}else{
-						$options['sender_email'] = isset( $sanitized['sender_email'] )
-						? sanitize_text_field( $sanitized['sender_email'] )
-						: '';
-						$options['sender_name'] = isset( $sanitized['sender_name'] )
-						? sanitize_text_field( $sanitized['sender_name'] )
-						: '';
-						update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
-					}					
-                    // Check if 'id' is set in the URL and update the specific connection.
-                    if ( isset( $form_data['postman_fallback_edit'] ) ) {
-                        $id = $form_data['postman_fallback_edit'];
-                        // Update the existing connection at the specified index.
-                        $mail_connections[$id] = array_merge( $mail_connections[$id], $new_connection );
-                    } else {
-                        if ( !empty( $new_connection ) ) {
-                            $mail_connections[] = $new_connection;
-                            $id = array_key_last($mail_connections);
-                        }
-                    }
-					// Save the new mail connections to the 'postman_connections' option.
-                    $response =  update_option( 'postman_connections', $mail_connections );
+        $sanitized['enc_type'] = 'tls';
+        $sanitized['auth_type'] = 'login';
 
+        $options = array_merge( $options, $sanitized );
+
+        return $options === $original_options ? true : update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
+    }
+
+    /**
+     * Handle saving for newer DB versions
+     *
+     * @since 2.7.0
+     * @version
+     */
+    private function handle_new_version_save( $form_data ) {
+
+        $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
+        $transport_type = isset( $sanitized['transport_type'] ) ? $sanitized['transport_type'] : '';
+        $api_keys = $this->get_transport_type_keys( $transport_type );
+
+        $new_connection = array(
+            'provider' => $transport_type,
+            'sender_email' => isset( $sanitized['sender_email'] ) ? $sanitized['sender_email'] : '',
+            'sender_name' => isset( $sanitized['sender_name'] ) ? $sanitized['sender_name'] : '',
+        );
+
+        foreach ( $api_keys as $key ) {
+            if ( isset( $sanitized[ $key ] ) ) {
+                $new_connection[ $key ] = sanitize_text_field( $sanitized[ $key ] );
+            }
+        }
+
+        $this->handle_special_providers( $transport_type, $form_data, $sanitized, $new_connection );
+        $this->update_sender_meta( $sanitized, $transport_type );
+
+        $mail_connections = get_option( 'postman_connections', array() );
+
+        if ( isset( $form_data['postman_fallback_edit'] ) ) {
+            $id = $form_data['postman_fallback_edit'];
+            $mail_connections[ $id ] = array_merge( $mail_connections[ $id ], $new_connection );
+        } else {
+            $mail_connections[] = $new_connection;
+            $id = array_key_last( $mail_connections );
+ 
+            // ✅ Update primary_connection key inside postman_options.
+            $postman_options = get_option( PostmanOptions::POSTMAN_OPTIONS, array() );
+            $postman_options['primary_connection'] = $id;
+            update_option( PostmanOptions::POSTMAN_OPTIONS, $postman_options );
+        }
+
+        $saved = update_option( 'postman_connections', $mail_connections );
+
+        return array(
+            'index'  => $id,
+            'status' => $saved ? 'updated' : 'not_updated',
+        );
+    }
+
+    /**
+     * Handle provider-specific logic
+     *
+     * @since 2.7.0
+     * @version
+     */
+    private function handle_special_providers( $type, $form_data, $sanitized, &$connection ) {
+
+        if ( $type === 'zohomail_api' ) {
+            $connection = array_merge(
+                $connection,
+                array(
+                    'zohomail_client_id'     => isset( $sanitized['zohomail_client_id'] ) ? $sanitized['zohomail_client_id'] : '',
+                    'zohomail_client_secret' => isset( $sanitized['zohomail_client_secret'] ) ? $sanitized['zohomail_client_secret'] : '',
+                    'timestamp'              => time() + 3600,
+                )
+            );
+
+            foreach ( array( 'access_token', 'refresh_token', 'token_expires' ) as $field ) {
+                if ( isset( $form_data[ $field ] ) ) {
+                    $connection[ $field ] = sanitize_text_field( $form_data[ $field ] );
                 }
             }
-            
         }
 
-        //Prevent redirection.
-        delete_transient( PostmanSession::ACTION );
-        if( $this->existing_db_version === '1.0.1' ) {
-             wp_send_json( array(), 200 );
-        }else{
-            wp_send_json_success( array(
-                'index'   => $id,
-                'status'  => $response ? 'updated' : 'not_updated',
-            ) );
+        if ( $type === 'office365_api' ) {
+            $connection = array_merge(
+                $connection,
+                array(
+                    'access_token'        => isset( $form_data['access_token'] ) ? $form_data['access_token'] : '',
+                    'refresh_token'       => isset( $form_data['refresh_token'] ) ? $form_data['refresh_token'] : '',
+                    'token_expires'       => isset( $form_data['token_expires'] ) ? $form_data['token_expires'] : '',
+                    'timestamp'           => time() + 3600,
+                    'office365_app_id'    => isset( $sanitized['office365_app_id'] ) ? $sanitized['office365_app_id'] : '',
+                    'office365_app_password' => isset( $sanitized['office365_app_password'] ) ? $sanitized['office365_app_password'] : '',
+                )
+            );
         }
 
+        if ( $type === 'gmail_api' ) {
+            $connection = array_merge(
+                $connection,
+                array(
+                    'access_token'        => isset( $form_data['access_token'] ) ? $form_data['access_token'] : '',
+                    'refresh_token'       => isset( $form_data['refresh_token'] ) ? $form_data['refresh_token'] : '',
+                    'auth_token_expires'  => isset( $form_data['token_expires'] ) ? $form_data['token_expires'] : '',
+                    'timestamp'           => time() + 3600,
+                    'oauth_client_id'     => isset( $sanitized['oauth_client_id'] ) ? $sanitized['oauth_client_id'] : '',
+                    'oauth_client_secret' => isset( $sanitized['oauth_client_secret'] ) ? $sanitized['oauth_client_secret'] : '',
+                )
+            );
+        }
     }
+
+    /**
+     * Update sender email/name in PostmanOptions
+     *
+     * @since 2.7.0
+     * @version
+     */
+    private function update_sender_meta( $sanitized, $transport_type ) {
+
+        $options = get_option( PostmanOptions::POSTMAN_OPTIONS, array() );
+
+        $options['sender_email'] = isset( $sanitized['sender_email'] ) ? sanitize_text_field( $sanitized['sender_email'] ) : '';
+        $options['sender_name']  = isset( $sanitized['sender_name'] ) ? sanitize_text_field( $sanitized['sender_name'] ) : '';
+
+        if ( $transport_type === 'office365_api' ) {
+            $options['office365_app_id'] = isset( $sanitized['office365_app_id'] ) ? sanitize_text_field( $sanitized['office365_app_id'] ) : '';
+            $options['office365_app_password'] = isset( $sanitized['office365_app_password'] ) ? sanitize_text_field( $sanitized['office365_app_password'] ) : '';
+        }
+
+        update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
+    }
+
 
     /**
      * Redirect to Zoho Authentication
