@@ -69,7 +69,7 @@ class PostmanEmailLogs {
             $header = $log['original_headers'];
             $msg = $log['original_message'];
  			$msg = $this->purify_html( $msg );
-           	echo ( isset ( $header ) && strpos( $header, "text/html" ) ) ? $msg : '<pre>' . $msg . '</pre>' ;
+           	echo ( isset ( $header ) && strpos( $header, "text/html" ) ) ? $msg : '' . $msg . '' ;
 
             die;
 
@@ -115,7 +115,7 @@ class PostmanEmailLogs {
 		// ✅ Allow inline styles but prevent unsafe styles
 		$config->set( 'CSS.Trusted', false ); // Block dangerous inline styles.
 		$config->set( 'CSS.AllowedProperties', null ); // NULL means allow all CSS properties.
-
+        $config->set( 'CSS.MaxImgLength', null );
         // this library is removing display:flex how can we fix it?
         $config->set( 'CSS.AllowTricky', true );
 

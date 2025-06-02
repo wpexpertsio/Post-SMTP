@@ -430,7 +430,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		$withPermission = __( 'Used with permission', 'post-smtp' );
 		$emailBody = '
 		<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-		<table style="width:470px;margin: 50px auto; color: #7D98B2;font-size: 12px;">
+		<table style="width: 600px;margin:50px auto;color:#7D98B2;font-size:14px;padding:30px 0;">
         <thead>
             <tr>
                 <th>
@@ -444,16 +444,16 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
                 <td style="padding: 0 20px;">Hey there 👋,</td>
             </tr>
             <tr>
-               <td style="padding: 0 20px;"><h3 style=" color: #214A72; font-size: 16px; font-weight: 600;">Congrats! Your test email was sent successfully</h3></td>
+               <td style="padding: 0 20px;"><h3 style="color:#214A72;font-size:16px;font-weight:600;display: inline-block;margin: 10px 0 10px; font-size: 20px;">Congrats! Your test email was sent successfully</h3></td>
             </tr>
             <tr>
-                <td style="padding: 0 20px;">Thank you for using Post SMTP. Our mission is to enhance you email deliverability.</td>
+                <td style="padding:0 20px;line-height: 20px;">Thank you for using Post SMTP. Our mission is to enhance you email deliverability.</td>
             </tr>
             <tr>
-                <td><img style=" margin: 20px 0;" src="'.esc_attr( POST_SMTP_ASSETS ).'/images/logos/post-man-banner.png"/></td>
+                <td><img style=" margin: 20px 0; width:100%" src="'.esc_attr( POST_SMTP_ASSETS ).'/images/logos/post-man-banner.png"/></td>
             </tr>
             <tr>
-                <td style="padding: 0 20px;font-size: 10px;">
+                <td style="padding:0 20px;font-size: 12px;text-align: center;">
                     This email was sent from your website <a href="'.home_url().'" target="_blank"><strong>'.get_bloginfo().'</strong></a> to test your email functionality.
                 </td>
             </tr>
@@ -462,7 +462,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 			'Content-Type: text/plain; charset = "UTF-8"',
 			'Content-Transfer-Encoding: 8bit',
 			'',
-			'Hello!',
+			'Hello!', 
 			'',
 			sprintf( '%s - https://wordpress.org/plugins/post-smtp/', $sentBy ),
 			'',
@@ -480,7 +480,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 			'</style>',
 			'</head>',
 			'<body class="wporg-notification">',
-			'	<div style="background: #e8f6fe; font-family: &amp; quot; Helvetica Neue&amp;quot; , Helvetica ,Arial,sans-serif; font-size: 14px; color: #666; text-align: center; margin: 0; padding: 0">',
+			'	<div style="style=" width: 600px; margin: 0 auto;">',
 			$emailBody,
 			'</body>',
 			'</html>',
