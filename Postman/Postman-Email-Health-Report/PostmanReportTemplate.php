@@ -13,7 +13,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 		public function reporting_template( $duration, $from, $to, $logs ) {
 
 			$is_addonactivated = false;
-			if ( post_smtp_has_pro() ) {
+			if ( class_exists( 'Post_SMTP_Report_And_Tracking' ) ) {
 				$is_addonactivated = true;
 			}
 
