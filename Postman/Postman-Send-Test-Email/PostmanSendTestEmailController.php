@@ -450,7 +450,11 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
                 <td style="padding:0 20px;line-height: 20px;">Thank you for using Post SMTP. Our mission is to enhance you email deliverability.</td>
             </tr>
             <tr>
-                <td><img style=" margin: 20px 0; width:100%" src="'.esc_attr( POST_SMTP_ASSETS ).'/images/logos/post-man-banner.png"/></td>
+                <td>
+					<a href="https://postmansmtp.com/post-smtp-mobile-app/" target="_blank">
+						<img style=" margin: 20px 0; width:100%" src="'.esc_attr( POST_SMTP_ASSETS ).'/images/logos/post-man-banner.png"/>
+					</a>
+				</td>
             </tr>
             <tr>
                 <td style="padding:0 20px;font-size: 12px;text-align: center;">
