@@ -98,7 +98,8 @@ class PostmanEmailLogs {
 
 		// ✅ Allow all attributes except JavaScript-based ones
 		$config->set('HTML.AllowedAttributes', null);
-
+        $config->set('CSS.AllowedProperties', 'border-radius, background');
+    
 		// ❌ Block JavaScript-based attacks
 		$config->set( 'HTML.ForbiddenElements', ['script'] );
 		
