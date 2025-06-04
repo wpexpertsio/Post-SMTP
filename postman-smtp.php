@@ -223,3 +223,39 @@ function post_setupPostman() {
 	$kevinCostner = new Postman( __FILE__, POST_SMTP_VER );
 	do_action( 'post_smtp_init');
 }
+
+add_action( 'admin_notices', 'post_smtp_office365_deprecation_notice' );
+
+/**
+ * Show warning notice for Office 365 users using deprecated SMTP auth.
+ *
+ * @since 3.2.2
+ */
+
+function post_smtp_office365_deprecation_notice() {
+    if ( ! isset( $_GET['page'] ) || strpos( $_GET['page'], 'postman' ) !== 0 ) {
+        return;
+    }
+
+    $options = get_option( 'postman_options' );
+
+    if ( ! is_array( $options ) ) {
+        return;
+    }
+
+    $transport = isset( $options['transport_type'] ) ? $options['transport_type'] : '';
+    $hostname  = isset( $options['hostname'] ) ? $options['hostname'] : '';
+
+    if ( $transport === 'smtp' && $hostname === 'smtp.office365.com' ) {
+        $message = sprintf(
+            '<div class="notice notice-warning"><p><strong>%s</strong><br>%s <a href="%s" target="_blank">%s</a>.</p></div>',
+            esc_html__( 'Attention Microsoft Office 365, Outlook, and Hotmail users:', 'post-smtp' ),
+            esc_html__( 'Basic Authentication for SMTP relay is being retired and will no longer be supported. To avoid email delivery failures, please switch to alternative mailers. For detailed instructions, please refer to our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/post-smtp-complete-mailer-guide/' ),
+            esc_html__( 'Mailer Setup Guides', 'post-smtp' )
+        );
+
+        echo $message;
+    }
+}
+
