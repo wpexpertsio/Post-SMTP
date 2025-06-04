@@ -111,7 +111,7 @@ class PostmanEmailLogs {
 			'mailto' => true,
 			'tel'   => true,
 		]); 
-		
+        
 		$config->set( 'URI.SafeIframeRegexp', '' );
 		// ✅ Allow inline styles but prevent unsafe styles
 		$config->set( 'CSS.Trusted', false ); // Block dangerous inline styles.

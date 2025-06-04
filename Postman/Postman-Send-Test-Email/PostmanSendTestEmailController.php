@@ -430,7 +430,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		$withPermission = __( 'Used with permission', 'post-smtp' );
 		$emailBody = '
 		<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-		<table style="width: 600px;margin:50px auto;color:#7D98B2;font-size:14px;padding:30px 0;">
+		<table style="width: 600px;margin:50px auto;color:#7D98B2;font-size:12px;padding:30px 0;">
         <thead>
             <tr>
                 <th>
@@ -444,7 +444,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
                 <td style="padding: 0 20px;">Hey there 👋,</td>
             </tr>
             <tr>
-               <td style="padding: 0 20px;"><h3 style="color:#214A72;font-size:16px;font-weight:600;display: inline-block;margin: 10px 0 10px; font-size: 20px;">Congrats! Your test email was sent successfully</h3></td>
+               <td style="padding: 0 20px;"><h3 style="color:#214A72;font-size:16px;font-weight:600;display: inline-block;margin:0; font-size: 20px;">Congrats! Your test email was sent successfully</h3></td>
             </tr>
             <tr>
                 <td style="padding:0 20px;line-height: 20px;">Thank you for using Post SMTP. Our mission is to enhance you email deliverability.</td>

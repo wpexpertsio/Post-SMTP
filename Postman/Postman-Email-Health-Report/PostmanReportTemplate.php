@@ -74,48 +74,48 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 			$extension_url = 'https://postmansmtp.com/pricing/?utm_source=wordpress&utm_medium=email&utm_campaign=email_report&utm_content=report_and_tracking';
 			$disable_url = 'https://postmansmtp.com/pricing/?utm_source=wordpress&utm_medium=email&utm_campaign=email_report&utm_content=email_health_report/';
 
-            $body = '<div style=" width: 500px; margin: 0 auto; color: rgba(125, 152, 178, 1); font-size: 14px; font-family: Poppins, sans-serif;">
+            $body = '<div style=" width: 500px; margin: 0 auto; color: rgba(125, 152, 178, 1); font-size: 12px; font-family: Poppins, sans-serif;">
         <table>
             <tr>
                 <td style="padding: 20px 0;text-align: center;">
-                    <a href="#"><img src="'.POST_SMTP_ASSETS.'images/reporting/post_logo.png"/></a>
+                    <a href="https://postmansmtp.com"><img src="'.POST_SMTP_ASSETS.'images/reporting/post_logo.png"/></a>
                 </td>
             </tr>
             <tr>
                 <td style="padding: 20px;background: #F0F6FF;border-radius: 10px;">
-                    <h4>Hi '.$admin_name.' </h4>
-                    <p>Here is a quick overview of how your emails were performing in the past '.$duration.'</p>
+                    <h4 style=" margin: 0 0 5px 0;">Hi '.$admin_name.' </h4>
+                    <p style=" margin: 0 0 5px 0;">Here is a quick overview of how your emails were performing in the past '.$duration.'</p>
                     <table style=" width: 100%; ">
                         <tr>
                             <td style=" width: 80px;">
                                 <div style="text-align: center; padding: 10px 10px; border-radius: 10px; background: #fff; color:#151D48; margin: 0 2px;">
                                     <img src="'.POST_SMTP_ASSETS.'images/reporting/total.png" style="margin: 0 0 5px;width: 40px;height: 40px; "/>
-                                    <h5 style="margin:0;font-weight: 400;font-size: 12px;">Total Emails<br> <strong style="font-size: 24px; font-weight: 600;">'.$total.'</strong></h5>
+                                    <h5 style="margin:0;font-weight: 400;font-size: 10px;">Total Emails<br> <strong style="font-size: 20px; font-weight: 600;">'.$total.'</strong></h5>
                                 </div>
                             </td>
                             <td style=" width: 80px;">
                                 <div style=" text-align: center; padding: 10px 10px; border-radius: 10px; background: #fff; color:#151D48; margin: 0 2px;">
                                     <img src="'.POST_SMTP_ASSETS.'images/reporting/sent.png" style="margin: 0 0 5px;width: 40px;height: 40px;"/>
-                                    <h5 style="margin:0;font-weight: 400;font-size: 12px;">Sent<br> <strong style="font-size: 24px; font-weight: 600;">'.$sent.'</strong></h5>
+                                    <h5 style="margin:0;font-weight: 400;font-size: 10px;">Sent<br> <strong style="font-size: 20px; font-weight: 600;">'.$sent.'</strong></h5>
                                 </div>
                             </td>
                             <td style=" width: 80px;">
                                 <div style=" text-align: center; padding: 10px 10px; border-radius: 10px; background: #fff; color:#151D48; margin: 0 2px;">
                                     <img src="'.POST_SMTP_ASSETS.'images/reporting/failed.png" style="margin: 0 0 5px;width: 40px;height: 40px;"/>
-                                    <h5 style="margin:0;font-weight: 400;font-size: 12px;">Failed <br> <strong style="font-size: 24px; font-weight: 600;">'.$failed.'</strong></h5>
+                                    <h5 style="margin:0;font-weight: 400;font-size: 10px;">Failed <br> <strong style="font-size: 20px; font-weight: 600;">'.$failed.'</strong></h5>
                                 </div>
                             </td>
                             <td style=" width: 80px;">
                                 '.($is_addonactivated ? '
                                 <div style=" text-align: center; padding: 10px 10px; border-radius: 10px; background: #fff; color:#151D48; margin: 0 2px;">
                                     <img src="'.POST_SMTP_ASSETS.'images/reporting/opened.png" style="margin: 0 0 5px;width: 40px;height: 40px;"/>
-                                    <h5 style="margin:0;font-weight: 400;font-size: 12px;">Opened<br><strong style="font-size: 24px; font-weight: 600;">'.$opened.'</strong></h5>
+                                    <h5 style="margin:0;font-weight: 400;font-size: 10px;">Opened<br><strong style="font-size: 20px; font-weight: 600;">'.$opened.'</strong></h5>
                                 </div>
                                 ' : '
                                 <a href="'.$extension_url.'" style="text-decoration: none;">
                                     <div style="text-align: center; padding: 10px 10px; border-radius: 10px; background: #fbbc1f; color:#fff; margin: 0 2px;">
                                         <img src="'.POST_SMTP_ASSETS.'images/reporting/opend.png" style="margin: 0 0 5px;width: 40px;height: 40px;"/>
-                                        <h5 style="margin:0;font-weight: 400;font-size: 12px;">Opened<br>
+                                        <h5 style="margin:0;font-weight: 400;font-size: 10px;">Opened<br>
                                         <img src="'.POST_SMTP_ASSETS.'images/reporting/lock.png" style="margin: 5px 0 0 0;"/>
                                     </div>
                                 </a>
