@@ -148,21 +148,21 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                                 <div>
                                     <h3 style="color:rgba(33,74,114,1);font-size: 14px;">Unlock the Post SMTP Pro and enhance your email deliverability</h3>
                                     <ul style="margin: 0; padding: 0; list-style: none;">
-                                        <li>
-                                            <img src="'.POST_SMTP_ASSETS.'images/reporting/list-icon.png" alt="check" style="width: 14px;">
+                                        <li style="margin-bottom: 10px;">
+                                            <img src="'.POST_SMTP_ASSETS.'images/reporting/list-icon.png" alt="check" style="width: 14px;margin-bottom: -2px;">
                                                 More Pro Mailers 
-                                            <img src="'.POST_SMTP_ASSETS.'images/reporting/mailers.png" alt="mailers.png">
+                                            <img style="margin-bottom: -5px;" src="'.POST_SMTP_ASSETS.'images/reporting/mailers.png" alt="mailers.png">
                                         </li>
-                                        <li>
-                                            <img src="'.POST_SMTP_ASSETS.'images/reporting/list-icon.png" alt="check" style="width: 14px;">
+                                        <li style="margin-bottom: 10px;">
+                                            <img src="'.POST_SMTP_ASSETS.'images/reporting/list-icon.png" alt="check" style="width: 14px;margin-bottom: -2px;">
                                             All mobile app premium features. 
                                         </li>
-                                        <li>
-                                           <img src="'.POST_SMTP_ASSETS.'images/reporting/list-icon.png" alt="check" style="width: 14px;">
+                                        <li style="margin-bottom: 10px;">
+                                           <img src="'.POST_SMTP_ASSETS.'images/reporting/list-icon.png" alt="check" style="width: 14px;margin-bottom: -2px;">
                                             Auto-resend failed emails. 
                                         </li>
-                                        <li>
-                                           <img src="'.POST_SMTP_ASSETS.'images/reporting/list-icon.png" alt="check" style="width: 14px;">
+                                        <li style="margin-bottom: 10px;">
+                                           <img src="'.POST_SMTP_ASSETS.'images/reporting/list-icon.png" alt="check" style="width: 14px;margin-bottom: -2px;">
                                             SMS Failure Notification.
                                         </li>
                                     </ul>
