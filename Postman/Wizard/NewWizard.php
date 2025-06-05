@@ -1799,13 +1799,13 @@ class Post_SMTP_New_Wizard {
             'ps-save-wizard' === $_POST['action'] &&
             wp_verify_nonce( $form_data['security'], 'post-smtp' )
         ) {
-            $response = false;
-
             if ( $this->existing_db_version === '1.0.1' ) {
                 $response = $this->handle_legacy_save( $form_data );
+                delete_transient( PostmanSession::ACTION );
                 wp_send_json( array(), 200 );
             } else {
                 $response_data = $this->handle_new_version_save( $form_data );
+                delete_transient( PostmanSession::ACTION );
                 wp_send_json_success( $response_data );
             }
         }
