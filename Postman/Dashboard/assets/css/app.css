@@ -771,14 +771,14 @@
 }
 
 
-.post-smtp-logs-wrapper[data-v-e7cdd006] * {
+.post-smtp-logs-wrapper[data-v-982b376a] * {
 	padding: 0;
 	margin: 0;
 }
-.post-smtp-logs-wrapper[data-v-e7cdd006] {
+.post-smtp-logs-wrapper[data-v-982b376a] {
 	width: 100%;
 }
-.post-smtp-logs-header[data-v-e7cdd006] {
+.post-smtp-logs-header[data-v-982b376a] {
 	width: calc( 100% - 2px - 48px );
 	height: calc( 52px - 1px - 32px );
 
@@ -790,7 +790,7 @@
 	border-left: 1px solid #DCDFE5;
 	background: #EFF4FD;
 }
-.post-smtp-logs-body[data-v-e7cdd006] {
+.post-smtp-logs-body[data-v-982b376a] {
 	width: calc( 100% - 2px );
 
 	border-radius: 0px 0px 4px 4px;
@@ -799,23 +799,23 @@
 	border-left: 1px solid #DCDFE5;
 	background: #FFF;
 }
-.post-smtp-logs-body th[data-v-e7cdd006],
-.post-smtp-logs-body td[data-v-e7cdd006] {
+.post-smtp-logs-body th[data-v-982b376a],
+.post-smtp-logs-body td[data-v-982b376a] {
 	height: 48px;
 	padding: 0 16px;
 }
-.post-smtp-logs-header[data-v-e7cdd006]::after {
+.post-smtp-logs-header[data-v-982b376a]::after {
 	content: '';
 	display: block;
 	clear: both;
 }
-.float-left[data-v-e7cdd006] {
+.float-left[data-v-982b376a] {
 	float: left;
 }
-.float-right[data-v-e7cdd006] {
+.float-right[data-v-982b376a] {
 	float: right;
 }
-.post-smtp-logs-header h2[data-v-e7cdd006] {
+.post-smtp-logs-header h2[data-v-982b376a] {
 	color: #231F20;
 	text-align: center;
 	font-family: Poppins;
@@ -824,7 +824,7 @@
 	font-weight: 600;
 	line-height: 20px; /* 125% */
 }
-.post-smtp-logs-header a[data-v-e7cdd006] {
+.post-smtp-logs-header a[data-v-982b376a] {
 	color: #375CAF;
 	text-align: center;
 	font-family: Poppins;
@@ -834,10 +834,10 @@
 	line-height: 20px; /* 166.667% */
 	text-decoration-line: underline;
 }
-.post-smtp-logs-body table[data-v-e7cdd006] {
+.post-smtp-logs-body table[data-v-982b376a] {
 	width: 100%;
 }
-.post-smtp-logs-body table thead th[data-v-e7cdd006] {
+.post-smtp-logs-body table thead th[data-v-982b376a] {
 	color: #231F20;
 	text-align: center;
 	font-family: Poppins;
@@ -846,7 +846,7 @@
 	font-weight: 500;
 	line-height: 14px; /* 100% */
 }
-.post-smtp-logs-body table tbody td[data-v-e7cdd006] {
+.post-smtp-logs-body table tbody td[data-v-982b376a] {
 	color: #646464;
 	font-family: Poppins;
 	font-size: 12px;
@@ -856,13 +856,13 @@
 
 	border-bottom: 1px solid #DCDFE5;
 }
-.post-smtp-logs-body table tbody tr:last-child td[data-v-e7cdd006] {
+.post-smtp-logs-body table tbody tr:last-child td[data-v-982b376a] {
 	border-bottom: none;
 }
-.post-smtp-logs-body table tbody td[data-v-e7cdd006] {
+.post-smtp-logs-body table tbody td[data-v-982b376a] {
 	text-align: left;
 }
-.post-smtp-status[data-v-e7cdd006] {
+.post-smtp-status[data-v-982b376a] {
 	display: inline-flex;
 	padding: 4px;
 	flex-direction: column;
@@ -876,19 +876,19 @@
 	border-radius: 14px;
 	width: 62px;
 }
-.post-smtp-status.post-smtp-success[data-v-e7cdd006] {
+.post-smtp-status.post-smtp-success[data-v-982b376a] {
 	color: #74B27B;
 	background: #EDFFEF;
 }
-.post-smtp-status.post-smtp-failed[data-v-e7cdd006] {
+.post-smtp-status.post-smtp-failed[data-v-982b376a] {
 	color: #E57373;
 	background: #FFEDED;
 }
-.post-smtp-status-wrapper[data-v-e7cdd006] {
+.post-smtp-status-wrapper[data-v-982b376a] {
 	width: 100%;
 	position: relative;
 }
-.post-smtp-logs-empty[data-v-e7cdd006] {
+.post-smtp-logs-empty[data-v-982b376a] {
 	width: 100%;
 	height: 300px;
 
@@ -897,14 +897,14 @@
 	align-items: center;
 	flex-direction: column;
 }
-.post-smtp-logs-empty .post-smtp-logs-head[data-v-e7cdd006] {}
-.post-smtp-logs-empty .post-smtp-logs-content[data-v-e7cdd006] {
+.post-smtp-logs-empty .post-smtp-logs-head[data-v-982b376a] {}
+.post-smtp-logs-empty .post-smtp-logs-content[data-v-982b376a] {
 	text-align: center;
 
 	margin-bottom: 16px;
 	margin-top: 24px;
 }
-.post-smtp-logs-empty .post-smtp-logs-content h3[data-v-e7cdd006] {
+.post-smtp-logs-empty .post-smtp-logs-content h3[data-v-982b376a] {
 	color: #646464;
 	text-align: center;
 	font-family: Poppins;
@@ -914,7 +914,7 @@
 	line-height: 14px; /* 100% */
 	margin-bottom: 8px;
 }
-.post-smtp-logs-empty .post-smtp-logs-content p[data-v-e7cdd006] {
+.post-smtp-logs-empty .post-smtp-logs-content p[data-v-982b376a] {
 	color: #646464;
 	text-align: center;
 	font-family: Poppins;
@@ -923,7 +923,7 @@
 	font-weight: 400;
 	line-height: 18px; /* 150% */
 }
-.post-smtp-logs-empty .post-smtp-logs-footer a[data-v-e7cdd006] {
+.post-smtp-logs-empty .post-smtp-logs-footer a[data-v-982b376a] {
 	display: block;
 	color: #FFF;
 	font-family: Poppins;
