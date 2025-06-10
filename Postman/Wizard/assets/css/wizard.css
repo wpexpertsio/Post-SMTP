@@ -710,7 +710,7 @@ span.ps-pro-close-popup {
   font-weight: 500;
   padding: 5px 10px !important;
   margin-top:20px !important;
-
+  display: inline-block !important;
 }
 .ps-disable-office365-setup b{
   display: inline-block;

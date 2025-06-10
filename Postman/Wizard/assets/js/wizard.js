@@ -543,6 +543,15 @@ jQuery( document ).ready(function() {
 
     });
 
+    const office365_icon = PostSMTPWizard.office365_icon;
+	const css = `
+	  .ps-office365-btn::before {
+	    background-image: url( ${office365_icon} );
+	  }
+	 `;
+	const style = jQuery('<style>').text(css);
+	jQuery('head').append(style);
+
 } );
 
 jQuery(document).on('click', '.ps-enable-office365-one-click', function (e) {

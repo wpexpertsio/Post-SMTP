@@ -549,6 +549,9 @@ class Post_SMTP_New_Wizard {
 
         }
 
+        $office365_icon_url = POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.png';
+		$localized['office365_icon'] = $office365_icon_url; 
+
         wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), '1.5.4' );
         wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), '3.0.4' );
         wp_localize_script( 'post-smtp-wizard', 'PostSMTPWizard', $localized );
@@ -1534,19 +1537,19 @@ class Post_SMTP_New_Wizard {
                 ],
                 admin_url( 'admin-post.php' )
             ) );
-            $html .= '<a href="' . $action_url . '" class="button button-secondary ps-remove-office365-btn">';
-            $html .= esc_html__( 'Remove Authorization', 'post-smtp' );
-            $html .= '</a>';
             if ( isset( $postman_office365_auth_token['user_email'] ) ) {
               $html .= '<b>' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_office365_auth_token['user_email'] ) ) . '</b>';
             }
+            $html .= '<a href="' . $action_url . '" class="button button-secondary ps-remove-office365-btn">';
+            $html .= esc_html__( 'Remove Authorization', 'post-smtp' );
+            $html .= '</a>';
         }else {
-                $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
-                $html .= '<p>' . esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Office 365 API.', 'post-smtp' ) . '</p>';
-                $html .= '<input type="hidden" ' . esc_attr( $required ) . ' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Office 365 API', 'post-smtp' ) . '" />';
-                $html .= '<a href="' . esc_url( $office365_auth_url ) . '" class="button button-primary ps-office365-btn">';
-                $html .= esc_html__( 'Sign in with Microsoft', 'post-smtp' );
-                $html .= '</a>';
+            $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
+            $html .= '<p>' . esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Office 365 API.', 'post-smtp' ) . '</p>';
+            $html .= '<input type="hidden" ' . esc_attr( $required ) . ' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Office 365 API', 'post-smtp' ) . '" />';
+            $html .= '<a href="' . esc_url( $office365_auth_url ) . '" class="button button-primary ps-office365-btn">';
+            $html .= esc_html__( 'Sign in with Microsoft', 'post-smtp' );
+            $html .= '</a>';
         }
     }
 
