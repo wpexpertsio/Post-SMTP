@@ -51,7 +51,7 @@
 }
 
 
-.post-smtp-settings-menu-wrapper[data-v-01624a62] {
+.post-smtp-settings-menu-wrapper[data-v-a06ecf4c] {
 	width: 190px;
 	height: 312px;
 
@@ -64,24 +64,24 @@
 	top: 60px;
 	right: 41px;
 }
-.post-smtp-dropdown-menu[data-v-01624a62] {
+.post-smtp-dropdown-menu[data-v-a06ecf4c] {
 	width: 100%;
 	height: 52px;
 }
-.post-smtp-button[data-v-01624a62]:hover {
+.post-smtp-button[data-v-a06ecf4c]:hover {
 	background: #375CAF;
 	color: #fff;
 }
-.post-smtp-button:hover img[data-v-01624a62] {
+.post-smtp-button:hover img[data-v-a06ecf4c] {
 	filter: invert(100%);
 }
-.post-smtp-button img[fallback="true"][data-v-01624a62] {
+.post-smtp-button img[fallback="true"][data-v-a06ecf4c] {
 	filter: invert(100%);
 }
-.post-smtp-button:hover img[fallback="true"][data-v-01624a62] {
+.post-smtp-button:hover img[fallback="true"][data-v-a06ecf4c] {
 	filter: invert(0);
 }
-.post-smtp-button[data-v-01624a62] {
+.post-smtp-button[data-v-a06ecf4c] {
 	display: block;
 	padding: 0 20px;
 	line-height: 52px;
@@ -584,35 +584,35 @@
 }
 
 
-.post-smtp-card[data-v-36caffee] {
+.post-smtp-card[data-v-3753d82c] {
 	width: calc( 25% - 16px + 2px );
 	height: 140px;
 	border-radius: 4px;
 	float: left;
 	margin-right: 16px;
 }
-.post-smtp-card[data-v-36caffee]:last-child {
+.post-smtp-card[data-v-3753d82c]:last-child {
 	margin-right: 0;
 }
-.post-smtp-card-all[data-v-36caffee] {
+.post-smtp-card-all[data-v-3753d82c] {
 	background: #EDF4FF;
 	border: 1px solid #D3DDEB;
 }
-.post-smtp-card-success[data-v-36caffee] {
+.post-smtp-card-success[data-v-3753d82c] {
 	background: #EDFFEF;
 	border: 1px solid #D3EBD6;
 }
-.post-smtp-card-failed[data-v-36caffee] {
+.post-smtp-card-failed[data-v-3753d82c] {
 	background: #FFEDED;
 	border: 1px solid #EBD3D3;
 }
-.post-smtp-card-opened--pro[data-v-36caffee] {
+.post-smtp-card-opened--pro[data-v-3753d82c] {
 	background: url( ../2b70fc947e7d243045cc.svg ), radial-gradient(95.39% 99.9% at 49.79% 0%, #FFD291 0%, #F9AA39 100%);
 	border: 1px solid #EBE1D3;
 	background-repeat: no-repeat;
 	background-position: 275px 10px, center;
 }
-.post-smtp-card-content-wrapper[data-v-36caffee] {
+.post-smtp-card-content-wrapper[data-v-3753d82c] {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -621,7 +621,7 @@
 	width: 100%;
 	height: 100%;
 }
-.post-smtp-image-container[data-v-36caffee] {
+.post-smtp-image-container[data-v-3753d82c] {
 	margin-right: 15px;
 
 	width: 42px;
@@ -633,49 +633,49 @@
 
 	border-radius: 50%;
 }
-.post-smtp-card-all .post-smtp-image-container[data-v-36caffee] {
+.post-smtp-card-all .post-smtp-image-container[data-v-3753d82c] {
 	background: url( ../5228f6e3f64c7ce0d516.png );
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
 }
-.post-smtp-card-success .post-smtp-image-container[data-v-36caffee] {
+.post-smtp-card-success .post-smtp-image-container[data-v-3753d82c] {
 	background: url( ../33faa49fa2c81c425660.png );
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
 }
-.post-smtp-card-failed .post-smtp-image-container[data-v-36caffee] {
+.post-smtp-card-failed .post-smtp-image-container[data-v-3753d82c] {
 	background: url( ../080727baa513e48c626e.png );
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
 }
-.post-smtp-card-opened--pro .post-smtp-image-container[data-v-36caffee] {
+.post-smtp-card-opened--pro .post-smtp-image-container[data-v-3753d82c] {
 	background: url( ../1f30527ba4ffa819f296.png );
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
 }
-.post-smtp-card-pro.post-smtp-card-all .post-smtp-image-container[data-v-36caffee] {
+.post-smtp-card-pro.post-smtp-card-all .post-smtp-image-container[data-v-3753d82c] {
 	background: url( ../acc721b33f3d1b7d3795.png );
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
 }
-.post-smtp-card-pro.post-smtp-card-success .post-smtp-image-container[data-v-36caffee] {
+.post-smtp-card-pro.post-smtp-card-success .post-smtp-image-container[data-v-3753d82c] {
 	background: url( ../0762235fe75fa43063e7.png );
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
 }
-.post-smtp-card-pro.post-smtp-card-failed .post-smtp-image-container[data-v-36caffee] {
+.post-smtp-card-pro.post-smtp-card-failed .post-smtp-image-container[data-v-3753d82c] {
 	background: url( ../1c7dc8d09d20ecab18fb.png );
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
 }
-.post-smtp-count[data-v-36caffee] {
+.post-smtp-count[data-v-3753d82c] {
 	color: #231F20;
 	font-family: Poppins;
 	font-size: 20px;
@@ -683,7 +683,7 @@
 	font-weight: 600;
 	line-height: 20px; /* 100% */
 }
-.post-smtp-content[data-v-36caffee] {
+.post-smtp-content[data-v-3753d82c] {
 	color: #231F20;
 	font-family: Poppins;
 	font-size: 11px;
@@ -691,20 +691,20 @@
 	font-weight: 500;
 	line-height: 13px; /* 118.182% */
 }
-.post-smtp-card-pro .post-smtp-count[data-v-36caffee],
-.post-smtp-card-pro .post-smtp-content[data-v-36caffee] {
+.post-smtp-card-pro .post-smtp-count[data-v-3753d82c],
+.post-smtp-card-pro .post-smtp-content[data-v-3753d82c] {
 	color: #fff;
 }
-.post-smtp-card-pro.post-smtp-card-all[data-v-36caffee] {
+.post-smtp-card-pro.post-smtp-card-all[data-v-3753d82c] {
 	background: #6291D9;
 }
-.post-smtp-card-pro.post-smtp-card-success[data-v-36caffee] {
+.post-smtp-card-pro.post-smtp-card-success[data-v-3753d82c] {
 	background: #74B27B;
 }
-.post-smtp-card-pro.post-smtp-card-failed[data-v-36caffee] {
+.post-smtp-card-pro.post-smtp-card-failed[data-v-3753d82c] {
 	background: #E57373;
 }
-.post-smtp-card-pro.post-smtp-card-opened--pro[data-v-36caffee] {
+.post-smtp-card-pro.post-smtp-card-opened--pro[data-v-3753d82c] {
 	background: radial-gradient(95.39% 99.9% at 49.79% 0%, #FFD291 0%, #F9AA39 100%);
 }
 
@@ -771,14 +771,14 @@
 }
 
 
-.post-smtp-logs-wrapper[data-v-982b376a] * {
+.post-smtp-logs-wrapper[data-v-82c3bb58] * {
 	padding: 0;
 	margin: 0;
 }
-.post-smtp-logs-wrapper[data-v-982b376a] {
+.post-smtp-logs-wrapper[data-v-82c3bb58] {
 	width: 100%;
 }
-.post-smtp-logs-header[data-v-982b376a] {
+.post-smtp-logs-header[data-v-82c3bb58] {
 	width: calc( 100% - 2px - 48px );
 	height: calc( 52px - 1px - 32px );
 
@@ -790,7 +790,7 @@
 	border-left: 1px solid #DCDFE5;
 	background: #EFF4FD;
 }
-.post-smtp-logs-body[data-v-982b376a] {
+.post-smtp-logs-body[data-v-82c3bb58] {
 	width: calc( 100% - 2px );
 
 	border-radius: 0px 0px 4px 4px;
@@ -799,23 +799,23 @@
 	border-left: 1px solid #DCDFE5;
 	background: #FFF;
 }
-.post-smtp-logs-body th[data-v-982b376a],
-.post-smtp-logs-body td[data-v-982b376a] {
+.post-smtp-logs-body th[data-v-82c3bb58],
+.post-smtp-logs-body td[data-v-82c3bb58] {
 	height: 48px;
 	padding: 0 16px;
 }
-.post-smtp-logs-header[data-v-982b376a]::after {
+.post-smtp-logs-header[data-v-82c3bb58]::after {
 	content: '';
 	display: block;
 	clear: both;
 }
-.float-left[data-v-982b376a] {
+.float-left[data-v-82c3bb58] {
 	float: left;
 }
-.float-right[data-v-982b376a] {
+.float-right[data-v-82c3bb58] {
 	float: right;
 }
-.post-smtp-logs-header h2[data-v-982b376a] {
+.post-smtp-logs-header h2[data-v-82c3bb58] {
 	color: #231F20;
 	text-align: center;
 	font-family: Poppins;
@@ -824,7 +824,7 @@
 	font-weight: 600;
 	line-height: 20px; /* 125% */
 }
-.post-smtp-logs-header a[data-v-982b376a] {
+.post-smtp-logs-header a[data-v-82c3bb58] {
 	color: #375CAF;
 	text-align: center;
 	font-family: Poppins;
@@ -834,10 +834,10 @@
 	line-height: 20px; /* 166.667% */
 	text-decoration-line: underline;
 }
-.post-smtp-logs-body table[data-v-982b376a] {
+.post-smtp-logs-body table[data-v-82c3bb58] {
 	width: 100%;
 }
-.post-smtp-logs-body table thead th[data-v-982b376a] {
+.post-smtp-logs-body table thead th[data-v-82c3bb58] {
 	color: #231F20;
 	text-align: center;
 	font-family: Poppins;
@@ -846,7 +846,7 @@
 	font-weight: 500;
 	line-height: 14px; /* 100% */
 }
-.post-smtp-logs-body table tbody td[data-v-982b376a] {
+.post-smtp-logs-body table tbody td[data-v-82c3bb58] {
 	color: #646464;
 	font-family: Poppins;
 	font-size: 12px;
@@ -856,13 +856,13 @@
 
 	border-bottom: 1px solid #DCDFE5;
 }
-.post-smtp-logs-body table tbody tr:last-child td[data-v-982b376a] {
+.post-smtp-logs-body table tbody tr:last-child td[data-v-82c3bb58] {
 	border-bottom: none;
 }
-.post-smtp-logs-body table tbody td[data-v-982b376a] {
+.post-smtp-logs-body table tbody td[data-v-82c3bb58] {
 	text-align: left;
 }
-.post-smtp-status[data-v-982b376a] {
+.post-smtp-status[data-v-82c3bb58] {
 	display: inline-flex;
 	padding: 4px;
 	flex-direction: column;
@@ -876,19 +876,19 @@
 	border-radius: 14px;
 	width: 62px;
 }
-.post-smtp-status.post-smtp-success[data-v-982b376a] {
+.post-smtp-status.post-smtp-success[data-v-82c3bb58] {
 	color: #74B27B;
 	background: #EDFFEF;
 }
-.post-smtp-status.post-smtp-failed[data-v-982b376a] {
+.post-smtp-status.post-smtp-failed[data-v-82c3bb58] {
 	color: #E57373;
 	background: #FFEDED;
 }
-.post-smtp-status-wrapper[data-v-982b376a] {
+.post-smtp-status-wrapper[data-v-82c3bb58] {
 	width: 100%;
 	position: relative;
 }
-.post-smtp-logs-empty[data-v-982b376a] {
+.post-smtp-logs-empty[data-v-82c3bb58] {
 	width: 100%;
 	height: 300px;
 
@@ -897,14 +897,14 @@
 	align-items: center;
 	flex-direction: column;
 }
-.post-smtp-logs-empty .post-smtp-logs-head[data-v-982b376a] {}
-.post-smtp-logs-empty .post-smtp-logs-content[data-v-982b376a] {
+.post-smtp-logs-empty .post-smtp-logs-head[data-v-82c3bb58] {}
+.post-smtp-logs-empty .post-smtp-logs-content[data-v-82c3bb58] {
 	text-align: center;
 
 	margin-bottom: 16px;
 	margin-top: 24px;
 }
-.post-smtp-logs-empty .post-smtp-logs-content h3[data-v-982b376a] {
+.post-smtp-logs-empty .post-smtp-logs-content h3[data-v-82c3bb58] {
 	color: #646464;
 	text-align: center;
 	font-family: Poppins;
@@ -914,7 +914,7 @@
 	line-height: 14px; /* 100% */
 	margin-bottom: 8px;
 }
-.post-smtp-logs-empty .post-smtp-logs-content p[data-v-982b376a] {
+.post-smtp-logs-empty .post-smtp-logs-content p[data-v-82c3bb58] {
 	color: #646464;
 	text-align: center;
 	font-family: Poppins;
@@ -923,7 +923,7 @@
 	font-weight: 400;
 	line-height: 18px; /* 150% */
 }
-.post-smtp-logs-empty .post-smtp-logs-footer a[data-v-982b376a] {
+.post-smtp-logs-empty .post-smtp-logs-footer a[data-v-82c3bb58] {
 	display: block;
 	color: #FFF;
 	font-family: Poppins;
