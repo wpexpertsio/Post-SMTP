@@ -496,7 +496,6 @@ jQuery( document ).ready(function() {
 
                     var selectedSocket = jQuery( '.ps-wizard-socket-check:checked' ).val();
                     jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${response.data.message} <br><br>`  );
-                    jQuery( '.ps-wizard-error' ).append( `<span class="dashicons dashicons-warning disclaimer"></span> <span class="disclaimer">Test email failed. Please verify your SMTP settings to proceed with the Email Health Checker.</span>` );
                     
                     if( selectedSocket === 'smtp' ) {
 
