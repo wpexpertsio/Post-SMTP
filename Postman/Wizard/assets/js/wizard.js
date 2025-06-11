@@ -495,8 +495,7 @@ jQuery( document ).ready(function() {
                 if( response.success === false ) {
 
                     var selectedSocket = jQuery( '.ps-wizard-socket-check:checked' ).val();
-                    jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${response.data.message} <br><br>`  );
-                    jQuery( '.ps-wizard-error' ).append( `<span class="dashicons dashicons-warning"></span> Test email failed. Please check and correct your SMTP configuration. The Email Health Checker cannot proceed until a test email is successfully sent.` );
+                    jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${response.data.message}` );
                     
                     if( selectedSocket === 'smtp' ) {
 
@@ -793,4 +792,3 @@ jQuery(document).ready(function ($) {
     // Listen for changes on the checkbox
     jQuery('.ps-enable-gmail-one-click').on('change', toggleFields);
 });
-
