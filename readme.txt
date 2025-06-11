@@ -288,11 +288,12 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 == Changelog ==
 
 = 3.3.0 - June 11, 2025 =
-* New - Added new socket MailerSend.
-* New - Stats Widget added in WordPress Dashboard.
-* New - User can send Diagnostic report directly from the plugin.
-* Improvement - Modernized Test email template.
-* Improvement - Modernized Email Health Report template.
+* NEW - WP Dashboard Widget
+* NEW - Diagnostic Report Send Form
+* NEW - Mailersend Mailer Integration
+* FIX - Add Validation In Domain Checker  DNS, SPF, DMARC
+* FIX - LOCO Translate Issue 
+* FIX - Email Summary Improvement 
 
 = 3.2.0 - May 19, 2025 =
 * New - Introducing Email Tester to test your email deliverability.
