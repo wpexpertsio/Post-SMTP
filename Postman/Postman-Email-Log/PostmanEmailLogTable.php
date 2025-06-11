@@ -10,6 +10,18 @@
      */
     do_action( 'post_smtp_before_logs_table' );
     ?>
+	<?php if ( is_multisite() && is_main_site() ) : ?>
+		<label for="site_selector"><strong>Select a Site:</strong></label>
+		<select id="site_selector" name="site_selector">
+			<?php
+			$sites = get_sites();
+			foreach ( $sites as $site ) {
+				$details = get_blog_details( $site->blog_id );
+				echo '<option value="' . esc_attr( $site->blog_id ) . '">' . esc_html( $details->blogname ) . '</option>';
+			}
+			?>
+		</select><br><br>
+	<?php endif; ?>
     <input type="hidden" id="ps-email-log-nonce" value="<?php echo wp_create_nonce( 'security' ) ?>" />
     <table width="100%" id="ps-email-log">
         <thead>

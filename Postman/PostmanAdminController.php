@@ -220,6 +220,20 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 						</td>
 					</tr>
 					<tr>
+						<th scope="row"><?php _e( 'Enable Email Logs', 'post-smtp' ); ?></th>
+						<td>
+							<?php $checked = checked( $options['post_smtp_email_logs'] ?? '', 1, false ); ?>
+							<label for="post-smtp-email-logs">
+								<input id="post-smtp-email-logs" type="checkbox"
+									   name="<?php echo esc_attr( PostmanOptions::POSTMAN_NETWORK_OPTIONS ); ?>[post_smtp_email_logs]"
+									   value="1"
+									   <?php echo $checked; ?>
+								>
+								<p class="description"><?php _e( 'By enabling email logs the admin can view all site email logs through main site', 'post-smtp' ); ?></p>
+							</label>
+						</td>
+					</tr>
+					<tr>
 						<th scope="row"><?php _e( 'Allow user to load saved options', 'post-smtp' ); ?></th>
 						<td>
 							<?php $checked = checked( $options['post_smtp_allow_overwrite'] ?? '', 1, false ); ?>
