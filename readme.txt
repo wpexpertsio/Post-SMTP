@@ -287,7 +287,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
-= 3.3.0 - June 02, 2025 =
+= 3.3.0 - June 11, 2025 =
 * New - Added new socket MailerSend.
 * New - Stats Widget added in WordPress Dashboard.
 * New - User can send Diagnostic report directly from the plugin.
