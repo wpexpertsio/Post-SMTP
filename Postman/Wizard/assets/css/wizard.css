@@ -894,4 +894,7 @@ div#ps-pro-code-copy-notification {
   background: rgb(225, 253, 228);
   display: none;
 }
+.ps-wizard-error .disclaimer{
+	color: blue;
+}
 /* Lets make wizard responsive */
