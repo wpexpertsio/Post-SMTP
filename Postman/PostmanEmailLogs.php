@@ -368,6 +368,21 @@ class PostmanEmailLogs {
 
             }
 
+            // Handle Site ID.
+			if ( isset( $_GET['siteid'] ) ) {
+				$siteid = sanitize_text_field( $_GET['siteid'] );
+				$query['siteid'] = $siteid;
+
+				// Determine correct table name.
+				$table_name = ( $siteid == 1 ) ? 'post_smtp_logs' : "{$siteid}_post_smtp_logs";
+
+				// Set dynamic table name via filter.
+				add_filter( 'post_smtp_logs_table_name', function( $default_table_name ) use ( $table_name ) {
+					global $wpdb;
+					return $wpdb->prefix . $table_name;
+				});
+			}
+
             //Column Name
             $query['order_by'] = sanitize_text_field( $_GET['columns'][$_GET['order'][0]['column']]['data'] );
 

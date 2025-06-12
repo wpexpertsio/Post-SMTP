@@ -162,6 +162,14 @@ jQuery(document).ready(function($) {
 
 	} );
 
+	// Site Selector Filter
+	jQuery(document).on('change', '#site_selector', function () {
+		var siteId = jQuery(this).val();
+		var siteParam = siteId ? `&siteid=${siteId}` : '';
+		var ajaxURL = `${ajaxurl}?action=ps-get-email-logs&security=${logsDTSecirity}${siteParam}`;
+		logsDT.ajax.url(ajaxURL).load();
+	});	
+
 	// Status Buttons
 	jQuery( '#ps-email-log' ).before( `
 		<div class="ps-email-log-status-buttons">

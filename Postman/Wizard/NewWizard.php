@@ -1690,7 +1690,10 @@ class Post_SMTP_New_Wizard {
 						if ( in_array( $sanitized['transport_type'], $valid_transport_types ) ) {
 							// Update options for the selected transport type
 							$this->update_options_sites( $options );
-						}
+						}else{
+                            // For all other transport types, update only on main site.
+                            $response = update_option( PostmanOptions::POSTMAN_OPTIONS, $options )
+                        }
 
 					}else{
 						 $response = update_option( PostmanOptions::POSTMAN_OPTIONS , $options );

@@ -9,8 +9,11 @@
      * @version 1.0.0
      */
     do_action( 'post_smtp_before_logs_table' );
+    $options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS );
+    $logs_enabled = isset( $options['post_smtp_email_logs'] ) && $options['post_smtp_email_logs'] == 1;
+    
     ?>
-	<?php if ( is_multisite() && is_main_site() ) : ?>
+	<?php if ( is_multisite() && is_main_site() && $logs_enabled  ) : ?>
 		<label for="site_selector"><strong>Select a Site:</strong></label>
 		<select id="site_selector" name="site_selector">
 			<?php

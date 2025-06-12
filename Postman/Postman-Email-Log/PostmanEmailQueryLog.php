@@ -20,8 +20,6 @@ class PostmanEmailQueryLog {
         global $wpdb;
         $this->db = $wpdb;
         $this->table = $this->db->prefix . $this->table;
-
-        
     }
 
 
@@ -33,6 +31,17 @@ class PostmanEmailQueryLog {
      * @version 1.0.0
      */
     public function get_logs( $args = array() ) {
+
+        /**
+         * Filter the logs table name.
+         *
+         * This filter allows developers to override the default logs table name.
+         *
+         * @since 3.3.0
+         *
+         * @param string $table_name The full table name including prefix.
+         */
+        $this->table = apply_filters( 'post_smtp_logs_table_name', $this->table );
 
         /**
          * Filter the query arguments
