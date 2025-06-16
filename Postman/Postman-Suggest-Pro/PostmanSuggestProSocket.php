@@ -92,10 +92,12 @@ class PostmanSuggestProSocket {
 
         $pluginData = apply_filters( 'postman_get_plugin_metadata', null );
 
-        wp_register_script( 'postman-suggest-pro-sockets', POST_SMTP_ASSETS . 'js/postman-admin.js', array( 'jquery' ), $pluginData['version'], true );
+        wp_register_script( 'postman-suggest-pro-sockets', POST_SMTP_ASSETS . 'js/postman-admin.js', array( 'jquery' ),  '1.2.5' , true );
 
         wp_enqueue_script( 'postman-suggest-pro-sockets' );
-
+	    
+        $this->data['lessSecureNotice'] = wp_create_nonce( 'less-secure-security' );
+        
         wp_localize_script( 
             'postman-suggest-pro-sockets', 
             'postmanPro', 
