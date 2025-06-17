@@ -334,6 +334,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 			$options = array(
 				'sent_emails'   => esc_html__( 'Sent Emails', 'post-smtp' ),
 				'failed_emails' => esc_html__( 'Failed Emails', 'post-smtp' ),
+				'opened_emails' => esc_html__( 'Opened Emails', 'post-smtp' ),
 			);
 			if ( ! post_smtp_has_pro() ) {
 				$disabled = 'disabled';
@@ -460,30 +461,23 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 			
 			if ( post_smtp_has_pro() ){
 				$opened_count = 0;
-				// $opened_email = new Post_SMTP_New_Dashboard;
-				$current_time  = current_time( 'timestamp' );
-				$period = 'day';
-				$filter = strtotime( 'today', $current_time );
-				$opened_count = apply_filters(
-					'post_smtp_dashboard_opened_emails_count',
-					0,
-					array(
-						'period'       => $period,
-						'current_time' => $current_time,
-						'filter'       => $filter,
-					)
-				);
+				
 			}
 			// Loop through logs to count sent and failed emails.
 			foreach( $logs as $log ) {
 				if (isset($log->success)) {
 					// Check if success is a truthy value (e.g., 1 for success).
-					if ($log->success == 1) {
+					if ( isset($log->event_type) && $log->event_type === 'open-email' && post_smtp_has_pro() ) {
+                        $opened_count++;
+                    } elseif ($log->success == 1) {
 						$sent_count++;
 					} else {
 						// If success contains an error message or a falsy value, consider it failed.
 						$failed_count++;
 					}
+				} else {
+					// If success contains an error message or a falsy value, consider it failed.
+					$failed_count++;
 				}
 			}
 
