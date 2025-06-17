@@ -16,13 +16,15 @@ use PostSMTP\Vendor\Monolog\Logger;
  *
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
-class ErrorLevelActivationStrategy implements \PostSMTP\Vendor\Monolog\Handler\FingersCrossed\ActivationStrategyInterface {
-
-	private $actionLevel;
-	public function __construct( $actionLevel ) {
-		$this->actionLevel = \PostSMTP\Vendor\Monolog\Logger::toMonologLevel( $actionLevel );
-	}
-	public function isHandlerActivated( array $record ) {
-		return $record['level'] >= $this->actionLevel;
-	}
+class ErrorLevelActivationStrategy implements \PostSMTP\Vendor\Monolog\Handler\FingersCrossed\ActivationStrategyInterface
+{
+    private $actionLevel;
+    public function __construct($actionLevel)
+    {
+        $this->actionLevel = \PostSMTP\Vendor\Monolog\Logger::toMonologLevel($actionLevel);
+    }
+    public function isHandlerActivated(array $record)
+    {
+        return $record['level'] >= $this->actionLevel;
+    }
 }

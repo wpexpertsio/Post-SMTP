@@ -18,6 +18,6 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\OpenSSL as Progenitor;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class OpenSSL extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\OpenSSL {
-
+abstract class OpenSSL extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\OpenSSL
+{
 }

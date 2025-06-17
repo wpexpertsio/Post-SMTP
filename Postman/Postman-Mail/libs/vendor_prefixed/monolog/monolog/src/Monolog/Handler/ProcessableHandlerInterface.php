@@ -19,20 +19,20 @@ use PostSMTP\Vendor\Monolog\Processor\ProcessorInterface;
  *
  * @author Jordi Boggiano <j.boggiano@seld.be>
  */
-interface ProcessableHandlerInterface {
-
-	/**
-	 * Adds a processor in the stack.
-	 *
-	 * @param  ProcessorInterface|callable $callback
-	 * @return HandlerInterface            self
-	 */
-	public function pushProcessor( $callback ): \PostSMTP\Vendor\Monolog\Handler\HandlerInterface;
-	/**
-	 * Removes the processor on top of the stack and returns it.
-	 *
-	 * @throws \LogicException In case the processor stack is empty
-	 * @return callable
-	 */
-	public function popProcessor(): callable;
+interface ProcessableHandlerInterface
+{
+    /**
+     * Adds a processor in the stack.
+     *
+     * @param  ProcessorInterface|callable $callback
+     * @return HandlerInterface            self
+     */
+    public function pushProcessor($callback) : \PostSMTP\Vendor\Monolog\Handler\HandlerInterface;
+    /**
+     * Removes the processor on top of the stack and returns it.
+     *
+     * @throws \LogicException In case the processor stack is empty
+     * @return callable
+     */
+    public function popProcessor() : callable;
 }

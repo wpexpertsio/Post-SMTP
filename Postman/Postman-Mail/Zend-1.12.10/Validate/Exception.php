@@ -30,5 +30,5 @@
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Validate_Exception extends Postman_Zend_Exception {
-}
+class Postman_Zend_Validate_Exception extends Postman_Zend_Exception
+{}

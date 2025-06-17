@@ -17,24 +17,26 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class LanguageSettings extends \PostSMTP\Vendor\Google\Model {
-
-	/**
-	 * @var string
-	 */
-	public $displayLanguage;
-	/**
-	 * @param string
-	 */
-	public function setDisplayLanguage( $displayLanguage ) {
-		$this->displayLanguage = $displayLanguage;
-	}
-	/**
-	 * @return string
-	 */
-	public function getDisplayLanguage() {
-		return $this->displayLanguage;
-	}
+class LanguageSettings extends \PostSMTP\Vendor\Google\Model
+{
+    /**
+     * @var string
+     */
+    public $displayLanguage;
+    /**
+     * @param string
+     */
+    public function setDisplayLanguage($displayLanguage)
+    {
+        $this->displayLanguage = $displayLanguage;
+    }
+    /**
+     * @return string
+     */
+    public function getDisplayLanguage()
+    {
+        return $this->displayLanguage;
+    }
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\LanguageSettings::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_LanguageSettings' );
+\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\LanguageSettings::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_LanguageSettings');

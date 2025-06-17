@@ -18,6 +18,6 @@ namespace PostSMTP\Vendor\phpseclib3\Crypt\Common;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class BlockCipher extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\SymmetricKey {
-
+abstract class BlockCipher extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\SymmetricKey
+{
 }

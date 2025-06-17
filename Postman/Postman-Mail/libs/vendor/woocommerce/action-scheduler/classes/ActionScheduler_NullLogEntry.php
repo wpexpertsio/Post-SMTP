@@ -8,3 +8,4 @@ class ActionScheduler_NullLogEntry extends ActionScheduler_LogEntry {
 		// nothing to see here
 	}
 }
+ 

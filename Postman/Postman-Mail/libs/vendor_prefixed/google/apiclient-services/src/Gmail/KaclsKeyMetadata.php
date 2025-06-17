@@ -17,40 +17,44 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class KaclsKeyMetadata extends \PostSMTP\Vendor\Google\Model {
-
-	/**
-	 * @var string
-	 */
-	public $kaclsData;
-	/**
-	 * @var string
-	 */
-	public $kaclsUri;
-	/**
-	 * @param string
-	 */
-	public function setKaclsData( $kaclsData ) {
-		$this->kaclsData = $kaclsData;
-	}
-	/**
-	 * @return string
-	 */
-	public function getKaclsData() {
-		return $this->kaclsData;
-	}
-	/**
-	 * @param string
-	 */
-	public function setKaclsUri( $kaclsUri ) {
-		$this->kaclsUri = $kaclsUri;
-	}
-	/**
-	 * @return string
-	 */
-	public function getKaclsUri() {
-		return $this->kaclsUri;
-	}
+class KaclsKeyMetadata extends \PostSMTP\Vendor\Google\Model
+{
+    /**
+     * @var string
+     */
+    public $kaclsData;
+    /**
+     * @var string
+     */
+    public $kaclsUri;
+    /**
+     * @param string
+     */
+    public function setKaclsData($kaclsData)
+    {
+        $this->kaclsData = $kaclsData;
+    }
+    /**
+     * @return string
+     */
+    public function getKaclsData()
+    {
+        return $this->kaclsData;
+    }
+    /**
+     * @param string
+     */
+    public function setKaclsUri($kaclsUri)
+    {
+        $this->kaclsUri = $kaclsUri;
+    }
+    /**
+     * @return string
+     */
+    public function getKaclsUri()
+    {
+        return $this->kaclsUri;
+    }
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\KaclsKeyMetadata::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_KaclsKeyMetadata' );
+\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\KaclsKeyMetadata::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_KaclsKeyMetadata');

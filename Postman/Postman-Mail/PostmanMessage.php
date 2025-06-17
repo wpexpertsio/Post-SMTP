@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+    exit; // Exit if accessed directly
 }
 
 if ( ! class_exists( 'PostmanMessage' ) ) {
@@ -8,7 +8,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 	require_once 'PostmanEmailAddress.php';
 
 	/**
-	 * This class knows how to interface with WordPress
+	 * This class knows how to interface with Wordpress
 	 * including loading/saving to the database.
 	 *
 	 * The various Transports available:
@@ -48,10 +48,10 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		 * No-argument constructor
 		 */
 		function __construct() {
-			$this->logger        = new PostmanLogger( get_class( $this ) );
-			$this->headers       = array();
-			$this->toRecipients  = array();
-			$this->ccRecipients  = array();
+			$this->logger = new PostmanLogger( get_class( $this ) );
+			$this->headers = array();
+			$this->toRecipients = array();
+			$this->ccRecipients = array();
 			$this->bccRecipients = array();
 		}
 
@@ -63,9 +63,9 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			}
 		}
 
-		function __call( $name, $args ) {
-			$class   = new ReflectionClass( __CLASS__ );
-			$methods = $class->getMethods( ReflectionMethod::IS_PUBLIC );
+		function __call($name, $args) {
+			$class = new ReflectionClass(__CLASS__);
+			$methods = $class->getMethods(ReflectionMethod::IS_PUBLIC );
 
 			$message = __( '<code>%1$s</code> method of a <code>PostmanMessage</code> object is <strong>not supported</strong>. Use one of the following methods <pre><code>%2$s</code></pre>', 'post-smtp' );
 
@@ -104,37 +104,37 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 				$this->contentType = sprintf( "%s;\r\n\t boundary=\"%s\"", $this->contentType, $this->getBoundary() );
 			}
 
-			$body        = $this->getBody();
+			$body = $this->getBody();
 			$contentType = $this->getContentType();
 			// add the message content as either text or html
 			if ( empty( $contentType ) || substr( $contentType, 0, 10 ) === 'text/plain' ) {
 				$this->logger->debug( 'Creating text body part' );
 				$this->setBodyTextPart( $body );
-			} elseif ( substr( $contentType, 0, 9 ) === 'text/html' ) {
+			} else if ( substr( $contentType, 0, 9 ) === 'text/html' ) {
 				$this->logger->debug( 'Creating html body part' );
 				$this->setBodyHtmlPart( $body );
-			} elseif ( substr( $contentType, 0, 21 ) === 'multipart/alternative' ) {
+			} else if ( substr( $contentType, 0, 21 ) === 'multipart/alternative' ) {
 				$this->logger->debug( 'Adding body as multipart/alternative' );
-				$arr      = explode( PHP_EOL, $body );
+				$arr = explode( PHP_EOL, $body );
 				$textBody = '';
 				$htmlBody = '';
-				$mode     = '';
+				$mode = '';
 				foreach ( $arr as $s ) {
 					$this->logger->trace( 'mode: ' . $mode . ' bodyline: ' . $s );
 					if ( substr( $s, 0, 25 ) === 'Content-Type: text/plain;' ) {
 						$mode = 'foundText';
-					} elseif ( substr( $s, 0, 24 ) === 'Content-Type: text/html;' ) {
+					} else if ( substr( $s, 0, 24 ) === 'Content-Type: text/html;' ) {
 						$mode = 'foundHtml';
-					} elseif ( $mode == 'textReading' ) {
+					} else if ( $mode == 'textReading' ) {
 						$textBody .= $s;
-					} elseif ( $mode == 'htmlReading' ) {
+					} else if ( $mode == 'htmlReading' ) {
 						$htmlBody .= $s;
-					} elseif ( $mode == 'foundText' ) {
+					} else if ( $mode == 'foundText' ) {
 						$trim = trim( $s );
 						if ( empty( $trim ) ) {
 							$mode = 'textReading';
 						}
-					} elseif ( $mode == 'foundHtml' ) {
+					} else if ( $mode == 'foundHtml' ) {
 						$trim = trim( $s );
 						if ( empty( $trim ) ) {
 							$mode = 'htmlReading';
@@ -163,7 +163,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			 * @since 2.2.0
 			 *
 			 * @param string $from_email
-			 *          Email address to send from.
+			 *        	Email address to send from.
 			 */
 			$filteredEmail = apply_filters( 'wp_mail_from', $this->getFromAddress()->getEmail() );
 			if ( $this->logger->isTrace() ) {
@@ -180,7 +180,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			 * @since 2.3.0
 			 *
 			 * @param string $from_name
-			 *          Name associated with the "from" email address.
+			 *        	Name associated with the "from" email address.
 			 */
 			$filteredName = apply_filters( 'wp_mail_from_name', $this->getFromAddress()->getName() );
 			if ( $this->logger->isTrace() ) {
@@ -197,7 +197,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			 * @since 2.3.0
 			 *
 			 * @param string $charset
-			 *          Default email charset.
+			 *        	Default email charset.
 			 */
 			$filteredCharset = apply_filters( 'wp_mail_charset', $this->getCharset() );
 			if ( $this->logger->isTrace() ) {
@@ -214,7 +214,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			 * @since 2.3.0
 			 *
 			 * @param string $content_type
-			 *          Default wp_mail() content type.
+			 *        	Default wp_mail() content type.
 			 */
 			$filteredContentType = apply_filters( 'wp_mail_content_type', $this->getContentType() );
 			if ( $this->logger->isTrace() ) {
@@ -226,7 +226,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			}
 
 			// Postman has it's own 'user override' filter
-			$options            = PostmanOptions::getInstance();
+			$options = PostmanOptions::getInstance();
 			$forcedEmailAddress = $options->getMessageSenderEmail();
 			if ( $options->isSenderEmailOverridePrevented() && $this->getFromAddress()->getEmail() !== $forcedEmailAddress ) {
 				$this->logger->debug( sprintf( 'Forced From email address: before=%s after=%s', $this->getFromAddress()->getEmail(), $forcedEmailAddress ) );
@@ -260,17 +260,17 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			$this->getFromAddress()->validate( 'From' );
 
 			// validate the To recipients
-			foreach ( (array) $this->getToRecipients() as $toRecipient ) {
+			foreach ( ( array ) $this->getToRecipients() as $toRecipient ) {
 				$toRecipient->validate( 'To' );
 			}
 
 			// validate the Cc recipients
-			foreach ( (array) $this->getCcRecipients() as $ccRecipient ) {
+			foreach ( ( array ) $this->getCcRecipients() as $ccRecipient ) {
 				$ccRecipient->validate( 'Cc' );
 			}
 
 			// validate the Bcc recipients
-			foreach ( (array) $this->getBccRecipients() as $bccRecipient ) {
+			foreach ( ( array ) $this->getBccRecipients() as $bccRecipient ) {
 				$bccRecipient->validate( 'Bcc' );
 			}
 		}
@@ -315,7 +315,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		/**
 		 *
 		 * @param mixed $recipients
-		 *          Array or comma-separated list of email addresses to send message.
+		 *        	Array or comma-separated list of email addresses to send message.
 		 * @throws Exception
 		 */
 		public function addTo( $to ) {
@@ -324,7 +324,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		/**
 		 *
 		 * @param mixed $recipients
-		 *          Array or comma-separated list of email addresses to send message.
+		 *        	Array or comma-separated list of email addresses to send message.
 		 * @throws Exception
 		 */
 		public function addCc( $cc ) {
@@ -333,7 +333,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		/**
 		 *
 		 * @param mixed $recipients
-		 *          Array or comma-separated list of email addresses to send message.
+		 *        	Array or comma-separated list of email addresses to send message.
 		 * @throws Exception
 		 */
 		public function addBcc( $bcc ) {
@@ -342,7 +342,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		/**
 		 *
 		 * @param mixed $recipients
-		 *          Array or comma-separated list of email addresses to send message.
+		 *        	Array or comma-separated list of email addresses to send message.
 		 * @throws Exception
 		 */
 		private function addRecipients( &$recipientList, $recipients ) {
@@ -374,17 +374,11 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 					// eg. boundary="----=_NextPart_DC7E1BB5...
 					if ( strpos( $header, ':' ) === false ) {
 						if ( false !== stripos( $header, 'boundary=' ) ) {
-							$parts          = preg_split( '/boundary=/i', trim( $header ) );
-							$this->boundary = trim(
-								str_replace(
-									array(
-										"'",
-										'"',
-									),
-									'',
-									$parts [1]
-								)
-							);
+							$parts = preg_split( '/boundary=/i', trim( $header ) );
+							$this->boundary = trim( str_replace( array(
+									"'",
+									'"',
+							), '', $parts [1] ) );
 							$this->logger->debug( sprintf( 'Processing special boundary header \'%s\'', $this->getBoundary() ) );
 						} else {
 							$this->logger->debug( sprintf( 'Ignoring broken header \'%s\'', $header ) );
@@ -401,43 +395,31 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		 * Add the headers that were processed in processHeaders()
 		 * Zend requires that several headers are specially handled.
 		 *
-		 * @param mixed             $name
-		 * @param mixed             $value
+		 * @param mixed           $name
+		 * @param mixed           $value
 		 * @param Postman_Zend_Mail $mail
 		 */
 		private function processHeader( $name, $content ) {
-			$name    = trim( $name );
+			$name = trim( $name );
 			$content = trim( $content );
 			switch ( strtolower( $name ) ) {
-				case 'content-type':
+				case 'content-type' :
 					$this->logProcessHeader( 'Content-Type', $name, $content );
 					if ( strpos( $content, ';' ) !== false ) {
 						list ( $type, $charset ) = explode( ';', $content );
 						$this->setContentType( trim( $type ) );
 						if ( false !== stripos( $charset, 'charset=' ) ) {
-							$charset = trim(
-								str_replace(
-									array(
-										'charset=',
-										'"',
-									),
-									'',
-									$charset
-								)
-							);
+							$charset = trim( str_replace( array(
+									'charset=',
+									'"',
+							), '', $charset ) );
 						} elseif ( false !== stripos( $charset, 'boundary=' ) ) {
-							$this->boundary = trim(
-								str_replace(
-									array(
-										'BOUNDARY=',
-										'boundary=',
-										'"',
-									),
-									'',
-									$charset
-								)
-							);
-							$charset        = '';
+							$this->boundary = trim( str_replace( array(
+									'BOUNDARY=',
+									'boundary=',
+									'"',
+							), '', $charset ) );
+							$charset = '';
 						}
 						if ( ! empty( $charset ) ) {
 							$this->setCharset( $charset );
@@ -446,62 +428,59 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 						$this->setContentType( trim( $content ) );
 					}
 					break;
-				case 'to':
+				case 'to' :
 					$this->logProcessHeader( 'To', $name, $content );
 					$this->addTo( $content );
 					break;
-				case 'cc':
+				case 'cc' :
 					$this->logProcessHeader( 'Cc', $name, $content );
 					$this->addCc( $content );
 					break;
-				case 'bcc':
+				case 'bcc' :
 					$this->logProcessHeader( 'Bcc', $name, $content );
 					$this->addBcc( $content );
 					break;
-				case 'from':
+				case 'from' :
 					$this->logProcessHeader( 'From', $name, $content );
 					$this->setFrom( $content );
 					break;
-				case 'subject':
+				case 'subject' :
 					$this->logProcessHeader( 'Subject', $name, $content );
 					$this->setSubject( $content );
 					break;
-				case 'reply-to':
+				case 'reply-to' :
 					$this->logProcessHeader( 'Reply-To', $name, $content );
-					$pattern = '/[a-z0-9_\-\+\.]+@[a-z0-9\-]+\.([a-z]{2,4})(?:\.[a-z]{2})?/i';
-					preg_match_all( $pattern, $content, $matches );
+                    $pattern = '/[a-z0-9_\-\+\.]+@[a-z0-9\-]+\.([a-z]{2,4})(?:\.[a-z]{2})?/i';
+                    preg_match_all($pattern, $content, $matches);
 
-					if ( isset( $matches[0] ) && isset( $matches[0][0] ) && filter_var( $matches[0][0], FILTER_VALIDATE_EMAIL ) ) {
-						$this->setReplyTo( $content );
-					}
+                    if ( isset( $matches[0] ) && isset( $matches[0][0] ) && filter_var( $matches[0][0], FILTER_VALIDATE_EMAIL ) ) {
+                        $this->setReplyTo( $content );
+                    }
 
 					break;
-				case 'sender':
+				case 'sender' :
 					$this->logProcessHeader( 'Sender', $name, $content );
 					$this->logger->warn( sprintf( 'Ignoring Sender header \'%s\'', $content ) );
 					break;
-				case 'return-path':
+				case 'return-path' :
 					$this->logProcessHeader( 'Return-Path', $name, $content );
 					$this->logger->warn( sprintf( 'Ignoring Return-Path header \'%s\'', $content ) );
 					break;
-				case 'date':
+				case 'date' :
 					$this->logProcessHeader( 'Date', $name, $content );
 					$this->setDate( $content );
 					break;
-				case 'message-id':
+				case 'message-id' :
 					$this->logProcessHeader( 'Message-Id', $name, $content );
 					$this->setMessageId( $content );
 					break;
-				default:
+				default :
 					// Add it to our grand headers array
 					$this->logProcessHeader( 'other', $name, $content );
-					array_push(
-						$this->headers,
-						array(
-							'name'    => $name,
+					array_push( $this->headers, array(
+							'name' => $name,
 							'content' => $content,
-						)
-					);
+					) );
 					break;
 			}
 		}
@@ -536,8 +515,8 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 					$at = new Postman_Zend_Mime_Part( file_get_contents( $file ) );
 					// $at->type = 'image/gif';
 					$at->disposition = Postman_Zend_Mime::DISPOSITION_ATTACHMENT;
-					$at->encoding    = Postman_Zend_Mime::ENCODING_BASE64;
-					$at->filename    = basename( $file );
+					$at->encoding = Postman_Zend_Mime::ENCODING_BASE64;
+					$at->filename = basename( $file );
 					$mail->addAttachment( $at );
 				}
 			}
@@ -628,7 +607,6 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		 * This is used in HTML messages that embed the images
 		 * the HTML refers to using the $cid value.
 		 * Never use a user-supplied path to a file!
-		 *
 		 * @param string $path Path to the attachment.
 		 * @param string $cid Content ID of the attachment; Use this to reference
 		 *        the content when using an embedded image in HTML.
@@ -638,18 +616,18 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		 * @param string $disposition Disposition to use
 		 * @return boolean True on successfully adding an attachment
 		 */
-		public function addEmbeddedImage( $path, $cid, $name = '', $encoding = 'base64', $type = '', $disposition = 'inline' ) {
-			if ( ! @is_file( $path ) ) {
+		public function addEmbeddedImage($path, $cid, $name = '', $encoding = 'base64', $type = '', $disposition = 'inline') {
+			if (!@is_file($path)) {
 				return false;
 			}
 
 			// If a MIME type is not specified, try to work it out from the file name
-			if ( $type == '' ) {
-				$type = self::filenameToType( $path );
+			if ($type == '') {
+				$type = self::filenameToType($path);
 			}
 
-			$filename = basename( $path );
-			if ( $name == '' ) {
+			$filename = basename($path);
+			if ($name == '') {
 				$name = $filename;
 			}
 
@@ -662,7 +640,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 				4 => $type,
 				5 => false, // isStringAttachment
 				6 => $disposition,
-				7 => $cid,
+				7 => $cid
 			);
 
 			return true;
@@ -670,13 +648,13 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 
 		/**
 		 * Get the MIME type for a file extension.
-		 *
 		 * @param string $ext File extension
 		 * @access public
 		 * @return string MIME type of file.
 		 * @static
 		 */
-		public static function _mime_types( $ext = '' ) {
+		public static function _mime_types($ext = '')
+		{
 			$mimes = array(
 				'xl'    => 'application/excel',
 				'js'    => 'application/javascript',
@@ -775,10 +753,10 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 				'qt'    => 'video/quicktime',
 				'rv'    => 'video/vnd.rn-realvideo',
 				'avi'   => 'video/x-msvideo',
-				'movie' => 'video/x-sgi-movie',
+				'movie' => 'video/x-sgi-movie'
 			);
-			if ( array_key_exists( strtolower( $ext ), $mimes ) ) {
-				return $mimes[ strtolower( $ext ) ];
+			if (array_key_exists(strtolower($ext), $mimes)) {
+				return $mimes[strtolower($ext)];
 			}
 			return 'application/octet-stream';
 		}
@@ -786,56 +764,51 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		/**
 		 * Map a file name to a MIME type.
 		 * Defaults to 'application/octet-stream', i.e.. arbitrary binary data.
-		 *
 		 * @param string $filename A file name or full path, does not need to exist as a file
 		 * @return string
 		 * @static
 		 */
-		public static function filenameToType( $filename ) {
+		public static function filenameToType($filename)
+		{
 			// In case the path is a URL, strip any query string before getting extension
-			$qpos = strpos( $filename, '?' );
-			if ( false !== $qpos ) {
-				$filename = substr( $filename, 0, $qpos );
+			$qpos = strpos($filename, '?');
+			if (false !== $qpos) {
+				$filename = substr($filename, 0, $qpos);
 			}
-			$pathinfo = self::mb_pathinfo( $filename );
-			return self::_mime_types( $pathinfo['extension'] );
+			$pathinfo = self::mb_pathinfo($filename);
+			return self::_mime_types($pathinfo['extension']);
 		}
 
 		/**
 		 * Multi-byte-safe pathinfo replacement.
 		 * Drop-in replacement for pathinfo(), but multibyte-safe, cross-platform-safe, old-version-safe.
 		 * Works similarly to the one in PHP >= 5.2.0
-		 *
 		 * @link http://www.php.net/manual/en/function.pathinfo.php#107461
-		 * @param string         $path A filename or path, does not need to exist as a file
+		 * @param string $path A filename or path, does not need to exist as a file
 		 * @param integer|string $options Either a PATHINFO_* constant,
 		 *      or a string name to return only the specified piece, allows 'filename' to work on PHP < 5.2
 		 * @return string|array
 		 * @static
 		 */
-		public static function mb_pathinfo( $path, $options = null ) {
-			$ret      = array(
-				'dirname'   => '',
-				'basename'  => '',
-				'extension' => '',
-				'filename'  => '',
-			);
+		public static function mb_pathinfo($path, $options = null)
+		{
+			$ret = array('dirname' => '', 'basename' => '', 'extension' => '', 'filename' => '');
 			$pathinfo = array();
-			if ( preg_match( '%^(.*?)[\\\\/]*(([^/\\\\]*?)(\.([^\.\\\\/]+?)|))[\\\\/\.]*$%im', $path, $pathinfo ) ) {
-				if ( array_key_exists( 1, $pathinfo ) ) {
+			if (preg_match('%^(.*?)[\\\\/]*(([^/\\\\]*?)(\.([^\.\\\\/]+?)|))[\\\\/\.]*$%im', $path, $pathinfo)) {
+				if (array_key_exists(1, $pathinfo)) {
 					$ret['dirname'] = $pathinfo[1];
 				}
-				if ( array_key_exists( 2, $pathinfo ) ) {
+				if (array_key_exists(2, $pathinfo)) {
 					$ret['basename'] = $pathinfo[2];
 				}
-				if ( array_key_exists( 5, $pathinfo ) ) {
+				if (array_key_exists(5, $pathinfo)) {
 					$ret['extension'] = $pathinfo[5];
 				}
-				if ( array_key_exists( 3, $pathinfo ) ) {
+				if (array_key_exists(3, $pathinfo)) {
 					$ret['filename'] = $pathinfo[3];
 				}
 			}
-			switch ( $options ) {
+			switch ($options) {
 				case PATHINFO_DIRNAME:
 				case 'dirname':
 					return $ret['dirname'];
@@ -852,5 +825,6 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 					return $ret;
 			}
 		}
+
 	}
 }

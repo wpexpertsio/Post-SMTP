@@ -27,72 +27,67 @@ use PostSMTP\Vendor\Google\Service\Gmail\ListFiltersResponse;
  *   $filters = $gmailService->users_settings_filters;
  *  </code>
  */
-class UsersSettingsFilters extends \PostSMTP\Vendor\Google\Service\Resource {
-
-	/**
-	 * Creates a filter. Note: you can only create a maximum of 1,000 filters.
-	 * (filters.create)
-	 *
-	 * @param string $userId User's email address. The special value "me" can be
-	 * used to indicate the authenticated user.
-	 * @param Filter $postBody
-	 * @param array  $optParams Optional parameters.
-	 * @return Filter
-	 */
-	public function create( $userId, \PostSMTP\Vendor\Google\Service\Gmail\Filter $postBody, $optParams = array() ) {
-		$params = array(
-			'userId'   => $userId,
-			'postBody' => $postBody,
-		);
-		$params = \array_merge( $params, $optParams );
-		return $this->call( 'create', array( $params ), \PostSMTP\Vendor\Google\Service\Gmail\Filter::class );
-	}
-	/**
-	 * Immediately and permanently deletes the specified filter. (filters.delete)
-	 *
-	 * @param string $userId User's email address. The special value "me" can be
-	 * used to indicate the authenticated user.
-	 * @param string $id The ID of the filter to be deleted.
-	 * @param array  $optParams Optional parameters.
-	 */
-	public function delete( $userId, $id, $optParams = array() ) {
-		$params = array(
-			'userId' => $userId,
-			'id'     => $id,
-		);
-		$params = \array_merge( $params, $optParams );
-		return $this->call( 'delete', array( $params ) );
-	}
-	/**
-	 * Gets a filter. (filters.get)
-	 *
-	 * @param string $userId User's email address. The special value "me" can be
-	 * used to indicate the authenticated user.
-	 * @param string $id The ID of the filter to be fetched.
-	 * @param array  $optParams Optional parameters.
-	 * @return Filter
-	 */
-	public function get( $userId, $id, $optParams = array() ) {
-		$params = array(
-			'userId' => $userId,
-			'id'     => $id,
-		);
-		$params = \array_merge( $params, $optParams );
-		return $this->call( 'get', array( $params ), \PostSMTP\Vendor\Google\Service\Gmail\Filter::class );
-	}
-	/**
-	 * Lists the message filters of a Gmail user. (filters.listUsersSettingsFilters)
-	 *
-	 * @param string $userId User's email address. The special value "me" can be
-	 * used to indicate the authenticated user.
-	 * @param array  $optParams Optional parameters.
-	 * @return ListFiltersResponse
-	 */
-	public function listUsersSettingsFilters( $userId, $optParams = array() ) {
-		$params = array( 'userId' => $userId );
-		$params = \array_merge( $params, $optParams );
-		return $this->call( 'list', array( $params ), \PostSMTP\Vendor\Google\Service\Gmail\ListFiltersResponse::class );
-	}
+class UsersSettingsFilters extends \PostSMTP\Vendor\Google\Service\Resource
+{
+    /**
+     * Creates a filter. Note: you can only create a maximum of 1,000 filters.
+     * (filters.create)
+     *
+     * @param string $userId User's email address. The special value "me" can be
+     * used to indicate the authenticated user.
+     * @param Filter $postBody
+     * @param array $optParams Optional parameters.
+     * @return Filter
+     */
+    public function create($userId, \PostSMTP\Vendor\Google\Service\Gmail\Filter $postBody, $optParams = [])
+    {
+        $params = ['userId' => $userId, 'postBody' => $postBody];
+        $params = \array_merge($params, $optParams);
+        return $this->call('create', [$params], \PostSMTP\Vendor\Google\Service\Gmail\Filter::class);
+    }
+    /**
+     * Immediately and permanently deletes the specified filter. (filters.delete)
+     *
+     * @param string $userId User's email address. The special value "me" can be
+     * used to indicate the authenticated user.
+     * @param string $id The ID of the filter to be deleted.
+     * @param array $optParams Optional parameters.
+     */
+    public function delete($userId, $id, $optParams = [])
+    {
+        $params = ['userId' => $userId, 'id' => $id];
+        $params = \array_merge($params, $optParams);
+        return $this->call('delete', [$params]);
+    }
+    /**
+     * Gets a filter. (filters.get)
+     *
+     * @param string $userId User's email address. The special value "me" can be
+     * used to indicate the authenticated user.
+     * @param string $id The ID of the filter to be fetched.
+     * @param array $optParams Optional parameters.
+     * @return Filter
+     */
+    public function get($userId, $id, $optParams = [])
+    {
+        $params = ['userId' => $userId, 'id' => $id];
+        $params = \array_merge($params, $optParams);
+        return $this->call('get', [$params], \PostSMTP\Vendor\Google\Service\Gmail\Filter::class);
+    }
+    /**
+     * Lists the message filters of a Gmail user. (filters.listUsersSettingsFilters)
+     *
+     * @param string $userId User's email address. The special value "me" can be
+     * used to indicate the authenticated user.
+     * @param array $optParams Optional parameters.
+     * @return ListFiltersResponse
+     */
+    public function listUsersSettingsFilters($userId, $optParams = [])
+    {
+        $params = ['userId' => $userId];
+        $params = \array_merge($params, $optParams);
+        return $this->call('list', [$params], \PostSMTP\Vendor\Google\Service\Gmail\ListFiltersResponse::class);
+    }
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\Resource\UsersSettingsFilters::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_Resource_UsersSettingsFilters' );
+\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\Resource\UsersSettingsFilters::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_Resource_UsersSettingsFilters');

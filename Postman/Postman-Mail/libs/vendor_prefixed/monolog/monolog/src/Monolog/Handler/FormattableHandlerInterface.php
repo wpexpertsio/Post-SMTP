@@ -19,19 +19,19 @@ use PostSMTP\Vendor\Monolog\Formatter\FormatterInterface;
  *
  * @author Jordi Boggiano <j.boggiano@seld.be>
  */
-interface FormattableHandlerInterface {
-
-	/**
-	 * Sets the formatter.
-	 *
-	 * @param  FormatterInterface $formatter
-	 * @return HandlerInterface   self
-	 */
-	public function setFormatter( \PostSMTP\Vendor\Monolog\Formatter\FormatterInterface $formatter ): \PostSMTP\Vendor\Monolog\Handler\HandlerInterface;
-	/**
-	 * Gets the formatter.
-	 *
-	 * @return FormatterInterface
-	 */
-	public function getFormatter(): \PostSMTP\Vendor\Monolog\Formatter\FormatterInterface;
+interface FormattableHandlerInterface
+{
+    /**
+     * Sets the formatter.
+     *
+     * @param  FormatterInterface $formatter
+     * @return HandlerInterface   self
+     */
+    public function setFormatter(\PostSMTP\Vendor\Monolog\Formatter\FormatterInterface $formatter) : \PostSMTP\Vendor\Monolog\Handler\HandlerInterface;
+    /**
+     * Gets the formatter.
+     *
+     * @return FormatterInterface
+     */
+    public function getFormatter() : \PostSMTP\Vendor\Monolog\Formatter\FormatterInterface;
 }

@@ -19,7 +19,6 @@ class ActionScheduler_NullSchedule extends ActionScheduler_SimpleSchedule {
 
 	/**
 	 * This schedule has no scheduled DateTime, so we need to override the parent __sleep()
-	 *
 	 * @return array
 	 */
 	public function __sleep() {

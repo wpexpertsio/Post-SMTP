@@ -15,13 +15,13 @@ namespace PostSMTP\Vendor\Monolog\Handler\FingersCrossed;
  *
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
-interface ActivationStrategyInterface {
-
-	/**
-	 * Returns whether the given record activates the handler.
-	 *
-	 * @param  array $record
-	 * @return bool
-	 */
-	public function isHandlerActivated( array $record );
+interface ActivationStrategyInterface
+{
+    /**
+     * Returns whether the given record activates the handler.
+     *
+     * @param  array   $record
+     * @return bool
+     */
+    public function isHandlerActivated(array $record);
 }

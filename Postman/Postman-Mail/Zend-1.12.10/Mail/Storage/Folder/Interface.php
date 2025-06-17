@@ -28,33 +28,33 @@
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-interface Postman_Zend_Mail_Storage_Folder_Interface {
+interface Postman_Zend_Mail_Storage_Folder_Interface
+{
+    /**
+     * get root folder or given folder
+     *
+     * @param string $rootFolder get folder structure for given folder, else root
+     * @return Postman_Zend_Mail_Storage_Folder root or wanted folder
+     */
+    public function getFolders($rootFolder = null);
 
-	/**
-	 * get root folder or given folder
-	 *
-	 * @param string $rootFolder get folder structure for given folder, else root
-	 * @return Postman_Zend_Mail_Storage_Folder root or wanted folder
-	 */
-	public function getFolders( $rootFolder = null );
-
-	/**
-	 * select given folder
-	 *
-	 * folder must be selectable!
-	 *
-	 * @param Postman_Zend_Mail_Storage_Folder|string $globalName global name of folder or instance for subfolder
-	 * @return null
-	 * @throws Postman_Zend_Mail_Storage_Exception
-	 */
-	public function selectFolder( $globalName );
+    /**
+     * select given folder
+     *
+     * folder must be selectable!
+     *
+     * @param Postman_Zend_Mail_Storage_Folder|string $globalName global name of folder or instance for subfolder
+     * @return null
+     * @throws Postman_Zend_Mail_Storage_Exception
+     */
+    public function selectFolder($globalName);
 
 
-	/**
-	 * get Postman_Zend_Mail_Storage_Folder instance for current folder
-	 *
-	 * @return Postman_Zend_Mail_Storage_Folder instance of current folder
-	 * @throws Postman_Zend_Mail_Storage_Exception
-	 */
-	public function getCurrentFolder();
+    /**
+     * get Postman_Zend_Mail_Storage_Folder instance for current folder
+     *
+     * @return Postman_Zend_Mail_Storage_Folder instance of current folder
+     * @throws Postman_Zend_Mail_Storage_Exception
+     */
+    public function getCurrentFolder();
 }

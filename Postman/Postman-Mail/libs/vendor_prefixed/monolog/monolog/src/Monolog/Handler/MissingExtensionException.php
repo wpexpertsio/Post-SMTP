@@ -15,6 +15,6 @@ namespace PostSMTP\Vendor\Monolog\Handler;
  *
  * @author  Christian Bergau <cbergau86@gmail.com>
  */
-class MissingExtensionException extends \Exception {
-
+class MissingExtensionException extends \Exception
+{
 }

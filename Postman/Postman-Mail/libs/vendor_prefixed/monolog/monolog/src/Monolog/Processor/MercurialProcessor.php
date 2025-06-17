@@ -16,36 +16,36 @@ use PostSMTP\Vendor\Monolog\Logger;
  *
  * @author Jonathan A. Schweder <jonathanschweder@gmail.com>
  */
-class MercurialProcessor implements \PostSMTP\Vendor\Monolog\Processor\ProcessorInterface {
-
-	private $level;
-	private static $cache;
-	public function __construct( $level = \PostSMTP\Vendor\Monolog\Logger::DEBUG ) {
-		$this->level = \PostSMTP\Vendor\Monolog\Logger::toMonologLevel( $level );
-	}
-	/**
-	 * @param  array $record
-	 * @return array
-	 */
-	public function __invoke( array $record ) {
-		// return if the level is not high enough
-		if ( $record['level'] < $this->level ) {
-			return $record;
-		}
-		$record['extra']['hg'] = self::getMercurialInfo();
-		return $record;
-	}
-	private static function getMercurialInfo() {
-		if ( self::$cache ) {
-			return self::$cache;
-		}
-		$result = \explode( ' ', \trim( `hg id -nb` ) );
-		if ( \count( $result ) >= 3 ) {
-			return self::$cache = array(
-				'branch'   => $result[1],
-				'revision' => $result[2],
-			);
-		}
-		return self::$cache = array();
-	}
+class MercurialProcessor implements \PostSMTP\Vendor\Monolog\Processor\ProcessorInterface
+{
+    private $level;
+    private static $cache;
+    public function __construct($level = \PostSMTP\Vendor\Monolog\Logger::DEBUG)
+    {
+        $this->level = \PostSMTP\Vendor\Monolog\Logger::toMonologLevel($level);
+    }
+    /**
+     * @param  array $record
+     * @return array
+     */
+    public function __invoke(array $record)
+    {
+        // return if the level is not high enough
+        if ($record['level'] < $this->level) {
+            return $record;
+        }
+        $record['extra']['hg'] = self::getMercurialInfo();
+        return $record;
+    }
+    private static function getMercurialInfo()
+    {
+        if (self::$cache) {
+            return self::$cache;
+        }
+        $result = \explode(' ', \trim(`hg id -nb`));
+        if (\count($result) >= 3) {
+            return self::$cache = array('branch' => $result[1], 'revision' => $result[2]);
+        }
+        return self::$cache = array();
+    }
 }

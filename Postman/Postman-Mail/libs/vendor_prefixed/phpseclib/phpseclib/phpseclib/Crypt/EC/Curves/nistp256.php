@@ -12,6 +12,6 @@
  */
 namespace PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves;
 
-final class nistp256 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\secp256r1 {
-
+final class nistp256 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\secp256r1
+{
 }

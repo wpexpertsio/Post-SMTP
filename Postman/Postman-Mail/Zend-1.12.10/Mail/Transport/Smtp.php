@@ -48,195 +48,200 @@
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Mail_Transport_Smtp extends Postman_Zend_Mail_Transport_Abstract {
+class Postman_Zend_Mail_Transport_Smtp extends Postman_Zend_Mail_Transport_Abstract
+{
+    /**
+     * EOL character string used by transport
+     * @var string
+     * @access public
+     */
+    public $EOL = "\n";
 
-	/**
-	 * EOL character string used by transport
-	 *
-	 * @var string
-	 * @access public
-	 */
-	public $EOL = "\n";
-
-	/**
-	 * Remote smtp hostname or i.p.
-	 *
-	 * @var string
-	 */
-	protected $_host;
-
-
-	/**
-	 * Port number
-	 *
-	 * @var integer|null
-	 */
-	protected $_port;
+    /**
+     * Remote smtp hostname or i.p.
+     *
+     * @var string
+     */
+    protected $_host;
 
 
-	/**
-	 * Local client hostname or i.p.
-	 *
-	 * @var string
-	 */
-	protected $_name = 'localhost';
+    /**
+     * Port number
+     *
+     * @var integer|null
+     */
+    protected $_port;
 
 
-	/**
-	 * Authentication type OPTIONAL
-	 *
-	 * @var string
-	 */
-	protected $_auth;
+    /**
+     * Local client hostname or i.p.
+     *
+     * @var string
+     */
+    protected $_name = 'localhost';
 
 
-	/**
-	 * Config options for authentication
-	 *
-	 * @var array
-	 */
-	protected $_config;
+    /**
+     * Authentication type OPTIONAL
+     *
+     * @var string
+     */
+    protected $_auth;
 
 
-	/**
-	 * Instance of Postman_Zend_Mail_Protocol_Smtp
-	 *
-	 * @var Postman_Zend_Mail_Protocol_Smtp
-	 */
-	protected $_connection;
+    /**
+     * Config options for authentication
+     *
+     * @var array
+     */
+    protected $_config;
 
 
-	/**
-	 * Constructor.
-	 *
-	 * @param  string     $host OPTIONAL (Default: 127.0.0.1)
-	 * @param  array|null $config OPTIONAL (Default: null)
-	 * @return void
-	 *
-	 * @todo Someone please make this compatible
-	 *       with the SendMail transport class.
-	 */
-	public function __construct( $host = '127.0.0.1', array $config = array() ) {
-		if ( isset( $config['name'] ) ) {
-			$this->_name = $config['name'];
-		} else {
-			$this->_name = PostmanUtils::getServerName();
-		}
-
-		if ( isset( $config['port'] ) ) {
-			$this->_port = $config['port'];
-		}
-
-		if ( isset( $config['auth'] ) ) {
-			$this->_auth = $config['auth'];
-		}
-
-		$this->_host   = $host;
-		$this->_config = $config;
-	}
+    /**
+     * Instance of Postman_Zend_Mail_Protocol_Smtp
+     *
+     * @var Postman_Zend_Mail_Protocol_Smtp
+     */
+    protected $_connection;
 
 
-	/**
-	 * Class destructor to ensure all open connections are closed
-	 *
-	 * @return void
-	 */
-	public function __destruct() {
-		if ( $this->_connection instanceof Postman_Zend_Mail_Protocol_Smtp ) {
-			try {
-				$this->_connection->quit();
-			} catch ( Postman_Zend_Mail_Protocol_Exception $e ) {
-				// ignore
-			}
-			$this->_connection->disconnect();
-		}
-	}
+    /**
+     * Constructor.
+     *
+     * @param  string $host OPTIONAL (Default: 127.0.0.1)
+     * @param  array|null $config OPTIONAL (Default: null)
+     * @return void
+     *
+     * @todo Someone please make this compatible
+     *       with the SendMail transport class.
+     */
+    public function __construct($host = '127.0.0.1', Array $config = array())
+    {
+        if (isset($config['name'])) {
+            $this->_name = $config['name'];
+        } else {
+            $this->_name = PostmanUtils::getServerName();
+        }
+
+        if (isset($config['port'])) {
+            $this->_port = $config['port'];
+        }
+
+        if (isset($config['auth'])) {
+            $this->_auth = $config['auth'];
+        }
+
+        $this->_host = $host;
+        $this->_config = $config;
+    }
 
 
-	/**
-	 * Sets the connection protocol instance
-	 *
-	 * @param Postman_Zend_Mail_Protocol_Abstract $client
-	 *
-	 * @return void
-	 */
-	public function setConnection( Postman_Zend_Mail_Protocol_Abstract $connection ) {
-		$this->_connection = $connection;
-	}
+    /**
+     * Class destructor to ensure all open connections are closed
+     *
+     * @return void
+     */
+    public function __destruct()
+    {
+        if ($this->_connection instanceof Postman_Zend_Mail_Protocol_Smtp) {
+            try {
+                $this->_connection->quit();
+            } catch (Postman_Zend_Mail_Protocol_Exception $e) {
+                // ignore
+            }
+            $this->_connection->disconnect();
+        }
+    }
 
 
-	/**
-	 * Gets the connection protocol instance
-	 *
-	 * @return Postman_Zend_Mail_Protocol|null
-	 */
-	public function getConnection() {
-		return $this->_connection;
-	}
+    /**
+     * Sets the connection protocol instance
+     *
+     * @param Postman_Zend_Mail_Protocol_Abstract $client
+     *
+     * @return void
+     */
+    public function setConnection(Postman_Zend_Mail_Protocol_Abstract $connection)
+    {
+        $this->_connection = $connection;
+    }
 
-	/**
-	 * Send an email via the SMTP connection protocol
-	 *
-	 * The connection via the protocol adapter is made just-in-time to allow a
-	 * developer to add a custom adapter if required before mail is sent.
-	 *
-	 * @return void
-	 * @todo Rename this to sendMail, it's a public method...
-	 */
-	public function _sendMail() {
-		// If sending multiple messages per session use existing adapter
-		if ( ! ( $this->_connection instanceof Postman_Zend_Mail_Protocol_Smtp ) ) {
-			// Check if authentication is required and determine required class
-			$connectionClass = 'Postman_Zend_Mail_Protocol_Smtp';
-			if ( $this->_auth ) {
-				$connectionClass .= '_Auth_' . ucwords( $this->_auth );
-			}
-			if ( ! class_exists( $connectionClass ) ) {
-				// require_once 'Zend/Loader.php';
-				// Postman_Zend_Loader::loadClass($connectionClass);
-			}
-			$this->setConnection( new $connectionClass( $this->_host, $this->_port, $this->_config ) );
-			$this->_connection->connect();
-			$this->_connection->helo( $this->_name );
-		} else {
-			// Reset connection to ensure reliable transaction
-			$this->_connection->rset();
-		}
 
-		// Set sender email address
-		$this->_connection->mail( $this->_mail->getReturnPath() );
+    /**
+     * Gets the connection protocol instance
+     *
+     * @return Postman_Zend_Mail_Protocol|null
+     */
+    public function getConnection()
+    {
+        return $this->_connection;
+    }
 
-		// Set recipient forward paths
-		foreach ( $this->_mail->getRecipients() as $recipient ) {
-			$this->_connection->rcpt( $recipient );
-		}
+    /**
+     * Send an email via the SMTP connection protocol
+     *
+     * The connection via the protocol adapter is made just-in-time to allow a
+     * developer to add a custom adapter if required before mail is sent.
+     *
+     * @return void
+     * @todo Rename this to sendMail, it's a public method...
+     */
+    public function _sendMail()
+    {
+        // If sending multiple messages per session use existing adapter
+        if (!($this->_connection instanceof Postman_Zend_Mail_Protocol_Smtp)) {
+            // Check if authentication is required and determine required class
+            $connectionClass = 'Postman_Zend_Mail_Protocol_Smtp';
+            if ($this->_auth) {
+                $connectionClass .= '_Auth_' . ucwords($this->_auth);
+            }
+            if (!class_exists($connectionClass)) {
+//                 require_once 'Zend/Loader.php';
+//                 Postman_Zend_Loader::loadClass($connectionClass);
+            }
+            $this->setConnection(new $connectionClass($this->_host, $this->_port, $this->_config));
+            $this->_connection->connect();
+            $this->_connection->helo($this->_name);
+        } else {
+            // Reset connection to ensure reliable transaction
+            $this->_connection->rset();
+        }
 
-		// Issue DATA command to client
-		$this->_connection->data( $this->header . Postman_Zend_Mime::LINEEND . $this->body );
-	}
+        // Set sender email address
+        $this->_connection->mail($this->_mail->getReturnPath());
 
-	/**
-	 * Format and fix headers
-	 *
-	 * Some SMTP servers do not strip BCC headers. Most clients do it themselves as do we.
-	 *
-	 * @access  protected
-	 * @param   array $headers
-	 * @return  void
-	 * @throws  Postman_Zend_Transport_Exception
-	 */
-	protected function _prepareHeaders( $headers ) {
-		if ( ! $this->_mail ) {
-			/**
-			 * @see Postman_Zend_Mail_Transport_Exception
-			 */
-			// require_once 'Zend/Mail/Transport/Exception.php';
-			throw new Postman_Zend_Mail_Transport_Exception( '_prepareHeaders requires a registered Postman_Zend_Mail object' );
-		}
+        // Set recipient forward paths
+        foreach ($this->_mail->getRecipients() as $recipient) {
+            $this->_connection->rcpt($recipient);
+        }
 
-		unset( $headers['Bcc'] );
+        // Issue DATA command to client
+        $this->_connection->data($this->header . Postman_Zend_Mime::LINEEND . $this->body);
+    }
 
-		// Prepare headers
-		parent::_prepareHeaders( $headers );
-	}
+    /**
+     * Format and fix headers
+     *
+     * Some SMTP servers do not strip BCC headers. Most clients do it themselves as do we.
+     *
+     * @access  protected
+     * @param   array $headers
+     * @return  void
+     * @throws  Postman_Zend_Transport_Exception
+     */
+    protected function _prepareHeaders($headers)
+    {
+        if (!$this->_mail) {
+            /**
+             * @see Postman_Zend_Mail_Transport_Exception
+             */
+//             require_once 'Zend/Mail/Transport/Exception.php';
+            throw new Postman_Zend_Mail_Transport_Exception('_prepareHeaders requires a registered Postman_Zend_Mail object');
+        }
+
+        unset($headers['Bcc']);
+
+        // Prepare headers
+        parent::_prepareHeaders($headers);
+    }
 }

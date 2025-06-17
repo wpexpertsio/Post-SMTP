@@ -17,39 +17,43 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class ListCseKeyPairsResponse extends \PostSMTP\Vendor\Google\Collection {
-
-	protected $collection_key      = 'cseKeyPairs';
-	protected $cseKeyPairsType     = \PostSMTP\Vendor\Google\Service\Gmail\CseKeyPair::class;
-	protected $cseKeyPairsDataType = 'array';
-	/**
-	 * @var string
-	 */
-	public $nextPageToken;
-	/**
-	 * @param CseKeyPair[]
-	 */
-	public function setCseKeyPairs( $cseKeyPairs ) {
-		$this->cseKeyPairs = $cseKeyPairs;
-	}
-	/**
-	 * @return CseKeyPair[]
-	 */
-	public function getCseKeyPairs() {
-		return $this->cseKeyPairs;
-	}
-	/**
-	 * @param string
-	 */
-	public function setNextPageToken( $nextPageToken ) {
-		$this->nextPageToken = $nextPageToken;
-	}
-	/**
-	 * @return string
-	 */
-	public function getNextPageToken() {
-		return $this->nextPageToken;
-	}
+class ListCseKeyPairsResponse extends \PostSMTP\Vendor\Google\Collection
+{
+    protected $collection_key = 'cseKeyPairs';
+    protected $cseKeyPairsType = \PostSMTP\Vendor\Google\Service\Gmail\CseKeyPair::class;
+    protected $cseKeyPairsDataType = 'array';
+    /**
+     * @var string
+     */
+    public $nextPageToken;
+    /**
+     * @param CseKeyPair[]
+     */
+    public function setCseKeyPairs($cseKeyPairs)
+    {
+        $this->cseKeyPairs = $cseKeyPairs;
+    }
+    /**
+     * @return CseKeyPair[]
+     */
+    public function getCseKeyPairs()
+    {
+        return $this->cseKeyPairs;
+    }
+    /**
+     * @param string
+     */
+    public function setNextPageToken($nextPageToken)
+    {
+        $this->nextPageToken = $nextPageToken;
+    }
+    /**
+     * @return string
+     */
+    public function getNextPageToken()
+    {
+        return $this->nextPageToken;
+    }
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\ListCseKeyPairsResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListCseKeyPairsResponse' );
+\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\ListCseKeyPairsResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListCseKeyPairsResponse');

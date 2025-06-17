@@ -17,23 +17,25 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class ListDelegatesResponse extends \PostSMTP\Vendor\Google\Collection {
-
-	protected $collection_key    = 'delegates';
-	protected $delegatesType     = \PostSMTP\Vendor\Google\Service\Gmail\Delegate::class;
-	protected $delegatesDataType = 'array';
-	/**
-	 * @param Delegate[]
-	 */
-	public function setDelegates( $delegates ) {
-		$this->delegates = $delegates;
-	}
-	/**
-	 * @return Delegate[]
-	 */
-	public function getDelegates() {
-		return $this->delegates;
-	}
+class ListDelegatesResponse extends \PostSMTP\Vendor\Google\Collection
+{
+    protected $collection_key = 'delegates';
+    protected $delegatesType = \PostSMTP\Vendor\Google\Service\Gmail\Delegate::class;
+    protected $delegatesDataType = 'array';
+    /**
+     * @param Delegate[]
+     */
+    public function setDelegates($delegates)
+    {
+        $this->delegates = $delegates;
+    }
+    /**
+     * @return Delegate[]
+     */
+    public function getDelegates()
+    {
+        return $this->delegates;
+    }
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\ListDelegatesResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListDelegatesResponse' );
+\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\ListDelegatesResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListDelegatesResponse');

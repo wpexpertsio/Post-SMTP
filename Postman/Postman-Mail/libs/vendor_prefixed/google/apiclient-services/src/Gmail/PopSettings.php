@@ -17,40 +17,44 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class PopSettings extends \PostSMTP\Vendor\Google\Model {
-
-	/**
-	 * @var string
-	 */
-	public $accessWindow;
-	/**
-	 * @var string
-	 */
-	public $disposition;
-	/**
-	 * @param string
-	 */
-	public function setAccessWindow( $accessWindow ) {
-		$this->accessWindow = $accessWindow;
-	}
-	/**
-	 * @return string
-	 */
-	public function getAccessWindow() {
-		return $this->accessWindow;
-	}
-	/**
-	 * @param string
-	 */
-	public function setDisposition( $disposition ) {
-		$this->disposition = $disposition;
-	}
-	/**
-	 * @return string
-	 */
-	public function getDisposition() {
-		return $this->disposition;
-	}
+class PopSettings extends \PostSMTP\Vendor\Google\Model
+{
+    /**
+     * @var string
+     */
+    public $accessWindow;
+    /**
+     * @var string
+     */
+    public $disposition;
+    /**
+     * @param string
+     */
+    public function setAccessWindow($accessWindow)
+    {
+        $this->accessWindow = $accessWindow;
+    }
+    /**
+     * @return string
+     */
+    public function getAccessWindow()
+    {
+        return $this->accessWindow;
+    }
+    /**
+     * @param string
+     */
+    public function setDisposition($disposition)
+    {
+        $this->disposition = $disposition;
+    }
+    /**
+     * @return string
+     */
+    public function getDisposition()
+    {
+        return $this->disposition;
+    }
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\PopSettings::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_PopSettings' );
+\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\PopSettings::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_PopSettings');

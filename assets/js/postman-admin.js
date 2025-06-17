@@ -14,6 +14,7 @@ jQuery( document ).ready( function() {
     
             jQuery('#slack_cred').slideUp( 'fast' );
             jQuery('#pushover_cred').slideUp( 'fast' );
+            jQuery('#webhook_alert_urls').slideUp( 'fast' );
             jQuery('#email_notify').slideDown();
     
         }
@@ -22,6 +23,7 @@ jQuery( document ).ready( function() {
     
             jQuery('#slack_cred').slideUp( 'fast' );
             jQuery('#email_notify').slideUp( 'fast' );
+            jQuery('#webhook_alert_urls').slideUp( 'fast' );
             jQuery('#pushover_cred').slideDown();
             
         }
@@ -30,7 +32,17 @@ jQuery( document ).ready( function() {
     
             jQuery('#email_notify').slideUp( 'fast' );
             jQuery('#pushover_cred').slideUp( 'fast' );
+            jQuery('#webhook_alert_urls').slideUp( 'fast' );
             jQuery('#slack_cred').slideDown();
+            
+        }
+
+        if ( selected == 'webhook_alerts' ) {
+    
+            jQuery('#email_notify').slideUp( 'fast' );
+            jQuery('#pushover_cred').slideUp( 'fast' );
+            jQuery('#slack_cred').slideUp( 'fast' );
+            jQuery('#webhook_alert_urls').slideDown();
             
         }
     
@@ -39,6 +51,7 @@ jQuery( document ).ready( function() {
             jQuery('#email_notify').slideUp( 'fast' );
             jQuery('#slack_cred').slideUp( 'fast' );
             jQuery('#pushover_cred').slideUp( 'fast' );
+            jQuery('#webhook_alert_urls').slideDown();
     
         }
     

@@ -2,6 +2,6 @@
 
 namespace PostSMTP\Vendor\Psr\Log;
 
-class InvalidArgumentException extends \InvalidArgumentException {
-
+class InvalidArgumentException extends \InvalidArgumentException
+{
 }

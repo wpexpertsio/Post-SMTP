@@ -34,42 +34,37 @@ use PostSMTP\Vendor\Psr\Cache\CacheItemPoolInterface;
  * );
  * ```
  */
-class GCECache {
-
-	const GCE_CACHE_KEY = 'google_auth_on_gce_cache';
-	use CacheTrait;
-
-	/**
-	 * @param array<mixed>           $cacheConfig Configuration for the cache
-	 * @param CacheItemPoolInterface $cache
-	 */
-	public function __construct( array $cacheConfig = null, \PostSMTP\Vendor\Psr\Cache\CacheItemPoolInterface $cache = null ) {
-		$this->cache       = $cache;
-		$this->cacheConfig = \array_merge(
-			array(
-				'lifetime' => 1500,
-				'prefix'   => '',
-			),
-			(array) $cacheConfig
-		);
-	}
-	/**
-	 * Caches the result of onGce so the metadata server is not called multiple
-	 * times.
-	 *
-	 * @param callable $httpHandler callback which delivers psr7 request
-	 * @return bool True if this a GCEInstance, false otherwise
-	 */
-	public function onGce( callable $httpHandler = null ) {
-		if ( \is_null( $this->cache ) ) {
-			return \PostSMTP\Vendor\Google\Auth\Credentials\GCECredentials::onGce( $httpHandler );
-		}
-		$cacheKey = self::GCE_CACHE_KEY;
-		$onGce    = $this->getCachedValue( $cacheKey );
-		if ( \is_null( $onGce ) ) {
-			$onGce = \PostSMTP\Vendor\Google\Auth\Credentials\GCECredentials::onGce( $httpHandler );
-			$this->setCachedValue( $cacheKey, $onGce );
-		}
-		return $onGce;
-	}
+class GCECache
+{
+    const GCE_CACHE_KEY = 'google_auth_on_gce_cache';
+    use CacheTrait;
+    /**
+     * @param array<mixed> $cacheConfig Configuration for the cache
+     * @param CacheItemPoolInterface $cache
+     */
+    public function __construct(array $cacheConfig = null, \PostSMTP\Vendor\Psr\Cache\CacheItemPoolInterface $cache = null)
+    {
+        $this->cache = $cache;
+        $this->cacheConfig = \array_merge(['lifetime' => 1500, 'prefix' => ''], (array) $cacheConfig);
+    }
+    /**
+     * Caches the result of onGce so the metadata server is not called multiple
+     * times.
+     *
+     * @param callable $httpHandler callback which delivers psr7 request
+     * @return bool True if this a GCEInstance, false otherwise
+     */
+    public function onGce(callable $httpHandler = null)
+    {
+        if (\is_null($this->cache)) {
+            return \PostSMTP\Vendor\Google\Auth\Credentials\GCECredentials::onGce($httpHandler);
+        }
+        $cacheKey = self::GCE_CACHE_KEY;
+        $onGce = $this->getCachedValue($cacheKey);
+        if (\is_null($onGce)) {
+            $onGce = \PostSMTP\Vendor\Google\Auth\Credentials\GCECredentials::onGce($httpHandler);
+            $this->setCachedValue($cacheKey, $onGce);
+        }
+        return $onGce;
+    }
 }

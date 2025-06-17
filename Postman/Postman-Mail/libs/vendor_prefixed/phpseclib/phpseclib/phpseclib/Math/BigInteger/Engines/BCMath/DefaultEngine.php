@@ -18,6 +18,6 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath\Reductions\Barrett
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class DefaultEngine extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath\Reductions\Barrett {
-
+abstract class DefaultEngine extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath\Reductions\Barrett
+{
 }

@@ -1,38 +1,38 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+    exit; // Exit if accessed directly
 }
 
 /**
  * Keep the interface_exists check here for Postman Gmail API Extension users!
- *
+ * 
  * @author jasonhendriks
  */
-if ( ! interface_exists( 'PostmanTransport' ) ) {
+if (! interface_exists ( 'PostmanTransport' )) {
 	interface PostmanTransport {
-		public function isServiceProviderGoogle( $hostname );
-		public function isServiceProviderMicrosoft( $hostname );
-		public function isServiceProviderYahoo( $hostname );
+		public function isServiceProviderGoogle($hostname);
+		public function isServiceProviderMicrosoft($hostname);
+		public function isServiceProviderYahoo($hostname);
 		// @deprecated
-		public function isOAuthUsed( $authType );
+		public function isOAuthUsed($authType);
 		public function isTranscriptSupported();
 		public function getSlug();
 		public function getName();
 		// @deprecated
-		public function createPostmanMailAuthenticator( PostmanOptions $options, PostmanOAuthToken $authToken );
-		public function createZendMailTransport( $fakeHostname, $fakeConfig );
-		public function isConfigured( PostmanOptionsInterface $options, PostmanOAuthToken $token );
-		public function isReady( PostmanOptionsInterface $options, PostmanOAuthToken $token );
+		public function createPostmanMailAuthenticator(PostmanOptions $options, PostmanOAuthToken $authToken);
+		public function createZendMailTransport($fakeHostname, $fakeConfig);
+		public function isConfigured(PostmanOptionsInterface $options, PostmanOAuthToken $token);
+		public function isReady(PostmanOptionsInterface $options, PostmanOAuthToken $token);
 		// @deprecated
-		public function getMisconfigurationMessage( PostmanConfigTextHelper $scribe, PostmanOptionsInterface $options, PostmanOAuthToken $token );
+		public function getMisconfigurationMessage(PostmanConfigTextHelper $scribe, PostmanOptionsInterface $options, PostmanOAuthToken $token);
 		// @deprecated
-		public function getConfigurationRecommendation( $hostData );
+		public function getConfigurationRecommendation($hostData);
 		// @deprecated
-		public function getHostsToTest( $hostname );
+		public function getHostsToTest($hostname);
 
 		/**
-		 * Get Socket's logo
-		 *
+		 * Get Socket's logo	
+		 * 
 		 * @since 2.1
 		 * @version 1.0
 		 */
@@ -46,8 +46,8 @@ interface PostmanModuleTransport extends PostmanTransport {
 
 ';
 	public function getDeliveryDetails();
-	public function getSocketsForSetupWizardToProbe( $hostname, $smtpServerGuess );
-	public function getConfigurationBid( PostmanWizardSocket $hostData, $userAuthOverride, $originalSmtpServer );
+	public function getSocketsForSetupWizardToProbe($hostname, $smtpServerGuess);
+	public function getConfigurationBid(PostmanWizardSocket $hostData, $userAuthOverride, $originalSmtpServer);
 	public function isLockingRequired();
 	public function createMailEngine();
 	public function isWizardSupported();
@@ -72,11 +72,12 @@ interface PostmanZendModuleTransport extends PostmanModuleTransport {
 /**
  *
  * @author jasonhendriks
+ *        
  */
 abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport {
 	private $configurationMessages;
 	private $configuredAndReady;
-
+	
 	/**
 	 * These internal variables are exposed for the subclasses to use
 	 *
@@ -86,15 +87,15 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	protected $options;
 	protected $rootPluginFilenameAndPath;
 	protected $scribe;
-
+	
 	/**
 	 */
-	public function __construct( $rootPluginFilenameAndPath = null ) {
-		$this->logger                    = new PostmanLogger( get_class( $this ) );
-		$this->options                   = PostmanOptions::getInstance();
+	public function __construct($rootPluginFilenameAndPath = null) {
+		$this->logger = new PostmanLogger ( get_class ( $this ) );
+		$this->options = PostmanOptions::getInstance ();
 		$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;
 	}
-
+	
 	/**
 	 * Initialize the Module
 	 *
@@ -103,143 +104,144 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	 */
 	public function init() {
 		// create the scribe
-		$hostname     = $this->getHostname();
-		$this->scribe = $this->createScribe( $hostname );
-
+		$hostname = $this->getHostname ();
+		$this->scribe = $this->createScribe ( $hostname );
+		
 		// validate the transport and generate error messages
-		$this->configurationMessages = $this->validateTransportConfiguration();
+		$this->configurationMessages = $this->validateTransportConfiguration ();
 	}
-
+	
 	/**
 	 * SendGrid API doesn't care what the hostname or guessed SMTP Server is; it runs it's port test no matter what
 	 */
-	public function getSocketsForSetupWizardToProbe( $hostname, $smtpServerGuess ) {
-		$hosts = array(
-			self::createSocketDefinition( $this->getHostname(), $this->getPort() ),
+	public function getSocketsForSetupWizardToProbe($hostname, $smtpServerGuess) {
+		$hosts = array (
+				self::createSocketDefinition ( $this->getHostname (), $this->getPort () ) 
 		);
 		return $hosts;
 	}
-
+	
 	/**
 	 * Creates a single socket for the Wizard to test
-	 *
+	 * 
 	 * @since 2.1 added `logo_url`
 	 */
-	protected function createSocketDefinition( $hostname, $port ) {
+	protected function createSocketDefinition($hostname, $port) {
 
-		$socket                    = array();
-		$socket ['host']           = $hostname;
-		$socket ['port']           = $port;
-		$socket ['id']             = sprintf( '%s-%s', $this->getSlug(), $port );
-		$socket ['transport_id']   = $this->getSlug();
-		$socket ['transport_name'] = $this->getName();
-		$socket ['smtp']           = false;
-		$socket['logo_url']        = $this->getLogoURL();
-
+		$socket = array ();
+		$socket ['host'] = $hostname;
+		$socket ['port'] = $port;
+		$socket ['id'] = sprintf ( '%s-%s', $this->getSlug (), $port );
+		$socket ['transport_id'] = $this->getSlug ();
+		$socket ['transport_name'] = $this->getName ();
+		$socket ['smtp'] = false;
+		$socket['logo_url'] = $this->getLogoURL();
+		
 		return $socket;
-	}
 
+	}
+	
 	/**
 	 *
-	 * @param mixed $data
+	 * @param mixed $data        	
 	 */
-	public function prepareOptionsForExport( $data ) {
+	public function prepareOptionsForExport($data) {
 		// no-op
 		return $data;
 	}
-
+	
 	/**
 	 * Returns the Status of OAuth
-	 *
-	 * @since 2.1 Removed HTML
+	 * 
+	 * @since 2.1 Removed HTML 
 	 */
 	public function printActionMenuItem() {
-		echo $this->getScribe()->getRequestPermissionLinkText();
+		echo $this->getScribe ()->getRequestPermissionLinkText ();
 	}
-
+	
 	/**
 	 *
-	 * @param mixed $queryHostname
+	 * @param mixed $queryHostname        	
 	 */
-	protected function createScribe( $hostname ) {
-		$scribe = new PostmanNonOAuthScribe( $hostname );
+	protected function createScribe($hostname) {
+		$scribe = new PostmanNonOAuthScribe ( $hostname );
 		return $scribe;
 	}
-
+	
 	/**
 	 */
 	public function enqueueScript() {
 		// no-op, this for subclasses
 	}
-
+	
 	/**
 	 * This method is for internal use
 	 */
 	protected function validateTransportConfiguration() {
 		$this->configuredAndReady = true;
-		$messages                 = array();
+		$messages = array ();
 		return $messages;
 	}
-
+	
 	/**
 	 */
 	protected function setNotConfiguredAndReady() {
 		$this->configuredAndReady = false;
 	}
-
+	
 	/**
 	 * A short-hand way of showing the complete delivery method
 	 *
-	 * @param PostmanModuleTransport $transport
+	 * @param PostmanModuleTransport $transport        	
 	 * @return string
 	 */
 	public function getPublicTransportUri() {
-		$name     = $this->getSlug();
-		$host     = $this->getHostname();
-		$port     = $this->getPort();
-		$protocol = $this->getProtocol();
-		return sprintf( '%s://%s:%s', $protocol, $host, $port );
+		$name = $this->getSlug ();
+		$host = $this->getHostname ();
+		$port = $this->getPort ();
+		$protocol = $this->getProtocol ();
+		return sprintf ( '%s://%s:%s', $protocol, $host, $port );
 	}
-
+	
 	/**
 	 * The Message From Address
 	 */
 	public function getFromEmailAddress() {
-		return PostmanOptions::getInstance()->getMessageSenderEmail();
+		return PostmanOptions::getInstance ()->getMessageSenderEmail ();
 	}
-
+	
 	/**
 	 * The Message From Name
 	 */
 	public function getFromName() {
-		return PostmanOptions::getInstance()->getMessageSenderName();
+		return PostmanOptions::getInstance ()->getMessageSenderName ();
 	}
 	public function getEnvelopeFromEmailAddress() {
-		return PostmanOptions::getInstance()->getEnvelopeSender();
+		return PostmanOptions::getInstance ()->getEnvelopeSender ();
 	}
 	public function isEmailValidationSupported() {
-		return ! PostmanOptions::getInstance()->isEmailValidationDisabled();
+		return ! PostmanOptions::getInstance ()->isEmailValidationDisabled ();
 	}
-
+	
 	/**
 	 * Make sure the Senders are configured
 	 *
-	 * @param PostmanOptions $options
+	 * @param PostmanOptions $options        	
 	 * @return boolean
 	 */
 	protected function isSenderConfigured() {
-		$options     = PostmanOptions::getInstance();
-		$messageFrom = $options->getMessageSenderEmail();
-		return ! empty( $messageFrom );
+		$options = PostmanOptions::getInstance ();
+		$messageFrom = $options->getMessageSenderEmail ();
+		return ! empty ( $messageFrom );
 	}
-
+	
 	/**
 	 * Get the configuration error messages
 	 */
 	public function getConfigurationMessages() {
 		return $this->configurationMessages;
 	}
-
+	
 	/**
 	 * (non-PHPdoc)
 	 *
@@ -248,16 +250,16 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	public function isConfiguredAndReady() {
 		return $this->configuredAndReady;
 	}
-
+	
 	/**
 	 * (non-PHPdoc)
 	 *
 	 * @see PostmanModuleTransport::isReadyToSendMail()
 	 */
 	public function isReadyToSendMail() {
-		return $this->isConfiguredAndReady();
+		return $this->isConfiguredAndReady ();
 	}
-
+	
 	/**
 	 * Determines whether Mail Engine locking is needed
 	 *
@@ -266,10 +268,10 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	public function isLockingRequired() {
 		return false;
 	}
-	public function isOAuthUsed( $authType ) {
+	public function isOAuthUsed($authType) {
 		return $authType == PostmanOptions::AUTHENTICATION_TYPE_OAUTH2;
 	}
-
+	
 	/**
 	 * (non-PHPdoc)
 	 *
@@ -278,19 +280,19 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	public function isWizardSupported() {
 		return false;
 	}
-
+	
 	/**
 	 * This is for step 2 of the Wizard
 	 */
 	public function printWizardMailServerHostnameStep() {
 	}
-
+	
 	/**
 	 * This is for step 4 of the Wizard
 	 */
 	public function printWizardAuthenticationStep() {
 	}
-
+	
 	/**
 	 *
 	 * @return PostmanNonOAuthScribe
@@ -298,80 +300,81 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	public function getScribe() {
 		return $this->scribe;
 	}
-
+	
 	/**
 	 *
-	 * @param mixed $hostname
-	 * @param mixed $response
+	 * @param mixed $hostname        	
+	 * @param mixed $response        	
 	 */
-	public function populateConfiguration( $hostname ) {
-		$configuration = array();
+	public function populateConfiguration($hostname) {
+		$configuration = array ();
 		return $configuration;
 	}
 	/**
 	 *
-	 * @param mixed $winningRecommendation
-	 * @param mixed $response
+	 * @param mixed $winningRecommendation        	
+	 * @param mixed $response        	
 	 */
-	public function populateConfigurationFromRecommendation( $winningRecommendation ) {
-		$configuration                                    = array();
-		$configuration ['message']                        = $winningRecommendation ['message'];
-		$configuration [ PostmanOptions::TRANSPORT_TYPE ] = $winningRecommendation ['transport'];
+	public function populateConfigurationFromRecommendation($winningRecommendation) {
+		$configuration = array ();
+		$configuration ['message'] = $winningRecommendation ['message'];
+		$configuration [PostmanOptions::TRANSPORT_TYPE] = $winningRecommendation ['transport'];
 		return $configuration;
 	}
-
+	
 	/**
 	 */
-	public function createOverrideMenu( PostmanWizardSocket $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride ) {
-
-		$overrideItem                                   = array();
-		$overrideItem ['secure']                        = $socket->secure;
-		$overrideItem ['mitm']                          = $socket->mitm;
-		$overrideItem ['hostname_domain_only']          = $socket->hostnameDomainOnly;
+	public function createOverrideMenu(PostmanWizardSocket $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride) {
+		
+		$overrideItem = array ();
+		$overrideItem ['secure'] = $socket->secure;
+		$overrideItem ['mitm'] = $socket->mitm;
+		$overrideItem ['hostname_domain_only'] = $socket->hostnameDomainOnly;
 		$overrideItem ['reported_hostname_domain_only'] = $socket->reportedHostnameDomainOnly;
-		$overrideItem ['value']                         = $socket->id;
-		$overrideItem ['description']                   = $socket->label;
-		$overrideItem ['selected']                      = ( $winningRecommendation ['id'] == $overrideItem ['value'] );
-		$overrideItem['data']                           = $socket->data;
+		$overrideItem ['value'] = $socket->id;
+		$overrideItem ['description'] = $socket->label;
+		$overrideItem ['selected'] = ($winningRecommendation ['id'] == $overrideItem ['value']);
+		$overrideItem['data'] = $socket->data;
 
 		return $overrideItem;
 	}
-
+	
 	/*
 	 * ******************************************************************
 	 * Not deprecated, but I wish they didn't live here on the superclass
 	 */
-	public function isServiceProviderGoogle( $hostname ) {
-		return PostmanUtils::endsWith( $hostname, 'gmail.com' ) || PostmanUtils::endsWith( $hostname, 'googleapis.com' );
+	public function isServiceProviderGoogle($hostname) {
+		return PostmanUtils::endsWith ( $hostname, 'gmail.com' ) || PostmanUtils::endsWith ( $hostname, 'googleapis.com' );
 	}
-	public function isServiceProviderMicrosoft( $hostname ) {
-		return PostmanUtils::endsWith( $hostname, 'live.com' );
+	public function isServiceProviderMicrosoft($hostname) {
+		return PostmanUtils::endsWith ( $hostname, 'live.com' );
 	}
-	public function isServiceProviderYahoo( $hostname ) {
-
-		if ( $hostname == null ) {
-
-			return false;
-
-		}
-
-		return strpos( $hostname, 'yahoo' );
+	public function isServiceProviderYahoo($hostname) {
+	    
+	    if( $hostname == null ) {
+	        
+	        return false;
+	        
+	    } 
+	    
+		return strpos ( $hostname, 'yahoo' );
+		
 	}
-
+	
 	/*
 	 * ********************************
 	 * Unused, deprecated methods follow
 	 * *********************************
 	 */
-
+	
 	/**
 	 *
 	 * @deprecated (non-PHPdoc)
 	 * @see PostmanTransport::createZendMailTransport()
 	 */
-	public function createZendMailTransport( $hostname, $config ) {
+	public function createZendMailTransport($hostname, $config) {
 	}
-
+	
 	/**
 	 *
 	 * @deprecated (non-PHPdoc)
@@ -380,43 +383,43 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	public function isTranscriptSupported() {
 		return false;
 	}
-
+	
 	/**
 	 * Only here because I can't remove it from the Interface
 	 */
-	final public function getMisconfigurationMessage( PostmanConfigTextHelper $scribe, PostmanOptionsInterface $options, PostmanOAuthToken $token ) {
+	public final function getMisconfigurationMessage(PostmanConfigTextHelper $scribe, PostmanOptionsInterface $options, PostmanOAuthToken $token) {
 	}
-	final public function isReady( PostmanOptionsInterface $options, PostmanOAuthToken $token ) {
-		return ! ( $this->isConfiguredAndReady() );
+	public final function isReady(PostmanOptionsInterface $options, PostmanOAuthToken $token) {
+		return ! ($this->isConfiguredAndReady ());
 	}
-	final public function isConfigured( PostmanOptionsInterface $options, PostmanOAuthToken $token ) {
-		return ! ( $this->isConfiguredAndReady() );
+	public final function isConfigured(PostmanOptionsInterface $options, PostmanOAuthToken $token) {
+		return ! ($this->isConfiguredAndReady ());
 	}
 	/**
 	 *
 	 * @deprecated (non-PHPdoc)
 	 * @see PostmanTransport::getConfigurationRecommendation()
 	 */
-	final public function getConfigurationRecommendation( $hostData ) {
+	public final function getConfigurationRecommendation($hostData) {
 	}
 	/**
 	 *
 	 * @deprecated (non-PHPdoc)
 	 * @see PostmanTransport::getHostsToTest()
 	 */
-	final public function getHostsToTest( $hostname ) {
+	public final function getHostsToTest($hostname) {
 	}
-	final protected function isHostConfigured( PostmanOptions $options ) {
-		$hostname = $options->getHostname();
-		$port     = $options->getPort();
-		return ! ( empty( $hostname ) || empty( $port ) );
+	protected final function isHostConfigured(PostmanOptions $options) {
+		$hostname = $options->getHostname ();
+		$port = $options->getPort ();
+		return ! (empty ( $hostname ) || empty ( $port ));
 	}
 	/**
 	 *
 	 * @deprecated (non-PHPdoc)
 	 * @see PostmanTransport::createPostmanMailAuthenticator()
 	 */
-	final public function createPostmanMailAuthenticator( PostmanOptions $options, PostmanOAuthToken $authToken ) {
+	public final function createPostmanMailAuthenticator(PostmanOptions $options, PostmanOAuthToken $authToken) {
 	}
 }
 
@@ -424,378 +427,371 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
  * For the transports which depend on Zend_Mail
  *
  * @author jasonhendriks
+ *        
  */
 abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleTransport implements PostmanZendModuleTransport {
 	private $oauthToken;
 	private $readyForOAuthGrant;
-
+	
 	/**
 	 */
-	public function __construct( $rootPluginFilenameAndPath ) {
-		parent::__construct( $rootPluginFilenameAndPath );
-		$this->oauthToken = PostmanOAuthToken::getInstance();
+	public function __construct($rootPluginFilenameAndPath) {
+		parent::__construct ( $rootPluginFilenameAndPath );
+		$this->oauthToken = PostmanOAuthToken::getInstance ();
 	}
 	public function getOAuthToken() {
 		return $this->oauthToken;
 	}
 	public function getProtocol() {
-		if ( $this->getSecurityType() == PostmanOptions::SECURITY_TYPE_SMTPS ) {
+		if ($this->getSecurityType () == PostmanOptions::SECURITY_TYPE_SMTPS)
 			return 'smtps';
-		} else {
+		else
 			return 'smtp';
-		}
 	}
 	public function getSecurityType() {
-		return PostmanOptions::getInstance()->getEncryptionType();
+		return PostmanOptions::getInstance ()->getEncryptionType ();
 	}
-
+	
 	/**
 	 *
-	 * @param mixed $data
+	 * @param mixed $data        	
 	 */
-	public function prepareOptionsForExport( $data ) {
-		$data = parent::prepareOptionsForExport( $data );
-		$data [ PostmanOptions::BASIC_AUTH_PASSWORD ] = PostmanOptions::getInstance()->getPassword();
+	public function prepareOptionsForExport($data) {
+		$data = parent::prepareOptionsForExport ( $data );
+		$data [PostmanOptions::BASIC_AUTH_PASSWORD] = PostmanOptions::getInstance ()->getPassword ();
 		return $data;
 	}
-
+	
 	/**
 	 *
 	 * @return boolean
 	 */
 	public function isEnvelopeFromValidationSupported() {
-		return $this->isEmailValidationSupported();
+		return $this->isEmailValidationSupported ();
 	}
-
+	
 	/**
 	 */
 	protected function setReadyForOAuthGrant() {
 		$this->readyForOAuthGrant = true;
 	}
-
+	
 	/**
 	 * Returns Link of OAuth
-	 *
+	 * 
 	 * @since 2.1 Removed `li` tag
 	 */
 	public function printActionMenuItem() {
-		if ( $this->readyForOAuthGrant && $this->getAuthenticationType() == PostmanOptions::AUTHENTICATION_TYPE_OAUTH2 ) {
-			echo '<a href="' . esc_attr( PostmanUtils::getGrantOAuthPermissionUrl() ) . '" class="welcome-icon send-test-email">' . esc_html( $this->getScribe()->getRequestPermissionLinkText() ) . '</a>';
+		if ($this->readyForOAuthGrant && $this->getAuthenticationType () == PostmanOptions::AUTHENTICATION_TYPE_OAUTH2) {
+			echo '<a href="'.esc_attr( PostmanUtils::getGrantOAuthPermissionUrl () ).'" class="welcome-icon send-test-email">'.esc_html( $this->getScribe ()->getRequestPermissionLinkText () ).'</a>';
 		} else {
-			parent::printActionMenuItem();
+			parent::printActionMenuItem ();
 		}
 	}
-
+	
 	/**
 	 *
-	 * @param mixed $queryHostname
+	 * @param mixed $queryHostname        	
 	 */
-	protected function createScribe( $hostname ) {
+	protected function createScribe($hostname) {
 		$scribe = null;
-		if ( $this->isServiceProviderGoogle( $hostname ) ) {
-			$scribe = new PostmanGoogleOAuthScribe();
-		} elseif ( $this->isServiceProviderMicrosoft( $hostname ) ) {
-			$scribe = new PostmanMicrosoftOAuthScribe();
-		} elseif ( $this->isServiceProviderYahoo( $hostname ) ) {
-			$scribe = new PostmanYahooOAuthScribe();
+		if ($this->isServiceProviderGoogle ( $hostname )) {
+			$scribe = new PostmanGoogleOAuthScribe ();
+		} else if ($this->isServiceProviderMicrosoft ( $hostname )) {
+			$scribe = new PostmanMicrosoftOAuthScribe ();
+		} else if ($this->isServiceProviderYahoo ( $hostname )) {
+			$scribe = new PostmanYahooOAuthScribe ();
 		} else {
-			$scribe = new PostmanNonOAuthScribe( $hostname );
+			$scribe = new PostmanNonOAuthScribe ( $hostname );
 		}
 		return $scribe;
 	}
-
+	
 	/**
 	 * A short-hand way of showing the complete delivery method
 	 *
-	 * @param PostmanModuleTransport $transport
+	 * @param PostmanModuleTransport $transport        	
 	 * @return string
 	 */
 	public function getPublicTransportUri() {
-		$transportName = $this->getSlug();
-		$options       = PostmanOptions::getInstance();
-		$auth          = $this->getAuthenticationType( $options );
-		$protocol      = $this->getProtocol();
-		$security      = $this->getSecurityType();
-		$host          = $this->getHostname( $options );
-		$port          = $this->getPort( $options );
-		if ( ! empty( $security ) && $security != 'ssl' ) {
-			return sprintf( '%s:%s:%s://%s:%s', $protocol, $security, $auth, $host, $port );
+		$transportName = $this->getSlug ();
+		$options = PostmanOptions::getInstance ();
+		$auth = $this->getAuthenticationType ( $options );
+		$protocol = $this->getProtocol ();
+		$security = $this->getSecurityType ();
+		$host = $this->getHostname ( $options );
+		$port = $this->getPort ( $options );
+		if (! empty ( $security ) && $security != 'ssl') {
+			return sprintf ( '%s:%s:%s://%s:%s', $protocol, $security, $auth, $host, $port );
 		} else {
-			return sprintf( '%s:%s://%s:%s', $protocol, $auth, $host, $port );
+			return sprintf ( '%s:%s://%s:%s', $protocol, $auth, $host, $port );
 		}
 	}
-
+	
 	/**
 	 * (non-PHPdoc)
 	 *
 	 * @see PostmanModuleTransport::getDeliveryDetails()
 	 */
 	public function getDeliveryDetails() {
-		$this->options                      = $this->options;
-		$deliveryDetails ['transport_name'] = $this->getTransportDescription( $this->getSecurityType() );
-		$deliveryDetails ['host']           = $this->getHostname() . ':' . $this->getPort();
-		$deliveryDetails ['auth_desc']      = $this->getAuthenticationDescription( $this->getAuthenticationType() );
+		$this->options = $this->options;
+		$deliveryDetails ['transport_name'] = $this->getTransportDescription ( $this->getSecurityType () );
+		$deliveryDetails ['host'] = $this->getHostname () . ':' . $this->getPort ();
+		$deliveryDetails ['auth_desc'] = $this->getAuthenticationDescription ( $this->getAuthenticationType () );
 
 		if ( $deliveryDetails ['host'] == 'localhost:25' ) {
-			$deliveryDetails ['transport_name'] = __( 'Sendmail (server default - not SMTP)', 'post-smtp' );
-		}
+            $deliveryDetails ['transport_name'] = __( 'Sendmail (server default - not SMTP)', 'post-smtp');
+        }
 
 		/* translators: where (1) is the transport type, (2) is the host, and (3) is the Authentication Type (e.g. Postman will send mail via smtp.gmail.com:465 using OAuth 2.0 authentication.) */
-		return sprintf( __( 'Postman will send mail via %1$s to %2$s using %3$s authentication.', 'post-smtp' ), '<b>' . $deliveryDetails ['transport_name'] . '</b>', '<b>' . $deliveryDetails ['host'] . '</b>', '<b>' . $deliveryDetails ['auth_desc'] . '</b>' );
+		return sprintf ( __ ( 'Postman will send mail via %1$s to %2$s using %3$s authentication.', 'post-smtp' ), '<b>' . $deliveryDetails ['transport_name'] . '</b>', '<b>' . $deliveryDetails ['host'] . '</b>', '<b>' . $deliveryDetails ['auth_desc'] . '</b>' );
 	}
-
+	
 	/**
 	 *
-	 * @param mixed $encType
+	 * @param mixed $encType        	
 	 * @return string
 	 */
-	protected function getTransportDescription( $encType ) {
+	protected function getTransportDescription($encType) {
 		$deliveryDetails = '🔓SMTP';
-		if ( $encType == PostmanOptions::SECURITY_TYPE_SMTPS ) {
+		if ($encType == PostmanOptions::SECURITY_TYPE_SMTPS) {
 			/* translators: where %1$s is the Transport type (e.g. SMTP or SMTPS) and %2$s is the encryption type (e.g. SSL or TLS) */
 			$deliveryDetails = '🔐SMTPS';
-		} elseif ( $encType == PostmanOptions::SECURITY_TYPE_STARTTLS ) {
+		} else if ($encType == PostmanOptions::SECURITY_TYPE_STARTTLS) {
 			/* translators: where %1$s is the Transport type (e.g. SMTP or SMTPS) and %2$s is the encryption type (e.g. SSL or TLS) */
 			$deliveryDetails = '🔐SMTP-STARTTLS';
 		}
 		return $deliveryDetails;
 	}
-
+	
 	/**
 	 *
-	 * @param mixed $authType
+	 * @param mixed $authType        	
 	 */
-	protected function getAuthenticationDescription( $authType ) {
-		if ( PostmanOptions::AUTHENTICATION_TYPE_OAUTH2 == $authType ) {
+	protected function getAuthenticationDescription($authType) {
+		if (PostmanOptions::AUTHENTICATION_TYPE_OAUTH2 == $authType) {
 			return 'OAuth 2.0';
-		} elseif ( PostmanOptions::AUTHENTICATION_TYPE_NONE == $authType ) {
-			return _x( 'no', 'as in "There is no Spoon"', 'post-smtp' );
+		} else if (PostmanOptions::AUTHENTICATION_TYPE_NONE == $authType) {
+			return _x ( 'no', 'as in "There is no Spoon"', 'post-smtp' );
 		} else {
-			switch ( $authType ) {
-				case PostmanOptions::AUTHENTICATION_TYPE_CRAMMD5:
+			switch ($authType) {
+				case PostmanOptions::AUTHENTICATION_TYPE_CRAMMD5 :
 					$authDescription = 'CRAM-MD5';
 					break;
-
-				case PostmanOptions::AUTHENTICATION_TYPE_LOGIN:
+				
+				case PostmanOptions::AUTHENTICATION_TYPE_LOGIN :
 					$authDescription = 'Login';
 					break;
-
-				case PostmanOptions::AUTHENTICATION_TYPE_PLAIN:
+				
+				case PostmanOptions::AUTHENTICATION_TYPE_PLAIN :
 					$authDescription = 'Plain';
 					break;
-
-				default:
+				
+				default :
 					$authDescription = $authType;
 					break;
 			}
-			return sprintf( '%s (%s)', __( 'Password', 'post-smtp' ), $authDescription );
+			return sprintf ( '%s (%s)', __ ( 'Password', 'post-smtp' ), $authDescription );
 		}
 	}
-
+	
 	/**
 	 * Make sure the Senders are configured
 	 *
-	 * @param PostmanOptions $options
+	 * @param PostmanOptions $options        	
 	 * @return boolean
 	 */
 	protected function isEnvelopeFromConfigured() {
-		$options      = PostmanOptions::getInstance();
-		$envelopeFrom = $options->getEnvelopeSender();
-		return ! empty( $envelopeFrom );
+		$options = PostmanOptions::getInstance ();
+		$envelopeFrom = $options->getEnvelopeSender ();
+		return ! empty ( $envelopeFrom );
 	}
-
+	
 	/**
 	 * (non-PHPdoc)
 	 *
 	 * @see PostmanTransport::getMisconfigurationMessage()
 	 */
 	protected function validateTransportConfiguration() {
-		parent::validateTransportConfiguration();
-		$messages = parent::validateTransportConfiguration();
-		if ( ! $this->isSenderConfigured() ) {
-			array_push( $messages, __( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
-			$this->setNotConfiguredAndReady();
+		parent::validateTransportConfiguration ();
+		$messages = parent::validateTransportConfiguration ();
+		if (! $this->isSenderConfigured ()) {
+			array_push ( $messages, __ ( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
+			$this->setNotConfiguredAndReady ();
 		}
-		if ( $this->getAuthenticationType() == PostmanOptions::AUTHENTICATION_TYPE_OAUTH2 ) {
-			if ( ! $this->isOAuth2ClientIdAndClientSecretConfigured() ) {
+		if ($this->getAuthenticationType () == PostmanOptions::AUTHENTICATION_TYPE_OAUTH2) {
+			if (! $this->isOAuth2ClientIdAndClientSecretConfigured ()) {
 				/* translators: %1$s is the Client ID label, and %2$s is the Client Secret label (e.g. Warning: OAuth 2.0 authentication requires an OAuth 2.0-capable Outgoing Mail Server, Sender Email Address, Client ID, and Client Secret.) */
-				array_push( $messages, sprintf( __( 'OAuth 2.0 authentication requires a %1$s and %2$s.', 'post-smtp' ), $this->getScribe()->getClientIdLabel(), $this->getScribe()->getClientSecretLabel() ) );
-				$this->setNotConfiguredAndReady();
+				array_push ( $messages, sprintf ( __ ( 'OAuth 2.0 authentication requires a %1$s and %2$s.', 'post-smtp' ), $this->getScribe ()->getClientIdLabel (), $this->getScribe ()->getClientSecretLabel () ) );
+				$this->setNotConfiguredAndReady ();
 			}
 		}
 		return $messages;
 	}
-
+	
 	/**
 	 *
 	 * @return boolean
 	 */
 	protected function isOAuth2ClientIdAndClientSecretConfigured() {
-		$options      = PostmanOptions::getInstance();
-		$clientId     = $options->getClientId();
-		$clientSecret = $options->getClientSecret();
-		return ! ( empty( $clientId ) || empty( $clientSecret ) );
+		$options = PostmanOptions::getInstance ();
+		$clientId = $options->getClientId ();
+		$clientSecret = $options->getClientSecret ();
+		return ! (empty ( $clientId ) || empty ( $clientSecret ));
 	}
-
+	
 	/**
 	 *
 	 * @return boolean
 	 */
-	protected function isPasswordAuthenticationConfigured( PostmanOptions $options ) {
-		$username = $options->getUsername();
-		$password = $options->getPassword();
-		return $this->options->isAuthTypePassword() && ! ( empty( $username ) || empty( $password ) );
+	protected function isPasswordAuthenticationConfigured(PostmanOptions $options) {
+		$username = $options->getUsername ();
+		$password = $options->getPassword ();
+		return $this->options->isAuthTypePassword () && ! (empty ( $username ) || empty ( $password ));
 	}
-
+	
 	/**
 	 *
 	 * @return boolean
 	 */
 	protected function isPermissionNeeded() {
-		$accessToken  = $this->getOAuthToken()->getAccessToken();
-		$refreshToken = $this->getOAuthToken()->getRefreshToken();
-		return $this->isOAuthUsed( PostmanOptions::getInstance()->getAuthenticationType() ) && ( empty( $accessToken ) || empty( $refreshToken ) );
+		$accessToken = $this->getOAuthToken ()->getAccessToken ();
+		$refreshToken = $this->getOAuthToken ()->getRefreshToken ();
+		return $this->isOAuthUsed ( PostmanOptions::getInstance ()->getAuthenticationType () ) && (empty ( $accessToken ) || empty ( $refreshToken ));
 	}
-
+	
 	/**
 	 *
-	 * @param mixed $hostname
-	 * @param mixed $response
+	 * @param mixed $hostname        	
+	 * @param mixed $response        	
 	 */
-	public function populateConfiguration( $hostname ) {
-		$response = parent::populateConfiguration( $hostname );
-		$this->logger->debug( sprintf( 'populateConfigurationFromRecommendation for hostname %s', $hostname ) );
-		$scribe = $this->createScribe( $hostname );
+	public function populateConfiguration($hostname) {
+		$response = parent::populateConfiguration ( $hostname );
+		$this->logger->debug ( sprintf ( 'populateConfigurationFromRecommendation for hostname %s', $hostname ) );
+		$scribe = $this->createScribe ( $hostname );
 		// checks to see if the host is an IP address and sticks the result in the response
 		// IP addresses are not allowed in the Redirect URL
-		$urlParts                      = parse_url( $scribe->getCallbackUrl() );
+		$urlParts = parse_url ( $scribe->getCallbackUrl () );
 		$response ['dot_notation_url'] = false;
-		if ( isset( $urlParts ['host'] ) ) {
-			if ( PostmanUtils::isHostAddressNotADomainName( $urlParts ['host'] ) ) {
+		if (isset ( $urlParts ['host'] )) {
+			if (PostmanUtils::isHostAddressNotADomainName ( $urlParts ['host'] )) {
 				$response ['dot_notation_url'] = true;
 			}
 		}
-		$response ['redirect_url']          = $scribe->getCallbackUrl();
-		$response ['callback_domain']       = $scribe->getCallbackDomain();
-		$response ['help_text']             = $scribe->getOAuthHelp();
-		$response ['client_id_label']       = $scribe->getClientIdLabel();
-		$response ['client_secret_label']   = $scribe->getClientSecretLabel();
-		$response ['redirect_url_label']    = $scribe->getCallbackUrlLabel();
-		$response ['callback_domain_label'] = $scribe->getCallbackDomainLabel();
+		$response ['redirect_url'] = $scribe->getCallbackUrl ();
+		$response ['callback_domain'] = $scribe->getCallbackDomain ();
+		$response ['help_text'] = $scribe->getOAuthHelp ();
+		$response ['client_id_label'] = $scribe->getClientIdLabel ();
+		$response ['client_secret_label'] = $scribe->getClientSecretLabel ();
+		$response ['redirect_url_label'] = $scribe->getCallbackUrlLabel ();
+		$response ['callback_domain_label'] = $scribe->getCallbackDomainLabel ();
 		return $response;
 	}
-
+	
 	/**
 	 * Populate the Ajax response for the Setup Wizard / Manual Configuration
 	 *
-	 * @param mixed $hostname
-	 * @param mixed $response
+	 * @param mixed $hostname        	
+	 * @param mixed $response        	
 	 */
-	public function populateConfigurationFromRecommendation( $winningRecommendation ) {
-		$response = parent::populateConfigurationFromRecommendation( $winningRecommendation );
-		$response [ PostmanOptions::AUTHENTICATION_TYPE ] = $winningRecommendation ['auth'];
-		if ( isset( $winningRecommendation ['enc'] ) ) {
-			$response [ PostmanOptions::SECURITY_TYPE ] = $winningRecommendation ['enc'];
+	public function populateConfigurationFromRecommendation($winningRecommendation) {
+		$response = parent::populateConfigurationFromRecommendation ( $winningRecommendation );
+		$response [PostmanOptions::AUTHENTICATION_TYPE] = $winningRecommendation ['auth'];
+		if (isset ( $winningRecommendation ['enc'] )) {
+			$response [PostmanOptions::SECURITY_TYPE] = $winningRecommendation ['enc'];
 		}
-		if ( isset( $winningRecommendation ['port'] ) ) {
-			$response [ PostmanOptions::PORT ] = $winningRecommendation ['port'];
+		if (isset ( $winningRecommendation ['port'] )) {
+			$response [PostmanOptions::PORT] = $winningRecommendation ['port'];
 		}
-		if ( isset( $winningRecommendation ['hostname'] ) ) {
-			$response [ PostmanOptions::HOSTNAME ] = $winningRecommendation ['hostname'];
+		if (isset ( $winningRecommendation ['hostname'] )) {
+			$response [PostmanOptions::HOSTNAME] = $winningRecommendation ['hostname'];
 		}
-		if ( isset( $winningRecommendation ['display_auth'] ) ) {
+		if (isset ( $winningRecommendation ['display_auth'] )) {
 			$response ['display_auth'] = $winningRecommendation ['display_auth'];
 		}
 		return $response;
 	}
-
+	
 	/**
-	 *
+	 * 
 	 * @version 1.0
 	 */
-	public function createOverrideMenu( PostmanWizardSocket $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride ) {
-		$overrideItem   = parent::createOverrideMenu( $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride );
-		$selected       = $overrideItem ['selected'];
+	public function createOverrideMenu(PostmanWizardSocket $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride) {
+		$overrideItem = parent::createOverrideMenu ( $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride );
+		$selected = $overrideItem ['selected'];
 		$password_field = __( 'Password', 'post-smtp' );
 
-		if ( $winningRecommendation['hostname'] == 'smtp.gmail.com' ) {
-			$password_field = sprintf(
-				'%s <a href="%s" target="_blank">%s</a>',
-				__( 'App Password', 'post-smtp' ),
-				esc_url( 'https://postmansmtp.com/documentation/#setting-up-an-app-password-in-your-google-account' ),
-				__( 'How to Setup an App Password', 'post-smtp' )
-			);
-		}
-
+        if( $winningRecommendation['hostname'] == 'smtp.gmail.com' ) {
+            $password_field = sprintf(
+                '%s <a href="%s" target="_blank">%s</a>',
+                __( 'App Password', 'post-smtp' ),
+                esc_url( 'https://postmansmtp.com/documentation/#setting-up-an-app-password-in-your-google-account' ),
+                __( 'How to Setup an App Password', 'post-smtp' )
+            );
+        }
+		
 		// only smtp can have multiple auth options
-		$overrideAuthItems = array();
-		$passwordMode      = false;
-		$oauth2Mode        = false;
-		$noAuthMode        = false;
-		if ( isset( $userAuthOverride ) || isset( $userSocketOverride ) ) {
-			if ( $userAuthOverride == 'password' ) {
+		$overrideAuthItems = array ();
+		$passwordMode = false;
+		$oauth2Mode = false;
+		$noAuthMode = false;
+		if (isset ( $userAuthOverride ) || isset ( $userSocketOverride )) {
+			if ($userAuthOverride == 'password') {
 				$passwordMode = true;
-			} elseif ( $userAuthOverride == 'oauth2' ) {
+			} elseif ($userAuthOverride == 'oauth2') {
 				$oauth2Mode = true;
 			} else {
 				$noAuthMode = true;
 			}
-		} elseif ( isset( $winningRecommendation ['display_auth'] ) && $winningRecommendation ['display_auth'] == 'password' ) {
-				$passwordMode = true;
-		} elseif ( isset( $winningRecommendation ['display_auth'] ) && $winningRecommendation ['display_auth'] == 'oauth2' ) {
-			$oauth2Mode = true;
 		} else {
-			$noAuthMode = true;
+			if ( isset( $winningRecommendation ['display_auth'] ) && $winningRecommendation ['display_auth'] == 'password') {
+				$passwordMode = true;
+			} elseif ( isset( $winningRecommendation ['display_auth'] ) && $winningRecommendation ['display_auth'] == 'oauth2') {
+				$oauth2Mode = true;
+			} else {
+				$noAuthMode = true;
+			}
 		}
-		if ( $selected ) {
-			if ( $socket->auth_crammd5 || $socket->auth_login || $socket->authPlain ) {
-				array_push(
-					$overrideAuthItems,
-					array(
-						'selected' => $passwordMode,
-						'name'     => $password_field,
-						'value'    => 'password',
-					)
-				);
+		if ($selected) {
+			if ($socket->auth_crammd5 || $socket->auth_login || $socket->authPlain) {
+				array_push ( $overrideAuthItems, array (
+						'selected'	=> $passwordMode,
+						'name' 		=> $password_field,
+						'value'		=> 'password'
+				) );
 			}
-			if ( $socket->auth_xoauth || $winningRecommendation ['auth'] == 'oauth2' ) {
-				array_push(
-					$overrideAuthItems,
-					array(
+			if ($socket->auth_xoauth || $winningRecommendation ['auth'] == 'oauth2') {
+				array_push ( $overrideAuthItems, array (
 						'selected' => $oauth2Mode,
-						'name'     => __( 'OAuth 2.0 (requires Client ID and Client Secret)', 'post-smtp' ),
-						'value'    => 'oauth2',
-					)
-				);
+						'name' => __ ( 'OAuth 2.0 (requires Client ID and Client Secret)', 'post-smtp' ),
+						'value' => 'oauth2' 
+				) );
 			}
-			if ( $socket->auth_none ) {
-				array_push(
-					$overrideAuthItems,
-					array(
+			if ($socket->auth_none) {
+				array_push ( $overrideAuthItems, array (
 						'selected' => $noAuthMode,
-						'name'     => __( 'None', 'post-smtp' ),
-						'value'    => 'none',
-					)
-				);
+						'name' => __ ( 'None', 'post-smtp' ),
+						'value' => 'none' 
+				) );
 			}
-
+			
 			// marks at least one item as selected if none are selected
 			$atLeastOneSelected = false;
-			$firstItem          = null;
+			$firstItem = null;
 			// don't use variable reference see http://stackoverflow.com/questions/15024616/php-foreach-change-original-array-values
 			foreach ( $overrideAuthItems as $key => $field ) {
-				if ( ! $firstItem ) {
+				if (! $firstItem) {
 					$firstItem = $key;
 				}
-				if ( $field ['selected'] ) {
+				if ($field ['selected']) {
 					$atLeastOneSelected = true;
 				}
 			}
-			if ( ! $atLeastOneSelected ) {
-				$this->logger->debug( 'nothing selected - forcing a selection on the *first* overrided auth item' );
-				$overrideAuthItems [ $firstItem ] ['selected'] = true;
+			if (! $atLeastOneSelected) {
+				$this->logger->debug ( 'nothing selected - forcing a selection on the *first* overrided auth item' );
+				$overrideAuthItems [$firstItem] ['selected'] = true;
 			}
-
+			
 			// push the authentication options into the $overrideItem structure
 			$overrideItem ['auth_items'] = $overrideAuthItems;
 		}
@@ -804,12 +800,14 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 
 	/**
 	 * Get Socket's logo
-	 *
+	 * 
 	 * @since 2.1
 	 * @version 1.0
 	 */
 	public function getLogoURL() {
 
 		return false;
+
 	}
 }
+

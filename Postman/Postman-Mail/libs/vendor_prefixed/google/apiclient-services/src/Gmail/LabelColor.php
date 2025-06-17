@@ -17,40 +17,44 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class LabelColor extends \PostSMTP\Vendor\Google\Model {
-
-	/**
-	 * @var string
-	 */
-	public $backgroundColor;
-	/**
-	 * @var string
-	 */
-	public $textColor;
-	/**
-	 * @param string
-	 */
-	public function setBackgroundColor( $backgroundColor ) {
-		$this->backgroundColor = $backgroundColor;
-	}
-	/**
-	 * @return string
-	 */
-	public function getBackgroundColor() {
-		return $this->backgroundColor;
-	}
-	/**
-	 * @param string
-	 */
-	public function setTextColor( $textColor ) {
-		$this->textColor = $textColor;
-	}
-	/**
-	 * @return string
-	 */
-	public function getTextColor() {
-		return $this->textColor;
-	}
+class LabelColor extends \PostSMTP\Vendor\Google\Model
+{
+    /**
+     * @var string
+     */
+    public $backgroundColor;
+    /**
+     * @var string
+     */
+    public $textColor;
+    /**
+     * @param string
+     */
+    public function setBackgroundColor($backgroundColor)
+    {
+        $this->backgroundColor = $backgroundColor;
+    }
+    /**
+     * @return string
+     */
+    public function getBackgroundColor()
+    {
+        return $this->backgroundColor;
+    }
+    /**
+     * @param string
+     */
+    public function setTextColor($textColor)
+    {
+        $this->textColor = $textColor;
+    }
+    /**
+     * @return string
+     */
+    public function getTextColor()
+    {
+        return $this->textColor;
+    }
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\LabelColor::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_LabelColor' );
+\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\LabelColor::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_LabelColor');

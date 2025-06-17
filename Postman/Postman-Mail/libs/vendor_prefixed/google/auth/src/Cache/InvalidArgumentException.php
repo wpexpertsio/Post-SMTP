@@ -18,6 +18,6 @@
 namespace PostSMTP\Vendor\Google\Auth\Cache;
 
 use PostSMTP\Vendor\Psr\Cache\InvalidArgumentException as PsrInvalidArgumentException;
-class InvalidArgumentException extends \InvalidArgumentException implements \PostSMTP\Vendor\Psr\Cache\InvalidArgumentException {
-
+class InvalidArgumentException extends \InvalidArgumentException implements \PostSMTP\Vendor\Psr\Cache\InvalidArgumentException
+{
 }

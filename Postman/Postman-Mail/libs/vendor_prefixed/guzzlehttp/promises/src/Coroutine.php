@@ -41,93 +41,103 @@ use Throwable;
  *
  * @see https://github.com/petkaantonov/bluebird/blob/master/API.md#generators inspiration
  */
-final class Coroutine implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface {
-
-	/**
-	 * @var PromiseInterface|null
-	 */
-	private $currentPromise;
-	/**
-	 * @var Generator
-	 */
-	private $generator;
-	/**
-	 * @var Promise
-	 */
-	private $result;
-	public function __construct( callable $generatorFn ) {
-		$this->generator = $generatorFn();
-		$this->result    = new \PostSMTP\Vendor\GuzzleHttp\Promise\Promise(
-			function (): void {
-				while ( isset( $this->currentPromise ) ) {
-					$this->currentPromise->wait();
-				}
-			}
-		);
-		try {
-			$this->nextCoroutine( $this->generator->current() );
-		} catch ( \Throwable $throwable ) {
-			$this->result->reject( $throwable );
-		}
-	}
-	/**
-	 * Create a new coroutine.
-	 */
-	public static function of( callable $generatorFn ): self {
-		return new self( $generatorFn );
-	}
-	public function then( callable $onFulfilled = null, callable $onRejected = null ): \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface {
-		return $this->result->then( $onFulfilled, $onRejected );
-	}
-	public function otherwise( callable $onRejected ): \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface {
-		return $this->result->otherwise( $onRejected );
-	}
-	public function wait( bool $unwrap = \true ) {
-		return $this->result->wait( $unwrap );
-	}
-	public function getState(): string {
-		return $this->result->getState();
-	}
-	public function resolve( $value ): void {
-		$this->result->resolve( $value );
-	}
-	public function reject( $reason ): void {
-		$this->result->reject( $reason );
-	}
-	public function cancel(): void {
-		$this->currentPromise->cancel();
-		$this->result->cancel();
-	}
-	private function nextCoroutine( $yielded ): void {
-		$this->currentPromise = \PostSMTP\Vendor\GuzzleHttp\Promise\Create::promiseFor( $yielded )->then( array( $this, '_handleSuccess' ), array( $this, '_handleFailure' ) );
-	}
-	/**
-	 * @internal
-	 */
-	public function _handleSuccess( $value ): void {
-		unset( $this->currentPromise );
-		try {
-			$next = $this->generator->send( $value );
-			if ( $this->generator->valid() ) {
-				$this->nextCoroutine( $next );
-			} else {
-				$this->result->resolve( $value );
-			}
-		} catch ( \Throwable $throwable ) {
-			$this->result->reject( $throwable );
-		}
-	}
-	/**
-	 * @internal
-	 */
-	public function _handleFailure( $reason ): void {
-		unset( $this->currentPromise );
-		try {
-			$nextYield = $this->generator->throw( \PostSMTP\Vendor\GuzzleHttp\Promise\Create::exceptionFor( $reason ) );
-			// The throw was caught, so keep iterating on the coroutine
-			$this->nextCoroutine( $nextYield );
-		} catch ( \Throwable $throwable ) {
-			$this->result->reject( $throwable );
-		}
-	}
+final class Coroutine implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
+{
+    /**
+     * @var PromiseInterface|null
+     */
+    private $currentPromise;
+    /**
+     * @var Generator
+     */
+    private $generator;
+    /**
+     * @var Promise
+     */
+    private $result;
+    public function __construct(callable $generatorFn)
+    {
+        $this->generator = $generatorFn();
+        $this->result = new \PostSMTP\Vendor\GuzzleHttp\Promise\Promise(function () : void {
+            while (isset($this->currentPromise)) {
+                $this->currentPromise->wait();
+            }
+        });
+        try {
+            $this->nextCoroutine($this->generator->current());
+        } catch (\Throwable $throwable) {
+            $this->result->reject($throwable);
+        }
+    }
+    /**
+     * Create a new coroutine.
+     */
+    public static function of(callable $generatorFn) : self
+    {
+        return new self($generatorFn);
+    }
+    public function then(callable $onFulfilled = null, callable $onRejected = null) : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
+    {
+        return $this->result->then($onFulfilled, $onRejected);
+    }
+    public function otherwise(callable $onRejected) : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
+    {
+        return $this->result->otherwise($onRejected);
+    }
+    public function wait(bool $unwrap = \true)
+    {
+        return $this->result->wait($unwrap);
+    }
+    public function getState() : string
+    {
+        return $this->result->getState();
+    }
+    public function resolve($value) : void
+    {
+        $this->result->resolve($value);
+    }
+    public function reject($reason) : void
+    {
+        $this->result->reject($reason);
+    }
+    public function cancel() : void
+    {
+        $this->currentPromise->cancel();
+        $this->result->cancel();
+    }
+    private function nextCoroutine($yielded) : void
+    {
+        $this->currentPromise = \PostSMTP\Vendor\GuzzleHttp\Promise\Create::promiseFor($yielded)->then([$this, '_handleSuccess'], [$this, '_handleFailure']);
+    }
+    /**
+     * @internal
+     */
+    public function _handleSuccess($value) : void
+    {
+        unset($this->currentPromise);
+        try {
+            $next = $this->generator->send($value);
+            if ($this->generator->valid()) {
+                $this->nextCoroutine($next);
+            } else {
+                $this->result->resolve($value);
+            }
+        } catch (\Throwable $throwable) {
+            $this->result->reject($throwable);
+        }
+    }
+    /**
+     * @internal
+     */
+    public function _handleFailure($reason) : void
+    {
+        unset($this->currentPromise);
+        try {
+            $nextYield = $this->generator->throw(\PostSMTP\Vendor\GuzzleHttp\Promise\Create::exceptionFor($reason));
+            // The throw was caught, so keep iterating on the coroutine
+            $this->nextCoroutine($nextYield);
+        } catch (\Throwable $throwable) {
+            $this->result->reject($throwable);
+        }
+    }
 }

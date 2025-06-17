@@ -17,55 +17,61 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class ListMessagesResponse extends \PostSMTP\Vendor\Google\Collection {
-
-	protected $collection_key   = 'messages';
-	protected $messagesType     = \PostSMTP\Vendor\Google\Service\Gmail\Message::class;
-	protected $messagesDataType = 'array';
-	/**
-	 * @var string
-	 */
-	public $nextPageToken;
-	/**
-	 * @var string
-	 */
-	public $resultSizeEstimate;
-	/**
-	 * @param Message[]
-	 */
-	public function setMessages( $messages ) {
-		$this->messages = $messages;
-	}
-	/**
-	 * @return Message[]
-	 */
-	public function getMessages() {
-		return $this->messages;
-	}
-	/**
-	 * @param string
-	 */
-	public function setNextPageToken( $nextPageToken ) {
-		$this->nextPageToken = $nextPageToken;
-	}
-	/**
-	 * @return string
-	 */
-	public function getNextPageToken() {
-		return $this->nextPageToken;
-	}
-	/**
-	 * @param string
-	 */
-	public function setResultSizeEstimate( $resultSizeEstimate ) {
-		$this->resultSizeEstimate = $resultSizeEstimate;
-	}
-	/**
-	 * @return string
-	 */
-	public function getResultSizeEstimate() {
-		return $this->resultSizeEstimate;
-	}
+class ListMessagesResponse extends \PostSMTP\Vendor\Google\Collection
+{
+    protected $collection_key = 'messages';
+    protected $messagesType = \PostSMTP\Vendor\Google\Service\Gmail\Message::class;
+    protected $messagesDataType = 'array';
+    /**
+     * @var string
+     */
+    public $nextPageToken;
+    /**
+     * @var string
+     */
+    public $resultSizeEstimate;
+    /**
+     * @param Message[]
+     */
+    public function setMessages($messages)
+    {
+        $this->messages = $messages;
+    }
+    /**
+     * @return Message[]
+     */
+    public function getMessages()
+    {
+        return $this->messages;
+    }
+    /**
+     * @param string
+     */
+    public function setNextPageToken($nextPageToken)
+    {
+        $this->nextPageToken = $nextPageToken;
+    }
+    /**
+     * @return string
+     */
+    public function getNextPageToken()
+    {
+        return $this->nextPageToken;
+    }
+    /**
+     * @param string
+     */
+    public function setResultSizeEstimate($resultSizeEstimate)
+    {
+        $this->resultSizeEstimate = $resultSizeEstimate;
+    }
+    /**
+     * @return string
+     */
+    public function getResultSizeEstimate()
+    {
+        return $this->resultSizeEstimate;
+    }
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\ListMessagesResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListMessagesResponse' );
+\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\ListMessagesResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListMessagesResponse');

@@ -15,8 +15,9 @@ use PostSMTP\Vendor\Psr\Http\Message\UriInterface;
  *
  * @deprecated str will be removed in guzzlehttp/psr7:2.0. Use Message::toString instead.
  */
-function str( \PostSMTP\Vendor\Psr\Http\Message\MessageInterface $message ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Message::toString( $message );
+function str(\PostSMTP\Vendor\Psr\Http\Message\MessageInterface $message)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Message::toString($message);
 }
 /**
  * Returns a UriInterface for the given value.
@@ -33,8 +34,9 @@ function str( \PostSMTP\Vendor\Psr\Http\Message\MessageInterface $message ) {
  *
  * @deprecated uri_for will be removed in guzzlehttp/psr7:2.0. Use Utils::uriFor instead.
  */
-function uri_for( $uri ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::uriFor( $uri );
+function uri_for($uri)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::uriFor($uri);
 }
 /**
  * Create a new stream based on the input type.
@@ -74,8 +76,9 @@ function uri_for( $uri ) {
  *
  * @deprecated stream_for will be removed in guzzlehttp/psr7:2.0. Use Utils::streamFor instead.
  */
-function stream_for( $resource = '', array $options = array() ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::streamFor( $resource, $options );
+function stream_for($resource = '', array $options = [])
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::streamFor($resource, $options);
 }
 /**
  * Parse an array of header values containing ";" separated data into an
@@ -89,8 +92,9 @@ function stream_for( $resource = '', array $options = array() ) {
  *
  * @deprecated parse_header will be removed in guzzlehttp/psr7:2.0. Use Header::parse instead.
  */
-function parse_header( $header ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Header::parse( $header );
+function parse_header($header)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Header::parse($header);
 }
 /**
  * Converts an array of header values that may contain comma separated
@@ -102,8 +106,9 @@ function parse_header( $header ) {
  *
  * @deprecated normalize_header will be removed in guzzlehttp/psr7:2.0. Use Header::normalize instead.
  */
-function normalize_header( $header ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Header::normalize( $header );
+function normalize_header($header)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Header::normalize($header);
 }
 /**
  * Clone and modify a request with the given changes.
@@ -127,8 +132,9 @@ function normalize_header( $header ) {
  *
  * @deprecated modify_request will be removed in guzzlehttp/psr7:2.0. Use Utils::modifyRequest instead.
  */
-function modify_request( \PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $changes ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::modifyRequest( $request, $changes );
+function modify_request(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $changes)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::modifyRequest($request, $changes);
 }
 /**
  * Attempts to rewind a message body and throws an exception on failure.
@@ -142,8 +148,9 @@ function modify_request( \PostSMTP\Vendor\Psr\Http\Message\RequestInterface $req
  *
  * @deprecated rewind_body will be removed in guzzlehttp/psr7:2.0. Use Message::rewindBody instead.
  */
-function rewind_body( \PostSMTP\Vendor\Psr\Http\Message\MessageInterface $message ) {
-	\PostSMTP\Vendor\GuzzleHttp\Psr7\Message::rewindBody( $message );
+function rewind_body(\PostSMTP\Vendor\Psr\Http\Message\MessageInterface $message)
+{
+    \PostSMTP\Vendor\GuzzleHttp\Psr7\Message::rewindBody($message);
 }
 /**
  * Safely opens a PHP stream resource using a filename.
@@ -160,8 +167,9 @@ function rewind_body( \PostSMTP\Vendor\Psr\Http\Message\MessageInterface $messag
  *
  * @deprecated try_fopen will be removed in guzzlehttp/psr7:2.0. Use Utils::tryFopen instead.
  */
-function try_fopen( $filename, $mode ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::tryFopen( $filename, $mode );
+function try_fopen($filename, $mode)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::tryFopen($filename, $mode);
 }
 /**
  * Copy the contents of a stream into a string until the given number of
@@ -177,8 +185,9 @@ function try_fopen( $filename, $mode ) {
  *
  * @deprecated copy_to_string will be removed in guzzlehttp/psr7:2.0. Use Utils::copyToString instead.
  */
-function copy_to_string( \PostSMTP\Vendor\Psr\Http\Message\StreamInterface $stream, $maxLen = -1 ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::copyToString( $stream, $maxLen );
+function copy_to_string(\PostSMTP\Vendor\Psr\Http\Message\StreamInterface $stream, $maxLen = -1)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::copyToString($stream, $maxLen);
 }
 /**
  * Copy the contents of a stream into another stream until the given number
@@ -193,8 +202,9 @@ function copy_to_string( \PostSMTP\Vendor\Psr\Http\Message\StreamInterface $stre
  *
  * @deprecated copy_to_stream will be removed in guzzlehttp/psr7:2.0. Use Utils::copyToStream instead.
  */
-function copy_to_stream( \PostSMTP\Vendor\Psr\Http\Message\StreamInterface $source, \PostSMTP\Vendor\Psr\Http\Message\StreamInterface $dest, $maxLen = -1 ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::copyToStream( $source, $dest, $maxLen );
+function copy_to_stream(\PostSMTP\Vendor\Psr\Http\Message\StreamInterface $source, \PostSMTP\Vendor\Psr\Http\Message\StreamInterface $dest, $maxLen = -1)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::copyToStream($source, $dest, $maxLen);
 }
 /**
  * Calculate a hash of a stream.
@@ -212,8 +222,9 @@ function copy_to_stream( \PostSMTP\Vendor\Psr\Http\Message\StreamInterface $sour
  *
  * @deprecated hash will be removed in guzzlehttp/psr7:2.0. Use Utils::hash instead.
  */
-function hash( \PostSMTP\Vendor\Psr\Http\Message\StreamInterface $stream, $algo, $rawOutput = \false ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::hash( $stream, $algo, $rawOutput );
+function hash(\PostSMTP\Vendor\Psr\Http\Message\StreamInterface $stream, $algo, $rawOutput = \false)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::hash($stream, $algo, $rawOutput);
 }
 /**
  * Read a line from the stream up to the maximum allowed buffer length.
@@ -225,8 +236,9 @@ function hash( \PostSMTP\Vendor\Psr\Http\Message\StreamInterface $stream, $algo,
  *
  * @deprecated readline will be removed in guzzlehttp/psr7:2.0. Use Utils::readLine instead.
  */
-function readline( \PostSMTP\Vendor\Psr\Http\Message\StreamInterface $stream, $maxLength = null ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::readLine( $stream, $maxLength );
+function readline(\PostSMTP\Vendor\Psr\Http\Message\StreamInterface $stream, $maxLength = null)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::readLine($stream, $maxLength);
 }
 /**
  * Parses a request message string into a request object.
@@ -237,8 +249,9 @@ function readline( \PostSMTP\Vendor\Psr\Http\Message\StreamInterface $stream, $m
  *
  * @deprecated parse_request will be removed in guzzlehttp/psr7:2.0. Use Message::parseRequest instead.
  */
-function parse_request( $message ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Message::parseRequest( $message );
+function parse_request($message)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Message::parseRequest($message);
 }
 /**
  * Parses a response message string into a response object.
@@ -249,8 +262,9 @@ function parse_request( $message ) {
  *
  * @deprecated parse_response will be removed in guzzlehttp/psr7:2.0. Use Message::parseResponse instead.
  */
-function parse_response( $message ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Message::parseResponse( $message );
+function parse_response($message)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Message::parseResponse($message);
 }
 /**
  * Parse a query string into an associative array.
@@ -267,8 +281,9 @@ function parse_response( $message ) {
  *
  * @deprecated parse_query will be removed in guzzlehttp/psr7:2.0. Use Query::parse instead.
  */
-function parse_query( $str, $urlEncoding = \true ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Query::parse( $str, $urlEncoding );
+function parse_query($str, $urlEncoding = \true)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Query::parse($str, $urlEncoding);
 }
 /**
  * Build a query string from an array of key value pairs.
@@ -286,8 +301,9 @@ function parse_query( $str, $urlEncoding = \true ) {
  *
  * @deprecated build_query will be removed in guzzlehttp/psr7:2.0. Use Query::build instead.
  */
-function build_query( array $params, $encoding = \PHP_QUERY_RFC3986 ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Query::build( $params, $encoding );
+function build_query(array $params, $encoding = \PHP_QUERY_RFC3986)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Query::build($params, $encoding);
 }
 /**
  * Determines the mimetype of a file by looking at its extension.
@@ -298,8 +314,9 @@ function build_query( array $params, $encoding = \PHP_QUERY_RFC3986 ) {
  *
  * @deprecated mimetype_from_filename will be removed in guzzlehttp/psr7:2.0. Use MimeType::fromFilename instead.
  */
-function mimetype_from_filename( $filename ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\MimeType::fromFilename( $filename );
+function mimetype_from_filename($filename)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\MimeType::fromFilename($filename);
 }
 /**
  * Maps a file extensions to a mimetype.
@@ -311,8 +328,9 @@ function mimetype_from_filename( $filename ) {
  * @link http://svn.apache.org/repos/asf/httpd/httpd/branches/1.3.x/conf/mime.types
  * @deprecated mimetype_from_extension will be removed in guzzlehttp/psr7:2.0. Use MimeType::fromExtension instead.
  */
-function mimetype_from_extension( $extension ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\MimeType::fromExtension( $extension );
+function mimetype_from_extension($extension)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\MimeType::fromExtension($extension);
 }
 /**
  * Parses an HTTP message into an associative array.
@@ -329,8 +347,9 @@ function mimetype_from_extension( $extension ) {
  *
  * @deprecated _parse_message will be removed in guzzlehttp/psr7:2.0. Use Message::parseMessage instead.
  */
-function _parse_message( $message ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Message::parseMessage( $message );
+function _parse_message($message)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Message::parseMessage($message);
 }
 /**
  * Constructs a URI for an HTTP request message.
@@ -344,8 +363,9 @@ function _parse_message( $message ) {
  *
  * @deprecated _parse_request_uri will be removed in guzzlehttp/psr7:2.0. Use Message::parseRequestUri instead.
  */
-function _parse_request_uri( $path, array $headers ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Message::parseRequestUri( $path, $headers );
+function _parse_request_uri($path, array $headers)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Message::parseRequestUri($path, $headers);
 }
 /**
  * Get a short summary of the message body.
@@ -359,8 +379,9 @@ function _parse_request_uri( $path, array $headers ) {
  *
  * @deprecated get_message_body_summary will be removed in guzzlehttp/psr7:2.0. Use Message::bodySummary instead.
  */
-function get_message_body_summary( \PostSMTP\Vendor\Psr\Http\Message\MessageInterface $message, $truncateAt = 120 ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Message::bodySummary( $message, $truncateAt );
+function get_message_body_summary(\PostSMTP\Vendor\Psr\Http\Message\MessageInterface $message, $truncateAt = 120)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Message::bodySummary($message, $truncateAt);
 }
 /**
  * Remove the items given by the keys, case insensitively from the data.
@@ -373,6 +394,7 @@ function get_message_body_summary( \PostSMTP\Vendor\Psr\Http\Message\MessageInte
  *
  * @deprecated _caseless_remove will be removed in guzzlehttp/psr7:2.0. Use Utils::caselessRemove instead.
  */
-function _caseless_remove( $keys, array $data ) {
-	return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::caselessRemove( $keys, $data );
+function _caseless_remove($keys, array $data)
+{
+    return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::caselessRemove($keys, $data);
 }

@@ -18,19 +18,20 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class BuiltIn extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath {
-
-	/**
-	 * Performs modular exponentiation.
-	 *
-	 * @param BCMath $x
-	 * @param BCMath $e
-	 * @param BCMath $n
-	 * @return BCMath
-	 */
-	protected static function powModHelper( \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $x, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $n ) {
-		$temp        = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath();
-		$temp->value = \bcpowmod( $x->value, $e->value, $n->value );
-		return $x->normalize( $temp );
-	}
+abstract class BuiltIn extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath
+{
+    /**
+     * Performs modular exponentiation.
+     *
+     * @param BCMath $x
+     * @param BCMath $e
+     * @param BCMath $n
+     * @return BCMath
+     */
+    protected static function powModHelper(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $x, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $n)
+    {
+        $temp = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath();
+        $temp->value = \bcpowmod($x->value, $e->value, $n->value);
+        return $x->normalize($temp);
+    }
 }

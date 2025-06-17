@@ -16,60 +16,63 @@ use PostSMTP\Vendor\Elastica\Document;
  *
  * @author Jelle Vink <jelle.vink@gmail.com>
  */
-class ElasticaFormatter extends \PostSMTP\Vendor\Monolog\Formatter\NormalizerFormatter {
-
-	/**
-	 * @var string Elastic search index name
-	 */
-	protected $index;
-	/**
-	 * @var string Elastic search document type
-	 */
-	protected $type;
-	/**
-	 * @param string $index Elastic Search index name
-	 * @param string $type  Elastic Search document type
-	 */
-	public function __construct( $index, $type ) {
-		// elasticsearch requires a ISO 8601 format date with optional millisecond precision.
-		parent::__construct( 'Y-m-d\\TH:i:s.uP' );
-		$this->index = $index;
-		$this->type  = $type;
-	}
-	/**
-	 * {@inheritdoc}
-	 */
-	public function format( array $record ) {
-		$record = parent::format( $record );
-		return $this->getDocument( $record );
-	}
-	/**
-	 * Getter index
-	 *
-	 * @return string
-	 */
-	public function getIndex() {
-		return $this->index;
-	}
-	/**
-	 * Getter type
-	 *
-	 * @return string
-	 */
-	public function getType() {
-		return $this->type;
-	}
-	/**
-	 * Convert a log message into an Elastica Document
-	 *
-	 * @param  array $record Log message
-	 * @return Document
-	 */
-	protected function getDocument( $record ) {
-		$document = new \PostSMTP\Vendor\Elastica\Document();
-		$document->setData( $record );
-		$document->setType( $this->type );
-		$document->setIndex( $this->index );
-		return $document;
-	}
+class ElasticaFormatter extends \PostSMTP\Vendor\Monolog\Formatter\NormalizerFormatter
+{
+    /**
+     * @var string Elastic search index name
+     */
+    protected $index;
+    /**
+     * @var string Elastic search document type
+     */
+    protected $type;
+    /**
+     * @param string $index Elastic Search index name
+     * @param string $type  Elastic Search document type
+     */
+    public function __construct($index, $type)
+    {
+        // elasticsearch requires a ISO 8601 format date with optional millisecond precision.
+        parent::__construct('Y-m-d\\TH:i:s.uP');
+        $this->index = $index;
+        $this->type = $type;
+    }
+    /**
+     * {@inheritdoc}
+     */
+    public function format(array $record)
+    {
+        $record = parent::format($record);
+        return $this->getDocument($record);
+    }
+    /**
+     * Getter index
+     * @return string
+     */
+    public function getIndex()
+    {
+        return $this->index;
+    }
+    /**
+     * Getter type
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+    /**
+     * Convert a log message into an Elastica Document
+     *
+     * @param  array    $record Log message
+     * @return Document
+     */
+    protected function getDocument($record)
+    {
+        $document = new \PostSMTP\Vendor\Elastica\Document();
+        $document->setData($record);
+        $document->setType($this->type);
+        $document->setIndex($this->index);
+        return $document;
+    }
 }

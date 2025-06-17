@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+    exit; // Exit if accessed directly
 }
 
 require_once 'PostmanModuleTransport.php';
@@ -74,14 +74,14 @@ class PostmanTransportRegistry {
 
 	/**
 	 * Retrieve the transport Postman is currently configured with.
-	 *
+	 *	
 	 * @return PostmanModuleTransport
 	 * @deprecated 2.1.4 use getActiveTransport()
 	 * @see getActiveTransport()
 	 */
 	public function getCurrentTransport() {
 		$selectedTransport = PostmanOptions::getInstance()->getTransportType();
-		$transports        = $this->getTransports();
+		$transports = $this->getTransports();
 		if ( ! isset( $transports [ $selectedTransport ] ) ) {
 			return $transports ['default'];
 		} else {
@@ -109,79 +109,13 @@ class PostmanTransportRegistry {
 	}
 
 	/**
-	 * Get provider name by connection ID from WordPress options.
-	 *
-	 * @param int $connection_id The connection ID.
-	 * @return string|null The provider name or null if not found.
-	 */
-	public function get_provider_name_by_id( $connection_id ) {
-		// Retrieve postman_connections from WordPress options.
-		$connections = get_option( 'postman_connections', array() );
-
-		// Check if the connection ID exists and return the provider name.
-		return isset( $connections[$connection_id] ) ? $connections[$connection_id]['provider'] : null;
-	}
-	/**
-	 *
-	 * @param PostmanOptions    $options
-	 * @param PostmanOAuthToken $token
-	 * @return boolean
-	 */
-	public function getPrimaryConnection() {
-		$selectedTransport = PostmanOptions::getInstance()->getSelectedPrimaryName();
-		$transports        = $this->getTransports();
-		if ( isset( $transports [ $selectedTransport ] ) ) {
-			$transport = $transports [ $selectedTransport ];
-			if ( $transport->getSlug() == $selectedTransport ) {
-				return $transport;
-			}
-		}
-		return $transports ['default'];
-	}
-
-	/**
-	 *
-	 * @param PostmanOptions    $options
-	 * @param PostmanOAuthToken $token
-	 * @return boolean
-	 */
-	public function getConnectionByName( $name ) {
-		$transports        = $this->getTransports();
-		if ( isset( $transports [ $name ] ) ) {
-			$transport = $transports [ $name ];
-			if ( $transport->getSlug() == $name ) {
-				return $transport;
-			}
-		}
-		return $transports ['default'];
-	}
-
-	/**
-	 *
-	 * @param PostmanOptions    $options
-	 * @param PostmanOAuthToken $token
-	 * @return boolean
-	 */
-	public function getFallbackConnection() {
-		$selectedTransport = PostmanOptions::getInstance()->getSelectedFallbackName();
-		$transports        = $this->getTransports();
-		if ( isset( $transports [ $selectedTransport ] ) ) {
-			$transport = $transports [ $selectedTransport ];
-			if ( $transport->getSlug() == $selectedTransport ) {
-				return $transport;
-			}
-		}
-		return $transports ['default'];
-	}
-
-	/**
 	 * Retrieve the transport Postman is currently configured with.
 	 *
 	 * @return PostmanModuleTransport
 	 */
 	public function getSelectedTransport() {
 		$selectedTransport = PostmanOptions::getInstance()->getTransportType();
-		$transports        = $this->getTransports();
+		$transports = $this->getTransports();
 		if ( isset( $transports [ $selectedTransport ] ) ) {
 			return $transports [ $selectedTransport ];
 		} else {
@@ -254,8 +188,8 @@ class PostmanTransportRegistry {
 	 */
 	public function getRecommendation( PostmanWizardSocket $hostData, $userAuthOverride, $originalSmtpServer ) {
 		$scrubbedUserAuthOverride = $this->scrubUserOverride( $hostData, $userAuthOverride );
-		$transport                = $this->getTransport( $hostData->transport );
-		$recommendation           = $transport->getConfigurationBid( $hostData, $scrubbedUserAuthOverride, $originalSmtpServer );
+		$transport = $this->getTransport( $hostData->transport );
+		$recommendation = $transport->getConfigurationBid( $hostData, $scrubbedUserAuthOverride, $originalSmtpServer );
 		if ( $this->logger->isDebug() ) {
 			$this->logger->debug( sprintf( 'Transport %s bid %s', $transport->getName(), $recommendation ['priority'] ) );
 		}
@@ -265,14 +199,14 @@ class PostmanTransportRegistry {
 	/**
 	 *
 	 * @param PostmanWizardSocket $hostData
-	 * @param mixed               $userAuthOverride
+	 * @param mixed             $userAuthOverride
 	 * @return NULL
 	 */
 	private function scrubUserOverride( PostmanWizardSocket $hostData, $userAuthOverride ) {
 		$this->logger->trace( 'before scrubbing userAuthOverride: ' . $userAuthOverride );
 
 		// validate userAuthOverride
-		if ( ! ( $userAuthOverride == 'oauth2' || $userAuthOverride == 'password' || $userAuthOverride == 'none' ) ) {
+		if ( ! ($userAuthOverride == 'oauth2' || $userAuthOverride == 'password' || $userAuthOverride == 'none') ) {
 			$userAuthOverride = null;
 		}
 
@@ -299,34 +233,35 @@ class PostmanTransportRegistry {
 	/**
 	 */
 	public function getReadyMessage() {
-
+		
 		$message = array();
-
+		
 		if ( $this->getCurrentTransport()->isConfiguredAndReady() ) {
 			if ( PostmanOptions::getInstance()->getRunMode() != PostmanOptions::RUN_MODE_PRODUCTION ) {
 				$message = array(
-					'error'   => true,
+					'error' => true,
 					'message' => __( 'Postman is in <em>non-Production</em> mode and is dumping all emails.', 'post-smtp' ),
 				);
 			} else {
 				$message = array(
-					'error'   => false,
+					'error' => false,
 					'message' => __( 'Postman is configured.', 'post-smtp' ),
 				);
 			}
 		} else {
 			$message = array(
-				'error'   => true,
+				'error' => true,
 				'message' => __( 'Postman is <em>not</em> configured and is mimicking out-of-the-box WordPress email delivery.', 'post-smtp' ),
 			);
 		}
-
+	
 		/**
 		 * Filters Dashobard Notice
-		 *
+		 * 
 		 * @since 2.6.0
 		 * @version 1.0.0
 		 */
 		return apply_filters( 'post_smtp_dashboard_notice', $message );
+	
 	}
 }

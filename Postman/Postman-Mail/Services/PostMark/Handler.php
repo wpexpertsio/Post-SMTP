@@ -2,81 +2,85 @@
 
 class PostmanPostMark extends PostmanServiceRequest {
 
-	/**
-	 * Success Code
-	 *
-	 * @since 2.2
-	 * @version 1.0
-	 */
-	private $email_sent_code = 200;
+    /**
+     * Success Code
+     * 
+     * @since 2.2
+     * @version 1.0
+     */
+    private $email_sent_code = 200;
 
-	/**
-	 * API Key
-	 *
-	 * @since 2.2
-	 * @version 1.0
-	 */
-	private $api_key = '';
+    /**
+     * API Key
+     * 
+     * @since 2.2
+     * @version 1.0
+     */
+    private $api_key = '';
 
-	/**
-	 * Base URL
-	 *
-	 * @since 2.2
-	 * @version 1.0
-	 */
-	private $base_url = 'https://api.postmarkapp.com';
+    /**
+     * Base URL
+     * 
+     * @since 2.2
+     * @version 1.0
+     */
+    private $base_url = 'https://api.postmarkapp.com';
 
-	/**
-	 * constructor PostmanPostMark
-	 *
-	 * @param $api_key
-	 * @since 2.2
-	 * @version 1.0
-	 */
-	public function __construct( $api_key ) {
+    /**
+     * constructor PostmanPostMark
+     * 
+     * @param $api_key
+     * @since 2.2
+     * @version 1.0
+     */
+    public function __construct( $api_key ) {
 
-		$this->api_key = $api_key;
+        $this->api_key = $api_key;
 
-		parent::__construct( $this->base_url );
-	}
+        parent::__construct( $this->base_url );
 
-	/**
-	 * Prepares Header for Request
-	 *
-	 * @since 2.2
-	 * @version 1.0
-	 */
-	private function get_headers() {
+    }
 
-		return array(
-			'X-Postmark-Server-Token' => $this->api_key,
-			'Content-Type'            => 'application/json',
-			'Accept'                  => 'application/json',
-		);
-	}
+    /**
+     * Prepares Header for Request
+     * 
+     * @since 2.2
+     * @version 1.0
+     */
+    private function get_headers() {
 
-	/**
-	 * Sends Email using PostMark email end point
-	 *
-	 * @param $api_key
-	 * @since 2.2
-	 * @version 1.0
-	 */
-	public function send( $content ) {
+        return array(
+            'X-Postmark-Server-Token'   => $this->api_key,
+            'Content-Type'              => 'application/json',
+            'Accept'                    => 'application/json',
+        );
 
-		/**
-		 * Filters the content before sending
-		 *
-		 * @since 2.9.2
-		 */
-		$content = json_encode( apply_filters( 'post_smtp_postmark_content', $content ) );
+    }
 
-		return $this->request(
-			'POST',
-			'/email',
-			$this->get_headers(),
-			$content,
-			$this->email_sent_code
-		);
-	}
+    /**
+     * Sends Email using PostMark email end point
+     * 
+     * @param $api_key
+     * @since 2.2
+     * @version 1.0
+     */
+    public function send( $content ) {
+
+        /**
+         * Filters the content before sending
+         * 
+         * @since 2.9.2
+         */
+        $content = json_encode( apply_filters( 'post_smtp_postmark_content' , $content ) );
+         
+        return $this->request(
+            'POST',
+            '/email',
+            $this->get_headers(),
+            $content,
+            $this->email_sent_code
+        );
+
+    }
+
 }

@@ -18,19 +18,20 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class DefaultEngine extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP {
-
-	/**
-	 * Performs modular exponentiation.
-	 *
-	 * @param GMP $x
-	 * @param GMP $e
-	 * @param GMP $n
-	 * @return GMP
-	 */
-	protected static function powModHelper( \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $x, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $n ) {
-		$temp        = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP();
-		$temp->value = \gmp_powm( $x->value, $e->value, $n->value );
-		return $x->normalize( $temp );
-	}
+abstract class DefaultEngine extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP
+{
+    /**
+     * Performs modular exponentiation.
+     *
+     * @param GMP $x
+     * @param GMP $e
+     * @param GMP $n
+     * @return GMP
+     */
+    protected static function powModHelper(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $x, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $n)
+    {
+        $temp = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP();
+        $temp->value = \gmp_powm($x->value, $e->value, $n->value);
+        return $x->normalize($temp);
+    }
 }

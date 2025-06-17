@@ -334,39 +334,3 @@ function postmanValidateAjaxResponseWithPopup(response) {
 	}
 	return true;
 }
-
-jQuery(document).ready(function($) {
-	// Function to show provider fields based on selected option.
-	function showProviderFields() {
-		// Get the selected option.
-		var selectedOption = $('#fallback-selected').find('option:selected');
-		// Get the provider from the selected option's data attribute.
-		var selectedProvider = selectedOption.data('provider');
-		var selectedValue = selectedOption.val();
-
-		// Hide all provider fields.
-		$('.provider-fields').hide();
-
-		// Show the selected provider fields if a provider is selected.
-		if (selectedProvider) {
-			$('#provider-fields-' + selectedProvider + '-' + selectedValue ).show();
-		}
-
-		// Update the "Edit Fallback" button's URL with the selected ID.
-		var baseUrl = postmanData.wizardUrl;
-		var newUrl;
-        if (selectedValue) {
-            newUrl = baseUrl + '&id=' + selectedValue; // Append id parameter if selectedValue is not empty
-        } else {
-            newUrl = baseUrl; // Just use base URL if selectedValue is empty
-        }
-        $('#editFallbackLink').attr('href', newUrl); // Update the href attribute.
-
-	}
-
-	// Trigger the function on dropdown change.
-//	$('#fallback-selected').on('change', showProviderFields);
-
-	// Call the function on page load to show the initially selected provider fields.
-//	showProviderFields();
-});

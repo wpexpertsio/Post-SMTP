@@ -18,6 +18,6 @@
 namespace PostSMTP\Vendor\Google\Task;
 
 use PostSMTP\Vendor\Google\Exception as GoogleException;
-class Exception extends \PostSMTP\Vendor\Google\Exception {
-
+class Exception extends \PostSMTP\Vendor\Google\Exception
+{
 }

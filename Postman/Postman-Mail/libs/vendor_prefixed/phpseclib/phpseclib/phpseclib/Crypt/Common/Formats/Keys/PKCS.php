@@ -17,45 +17,51 @@ namespace PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Keys;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class PKCS {
-
-	/**
-	 * Auto-detect the format
-	 */
-	const MODE_ANY = 0;
-	/**
-	 * Require base64-encoded PEM's be supplied
-	 */
-	const MODE_PEM = 1;
-	/**
-	 * Require raw DER's be supplied
-	 */
-	const MODE_DER = 2;
-	/**#@-*/
-	/**
-	 * Is the key a base-64 encoded PEM, DER or should it be auto-detected?
-	 *
-	 * @var int
-	 */
-	protected static $format = self::MODE_ANY;
-	/**
-	 * Require base64-encoded PEM's be supplied
-	 */
-	public static function requirePEM() {
-		self::$format = self::MODE_PEM;
-	}
-	/**
-	 * Require raw DER's be supplied
-	 */
-	public static function requireDER() {
-		self::$format = self::MODE_DER;
-	}
-	/**
-	 * Accept any format and auto detect the format
-	 *
-	 * This is the default setting
-	 */
-	public static function requireAny() {
-		self::$format = self::MODE_ANY;
-	}
+abstract class PKCS
+{
+    /**
+     * Auto-detect the format
+     */
+    const MODE_ANY = 0;
+    /**
+     * Require base64-encoded PEM's be supplied
+     */
+    const MODE_PEM = 1;
+    /**
+     * Require raw DER's be supplied
+     */
+    const MODE_DER = 2;
+    /**#@-*/
+    /**
+     * Is the key a base-64 encoded PEM, DER or should it be auto-detected?
+     *
+     * @var int
+     */
+    protected static $format = self::MODE_ANY;
+    /**
+     * Require base64-encoded PEM's be supplied
+     *
+     */
+    public static function requirePEM()
+    {
+        self::$format = self::MODE_PEM;
+    }
+    /**
+     * Require raw DER's be supplied
+     *
+     */
+    public static function requireDER()
+    {
+        self::$format = self::MODE_DER;
+    }
+    /**
+     * Accept any format and auto detect the format
+     *
+     * This is the default setting
+     *
+     */
+    public static function requireAny()
+    {
+        self::$format = self::MODE_ANY;
+    }
 }

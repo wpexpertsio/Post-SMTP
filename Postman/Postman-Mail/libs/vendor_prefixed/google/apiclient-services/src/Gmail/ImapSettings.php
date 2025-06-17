@@ -17,72 +17,80 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class ImapSettings extends \PostSMTP\Vendor\Google\Model {
-
-	/**
-	 * @var bool
-	 */
-	public $autoExpunge;
-	/**
-	 * @var bool
-	 */
-	public $enabled;
-	/**
-	 * @var string
-	 */
-	public $expungeBehavior;
-	/**
-	 * @var int
-	 */
-	public $maxFolderSize;
-	/**
-	 * @param bool
-	 */
-	public function setAutoExpunge( $autoExpunge ) {
-		$this->autoExpunge = $autoExpunge;
-	}
-	/**
-	 * @return bool
-	 */
-	public function getAutoExpunge() {
-		return $this->autoExpunge;
-	}
-	/**
-	 * @param bool
-	 */
-	public function setEnabled( $enabled ) {
-		$this->enabled = $enabled;
-	}
-	/**
-	 * @return bool
-	 */
-	public function getEnabled() {
-		return $this->enabled;
-	}
-	/**
-	 * @param string
-	 */
-	public function setExpungeBehavior( $expungeBehavior ) {
-		$this->expungeBehavior = $expungeBehavior;
-	}
-	/**
-	 * @return string
-	 */
-	public function getExpungeBehavior() {
-		return $this->expungeBehavior;
-	}
-	/**
-	 * @param int
-	 */
-	public function setMaxFolderSize( $maxFolderSize ) {
-		$this->maxFolderSize = $maxFolderSize;
-	}
-	/**
-	 * @return int
-	 */
-	public function getMaxFolderSize() {
-		return $this->maxFolderSize;
-	}
+class ImapSettings extends \PostSMTP\Vendor\Google\Model
+{
+    /**
+     * @var bool
+     */
+    public $autoExpunge;
+    /**
+     * @var bool
+     */
+    public $enabled;
+    /**
+     * @var string
+     */
+    public $expungeBehavior;
+    /**
+     * @var int
+     */
+    public $maxFolderSize;
+    /**
+     * @param bool
+     */
+    public function setAutoExpunge($autoExpunge)
+    {
+        $this->autoExpunge = $autoExpunge;
+    }
+    /**
+     * @return bool
+     */
+    public function getAutoExpunge()
+    {
+        return $this->autoExpunge;
+    }
+    /**
+     * @param bool
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+    }
+    /**
+     * @return bool
+     */
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
+    /**
+     * @param string
+     */
+    public function setExpungeBehavior($expungeBehavior)
+    {
+        $this->expungeBehavior = $expungeBehavior;
+    }
+    /**
+     * @return string
+     */
+    public function getExpungeBehavior()
+    {
+        return $this->expungeBehavior;
+    }
+    /**
+     * @param int
+     */
+    public function setMaxFolderSize($maxFolderSize)
+    {
+        $this->maxFolderSize = $maxFolderSize;
+    }
+    /**
+     * @return int
+     */
+    public function getMaxFolderSize()
+    {
+        return $this->maxFolderSize;
+    }
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\ImapSettings::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ImapSettings' );
+\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\ImapSettings::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ImapSettings');

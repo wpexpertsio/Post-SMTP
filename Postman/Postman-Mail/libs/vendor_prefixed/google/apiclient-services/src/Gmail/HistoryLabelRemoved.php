@@ -17,39 +17,43 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class HistoryLabelRemoved extends \PostSMTP\Vendor\Google\Collection {
-
-	protected $collection_key = 'labelIds';
-	/**
-	 * @var string[]
-	 */
-	public $labelIds;
-	protected $messageType     = \PostSMTP\Vendor\Google\Service\Gmail\Message::class;
-	protected $messageDataType = '';
-	/**
-	 * @param string[]
-	 */
-	public function setLabelIds( $labelIds ) {
-		$this->labelIds = $labelIds;
-	}
-	/**
-	 * @return string[]
-	 */
-	public function getLabelIds() {
-		return $this->labelIds;
-	}
-	/**
-	 * @param Message
-	 */
-	public function setMessage( \PostSMTP\Vendor\Google\Service\Gmail\Message $message ) {
-		$this->message = $message;
-	}
-	/**
-	 * @return Message
-	 */
-	public function getMessage() {
-		return $this->message;
-	}
+class HistoryLabelRemoved extends \PostSMTP\Vendor\Google\Collection
+{
+    protected $collection_key = 'labelIds';
+    /**
+     * @var string[]
+     */
+    public $labelIds;
+    protected $messageType = \PostSMTP\Vendor\Google\Service\Gmail\Message::class;
+    protected $messageDataType = '';
+    /**
+     * @param string[]
+     */
+    public function setLabelIds($labelIds)
+    {
+        $this->labelIds = $labelIds;
+    }
+    /**
+     * @return string[]
+     */
+    public function getLabelIds()
+    {
+        return $this->labelIds;
+    }
+    /**
+     * @param Message
+     */
+    public function setMessage(\PostSMTP\Vendor\Google\Service\Gmail\Message $message)
+    {
+        $this->message = $message;
+    }
+    /**
+     * @return Message
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\HistoryLabelRemoved::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_HistoryLabelRemoved' );
+\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\HistoryLabelRemoved::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_HistoryLabelRemoved');

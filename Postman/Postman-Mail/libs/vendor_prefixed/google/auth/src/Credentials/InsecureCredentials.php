@@ -23,37 +23,40 @@ use PostSMTP\Vendor\Google\Auth\FetchAuthTokenInterface;
  * This is useful for APIs which do not require authentication, for local
  * service emulators, and for testing.
  */
-class InsecureCredentials implements \PostSMTP\Vendor\Google\Auth\FetchAuthTokenInterface {
-
-	/**
-	 * @var array{access_token:string}
-	 */
-	private $token = array( 'access_token' => '' );
-	/**
-	 * Fetches the auth token. In this case it returns an empty string.
-	 *
-	 * @param callable $httpHandler
-	 * @return array{access_token:string} A set of auth related metadata
-	 */
-	public function fetchAuthToken( callable $httpHandler = null ) {
-		return $this->token;
-	}
-	/**
-	 * Returns the cache key. In this case it returns a null value, disabling
-	 * caching.
-	 *
-	 * @return string|null
-	 */
-	public function getCacheKey() {
-		return null;
-	}
-	/**
-	 * Fetches the last received token. In this case, it returns the same empty string
-	 * auth token.
-	 *
-	 * @return array{access_token:string}
-	 */
-	public function getLastReceivedToken() {
-		return $this->token;
-	}
+class InsecureCredentials implements \PostSMTP\Vendor\Google\Auth\FetchAuthTokenInterface
+{
+    /**
+     * @var array{access_token:string}
+     */
+    private $token = ['access_token' => ''];
+    /**
+     * Fetches the auth token. In this case it returns an empty string.
+     *
+     * @param callable $httpHandler
+     * @return array{access_token:string} A set of auth related metadata
+     */
+    public function fetchAuthToken(callable $httpHandler = null)
+    {
+        return $this->token;
+    }
+    /**
+     * Returns the cache key. In this case it returns a null value, disabling
+     * caching.
+     *
+     * @return string|null
+     */
+    public function getCacheKey()
+    {
+        return null;
+    }
+    /**
+     * Fetches the last received token. In this case, it returns the same empty string
+     * auth token.
+     *
+     * @return array{access_token:string}
+     */
+    public function getLastReceivedToken()
+    {
+        return $this->token;
+    }
 }

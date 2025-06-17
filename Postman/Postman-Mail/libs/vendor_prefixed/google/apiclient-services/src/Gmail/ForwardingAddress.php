@@ -17,40 +17,44 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class ForwardingAddress extends \PostSMTP\Vendor\Google\Model {
-
-	/**
-	 * @var string
-	 */
-	public $forwardingEmail;
-	/**
-	 * @var string
-	 */
-	public $verificationStatus;
-	/**
-	 * @param string
-	 */
-	public function setForwardingEmail( $forwardingEmail ) {
-		$this->forwardingEmail = $forwardingEmail;
-	}
-	/**
-	 * @return string
-	 */
-	public function getForwardingEmail() {
-		return $this->forwardingEmail;
-	}
-	/**
-	 * @param string
-	 */
-	public function setVerificationStatus( $verificationStatus ) {
-		$this->verificationStatus = $verificationStatus;
-	}
-	/**
-	 * @return string
-	 */
-	public function getVerificationStatus() {
-		return $this->verificationStatus;
-	}
+class ForwardingAddress extends \PostSMTP\Vendor\Google\Model
+{
+    /**
+     * @var string
+     */
+    public $forwardingEmail;
+    /**
+     * @var string
+     */
+    public $verificationStatus;
+    /**
+     * @param string
+     */
+    public function setForwardingEmail($forwardingEmail)
+    {
+        $this->forwardingEmail = $forwardingEmail;
+    }
+    /**
+     * @return string
+     */
+    public function getForwardingEmail()
+    {
+        return $this->forwardingEmail;
+    }
+    /**
+     * @param string
+     */
+    public function setVerificationStatus($verificationStatus)
+    {
+        $this->verificationStatus = $verificationStatus;
+    }
+    /**
+     * @return string
+     */
+    public function getVerificationStatus()
+    {
+        return $this->verificationStatus;
+    }
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\ForwardingAddress::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ForwardingAddress' );
+\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\ForwardingAddress::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ForwardingAddress');

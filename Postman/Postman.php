@@ -51,6 +51,7 @@ class Postman {
 		$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;
 		self::$rootPlugin = $rootPluginFilenameAndPath;
 		
+		require_once POST_SMTP_PATH . '/Postman/Postman-Suggest-Pro/PostmanPromotionManager.php';
 		//Load helper functions file :D
 		require_once POST_SMTP_PATH . '/includes/postman-functions.php';
 
@@ -83,9 +84,6 @@ class Postman {
 		require_once 'Postman-Mail/PostmanContactForm7.php';
 		require_once 'Phpmailer/PostsmtpMailer.php';
 		//require_once 'Postman-Mail/PostmanWooCommerce.php';
-		require_once 'Postman-Fallback-Migration/PostmanFallbackMigration.php';
-
-		//Fallback Migration
 		require_once 'Postman-Mail/Services/PostmanServiceRequest.php';
 
 		//New Wizard
@@ -109,7 +107,7 @@ class Postman {
 
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
-				'name' => __( 'Postman SMTP', 'post-smtp' ),
+				'name' => 'Post SMTP',
 				'version' => $version,
 		);
 
@@ -371,16 +369,14 @@ class Postman {
 				// if the configuration is broken, and the user has started to configure the plugin
 				// show this error message
 				$messages = $transport->getConfigurationMessages();
-				if ( is_array( $messages ) && ! empty( $messages ) ) {
-					foreach ( $messages as $message ) {
-						if ( $message ) {
-							// log the warning message
-							$this->logger->warn( sprintf( '%s Transport has a configuration problem: %s', $transport->getName(), $message ) );
+				foreach ( $messages as $message ) {
+					if ( $message ) {
+						// log the warning message
+						$this->logger->warn( sprintf( '%s Transport has a configuration problem: %s', $transport->getName(), $message ) );
 
-							if ( PostmanUtils::isAdmin() && PostmanUtils::isCurrentPagePostmanAdmin() ) {
-								// on pages that are Postman admin pages only, show this error message
-								$this->messageHandler->addError( $message );
-							}
+						if ( PostmanUtils::isAdmin() && PostmanUtils::isCurrentPagePostmanAdmin() ) {
+							// on pages that are Postman admin pages only, show this error message
+							$this->messageHandler->addError( $message );
 						}
 					}
 				}

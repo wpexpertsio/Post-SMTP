@@ -12,6 +12,6 @@
  */
 namespace PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves;
 
-final class prime192v1 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\secp192r1 {
-
+final class prime192v1 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\secp192r1
+{
 }

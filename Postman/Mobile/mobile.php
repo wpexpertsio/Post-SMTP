@@ -85,11 +85,29 @@ class Post_SMTP_Mobile {
      * @version 1.0.0
      */
     public function add_menu() {
+
+        if( postman_is_bfcm() ) {
+
+            $menu_text = sprintf( 
+            '%s<span class="dashicons dashicons-smartphone">', 
+        __( 'Mobile App', 'post-smtp' )
+            );
+
+        }
+        else {
+
+            $menu_text = sprintf( 
+            '%s<span class="dashicons dashicons-smartphone"></span><span class="menu-counter">%s</span>', 
+        __( 'Mobile App', 'post-smtp' ), 
+                __( 'New', 'post-smtp' ) 
+            );
+
+        }
         
         add_submenu_page( 
             PostmanViewController::POSTMAN_MENU_SLUG, 
             __( 'Mobile Application', 'post-smtp' ), 
-            sprintf( '%s<span class="dashicons dashicons-smartphone"></span><span class="menu-counter">%s</span>', __( 'Mobile App', 'post-smtp' ), __( 'New', 'post-smtp' ) ),
+            $menu_text,
             'manage_options', 
             admin_url( 'admin.php?page=postman/configuration#mobile-app' ),
             '',
@@ -166,6 +184,8 @@ class Post_SMTP_Mobile {
      */
     public function section() {
 
+        $nonce = wp_create_nonce( 'ps-regenerate-qrcode-nonce' );
+
         //Incompatible server
         if( function_exists( 'ImageCreate' ) ):
         ?>
@@ -195,7 +215,7 @@ class Post_SMTP_Mobile {
                         And you are done👍.
                     </p>
                     <p>
-                        Want more details? Check out our complete guide <a href="https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app" target="_blank">Post SMTP Plugin with Mobile App</a>
+                        Want more details? Check out our complete guide <a href="https://postmansmtp.com/documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/?utm_source=plugin&utm_medium=settings" target="_blank">Post SMTP Plugin with Mobile App</a>
                     </p>
                 </div>
                 <div class="mobile-app-internal-box ps-qr-box" style="line-height: 30px;">
@@ -205,7 +225,7 @@ class Post_SMTP_Mobile {
                         echo '<img src="data:image/jpeg;base64,'. $this->qr_code.'" width="300"/>'; 
                         ?>
                         <div>
-                            <a href="<?php echo esc_url( admin_url('admin-post.php?action=regenerate-qrcode') ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
+                            <a href="<?php echo esc_url( admin_url( "admin-post.php?action=regenerate-qrcode&_psnonce=$nonce" ) ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
                         </div>
                         <?php
 
@@ -374,6 +394,12 @@ class Post_SMTP_Mobile {
      * @version 1.0.0
      */
     public function regenerate_qrcode() {
+
+        if( ! isset( $_GET['_psnonce'] ) || ! wp_verify_nonce( $_GET['_psnonce'], 'ps-regenerate-qrcode-nonce' ) ) {
+
+            die( 'Security Check' );
+
+        }
 
         if( isset( $_GET['action'] ) && $_GET['action'] === 'regenerate-qrcode' ) {
 

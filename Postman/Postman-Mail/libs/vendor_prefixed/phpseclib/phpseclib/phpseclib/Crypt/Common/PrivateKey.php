@@ -15,15 +15,15 @@ namespace PostSMTP\Vendor\phpseclib3\Crypt\Common;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-interface PrivateKey {
-
-	public function sign( $message );
-	// public function decrypt($ciphertext);
-	public function getPublicKey();
-	public function toString( $type, array $options = array() );
-	/**
-	 * @param string|false $password
-	 * @return mixed
-	 */
-	public function withPassword( $password = \false );
+interface PrivateKey
+{
+    public function sign($message);
+    //public function decrypt($ciphertext);
+    public function getPublicKey();
+    public function toString($type, array $options = []);
+    /**
+     * @param string|false $password
+     * @return mixed
+     */
+    public function withPassword($password = \false);
 }

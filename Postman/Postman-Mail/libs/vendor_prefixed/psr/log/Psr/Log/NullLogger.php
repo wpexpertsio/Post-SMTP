@@ -10,20 +10,21 @@ namespace PostSMTP\Vendor\Psr\Log;
  * is a good way to avoid littering your code with `if ($this->logger) { }`
  * blocks.
  */
-class NullLogger extends \PostSMTP\Vendor\Psr\Log\AbstractLogger {
-
-	/**
-	 * Logs with an arbitrary level.
-	 *
-	 * @param mixed  $level
-	 * @param string $message
-	 * @param array  $context
-	 *
-	 * @return void
-	 *
-	 * @throws \Psr\Log\InvalidArgumentException
-	 */
-	public function log( $level, $message, array $context = array() ) {
-		// noop
-	}
+class NullLogger extends \PostSMTP\Vendor\Psr\Log\AbstractLogger
+{
+    /**
+     * Logs with an arbitrary level.
+     *
+     * @param mixed  $level
+     * @param string $message
+     * @param array  $context
+     *
+     * @return void
+     *
+     * @throws \Psr\Log\InvalidArgumentException
+     */
+    public function log($level, $message, array $context = array())
+    {
+        // noop
+    }
 }

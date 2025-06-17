@@ -28,51 +28,51 @@ use PostSMTP\Vendor\Google\Service\Gmail\WatchResponse;
  *   $users = $gmailService->users;
  *  </code>
  */
-class Users extends \PostSMTP\Vendor\Google\Service\Resource {
-
-	/**
-	 * Gets the current user's Gmail profile. (users.getProfile)
-	 *
-	 * @param string $userId The user's email address. The special value `me` can be
-	 * used to indicate the authenticated user.
-	 * @param array  $optParams Optional parameters.
-	 * @return Profile
-	 */
-	public function getProfile( $userId, $optParams = array() ) {
-		$params = array( 'userId' => $userId );
-		$params = \array_merge( $params, $optParams );
-		return $this->call( 'getProfile', array( $params ), \PostSMTP\Vendor\Google\Service\Gmail\Profile::class );
-	}
-	/**
-	 * Stop receiving push notifications for the given user mailbox. (users.stop)
-	 *
-	 * @param string $userId The user's email address. The special value `me` can be
-	 * used to indicate the authenticated user.
-	 * @param array  $optParams Optional parameters.
-	 */
-	public function stop( $userId, $optParams = array() ) {
-		$params = array( 'userId' => $userId );
-		$params = \array_merge( $params, $optParams );
-		return $this->call( 'stop', array( $params ) );
-	}
-	/**
-	 * Set up or update a push notification watch on the given user mailbox.
-	 * (users.watch)
-	 *
-	 * @param string       $userId The user's email address. The special value `me` can be
-	 *       used to indicate the authenticated user.
-	 * @param WatchRequest $postBody
-	 * @param array        $optParams Optional parameters.
-	 * @return WatchResponse
-	 */
-	public function watch( $userId, \PostSMTP\Vendor\Google\Service\Gmail\WatchRequest $postBody, $optParams = array() ) {
-		$params = array(
-			'userId'   => $userId,
-			'postBody' => $postBody,
-		);
-		$params = \array_merge( $params, $optParams );
-		return $this->call( 'watch', array( $params ), \PostSMTP\Vendor\Google\Service\Gmail\WatchResponse::class );
-	}
+class Users extends \PostSMTP\Vendor\Google\Service\Resource
+{
+    /**
+     * Gets the current user's Gmail profile. (users.getProfile)
+     *
+     * @param string $userId The user's email address. The special value `me` can be
+     * used to indicate the authenticated user.
+     * @param array $optParams Optional parameters.
+     * @return Profile
+     */
+    public function getProfile($userId, $optParams = [])
+    {
+        $params = ['userId' => $userId];
+        $params = \array_merge($params, $optParams);
+        return $this->call('getProfile', [$params], \PostSMTP\Vendor\Google\Service\Gmail\Profile::class);
+    }
+    /**
+     * Stop receiving push notifications for the given user mailbox. (users.stop)
+     *
+     * @param string $userId The user's email address. The special value `me` can be
+     * used to indicate the authenticated user.
+     * @param array $optParams Optional parameters.
+     */
+    public function stop($userId, $optParams = [])
+    {
+        $params = ['userId' => $userId];
+        $params = \array_merge($params, $optParams);
+        return $this->call('stop', [$params]);
+    }
+    /**
+     * Set up or update a push notification watch on the given user mailbox.
+     * (users.watch)
+     *
+     * @param string $userId The user's email address. The special value `me` can be
+     * used to indicate the authenticated user.
+     * @param WatchRequest $postBody
+     * @param array $optParams Optional parameters.
+     * @return WatchResponse
+     */
+    public function watch($userId, \PostSMTP\Vendor\Google\Service\Gmail\WatchRequest $postBody, $optParams = [])
+    {
+        $params = ['userId' => $userId, 'postBody' => $postBody];
+        $params = \array_merge($params, $optParams);
+        return $this->call('watch', [$params], \PostSMTP\Vendor\Google\Service\Gmail\WatchResponse::class);
+    }
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\Resource\Users::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_Resource_Users' );
+\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\Resource\Users::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_Resource_Users');

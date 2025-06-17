@@ -20,35 +20,34 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class Raw {
-
-	/**
-	 * Loads a signature
-	 *
-	 * @param array $sig
-	 * @return array|bool
-	 */
-	public static function load( $sig ) {
-		switch ( \true ) {
-			case ! \is_array( $sig ):
-			case ! isset( $sig['r'] ) || ! isset( $sig['s'] ):
-			case ! $sig['r'] instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger:
-			case ! $sig['s'] instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger:
-				return \false;
-		}
-		return array(
-			'r' => $sig['r'],
-			's' => $sig['s'],
-		);
-	}
-	/**
-	 * Returns a signature in the appropriate format
-	 *
-	 * @param \phpseclib3\Math\BigInteger $r
-	 * @param \phpseclib3\Math\BigInteger $s
-	 * @return string
-	 */
-	public static function save( \PostSMTP\Vendor\phpseclib3\Math\BigInteger $r, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $s ) {
-		return \compact( 'r', 's' );
-	}
+abstract class Raw
+{
+    /**
+     * Loads a signature
+     *
+     * @param array $sig
+     * @return array|bool
+     */
+    public static function load($sig)
+    {
+        switch (\true) {
+            case !\is_array($sig):
+            case !isset($sig['r']) || !isset($sig['s']):
+            case !$sig['r'] instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger:
+            case !$sig['s'] instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger:
+                return \false;
+        }
+        return ['r' => $sig['r'], 's' => $sig['s']];
+    }
+    /**
+     * Returns a signature in the appropriate format
+     *
+     * @param \phpseclib3\Math\BigInteger $r
+     * @param \phpseclib3\Math\BigInteger $s
+     * @return string
+     */
+    public static function save(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $r, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $s)
+    {
+        return \compact('r', 's');
+    }
 }

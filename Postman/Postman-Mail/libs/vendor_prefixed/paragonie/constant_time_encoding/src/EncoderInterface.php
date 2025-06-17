@@ -27,26 +27,25 @@ namespace PostSMTP\Vendor\ParagonIE\ConstantTime;
  */
 /**
  * Interface EncoderInterface
- *
  * @package ParagonIE\ConstantTime
  */
-interface EncoderInterface {
-
-	/**
-	 * Convert a binary string into a hexadecimal string without cache-timing
-	 * leaks
-	 *
-	 * @param string $binString (raw binary)
-	 * @return string
-	 */
-	public static function encode( string $binString ): string;
-	/**
-	 * Convert a binary string into a hexadecimal string without cache-timing
-	 * leaks
-	 *
-	 * @param string $encodedString
-	 * @param bool   $strictPadding Error on invalid padding
-	 * @return string (raw binary)
-	 */
-	public static function decode( string $encodedString, bool $strictPadding = \false ): string;
+interface EncoderInterface
+{
+    /**
+     * Convert a binary string into a hexadecimal string without cache-timing
+     * leaks
+     *
+     * @param string $binString (raw binary)
+     * @return string
+     */
+    public static function encode(string $binString) : string;
+    /**
+     * Convert a binary string into a hexadecimal string without cache-timing
+     * leaks
+     *
+     * @param string $encodedString
+     * @param bool $strictPadding Error on invalid padding
+     * @return string (raw binary)
+     */
+    public static function decode(string $encodedString, bool $strictPadding = \false) : string;
 }

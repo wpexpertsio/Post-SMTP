@@ -17,119 +17,133 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class CseKeyPair extends \PostSMTP\Vendor\Google\Collection {
-
-	protected $collection_key = 'subjectEmailAddresses';
-	/**
-	 * @var string
-	 */
-	public $disableTime;
-	/**
-	 * @var string
-	 */
-	public $enablementState;
-	/**
-	 * @var string
-	 */
-	public $keyPairId;
-	/**
-	 * @var string
-	 */
-	public $pem;
-	/**
-	 * @var string
-	 */
-	public $pkcs7;
-	protected $privateKeyMetadataType     = \PostSMTP\Vendor\Google\Service\Gmail\CsePrivateKeyMetadata::class;
-	protected $privateKeyMetadataDataType = 'array';
-	/**
-	 * @var string[]
-	 */
-	public $subjectEmailAddresses;
-	/**
-	 * @param string
-	 */
-	public function setDisableTime( $disableTime ) {
-		$this->disableTime = $disableTime;
-	}
-	/**
-	 * @return string
-	 */
-	public function getDisableTime() {
-		return $this->disableTime;
-	}
-	/**
-	 * @param string
-	 */
-	public function setEnablementState( $enablementState ) {
-		$this->enablementState = $enablementState;
-	}
-	/**
-	 * @return string
-	 */
-	public function getEnablementState() {
-		return $this->enablementState;
-	}
-	/**
-	 * @param string
-	 */
-	public function setKeyPairId( $keyPairId ) {
-		$this->keyPairId = $keyPairId;
-	}
-	/**
-	 * @return string
-	 */
-	public function getKeyPairId() {
-		return $this->keyPairId;
-	}
-	/**
-	 * @param string
-	 */
-	public function setPem( $pem ) {
-		$this->pem = $pem;
-	}
-	/**
-	 * @return string
-	 */
-	public function getPem() {
-		return $this->pem;
-	}
-	/**
-	 * @param string
-	 */
-	public function setPkcs7( $pkcs7 ) {
-		$this->pkcs7 = $pkcs7;
-	}
-	/**
-	 * @return string
-	 */
-	public function getPkcs7() {
-		return $this->pkcs7;
-	}
-	/**
-	 * @param CsePrivateKeyMetadata[]
-	 */
-	public function setPrivateKeyMetadata( $privateKeyMetadata ) {
-		$this->privateKeyMetadata = $privateKeyMetadata;
-	}
-	/**
-	 * @return CsePrivateKeyMetadata[]
-	 */
-	public function getPrivateKeyMetadata() {
-		return $this->privateKeyMetadata;
-	}
-	/**
-	 * @param string[]
-	 */
-	public function setSubjectEmailAddresses( $subjectEmailAddresses ) {
-		$this->subjectEmailAddresses = $subjectEmailAddresses;
-	}
-	/**
-	 * @return string[]
-	 */
-	public function getSubjectEmailAddresses() {
-		return $this->subjectEmailAddresses;
-	}
+class CseKeyPair extends \PostSMTP\Vendor\Google\Collection
+{
+    protected $collection_key = 'subjectEmailAddresses';
+    /**
+     * @var string
+     */
+    public $disableTime;
+    /**
+     * @var string
+     */
+    public $enablementState;
+    /**
+     * @var string
+     */
+    public $keyPairId;
+    /**
+     * @var string
+     */
+    public $pem;
+    /**
+     * @var string
+     */
+    public $pkcs7;
+    protected $privateKeyMetadataType = \PostSMTP\Vendor\Google\Service\Gmail\CsePrivateKeyMetadata::class;
+    protected $privateKeyMetadataDataType = 'array';
+    /**
+     * @var string[]
+     */
+    public $subjectEmailAddresses;
+    /**
+     * @param string
+     */
+    public function setDisableTime($disableTime)
+    {
+        $this->disableTime = $disableTime;
+    }
+    /**
+     * @return string
+     */
+    public function getDisableTime()
+    {
+        return $this->disableTime;
+    }
+    /**
+     * @param string
+     */
+    public function setEnablementState($enablementState)
+    {
+        $this->enablementState = $enablementState;
+    }
+    /**
+     * @return string
+     */
+    public function getEnablementState()
+    {
+        return $this->enablementState;
+    }
+    /**
+     * @param string
+     */
+    public function setKeyPairId($keyPairId)
+    {
+        $this->keyPairId = $keyPairId;
+    }
+    /**
+     * @return string
+     */
+    public function getKeyPairId()
+    {
+        return $this->keyPairId;
+    }
+    /**
+     * @param string
+     */
+    public function setPem($pem)
+    {
+        $this->pem = $pem;
+    }
+    /**
+     * @return string
+     */
+    public function getPem()
+    {
+        return $this->pem;
+    }
+    /**
+     * @param string
+     */
+    public function setPkcs7($pkcs7)
+    {
+        $this->pkcs7 = $pkcs7;
+    }
+    /**
+     * @return string
+     */
+    public function getPkcs7()
+    {
+        return $this->pkcs7;
+    }
+    /**
+     * @param CsePrivateKeyMetadata[]
+     */
+    public function setPrivateKeyMetadata($privateKeyMetadata)
+    {
+        $this->privateKeyMetadata = $privateKeyMetadata;
+    }
+    /**
+     * @return CsePrivateKeyMetadata[]
+     */
+    public function getPrivateKeyMetadata()
+    {
+        return $this->privateKeyMetadata;
+    }
+    /**
+     * @param string[]
+     */
+    public function setSubjectEmailAddresses($subjectEmailAddresses)
+    {
+        $this->subjectEmailAddresses = $subjectEmailAddresses;
+    }
+    /**
+     * @return string[]
+     */
+    public function getSubjectEmailAddresses()
+    {
+        return $this->subjectEmailAddresses;
+    }
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\CseKeyPair::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_CseKeyPair' );
+\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\CseKeyPair::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_CseKeyPair');

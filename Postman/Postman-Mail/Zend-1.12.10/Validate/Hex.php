@@ -30,41 +30,43 @@ require_once 'Zend/Validate/Abstract.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Validate_Hex extends Postman_Zend_Validate_Abstract {
+class Postman_Zend_Validate_Hex extends Postman_Zend_Validate_Abstract
+{
+    const INVALID = 'hexInvalid';
+    const NOT_HEX = 'notHex';
 
-	const INVALID = 'hexInvalid';
-	const NOT_HEX = 'notHex';
+    /**
+     * Validation failure message template definitions
+     *
+     * @var array
+     */
+    protected $_messageTemplates = array(
+        self::INVALID => "Invalid type given. String expected",
+        self::NOT_HEX => "'%value%' has not only hexadecimal digit characters",
+    );
 
-	/**
-	 * Validation failure message template definitions
-	 *
-	 * @var array
-	 */
-	protected $_messageTemplates = array(
-		self::INVALID => 'Invalid type given. String expected',
-		self::NOT_HEX => "'%value%' has not only hexadecimal digit characters",
-	);
+    /**
+     * Defined by Postman_Zend_Validate_Interface
+     *
+     * Returns true if and only if $value contains only hexadecimal digit characters
+     *
+     * @param  string $value
+     * @return boolean
+     */
+    public function isValid($value)
+    {
+        if (!is_string($value) && !is_int($value)) {
+            $this->_error(self::INVALID);
+            return false;
+        }
 
-	/**
-	 * Defined by Postman_Zend_Validate_Interface
-	 *
-	 * Returns true if and only if $value contains only hexadecimal digit characters
-	 *
-	 * @param  string $value
-	 * @return boolean
-	 */
-	public function isValid( $value ) {
-		if ( ! is_string( $value ) && ! is_int( $value ) ) {
-			$this->_error( self::INVALID );
-			return false;
-		}
+        $this->_setValue($value);
+        if (!ctype_xdigit((string) $value)) {
+            $this->_error(self::NOT_HEX);
+            return false;
+        }
 
-		$this->_setValue( $value );
-		if ( ! ctype_xdigit( (string) $value ) ) {
-			$this->_error( self::NOT_HEX );
-			return false;
-		}
+        return true;
+    }
 
-		return true;
-	}
 }

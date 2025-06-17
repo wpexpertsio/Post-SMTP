@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+    exit; // Exit if accessed directly
 }
 
 define( 'MAILSTER_POSTMAN_REQUIRED_VERSION', '2.0' );
@@ -21,29 +21,19 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 		 * No-argument constructor
 		 */
 		public function __construct( $file ) {
-			register_activation_hook(
-				$file,
-				array(
+			register_activation_hook( $file, array(
 					$this,
 					'activate',
-				)
-			);
-			register_deactivation_hook(
-				$file,
-				array(
+			) );
+			register_deactivation_hook( $file, array(
 					$this,
 					'deactivate',
-				)
-			);
+			) );
 
-			add_action(
-				'init',
-				array(
+			add_action( 'init', array(
 					$this,
 					'init',
-				),
-				1
-			);
+			), 1 );
 		}
 
 		/**
@@ -57,50 +47,32 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 				$this->logger = new PostmanLogger( get_class( $this ) );
 				$this->logger->debug( 'Starting' );
 
-				add_filter(
-					'mailster_delivery_methods',
-					array(
+				add_filter( 'mailster_delivery_methods', array(
 						&$this,
 						'delivery_method',
-					)
-				);
-				add_action(
-					'mailster_deliverymethod_tab_postman',
-					array(
+				) );
+				add_action( 'mailster_deliverymethod_tab_postman', array(
 						&$this,
 						'deliverytab',
-					)
-				);
+				) );
 
 				if ( mailster_option( 'deliverymethod' ) == MAILSTER_POSTMAN_ID ) {
-					add_action(
-						'mailster_initsend',
-						array(
+					add_action( 'mailster_initsend', array(
 							&$this,
 							'initsend',
-						)
-					);
-					add_action(
-						'mailster_presend',
-						array(
+					) );
+					add_action( 'mailster_presend', array(
 							&$this,
 							'presend',
-						)
-					);
-					add_action(
-						'mailster_dosend',
-						array(
+					) );
+					add_action( 'mailster_dosend', array(
 							&$this,
 							'dosend',
-						)
-					);
-					add_action(
-						'MAILSTER_POSTMAN_cron',
-						array(
+					) );
+					add_action( 'MAILSTER_POSTMAN_cron', array(
 							&$this,
 							'reset',
-						)
-					);
+					) );
 				}
 			}
 		}

@@ -7,8 +7,8 @@ class ActionScheduler_Action {
 	protected $hook = '';
 	protected $args = array();
 	/** @var ActionScheduler_Schedule */
-	protected $schedule = null;
-	protected $group    = '';
+	protected $schedule = NULL;
+	protected $group = '';
 
 	/**
 	 * Priorities are conceptually similar to those used for regular WordPress actions.
@@ -23,12 +23,12 @@ class ActionScheduler_Action {
 	 */
 	protected $priority = 10;
 
-	public function __construct( $hook, array $args = array(), ActionScheduler_Schedule $schedule = null, $group = '' ) {
+	public function __construct( $hook, array $args = array(), ActionScheduler_Schedule $schedule = NULL, $group = '' ) {
 		$schedule = empty( $schedule ) ? new ActionScheduler_NullSchedule() : $schedule;
-		$this->set_hook( $hook );
-		$this->set_schedule( $schedule );
-		$this->set_args( $args );
-		$this->set_group( $group );
+		$this->set_hook($hook);
+		$this->set_schedule($schedule);
+		$this->set_args($args);
+		$this->set_group($group);
 	}
 
 	/**
@@ -104,7 +104,7 @@ class ActionScheduler_Action {
 	 * @return bool If the action has been finished
 	 */
 	public function is_finished() {
-		return false;
+		return FALSE;
 	}
 
 	/**

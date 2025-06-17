@@ -13,10 +13,10 @@ namespace PostSMTP\Vendor\Symfony\Polyfill\Intl\Idn;
 /**
  * @internal
  */
-class Info {
-
-	public $bidiDomain            = \false;
-	public $errors                = 0;
-	public $validBidiDomain       = \true;
-	public $transitionalDifferent = \false;
+class Info
+{
+    public $bidiDomain = \false;
+    public $errors = 0;
+    public $validBidiDomain = \true;
+    public $transitionalDifferent = \false;
 }

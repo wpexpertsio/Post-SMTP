@@ -17,23 +17,25 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class ListSendAsResponse extends \PostSMTP\Vendor\Google\Collection {
-
-	protected $collection_key = 'sendAs';
-	protected $sendAsType     = \PostSMTP\Vendor\Google\Service\Gmail\SendAs::class;
-	protected $sendAsDataType = 'array';
-	/**
-	 * @param SendAs[]
-	 */
-	public function setSendAs( $sendAs ) {
-		$this->sendAs = $sendAs;
-	}
-	/**
-	 * @return SendAs[]
-	 */
-	public function getSendAs() {
-		return $this->sendAs;
-	}
+class ListSendAsResponse extends \PostSMTP\Vendor\Google\Collection
+{
+    protected $collection_key = 'sendAs';
+    protected $sendAsType = \PostSMTP\Vendor\Google\Service\Gmail\SendAs::class;
+    protected $sendAsDataType = 'array';
+    /**
+     * @param SendAs[]
+     */
+    public function setSendAs($sendAs)
+    {
+        $this->sendAs = $sendAs;
+    }
+    /**
+     * @return SendAs[]
+     */
+    public function getSendAs()
+    {
+        return $this->sendAs;
+    }
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\ListSendAsResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListSendAsResponse' );
+\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\ListSendAsResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListSendAsResponse');

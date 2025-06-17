@@ -19,44 +19,47 @@ use PostSMTP\Vendor\Monolog\ResettableInterface;
  *
  * @author Jordi Boggiano <j.boggiano@seld.be>
  */
-trait ProcessableHandlerTrait {
-
-	/**
-	 * @var callable[]
-	 */
-	protected $processors = array();
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @suppress PhanTypeMismatchReturn
-	 */
-	public function pushProcessor( $callback ): \PostSMTP\Vendor\Monolog\Handler\HandlerInterface {
-		\array_unshift( $this->processors, $callback );
-		return $this;
-	}
-	/**
-	 * {@inheritdoc}
-	 */
-	public function popProcessor(): callable {
-		if ( ! $this->processors ) {
-			throw new \LogicException( 'You tried to pop from an empty processor stack.' );
-		}
-		return \array_shift( $this->processors );
-	}
-	/**
-	 * Processes a record.
-	 */
-	protected function processRecord( array $record ): array {
-		foreach ( $this->processors as $processor ) {
-			$record = $processor( $record );
-		}
-		return $record;
-	}
-	protected function resetProcessors(): void {
-		foreach ( $this->processors as $processor ) {
-			if ( $processor instanceof \PostSMTP\Vendor\Monolog\ResettableInterface ) {
-				$processor->reset();
-			}
-		}
-	}
+trait ProcessableHandlerTrait
+{
+    /**
+     * @var callable[]
+     */
+    protected $processors = [];
+    /**
+     * {@inheritdoc}
+     * @suppress PhanTypeMismatchReturn
+     */
+    public function pushProcessor($callback) : \PostSMTP\Vendor\Monolog\Handler\HandlerInterface
+    {
+        \array_unshift($this->processors, $callback);
+        return $this;
+    }
+    /**
+     * {@inheritdoc}
+     */
+    public function popProcessor() : callable
+    {
+        if (!$this->processors) {
+            throw new \LogicException('You tried to pop from an empty processor stack.');
+        }
+        return \array_shift($this->processors);
+    }
+    /**
+     * Processes a record.
+     */
+    protected function processRecord(array $record) : array
+    {
+        foreach ($this->processors as $processor) {
+            $record = $processor($record);
+        }
+        return $record;
+    }
+    protected function resetProcessors() : void
+    {
+        foreach ($this->processors as $processor) {
+            if ($processor instanceof \PostSMTP\Vendor\Monolog\ResettableInterface) {
+                $processor->reset();
+            }
+        }
+    }
 }

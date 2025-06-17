@@ -9,10 +9,10 @@
 class ActionScheduler_CanceledAction extends ActionScheduler_FinishedAction {
 
 	/**
-	 * @param string                   $hook
-	 * @param array                    $args
+	 * @param string $hook
+	 * @param array $args
 	 * @param ActionScheduler_Schedule $schedule
-	 * @param string                   $group
+	 * @param string $group
 	 */
 	public function __construct( $hook, array $args = array(), ActionScheduler_Schedule $schedule = null, $group = '' ) {
 		parent::__construct( $hook, $args, $schedule, $group );

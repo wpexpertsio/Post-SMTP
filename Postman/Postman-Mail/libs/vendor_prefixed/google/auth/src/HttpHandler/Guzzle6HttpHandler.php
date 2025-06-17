@@ -20,37 +20,40 @@ namespace PostSMTP\Vendor\Google\Auth\HttpHandler;
 use PostSMTP\Vendor\GuzzleHttp\ClientInterface;
 use PostSMTP\Vendor\Psr\Http\Message\RequestInterface;
 use PostSMTP\Vendor\Psr\Http\Message\ResponseInterface;
-class Guzzle6HttpHandler {
-
-	/**
-	 * @var ClientInterface
-	 */
-	private $client;
-	/**
-	 * @param ClientInterface $client
-	 */
-	public function __construct( \PostSMTP\Vendor\GuzzleHttp\ClientInterface $client ) {
-		$this->client = $client;
-	}
-	/**
-	 * Accepts a PSR-7 request and an array of options and returns a PSR-7 response.
-	 *
-	 * @param RequestInterface $request
-	 * @param array<mixed>     $options
-	 * @return ResponseInterface
-	 */
-	public function __invoke( \PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $options = array() ) {
-		return $this->client->send( $request, $options );
-	}
-	/**
-	 * Accepts a PSR-7 request and an array of options and returns a PromiseInterface
-	 *
-	 * @param RequestInterface $request
-	 * @param array<mixed>     $options
-	 *
-	 * @return \GuzzleHttp\Promise\PromiseInterface
-	 */
-	public function async( \PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $options = array() ) {
-		return $this->client->sendAsync( $request, $options );
-	}
+class Guzzle6HttpHandler
+{
+    /**
+     * @var ClientInterface
+     */
+    private $client;
+    /**
+     * @param ClientInterface $client
+     */
+    public function __construct(\PostSMTP\Vendor\GuzzleHttp\ClientInterface $client)
+    {
+        $this->client = $client;
+    }
+    /**
+     * Accepts a PSR-7 request and an array of options and returns a PSR-7 response.
+     *
+     * @param RequestInterface $request
+     * @param array<mixed> $options
+     * @return ResponseInterface
+     */
+    public function __invoke(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $options = [])
+    {
+        return $this->client->send($request, $options);
+    }
+    /**
+     * Accepts a PSR-7 request and an array of options and returns a PromiseInterface
+     *
+     * @param RequestInterface $request
+     * @param array<mixed> $options
+     *
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function async(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $options = [])
+    {
+        return $this->client->sendAsync($request, $options);
+    }
 }
