@@ -71,8 +71,8 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 			 */
 			$site_title = apply_filters( 'postman_rat_reporting_email_site_title', get_bloginfo( 'name' ) );
 			$url = admin_url( "admin.php?page=post-smtp-email-reporting&from={$from}&to={$to}" );
-			$extension_url = 'https://postmansmtp.com/pricing/?utm_source=wordpress&utm_medium=email&utm_campaign=email_report&utm_content=report_and_tracking';
-			$disable_url = 'https://postmansmtp.com/pricing/?utm_source=wordpress&utm_medium=email&utm_campaign=email_report&utm_content=email_health_report/';
+			$extension_url = 'https://postmansmtp.com/extensions/reporting-and-tracking-extension/';
+			$disable_url = 'https://postmansmtp.com/documentation/advance-functionality/email-health-report/';
 
             $body = '<div style=" width: 500px; margin: 0 auto; color: rgba(125, 152, 178, 1); font-size: 12px; font-family: Poppins, sans-serif;">
         <table>

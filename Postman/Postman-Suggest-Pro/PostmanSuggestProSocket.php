@@ -41,6 +41,7 @@ class PostmanSuggestProSocket {
         
         add_filter( 'gettext', array( $this, 'change_fs_submenu_text' ), 10, 3 );
         add_action( 'admin_action_ps_skip_pro_banner', array( $this, 'skip_pro_banner' ) );
+        add_action( 'init', array( $this, 'init' ) );
         
     }
 
@@ -88,7 +89,7 @@ class PostmanSuggestProSocket {
      * @since 2.2
      * @version 1.0
      */
-    public function admin_enqueue_scripts( $hook ) {
+    public function admin_enqueue_scripts() {
 
         $pluginData = apply_filters( 'postman_get_plugin_metadata', null );
 
@@ -101,13 +102,6 @@ class PostmanSuggestProSocket {
             'postmanPro', 
             $this->data
         );
-        
-        wp_register_style( 'extension-ui-fonts', 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap', array(), $pluginData['version'], 'all' );
-
-        if ( 'post-smtp_page_extensions' === $hook ) {
-            wp_enqueue_style( 'extensions-ui', plugin_dir_url( __FILE__ ) . 'assets/css/extensions-ui.css', array( 'extension-ui-fonts' ), $pluginData['version'], 'all' );
-            wp_enqueue_script( 'extensions-ui', plugin_dir_url( __FILE__ ) . 'assets/js/extensions-ui.js', array( 'jquery' ), $pluginData['version'], true );
-        }
 
     }
 
@@ -213,35 +207,37 @@ class PostmanSuggestProSocket {
     }
 
     /**
+     * Redirect
+     * 
+     * @since 2.6.3
+     * @version 1.0.0
+     */
+    public function init() {
+        
+        if ( isset( $_GET['page'] ) && 'postman-pricing' === $_GET['page'] ) {
+
+            wp_redirect( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu&utm_campaign=plugin' );
+            exit;
+
+        }
+        
+    }
+
+    /**
      * Add menu
      * 
      * @since 2.8.6
      * @version 1.0.0
      */
     public function add_menu() {
-
-        if( postman_is_bfcm() ) {
-
-            $menu_text = sprintf( 
-                '<span class="dashicons dashicons-superhero ps-pro-icon"></span>%1$s<span class="menu-counter"><b>%2$s</b></span>', 
-                __( 'Extensions', 'post-smtp' ),
-                '24%OFF'
-            );
-
-        }
-        else {
-
-            $menu_text = sprintf( '<span class="dashicons dashicons-superhero ps-pro-icon"></span> %1$s', __( 'Extensions', 'post-smtp' ) );
-
-        }
         
-        add_submenu_page(
-            PostmanViewController::POSTMAN_MENU_SLUG,
-            __( 'Extensions', 'post-smtp' ),
-            $menu_text,
-            'manage_options',
-            'extensions',
-            array( $this, 'extensions' ),
+        add_submenu_page( 
+            PostmanViewController::POSTMAN_MENU_SLUG, 
+            __( 'Get Pro Bundle', 'post-smtp' ), 
+            sprintf( '<span class="dashicons dashicons-superhero-alt ps-pro-icon"></span> %1$s <b>%2$s</b>', __( 'Get', 'post-smtp' ), __( 'Pro Bundle', 'post-smtp' ) ),
+            'manage_options', 
+            esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=submenu&utm_campaign=plugin' ),
+            '',
             99
         );
         

@@ -24,7 +24,7 @@ namespace PostSMTP\Vendor\Monolog;
  *
  * @author Grégoire Pineau <lyrixx@lyrixx.info>
  */
-interface ResettableInterface
-{
-    public function reset();
+interface ResettableInterface {
+
+	public function reset();
 }

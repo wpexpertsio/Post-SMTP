@@ -17,6 +17,6 @@ namespace PostSMTP\Vendor\phpseclib3\Exception;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class FileNotFoundException extends \RuntimeException
-{
+class FileNotFoundException extends \RuntimeException {
+
 }

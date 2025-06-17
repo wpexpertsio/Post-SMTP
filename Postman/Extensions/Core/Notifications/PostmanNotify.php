@@ -7,7 +7,6 @@ require_once 'INotify.php';
 require_once 'PostmanMailNotify.php';
 require_once 'PostmanPushoverNotify.php';
 require_once 'PostmanSlackNotify.php';
-require_once 'PostmanWebhookAlertsNotify.php';
 require_once 'PostmanNotifyOptions.php';
 
 class PostmanNotify {

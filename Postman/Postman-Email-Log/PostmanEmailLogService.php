@@ -54,6 +54,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		private $logger;
 		private $inst;
 		public $new_logging = false;
+		private $existing_db_version = '';
 
 		/**
 		 * Constructor
@@ -191,17 +192,26 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
             $new_status = apply_filters( 'post_smtp_log_status', $new_status, $log, $message );
 			//If Table exists, Insert Log into Table
 			if( $this->new_logging ) {
+				$options = PostmanOptions::getInstance();
+				$connection_details = get_option( 'postman_connections' );
+				$this->existing_db_version = get_option( 'postman_db_version' );
+				if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+					$from =  $log->sender;
+				}else{
+					 $primary = $options->getSelectedPrimary();
+					 $from = $connection_details[ $primary ]['sender_name'] . ' <' . $connection_details[ $primary ]['sender_email'] . '>';
+				}
 				$data = array();
-				$data['solution']         = apply_filters( 'post_smtp_log_solution', null, $new_status, $log, $message );
-				$data['success']          = empty( $new_status ) ? 1 : $new_status;
-				$data['from_header']      = $log->sender;
-				$data['to_header']        = $this->sanitize_emails( $log->toRecipients );
-				$data['cc_header']        = $this->sanitize_emails( $log->ccRecipients );
-				$data['bcc_header']       = $this->sanitize_emails( $log->bccRecipients );
-				$data['reply_to_header']  = $this->sanitize_emails( $log->replyTo );
-				$data['transport_uri']    = !empty( $log->transportUri ) ? $log->transportUri : '';
-				$data['original_to']      = $this->sanitize_emails( $log->originalTo );
-				$data['original_subject'] = !empty( $log->originalSubject ) ? sanitize_text_field( $log->originalSubject ) : '';
+				$data['solution'] = apply_filters( 'post_smtp_log_solution', null, $new_status, $log, $message );
+				$data['success'] = empty( $new_status ) ? 1 : $new_status;
+				$data['from_header'] = $from;
+				$data['to_header'] = !empty( $log->toRecipients ) ? $log->toRecipients : '';
+				$data['cc_header'] = !empty( $log->ccRecipients ) ? $log->ccRecipients : '';
+				$data['bcc_header'] = !empty( $log->bccRecipients ) ? $log->bccRecipients : '';
+				$data['reply_to_header'] = !empty( $log->replyTo ) ? $log->replyTo : '';
+				$data['transport_uri'] = !empty( $log->transportUri ) ? $log->transportUri : '';
+				$data['original_to'] = is_array( $log->originalTo ) ? implode( ',', $log->originalTo ) : $log->originalTo;
+				$data['original_subject'] = !empty( $log->originalSubject ) ? $log->originalSubject : '';
 				$data['original_message'] = $log->originalMessage;
 			    $data['original_headers'] = is_array( $log->originalHeaders ) ? serialize( $log->originalHeaders ) : $log->originalHeaders;
 				$data['session_transcript'] = $log->sessionTranscript;

@@ -35,101 +35,97 @@ require_once 'Zend/Locale/Format.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Validate_Float extends Postman_Zend_Validate_Abstract
-{
-    const INVALID   = 'floatInvalid';
-    const NOT_FLOAT = 'notFloat';
+class Postman_Zend_Validate_Float extends Postman_Zend_Validate_Abstract {
 
-    /**
-     * @var array
-     */
-    protected $_messageTemplates = array(
-        self::INVALID   => "Invalid type given. String, integer or float expected",
-        self::NOT_FLOAT => "'%value%' does not appear to be a float",
-    );
+	const INVALID   = 'floatInvalid';
+	const NOT_FLOAT = 'notFloat';
 
-    protected $_locale;
+	/**
+	 * @var array
+	 */
+	protected $_messageTemplates = array(
+		self::INVALID   => 'Invalid type given. String, integer or float expected',
+		self::NOT_FLOAT => "'%value%' does not appear to be a float",
+	);
 
-    /**
-     * Constructor for the float validator
-     *
-     * @param string|Postman_Zend_Config|Postman_Zend_Locale $locale
-     */
-    public function __construct($locale = null)
-    {
-        if ($locale instanceof Postman_Zend_Config) {
-            $locale = $locale->toArray();
-        }
+	protected $_locale;
 
-        if (is_array($locale)) {
-            if (array_key_exists('locale', $locale)) {
-                $locale = $locale['locale'];
-            } else {
-                $locale = null;
-            }
-        }
+	/**
+	 * Constructor for the float validator
+	 *
+	 * @param string|Postman_Zend_Config|Postman_Zend_Locale $locale
+	 */
+	public function __construct( $locale = null ) {
+		if ( $locale instanceof Postman_Zend_Config ) {
+			$locale = $locale->toArray();
+		}
 
-        if (empty($locale)) {
-            require_once 'Zend/Registry.php';
-            if (Postman_Zend_Registry::isRegistered('Postman_Zend_Locale')) {
-                $locale = Postman_Zend_Registry::get('Postman_Zend_Locale');
-            }
-        }
+		if ( is_array( $locale ) ) {
+			if ( array_key_exists( 'locale', $locale ) ) {
+				$locale = $locale['locale'];
+			} else {
+				$locale = null;
+			}
+		}
 
-        $this->setLocale($locale);
-    }
+		if ( empty( $locale ) ) {
+			require_once 'Zend/Registry.php';
+			if ( Postman_Zend_Registry::isRegistered( 'Postman_Zend_Locale' ) ) {
+				$locale = Postman_Zend_Registry::get( 'Postman_Zend_Locale' );
+			}
+		}
 
-    /**
-     * Returns the set locale
-     */
-    public function getLocale()
-    {
-        return $this->_locale;
-    }
+		$this->setLocale( $locale );
+	}
 
-    /**
-     * Sets the locale to use
-     *
-     * @param string|Postman_Zend_Locale $locale
-     * @return $this
-     */
-    public function setLocale($locale = null)
-    {
-        require_once 'Zend/Locale.php';
-        $this->_locale = Postman_Zend_Locale::findLocale($locale);
-        return $this;
-    }
+	/**
+	 * Returns the set locale
+	 */
+	public function getLocale() {
+		return $this->_locale;
+	}
 
-    /**
-     * Defined by Postman_Zend_Validate_Interface
-     *
-     * Returns true if and only if $value is a floating-point value
-     *
-     * @param  string $value
-     * @return boolean
-     */
-    public function isValid($value)
-    {
-        if (!is_string($value) && !is_int($value) && !is_float($value)) {
-            $this->_error(self::INVALID);
-            return false;
-        }
+	/**
+	 * Sets the locale to use
+	 *
+	 * @param string|Postman_Zend_Locale $locale
+	 * @return $this
+	 */
+	public function setLocale( $locale = null ) {
+		require_once 'Zend/Locale.php';
+		$this->_locale = Postman_Zend_Locale::findLocale( $locale );
+		return $this;
+	}
 
-        if (is_float($value)) {
-            return true;
-        }
+	/**
+	 * Defined by Postman_Zend_Validate_Interface
+	 *
+	 * Returns true if and only if $value is a floating-point value
+	 *
+	 * @param  string $value
+	 * @return boolean
+	 */
+	public function isValid( $value ) {
+		if ( ! is_string( $value ) && ! is_int( $value ) && ! is_float( $value ) ) {
+			$this->_error( self::INVALID );
+			return false;
+		}
 
-        $this->_setValue($value);
-        try {
-            if (!Postman_Zend_Locale_Format::isFloat($value, array('locale' => $this->_locale))) {
-                $this->_error(self::NOT_FLOAT);
-                return false;
-            }
-        } catch (Postman_Zend_Locale_Exception $e) {
-            $this->_error(self::NOT_FLOAT);
-            return false;
-        }
+		if ( is_float( $value ) ) {
+			return true;
+		}
 
-        return true;
-    }
+		$this->_setValue( $value );
+		try {
+			if ( ! Postman_Zend_Locale_Format::isFloat( $value, array( 'locale' => $this->_locale ) ) ) {
+				$this->_error( self::NOT_FLOAT );
+				return false;
+			}
+		} catch ( Postman_Zend_Locale_Exception $e ) {
+			$this->_error( self::NOT_FLOAT );
+			return false;
+		}
+
+		return true;
+	}
 }

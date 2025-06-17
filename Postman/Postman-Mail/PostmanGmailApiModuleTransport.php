@@ -25,7 +25,8 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	public function __construct($rootPluginFilenameAndPath) {
 		parent::__construct ( $rootPluginFilenameAndPath );
 		$this->gmail_oneclick_enabled = in_array( 'gmail-oneclick', get_option( 'post_smtp_pro', [] )['extensions'] ?? [] );
-
+		private $existing_db_version = '';
+		$this->existing_db_version = get_option( 'postman_db_version' );
 		// add a hook on the plugins_loaded event
 		add_action ( 'admin_init', array (
 				$this,
@@ -51,8 +52,27 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	 * @see PostmanModuleTransport::createMailEngine()
 	 */
 	public function createMailEngine() {
+		$fallback_flag = array(
+			'is_fallback' => null,
+		);
+
 		require_once 'PostmanZendMailEngine.php';
-		return new PostmanZendMailEngine ( $this );
+		return new PostmanZendMailEngine ( $this , $fallback_flag );
+	}
+
+	/**
+	 * @since 3.0.1
+	 * @version 1.0
+	 */
+	public function createMailEngineFallback() {
+
+		$fallback_flag = array(
+            'is_fallback' => 1,
+        );
+
+		require_once 'PostmanZendMailEngine.php';
+		return new PostmanZendMailEngine ( $this , $fallback_flag );
+
 	}
 
 	
@@ -61,31 +81,64 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	 *
 	 * @see PostmanZendModuleTransport::createZendMailTransport()
 	 */
-	public function createZendMailTransport($fakeHostname, $fakeConfig) {
+	public function createZendMailTransport($fakeHostname, $fakeConfig ) {
 		if (PostmanOptions::AUTHENTICATION_TYPE_OAUTH2 == $this->getAuthenticationType ()) {
 			$config = PostmanOAuth2ConfigurationFactory::createConfig ( $this );
 		} else {
 			$config = PostmanBasicAuthConfigurationFactory::createConfig ( $this );
 		}
+		// build the Gmail Client.
+		$authToken = PostmanOAuthToken::getInstance();
 		
+		$options = PostmanOptions::getInstance();
+		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+			$client_id = $this->options->getClientId();
+			$client_secret = $this->options->getClientSecret();
+			$access_token = $authToken->getAccessToken();
+			$refresh_token = $authToken->getRefreshToken();
+		}else{
+			$connection_details = get_option( 'postman_connections' );
+			if ( $fakeConfig == null ) {
+				// Check if a transient for smart routing is set
+				$route_key = null; 
+				$route_key = get_transient( 'post_smtp_smart_routing_route' );
+				if( $route_key != null  ){
+					// Smart routing is enabled, use the connection associated with the route_key.
+					$client_id   = $connection_details[ $route_key ]['oauth_client_id'];
+					$client_secret   = $connection_details[ $route_key ]['oauth_client_secret'];
+					$access_token =  $connection_details[ $route_key ]['access_token'];
+					$refresh_token =  $connection_details[ $route_key ]['refresh_token'];
+				}else{ 
+					$primary = $options->getSelectedPrimary();
+					$client_id   = $connection_details[ $primary ]['oauth_client_id'];
+					$client_secret   = $connection_details[ $primary ]['oauth_client_secret'];
+					$access_token =  $connection_details[ $primary ]['access_token'];
+					$refresh_token =  $connection_details[ $primary ]['refresh_token'];
+				}
+			} else {
+				$fallback = $options->getSelectedFallback();
+				$client_id   = $connection_details[ $fallback ]['oauth_client_id'];
+				$client_secret   = $connection_details[ $fallback ]['oauth_client_secret'];
+				$access_token =  $connection_details[ $fallback ]['access_token'];
+				$refresh_token =  $connection_details[ $fallback ]['refresh_token'];
+			}
+		}
 		// Google's autoloader will try and load this so we list it first
 		require_once 'PostmanGmailApiModuleZendMailTransport.php';
 
 		//Load Google Client API
         require_once 'libs/vendor/autoload.php';
 		
-		// build the Gmail Client
-		$authToken = PostmanOAuthToken::getInstance ();
+
 		$client = new Google_Client(
             array(
-                'client_id'     => $this->options->getClientId(),
-                'client_secret' => $this->options->getClientSecret(),
+                'client_id'     => $client_id,
+                'client_secret' => $client_secret,
                 'redirect_uris' => array(
                     $this->getScribe()->getCallbackUrl(),
                 ),
             )
         );
-		
 		// rebuild the google access token
 		$token = new stdClass ();
         $client->setApplicationName( 'Post SMTP ' . POST_SMTP_VER );
@@ -103,13 +156,15 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 			
 			//If Access Token Expired, get new one
 			if( $client->isAccessTokenExpired() ) {
-				$client->fetchAccessTokenWithRefreshToken( $authToken->getRefreshToken() );
+				
+				$client->fetchAccessTokenWithRefreshToken( $refresh_token );
 				
 			}
 			//Lets go with the old one
 			else {
-				$client->setAccessToken( $authToken->getAccessToken() );
-				$client->setRefreshToken( $authToken->getRefreshToken() );
+				
+				$client->setAccessToken( $access_token );
+				$client->setRefreshToken( $refresh_token );
 				
 			}
 			

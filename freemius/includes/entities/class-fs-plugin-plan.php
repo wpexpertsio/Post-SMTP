@@ -91,14 +91,6 @@
 		 * @var bool Is hidden plan.
 		 */
 		public $is_hidden;
-		/**
-		 * @var FS_Pricing[]
-		 */
-		public $pricing;
-		/**
-		 * @var object[]
-		 */
-		public $features;
 
 		#endregion Properties
 
