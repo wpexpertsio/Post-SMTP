@@ -221,5 +221,5 @@ function post_smtp_start( $startingMemory ) {
 function post_setupPostman() {
 	require_once 'Postman/Postman.php';
 	$kevinCostner = new Postman( __FILE__, POST_SMTP_VER );
-	do_action( 'post_smtp_init');
+	do_action( 'post_smtp_init' );
 }
