@@ -28,137 +28,134 @@ require_once 'Zend/Validate/Abstract.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Validate_Identical extends Postman_Zend_Validate_Abstract
-{
-    /**
-     * Error codes
-     * @const string
-     */
-    const NOT_SAME      = 'notSame';
-    const MISSING_TOKEN = 'missingToken';
+class Postman_Zend_Validate_Identical extends Postman_Zend_Validate_Abstract {
 
-    /**
-     * Error messages
-     * @var array
-     */
-    protected $_messageTemplates = array(
-        self::NOT_SAME      => "The two given tokens do not match",
-        self::MISSING_TOKEN => 'No token was provided to match against',
-    );
+	/**
+	 * Error codes
+	 *
+	 * @const string
+	 */
+	const NOT_SAME      = 'notSame';
+	const MISSING_TOKEN = 'missingToken';
 
-    /**
-     * @var array
-     */
-    protected $_messageVariables = array(
-        'token' => '_tokenString'
-    );
+	/**
+	 * Error messages
+	 *
+	 * @var array
+	 */
+	protected $_messageTemplates = array(
+		self::NOT_SAME      => 'The two given tokens do not match',
+		self::MISSING_TOKEN => 'No token was provided to match against',
+	);
 
-    /**
-     * Original token against which to validate
-     * @var string
-     */
-    protected $_tokenString;
-    protected $_token;
-    protected $_strict = true;
+	/**
+	 * @var array
+	 */
+	protected $_messageVariables = array(
+		'token' => '_tokenString',
+	);
 
-    /**
-     * Sets validator options
-     *
-     * @param mixed $token
-     */
-    public function __construct($token = null)
-    {
-        if ($token instanceof Postman_Zend_Config) {
-            $token = $token->toArray();
-        }
+	/**
+	 * Original token against which to validate
+	 *
+	 * @var string
+	 */
+	protected $_tokenString;
+	protected $_token;
+	protected $_strict = true;
 
-        if (is_array($token) && array_key_exists('token', $token)) {
-            if (array_key_exists('strict', $token)) {
-                $this->setStrict($token['strict']);
-            }
+	/**
+	 * Sets validator options
+	 *
+	 * @param mixed $token
+	 */
+	public function __construct( $token = null ) {
+		if ( $token instanceof Postman_Zend_Config ) {
+			$token = $token->toArray();
+		}
 
-            $this->setToken($token['token']);
-        } else if (null !== $token) {
-            $this->setToken($token);
-        }
-    }
+		if ( is_array( $token ) && array_key_exists( 'token', $token ) ) {
+			if ( array_key_exists( 'strict', $token ) ) {
+				$this->setStrict( $token['strict'] );
+			}
 
-    /**
-     * Retrieve token
-     *
-     * @return string
-     */
-    public function getToken()
-    {
-        return $this->_token;
-    }
+			$this->setToken( $token['token'] );
+		} elseif ( null !== $token ) {
+			$this->setToken( $token );
+		}
+	}
 
-    /**
-     * Set token against which to compare
-     *
-     * @param  mixed $token
-     * @return Postman_Zend_Validate_Identical
-     */
-    public function setToken($token)
-    {
-        $this->_tokenString = $token;
-        $this->_token       = $token;
-        return $this;
-    }
+	/**
+	 * Retrieve token
+	 *
+	 * @return string
+	 */
+	public function getToken() {
+		return $this->_token;
+	}
 
-    /**
-     * Returns the strict parameter
-     *
-     * @return boolean
-     */
-    public function getStrict()
-    {
-        return $this->_strict;
-    }
+	/**
+	 * Set token against which to compare
+	 *
+	 * @param  mixed $token
+	 * @return Postman_Zend_Validate_Identical
+	 */
+	public function setToken( $token ) {
+		$this->_tokenString = $token;
+		$this->_token       = $token;
+		return $this;
+	}
 
-    /**
-     * Sets the strict parameter
-     *
-     * @param Postman_Zend_Validate_Identical
-     * @return $this
-     */
-    public function setStrict($strict)
-    {
-        $this->_strict = (boolean) $strict;
-        return $this;
-    }
+	/**
+	 * Returns the strict parameter
+	 *
+	 * @return boolean
+	 */
+	public function getStrict() {
+		return $this->_strict;
+	}
 
-    /**
-     * Defined by Postman_Zend_Validate_Interface
-     *
-     * Returns true if and only if a token has been set and the provided value
-     * matches that token.
-     *
-     * @param  mixed $value
-     * @param  array $context
-     * @return boolean
-     */
-    public function isValid($value, $context = null)
-    {
-        $this->_setValue($value);
+	/**
+	 * Sets the strict parameter
+	 *
+	 * @param Postman_Zend_Validate_Identical
+	 * @return $this
+	 */
+	public function setStrict( $strict ) {
+		$this->_strict = (bool) $strict;
+		return $this;
+	}
 
-        if (($context !== null) && isset($context) && array_key_exists($this->getToken(), $context)) {
-            $token = $context[$this->getToken()];
-        } else {
-            $token = $this->getToken();
-        }
+	/**
+	 * Defined by Postman_Zend_Validate_Interface
+	 *
+	 * Returns true if and only if a token has been set and the provided value
+	 * matches that token.
+	 *
+	 * @param  mixed $value
+	 * @param  array $context
+	 * @return boolean
+	 */
+	public function isValid( $value, $context = null ) {
+		$this->_setValue( $value );
 
-        if ($token === null) {
-            $this->_error(self::MISSING_TOKEN);
-            return false;
-        }
+		if ( ( $context !== null ) && isset( $context ) && array_key_exists( $this->getToken(), $context ) ) {
+			$token = $context[ $this->getToken() ];
+		} else {
+			$token = $this->getToken();
+		}
 
-        $strict = $this->getStrict();
-        if (($strict && ($value !== $token)) || (!$strict && ($value != $token))) {
-            $this->_error(self::NOT_SAME);
-            return false;
-        }
+		if ( $token === null ) {
+			$this->_error( self::MISSING_TOKEN );
+			return false;
+		}
 
-        return true;
-    }
+		$strict = $this->getStrict();
+		if ( ( $strict && ( $value !== $token ) ) || ( ! $strict && ( $value != $token ) ) ) {
+			$this->_error( self::NOT_SAME );
+			return false;
+		}
+
+		return true;
+	}
 }

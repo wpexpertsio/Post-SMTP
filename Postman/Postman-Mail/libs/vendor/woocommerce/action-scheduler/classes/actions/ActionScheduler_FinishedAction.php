@@ -10,7 +10,6 @@ class ActionScheduler_FinishedAction extends ActionScheduler_Action {
 	}
 
 	public function is_finished() {
-		return TRUE;
+		return true;
 	}
 }
- 

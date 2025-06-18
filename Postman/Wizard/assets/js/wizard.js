@@ -143,6 +143,28 @@ jQuery( document ).ready(function() {
                         var _element = jQuery( '.ps-wizard-outer' ).removeClass();
                         jQuery( _element ).addClass( 'ps-wizard-outer' );
 
+                        const wizardStep = jQuery('.ps-wizard-step-2');
+                        const connectionIndex = response.data.index; // Adjust key name based on actual response structure.
+                    
+                        // Debugging: Log the extracted index to see if it has a value.
+                        console.log('Connection Index:', connectionIndex);
+                    
+                        // Use a more reliable check to handle 0 or null values.
+                        if (connectionIndex !== undefined && connectionIndex !== null) {
+                            if (wizardStep.find('.postman_fallback_edit').length) {
+                                wizardStep.find('.postman_fallback_edit').val(connectionIndex);
+                            } else {
+                                jQuery('<input>', {
+                                    type: 'hidden',
+                                    class: 'postman_fallback_edit',
+                                    name: 'postman_fallback_edit',
+                                    value: connectionIndex
+                                }).appendTo(wizardStep);
+                            }
+                        } else {
+                            console.error('Connection index is undefined or null!');
+                        }
+
                     },
                     error: function( response ) {
 
@@ -521,6 +543,8 @@ jQuery( document ).ready(function() {
         var office365_app_password = jQuery( '.ps-office365-client-secret' ).val();
         var _button = jQuery( this ).html();
 
+        // Append or set clientID and clientSecret as query parameters
+
         if( office365_app_id == '' ) {
 
             jQuery( '.ps-office365-client-id' ).focus();
@@ -536,8 +560,9 @@ jQuery( document ).ready(function() {
 
         jQuery( this ).html( 'Redirecting...' );
 
-        var authURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?state=${PostSMTPWizard.office365State}&scope=openid profile offline_access Mail.Send Mail.Send.Shared&response_type=code&approval_prompt=auto&redirect_uri=${PostSMTPWizard.adminURL}&client_id=${office365_app_id}`;
-        
+         var authURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?state=${PostSMTPWizard.office365State}&scope=openid profile offline_access Mail.Send Mail.Send.Shared&response_type=code&approval_prompt=auto&redirect_uri=${PostSMTPWizard.adminURL}&client_id=${office365_app_id}`;
+
+
         jQuery.ajax( {
 
             url: ajaxurl,
@@ -583,6 +608,8 @@ jQuery( document ).ready(function() {
 
         jQuery( this ).html( 'Redirecting...' );
 
+        redirectURI += (redirectURI.includes('?') ? '&' : '?') + 'client_id=' + encodeURIComponent(clientID) + '&client_secret=' + encodeURIComponent(clientSecret);
+
         jQuery.ajax( {
 
             url: ajaxurl,
@@ -611,6 +638,11 @@ jQuery( document ).ready(function() {
         var clientID = jQuery( '.ps-zoho-client-id' ).val();
         var clientSecret = jQuery( '.ps-zoho-client-secret' ).val();
         var redirectURI = jQuery( this ).attr( 'href' );
+        var url = new URL(redirectURI);
+        // Append or set clientID and clientSecret as query parameters
+        url.searchParams.set('clientID', clientID);
+        url.searchParams.set('clientSecret', clientSecret);
+        // Append clientID and clientSecret as query parameters
 
         if( clientID == '' ) {
 
@@ -638,8 +670,7 @@ jQuery( document ).ready(function() {
             },
 
             success: function( response ) {
-
-                window.location.assign( redirectURI );
+                window.location.assign( url.toString() );
 
             },
 
@@ -761,6 +792,81 @@ jQuery( document ).ready(function() {
         }, 2000);
 
     });
+	let activeEditButton;
+    jQuery('.postman-delete-connection-btn').click(function(e) {
+        e.preventDefault();
+        var connectionId = jQuery(this).data('id');
+        
+        if (!confirm('Are you sure you want to delete this connection?')) {
+            return;
+        }
+
+        jQuery.post(ajaxurl, {
+            action: 'postman_delete_connection',
+            connection_id: connectionId,
+            _wpnonce: PostSMTPWizard.delete_connection_nonce
+        }, function(response) {
+            if (response.success) {
+                alert('Connection deleted successfully.');
+                location.reload();
+            } else {
+                alert('Failed to delete connection.');
+            }
+        });
+    });
+	
+    function openModal(wizardValue) {
+        jQuery('#editModal').css('display', 'flex');
+        jQuery('body').addClass('post-smtp-modal-open');
+		jQuery('#titleInput').val('');
+		jQuery('#wizardValue').val('');
+
+        jQuery('#wizardValue').val(wizardValue);
+    }
+
+    function closeModal(event) {
+        if (event) event.preventDefault();
+        jQuery('#editModal').hide();
+        jQuery('body').removeClass('post-smtp-modal-open');
+    }
+
+    // Open modal with wizard value
+    jQuery('.post-smtp-modal-trigger-btn').on('click', function() {
+		 activeEditButton = jQuery(this);
+        const wizardValue = jQuery(this).data('wizard');
+        openModal(wizardValue);
+    });
+
+    // Save title
+    jQuery('.post-smtp-modal-save-btn').on('click', saveTitle);
+
+    // Close modal
+    jQuery('.post-smtp-modal-close-btn').on('click', closeModal);
+	
+	function saveTitle() {
+		const title = jQuery('#titleInput').val();
+		const wizardIndex = jQuery('#wizardValue').val();
+
+		jQuery.ajax({
+			url: ajaxurl,
+			method: 'POST',
+			data: {
+				action: 'save_connection_title',
+				title: title,
+				index: wizardIndex,
+				_wpnonce: PostSMTPWizard.save_title_nonce
+			},
+			success: function(response) {
+				  activeEditButton.closest('tr').find('td:first strong').text(title);  
+				closeModal();
+			},
+			error: function(error) {
+				alert('Failed To Save Title');
+			}
+		});
+	}
+
+	
 
     const gmail_icon = PostSMTPWizard.gmail_icon;
     const css = `

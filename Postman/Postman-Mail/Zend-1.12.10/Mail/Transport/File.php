@@ -37,98 +37,96 @@ require_once 'Zend/Mail/Transport/Abstract.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Mail_Transport_File extends Postman_Zend_Mail_Transport_Abstract
-{
-    /**
-     * Target directory for saving sent email messages
-     *
-     * @var string
-     */
-    protected $_path;
+class Postman_Zend_Mail_Transport_File extends Postman_Zend_Mail_Transport_Abstract {
 
-    /**
-     * Callback function generating a file name
-     *
-     * @var string|array
-     */
-    protected $_callback;
+	/**
+	 * Target directory for saving sent email messages
+	 *
+	 * @var string
+	 */
+	protected $_path;
 
-    /**
-     * Constructor
-     *
-     * @param  array|Postman_Zend_Config $options OPTIONAL (Default: null)
-     * @return void
-     */
-    public function __construct($options = null)
-    {
-        if ($options instanceof Postman_Zend_Config) {
-            $options = $options->toArray();
-        } elseif (!is_array($options)) {
-            $options = array();
-        }
+	/**
+	 * Callback function generating a file name
+	 *
+	 * @var string|array
+	 */
+	protected $_callback;
 
-        // Making sure we have some defaults to work with
-        if (!isset($options['path'])) {
-            $options['path'] = sys_get_temp_dir();
-        }
-        if (!isset($options['callback'])) {
-            $options['callback'] = array($this, 'defaultCallback');
-        }
+	/**
+	 * Constructor
+	 *
+	 * @param  array|Postman_Zend_Config $options OPTIONAL (Default: null)
+	 * @return void
+	 */
+	public function __construct( $options = null ) {
+		if ( $options instanceof Postman_Zend_Config ) {
+			$options = $options->toArray();
+		} elseif ( ! is_array( $options ) ) {
+			$options = array();
+		}
 
-        $this->setOptions($options);
-    }
+		// Making sure we have some defaults to work with
+		if ( ! isset( $options['path'] ) ) {
+			$options['path'] = sys_get_temp_dir();
+		}
+		if ( ! isset( $options['callback'] ) ) {
+			$options['callback'] = array( $this, 'defaultCallback' );
+		}
 
-    /**
-     * Sets options
-     *
-     * @param  array $options
-     * @return void
-     */
-    public function setOptions(array $options)
-    {
-        if (isset($options['path']) && is_dir($options['path'])) {
-            $this->_path = $options['path'];
-        }
-        if (isset($options['callback']) && is_callable($options['callback'])) {
-            $this->_callback = $options['callback'];
-        }
-    }
+		$this->setOptions( $options );
+	}
 
-    /**
-     * Saves e-mail message to a file
-     *
-     * @return void
-     * @throws Postman_Zend_Mail_Transport_Exception on not writable target directory
-     * @throws Postman_Zend_Mail_Transport_Exception on file_put_contents() failure
-     */
-    protected function _sendMail()
-    {
-        $file = $this->_path . DIRECTORY_SEPARATOR . call_user_func($this->_callback, $this);
+	/**
+	 * Sets options
+	 *
+	 * @param  array $options
+	 * @return void
+	 */
+	public function setOptions( array $options ) {
+		if ( isset( $options['path'] ) && is_dir( $options['path'] ) ) {
+			$this->_path = $options['path'];
+		}
+		if ( isset( $options['callback'] ) && is_callable( $options['callback'] ) ) {
+			$this->_callback = $options['callback'];
+		}
+	}
 
-        if (!is_writable(dirname($file))) {
-            require_once 'Zend/Mail/Transport/Exception.php';
-            throw new Postman_Zend_Mail_Transport_Exception(sprintf(
-                'Target directory "%s" does not exist or is not writable',
-                dirname($file)
-            ));
-        }
+	/**
+	 * Saves e-mail message to a file
+	 *
+	 * @return void
+	 * @throws Postman_Zend_Mail_Transport_Exception on not writable target directory
+	 * @throws Postman_Zend_Mail_Transport_Exception on file_put_contents() failure
+	 */
+	protected function _sendMail() {
+		$file = $this->_path . DIRECTORY_SEPARATOR . call_user_func( $this->_callback, $this );
 
-        $email = $this->header . $this->EOL . $this->body;
+		if ( ! is_writable( dirname( $file ) ) ) {
+			require_once 'Zend/Mail/Transport/Exception.php';
+			throw new Postman_Zend_Mail_Transport_Exception(
+				sprintf(
+					'Target directory "%s" does not exist or is not writable',
+					dirname( $file )
+				)
+			);
+		}
 
-        if (!file_put_contents($file, $email)) {
-            require_once 'Zend/Mail/Transport/Exception.php';
-            throw new Postman_Zend_Mail_Transport_Exception('Unable to send mail');
-        }
-    }
+		$email = $this->header . $this->EOL . $this->body;
 
-    /**
-     * Default callback for generating filenames
-     *
-     * @param Postman_Zend_Mail_Transport_File File transport instance
-     * @return string
-     */
-    public function defaultCallback($transport)
-    {
-        return 'ZendMail_' . $_SERVER['REQUEST_TIME'] . '_' . mt_rand() . '.tmp';
-    }
+		if ( ! file_put_contents( $file, $email ) ) {
+			require_once 'Zend/Mail/Transport/Exception.php';
+			throw new Postman_Zend_Mail_Transport_Exception( 'Unable to send mail' );
+		}
+	}
+
+	/**
+	 * Default callback for generating filenames
+	 *
+	 * @param Postman_Zend_Mail_Transport_File File transport instance
+	 * @return string
+	 */
+	public function defaultCallback( $transport ) {
+		return 'ZendMail_' . $_SERVER['REQUEST_TIME'] . '_' . mt_rand() . '.tmp';
+	}
 }

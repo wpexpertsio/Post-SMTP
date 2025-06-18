@@ -182,7 +182,6 @@
                 fs_ends_with( $subdomain, '.staging.wpengine.com' ) ||
                 fs_ends_with( $subdomain, '.dev.wpengine.com' ) ||
                 fs_ends_with( $subdomain, '.wpengine.com' ) ||
-                fs_ends_with( $subdomain, '.wpenginepowered.com' ) ||
                 // Pantheon
                 ( fs_ends_with( $subdomain, 'pantheonsite.io' ) &&
                   ( fs_starts_with( $subdomain, 'test-' ) || fs_starts_with( $subdomain, 'dev-' ) ) ) ||
@@ -202,9 +201,7 @@
                 // Vendasta
                 ( fs_ends_with( $subdomain, '.websitepro-staging.com' ) || fs_ends_with( $subdomain, '.websitepro.hosting' ) ) ||
                 // InstaWP
-                fs_ends_with( $subdomain, '.instawp.xyz' ) ||
-                // 10Web Hosting
-                ( fs_ends_with( $subdomain, '-dev.10web.site' ) || fs_ends_with( $subdomain, '-dev.10web.cloud' ) )
+                fs_ends_with( $subdomain, '.instawp.xyz' )
             );
         }
 

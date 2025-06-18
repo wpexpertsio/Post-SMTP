@@ -17,6 +17,6 @@ namespace PostSMTP\Vendor\phpseclib3\Exception;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class InsufficientSetupException extends \RuntimeException
-{
+class InsufficientSetupException extends \RuntimeException {
+
 }

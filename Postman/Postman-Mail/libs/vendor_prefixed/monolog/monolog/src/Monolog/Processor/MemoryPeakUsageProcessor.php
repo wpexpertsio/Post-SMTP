@@ -16,17 +16,16 @@ namespace PostSMTP\Vendor\Monolog\Processor;
  * @see Monolog\Processor\MemoryProcessor::__construct() for options
  * @author Rob Jensen
  */
-class MemoryPeakUsageProcessor extends \PostSMTP\Vendor\Monolog\Processor\MemoryProcessor
-{
-    /**
-     * @param  array $record
-     * @return array
-     */
-    public function __invoke(array $record)
-    {
-        $bytes = \memory_get_peak_usage($this->realUsage);
-        $formatted = $this->formatBytes($bytes);
-        $record['extra']['memory_peak_usage'] = $formatted;
-        return $record;
-    }
+class MemoryPeakUsageProcessor extends \PostSMTP\Vendor\Monolog\Processor\MemoryProcessor {
+
+	/**
+	 * @param  array $record
+	 * @return array
+	 */
+	public function __invoke( array $record ) {
+		$bytes                                = \memory_get_peak_usage( $this->realUsage );
+		$formatted                            = $this->formatBytes( $bytes );
+		$record['extra']['memory_peak_usage'] = $formatted;
+		return $record;
+	}
 }

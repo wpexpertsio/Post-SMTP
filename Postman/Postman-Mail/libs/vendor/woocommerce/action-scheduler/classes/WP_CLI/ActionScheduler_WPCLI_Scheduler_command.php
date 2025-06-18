@@ -92,11 +92,11 @@ class ActionScheduler_WPCLI_Scheduler_command extends WP_CLI_Command {
 		$batches_completed = 0;
 		$actions_completed = 0;
 		$unlimited         = $batches === 0;
-		if ( is_callable( [ ActionScheduler::store(), 'set_claim_filter' ] ) ) {
+		if ( is_callable( array( ActionScheduler::store(), 'set_claim_filter' ) ) ) {
 			$exclude_groups = $this->parse_comma_separated_string( $exclude_groups );
 
 			if ( ! empty( $exclude_groups ) ) {
-				ActionScheduler::store()->set_claim_filter('exclude-groups', $exclude_groups );
+				ActionScheduler::store()->set_claim_filter( 'exclude-groups', $exclude_groups );
 			}
 		}
 
@@ -114,7 +114,7 @@ class ActionScheduler_WPCLI_Scheduler_command extends WP_CLI_Command {
 			while ( $total > 0 ) {
 				$this->print_total_actions( $total );
 				$actions_completed += $runner->run();
-				$batches_completed++;
+				++$batches_completed;
 
 				// Maybe set up tasks for the next batch.
 				$total = ( $unlimited || $batches_completed < $batches ) ? $runner->setup( $batch, $hooks, $group, $force ) : 0;
