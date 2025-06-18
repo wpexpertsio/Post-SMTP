@@ -102,3 +102,55 @@
 .ps-app-download-button p{
     margin: 0px; 
 }
+
+/* Custom style for the Add New Connection button */
+.postman-add-connection-btn {
+    background-color: #2271B1 !important;
+    color: #fff !important;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.postman-add-connection-btn:hover {
+    background-color: #006ba1 !important;
+}
+
+.postman-button-gif {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+/* Custom style for the transparent select dropdown */
+#postman_primary_connection {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    color: #000;
+    font-size: 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+/* Optional: Styling for hover and focus states */
+#postman_primary_connection:hover {
+    border-color: #007cba;
+}
+
+#postman_primary_connection:focus {
+    outline: none;
+    border-color: #007cba;
+}
+
+/* For browsers that support ::-ms-expand (IE/Edge) */
+#postman_primary_connection::-ms-expand {
+    display: none;
+}

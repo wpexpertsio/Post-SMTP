@@ -2235,7 +2235,7 @@ class Post_SMTP_New_Wizard {
         }
     }
 
-     * Get transport type keys based on the provided transport type.
+     /* Get transport type keys based on the provided transport type.
      *
      * This function returns an array of keys required for a specific
      * transport type. Each transport type may require different API keys
