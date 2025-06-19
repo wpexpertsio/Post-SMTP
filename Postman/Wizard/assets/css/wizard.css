@@ -934,7 +934,7 @@ div#ps-pro-code-copy-notification {
   transform: rotate(45deg);
   display: inline-block;
 /* Lets make wizard responsive */
-
+}
 
 .post-smtp-modal-overlay {
     position: fixed;
