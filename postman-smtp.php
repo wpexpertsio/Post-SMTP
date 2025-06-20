@@ -247,14 +247,11 @@ function post_smtp_office365_deprecation_notice() {
     $hostname  = isset( $options['hostname'] ) ? $options['hostname'] : '';
 
     if ( $transport === 'smtp' && $hostname === 'smtp.office365.com' ) {
+        // Display the deprecation notice for Office 365 users.       
         $message = sprintf(
-            '<div class="notice notice-warning"><p><strong>%s</strong><br>%s <a href="%s" target="_blank">%s</a>.</p></div>',
-            esc_html__( 'Attention Microsoft Office 365, Outlook, and Hotmail users:', 'post-smtp' ),
-            esc_html__( 'Basic Authentication for SMTP relay is being retired and will no longer be supported. To avoid email delivery failures, please switch to alternative mailers. For detailed instructions, please refer to our', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/post-smtp-complete-mailer-guide/' ),
-            esc_html__( 'Mailer Setup Guides', 'post-smtp' )
+            '<div class="notice notice-warning"><p>🚨 <strong>Important: Microsoft Outlook Email Issues Detected</strong><br>Microsoft is ending support for Basic Authentication (email + password) for Outlook, Hotmail, and Microsoft 365 accounts.<br>📌 <a href="%s" target="_blank">Get the full details on our support forum thread</a>.</p></div>',
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/post-smtp-complete-mailer-guide/' )
         );
-
         echo $message;
     }
 }
