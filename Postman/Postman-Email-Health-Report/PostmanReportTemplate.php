@@ -128,7 +128,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                         
                          <tr>
                             <td colspan="4" style=" text-align: center;">
-                                <a href="'.$url.'" style=" display: inline-block; background: #375CAF; margin: 20px 0 0; color: #fff; text-decoration: none; padding: 12px 25px; border-radius: 100px;">View More Stats</a>
+                                <a href="'.$url.'" style="display: inline-block; margin: 20px 0 0;"><img style="width: 150px;" src="'.POST_SMTP_ASSETS.'/images/reporting/more-status.png"/></a>
                             </td>
                         </tr>
                         
@@ -245,13 +245,22 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                         '.$logs_html.'
                     </table>
                 </td>
-            </tr>';
+            </tr>
+             <tr>
+                <td colspan="4" style=" text-align: center;">
+                    <a href="'.home_url().'/wp-admin/admin.php?page=postman_email_log"><img style=" width: 150px;" src="'.POST_SMTP_ASSETS.'/images/reporting/view-more-emails.png"/></a>
+                </td> 
+            </tr>
+            ';
+            
             }
             
        $body .='
         <!---->
         <tr>
-            <td style="text-align: center;padding: 20px 0;">This email was auto-generated and learn how to <a href="'.$disable_url.'"><strong>disable it</strong></a>
+            <td style="text-align:center;padding:20px 0;color: #606C7C;font-size: 12px;">This email was auto-generated and learn how to <a style="
+    color: #606C7C;
+" href="'.$disable_url.'"><strong>disable it</strong></a>
             </td>
         </tr>
        </table>
