@@ -84,7 +84,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
             <tr>
                 <td style="padding: 20px;background: #F0F6FF;border-radius: 10px;">
                     <h4 style=" margin: 0 0 5px 0;">Hi '.$admin_name.' </h4>
-                    <p style=" margin: 0 0 5px 0;">Here is a quick overview of how your emails were performing in the past '.$duration.'</p>
+                    <p style=" margin: 0 0 5px 0;">Here is a quick overview of how your emails were performing in the past '. esc_html( strtolower( $duration ) ) .'</p>
                     <table style=" width: 100%; ">
                         <tr>
                             <td style=" width: 80px;">
@@ -215,14 +215,14 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 
             if(empty($log)) {
                   $logs_html = '';
-                  $logs_html .= '<tr><td colspan="5">No emails were sent last '.$duration.'</td></tr>';
+                  $logs_html .= '<tr><td colspan="5">No emails were sent last '. esc_html( strtolower( $duration ) ) .'</td></tr>';
             }
             
             if($is_addonactivated && ! empty($logs)) {
                 $body .= '<tr>
                 <td style=" text-align: center;">
                     <h4 style="text-align:center;color:#214A72;font-size:16px;display: inline-block;">
-                        <img src="'.POST_SMTP_ASSETS.'images/reporting/dashicons-clock.png" alt="dashicons-clock" style="vertical-align:middle;width: 20px;margin: -4px 0 0 0;"> Last '.$duration.' Top Emails
+                        <img src="'.POST_SMTP_ASSETS.'images/reporting/dashicons-clock.png" alt="dashicons-clock" style="vertical-align:middle;width: 20px;margin: -4px 0 0 0;"> Last '. esc_html( strtolower( $duration ) ) .' Top Emails
                     </h4>
                     <table style="width: 100%; border-spacing: 0;">
                         <tr>

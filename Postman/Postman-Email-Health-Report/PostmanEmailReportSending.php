@@ -124,10 +124,21 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 			$ps_query = new PostmanEmailQueryLog();
 
 			$where = ( ! empty( $from ) && ! empty( $to ) ) ? " WHERE pl.time >= {$from} && pl.time <= {$to}" : '';
-
+			
+			$log_table     = $ps_query->table;
+			$tracking_table = $GLOBALS['wpdb']->prefix . 'post_smtp_tracking';
 
 			$query = "SELECT pl.original_subject AS subject, COUNT( pl.original_subject ) AS total, SUM( pl.success = 1 ) As sent, SUM( pl.success != 1 ) As failed FROM {$ps_query->table} AS pl";
-
+			
+			$query = " SELECT 
+					pl.original_subject AS subject,
+					COUNT(pl.original_subject) AS total,
+					SUM(pl.success = 1) AS sent,
+					SUM(pl.success != 1) AS failed,
+					COUNT(pt.id) AS opened
+				FROM {$log_table} AS pl
+				LEFT JOIN {$tracking_table} AS pt 
+					ON pt.email_id = pl.id AND pt.event_type = 'open-email' ";
 			/**
 			 * Filter to get query from extension
 			 *
@@ -164,14 +175,17 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 
 			if ( $interval === 'd' ) {
 				$from = strtotime( 'today', $current_time );
+				$duration = __( 'Today', 'post-smtp' );
 			}
 			if ( $interval === 'w' ) {
 				$today  = strtotime( 'today', $current_time );
 				$from = strtotime( '-7 days', $today );
+				$duration = __( 'Last 7 Days', 'post-smtp' );
 			}
 			if ( $interval === 'm' ) {
 				$today  = strtotime( 'today', $current_time );
 				$from = strtotime( '-1 month', $today );
+				$duration = __( 'Last 30 Days', 'post-smtp' );
 			}
 
 			$logs = $this->get_total_logs( $from, $current_time );
