@@ -423,8 +423,12 @@ class Post_SMTP_New_Wizard {
                                 <div style="clear: both"></div>
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-2">
-                                <p class="ps-wizard-success"><?php echo ( isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
-                                <p class="ps-wizard-error"><?php echo ( !isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
+                                <p class="ps-wizard-success">
+									<?php echo ( isset( $_GET['success'], $_GET['msg'] ) && $_GET['success'] !== '0' ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?>
+								</p>
+								<p class="ps-wizard-error">
+									<?php echo ( ( !isset( $_GET['success'] ) || $_GET['success'] === '0' ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?>
+								</p>
                                 <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="2"></span><?php _e( 'Save and Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                                 <div style="clear: both"></div>
                             </div>
