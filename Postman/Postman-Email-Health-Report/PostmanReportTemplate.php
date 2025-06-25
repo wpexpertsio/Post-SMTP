@@ -258,9 +258,11 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
        $body .='
         <!---->
         <tr>
-            <td style="text-align:center;padding:20px 0;color: #606C7C;font-size: 12px;">This email was auto-generated and learn how to <a style="
-    color: #606C7C;
-" href="'.$disable_url.'"><strong>disable it</strong></a>
+            <td style="text-align:center;padding:20px 0;color: #606C7C;font-size: 12px;">
+            '.($is_addonactivated ? 
+            ' This email was auto-generated and sent from  <a style="color: #606C7C;" href="'.home_url().'"><strong>[site_url]</strong></a>' 
+                : 
+            ' This email was auto-generated and learn how to <a style="color: #606C7C;" href="'.$disable_url.'"><strong>disable it</strong></a>' ).'
             </td>
         </tr>
        </table>
