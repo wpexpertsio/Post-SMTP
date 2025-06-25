@@ -146,7 +146,9 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				}
 			}
            
-			do_action('post_smtp_handle_oauth', $this->messageHandler );
+			if( $this->options->getTransportType()  != 'gmail_api' ){
+            	do_action('post_smtp_handle_oauth', $this->messageHandler );
+			}
 
 			// continue to initialize the AdminController
 			add_action( 'init', array(
