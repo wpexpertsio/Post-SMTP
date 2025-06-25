@@ -69,8 +69,7 @@ class PostmanEmailLogs {
             $header = $log['original_headers'];
             $msg = $log['original_message'];
  			$msg = $this->purify_html( $msg );
-           	echo ( isset ( $header ) && strpos( $header, "text/html" ) ) ? $msg : '' . $msg . '' ;
-
+        	echo ( isset ( $header ) && strpos( $header, "text/html" ) ) ? $msg : '<pre>' . $msg . '</pre>' ;
             die;
 
         }
