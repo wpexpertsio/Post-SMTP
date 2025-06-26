@@ -122,6 +122,21 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			if ( $session->isSetOauthInProgress() ) {
 				// there is only a three minute window that Postman will expect a Grant Code, once Grant is clicked by the user
 				$this->logger->debug( 'Looking for grant code' );
+
+				// ✅ Handle OAuth cancel (user clicked "Cancel" or closed the prompt)
+				if ( isset( $_GET['error'] ) && $_GET['error'] === 'access_denied' ) {
+					$this->logger->debug( 'User denied Gmail OAuth access' );
+
+					$message = __( 'Gmail authorization was cancelled by the user.', 'post-smtp' );
+					$this->messageHandler->addError( $message );
+
+					$redirect_uri = admin_url( "admin.php?page=postman/configuration_wizard&socket=gmail_api&step=2&msg=" . urlencode( $message ) . "&success=0" );
+
+					wp_redirect( $redirect_uri );
+					exit;
+				}
+				
+				// ✅ Handle OAuth success
 				if ( isset( $_GET ['code'] ) ) {
 					$this->logger->debug( 'Found authorization grant code' );
 
@@ -130,7 +145,10 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 					return;
 				}
 			}
-            do_action('post_smtp_handle_oauth', $this->messageHandler );
+           
+			if( $this->options->getTransportType()  != 'gmail_api' ){
+            	do_action('post_smtp_handle_oauth', $this->messageHandler );
+			}
 
 			// continue to initialize the AdminController
 			add_action( 'init', array(
