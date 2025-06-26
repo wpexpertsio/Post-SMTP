@@ -180,12 +180,12 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 			if ( $interval === 'w' ) {
 				$today  = strtotime( 'today', $current_time );
 				$from = strtotime( '-7 days', $today );
-				$duration = __( 'Last 7 Days', 'post-smtp' );
+				$duration = __( '7 Days', 'post-smtp' );
 			}
 			if ( $interval === 'm' ) {
 				$today  = strtotime( 'today', $current_time );
 				$from = strtotime( '-1 month', $today );
-				$duration = __( 'Last 30 Days', 'post-smtp' );
+				$duration = __( '30 Days', 'post-smtp' );
 			}
 
 			$logs = $this->get_total_logs( $from, $current_time );
