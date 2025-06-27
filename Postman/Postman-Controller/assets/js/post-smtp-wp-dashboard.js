@@ -16,81 +16,60 @@ jQuery(document).ready(function($) {
     var transactionChart = new Chart(ctx, {
         type: 'line',
         data: {
-			labels: [],
-			datasets: [
-				{
-					label: '',
-					data: [],
-					backgroundColor: 'rgba(34, 113, 177, 0.15)',
-					borderColor: 'rgba(34, 113, 177, 1)',
-					borderWidth: 2,
-					pointRadius: 4,
-					pointBorderWidth: 1,
-					pointBackgroundColor: 'rgba(255, 255, 255, 1)'
-				}
-			]
-		},
+            labels: [],
+            datasets: [
+                {
+                    label: '',
+                    data: [],
+                    backgroundColor: 'rgba(34, 113, 177, 0.15)',
+                    borderColor: 'rgba(34, 113, 177, 1)',
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointBorderWidth: 1,
+                    pointBackgroundColor: 'rgba(255, 255, 255, 1)'
+                }
+            ]
+        },
         options: { 
-			// responsive: true,
-			maintainAspectRatio: false, // Maintain aspect ratio
+            maintainAspectRatio: false,
             scales: {
-				x: {
-					type: 'time',
-					time: {
-						unit: 'day',
-						tooltipFormat: 'MMM DD',
-					},
-					distribution: 'series',
-					ticks: {
-						beginAtZero: true,
-						source: 'labels',
-						padding: 10,
-						minRotation: 25,
-						maxRotation: 25,
-						callback: function (value, index, values) {
-							var gap = Math.floor(values.length / 7); 
-							if (gap < 1) {
-								return value;
-							}
-							if ((values.length - index - 1) % gap === 0) {
-								return value;
-							}
-						}
-					}
-				},
+                x: {
+                    // Remove type: 'time' - use default category scale
+                    ticks: {
+                        padding: 10,
+                        minRotation: 25,
+                        maxRotation: 25
+                    }
+                },
                 y: {
-					ticks: {
-						beginAtZero: true,
-						maxTicksLimit: 6,
-						padding: 20,
-						callback: function (value) {
-							if (Math.floor(value) === value) {
-								return value;
-							}
-						}
-					},
+                    beginAtZero: true,
+                    ticks: {
+                        maxTicksLimit: 6,
+                        padding: 20,
+                        callback: function (value) {
+                            return Math.floor(value) === value ? value : null;
+                        }
+                    }
                 }
             },
-			elements: {
-				line: {
-					tension: 0,
-				},
-			},
-			animation: {
-				duration: 1000, // Animation duration in milliseconds
-				easing: 'easeInOutQuart', // Easing function to make it smooth
-			},
-			hover: {
-				animationDuration: 0,
-			},
-			legend: {
-				display: false,
-			},
-			tooltips: {
-				displayColors: false,
-			},
-			responsiveAnimationDuration: 0,
-        },
+            elements: {
+                line: {
+                    tension: 0
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeInOutQuart'
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    displayColors: false
+                }
+            }
+        }
     });
 	window.chartInstances['myChart'] = transactionChart;
 	updateWithDummyData(transactionChart);
@@ -157,36 +136,29 @@ jQuery(document).ready(function($) {
 });
 
 function updateWithDummyData(chart) {
-    var end = moment().startOf('day'),
-        days = 7,  // Number of days to go back
-        data = [55, 45, 34, 45, 32, 55, 65],  // The dummy data points
-        date,
-        i;
+    var days = 7,
+        data = [55, 45, 34, 45, 32, 55, 65],
+        labels = [];
 
-    // Clear the previous data in the chart
-    chart.data.labels = [];
-    chart.data.datasets[0].data = [];
-
-    // Loop to create dummy data for each day in the range
-    for (i = 0; i < days; i++) {
-        // Clone the 'end' date to avoid modifying the original 'end' date
-        date = end.clone().subtract(i, 'days');
-
-        // Push formatted date to labels (e.g., 'Apr 27', 'Apr 26', etc.)
-        chart.data.labels.push(date.format('MMM DD'));  // Format the date as string (e.g., 'Apr 27')
-
-        // Push the data for this day to the dataset
-        chart.data.datasets[0].data.push({
-            t: date.valueOf(),  // Convert the Moment object to Unix timestamp (milliseconds)
-            y: data[i],         // Corresponding y value
-        });
+    // Create simple date labels without time objects
+    var today = new Date();
+    for (var i = days - 1; i >= 0; i--) {
+        var date = new Date(today);
+        date.setDate(date.getDate() - i);
+        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        labels.push(monthNames[date.getMonth()] + " " + 
+            String(date.getDate()).padStart(2, '0'));
     }
 
-    console.log('chart data updated: ', chart.data);  // Log the chart data for debugging
+    // Simple data structure for category scale
+    chart.data.labels = labels;
+    chart.data.datasets[0].data = data; // Just simple array, not objects
 
-    // Update the chart with the new data
+    console.log('chart data updated: ', chart.data);
+
     chart.update();
-	removeOverlay( jQuery('#post-smtp-dash-widget-chart') );
+    removeOverlay( jQuery('#post-smtp-dash-widget-chart') );
 }
 
 function removeOverlay( $el ) {  
@@ -197,7 +169,6 @@ function showOverlay( $el ) {
 	$el.siblings( '.post-smtp-dash-widget-overlay' ).show();
 }
 function saveWidgetMeta( meta, value ) {
-
 	var data = {
 		_wpnonce: post_smtp_dashboard_widget.nonce,
 		action  : 'post_smtp_' + post_smtp_dashboard_widget.slug + '_save_widget_meta',
