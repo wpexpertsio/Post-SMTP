@@ -152,7 +152,13 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 		 * @param mixed $new_input
 		 */
 		public function sanitizePassword( $desc, $key, $input, &$new_input, $existingPassword ) {
-
+			
+			if ( isset( $GLOBALS['_ps_skip_sanitize'] ) && $GLOBALS['_ps_skip_sanitize'] ) {
+				$new_input[ $key ] = isset( $input[ $key ] ) ? $input[ $key ] : '';
+				$this->logger->debug( "$desc skipped sanitization due to sync flag." );
+				return;
+			}
+			
 			// WordPress calling Sanitize twice is a known issue
 			// https://core.trac.wordpress.org/ticket/21989
 			$action = PostmanSession::getInstance()->getAction();

@@ -1684,17 +1684,20 @@ class Post_SMTP_New_Wizard {
                 } else {
 					// If network settings are enabled, update all child sites.
 					if ( $this->is_network_settings_enabled() ) {
-						 // Define an array of valid transport types.
 						$valid_transport_types = ['gmail_api', 'office365_api', 'zohomail_api', 'aws_ses_api'];
-						// Check if the transport type is in the valid list.
-						if ( in_array( $sanitized['transport_type'], $valid_transport_types ) ) {
-							// Update options for the selected transport type
-							$this->update_options_sites( $options );
-						}else{
-                            // For all other transport types, update only on main site.
-                            $response = update_option( PostmanOptions::POSTMAN_OPTIONS, $options )
-                        }
 
+                        if ( isset( $sanitized['transport_type'] ) && in_array( $sanitized['transport_type'], $valid_transport_types, true ) ) {
+                            $GLOBALS['_ps_skip_sanitize'] = true;
+                            if ( 'office365_api' === $sanitized['transport_type'] ) {
+                                $this->update_office365_sites( $options );
+                            } else {
+                                $this->update_options_sites( $options );
+                            }
+                            unset( $GLOBALS['_ps_skip_sanitize'] );
+                            $response = true; // avoid calling update_option again below
+                        } else {
+                            $response = update_site_option( PostmanOptions::POSTMAN_OPTIONS, $options );
+                        }
 					}else{
 						 $response = update_option( PostmanOptions::POSTMAN_OPTIONS , $options );
 					}
@@ -1744,6 +1747,34 @@ class Post_SMTP_New_Wizard {
 		foreach ( $sites as $site_id ) {
 			switch_to_blog( $site_id );
  			update_option( PostmanOptions::POSTMAN_OPTIONS , $options );
+			restore_current_blog();
+		}
+	}
+
+    /**Add commentMore actions
+	 * Update Office 365 API settings in all child sites
+	 */
+	private function update_office365_sites( $options ) {
+		if ( ! is_multisite() ) {
+			return;
+		}
+
+		$sites = get_sites( array( 'fields' => 'ids' ) );
+
+		foreach ( $sites as $site_id ) {
+			switch_to_blog( $site_id );
+			// 🔒 Skip sanitize, so encode manually — but only if not already encoded
+			if ( base64_encode( base64_decode( $options['office365_app_id'], true ) ) !== $options['office365_app_id'] ) {
+				$options['office365_app_id'] = base64_encode( $options['office365_app_id'] );
+			}
+			if ( base64_encode( base64_decode( $options['office365_app_password'], true ) ) !== $options['office365_app_password'] ) {
+				$options['office365_app_password'] = base64_encode( $options['office365_app_password'] );
+			}
+			update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
+			$saved_options = get_option( PostmanOptions::POSTMAN_OPTIONS );
+			$app_id        = $saved_options['office365_app_id'];
+			$app_secret    = $saved_options['office365_app_password'];
+
 			restore_current_blog();
 		}
 	}
