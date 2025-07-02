@@ -469,7 +469,8 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 					// Check if success is a truthy value (e.g., 1 for success).
 					if ( isset($log->event_type) && $log->event_type === 'open-email' && post_smtp_has_pro() ) {
                         $opened_count++;
-                    } elseif ($log->success == 1) {
+                    }
+					if ($log->success == 1) {
 						$sent_count++;
 					} else {
 						// If success contains an error message or a falsy value, consider it failed.

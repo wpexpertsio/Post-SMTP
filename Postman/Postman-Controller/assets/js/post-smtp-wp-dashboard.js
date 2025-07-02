@@ -30,13 +30,17 @@ jQuery(document).ready(function($) {
                 }
             ]
         },
-        options: { 
+        options: {
+            responsive: true,
             maintainAspectRatio: false,
             scales: {
                 x: {
                     // Remove type: 'time' - use default category scale
                     ticks: {
                         padding: 10,
+                        grid: {
+                            display: true,
+                        },
                         minRotation: 25,
                         maxRotation: 25
                     }
@@ -44,6 +48,7 @@ jQuery(document).ready(function($) {
                 y: {
                     beginAtZero: true,
                     ticks: {
+                        stepSize: 1,
                         maxTicksLimit: 6,
                         padding: 20,
                         callback: function (value) {
@@ -54,7 +59,12 @@ jQuery(document).ready(function($) {
             },
             elements: {
                 line: {
-                    tension: 0
+                    tension: 0.4,
+                    borderWidth: 2
+                },
+                point: {
+                    radius: 4,
+                    hoverRadius: 6
                 }
             },
             animation: {
@@ -63,10 +73,12 @@ jQuery(document).ready(function($) {
             },
             plugins: {
                 legend: {
-                    display: false
+                    display: true,
+                    position: 'top'
                 },
                 tooltip: {
-                    displayColors: false
+                    mode: 'index',
+                    intersect: false
                 }
             }
         }
