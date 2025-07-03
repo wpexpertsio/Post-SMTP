@@ -70,8 +70,8 @@ class Post_SMTP_New_Wizard {
             'postmark_api',
             'sparkpost_api',
             'mailjet_api',
-            'smtp2go_api',
             'sendpulse_api',
+            'smtp2go_api',
             
         );
         
@@ -128,15 +128,38 @@ class Post_SMTP_New_Wizard {
         ?>
  
         
-        <div class="wrap">
+        <div class="wrap" id="ps-wizard">
             <div class="ps-wizard">
-                <div class="ps-logo">
-                    <img src="<?php echo esc_attr( POST_SMTP_ASSETS ) . '/images/logos/post-smtp-logo-large.svg'; ?>" width="250px" />
+                <div class="ps-w-header">
+                    <div class="ps-logo">
+                        <img src="<?php echo esc_attr( POST_SMTP_ASSETS ) . '/images/logos/post-smtp-logo-large.svg'; ?>" width="250px" />
+                 </div>
+                 <div class="px-exit-w">
+                     <a href="">Exit Wizard Setup <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 16.5C13.125 16.5 16.5 13.125 16.5 9C16.5 4.875 13.125 1.5 9 1.5C4.875 1.5 1.5 4.875 1.5 9C1.5 13.125 4.875 16.5 9 16.5Z" stroke="#214A72" stroke-width="1.125" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6.87756 11.1224L11.1226 6.87744" stroke="#214A72" stroke-width="1.125" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M11.1226 11.1224L6.87756 6.87744" stroke="#214A72" stroke-width="1.125" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</a>
+                 </div>
                 </div>
-                <div class="ps-wizard-outer <?php echo esc_attr( $socket ); ?>">
+                
+                <div class="ps-wizard-outer <?php echo esc_attr( $socket ); ?>" >
                     <div class="ps-wizard-section">
                         <div class="ps-wizard-nav">
-                            <table>
+                            
+                            <?php
+                                $nav = '';
+                                $nav .= '
+                                    <ul class="wizard-nav">
+                                        <li class="'.esc_attr($in_active).'"><a href="#choose-smtp">'._( 'Choose your SMTP Mailer', 'post-smtp' ).'</a></li>
+                                        <li class="'.esc_attr($is_active).'"><a href="#configure-setting">'._( 'Configure Mailer Settings', 'post-smtp' ).'</a></li>
+                                        <li class="'.esc_attr($is_active).'"><a href="#send-test-email">'._( 'Send Test Email', 'post-smtp' ).'</a></li>
+                                    </ul>
+                                ';
+                                echo $nav;
+                            ?>
+                            <table style="display: none;">
                                 <tr class="<?php echo esc_attr( $in_active ) ?>">
                                     <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"></span></td>
                                     <td class="ps-wizard-text"><?php _e( 'Choose your SMTP Mailer', 'post-smtp' ) ?></td>
@@ -159,7 +182,7 @@ class Post_SMTP_New_Wizard {
                                 <?php wp_nonce_field( 'post-smtp', 'security' );  ?>
                                 <div class="ps-wizard-screens-container">
                                     <div class="ps-wizard-step ps-wizard-step-1">
-                                        <p style="width: 70%; margin-bottom: 30px;"><?php 
+                                        <p><?php 
                                         /**
                                          * Translators: %1$s Description of the step, %2$s Link to the complete mailer guide, %3$s Link text, %4$s Description of the step
                                          */
@@ -181,23 +204,24 @@ class Post_SMTP_New_Wizard {
                                         foreach( $transports as $key => $transport ) {
 
                                             $urls = array(
-                                                'default'           =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.png',
-                                                'smtp'              =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.png',
-                                                'gmail_api'         =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/gmail.png',
-                                                'mandrill_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mandrill.png',
-                                                'sendgrid_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendgrid.png',
-                                                'mailersend_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailersend.png',
-                                                'mailgun_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailgun.png',
-                                                'sendinblue_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/brevo.png',
-                                                'postmark_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/postmark.png',
-                                                'sparkpost_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sparkpost.png',
-                                                'mailjet_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailjet.png',
-                                                'sendpulse_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendpulse.png',
-                                                'smtp2go_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp2go.png',
-                                                'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.png',
-                                                'elasticemail_api'  =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/elasticemail.png',
-                                                'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
-                                                'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png'
+                                                'default'           =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/other.svg',
+                                                'smtp'              =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/other.svg',
+                                                'gmail_api'         =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/gmail.svg',
+                                                'mandrill_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mandrill.svg',
+                                                'sendgrid_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendgrid.svg',
+                                                'mailersend_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/Mailersend.svg',
+                                                'mailgun_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailgun.svg',
+                                                'sendinblue_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/brevo.svg',
+                                                'postmark_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/postmark.svg',
+                                                'sparkpost_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sparkpost.svg',
+                                                'sendpulse_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendpulse.svg',
+                                                'mailjet_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailjet.svg',
+                                                'smtp2go_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp2go.svg',
+                                                'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.svg',
+                                                'elasticemail_api'  =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/elasticemail.svg',
+                                                'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.svg',
+                                                'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.svg'
+                                                
                                             );
 
                                             $url = '';
@@ -233,7 +257,7 @@ class Post_SMTP_New_Wizard {
 
                                                 if( $transport_slug == 'office365_api' ) {
                                                     
-                                                    $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.png';
+                                                    $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.svg';
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Microsoft 365';
                                                     $is_pro = 'ps-pro-extension';
@@ -242,7 +266,7 @@ class Post_SMTP_New_Wizard {
                                                 }
                                                 if( $transport_slug == 'zohomail_api' ) {
                                                     
-                                                    $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png';
+                                                    $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.svg';
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Zoho';
                                                     $is_pro = 'ps-pro-extension';
@@ -251,7 +275,7 @@ class Post_SMTP_New_Wizard {
                                                 }
                                                 if( !class_exists( 'Post_Smtp_Amazon_Ses' ) && $transport_slug == 'aws_ses_api' ) {
                                                     
-                                                    $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png';
+                                                    $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.svg';
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Amazon SES';
                                                     $is_pro = 'ps-pro-extension';
@@ -261,17 +285,7 @@ class Post_SMTP_New_Wizard {
 
                                             }
 
-                                            if( $row >= 4 ) {
-
-                                                $row = 0;
-
-                                                ?>
-                                                </div>
-                                                <div class="ps-wizard-sockets">
-                                                <?php
-
-
-                                            }
+                                            
 
                                             ?>
                                             <div class="ps-wizard-socket-radio-outer">
@@ -402,20 +416,10 @@ class Post_SMTP_New_Wizard {
                                 </div>
                             </form>
                         </div>
-                        <div style="clear: both"></div>
+                        
                     </div>
                     <div class="ps-wizard-footer">
-                        <div class="ps-wizard-footer-left">
-                            <div class="ps-wizard-nav">
-                                <table>
-                                    <tr class="ps-in-active-nav">
-                                        <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"><span class="ps-wizard-line"></span></span></td>
-                                        <td class="ps-wizard-text"></td>
-                                        <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="4"></span></td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
+                       
                         <div class="ps-wizard-footer-right">
                             <div class="ps-wizard-step ps-wizard-step-1">
                                 <p class="ps-wizard-error"></p>

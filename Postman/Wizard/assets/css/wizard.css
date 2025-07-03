@@ -1,4 +1,106 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+body.post-smtp_page_postman-configuration_wizard #wpcontent *:not(.dashicons ) {
+     font-family: "Bricolage Grotesque", sans-serif;
+}
+body.post-smtp_page_postman-configuration_wizard #wpcontent {
+    background: #fff;
+}
+.ps-wizard-outer {
+  border: 2px solid #F0F0F1;
+  border-radius: 30px;
+  width: 875px;
+  margin: 0 auto;
+  padding: 45px 35px;
+}
+
+ul.wizard-nav *,
+.ps-w-header * {
+ 
+}
+#ps-wizard .ps-wizard-section {
+    display: flex;
+}
+
+#ps-wizard .ps-wizard-pages {
+    width: 70%;
+}
+ul.wizard-nav li {
+    margin: 0;
+   
+}
+
+ul.wizard-nav {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 54px;
+    counter-reset: section;
+}
+
+ul.wizard-nav li a {
+    text-decoration: none;
+    color: #214A72;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 20px 0 20px 40px;
+    position: relative;
+    box-shadow: none;
+}
+ul.wizard-nav li a:before {
+    content: "0" counter(section);
+    width: 30px;
+    height: 30px;
+    counter-increment: section;
+    border: 1px solid #214A72;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 0;
+    top: 13px;
+}
+ul.wizard-nav li a:after {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 30px;
+    background: #CDCDCD;
+    left: 15px;
+    top: 50px;
+}
+.ps-wizard-footer {
+  background: #f1f1f1;
+  padding: 17px 0;
+}
+
+.ps-wizard-nav {
+    border-right: 1px solid #EFEFEF;
+    width: 26%;
+    padding-right: 5%;
+    margin-right: 5%;
+}
+.ps-w-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 40px 0 60px;
+    padding: 0 12%;
+}
+.ps-w-header .px-exit-w a {
+  color: #214A72;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: normal;
+    border: 1px solid #E2E9FB;
+    display: flex;
+    gap: 7px;
+    text-decoration: none;
+    padding: 5px 10px;
+}
+
 .admin_page_postman-configuration_wizard {
   -ms-overflow-style: none;  /* Internet Explorer 10+ */
   scrollbar-width: none;  /* Firefox */
@@ -7,103 +109,11 @@
   display: none;  /* Safari and Chrome */
 }
 
-.ps-logo {
-  text-align: center;
-  margin: 50px 0;
-}
-
-.ps-wizard-outer {
-  border: 2px solid #375caf;
-  border-radius: 7px;
-  width: 875px;
-  margin: 0 auto;
-}
-
-.ps-wizard-nav {
-  width: 32%;
-  float: left;
-}
-
-.ps-wizard-pages {
-  width: 67%;
-  float: right;
-}
-
-.ps-wizard-section {
-  margin: 25px 0;
-}
-
-.ps-wizard-footer {
-  background: #f1f1f1;
-  padding: 17px 0;
-}
-
-.ps-wizard-nav {
-  border-right: 1px solid #d9d9d9;
-}
-
-.ps-wizard-section .ps-wizard-nav {
-  height: 484px;
-}
-
-.smtp-outer .ps-wizard-section .ps-wizard-nav {
-  height: 978px;
-}
-
-.gmail_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 1087px;
-}
-
-.mandrill_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
-}
-
-.sendgrid_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
-}
-
-.mailersend_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
-}
-
-.mailgun_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 904px;
-}
-
-.sendinblue_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 724px;
-}
-
-.postmark_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
-}
-
-.sparkpost_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
-}
-
-.elasticemail_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
-}
-
-.office365_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 978px;
-}
-
-.zohomail_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 1087px;
-}
-
-.aws_ses_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 887px;
-}
-
-.mailjet_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 778px;
-}
-
-.sendpulse_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 775px;
+#ps-wizard p {
+    font-weight: 500;
+    font-size: 12px;
+    color: #707070;
+    margin: 0 0 10px;
 }
 
 .ps-wizard-footer .ps-wizard-nav {
@@ -169,11 +179,6 @@
   font-weight: 600;
 }
 
-.ps-wizard-footer-left {
-  width: 32%;
-  float: left;
-}
-
 .ps-wizard-footer-right {
   float: right;
   width: 67%;
@@ -214,94 +219,20 @@
   height: 342px;
 }
 
-.ps-wizard-screens-container {
-  padding: 0 25px;
-}
-
 .ps-wizard-step {
   display: none;
 }
 
-.ps-wizard-pages p {
-  font-weight: 600;
-  font-size: 12px;
-}
 
 .ps-wizard-pages a {
   color: #000;
 }
 
-.smtp-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 837px;
-}
-
-.gmail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 1100px;
-}
-
-.mandrill_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 535px;
-}
-
-.sendgrid_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 608px;
-}
-
-.mailersend_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 608px;
-}
-
-.mailgun_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 763px;
-}
-
-.sendinblue_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 583px;
-}
-
-.postmark_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 535px;
-}
-
-.sparkpost_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 535px;
-}
-
-.elasticemail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 535px;
-}
-
-.office365_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 837px;
-}
-
-.zohomail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 946px;
-}
-
-.aws_ses_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 746px;
-}
-
-.mailjet_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 638px;
-}
-
-.sendpulse_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 635px;
-}
-
-.ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 343px;
-}
-
-.ps-wizard-footer-left .ps-in-active-nav .ps-email-tester-line.ps-wizard-line:after {
-  height: 417px;
-}
-
 .ps-wizard-sockets {
   display: flex;
-  margin: 15px 0 15px 0;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin: 24px 0;
 }
 
 .ps-wizard-socket-radio label {
@@ -311,13 +242,15 @@
 }
 
 .ps-wizard-socket-radio img {
-  width: 31px;
   cursor: pointer;
   transition: transform 1s;
   object-fit: cover;
-  padding: 8px 20px 3px 20px;
+  width: 35px;
 }
-
+.ps-wizard-socket-radio label[for="ps-wizard-socket-smtp2go_api"] img {
+    width: 65px;
+    height: 35px;
+}
 .ps-wizard-socket-tick-container {
   transition: .5s ease;
   opacity: 0;
@@ -334,10 +267,13 @@
 }
 
 .ps-wizard-socket-radio {
-  border: 2px solid #000;
-  width: 100px;
-  height: 66px;
-  margin-right: 15px;
+  width: 110px;
+  height: 75px;
+  border-radius: 3px;
+  border: 1px solid #EFEFEF;
+  background: #FAFAFA;
+  padding: 8px 5px;
+  box-sizing: border-box;
 }
 
 .ps-wizard-socket-radio input {
@@ -560,14 +496,15 @@
 
 .ps-pro-extension-tag {
   position: absolute;
-  left: 1px;
-  top: 1px;
-  background: #FF9900;
+  top: 5px;
   color: #ffffff;
-  font-size: 11px;
-  font-weight: bold;
-  font-family: sans-serif;
-  padding: 0px 3px;
+  font-size: 10px;
+  padding: 2px 3px;
+  left: auto;
+  right: 5px;
+  background: linear-gradient(122deg, #214A72 14.11%, #3F8CD8 109.32%);
+  font-weight: 700;
+  line-height: normal;
 }
 
 .ps-pro-popup-overlay {
@@ -702,9 +639,7 @@ span.ps-pro-close-popup {
   color: #E57373;
 }
 
-.ps-wizard-outer.smtp2go_api-outer .ps-wizard-footer-left .ps-wizard-line::after {
-  height: 557px;
-}
+
 
 .ps-wizard-pro-tag {
   background: #ffbf00;

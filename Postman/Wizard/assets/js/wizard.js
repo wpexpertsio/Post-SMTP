@@ -17,7 +17,7 @@ jQuery( document ).ready(function() {
      */
     const refreshWizard = function() {
 
-        var tableRow = jQuery( '.ps-wizard-nav table tr.ps-active-nav' );
+        var tableRow = jQuery( '.ps-wizard-nav .ps-active-nav' );
         var activeTab = jQuery( tableRow ).hasClass( 'ps-active-nav' );
 
         if( activeTab ) {
