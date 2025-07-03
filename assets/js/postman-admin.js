@@ -51,7 +51,7 @@ jQuery( document ).ready( function() {
             jQuery('#email_notify').slideUp( 'fast' );
             jQuery('#slack_cred').slideUp( 'fast' );
             jQuery('#pushover_cred').slideUp( 'fast' );
-            jQuery('#webhook_alert_urls').slideDown();
+            jQuery('#webhook_alert_urls').fadeOut('fast');
     
         }
     
