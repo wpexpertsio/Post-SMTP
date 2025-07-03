@@ -576,7 +576,11 @@ class PostmanSettingsRegistry {
 
 			$provider_label = ucfirst( str_replace( '_', ' ', __( str_replace( 'api', 'API', $raw_label ), 'post-smtp' ) ) );
 			
-			$status         = ( $key == $primary_connection ) ? 'Primary' : ( ( $key == $primary_fallback ) ? 'Fallback' : 'None' );
+			//$status         = ( $key == $primary_connection ) ? 'Primary' : ( ( $key == $primary_fallback ) ? 'Fallback' : 'None' );
+			$is_primary = ( $key == $primary_connection );
+			$is_valid_fallback = isset( $connections[ $primary_fallback ] ) && $primary_fallback != $primary_connection && $key === $primary_fallback;
+
+			$status = $is_primary ? 'Primary' : ( $is_valid_fallback ? 'Fallback' : 'None' );
 			echo '<tr><td>';
 			echo '<strong>' . esc_html( $provider_label ) . '</strong><br>';
 			echo '<small>' . esc_html__( 'Selected as:', 'post-smtp' ) . ' ' . esc_html( $status ) . '</small>';

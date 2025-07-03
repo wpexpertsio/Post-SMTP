@@ -22,6 +22,7 @@
 					action	 : 'postman_send_test_email',
 					security : security,
 					email	 : email,
+					primary  : '1' // Set primary to 1 for the test email.
 				},
 				success : function( response ) {
 					$( '#when-button-clicked' ).removeClass( 'is-active' ).css( 'display', 'none' );

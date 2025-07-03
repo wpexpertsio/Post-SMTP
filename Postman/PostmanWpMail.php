@@ -55,7 +55,6 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$log->originalSubject = $subject;
 			$log->originalMessage = $message;
 			$log->originalHeaders = $headers;
-
 			// send the message and return the result
 			return $this->sendMessage( $postmanMessage, $log );
 		}
@@ -189,7 +188,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$existing_db_version = get_option( 'postman_db_version' );
 			$pro_options = get_option( 'post_smtp_pro', [] );
 			$bonus_extensions = isset( $pro_options['bonus_extensions'] ) ? $pro_options['bonus_extensions'] : [];
-
+			
 			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
 				// get the transport and create the transportConfig and engine.
 				$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
@@ -197,6 +196,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				// get primaryconnection and Config and engine.
 				$transport_registry = PostmanTransportRegistry::getInstance();
 				$transport = $transport_registry->getPrimaryConnection();
+		
 				if ( is_array( $bonus_extensions ) && in_array( 'smart-routing', $bonus_extensions, true ) ) {
 				
 					/**
@@ -277,10 +277,14 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				$this->postSend( $engine, $startTime, $options, $transport );
 			
 
+				delete_transient( 'post_smtp_force_primary_connection' );
                 /**
                  * Do stuff after successful delivery
                  */
                 do_action( 'post_smtp_on_success', $log, $message, $engine->getTranscript(), $transport );
+				
+				// Delete the transient in case of success
+				delete_transient( 'post_smtp_force_primary_connection' );
 				
 				// Success: Delete the transient after sending the email
                  delete_transient( 'post_smtp_smart_routing_route' );

@@ -466,7 +466,16 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
         }
 
 		public function getSelectedPrimary() {
-            if ( isset( $this->options [ PostmanOptions::PRIMARY_CONNECTION ] ) ) {
+			
+			$force_primary = get_transient( 'post_smtp_force_primary_connection' );
+			
+			// If transient exists and is not equal to 1, use the last connection
+			if ( $force_primary !== false && (int) $force_primary === 0 ) {
+				$connections = get_option( 'postman_connections', array() );
+				return array_key_last( $connections );
+			}
+			
+			if ( isset( $this->options [ PostmanOptions::PRIMARY_CONNECTION ] ) ) {
                 return $this->options [ PostmanOptions::PRIMARY_CONNECTION ];
             }
         }

@@ -347,6 +347,7 @@ jQuery( document ).ready(function() {
                 action: 'postman_send_test_email',
                 email: sendTo,
                 security: security,
+                primary  : '0', // Set primary to 0 for the test email.
             },
             success: function( response ) {
 
