@@ -197,23 +197,38 @@ if ( ! class_exists( 'PostmanGmailApiModuleZendMailTransport' ) ) {
 		 * @return void
 		 * @todo Rename this to sendMail, it's a public method...
 		 */
-		public function _sendMail() {
+			public function _sendMail() {
 
 			// Prepare the message in message/rfc822
-			$message       = $this->header . Postman_Zend_Mime::LINEEND . $this->body;
+			$message = $this->header . Postman_Zend_Mime::LINEEND . $this->body;
 			$this->message = $message;
 			// The message needs to be encoded in Base64URL
-			$encodedMessage   = rtrim( strtr( base64_encode( $message ), '+/', '-_' ), '=' );
-			$googleApiMessage = new Message();
-			$googleService    = $this->_config [ self::SERVICE_OPTION ];
-			$googleClient     = $googleService->getClient();
+			$encodedMessage = rtrim ( strtr ( base64_encode ( $message ), '+/', '-_' ), '=' );
+		
+ 
+			$file_size = strlen($message);
 
-			$file_size = strlen( $message );
-
-			$result = array();
+			$result = array ();
 			try {
-				$googleClient->setDefer( true );
-				$result = $googleService->users_messages->send( 'me', $googleApiMessage, array( 'uploadType' => 'resumable' ) );
+				if ( $this->gmail_oneclick_enabled ) {
+				  // Prepare payload.
+					$payload = array(
+						'message' => $encodedMessage,
+						'headers' => $this->header,
+						'site_url'  => get_site_url(),
+					);
+					
+					$response = wp_remote_post(
+						$this->api_base_url,
+						array(
+							'method'    => 'POST',
+							'body'      => wp_json_encode( $payload ),
+							'headers'   => array(
+								'Content-Type' => 'application/json',
+							),
+							'timeout'   => 30,
+						)
+					);
 
 					$body           = wp_remote_retrieve_body( $response );
 					$result_output  = json_decode( $body, true );
@@ -224,36 +239,60 @@ if ( ! class_exists( 'PostmanGmailApiModuleZendMailTransport' ) ) {
 						throw new Exception( 'Error in PostSMTP GMAIL API Request: ' . $response->get_error_message() );
 					}
 
-				// create mediafile upload
-				$media = new MediaFileUpload(
-					$googleClient,
-					$result,
-					'message/rfc822',
-					$message,
-					true,
-					$chunkSizeBytes
-				);
-				$media->setFileSize( $file_size );
+					$response_code = wp_remote_retrieve_response_code( $response );
+					$body = wp_remote_retrieve_body( $response );
+					$result_output = json_decode( $body, true );
+					if ( $response_code !== 200 || empty( $result_output ) ) {
+						
+    				$error_code = $response_code;
 
-				$status = false;
-				while ( ! $status ) {
-					$status = $media->nextChunk();
+			    	throw new Exception("PostSMTP GMAIL API Error: $error_message (HTTP Code: $error_code)");
+						
+					}
+					// ✅ Ensure email send response contains "data".
+					if ( !isset( $result_output['data'] ) ) {
+						throw new Exception( "PostSMTP GMAIL API Error: Missing 'data' key in response: " . print_r( $result_output, true ) );
+					}
+					
+					$result = $result_output['data'];
+				}else{
+				    $googleApiMessage = new Message ();
+				    $googleService = $this->_config [self::SERVICE_OPTION];
+				    $googleClient = $googleService->getClient();
+				    $googleClient->setDefer(true);
+				    $result = $googleService->users_messages->send ( 'me', $googleApiMessage, array('uploadType' => 'resumable') );	
+					$chunkSizeBytes = 1 * 1024 * 1024;
+
+					// create mediafile upload
+					$media = new MediaFileUpload(
+						$googleClient,
+						$result,
+						'message/rfc822',
+						$message,
+						true,
+						$chunkSizeBytes
+					);
+					$media->setFileSize($file_size);
+
+					$status = false;
+					while (! $status) {
+						$status = $media->nextChunk();
+					}
+					$result = false;
+
+					// Reset to the client to execute requests immediately in the future.
+					$googleClient->setDefer(false);
+
+					$googleMessageId = $status->getId();
 				}
-				$result = false;
-
-				// Reset to the client to execute requests immediately in the future.
-				$googleClient->setDefer( false );
-
-				$googleMessageId = $status->getId();
-
-				if ( $this->logger->isInfo() ) {
-					$this->logger->info( sprintf( 'Message %d accepted for delivery', PostmanState::getInstance()->getSuccessfulDeliveries() + 1 ) );
+				if ($this->logger->isInfo ()) {
+					$this->logger->info ( sprintf ( 'Message %d accepted for delivery', PostmanState::getInstance ()->getSuccessfulDeliveries () + 1 ) );
 				}
-				$this->transcript  = print_r( $result, true );
+				$this->transcript = print_r ( $result, true );
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 				$this->transcript .= $message;
 			} catch ( Exception $e ) {
-				$this->transcript  = $e->getMessage();
+				$this->transcript = $e->getMessage ();
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 				$this->transcript .= $message;
 				throw $e;
