@@ -52,6 +52,7 @@ class PostmanSendGrid extends PostmanServiceRequest {
 
         $this->base_url = apply_filters( 'post_smtp_sendgrid_base_url', $this->base_url, $region );
         parent::__construct( $this->base_url );
+	}
 
 	/**
 	 * Prepares Header for Request

@@ -2057,7 +2057,7 @@ class Post_SMTP_New_Wizard {
  
             // ✅ Update primary_connection key inside postman_options.
             $postman_options = get_option( PostmanOptions::POSTMAN_OPTIONS, array() );
-            $postman_options['primary_connection'] = $id;
+            //$postman_options['primary_connection'] = $id;
             update_option( PostmanOptions::POSTMAN_OPTIONS, $postman_options );
         }
 
