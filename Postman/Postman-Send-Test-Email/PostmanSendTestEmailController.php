@@ -330,7 +330,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		$primary = $this->getRequestParameter( 'primary' );
 		
 		if ( false === get_transient( 'post_smtp_force_primary_connection' ) ) {
-			set_transient( 'post_smtp_force_primary_connection', $primary, 10 );
+			set_transient( 'post_smtp_force_primary_connection', $primary, 0 );
 		}
 		
 		// get the name of the server from the HTTP Request
