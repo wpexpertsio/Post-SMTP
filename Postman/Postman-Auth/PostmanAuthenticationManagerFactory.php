@@ -51,8 +51,8 @@ if (! class_exists ( "PostmanAuthenticationManagerFactory" )) {
 			$hostname = $options->getHostname ();
 			if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
 				if ( false === get_transient( 'client_id' ) && isset( $_GET['client_id'] ) && isset( $_GET['client_secret'] ) ) {
-					set_transient( 'client_id', esc_attr( $_GET['client_id'] ), $expiry_time );
-					set_transient( 'client_secret', esc_attr( $_GET['client_secret'] ), $expiry_time );
+					set_transient( 'client_id', esc_attr( $_GET['client_id'] ), 0 );
+					set_transient( 'client_secret', esc_attr( $_GET['client_secret'] ), 0 );
 				}
 				$clientId       = get_transient( 'client_id' ) ?? '';
 				$clientSecret = get_transient( 'client_secret' ) ?? '';

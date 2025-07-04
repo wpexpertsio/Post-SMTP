@@ -273,15 +273,23 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				}
 				// clean up
 				$this->postSend( $engine, $startTime, $options, $transport );
-			
+		
 
-				delete_transient( 'post_smtp_force_primary_connection' );
                 /**
                  * Do stuff after successful delivery
                  */
                 do_action( 'post_smtp_on_success', $log, $message, $engine->getTranscript(), $transport );
+
+				/**
+				 * Delete temporary transients used during Gmail OAuth authorization.
+				 */
+				delete_transient( 'client_id' );
+				delete_transient( 'client_secret' );
 				
-				// Delete the transient in case of success
+				/**
+				 * Remove the transient flag used to force sending from the primary connection.
+				 * This ensures that future emails can dynamically determine the appropriate connection.
+				 */
 				delete_transient( 'post_smtp_force_primary_connection' );
 				
 				// Success: Delete the transient after sending the email
