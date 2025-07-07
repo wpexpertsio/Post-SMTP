@@ -492,6 +492,10 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				// clean up
 				$this->postSend( $engine, $startTime, $options, $transport );
 
+				/**
+                 * Do stuff after failed delivery
+                 */
+                do_action( 'post_smtp_on_failed', $log, $message, $engine->getTranscript(), $transport, $e->getMessage() );
 
 				$mail_error_data = array(
 					'to' => $message->getToRecipients(),

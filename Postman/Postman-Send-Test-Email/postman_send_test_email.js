@@ -28,7 +28,12 @@
 					$( '#when-button-clicked' ).removeClass( 'is-active' ).css( 'display', 'none' );
 					$this.removeAttr( 'disabled' );
 					if ( ! response.success ) {
-						var message = response.data.message;
+						let message = 'Test email failed. Please check your settings and try again.';
+						
+						if ( response.data && typeof response.data.message === 'string' && response.data.message.trim() !== '' ) {
+							message = response.data.message;
+						}
+						
 						var icon    = '<span class="dashicons dashicons-no-alt"></span>';
 						$( '.send-test-email .ps-success' ).empty();
 						$( '.send-test-email .ps-error' ).html( icon + message );
