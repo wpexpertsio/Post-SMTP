@@ -2059,17 +2059,26 @@ class Post_SMTP_New_Wizard {
             $id = $form_data['postman_fallback_edit'];
             $mail_connections[ $id ] = array_merge( $mail_connections[ $id ], $new_connection );
         } else {
-            $mail_connections[] = $new_connection;
-            $id = array_key_last( $mail_connections );
- 
-            // ✅ Update primary_connection key inside postman_options.
-            $postman_options = get_option( PostmanOptions::POSTMAN_OPTIONS, array() );
-            //$postman_options['primary_connection'] = $id;
-            update_option( PostmanOptions::POSTMAN_OPTIONS, $postman_options );
+
+          	if ( isset( $form_data['access_token'] ) && ! empty( $form_data['access_token'] ) ) {
+              // ✅ Update token values for the last connection (assumes wizard OAuth success redirect)
+				$id = array_key_last( $mail_connections );
+				$mail_connections[ $id ] = array_merge( $mail_connections[ $id ], $new_connection );
+				update_option( 'postman_connections', $mail_connections );
+				
+				return array(
+					'index'  => $id,
+					'status' => 'updated_token_only',
+				);
+				
+            }else{					
+	            $mail_connections[] = $new_connection;
+    	        $id = array_key_last( $mail_connections );
+			}
         }
-
+        
         $saved = update_option( 'postman_connections', $mail_connections );
-
+        
         return array(
             'index'  => $id,
             'status' => $saved ? 'updated' : 'not_updated',
@@ -2080,55 +2089,50 @@ class Post_SMTP_New_Wizard {
      * Handle provider-specific logic
      *
      * @since 2.7.0
-     * @version
+     * @version 2.0
      */
     private function handle_special_providers( $type, $form_data, $sanitized, &$connection ) {
 
-        if ( $type === 'zohomail_api' ) {
-            $connection = array_merge(
-                $connection,
-                array(
-                    'zohomail_client_id'     => isset( $sanitized['zohomail_client_id'] ) ? $sanitized['zohomail_client_id'] : '',
-                    'zohomail_client_secret' => isset( $sanitized['zohomail_client_secret'] ) ? $sanitized['zohomail_client_secret'] : '',
-                    'timestamp'              => time() + 3600,
-                )
-            );
+        // Common token keys
+        $token_keys = array( 'access_token', 'refresh_token', 'token_expires' );
 
-            foreach ( array( 'access_token', 'refresh_token', 'token_expires' ) as $field ) {
+        switch ( $type ) {
+            case 'zohomail_api':
+                $connection = array_merge( $connection, array(
+                    'zohomail_client_id'     => $sanitized['zohomail_client_id'] ?? '',
+                    'zohomail_client_secret' => $sanitized['zohomail_client_secret'] ?? '',
+                    'timestamp'              => time() + 3600,
+                ) );
+                break;
+
+            case 'office365_api':
+                $connection = array_merge( $connection, array(
+                    'office365_app_id'       => $sanitized['office365_app_id'] ?? '',
+                    'office365_app_password' => $sanitized['office365_app_password'] ?? '',
+                    'timestamp'              => time() + 3600,
+                ) );
+                break;
+
+            case 'gmail_api':
+                $connection = array_merge( $connection, array(
+                    'oauth_client_id'     => $sanitized['oauth_client_id'] ?? '',
+                    'oauth_client_secret' => $sanitized['oauth_client_secret'] ?? '',
+                    'auth_token_expires'  => $form_data['token_expires'] ?? '',
+                    'timestamp'           => time() + 3600,
+                ) );
+                break;
+        }
+
+        // Apply token fields (if exist) for all 3 types.
+        if ( in_array( $type, array( 'zohomail_api', 'office365_api', 'gmail_api' ), true ) ) {
+            foreach ( $token_keys as $field ) {
                 if ( isset( $form_data[ $field ] ) ) {
                     $connection[ $field ] = sanitize_text_field( $form_data[ $field ] );
                 }
             }
         }
-
-        if ( $type === 'office365_api' ) {
-            $connection = array_merge(
-                $connection,
-                array(
-                    'access_token'        => isset( $form_data['access_token'] ) ? $form_data['access_token'] : '',
-                    'refresh_token'       => isset( $form_data['refresh_token'] ) ? $form_data['refresh_token'] : '',
-                    'token_expires'       => isset( $form_data['token_expires'] ) ? $form_data['token_expires'] : '',
-                    'timestamp'           => time() + 3600,
-                    'office365_app_id'    => isset( $sanitized['office365_app_id'] ) ? $sanitized['office365_app_id'] : '',
-                    'office365_app_password' => isset( $sanitized['office365_app_password'] ) ? $sanitized['office365_app_password'] : '',
-                )
-            );
-        }
-
-        if ( $type === 'gmail_api' ) {
-            $connection = array_merge(
-                $connection,
-                array(
-                    'access_token'        => isset( $form_data['access_token'] ) ? $form_data['access_token'] : '',
-                    'refresh_token'       => isset( $form_data['refresh_token'] ) ? $form_data['refresh_token'] : '',
-                    'auth_token_expires'  => isset( $form_data['token_expires'] ) ? $form_data['token_expires'] : '',
-                    'timestamp'           => time() + 3600,
-                    'oauth_client_id'     => isset( $sanitized['oauth_client_id'] ) ? $sanitized['oauth_client_id'] : '',
-                    'oauth_client_secret' => isset( $sanitized['oauth_client_secret'] ) ? $sanitized['oauth_client_secret'] : '',
-                )
-            );
-        }
     }
+
 
     /**
      * Update sender email/name in PostmanOptions
