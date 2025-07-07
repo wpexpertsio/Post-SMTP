@@ -552,24 +552,126 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		 * Print the human-readable plugin state
 		 */
 		public function print_postman_status() {
-			if (! PostmanPreRequisitesCheck::isReady ()) {
-				printf ( '<p><span style="color:red">%s</span></p>', __ ( 'Error: Postman is missing a required PHP library.', 'post-smtp' ) );
-			} else if ($this->wpMailBinder->isUnboundDueToException ()) {
-				printf ( '<p><span style="color:red">%s</span></p>', __ ( 'Postman: wp_mail has been declared by another plugin or theme, so you won\'t be able to use Postman until the conflict is resolved.', 'post-smtp' ) );
+			if ( ! PostmanPreRequisitesCheck::isReady() ) {
+				printf(
+					'<p><span style="color:red">%s</span></p>',
+					__( 'Error: Postman is missing a required PHP library.', 'post-smtp' )
+				);
+			} else if ( $this->wpMailBinder->isUnboundDueToException() ) {
+				printf(
+					'<p><span style="color:red">%s</span></p>',
+					__( 'Postman: wp_mail has been declared by another plugin or theme, so you won\'t be able to use Postman until the conflict is resolved.', 'post-smtp' )
+				);
 			} else {
-				if ($this->options->getRunMode () != PostmanOptions::RUN_MODE_PRODUCTION) {
-					printf ( '<p><span style="background-color:yellow">%s</span></p>', __ ( 'Postman is in <em>non-Production</em> mode and is dumping all emails.', 'post-smtp' ) );
-				} else if (PostmanTransportRegistry::getInstance ()->getSelectedTransport ()->isConfiguredAndReady ()) {
-					printf ( '<p class="wp-menu-image dashicons-before dashicons-email"> %s </p>', sprintf ( _n ( '<span style="color:green">Postman is configured</span> and has delivered <span style="color:green">%d</span> email.', '<span style="color:green">Postman is configured</span> and has delivered <span style="color:green">%d</span> emails.', PostmanState::getInstance ()->getSuccessfulDeliveries (), 'post-smtp' ), PostmanState::getInstance ()->getSuccessfulDeliveries () ) );
+				// Production vs Development mode message
+				if ( $this->options->getRunMode() != PostmanOptions::RUN_MODE_PRODUCTION ) {
+					printf(
+						'<p><span style="background-color:yellow">%s</span></p>',
+						__( 'Postman is in <em>non-Production</em> mode and is dumping all emails.', 'post-smtp' )
+					);
 				} else {
-					printf ( '<p><span style="color:red">%s</span></p>', __ ( 'Postman is <em>not</em> configured and is mimicking out-of-the-box WordPress email delivery.', 'post-smtp' ) );
+					// Configuration check logic
+					$postman_db_version = get_option( 'postman_db_version' );
+					$primary_connection = $this->options->getSelectedPrimary();
+					$transport          = PostmanTransportRegistry::getInstance()->getSelectedTransport();
+					$is_configured = false;
+					if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+						// Legacy check
+						$is_configured = $transport->isConfiguredAndReady();
+					} else {
+						// New structure check
+						$is_configured = isset( $primary_connection );
+					}
+					if ( $is_configured ) {
+						printf(
+							'<p class="wp-menu-image dashicons-before dashicons-email"> %s </p>',
+							sprintf(
+								_n(
+									'<span style="color:green">Postman is configured</span> and has delivered <span style="color:green">%d</span> email.',
+									'<span style="color:green">Postman is configured</span> and has delivered <span style="color:green">%d</span> emails.',
+									PostmanState::getInstance()->getSuccessfulDeliveries(),
+									'post-smtp'
+								),
+								PostmanState::getInstance()->getSuccessfulDeliveries()
+							)
+						);
+					} else {
+						printf(
+							'<p><span style="color:red">%s</span></p>',
+							__( 'Postman is <em>not</em> configured and is mimicking out-of-the-box WordPress email delivery.', 'post-smtp' )
+						);
+					}
 				}
-				$currentTransport = PostmanTransportRegistry::getInstance ()->getActiveTransport ();
-				$deliveryDetails = $currentTransport->getDeliveryDetails ( $this->options );
-				printf ( '<p>%s</p>', $deliveryDetails );
+			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+				// Print delivery details (e.g. SMTP or API summary)
+				$currentTransport = PostmanTransportRegistry::getInstance()->getActiveTransport();
+
+				if ( method_exists( $currentTransport, 'getDeliveryDetails' ) ) {
+					$deliveryDetails = $currentTransport->getDeliveryDetails( $this->options );
+					printf( '<p>%s</p>', $deliveryDetails );
+				}
+			}else{	
+					$summary_text = $this->get_transport_summary_text();
+					printf( '<p>%s</p>', $summary_text );
+
+			}
+
 			}
 		}
 		
+	/**
+	 * Returns a human-readable summary of the current mail delivery method.
+	 *
+	 * This method determines the primary connection set in Postman SMTP plugin settings
+	 * and retrieves the provider name associated with it. It then returns a formatted
+	 * message indicating which mailer (e.g., SMTP, Gmail API, MailerSend API) is used 
+	 * for sending emails.
+	 *
+	 * @since 3.5.0
+	 * @version 1.0
+	 *
+	 * @return string Formatted delivery summary message. Example:
+	 *                "Postman will send mail via the 🔐 Gmail API."
+	 *                If not configured, returns: "Postman is not configured properly."
+	 */
+		public function get_transport_summary_text() {
+			$primary_connection = $this->options->getSelectedPrimary();
+			$connections        = get_option( 'postman_connections', array() );
+
+			if ( isset( $connections[ $primary_connection ] ) ) {
+				$provider_slug = $connections[ $primary_connection ]['provider'] ?? '';
+
+				$provider_names = array(
+					'smtp'             => 'SMTP',
+					'mandrill_api'         => 'Mandrill API',
+					'sendgrid_api'     => 'SendGrid API',
+					'sendinblue_api'   => 'Brevo API',
+					'mailjet_api'      => 'Mailjet API',
+					'sendpulse_api'    => 'SendPulse API',
+					'postmark_api'     => 'Postmark API',
+					'sparkpost_api'    => 'SparkPost API',
+					'mailgun_api'      => 'Mailgun API',
+					'elasticemail_api' => 'Elastic Email API',
+					'smtp2go_api'      => 'SMTP2Go API',
+					'gmail_api'        => 'Gmail API',
+					'aws_ses_api'      => 'Amazon SES API',
+					'zohomail_api'     => 'Zoho Mail API',
+					'office365_api'    => 'Office365 API',
+					'mailersend_api'   => 'MailerSend API',
+				);
+
+				$provider_label = $provider_names[ $provider_slug ] ?? strtoupper( $provider_slug );
+
+				return sprintf(
+					__( 'Postman will send mail via the 🔐 %s.', 'post-smtp' ),
+					esc_html( $provider_label )
+				);
+			}
+
+			return __( 'Postman is not configured properly.', 'post-smtp' );
+		}
+
+
 		/**
 		 * Create the function to output the contents of our Dashboard Widget.
 		 */
