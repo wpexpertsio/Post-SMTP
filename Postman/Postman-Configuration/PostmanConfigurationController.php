@@ -882,6 +882,14 @@ class PostmanConfigurationController {
 			'office365_api'    => array(
 				'provider' => 'office365_api',
 			),
+			'mailersend_api' => array(
+				'provider'    => 'mailersend_api',
+				'title'       => __( 'Authentication', 'post-smtp' ),
+				'description' => __( 'Create an account at <a href="https://www.mailersend.com/" target="_blank">mailersend.com</a> and enter your API key below.', 'post-smtp' ),
+				'mailersend_api_key',
+				'sender_name',
+				'sender_email',
+			),
 		);
 
 		return $provider_fields;

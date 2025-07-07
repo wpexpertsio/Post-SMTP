@@ -1107,8 +1107,15 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function render_mailersend_settings() {
-
-        $api_key = null !== $this->options->getMailerSendApiKey() ? esc_attr ( $this->options->getMailerSendApiKey() ) : '';
+        
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['mailersend_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getMailerSendApiKey() ?? '' );
+        
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
             esc_url( 'https://mailersend.com/' ),
@@ -2001,7 +2008,7 @@ class Post_SMTP_New_Wizard {
         // Map of keys to preserve
         $keys = array(
             'office365_app_id', 'office365_app_password', PostmanOptions::SENDINBLUE_API_KEY,
-            'sparkpost_api_key', 'postmark_api_key', 'mailgun_api_key',
+            'sparkpost_api_key', 'postmark_api_key', 'mailgun_api_key', 'mailersend_api_key',
             PostmanOptions::SENDGRID_API_KEY, 'mandrill_api_key', 'elasticemail_api_key',
             PostmanOptions::MAILJET_API_KEY, PostmanOptions::MAILJET_SECRET_KEY,
             'basic_auth_password', 'ses_access_key_id', 'ses_secret_access_key', 'ses_region'
@@ -2279,6 +2286,7 @@ class Post_SMTP_New_Wizard {
             'elasticemail_api' => array( 'elasticemail_api_key' ),
             'smtp2go_api'    => array( 'smtp2go_api_key' ),
             'aws_ses_api'  => array( 'ses_access_key_id', 'ses_secret_access_key', 'ses_region' ),
+            'mailersend_api' => array( 'mailersend_api_key' ),
         );
 
         /**

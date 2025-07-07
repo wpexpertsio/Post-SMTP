@@ -22,6 +22,9 @@ if ( ! class_exists( 'PostmanMailerSendMailEngine' ) ) {
 		private $transcript;
 
 		private $apiKey;
+		
+		private $existing_db_version = '';
+		private $is_fallback;
 
 		/**
 		 *
@@ -30,7 +33,18 @@ if ( ! class_exists( 'PostmanMailerSendMailEngine' ) ) {
 		 */
 		function __construct( $apiKey ) {
 			assert( ! empty( $apiKey ) );
-			$this->apiKey = $apiKey;
+			
+			if ( is_array( $apiKey ) ) {
+				// When passed as an array with additional data.
+				assert( ! empty( $apiKey['api_key'] ) );
+				$this->apiKey      = $apiKey['api_key'];
+				$this->is_fallback = $apiKey['is_fallback'] ?? null;
+			} else {
+				// When passed as a string (just the API key).
+				assert( ! empty( $apiKey ) );
+				$this->apiKey      = $apiKey;
+				$this->is_fallback = null;
+			}
 
 			// create the logger
 			$this->logger = new PostmanLogger( get_class( $this ) );
@@ -43,7 +57,8 @@ if ( ! class_exists( 'PostmanMailerSendMailEngine' ) ) {
 		 */
 		public function send( PostmanMessage $message ) {
 			$options = PostmanOptions::getInstance();
-
+			$connection_details = get_option( 'postman_connections' );
+			$postman_db_version = get_option( 'postman_db_version' );
             $mailersend = new PostmanMailerSend( $this->apiKey );
 			$content = array();
 			$recipients = array();
@@ -52,9 +67,27 @@ if ( ! class_exists( 'PostmanMailerSendMailEngine' ) ) {
             // add the From Header
 			$sender = $message->getFromAddress();
 
-			$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-			$senderName = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
-
+			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+				// Legacy fallback
+				$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+				$senderName  = ! empty( $sender->getName() )  ? $sender->getName()  : $options->getMessageSenderName();
+			} else {
+				if ( $this->is_fallback === null ) {
+					$route_key = get_transient( 'post_smtp_smart_routing_route' );
+					if ( $route_key && isset( $connection_details[ $route_key ] ) ) {
+						$senderEmail = $connection_details[ $route_key ]['sender_email'];
+						$senderName  = $connection_details[ $route_key ]['sender_name'];
+					} else {
+						$primary     = $options->getSelectedPrimary();
+						$senderEmail = $connection_details[ $primary ]['sender_email'];
+						$senderName  = $connection_details[ $primary ]['sender_name'];
+					}
+				} else {
+					$fallback    = $options->getSelectedFallback();
+					$senderEmail = $connection_details[ $fallback ]['sender_email'];
+					$senderName  = $connection_details[ $fallback ]['sender_name'];
+				}
+			}
 			$content['from'] = array(
 				'email'	=>	$senderEmail,
 				'name'	=>	$senderName
