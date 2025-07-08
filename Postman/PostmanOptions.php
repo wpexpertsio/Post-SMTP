@@ -466,15 +466,20 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
         }
 
 		public function getSelectedPrimary() {
+			// ✅ 1. Check if we are editing a fallback (transient exists)
+			$fallback_edit = get_transient( 'post_smtp_fallback_edit' );
+			if ( $fallback_edit !== false ) {
+				return $fallback_edit; // return the ID set in transient
+			}
 			
-			// ✅ 1. Use last connection if transient says force fallback
+			// ✅ 2. Use last connection if transient says force fallback
 			$force_primary = get_transient( 'post_smtp_force_primary_connection' );
 			if ( $force_primary !== false && (int) $force_primary === 0 ) {
 				$connections = get_option( 'postman_connections', array() );
 				return array_key_last( $connections );
 			}
 
-			// ✅ 2. Use saved primary connection from options
+			// ✅ 3. Use saved primary connection from options
 			if ( isset( $this->options[ PostmanOptions::PRIMARY_CONNECTION ] ) ) {
 				return $this->options[ PostmanOptions::PRIMARY_CONNECTION ];
 			}

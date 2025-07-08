@@ -2057,6 +2057,9 @@ class Post_SMTP_New_Wizard {
 
         if ( isset( $form_data['postman_fallback_edit'] ) ) {
             $id = $form_data['postman_fallback_edit'];
+            if ( false === get_transient( 'post_smtp_fallback_edit' ) ) {
+                set_transient( 'post_smtp_fallback_edit', $id, 0 );
+            }
             $mail_connections[ $id ] = array_merge( $mail_connections[ $id ], $new_connection );
         } else {
 

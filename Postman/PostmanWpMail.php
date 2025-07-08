@@ -274,7 +274,6 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				// clean up
 				$this->postSend( $engine, $startTime, $options, $transport );
 		
-
                 /**
                  * Do stuff after successful delivery
                  */
@@ -291,6 +290,13 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				 * This ensures that future emails can dynamically determine the appropriate connection.
 				 */
 				delete_transient( 'post_smtp_force_primary_connection' );
+
+				
+				/** 
+				 * Clear fallback edit flag after settings are saved 
+				 */
+				delete_transient( 'post_smtp_fallback_edit' );
+				
 				
 				// Success: Delete the transient after sending the email
                  delete_transient( 'post_smtp_smart_routing_route' );
@@ -303,6 +309,12 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 				// write the error to the PHP log
 				$this->logger->error( get_class( $e ) . ' code=' . $e->getCode() . ' message=' . trim( $e->getMessage() ) );
+
+				/**
+				 * Remove the transient flag used to force sending from the primary connection.
+				 * This ensures that future emails can dynamically determine the appropriate connection.
+				 */
+				delete_transient( 'post_smtp_force_primary_connection' );
 
 				// Failure: Delete the transient in case of an error
         		delete_transient( 'post_smtp_smart_routing_route' );
