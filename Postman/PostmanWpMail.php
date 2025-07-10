@@ -316,6 +316,11 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				 */
 				delete_transient( 'post_smtp_force_primary_connection' );
 
+				/** 
+				 * Clear fallback edit flag after settings are saved 
+				 */
+				delete_transient( 'post_smtp_fallback_edit' );
+
 				// Failure: Delete the transient in case of an error
         		delete_transient( 'post_smtp_smart_routing_route' );
 

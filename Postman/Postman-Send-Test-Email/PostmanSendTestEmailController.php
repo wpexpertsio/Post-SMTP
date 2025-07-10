@@ -328,9 +328,15 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		$email = $this->getRequestParameter( 'email' );
 		
 		$primary = $this->getRequestParameter( 'primary' );
+
+		$edit = $this->getRequestParameter( 'edit' );
 		
 		if ( false === get_transient( 'post_smtp_force_primary_connection' ) ) {
 			set_transient( 'post_smtp_force_primary_connection', $primary, 0 );
+		}
+
+		if ( ! empty( $edit ) && false === get_transient( 'post_smtp_fallback_edit' ) ) {
+           set_transient( 'post_smtp_fallback_edit', $edit, 0 );
 		}
 		
 		// get the name of the server from the HTTP Request

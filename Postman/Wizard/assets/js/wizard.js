@@ -331,6 +331,7 @@ jQuery( document ).ready(function() {
 
         var sendTo = jQuery( '.ps-test-to' ).val();
         var security = jQuery( '#security' ).val();
+        const id = new URLSearchParams( window.location.search ).get('id');
 
         if( sendTo == '' ) {
 
@@ -347,7 +348,8 @@ jQuery( document ).ready(function() {
                 action: 'postman_send_test_email',
                 email: sendTo,
                 security: security,
-                primary  : '0', // Set primary to 0 for the test email.
+                primary  : '0',
+                edit : id,
             },
             success: function( response ) {
 
