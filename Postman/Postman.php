@@ -202,6 +202,23 @@ class Postman {
 				'on_deactivation',
 		) );
 
+		 add_action( 'admin_head', array( $this, 'hide_wizard_notices' ) );
+
+	}
+
+	/**
+	 * Hide all admin notices on the setup wizard page.
+	 */
+	public function hide_wizard_notices() {
+		
+		if ( ! is_admin() ) {
+            return;
+        }
+
+		if ( isset( $_GET['page'] ) && $_GET['page'] === 'postman/configuration_wizard' ) {
+			remove_all_actions( 'admin_notices' );
+			remove_all_actions( 'all_admin_notices' );
+		}
 	}
 
     function add_extension_headers($headers) {
