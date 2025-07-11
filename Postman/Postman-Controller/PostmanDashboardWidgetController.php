@@ -580,7 +580,8 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 						$is_configured = $transport->isConfiguredAndReady();
 					} else {
 						// New structure check
-						$is_configured = isset( $primary_connection );
+							$connections    = get_option( 'postman_connections', array() );
+							$is_configured = isset( $primary_connection ) && $primary_connection !== '' && ! empty( $connections );
 					}
 					if ( $is_configured ) {
 						printf(

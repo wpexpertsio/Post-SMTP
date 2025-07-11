@@ -323,6 +323,10 @@ class Postman {
 	public function check_for_configuration_errors() {
 		$options = PostmanOptions::getInstance();
 		$authToken = PostmanOAuthToken::getInstance();
+		$postman_db_version = get_option( 'postman_db_version' );
+		$primary_connection = $options->getSelectedPrimary();
+		$connections          = get_option( 'postman_connections', array() );
+
 
 		// did Postman fail binding to wp_mail()?
 		if ( $this->wpMailBinder->isUnboundDueToException() ) {
@@ -389,13 +393,20 @@ class Postman {
 			}
 
 			// on pages that are NOT Postman admin pages only, show this error message
-			if ( PostmanUtils::isAdmin() && ! PostmanUtils::isCurrentPagePostmanAdmin() && ! $transport->isConfiguredAndReady() ) {
+			if ( PostmanUtils::isAdmin() && ! PostmanUtils::isCurrentPagePostmanAdmin() ) {
+				$show_notice = false;
 				// on pages that are *NOT* Postman admin pages only....
 				// if the configuration is broken show this error message
-				add_action( 'admin_notices', array(
-						$this,
-						'display_configuration_required_warning',
-				) );
+
+				if( $postman_db_version != POST_SMTP_DB_VERSION ){
+					$show_notice = ! $transport->isConfiguredAndReady();
+				}else{
+					$show_notice = ! ( isset( $primary_connection ) && $primary_connection !== '' && ! empty( $connections ) );
+				}
+				
+				if ( $show_notice ) {
+					add_action( 'admin_notices', array( $this, 'display_configuration_required_warning' ) );
+				}
 			}
 		}
 	}

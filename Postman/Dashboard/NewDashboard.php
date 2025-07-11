@@ -62,7 +62,8 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
 			 if( $postman_db_version != POST_SMTP_DB_VERSION ){
                 $configured         = $transport->isConfiguredAndReady() ? 'true' : 'false';
             }else{
-                $configured = ($primary_connection !== '') ? 'true' : 'false';
+                $connections    = get_option( 'postman_connections', array() );
+				$configured     = isset( $primary_connection ) && $primary_connection !== '' && ! empty( $connections );
             }
 			$has_post_smtp_pro  = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
 			$has_post_smtp_pro  = in_array( 'post-smtp-pro/post-smtp-pro.php', $has_post_smtp_pro, true )

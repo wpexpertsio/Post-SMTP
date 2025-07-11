@@ -521,6 +521,11 @@ class PostmanSettingsRegistry {
 
 		echo '</select>';
 
+		// Set default to 0 if no connections exist.
+		if ( empty( $connections ) ) {
+			echo '<input type="hidden" name="postman_options[primary_connection]" value="0" />';
+		}
+
 		// Display a message if no connections are available.
 		if ( empty( $connections ) ) {
 			$wizard_uri = admin_url( 'admin.php?page=postman/configuration_wizard' );
