@@ -155,9 +155,10 @@ class PostmanDiagnosticTestController {
  * @author jasonhendriks
  */
 class PostmanGetDiagnosticsViaAjax {
-	private $diagnostics;
 	private $options;
 	private $authorizationToken;
+	private $diagnostics = '';
+	private $cleanDiagnostics = '';
 	/**
 	 * Constructor
 	 *
@@ -166,8 +167,6 @@ class PostmanGetDiagnosticsViaAjax {
 	function __construct() {
 		$this->options = PostmanOptions::getInstance();
 		$this->authorizationToken = PostmanOAuthToken::getInstance();
-		$this->diagnostics = '';
-		$this->cleanDiagnostics = '';
 		PostmanUtils::registerAjaxHandler( 'postman_diagnostics', $this, 'getDiagnostics' );
 		PostmanUtils::registerAjaxHandler( 'send_postman_diagnostics_data', $this, 'sendDiagnosticsReportViaEmail' );
 	}
