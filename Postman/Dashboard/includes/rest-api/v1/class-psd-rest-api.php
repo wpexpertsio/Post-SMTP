@@ -125,7 +125,7 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 						'delivery_time' => gmdate( 'F d, Y h:i a', $log->time ),
 					);
 
-					if ( 1 === absint( $log->success ) ) {
+					if ( 1 === absint( $log->success ) || 'Sent ( ** Fallback ** )' === $log->success ) {
 						$data['status'] = 'success';
 					} elseif ( 'In Queue' === $log->success ) {
 						$data['status'] = 'in_queue';
