@@ -558,6 +558,26 @@ jQuery( document ).ready(function() {
 
     } );
 
+	 //Connect to Gmail One Click API | Auth
+    jQuery( document ).on( 'click', '.ps-gmail-btn', function( e ) {
+        e.preventDefault();
+		var redirectURI = jQuery( this ).attr( 'href' );
+        jQuery.ajax( {
+            url: ajaxurl,
+            type: 'POST',
+            async: true,
+            data: {
+                action: 'ps-save-wizard',
+                FormData: jQuery( '#ps-wizard-form' ).serialize(),
+            },
+            success: function( response ) {
+                window.location.assign( redirectURI );
+
+            },
+
+        } );
+
+    } );
 
     //Connect to Gmail API | Auth
     jQuery( document ).on( 'click', '#ps-wizard-connect-gmail', function( e ) {
