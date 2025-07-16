@@ -63,6 +63,7 @@ class Post_SMTP_New_Wizard {
         $this->socket_sequence = array(
             'gmail_api',
             'sendinblue_api',
+            'resend_api',
             'sendgrid_api',
             'mailgun_api',
             'elasticemail_api',
@@ -630,6 +631,9 @@ class Post_SMTP_New_Wizard {
             case 'sendinblue_api':
                 echo wp_kses( $this->render_brevo_settings(), $this->allowed_tags );
             break;
+            case 'resend_api':
+                echo wp_kses( $this->render_resend_settings(), $this->allowed_tags );
+            break;
             case 'postmark_api':
                 echo wp_kses( $this->render_postmark_settings(), $this->allowed_tags );
             break;
@@ -1173,6 +1177,51 @@ public function render_gmail_settings() {
                 esc_attr( 'Brevo' ),
                 __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
                 esc_url( 'https://app.brevo.com/settings/keys/api' ),
+                __( 'API Key.', 'post-smtp' )
+            )
+            .
+        '</div>
+        ';
+
+        return $html;
+
+    }
+
+
+    /**
+     * Render Resend Settings
+     * 
+     * @since 3.2.0
+     * @version 1.0.0
+     */
+    public function render_resend_settings() {
+
+        $api_key = null !== $this->options->getResendApiKey() ? esc_attr ( $this->options->getResendApiKey() ) : '';
+
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">Resend</a> %2$s</p><p>%3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a>',
+            esc_url( 'https://resend.com/' ),
+            __( 'is a modern email API provider built for developers. It provides reliable email delivery with simple APIs and excellent deliverability.', 'post-smtp' ),
+            __( 'Resend offers a free plan to send up to 100 emails per day and 3,000 emails per month. You can start testing immediately and upgrade when needed.', 'post-smtp' ),
+            __( 'Let\'s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-resend-with-post-smtp/' ),
+            __( 'Resend Documentation', 'post-smtp' )
+        );
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>API Key</label></div>
+            <input type="text" class="ps-resend-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::RESEND_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            /**
+             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
+             */
+            sprintf(
+                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
+                __( 'Create an account at', 'post-smtp' ),
+                esc_url( 'https://resend.com/' ),
+                esc_attr( 'Resend.com' ),
+                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+                esc_url( 'https://resend.com/api-keys' ),
                 __( 'API Key.', 'post-smtp' )
             )
             .
