@@ -1810,6 +1810,7 @@ public function render_gmail_settings() {
                 $sanitized['mailgun_api_key'] = isset( $sanitized['mailgun_api_key'] ) ? $sanitized['mailgun_api_key'] : '';
                 $sanitized[PostmanOptions::SENDGRID_API_KEY] = isset( $sanitized[PostmanOptions::SENDGRID_API_KEY] ) ? $sanitized[PostmanOptions::SENDGRID_API_KEY] : '';
                 $sanitized['sendgrid_region']  = isset( $sanitized['sendgrid_region'] ) ? $sanitized['sendgrid_region'] : '';
+                $sanitized['resend_api_key']  = isset( $sanitized['resend_api_key'] ) ? $sanitized['resend_api_key'] : '';
                 $sanitized['mandrill_api_key'] = isset( $sanitized['mandrill_api_key'] ) ? $sanitized['mandrill_api_key'] : '';
                 $sanitized[PostmanOptions::MAILERSEND_API_KEY] = isset( $sanitized[PostmanOptions::MAILERSEND_API_KEY] ) ? $sanitized[PostmanOptions::MAILERSEND_API_KEY] : '';
                 $sanitized['elasticemail_api_key'] = isset( $sanitized['elasticemail_api_key'] ) ? $sanitized['elasticemail_api_key'] : '';

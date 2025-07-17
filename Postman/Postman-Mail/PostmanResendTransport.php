@@ -131,9 +131,9 @@ class PostmanResendTransport extends PostmanAbstractModuleTransport implements P
      * @since 3.2.0
      * @version 1.0
      */
-    public function populateConfiguration( PostmanWizardSocket $socket ) {
+    public function populateConfiguration( $hostname ) {
 
-        $response = parent::populateConfiguration( $socket );
+        $response = parent::populateConfiguration( $hostname );
         $response [PostmanOptions::TRANSPORT_TYPE] = $this->getSlug();
         $response [PostmanOptions::PORT] = $this->getPort();
         $response [PostmanOptions::HOSTNAME] = $this->getHostname();
@@ -149,14 +149,8 @@ class PostmanResendTransport extends PostmanAbstractModuleTransport implements P
      * @version 1.0
      */
     public function on_admin_init() {
-
-        if ( PostmanUtils::isCurrentPagePostmanAdmin( $this->options->getSlug() ) ) {
-
-            $this->addSettings();
-            $this->registerStylesAndScripts();
-
-        }
-
+        $this->addSettings();
+        $this->registerStylesAndScripts();
     }
 
     /**
