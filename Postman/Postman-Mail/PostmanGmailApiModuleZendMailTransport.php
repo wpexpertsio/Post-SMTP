@@ -234,25 +234,20 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 					$body           = wp_remote_retrieve_body( $response );
 					$result_output  = json_decode( $body, true );
 					$result         = isset( $result_output['data'] ) ? $result_output['data'] : array();
-   					
-					// ✅ Check for HTTP errors.
+					$error_message  = '';
+					$error_code     = '';
+					
 					if ( is_wp_error( $response ) ) {
-						throw new Exception( 'Error in PostSMTP GMAIL API Request: ' . $response->get_error_message() );
-					}
+						$error_message = $response->get_error_message();
+					} else {
+						$response_code = wp_remote_retrieve_response_code( $response );
+						$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-					$response_code = wp_remote_retrieve_response_code( $response );
-					$body = wp_remote_retrieve_body( $response );
-					$result_output = json_decode( $body, true );
-					if ( $response_code !== 200 || empty( $result_output ) ) {
-						
-    				$error_code = $response_code;
-
-			    	throw new Exception("PostSMTP GMAIL API Error: $error_message (HTTP Code: $error_code)");
-						
-					}
-					// ✅ Ensure email send response contains "data".
-					if ( !isset( $result_output['data'] ) ) {
-						throw new Exception( "PostSMTP GMAIL API Error: Missing 'data' key in response: " . print_r( $result_output, true ) );
+						if ( $response_code !== 200 || ! empty( $response_body['error'] ) ) {
+							$error_message = $response_body['message'] ?? 'Unknown error occurred.';
+							$error_code = $response_body['code'] ?? 'UNKNOWN';
+							throw new Exception( "PostSMTP GMAIL API Error: $error_message (HTTP Code: $error_code)" );
+						}
 					}
 					
 					$result = $result_output['data'];
