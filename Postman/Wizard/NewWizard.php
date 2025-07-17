@@ -426,12 +426,18 @@ class Post_SMTP_New_Wizard {
                                 <?php
                                 $success = isset( $_GET['success'] ) ? $_GET['success'] : null;
                                 $message = isset( $_GET['msg'] ) ? sanitize_text_field( $_GET['msg'] ) : '';
+                                $error   = isset( $_GET['error'] ) ? sanitize_text_field( $_GET['error'] ) : '';
 
                                 if ( $success === '1' && $message ) : ?>
                                     <p class="ps-wizard-success"><?php echo esc_html( $message ); ?></p>
 
                                 <?php elseif ( $success === '0' && $message ) : ?>
-                                    <p class="ps-wizard-error"><?php echo esc_html( $message ); ?></p>
+                                   <p class="ps-wizard-error"> <?php
+										echo esc_html( $message );
+										if ( $error === 'missing_scope' ) {
+											echo '<br>' . esc_html( 'Please sign in with Google again to fix this issue.' );
+										}
+										?></p>
                                 <?php endif; ?>
                                 <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="2"></span><?php _e( 'Save and Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                                 <div style="clear: both"></div>
