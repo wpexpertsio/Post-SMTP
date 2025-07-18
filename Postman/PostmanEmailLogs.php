@@ -308,12 +308,10 @@ class PostmanEmailLogs {
         $data['time'] = !isset( $data['time'] ) ? current_time( 'timestamp' ) : $data['time'];
 
         if( !empty( $id ) ) {
-
             return $this->update( $data, $id );
-
         }
         else {
-                return $this->db->insert( $this->db->prefix . $this->db_name, $data  ) ? $this->db->insert_id : false;
+            return $this->db->insert( $this->db->prefix . $this->db_name, $data  ) ? $this->db->insert_id : false;
         }
 
     }
@@ -329,11 +327,13 @@ class PostmanEmailLogs {
      */
     public function update( $data, $id ) {
 
-        return $this->db->update(
-            $this->db->prefix . $this->db_name,
-            $data,
-            array( 'id' => $id )
-        );
+        $result = $this->db->update(
+			$this->db->prefix . $this->db_name,
+			$data,
+			array( 'id' => $id )
+		);
+
+		return $result !== false ? $id : false;
 
     }
 
