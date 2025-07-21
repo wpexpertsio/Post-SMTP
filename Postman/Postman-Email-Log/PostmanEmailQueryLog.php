@@ -146,12 +146,12 @@ class PostmanEmailQueryLog {
             
             if( $args['status'] == 'success' ) {
 
-                $this->query .= "{$clause_for_status} `success` = 1 ";
+                 $this->query .= "{$clause_for_status} ( `success` = 1 OR `success` = 'Sent ( ** Fallback ** )' )";
     
             }
             elseif ( $args['status'] == 'failed' ) {
     
-                $this->query .= "{$clause_for_status} `success` != 1 ";
+                $this->query .= "{$clause_for_status} ( `success` != 1 AND `success` != 'Sent ( ** Fallback ** )' )";
     
             }
             else {
