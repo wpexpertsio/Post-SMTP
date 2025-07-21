@@ -335,7 +335,7 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 			set_transient( 'post_smtp_force_primary_connection', $primary, 0 );
 		}
 
-		if ( ! empty( $edit ) && false === get_transient( 'post_smtp_fallback_edit' ) ) {
+		if ( $edit !== null && $edit !== '' && false === get_transient( 'post_smtp_fallback_edit' ) ) {
            set_transient( 'post_smtp_fallback_edit', $edit, 0 );
 		}
 		
