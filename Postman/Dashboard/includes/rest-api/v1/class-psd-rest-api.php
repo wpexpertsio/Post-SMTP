@@ -313,12 +313,12 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 
             $success = $logs;
             $success = array_filter($success, function ($log) {
-                return 1 === absint($log->success);
+                return absint( $log->success ) === 1 || trim( $log->success ) === 'Sent ( ** Fallback ** )';
             });
 
             $failed = $logs;
             $failed = array_filter($failed, function ($log) {
-                return 1 !== absint($log->success) && 'In Queue' !== $log->success;
+                return 1 !== absint($log->success) && 'In Queue' !== $log->success  && trim( $log->success ) !== 'Sent ( ** Fallback ** )';
             });
 
 
