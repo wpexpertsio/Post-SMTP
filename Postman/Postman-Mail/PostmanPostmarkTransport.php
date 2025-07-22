@@ -134,7 +134,7 @@ if ( ! class_exists( 'PostmanPostmarkTransport' ) ) :
 				'is_fallback' => 1,
 			);
 			require_once 'PostmanPostmarkMailEngine.php';
-			$engine = new PostmanPostmarkMailEngine( $api_key );
+			$engine = new PostmanPostmarkMailEngine( $api_credentials );
 
 			return $engine;
 		}

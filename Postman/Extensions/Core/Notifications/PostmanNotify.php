@@ -29,7 +29,7 @@ class PostmanNotify {
 		add_filter( 'post_smtp_admin_tabs', array( $this, 'tabs' ) );
 		add_action( 'post_smtp_settings_menu', array( $this, 'menu' ) );
 		add_action( 'post_smtp_settings_fields', array( $this, 'settings' ) );
-		add_action( 'post_smtp_on_failed', array( $this, 'notify' ), 10, 5 );
+		add_action( 'post_smtp_on_failed', array( $this, 'notify' ), 10, 6 );
 		add_filter( 'post_smtp_sanitize', array( $this, 'sanitize' ), 10, 3 );
 	}
 
@@ -292,7 +292,7 @@ class PostmanNotify {
 	 * @param PostmanTransport $transport
 	 * @param string           $errorMessage
 	 */
-	public function notify( $log, $postmanMessage, $transcript, $transport, $errorMessage ) {
+	public function notify( $log, $postmanMessage, $transcript, $transport, $errorMessage, $is_fallback = false ) {
 		$message  = __( 'You getting this message because an error detected while delivered your email.', 'post-smtp' );
 		$message .= "\r\n" . sprintf( __( 'For the domain: %1$s', 'post-smtp' ), get_bloginfo( 'url' ) );
 		$message .= "\r\n" . __( 'The log to paste when you open a support issue:', 'post-smtp' ) . "\r\n";

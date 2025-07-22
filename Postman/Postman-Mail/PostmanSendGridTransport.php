@@ -107,7 +107,7 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 			'is_fallback' => 1,
 		);
 		require_once 'PostmanSendGridMailEngine.php';
-		$engine = new PostmanSendGridMailEngine( $api_key );
+		$engine = new PostmanSendGridMailEngine( $api_credentials );
 
 		return $engine;
 	}

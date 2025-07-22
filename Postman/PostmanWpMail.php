@@ -188,7 +188,8 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$existing_db_version = get_option( 'postman_db_version' );
 			$pro_options = get_option( 'post_smtp_pro', [] );
 			$bonus_extensions = isset( $pro_options['bonus_extensions'] ) ? $pro_options['bonus_extensions'] : [];
-			
+			$is_fallback = false;
+
 			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
 				// get the transport and create the transportConfig and engine.
 				$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
@@ -277,7 +278,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
                 /**
                  * Do stuff after successful delivery
                  */
-                do_action( 'post_smtp_on_success', $log, $message, $engine->getTranscript(), $transport );
+                do_action( 'post_smtp_on_success', $log, $message, $engine->getTranscript(), $transport, $is_fallback );
 
 				/**
 				 * Delete temporary transients used during Gmail OAuth authorization.
@@ -331,7 +332,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
                 /**
                  * Do stuff after failed delivery
                  */
-                do_action( 'post_smtp_on_failed', $log, $message, $engine->getTranscript(), $transport, $e->getMessage() );
+                do_action( 'post_smtp_on_failed', $log, $message, $engine->getTranscript(), $transport, $e->getMessage(), $is_fallback );
 
 				/** 
 				 * Clear fallback edit flag after settings are saved 
@@ -405,6 +406,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$options = PostmanOptions::getInstance();
 			$authorizationToken = PostmanOAuthToken::getInstance();
 			$existing_db_version = get_option( 'postman_db_version' );
+			$is_fallback = true;
 
 			$transport_registry = PostmanTransportRegistry::getInstance();
 			$transport = $transport_registry->getFallbackConnection();
@@ -491,7 +493,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
                 /**
                  * Do stuff after successful delivery
                  */
-                do_action( 'post_smtp_on_success', $log, $message, $engine->getTranscript(), $transport );
+                do_action( 'post_smtp_on_success', $log, $message, $engine->getTranscript(), $transport, $is_fallback );
 
 				// return successful
 				return true;
@@ -513,7 +515,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				/**
                  * Do stuff after failed delivery
                  */
-                do_action( 'post_smtp_on_failed', $log, $message, $engine->getTranscript(), $transport, $e->getMessage() );
+                do_action( 'post_smtp_on_failed', $log, $message, $engine->getTranscript(), $transport, $e->getMessage(), $is_fallback );
 
 				$mail_error_data = array(
 					'to' => $message->getToRecipients(),

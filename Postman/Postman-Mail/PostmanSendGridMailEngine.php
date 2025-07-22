@@ -66,17 +66,19 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
 				$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+				$senderName = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
 			} else {
 				$connection_details = get_option( 'postman_connections' );
 				if ( $this->is_fallback == null ) {
 					$primary     = $options->getSelectedPrimary();
 					$senderEmail = $connection_details[ $primary ]['sender_email'];
+					$senderName  = $connection_details[ $primary ]['sender_name'];
 				} else {
 					$fallback    = $options->getSelectedFallback();
 					$senderEmail = $connection_details[ $fallback ]['sender_email'];
+					$senderName  = $connection_details[ $fallback ]['sender_name'];
 				}
 			}
-			$senderName = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
 
 			$content['from'] = array(
 				'email' => $senderEmail,

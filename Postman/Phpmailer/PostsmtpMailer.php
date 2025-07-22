@@ -135,10 +135,10 @@ class PostsmtpMailer extends PHPMailer {
 				$result = $this->options->getTransportType() !== 'smtp' ?
 					$postmanWpMail->send( $to, $subject, $body, $headers, $attachments ) :
 					$response = $this->sendSmtp();
-
+					$is_fallback = false;
 					if( $response ) {
 
-						do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport );
+						do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport, $is_fallback );
 
 					}
 
@@ -151,10 +151,10 @@ class PostsmtpMailer extends PHPMailer {
 			$this->error = $exc;
 
 			$this->mailHeader = '';
-
+			$is_fallback = false;
 			$this->setError($exc->getMessage());
 
-            do_action( 'post_smtp_on_failed', $log, $postmanMessage,  $this->transcript, $transport, $exc->getMessage() );
+            do_action( 'post_smtp_on_failed', $log, $postmanMessage,  $this->transcript, $transport, $exc->getMessage(), $is_fallback );
 
 			if ($this->exceptions) {
 				throw $exc;
