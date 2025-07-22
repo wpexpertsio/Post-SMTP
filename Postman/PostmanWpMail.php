@@ -305,17 +305,13 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				// return successful
 				return true;
 			} catch ( Exception $e ) {
+				
+				$force_primary = get_transient( 'post_smtp_force_primary_connection' );
 				// save the error for later
 				$this->exception = $e;
 
 				// write the error to the PHP log
 				$this->logger->error( get_class( $e ) . ' code=' . $e->getCode() . ' message=' . trim( $e->getMessage() ) );
-
-				/**
-				 * Remove the transient flag used to force sending from the primary connection.
-				 * This ensures that future emails can dynamically determine the appropriate connection.
-				 */
-				delete_transient( 'post_smtp_force_primary_connection' );
 
 				// Failure: Delete the transient in case of an error
         		delete_transient( 'post_smtp_smart_routing_route' );
@@ -333,19 +329,23 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
                  * Do stuff after failed delivery
                  */
                 do_action( 'post_smtp_on_failed', $log, $message, $engine->getTranscript(), $transport, $e->getMessage(), $is_fallback );
+				
+				/**
+				 * Remove the transient flag used to force sending from the primary connection.
+				 * This ensures that future emails can dynamically determine the appropriate connection.
+				 */
+				delete_transient( 'post_smtp_force_primary_connection' );
 
 				/** 
 				 * Clear fallback edit flag after settings are saved 
 				 */
 				delete_transient( 'post_smtp_fallback_edit' );
-
-
-                // Fallback
-                if ( $this->fallback( $log, $message, $options ) ) {
-
-				    return true;
-
-                }
+				if ( $force_primary !== false && (int) $force_primary == 1 ) {
+					// Fallback
+					if ( $this->fallback( $log, $message, $options ) ) {
+						return true;
+					}
+				} 
 
 				$mail_error_data = array(
 					'to' => $message->getToRecipients(),
