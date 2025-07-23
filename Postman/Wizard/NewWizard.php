@@ -62,8 +62,8 @@ class Post_SMTP_New_Wizard {
 
         $this->socket_sequence = array(
             'gmail_api',
-            'sendinblue_api',
             'resend_api',
+            'sendinblue_api',
             'sendgrid_api',
             'mailgun_api',
             'elasticemail_api',
@@ -73,7 +73,7 @@ class Post_SMTP_New_Wizard {
             'mailjet_api',
             'smtp2go_api',
             'sendpulse_api',
-            
+            'mailersend_api'
         );
         
         if( !is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' ) ) {
@@ -198,7 +198,8 @@ class Post_SMTP_New_Wizard {
                                                 'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.png',
                                                 'elasticemail_api'  =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/elasticemail.png',
                                                 'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
-                                                'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png'
+                                                'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png',
+                                                'resend_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/resend.png'
                                             );
 
                                             $url = '';
