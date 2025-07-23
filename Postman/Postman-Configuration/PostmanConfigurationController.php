@@ -85,7 +85,7 @@ class PostmanConfigurationController {
 	 * Fires on the admin_init method
 	 */
 	public function on_admin_init() {
-				$this->registerStylesAndScripts();
+		$this->registerStylesAndScripts();
 		$this->settingsRegistry->on_admin_init();
 	}
 

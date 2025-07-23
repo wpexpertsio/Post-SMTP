@@ -2051,7 +2051,7 @@ class Post_SMTP_New_Wizard {
         }
 
         $this->handle_special_providers( $transport_type, $form_data, $sanitized, $new_connection );
-        $this->update_sender_meta( $sanitized, $transport_type );
+       // $this->update_sender_meta( $sanitized, $transport_type );
 
         $mail_connections = get_option( 'postman_connections', array() );
 
