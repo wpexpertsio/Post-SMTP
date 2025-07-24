@@ -125,6 +125,21 @@ jQuery( document ).ready(function() {
                 var buttonHTML = jQuery( button ).html();
                 jQuery( button ).html( 'Saving...' );
 
+                // Step 1: Get selected socket from step 1
+                var $step1 = jQuery('.ps-wizard-step-1');
+                var selectedSocket = $step1.attr('data-socket');
+
+                if ( selectedSocket ) {
+                    // Convert socket key to match input class (e.g., sendgrid_api -> ps-sendgrid-api-key)
+                    var classSelector = '.ps-' + selectedSocket.replace('_', '-') + '-key';
+                    var apiKeyInput = jQuery(classSelector);
+                    
+                    if ( apiKeyInput.length > 0 ) {
+                        var apiKey = apiKeyInput.val();
+                        $step1.attr( 'data-apikey', apiKey );
+                    }
+                }
+
                 //Lets AJAX request.
                 jQuery.ajax( {
 
@@ -258,7 +273,8 @@ jQuery( document ).ready(function() {
         e.preventDefault();
 
         var stepID = jQuery( this ).data( 'step' );
-        
+        var selectedSocket = jQuery( '.ps-wizard-socket-check:checked' ).val();
+        jQuery('.ps-wizard-step-1').attr('data-socket', selectedSocket);
         
         if( validateStep( stepID ) === true ) {
 
@@ -309,9 +325,9 @@ jQuery( document ).ready(function() {
 
         var sendTo = jQuery( '.ps-test-to' ).val();
         var security = jQuery( '#security' ).val();
-
+        var socket = jQuery( '.ps-wizard-step-1' ).data( 'socket' );
+        var apikey = jQuery( '.ps-wizard-step-1' ).data( 'apikey' );
         if( sendTo == '' ) {
-
             jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${PostSMTPWizard.Step3E4}` );
             return;
 
@@ -349,12 +365,13 @@ jQuery( document ).ready(function() {
                                 action: 'ps-mail-test',
                                 email: sendTo,  
                                 security: security,
+                                socket: socket,
+                                apikey: apikey
                             },
                             success: function( response ) {
 
                                 jQuery( '.ps-loading-test-report' ).remove();
-                                console.log( 'Mail Tester', response );
-
+                               
                                 if( response.data.message !== undefined && response.data.message === 'test_email_sent' ) {
 
                                     var title = response.data.data.title;
@@ -495,7 +512,8 @@ jQuery( document ).ready(function() {
                 if( response.success === false ) {
 
                     var selectedSocket = jQuery( '.ps-wizard-socket-check:checked' ).val();
-                    jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${response.data.message}` );
+                    jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${response.data.message} <br><br>`  );
+                    jQuery( '.ps-wizard-error' ).append( `<span class="dashicons dashicons-warning"></span> Test email failed. Please check and correct your SMTP configuration. The Email Health Checker cannot proceed until a test email is successfully sent.` );
                     
                     if( selectedSocket === 'smtp' ) {
 
