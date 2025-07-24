@@ -28,13 +28,15 @@
 				$smtp2go = new PostmanSmtp2GoHandler( $this->apiKey );
 				$content = array();
 				$headers = array();
+				$customHeaders = array();
 
 				$sender = $message->getFromAddress();
+				$replyTo = $message->getReplyTo();
 				$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
 				$senderName = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
 
 				$content['sender'] = $senderName . '<' . $senderEmail . '>';
-
+				
 				$sender->log( $this->logger, 'From' );
 
 				$duplicates = array();
@@ -99,7 +101,36 @@
 				if ( ! empty( $headers ) ) {
 					$content['headers'] = $headers;
 				}
+						
+				if ( ! empty( $replyTo ) ) {
+					// Normalize to array.
+					if ( $replyTo instanceof PostmanEmailAddress ) {
+						$replyTo = [ $replyTo ];
+					} elseif ( ! is_array( $replyTo ) ) {
+						$replyTo = [];
+					}
 
+					foreach ( $replyTo as $reply ) {
+						if ( $reply instanceof PostmanEmailAddress ) {
+							$name  = $reply->getName();
+							$email = $reply->getEmail();
+
+							if ( ! empty( $email ) ) {
+								$formatted = $name ? "$name <$email>" : $email;
+
+								$customHeaders[] = array(
+									'header' => 'Reply-To',
+									'value'  => $formatted,
+								);
+							}
+						}
+					}
+				}
+
+				// Only assign if we have valid headers.
+				if ( ! empty( $customHeaders ) ) {
+					$content['custom_headers'] = $customHeaders;
+				}
 				$this->logger->debug( 'Adding attachments' );
 
 				$attachments = $this->addAttachmentsToMail( $message );
@@ -112,7 +143,7 @@
 					if ( $this->logger->isDebug() ) {
 						$this->logger->debug( 'Sending mail' );
 					}
-
+					
 					$response = $smtp2go->send( $content );
 					$this->transcript = print_r( $response, true );
 					$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
