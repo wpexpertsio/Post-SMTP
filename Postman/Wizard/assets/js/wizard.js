@@ -900,4 +900,10 @@ jQuery(document).ready(function ($) {
 
     // Listen for changes on the checkbox
     jQuery('.ps-enable-gmail-one-click').on('change', toggleFields);
+    
+    // Place this in your admin JS file or enqueue it for the wizard page
+	jQuery(document).on('click', '.ps-finish-wizard', function(e) {
+		jQuery.post(ajaxurl, { action: 'ps_expire_client_transients' });
+	});
+    
 });

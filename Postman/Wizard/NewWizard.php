@@ -111,6 +111,23 @@ class Post_SMTP_New_Wizard {
         $this->existing_db_version = get_option( 'postman_db_version' );
         
     }
+    
+    /**
+	* Expire stored OAuth client credentials after wizard completion.
+	*
+	* This function deletes the client_id and client_secret transients,
+	* ensuring sensitive credentials are removed from the database once
+	* the authentication flow is finished. It is typically called via AJAX
+	* after the wizard or "Thank You" step to enhance security.
+	*
+	* @since 3.5.0
+	* @version 1.0.0
+	*/
+	public static function expire_client_transients() {
+	    delete_transient('client_id');
+		delete_transient('client_secret');
+		wp_send_json_success();
+	}
 
     /**
      * Load the wizard | Action Callback
