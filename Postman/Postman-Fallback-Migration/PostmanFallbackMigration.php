@@ -222,56 +222,100 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 		 * @version 1.0.0
 		 */
 		private function save_mail_connections() {
-			// Get the 'postman_options' array from the database.
 			$postman_options = get_option( 'postman_options', array() );
-
-			// Get the current transport type.
-			$current_transport_type = isset( $postman_options['transport_type'] ) ? $postman_options['transport_type'] : 'default';
-
-			// Initialize the connections array.
+			$current_transport_type = $postman_options['transport_type'] ?? 'default';
+			
 			$mail_connections = array();
 
-			// Get API keys based on the current transport type.
-			$api_keys = $this->get_api_keys( $postman_options );
-			if ( array_key_exists( $current_transport_type, $api_keys ) ) {
-				$mail_connections[0] = array_filter( $api_keys[ $current_transport_type ] );
+			// Sender details - only for primary
+			$sender_details = array(
+				'sender_email'    => sanitize_email( $postman_options['sender_email'] ?? '' ),
+				'envelope_sender' => sanitize_email( $postman_options['envelope_sender'] ?? '' ),
+				'sender_name'     => sanitize_text_field( $postman_options['sender_name'] ?? '' ),
+			);
+
+			// All API providers data
+			$api_keys = $this->get_api_keys( $postman_options );	
+			
+				// Sensitive keys to decode before saving
+			$sensitive_keys = array(
+				'basic_auth_password',
+				'mandrill_api_key',
+				'sendgrid_api_key',
+				'sendinblue_api_key',
+				'postmark_api_key',
+				'sendpulse_api_key',
+				'sendpulse_secret_key',
+				'sparkpost_api_key',
+				'elasticemail_api_key',
+				'smtp2go_api_key',
+				'mailersend_api_key',
+			);
+			
+			// Decode sensitive keys if present
+			foreach ( $api_keys as $provider => &$connection ) {
+				foreach ( $sensitive_keys as $key ) {
+					if ( isset( $connection[ $key ] ) && ! empty( $connection[ $key ] ) ) {
+						$connection[ $key ] = base64_decode( $connection[ $key ] );
+					}
+				}
 			}
+			
+			// Merge Gmail tokens if primary connection is gmail_api
+			$auth_tokens = get_option( 'postman_auth_token', array() );
+			if ( $current_transport_type === 'gmail_api' && isset( $api_keys['gmail_api'] ) && !empty( $auth_tokens ) ) {
+				$api_keys['gmail_api'] = array_merge( $api_keys['gmail_api'], $auth_tokens );
+			}
+			
+			if ( isset( $api_keys[ $current_transport_type ] ) ) {
+				$postman_options['primary_connection'] = 0;
+				$mail_connections[0] = array_merge(
+					$api_keys[ $current_transport_type ],
+					array_filter( $sender_details )
+				);
+			}
+			
+			$connection_index = 1;
+				// Optional fallback SMTP
+			$fallback_enabled = $postman_options['fallback_smtp_enabled'] ?? 'no';
+			$fallback_hostname = $postman_options['fallback_smtp_hostname'] ?? '';
+			
 			// Check if fallback SMTP is enabled.
-			if ( isset( $postman_options['fallback_smtp_enabled'] ) && '' !== $postman_options['fallback_smtp_hostname'] && 'yes' === $postman_options['fallback_smtp_enabled'] ) {
+			if ( $fallback_enabled === 'yes' && ! empty( $fallback_hostname ) ) {
 				// Gather all fallback-related settings except 'fallback_smtp_enabled'.
-				$fallback_settings = array(
-					'enc_type'            => isset( $postman_options['fallback_smtp_security'] ) ? sanitize_text_field( $postman_options['fallback_smtp_security'] ) : '',
-					'hostname'            => isset( $postman_options['fallback_smtp_hostname'] ) ? sanitize_text_field( $postman_options['hostname'] ) : '',
-					'port'                => isset( $postman_options['fallback_portsmtp_port'] ) ? sanitize_text_field( $postman_options['fallback_portsmtp_port'] ) : '',
-					'auth_type'           => isset( $postman_options['fallback_smtp_use_auth'] ) ? sanitize_text_field( $postman_options['fallback_smtp_use_auth'] ) : '',
-					'sender_email'        => isset( $postman_options['fallback_from_email'] ) ? sanitize_email( $postman_options['fallback_from_email'] ) : '',
-					'envelope_sender'     => isset( $postman_options['fallback_from_email'] ) ? sanitize_text_field( $postman_options['fallback_from_email'] ) : '',
-					'basic_auth_username' => isset( $postman_options['fallback_smtp_username'] ) ? sanitize_text_field( $postman_options['fallback_smtp_username'] ) : '',
-					'basic_auth_password' => isset( $postman_options['fallback_smtp_password'] ) ? sanitize_text_field( $postman_options['fallback_smtp_password'] ) : '',
+				$mail_connections[ $connection_index ] = array(
+					'enc_type'            => sanitize_text_field( $postman_options['fallback_smtp_security'] ?? '' ),
+					'hostname'            => sanitize_text_field( $postman_options['fallback_smtp_hostname'] ?? '' ),
+					'port'                => sanitize_text_field( $postman_options['fallback_smtp_port'] ?? '' ),
+					'auth_type'           => sanitize_text_field( $postman_options['fallback_smtp_use_auth'] ?? '' ),
+					'sender_name'         => sanitize_text_field( $postman_options['sender_name'] ?? '' ),
+					'sender_email'        => sanitize_email( $postman_options['fallback_from_email'] ?? '' ),
+					'envelope_sender'     => sanitize_text_field( $postman_options['fallback_from_email'] ?? '' ),
+					'basic_auth_username' => sanitize_text_field( $postman_options['fallback_smtp_username'] ?? '' ),
+					'basic_auth_password' => sanitize_text_field( $postman_options['fallback_smtp_password'] ?? '' ),
 					'provider'            => 'smtp',
 					'title'               => 'SMTP',
 				);
-
-				// Add fallback settings to index 1.
-				$mail_connections[1] = $fallback_settings;
+				 // Save fallback settings into mail_connections[1]
+				$postman_options['selected_fallback'] = $connection_index;
+				$connection_index++;
 			}
-			// Add the remaining options to the following indexes.
-			$remaining_connections = $this->get_api_keys( $postman_options );
 
-			foreach ( $remaining_connections as $key => $value ) {
-				// Only add if it's not already added at index 0 or 1.
-				if ( ( isset( $mail_connections[0] ) && array_key_exists( $key, $mail_connections[0] ) ) ||
-				( isset( $mail_connections[1] ) && array_key_exists( $key, $mail_connections[1] ) ) ) {
+			foreach ( $api_keys as $provider_key => $connection_data  ) {
+				if (
+					$provider_key === $current_transport_type ||
+					$provider_key === 'smtp' ||
+					empty( $connection_data )
+				) {
 					continue;
 				}
-				if ( ! empty( $value ) ) {
-					$mail_connections[] = $value;
-				}
+				$mail_connections[ $connection_index ] = $connection_data;
+				$connection_index++;
 			}
-			// Remove duplicates from the mail connections array.
-			$mail_connections = array_unique( $mail_connections, SORT_REGULAR );
+			
 			// Save the new mail connections to the 'postman_connections' option.
 			update_option( 'postman_connections', $mail_connections );
+			update_option( 'postman_options', $postman_options );
 		}
 
 		/**
@@ -316,9 +360,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'gmail_api'        => array(
 					'oauth_client_id',
 					'oauth_client_secret',
-					'basic_auth_username',
-					'basic_auth_password',
 				),
+				'mailersend_api'   => array( 'mailersend_api_key'),
 			);
 
 			// Initialize the API keys array.
@@ -375,55 +418,52 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			// Get the 'postman_options' array from the database.
 			$postman_options = get_option( 'postman_options', array() );
 
-			// Store the deleted email settings in a transient for 2 days (172800 seconds).
-			set_transient( 'deleted_email_settings', $postman_options, 172800 ); // 2 days.
-
-			// Get the 'postman_connections' array and retrieve the primary connection.
-			$mail_connections   = get_option( 'postman_connections', array() );
-			$primary_connection = isset( $mail_connections[0] ) ? $mail_connections[0] : array();
-			// Define the keys related to email settings that need to be deleted.
-			$email_keys = array(
-				// SMTP settings.
-				'enc_type',
-				'hostname',
-				'port',
-				'envelope_sender',
-				'basic_auth_username',
+			// Define the sensitive keys that need to be decoded.
+			$sensitive_keys = array(
 				'basic_auth_password',
-				'fallback_smtp_security',
-				'fallback_smtp_hostname',
-				'fallback_smtp_port',
-				'fallback_smtp_use_auth',
-				'fallback_from_email',
-				'fallback_smtp_username',
-				'fallback_smtp_password',
 				'mandrill_api_key',
 				'sendgrid_api_key',
 				'sendinblue_api_key',
-				'mailjet_api_key',
-				'mailjet_secret_key',
+				'postmark_api_key',
 				'sendpulse_api_key',
 				'sendpulse_secret_key',
-				'postmark_api_key',
 				'sparkpost_api_key',
-				'mailgun_api_key',
-				'mailgun_domain_name',
 				'elasticemail_api_key',
 				'smtp2go_api_key',
-				'oauth_client_id',
-				'oauth_client_secret',
-				'basic_auth_username',
-				'basic_auth_password',
+				'mailersend_api_key',
 			);
 
-			// Initialize an array to hold the deleted email settings.
-			$deleted_email_settings = array();
+			// Decrypt only the sensitive keys before storing in the transient.
+			foreach ( $sensitive_keys as $key ) {
+				if ( isset( $postman_options[ $key ] ) ) {
+					$postman_options[ $key ] = $this->decrypt( $postman_options[ $key ] );
+				}
+			}
+			// Store the deleted email settings in a transient for 2 days (172800 seconds).
+			set_transient( 'deleted_email_settings', $postman_options, 172800 ); // 2 days.
+			
+			// Get the 'postman_connections' array and retrieve the primary connection.
+			$mail_connections   = get_option( 'postman_connections', array() );
+			$primary_connection = isset( $mail_connections[0] ) ? $mail_connections[0] : array();
+			
+			// Define all keys to be deleted from postman_options.
+			$email_keys = array(
+				'enc_type', 'hostname', 'port', 'envelope_sender',
+				'basic_auth_username', 'basic_auth_password',
+				'fallback_smtp_security', 'fallback_smtp_hostname',
+				'fallback_smtp_port', 'fallback_smtp_use_auth', 'fallback_from_email',
+				'fallback_smtp_username', 'fallback_smtp_password',
+				'mandrill_api_key', 'sendgrid_api_key', 'sendinblue_api_key',
+				'mailjet_api_key', 'mailjet_secret_key',
+				'mailersend_api_key', 'sendpulse_api_key', 'sendpulse_secret_key',
+				'postmark_api_key', 'sparkpost_api_key', 'mailgun_api_key',
+				'mailgun_domain_name', 'elasticemail_api_key', 'smtp2go_api_key',
+				'oauth_client_id', 'oauth_client_secret'
+			);
 
 			// Loop through the defined email keys.
 			foreach ( $email_keys as $key ) {
 				if ( array_key_exists( $key, $postman_options ) ) {
-					// Store the value in the deleted_email_settings array.
-					$deleted_email_settings[ $key ] = $postman_options[ $key ];
 					// Remove the key from postman_options.
 					unset( $postman_options[ $key ] );
 				}
@@ -451,27 +491,43 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( $_POST['security'], 'ps-migrate-fallback-db' ) ) {
 				wp_die( 'Security check failed.' );
 			}
+			$sensitive_keys = array(
+				'basic_auth_password',
+				'mandrill_api_key',
+				'sendgrid_api_key',
+				'sendinblue_api_key',
+				'postmark_api_key',
+				'sendpulse_api_key',
+				'sendpulse_secret_key',
+				'sparkpost_api_key',
+				'elasticemail_api_key',
+				'smtp2go_api_key',
+				'mailersend_api_key',
+			);
+
 			$deleted_email_settings = get_transient( 'deleted_email_settings' );
 
-			// Check if the transient exists.
-			if ( false !== ( $deleted_email_settings = get_transient( 'deleted_email_settings' ) ) ) {
-				// Update the postman_options in the database.
+			if ( false !== $deleted_email_settings ) {
+				// Save the restored settings
 				update_option( 'postman_options', $deleted_email_settings );
 
-				// Optionally delete postman_connections if needed.
+				// Clear fallback connections (if needed)
 				delete_option( 'postman_connections' );
-
-				// Delete the transient as we no longer need it.
 				delete_transient( 'deleted_email_settings' );
-
 				update_option( 'postman_db_version', '1.0.1' );
 
-				// Redirect back to the settings page with a success message.
-				wp_safe_redirect( admin_url( 'admin.php?page=your_settings_page_slug&settings_restored=1' ) );
+				// Redirect with success notice
+				wp_safe_redirect( admin_url( 'admin.php?page=postman&settings_restored=1' ) );
 				exit;
 			}
-		}
 
+		}
+		
+		private function decrypt( $value ) {
+			$decode = base64_decode( $value );
+			return base64_decode( $decode );
+		}
+		
 		/**
 		 * Format provider name to title case, removing underscores and 'api'.
 		 *

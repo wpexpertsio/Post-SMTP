@@ -122,9 +122,9 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const INCOMPATIBLE_PHP_VERSION = 'incompatible_php_version';
 
 		// Fallback
-        const FALLBACK_SMTP_ENABLED  = 'fallback_smtp_enabled';
+        const FALLBACK_SMTP_ENABLED = 'fallback_smtp_enabled';
         const FALLBACK_SMTP_HOSTNAME = 'fallback_smtp_hostname';
-        const FALLBACK_SMTP_PORT     = 'fallback_smtp_port';
+        const FALLBACK_SMTP_PORT	 = 'fallback_smtp_port';
         const FALLBACK_SMTP_SECURITY = 'fallback_smtp_security';
 		const FALLBACK_FROM_EMAIL    = 'fallback_from_email';
         const FALLBACK_SMTP_USE_AUTH = 'fallback_smtp_use_auth';
