@@ -92,6 +92,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const MAILERSEND_API_KEY = 'mailersend_api_key';
 		const SENDGRID_REGION = 'sendgrid_region';
 		const SENDINBLUE_API_KEY = 'sendinblue_api_key';
+		const RESEND_API_KEY = 'resend_api_key';
 		const MAILJET_API_KEY = 'mailjet_api_key';
 		const MAILJET_SECRET_KEY = 'mailjet_secret_key';
 		const SENDPULSE_API_KEY = 'sendpulse_api_key';
@@ -583,6 +584,24 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
             if ( isset( $this->options[PostmanOptions::SENDINBLUE_API_KEY] ) ) {
                 return base64_decode( $this->options[PostmanOptions::SENDINBLUE_API_KEY] );
+            }
+
+        }
+
+        /**
+         * Get Resend API Key
+         * 
+         * @since 3.2.0
+         * @version 1.0
+         */
+        public function getResendApiKey() {
+
+            if ( defined( 'POST_SMTP_API_KEY' ) ) {
+                return POST_SMTP_API_KEY;
+            }
+
+            if ( isset( $this->options[PostmanOptions::RESEND_API_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::RESEND_API_KEY] );
             }
 
         }

@@ -259,6 +259,10 @@
   height: 583px;
 }
 
+.resend_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
+  height: 583px;
+}
+
 .postmark_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
   height: 535px;
 }
@@ -292,7 +296,7 @@
 }
 
 .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 343px;
+    height: 429px;
 }
 
 .ps-wizard-footer-left .ps-in-active-nav .ps-email-tester-line.ps-wizard-line:after {

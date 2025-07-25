@@ -159,6 +159,8 @@ class PostmanGetDiagnosticsViaAjax {
 	private $cleanDiagnostics;
 	private $options;
 	private $authorizationToken;
+	private $cleanDiagnostics;
+	
 	/**
 	 * Constructor
 	 *
