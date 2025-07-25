@@ -394,6 +394,10 @@ class PostmanEmailLogs {
 
             $data = $logs_query->get_logs( $query );
 
+            usort( $data, function ( $a, $b ) {
+				return intval( $b->id ) <=> intval( $a->id );
+			});
+
             //WordPress Date, Time Format
             $date_format = get_option( 'date_format' );
 		    $time_format = get_option( 'time_format' );
