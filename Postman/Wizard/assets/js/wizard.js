@@ -309,7 +309,9 @@ jQuery( document ).ready(function() {
 
         var sendTo = jQuery( '.ps-test-to' ).val();
         var security = jQuery( '#security' ).val();
-
+        var $btn = jQuery( this );
+        $btn.prop( 'disabled', true );
+        
         if( sendTo == '' ) {
 
             jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${PostSMTPWizard.Step3E4}` );
@@ -353,7 +355,7 @@ jQuery( document ).ready(function() {
                             success: function( response ) {
 
                                 jQuery( '.ps-loading-test-report' ).remove();
-                                console.log( 'Mail Tester', response );
+                                $btn.prop( 'disabled', false )
 
                                 if( response.data.message !== undefined && response.data.message === 'test_email_sent' ) {
 
@@ -457,7 +459,7 @@ jQuery( document ).ready(function() {
 
                                 }
                                 else {
-
+                                    $btn.prop('disabled', false);
                                     if ( jQuery( '#ps-dns-results__el_id' ).length ) {
                                         jQuery( '#ps-dns-results__el_id' ).remove();
                                     }
@@ -472,6 +474,7 @@ jQuery( document ).ready(function() {
 
                             },
                             error: function(jqXHR, textStatus, errorThrown) {
+                                $btn.prop( 'disabled', false);
                                 jQuery( '.ps-loading-test-report' ).remove();
                                 if (jqXHR.status === 429) {
 
@@ -493,7 +496,7 @@ jQuery( document ).ready(function() {
 
                 }
                 if( response.success === false ) {
-
+                    $btn.prop( 'disabled', false);
                     var selectedSocket = jQuery( '.ps-wizard-socket-check:checked' ).val();
                     jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${response.data.message}` );
                     
