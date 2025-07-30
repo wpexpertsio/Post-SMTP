@@ -155,6 +155,10 @@ class PostmanDiagnosticTestController {
  * @author jasonhendriks
  */
 class PostmanGetDiagnosticsViaAjax {
+	/**
+	 * @var array|null
+	*/
+        public $cleanDiagnostics = null;
 	private $diagnostics;
 	private $options;
 	private $authorizationToken;
