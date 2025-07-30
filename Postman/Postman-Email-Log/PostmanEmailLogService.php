@@ -174,7 +174,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 *
 		 * From http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields
 		 */
-		private function writeToEmailLog( PostmanEmailLog $log, ?PostmanMessage $message ) {
+		private function writeToEmailLog( PostmanEmailLog $log, PostmanMessage $message = null ) {
 
 		    $options = PostmanOptions::getInstance();
 

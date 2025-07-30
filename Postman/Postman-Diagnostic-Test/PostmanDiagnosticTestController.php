@@ -156,11 +156,8 @@ class PostmanDiagnosticTestController {
  */
 class PostmanGetDiagnosticsViaAjax {
 	private $diagnostics;
-	private $cleanDiagnostics;
 	private $options;
 	private $authorizationToken;
-	private $cleanDiagnostics;
-	
 	/**
 	 * Constructor
 	 *
