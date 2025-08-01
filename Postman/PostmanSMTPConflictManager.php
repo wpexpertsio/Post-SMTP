@@ -32,6 +32,7 @@ class PostmanSMTPConflictManager {
         
         // Hook into AJAX for dismissing notices
         add_action( 'wp_ajax_dismiss_smtp_conflict_notice', array( $this, 'dismiss_notice_ajax' ) );
+        
     }
 
     /**
@@ -330,7 +331,6 @@ class PostmanSMTPConflictManager {
              */
             array(
                 'name'     => 'WP HTML Mail - Email Template Designer',
-                'slug'     => 'wp-html-mail/wp-html-mail.php',
                 'function' => 'Haet_Mail',
                 'test'     => 'test_wp_html_mail_integration',
                 'message'  => esc_html__( 'Or enable "Do not change email sender by default" setting in Settings > Email template > Sender (tab).', 'post-smtp' ),
@@ -487,12 +487,6 @@ class PostmanSMTPConflictManager {
 
         foreach ( $conflicting_plugins as $plugin ) {
             $notice_id = sanitize_key( $plugin['name'] );
-            
-            // Skip if notice was dismissed
-            if ( in_array( $notice_id, $dismissed_notices ) ) {
-                continue;
-            }
-
             $this->display_conflict_notice( $plugin, $notice_id );
         }
     }
@@ -504,9 +498,12 @@ class PostmanSMTPConflictManager {
      * @param string $notice_id Unique notice ID
      */
     private function display_conflict_notice( $plugin, $notice_id ) {
+		 
+	//echo "<pre>"; ar_dump($plugin);
+
         $plugin_name = esc_html( $plugin['name'] );
         $custom_message = isset( $plugin['message'] ) ? $plugin['message'] : '';
-        
+             
         echo '<div class="notice notice-warning is-dismissible postman-smtp-conflict-notice" data-notice-id="' . esc_attr( $notice_id ) . '">';
         echo '<h3>' . esc_html__( 'Post SMTP - Plugin Conflict Detected', 'post-smtp' ) . '</h3>';
         echo '<p>';
@@ -561,6 +558,7 @@ class PostmanSMTPConflictManager {
             wp_send_json_success( array( 'message' => 'Notice already dismissed' ) );
         }
     }
+
 
     /**
      * Get count of conflicting plugins
