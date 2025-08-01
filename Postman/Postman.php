@@ -290,6 +290,7 @@ class Postman {
 		require_once 'Postman-Configuration/PostmanConfigurationController.php';
 		require_once 'Postman-Send-Test-Email/PostmanSendTestEmailController.php';
 		require_once 'Postman-Diagnostic-Test/PostmanDiagnosticTestController.php';
+		require_once 'PostmanSMTPConflictManager.php';
 
 		// create and store an instance of the MessageHandler
 		$this->messageHandler = new PostmanMessageHandler();
@@ -303,6 +304,9 @@ class Postman {
 		new PostmanConfigurationController( $rootPluginFilenameAndPath );
 		new PostmanSendTestEmailController( $rootPluginFilenameAndPath );
 		new PostmanDiagnosticTestController( $rootPluginFilenameAndPath );
+
+		// Initialize SMTP Conflict Manager to detect and warn about conflicting plugins
+		new PostmanSMTPConflictManager();
 
 		// register the Postman signature (only if we're on a postman admin screen) on the in_admin_footer event
 		if ( PostmanUtils::isCurrentPagePostmanAdmin() ) {
