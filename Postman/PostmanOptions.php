@@ -133,16 +133,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		// Emailit integration
 		const EMAILIT_API_KEY = 'emailit_api_key';
-		/**
-		 * Get Emailit API Key
-		 * @return string|null
-		 */
-		public function getEmailitApiKey() {
-			if ( isset( $this->options[ PostmanOptions::EMAILIT_API_KEY ] ) ) {
-				return base64_decode( $this->options[ PostmanOptions::EMAILIT_API_KEY ] );
-			}
-			return null;
-		}
+
 
 		// defaults
 		const DEFAULT_TRANSCRIPT_SIZE = 128;
@@ -598,6 +589,22 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				return base64_decode( $this->options[PostmanOptions::SENDINBLUE_API_KEY] );
 			}
 
+		}
+
+		/**
+		 * Get Emailit API Key
+		 * @return string|null
+		 */
+		public function getEmailitApiKey() {
+            
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+                return POST_SMTP_API_KEY;
+            }
+
+			if ( isset( $this->options[ PostmanOptions::EMAILIT_API_KEY ] ) ) {
+				return base64_decode( base64_decode( $this->options[ PostmanOptions::EMAILIT_API_KEY ] ) );
+			}
+			return null;
 		}
 
 		/**
