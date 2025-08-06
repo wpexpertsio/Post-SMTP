@@ -322,7 +322,7 @@ jQuery( document ).ready(function() {
     jQuery( document ).on( 'click', '.ps-wizard-send-test-email', function( e ) {
 
         e.preventDefault();
-
+        jQuery('#ps-dns-results__el_id').empty();
         var sendTo = jQuery( '.ps-test-to' ).val();
         var security = jQuery( '#security' ).val();
         var socket = jQuery( '.ps-wizard-step-1' ).data( 'socket' );
