@@ -325,8 +325,8 @@ jQuery( document ).ready(function() {
         jQuery('#ps-dns-results__el_id').empty();
         var sendTo = jQuery( '.ps-test-to' ).val();
         var security = jQuery( '#security' ).val();
-        var socket = jQuery( '.ps-wizard-step-1' ).data( 'socket' );
-        var apikey = jQuery( '.ps-wizard-step-1' ).data( 'apikey' );
+        var socket = jQuery( '.ps-wizard-step-1' ).attr( 'data-socket' );
+		var apikey = jQuery( '.ps-wizard-step-1' ).attr( 'data-apikey' );
         if( sendTo == '' ) {
             jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${PostSMTPWizard.Step3E4}` );
             return;
