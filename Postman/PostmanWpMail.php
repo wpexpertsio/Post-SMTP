@@ -340,12 +340,19 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				 * Clear fallback edit flag after settings are saved 
 				 */
 				delete_transient( 'post_smtp_fallback_edit' );
-				if ( $force_primary !== false && (int) $force_primary == 1 ) {
+				
+				if ( $force_primary !== false && (int) $force_primary == 1 && $testMode ) {
 					// Fallback
 					if ( $this->fallback( $log, $message, $options ) ) {
 						return true;
 					}
-				} 
+				}
+				
+				if( ! $testMode ){
+					if ( $this->fallback( $log, $message, $options ) ) {
+						return true;
+					}
+				}
 
 				$mail_error_data = array(
 					'to' => $message->getToRecipients(),
