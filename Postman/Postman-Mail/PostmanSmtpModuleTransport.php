@@ -134,7 +134,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
     	$route_key = get_transient( 'post_smtp_smart_routing_route' );
 		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
 			$this->options = $this->options;
-			return $this->options->getHostname();
+			return $this->options->getPort();
 		}else{
 			if ( $this->fallback == null ) {
 				$route_key = null;

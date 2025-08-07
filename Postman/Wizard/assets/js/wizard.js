@@ -124,6 +124,10 @@ jQuery( document ).ready(function() {
                 var button = jQuery( '.ps-wizard-step-2' ).find( '.ps-wizard-next-btn' );
                 var buttonHTML = jQuery( button ).html();
                 jQuery( button ).html( 'Saving...' );
+                
+                setTimeout(function () {
+                    jQuery(button).html(buttonHTML);
+                }, 2000);
 
                 //Lets AJAX request.
                 jQuery.ajax( {
