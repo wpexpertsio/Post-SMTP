@@ -1773,6 +1773,8 @@ public function render_gmail_settings() {
                 $sanitized['enc_type'] = 'tls';
                 $sanitized['auth_type'] = 'login';
 				$sanitized['slack_token'] = base64_decode( $options['slack_token'] );
+				
+				
                 foreach( $sanitized as $key => $value ) {
                     $options[$key] = $value;
                 }

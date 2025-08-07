@@ -419,7 +419,11 @@ class PostmanEmailLogs {
 
                     $row->success = '<span title="Success">Success</span>';
 
-                }
+                } else if( $row->success == 'Sent ( ** Fallback ** )' ){
+
+                    $row->success = '<span title="Sent ( ** Fallback ** )">Success</span><a href="#" class="ps-status-log ps-popup-btn">View details</a>';
+                    
+               }
                 elseif( $row->success == 'In Queue' ) {
 
                     $row->success = '<span title="In Queue">In Queue</span>';

@@ -96,6 +96,17 @@ class PostmanTransportRegistry {
 	 * @return boolean
 	 */
 	public function getActiveTransport() {
+	    // During fallback mode, always use SMTP transport
+	    $options = PostmanOptions::getInstance();
+	    if ( $options->is_fallback ) {
+	        $transports = $this->getTransports();
+	        if ( isset( $transports['smtp'] ) ) {
+	            return $transports['smtp'];
+	        } else {
+	            return $transports['default'];
+	        }
+	    }
+	    
 		$selectedTransport = PostmanOptions::getInstance()->getTransportType();
 		
 		$transports = $this->getTransports();

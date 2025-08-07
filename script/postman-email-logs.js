@@ -98,6 +98,10 @@ jQuery(document).ready(function($) {
 
 				jQuery( status ).addClass( 'ps-email-log-status-queued' );
 
+			} else if( data['success'] == '<span title="Sent ( ** Fallback ** )">Success</span><a href="#" class="ps-status-log ps-popup-btn">View details</a>' ) {
+
+				jQuery( status ).addClass( 'ps-email-log-status-success' );
+
 			}
 			else {
 
