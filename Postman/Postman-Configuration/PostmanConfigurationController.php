@@ -759,6 +759,12 @@ class PostmanConfigurationController {
 		// Call the settings for SMTP2GO API authentication from PostmanSmtp2GoTransport.
 		do_settings_sections( PostmanSmtp2GoTransport::SMTP2GO_AUTH_OPTIONS );
 		print '</div>';
+
+		// Render the MailerSend API settings.
+		print '<div id="mailersend_settings" class="authentication_setting non-basic non-oauth2">';
+		// Call the settings for MailerSend API authentication from PostmanMailerSendTransport.
+		do_settings_sections( PostmanMailerSendTransport::MAILERSEND_AUTH_OPTIONS );
+		print '</div>';
 	}
 
 	/**

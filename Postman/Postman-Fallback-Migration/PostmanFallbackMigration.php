@@ -250,6 +250,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'elasticemail_api_key',
 				'smtp2go_api_key',
 				'mailersend_api_key',
+				'mailjet_api_key',
+				'mailjet_secret_key'
 			);
 			
 			// Decode sensitive keys if present
@@ -304,12 +306,14 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			foreach ( $api_keys as $provider_key => $connection_data  ) {
 				if (
 					$provider_key === $current_transport_type ||
-					$provider_key === 'smtp' ||
 					empty( $connection_data )
 				) {
 					continue;
 				}
-				$mail_connections[ $connection_index ] = $connection_data;
+				$mail_connections[ $connection_index ] = array_merge(
+					$connection_data,
+					array_filter( $sender_details )
+				);
 				$connection_index++;
 			}
 			
@@ -431,6 +435,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'elasticemail_api_key',
 				'smtp2go_api_key',
 				'mailersend_api_key',
+				'mailjet_api_key',
+				'mailjet_secret_key'
 			);
 
 			// Decrypt only the sensitive keys before storing in the transient.
@@ -458,7 +464,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'mailersend_api_key', 'sendpulse_api_key', 'sendpulse_secret_key',
 				'postmark_api_key', 'sparkpost_api_key', 'mailgun_api_key',
 				'mailgun_domain_name', 'elasticemail_api_key', 'smtp2go_api_key',
-				'oauth_client_id', 'oauth_client_secret'
+				'oauth_client_id', 'oauth_client_secret',
 			);
 
 			// Loop through the defined email keys.
@@ -503,6 +509,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'elasticemail_api_key',
 				'smtp2go_api_key',
 				'mailersend_api_key',
+								'mailjet_api_key',
+				'mailjet_secret_key'
 			);
 
 			$deleted_email_settings = get_transient( 'deleted_email_settings' );

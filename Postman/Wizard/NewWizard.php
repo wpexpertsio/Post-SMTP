@@ -1491,8 +1491,8 @@ class Post_SMTP_New_Wizard {
             $secret_key = $mail_connections[$id]['mailjet_secret_key'];
         }
 
-        $api_key = $api_key ?: esc_attr( $this->options->getElasticEmailApiKey() ?? '' );
-        $secret_key = $api_key ?: esc_attr( $this->options->getMailjetSecretKey() ?? '' );
+        $api_key = $api_key ?: esc_attr( $this->options->getMailjetApiKey() ?? '' );
+        $secret_key = $secret_key ?: esc_attr( $this->options->getMailjetSecretKey() ?? '' );
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">Mailjet</a> %2$s</p><p>%6$s<p>%3$s <a href="%4$s" target="_blank">%5$s</a>',
@@ -1507,13 +1507,13 @@ class Post_SMTP_New_Wizard {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key"></div>
+            <input type="text" class="ps-mailjet-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key"></div>
         ';
 
         $html .= '
         <div class="ps-form-control">
             <div><label>Secret Key</label></div>
-            <input type="text" class="ps-elasticemail-secret-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="Secret Key">'.
+            <input type="text" class="ps-mailjet-secret-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="Secret Key">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
