@@ -477,7 +477,7 @@ class PostmanSettingsRegistry {
 	 * Callback for the Manage Connections section.
 	 */
 	public function manage_connections_section_callback() {
-		$wizard_uri = admin_url( 'admin.php?page=postman/configuration_wizard' );
+		$wizard_uri = admin_url( 'admin.php?page=postman/configuration_wizard&action=add' );
 		echo '<div style="margin-top: -36px;margin-left: 200px;" > <a style="color: #2271B1; font-weight:bold; font-size:12px" href="' . esc_url( $wizard_uri ) . '">' . esc_html__( 'Add New Connection', 'post-smtp' ) . '</a></div>';
 		echo '<p>' . esc_html__( 'You can select the primary connection and manage additional connections from here.', 'post-smtp' ) . '</p>';
 	}
@@ -547,7 +547,7 @@ class PostmanSettingsRegistry {
 	 */
 	public function add_new_connection_callback() {
 		$connections        = get_option( 'postman_connections', array() );
-		$wizard_uri         = admin_url( 'admin.php?page=postman/configuration_wizard' );
+		$wizard_uri         = admin_url( 'admin.php?page=postman/configuration_wizard&action=add' );
 		$primary_connection = $this->options->getSelectedPrimary();
 		$primary_fallback   = $this->options->getSelectedFallback();
 

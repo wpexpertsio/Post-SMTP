@@ -54,7 +54,7 @@ if (! class_exists ( "PostmanAuthenticationManagerFactory" )) {
 					set_transient( 'client_id', esc_attr( $_GET['client_id'] ), 0 );
 					set_transient( 'client_secret', esc_attr( $_GET['client_secret'] ), 0 );
 				}
-				$clientId       = get_transient( 'client_id' ) ?? '';
+				$clientId     = get_transient( 'client_id' ) ?? '';
 				$clientSecret = get_transient( 'client_secret' ) ?? '';
 
 			}else{

@@ -907,7 +907,7 @@ jQuery(document).ready(function ($) {
     
     // Place this in your admin JS file or enqueue it for the wizard page
 	jQuery(document).on('click', '.ps-finish-wizard', function(e) {
-		jQuery.post(ajaxurl, { action: 'ps_expire_client_transients' });
+		jQuery.post( ajaxurl, { action: 'ps_expire_client_transients' });
 	});
     
 });

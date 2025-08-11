@@ -509,7 +509,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'elasticemail_api_key',
 				'smtp2go_api_key',
 				'mailersend_api_key',
-								'mailjet_api_key',
+				'mailjet_api_key',
 				'mailjet_secret_key'
 			);
 

@@ -99,6 +99,7 @@ class Post_SMTP_New_Wizard {
         add_action( 'admin_init', array( $this, 'handle_gmail_oauth_redirect' ) );
 		add_action( 'wp_ajax_postman_delete_connection', array( $this, 'postman_handle_delete_connection' ) );
 		add_action( 'wp_ajax_nopriv_postman_delete_connection', array( $this, 'postman_handle_delete_connection' ) );
+        add_action( 'wp_ajax_ps_expire_client_transients', array( $this, 'ps_expire_client_transients' ) );
 
         if( isset( $_GET['wizard'] ) && $_GET['wizard'] == 'legacy' ) {
 
@@ -588,13 +589,27 @@ class Post_SMTP_New_Wizard {
         $from_name_enforced = $this->options->isPluginSenderNameEnforced() ? 'checked' : '';
         $from_email_enforced = $this->options->isPluginSenderEmailEnforced() ? 'checked' : '';
         $postman_connections = get_option( 'postman_connections' );
-        if( isset($_GET['id'] ) ) {
-            $from_email = $postman_connections[$_GET['id']]['sender_email'] ?? '';
-            $from_name = $postman_connections[$_GET['id']]['sender_name'] ?? '';
-         }else{
-            $from_name = null !== $this->options->getMessageSenderName() ? esc_attr( $this->options->getMessageSenderName() ) : '';
+	    if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
+			if ( isset( $_GET['id'] ) && isset( $postman_connections[ $_GET['id'] ] ) ) {
+				// Use specific connection (edit case)
+				$from_email = $postman_connections[ $_GET['id'] ]['sender_email'] ?? '';
+				$from_name  = $postman_connections[ $_GET['id'] ]['sender_name'] ?? '';
+
+			} elseif ( ! isset( $_GET['action'] ) || $_GET['action'] !== 'add' ) {
+				// No ID given — use the last connection
+				$last_connection = end( $postman_connections );
+				$from_email = $last_connection['sender_email'] ?? '';
+				$from_name  = $last_connection['sender_name'] ?? '';
+
+			}else{
+				$from_email =  '';
+				$from_name  = '';
+			}
+		}else {
+            // Fallback to stored options
+            $from_name  = null !== $this->options->getMessageSenderName() ? esc_attr( $this->options->getMessageSenderName() ) : '';
             $from_email = null !== $this->options->getMessageSenderEmail() ? esc_attr( $this->options->getMessageSenderEmail() ) : '';
-         }
+        }
 
         $html = '
         <div class="ps-form-ui ps-name-email-settings">
@@ -833,15 +848,22 @@ class Post_SMTP_New_Wizard {
         
         $mail_connections = get_option( 'postman_connections' );
         if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
-            $client_id = get_transient('client_id') ?? '';
-            $client_secret = get_transient('client_secret') ?? '';
-            if (empty( $client_id ) || empty( $client_secret ) ) {
-                $mail_connections = get_option('postman_connections');
-                $id = $_GET['id'] ?? null;
-                if ( isset( $mail_connections[$id] ) ) {
-                    $client_id = $mail_connections[$id]['oauth_client_id'] ?? '';
-                    $client_secret = $mail_connections[$id]['oauth_client_secret'] ?? '';
-                }
+            $id = $_GET['id'] ?? null;
+            $client_id = '';
+            $client_secret = '';
+
+            if ( isset( $mail_connections[ $id ] ) ) {
+                // Use the selected connection for editing
+                $client_id     = $mail_connections[ $id ]['oauth_client_id'] ?? '';
+                $client_secret = $mail_connections[ $id ]['oauth_client_secret'] ?? '';
+            } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
+                // No ID? Use the last connection in the list
+                $last_connection = end( $mail_connections );
+                $client_id     = $last_connection['oauth_client_id'] ?? '';
+                $client_secret = $last_connection['oauth_client_secret'] ?? '';
+            } else {
+                $client_id     = '';
+                $client_secret = '';
             }
         }else{
             $client_id = null !== $this->options->getClientId() ? esc_attr ( $this->options->getClientId() ) : '';
@@ -2095,7 +2117,13 @@ class Post_SMTP_New_Wizard {
         }
         
         $saved = update_option( 'postman_connections', $mail_connections );
-        
+
+        // ✅ Update sender email/name in postman_options globally
+        update_option( 'postman_options', array_merge( get_option( 'postman_options', array() ), array(
+            'sender_email' => $new_connection['sender_email'],
+            'sender_name'  => $new_connection['sender_name'],
+        ) ) );
+            
         return array(
             'index'  => $id,
             'status' => $saved ? 'updated' : 'not_updated',
@@ -2351,6 +2379,33 @@ class Post_SMTP_New_Wizard {
 			wp_send_json_error( 'Connection not found.' );
 		}
 	}
+
+    /**
+     * Handles the deletion of specific OAuth-related transients via AJAX.
+     *
+     * - Verifies the nonce for security.
+     * - Deletes the 'client_id' and 'client_secret' transients from the database.
+     * - Sends a JSON response indicating success or failure.
+     *
+     * @return void Sends a JSON response back to the AJAX request.
+     */
+    public function ps_expire_client_transients() {
+
+        // Delete the transients
+        $deleted_client_id     = delete_transient( 'client_id' );
+        $deleted_client_secret = delete_transient( 'client_secret' );
+
+        if ( $deleted_client_id || $deleted_client_secret ) {
+            wp_send_json_success( array(
+                'message' => 'Client ID and Client Secret transients cleared successfully.'
+            ) );
+        } else {
+            wp_send_json_error( array(
+                'message' => 'No transients found to delete.'
+            ) );
+        }
+    }
+
 
 }
 
