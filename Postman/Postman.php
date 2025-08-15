@@ -111,8 +111,8 @@ class Postman {
 
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
-				'name' => __( 'Postman SMTP', 'post-smtp' ),
-				'version' => $version,
+			'name' => 'Post SMTP',
+			'version' => $version,
 		);
 
 		// register the plugin metadata filter (part of the Postman API)

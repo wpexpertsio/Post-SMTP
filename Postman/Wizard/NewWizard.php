@@ -1701,22 +1701,32 @@ class Post_SMTP_New_Wizard {
      */
     public function render_office365_settings() {
 
-        $options = get_option( PostmanOptions::POSTMAN_OPTIONS );
-        if( $this->existing_db_version != POST_SMTP_DB_VERSION ){
-            $app_client_id = isset( $options['office365_app_id'] ) ? base64_decode( $options['office365_app_id'] ) : '';
-            $app_client_secret = isset( $options['office365_app_password'] ) ? base64_decode( $options['office365_app_password'] ) : '';    
-        }else{
+        $mail_connections  = get_option( 'postman_connections' );
+
+        if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
             $id = $_GET['id'] ?? null;
-            $mail_connections = get_option( 'postman_connections' );
-            if ( isset( $_GET['id'] ) ) {
-                $app_client_id = $mail_connections[$id]['office365_app_id'];
-                $app_client_secret = $mail_connections[$id]['office365_app_password'];
-            }else{
-                $options           = get_option( PostmanOptions::POSTMAN_OPTIONS );
-				$app_client_id     = ( isset( $options['office365_app_id']  ) ? base64_decode( $options['office365_app_id']  ) : '' );
-				$app_client_secret = ( isset( $options['office365_app_password'] ) ? base64_decode( $options['office365_app_password'] ) : '' );
+
+            if ( isset( $mail_connections[ $id ] ) ) {
+                // Selected connection exists → use it
+                $app_client_id     = $mail_connections[ $id ]['office365_app_id'] ?? '';
+                $app_client_secret = $mail_connections[ $id ]['office365_app_password'] ?? '';
+            } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
+                // No ID? Use last connection in list
+                $last_connection   = end( $mail_connections );
+                $app_client_id     = $last_connection['office365_app_id'] ?? '';
+                $app_client_secret = $last_connection['office365_app_password'] ?? '';
+            } else {
+                // No connections → empty values
+                $app_client_id     = '';
+                $app_client_secret = '';
             }
+
+        } else {
+            // Old DB version → use base64 decoded stored values
+            $app_client_id     = isset( $options['office365_app_id'] ) ? base64_decode( $options['office365_app_id'] ) : '';
+            $app_client_secret = isset( $options['office365_app_password'] ) ? base64_decode( $options['office365_app_password'] ) : '';
         }
+
         $redirect_uri = admin_url();
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
@@ -1813,21 +1823,34 @@ class Post_SMTP_New_Wizard {
         );
         $selected_region = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ]: '';
 
-        if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
-            $client_id = get_transient('clientID') ?? '';
-            $client_secret = get_transient('clientSecret') ?? '';
-            if (empty( $client_id ) || empty( $client_secret ) ) {
-                $mail_connections = get_option('postman_connections');
-                $id = $_GET['id'] ?? null;
-                if ( isset( $mail_connections[$id] ) ) {
-                    $client_id = $mail_connections[$id]['zohomail_client_id'] ?? '';
-                    $client_secret = $mail_connections[$id]['zohomail_client_secret'] ?? '';
-                }
+        if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
+            $mail_connections = get_option( 'postman_connections' );
+            $id = $_GET['id'] ?? null;
+
+            if ( isset( $mail_connections[ $id ] ) ) {
+                // Selected connection
+                $client_id     = $mail_connections[ $id ]['zohomail_client_id'] ?? '';
+                $client_secret = $mail_connections[ $id ]['zohomail_client_secret'] ?? '';
+            } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
+                // No ID → fallback to last connection
+                $last_connection = end( $mail_connections );
+                $client_id     = $last_connection['zohomail_client_id'] ?? '';
+                $client_secret = $last_connection['zohomail_client_secret'] ?? '';
+            } else {
+                // Nothing found
+                $client_id     = '';
+                $client_secret = '';
             }
-        }else{
-            $client_id = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] : '';
-            $client_secret = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) ? base64_decode( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) : '';
+
+        } else {
+            $client_id     = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] )
+                                ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ]
+                                : '';
+            $client_secret = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] )
+                                ? base64_decode( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] )
+                                : '';
         }
+
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
         $html = '
