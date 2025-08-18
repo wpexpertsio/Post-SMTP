@@ -487,7 +487,19 @@ class PostmanSettingsRegistry {
 	 */
 	public function primary_connection_callback() {
 		$connections        = get_option( 'postman_connections', array() ); // Retrieve saved connections.
+
 		$primary_connection = $this->options->getSelectedPrimary();
+		// Provider keys mapping (wizard-key lookup)
+		$provider_keys = array(
+			'office365_api'  => 'microsoft-365',
+			'aws_ses_api'    => 'amazon-ses',
+			'zohomail_api'   => 'zoho-mail',
+			'gmail_api'      => 'gmail-oneclick',
+		);
+
+		// Get active extensions from option
+		$pro_options       = get_option( 'post_smtp_pro', array() );
+		$active_extensions = isset( $pro_options['extensions'] ) ? (array) $pro_options['extensions'] : array();
 
 		echo '<select name="postman_options[primary_connection]" id="postman_primary_connection">';
 		// Display the "None" option as the default selection.
@@ -499,7 +511,17 @@ class PostmanSettingsRegistry {
 
 		// Check if there are any saved connections to display.
 		if ( ! empty( $connections ) ) {
-			foreach ( $connections as $key => $connection ) {
+			foreach ( $connections as $key => $connection ) {	
+				$provider = isset( $connection['provider'] ) ? $connection['provider'] : '';
+
+				// Map provider to wizard-key if available
+				$wizard_key = isset( $provider_keys[$provider] ) ? $provider_keys[$provider] : $provider;
+				var_dump($wizard_key);
+				// Only enforce active extension check if provider is in provider_keys
+				if ( isset( $provider_keys[ $provider ] ) && ! in_array( $wizard_key, $active_extensions, true ) ) {
+					continue;
+				}
+			
 				$selected = selected( $primary_connection, $key, false );
 				$email    = isset( $connection['sender_email'] ) ? $connection['sender_email'] : '';
 				// Use provider_name if available, fallback to provider.

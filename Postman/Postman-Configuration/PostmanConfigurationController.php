@@ -533,12 +533,36 @@ class PostmanConfigurationController {
 					<?php
 					// Show a default option when no fallback is selected.
 					$selected_fallback = $this->options->getSelectedFallback();
+					
+					// Provider keys mapping (wizard-key lookup).
+					$provider_keys = array(
+						'office365_api'  => 'microsoft-365',
+						'aws_ses_api'    => 'amazon-ses',
+						'zohomail_api'   => 'zoho-mail',
+						'gmail_api'      => 'gmail-oneclick',
+					);
+
+					// Active extensions.
+					$pro_options       = get_option( 'post_smtp_pro', array() );
+					$active_extensions = isset( $pro_options['extensions'] ) ? (array) $pro_options['extensions'] : array();
+					
 					?>
+
 					<option value="" <?php echo esc_attr( selected( $selected_fallback, null, false ) ); ?>>
 						<?php esc_html_e( 'Select a fallback', 'post-smtp' ); ?>
 					</option>
 					<?php
 					foreach ( $filtered_mail_connections as $index => $connection ) {
+						$provider = isset( $connection['provider'] ) ? $connection['provider'] : '';
+
+						// Map provider to wizard-key if available.
+						$wizard_key = isset( $provider_keys[$provider] ) ? $provider_keys[$provider] : $provider;
+
+						// Skip inactive providers (if provider is in provider_keys and not in active_extensions).
+						if ( isset( $provider_keys[ $provider ] ) && ! in_array( $wizard_key, $active_extensions, true ) ) {
+							continue;
+						}
+						
 						$selected = selected( $this->options->getSelectedFallback(), $index, false );
 										// Use provider_name if available, fallback to provider.
 						$raw_label = ! empty( $connection['provider_name'] ) ? $connection['provider_name'] : $connection['provider'];

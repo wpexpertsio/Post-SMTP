@@ -63,6 +63,13 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 		private $existing_db_version = '';
 
 		/**
+		 * Time (in seconds) for which deleted settings can be recovered.
+		 *
+		 * @var int
+		 */
+		private $recover_settings = 5 * DAY_IN_SECONDS;
+
+		/**
 		 * Constructor PostmanFallbackMigration
 		 *
 		 * @since 2.4.0
@@ -83,8 +90,11 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			}
 
 			$this->existing_db_version = get_option( 'postman_db_version' );
-			$hide_notice               = get_transient( 'ps_dismiss_fallback_update_notice' );
-			$deleted_email_settings    = get_transient( 'deleted_email_settings' );
+			
+			// Custom option-based transient replacement.
+			$hide_notice               = $this->get_expiring_option( 'ps_dismiss_fallback_update_notice' );
+			$deleted_email_settings    = $this->get_expiring_option( 'deleted_email_settings' );
+			
 			// Show DB Update Notice.
 			if ( $this->has_migrated() && ( POST_SMTP_DB_VERSION !== $this->existing_db_version || false !== $deleted_email_settings ) ) {
 				add_action( 'admin_notices', array( $this, 'notice' ) );
@@ -110,7 +120,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			$new_logging            = get_option( 'postman_db_version' );
 			$dismissible            = ( ! $this->has_migrated() && ! $this->migrating ) ? 'is-dismissible' : '';
 			$revert_url             = admin_url( 'admin.php?page=postman_email_log' ) . '&security=' . $security . '&action=ps-revert-migration';
-			$deleted_email_settings = get_transient( 'deleted_email_settings' );
+			$deleted_email_settings = $this->get_expiring_option( 'deleted_email_settings' );
 
 			if ( isset( $_GET['fallback_update'] ) && $_GET['fallback_update'] == 'success' ) {
 				?>
@@ -206,7 +216,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			$this->update_db_version();
 
 			// Save the Postman Details In Transient.
-			$this->store_email_settings_in_transient();
+			$this->store_email_settings();
 
 			// Redirect to the same page or any other page with a success message.
 			wp_redirect( admin_url( 'admin.php?page=postman&fallback_update=success' ) );
@@ -418,7 +428,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 		 * @since 3.0.1
 		 * @version 1.0.0
 		 */
-		private function store_email_settings_in_transient() {
+		private function store_email_settings() {
 			// Get the 'postman_options' array from the database.
 			$postman_options = get_option( 'postman_options', array() );
 
@@ -445,8 +455,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					$postman_options[ $key ] = $this->decrypt( $postman_options[ $key ] );
 				}
 			}
-			// Store the deleted email settings in a transient for 2 days (172800 seconds).
-			set_transient( 'deleted_email_settings', $postman_options, 172800 ); // 2 days.
+
+			$this->set_expiring_option( 'deleted_email_settings', $postman_options, $this->recover_settings );
 			
 			// Get the 'postman_connections' array and retrieve the primary connection.
 			$mail_connections   = get_option( 'postman_connections', array() );
@@ -513,7 +523,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'mailjet_secret_key'
 			);
 
-			$deleted_email_settings = get_transient( 'deleted_email_settings' );
+			$deleted_email_settings = $this->get_expiring_option( 'deleted_email_settings' );
 
 			if ( false !== $deleted_email_settings ) {
 				// Save the restored settings
@@ -521,7 +531,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 
 				// Clear fallback connections (if needed)
 				delete_option( 'postman_connections' );
-				delete_transient( 'deleted_email_settings' );
+				delete_option( 'deleted_email_settings' );
 				update_option( 'postman_db_version', '1.0.1' );
 
 				// Redirect with success notice
@@ -551,6 +561,39 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 
 			// Convert the formatted string to title case.
 			return ucwords( $formatted );
+		}
+		
+		
+		/**
+		 * Custom function to mimic transient with options and expiration.
+		 */
+		private function get_expiring_option( $option_name ) {
+			$value = get_option( $option_name );
+			
+			if ( empty( $value ) || ! is_array( $value ) ) {
+				return false;
+			}
+
+			// Check if expired.
+			if ( isset( $value['expires'] ) && time() > $value['expires'] ) {
+				delete_option( $option_name );
+				return false;
+			}
+
+			return isset( $value['data'] ) ? $value['data'] : false;
+		}
+
+		/**
+		 * Set an option with expiration (replacement for set_transient).
+		 */
+		private function set_expiring_option( $option_name, $data, $expiration ) {
+			
+			$option_value = array(
+				'data'    => $data,
+				'expires' => time() + $expiration,
+			);
+
+			update_option( $option_name, $option_value );
 		}
 	}
 
