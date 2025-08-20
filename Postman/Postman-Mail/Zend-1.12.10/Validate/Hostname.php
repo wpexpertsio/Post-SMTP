@@ -1971,7 +1971,7 @@ class Postman_Zend_Validate_Hostname extends Postman_Zend_Validate_Abstract
 	 * @param Postman_Zend_Validate_Ip $ipValidator OPTIONAL
 	 * @return Postman_Zend_Validate_Hostname
 	 */
-	public function setIpValidator( Postman_Zend_Validate_Ip $ipValidator = null ) {
+	public function setIpValidator( ?Postman_Zend_Validate_Ip $ipValidator = null ) {
 		if ( $ipValidator === null ) {
 			$ipValidator = new Postman_Zend_Validate_Ip();
 		}

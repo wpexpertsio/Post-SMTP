@@ -211,7 +211,7 @@ class Postman_Zend_Mail_Transport_Sendmail extends Postman_Zend_Mail_Transport_A
      * @param array  $errcontext
      * @return true
      */
-    public function _handleMailErrors($errno, $errstr, $errfile = null, $errline = null, array $errcontext = null)
+    public function _handleMailErrors($errno, $errstr, $errfile = null, $errline = null, ?array $errcontext = null)
     {
         $this->_errstr = $errstr;
         return true;

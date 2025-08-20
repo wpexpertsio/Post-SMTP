@@ -243,7 +243,7 @@ class Postman_Zend_Validate_EmailAddress extends Postman_Zend_Validate_Abstract
      * @param int                    $allow             OPTIONAL
      * @return $this
      */
-    public function setHostnameValidator(Postman_Zend_Validate_Hostname $hostnameValidator = null, $allow = Postman_Zend_Validate_Hostname::ALLOW_DNS)
+    public function setHostnameValidator(?Postman_Zend_Validate_Hostname $hostnameValidator = null, $allow = Postman_Zend_Validate_Hostname::ALLOW_DNS)
     {
         if (!$hostnameValidator) {
             $hostnameValidator = new Postman_Zend_Validate_Hostname($allow);
