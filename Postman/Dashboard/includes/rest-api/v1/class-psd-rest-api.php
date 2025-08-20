@@ -55,8 +55,8 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				array(
 					'methods' => WP_REST_Server::READABLE,
 					'callback' => array( $this, 'email_count' ),
-					'permission_callback' => array( $this, 'get_logs_permission' )
-				),
+					   'permission_callback' => array( $this, 'get_logs_permission' )
+				   )
 			);
 
 			register_rest_route(
@@ -65,8 +65,8 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 				array(
 					'methods' => WP_REST_Server::CREATABLE,
 					'callback' => array( $this, 'minimize_maximize_ad' ),
-					'permission_callback' => array( $this, 'get_logs_permission' )
-				),
+					   'permission_callback' => array( $this, 'get_logs_permission' )
+				   )
 			);
 
 			register_rest_route(
