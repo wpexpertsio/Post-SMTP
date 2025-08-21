@@ -740,6 +740,7 @@ jQuery( document ).ready(function() {
             data: {
                 action: 'update_post_smtp_pro_option',
                 enabled: enabled ? 'gmail-oneclick' : '',
+                _wpnonce: (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.pro_option_nonce) ? PostSMTPWizard.pro_option_nonce : ''
             },
             success: function(response) {
                 if (response.success) {
