@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: smtp, gmail smtp, email,  email logs, office 365
 Requires at least: 5.6.0
 Tested up to: 6.8
-Stable tag: 3.4.0
+Stable tag: 3.4.1
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -291,6 +291,9 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
+= 3.4.1 - Aug 20, 2025 =
+* TWEAK - Updated Plugin URI in header
+
 = 3.4.0 - Aug 18, 2025 =
 * NEW - Added [Resend](https://postmansmtp.com/smtp-integrations/resend/) email service providers.
 * UPDATED: Feedback SDK to the latest version.
@@ -301,8 +304,8 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 = 3.3.0 - June 11, 2025 =
 * NEW - WP Dashboard Widget
 * NEW - Diagnostic Report Send Form
-* NEW - [Mailersend](https://www.mailersend.com/) Mailer Integration
-* FIX - Add Validation In Domain Checker  DNS, SPF, DMARC
+* NEW - [Mailersend](https://postmansmtp.com/smtp-integrations/mailersend-smtp/) Mailer Integration
+* FIX - Added Validation In Domain Checker  DNS, SPF, DMARC
 * FIX - LOCO Translate Issue 
 * FIX - Email Summary Improvement 
 * FIX - Vulnerability Fix. 

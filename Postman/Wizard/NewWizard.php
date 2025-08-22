@@ -493,7 +493,9 @@ class Post_SMTP_New_Wizard {
                 esc_url( admin_url( 'admin.php?page=postman/port_test' ) ),
                 __( 'connectivity test', 'post-smtp' ),
                 __( 'of your site to get more information about this failure.', 'post-smtp' )
-            )
+            ),
+            // Add the nonce for pro option AJAX
+            'pro_option_nonce' => wp_create_nonce('update_post_smtp_pro_option'),
         );
 
         if( class_exists( 'Post_Smtp_Office365' ) ) {
@@ -1856,6 +1858,19 @@ public function render_gmail_settings() {
      * @return void
      */
     public function update_post_smtp_pro_option_callback() {
+
+        // Capability check: Only allow admins
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Unauthorized.' ) );
+            return;
+        }
+
+        // Nonce check for CSRF protection
+        if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'update_post_smtp_pro_option' ) ) {
+            wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ) );
+            return;
+        }
+
         if ( ! isset( $_POST['enabled'] ) ) {
             wp_send_json_error( array( 'message' => 'Invalid request.' ) );
             return;
