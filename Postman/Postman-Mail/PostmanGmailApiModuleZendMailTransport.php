@@ -141,8 +141,11 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 			$this->_host = $host;
 			$this->_config = $config;
 			$this->logger = new PostmanLogger ( get_class ( $this ) );
-			// Define API base URL for middleware.
-			$this->api_base_url = 'https://connect.postmansmtp.com/wp-json/gmail-oauth/v1/send-email';
+			// Define API base URLs for middleware (main and backup).
+			$this->api_base_urls = [
+				'https://connect.postmansmtp.com/wp-json/gmail-oauth/v1/send-email',
+				'https://backup.postmansmtp.com/wp-json/gmail-oauth/v1/send-email'
+			];
 			// Check if Gmail One Click is enabled.
 			$this->gmail_oneclick_enabled = in_array(
 				'gmail-oneclick',
@@ -212,51 +215,54 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 			$result = array ();
 			try {
 				if ( $this->gmail_oneclick_enabled ) {
-				  // Prepare payload.
+					// Prepare payload.
 					$payload = array(
 						'message' => $encodedMessage,
 						'headers' => $this->header,
 						'site_url'  => get_site_url(),
 					);
-					
-					$response = wp_remote_post(
-						$this->api_base_url,
-						array(
-							'method'    => 'POST',
-							'body'      => wp_json_encode( $payload ),
-							'headers'   => array(
-								'Content-Type' => 'application/json',
-							),
-							'timeout'   => 30,
-						)
-					);
 
-					$body           = wp_remote_retrieve_body( $response );
-					$result_output  = json_decode( $body, true );
-					$result         = isset( $result_output['data'] ) ? $result_output['data'] : array();
-   					
-					// ✅ Check for HTTP errors.
-					if ( is_wp_error( $response ) ) {
-						throw new Exception( 'Error in PostSMTP GMAIL API Request: ' . $response->get_error_message() );
+					$response = null;
+					$result_output = null;
+					$success = false;
+					$last_error = '';
+
+					foreach ( $this->api_base_urls as $api_url ) {
+						$response = wp_remote_post(
+							$api_url,
+							array(
+								'method'    => 'POST',
+								'body'      => wp_json_encode( $payload ),
+								'headers'   => array(
+									'Content-Type' => 'application/json',
+								),
+								'timeout'   => 30,
+							)
+						);
+
+						if ( is_wp_error( $response ) ) {
+							$last_error = $response->get_error_message();
+							continue; // Try next server
+						}
+
+						$response_code = wp_remote_retrieve_response_code( $response );
+						$body = wp_remote_retrieve_body( $response );
+						$result_output = json_decode( $body, true );
+
+						if ( $response_code === 200 && isset( $result_output['data'] ) ) {
+							$success = true;
+							break; // Success, stop trying
+						} else {
+							$last_error = isset($result_output['message']) ? $result_output['message'] : 'Unknown error';
+						}
 					}
 
-					$response_code = wp_remote_retrieve_response_code( $response );
-					$body = wp_remote_retrieve_body( $response );
-					$result_output = json_decode( $body, true );
-					if ( $response_code !== 200 || empty( $result_output ) ) {
-						
-    				$error_code = $response_code;
+					if ( !$success ) {
+						throw new Exception( "PostSMTP GMAIL API Error: $last_error" );
+					}
 
-			    	throw new Exception("PostSMTP GMAIL API Error: $error_message (HTTP Code: $error_code)");
-						
-					}
-					// ✅ Ensure email send response contains "data".
-					if ( !isset( $result_output['data'] ) ) {
-						throw new Exception( "PostSMTP GMAIL API Error: Missing 'data' key in response: " . print_r( $result_output, true ) );
-					}
-					
 					$result = $result_output['data'];
-				}else{
+				} else {
 				    $googleApiMessage = new Message ();
 				    $googleService = $this->_config [self::SERVICE_OPTION];
 				    $googleClient = $googleService->getClient();

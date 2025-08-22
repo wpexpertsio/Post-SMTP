@@ -8,6 +8,33 @@ jQuery( document ).ready(function() {
         
     } )
 
+    jQuery(document).on('click', '#ps-gmail-btn', function(e) {
+        e.preventDefault();
+        var $btn = jQuery(this);
+        $btn.prop('disabled', true);
+
+        jQuery.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'ps_gmail_one_click',
+            },
+            success: function(response) {
+                if (response.success && response.data.auth_url) {
+                    window.location.href = response.data.auth_url;
+                } else {
+                    alert('Failed to get Gmail Auth URL.');
+                }
+            },
+            error: function() {
+                alert('AJAX error. Please try again.');
+            },
+            complete: function() {
+                $btn.prop('disabled', false);
+            }
+        });
+    });
+
     /**
      * Refresh the wizard to show the current step
      * 

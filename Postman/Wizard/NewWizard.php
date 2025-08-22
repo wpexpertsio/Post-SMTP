@@ -96,6 +96,7 @@ class Post_SMTP_New_Wizard {
         add_action( 'admin_action_zoho_auth_request', array( $this, 'auth_zoho' ) );
         add_action( 'admin_post_remove_oauth_action', array( $this, 'post_smtp_remove_oauth_action' ) );
         add_action( 'admin_init', array( $this, 'handle_gmail_oauth_redirect' ) );
+        add_action( 'wp_ajax_ps_gmail_one_click', array( $this, 'gmail_one_click_handler' ));
 
         if( isset( $_GET['wizard'] ) && $_GET['wizard'] == 'legacy' ) {
 
@@ -105,6 +106,47 @@ class Post_SMTP_New_Wizard {
 
         $this->options_array = get_option( PostmanOptions::POSTMAN_OPTIONS );
         
+    }
+    
+    /**
+     * AJAX handler for Gmail One Click.
+     *
+     * Checks connectivity to the main and backup middleware servers, retrieves the Gmail OAuth URL,
+     * stores it in the WordPress options table, and returns it for client-side redirection.
+     *
+     * @since 3.0.0
+     * @return void Outputs JSON response and exits.
+     */
+    public function gmail_one_click_handler() {
+        // Define the redirect URL for the OAuth flow.
+        $redirect_url = admin_url( "admin.php?socket=gmail_api&step=2" );
+
+        // List of API endpoints to check, in order.
+        $api_urls = [
+            'https://connect.postmansmtp.com/wp-json/gmail-oauth/v1/auth-url',
+            'https://backup.postmansmtp.com/wp-json/gmail-oauth/v1/auth-url'
+        ];
+
+        $auth_url = '';
+        foreach ( $api_urls as $api_url) {
+            $response = wp_remote_get(
+                add_query_arg( 'client_site_url', urlencode( $redirect_url ), $api_url )
+            );
+            if ( !is_wp_error( $response ) ) {
+                $data = json_decode( wp_remote_retrieve_body( $response ), true );
+                if ( !empty( $data['auth_url'] ) ) {
+                    $auth_url = esc_url_raw( $data['auth_url'] );
+                    update_option( 'post_smtp_gmail_auth_url', $auth_url );
+                    break;
+                }
+            }
+        }
+
+        if ( $auth_url ) {
+            wp_send_json_success( [ 'auth_url' => $auth_url ] );
+        } else {
+            wp_send_json_error();
+        }
     }
 
     /**
