@@ -754,7 +754,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 						<br />
 						<a href="%8$s" target="_blank">%9$s</a>
 						<br />
-						<a href="" id="discard-less-secure-notification">%10$s</a>
+						<a href="#" id="discard-less-secure-notification">%10$s</a>
 					</p>',
 					esc_html__( 'To help keep your account secure, Google will no longer support using third-party apps to sign in to your Google Account using only your username and primary password. You can ', 'post-smtp' ),
 					esc_url( 'https://postmansmtp.com/gmail-is-disabling-less-secure-apps-feature-soon/' ),
