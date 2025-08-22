@@ -109,7 +109,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 					$statusMessage = sprintf( '%s: %s', __( 'Warning', 'post-smtp' ), __( 'An empty subject line can result in delivery failure.', 'post-smtp' ) );
 					$status = 'WARN';
 				}
-				$this->createLog( $log, $transcript, $statusMessage, $status, $transport, $message );
+				$this->createLog( $log, $message, $transcript, $statusMessage, $status, $transport );
 				$this->writeToEmailLog( $log );
 			}
 		}
