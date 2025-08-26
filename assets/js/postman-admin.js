@@ -95,10 +95,7 @@ jQuery( document ).ready( function() {
 			},
 			success: function(data) {
 				jQuery( '.ps-less-secure-notice .notice-dismiss' ).click();
-            },
-			error: function(data) {debugger
-                alert( data.responseJSON.data.message );
-            },
+            }
 		} )
 
 		jQuery( '.ps-less-secure-notice .notice-dismiss' ).click();

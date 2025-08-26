@@ -109,7 +109,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 					$statusMessage = sprintf( '%s: %s', __( 'Warning', 'post-smtp' ), __( 'An empty subject line can result in delivery failure.', 'post-smtp' ) );
 					$status = 'WARN';
 				}
-				$this->createLog( $log, $message, $transcript, $statusMessage, $status, $transport );
+				   $this->createLog( $log, $transcript, $statusMessage, $status, $transport, $message );
 				$this->writeToEmailLog( $log );
 			}
 		}
@@ -323,24 +323,24 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 * @param PostmanModuleTransport $transport
 		 * @return PostmanEmailLog
 		 */
-		private function createLog( PostmanEmailLog $log, ?PostmanMessage $message = null, $transcript, $statusMessage, $success, PostmanModuleTransport $transport ) {
-			if ( $message ) {
-				$log->sender = $message->getFromAddress()->format();
-				$log->toRecipients = $this->flattenEmails( $message->getToRecipients() );
-				$log->ccRecipients = $this->flattenEmails( $message->getCcRecipients() );
-				$log->bccRecipients = $this->flattenEmails( $message->getBccRecipients() );
-				$log->subject = $message->getSubject();
-				$log->body = $message->getBody();
-				if ( null !== $message->getReplyTo() ) {
-					$log->replyTo = $message->getReplyTo()->format();
+		private function createLog( PostmanEmailLog $log, $transcript, $statusMessage, $success, PostmanModuleTransport $transport, ?PostmanMessage $message = null ) {
+				if ( $message ) {
+					$log->sender = $message->getFromAddress()->format();
+					$log->toRecipients = $this->flattenEmails( $message->getToRecipients() );
+					$log->ccRecipients = $this->flattenEmails( $message->getCcRecipients() );
+					$log->bccRecipients = $this->flattenEmails( $message->getBccRecipients() );
+					$log->subject = $message->getSubject();
+					$log->body = $message->getBody();
+					if ( null !== $message->getReplyTo() ) {
+						$log->replyTo = $message->getReplyTo()->format();
+					}
 				}
+				$log->success = $success;
+				$log->statusMessage = $statusMessage;
+				$log->transportUri = PostmanTransportRegistry::getInstance()->getPublicTransportUri( $transport );
+				$log->sessionTranscript = $log->transportUri . "\n\n" . $transcript;
+				return $log;
 			}
-			$log->success = $success;
-			$log->statusMessage = $statusMessage;
-			$log->transportUri = PostmanTransportRegistry::getInstance()->getPublicTransportUri( $transport );
-			$log->sessionTranscript = $log->transportUri . "\n\n" . $transcript;
-			return $log;
-		}
 
 		/**
 		 * Creates a readable "TO" entry based on the recipient header
