@@ -291,9 +291,9 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
-= 3.4.2 - Aug 22, 2025 =
-* FIX - Security Issues.
-* FIX - php 8+ version warnings.
+= 3.4.2 - Sept 01, 2025 =
+* Enhancement - Improved AJAX call security.
+* Improvement - PHP 8+ version compatibility.
 
 = 3.4.1 - Aug 20, 2025 =
 * TWEAK - Updated Plugin URI in header
