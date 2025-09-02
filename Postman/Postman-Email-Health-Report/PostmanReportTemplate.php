@@ -27,22 +27,18 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 
 				foreach ( $logs as $log ) {
 
-					if ( $log->total ) {
-
-						$total += $log->total;
-					}
-					if ( $log->sent ) {
-
-						$sent += $log->sent;
-					}
-					if ( $log->failed ) {
-
-						$failed += $log->failed;
-					}
-					if ( $is_addonactivated && $log->opened ) {
-
-						$opened += $log->opened;
-					}
+                       if ( $log->total ) {
+                           $total += $log->total;
+                       }
+                       if ( $log->sent ) {
+                           $sent += $log->sent;
+                       }
+                       if ( $log->failed ) {
+                           $failed += $log->failed;
+                       }
+                       if ( $is_addonactivated && property_exists( $log, 'opened' )  ) {
+                           $opened += $log->opened;
+                       }
 				}
 			}
 
@@ -204,7 +200,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                             <td style="padding: 10px; text-align: center;">'.$log->total.'</td>
                             <td style="padding: 10px; text-align: center;">'.$log->sent.'</td>
                             <td style="padding: 10px; text-align: center;">'.$log->failed.'</td>
-                            <td style="padding: 10px; text-align: center;">'.$log->opened.'</td>
+                            <td style="padding: 10px; text-align: center;">'.(property_exists($log, 'opened') ? $log->opened : '').'</td>
                         </tr>
                         ';
                     }
