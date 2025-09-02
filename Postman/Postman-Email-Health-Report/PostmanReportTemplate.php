@@ -197,10 +197,10 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                         </tr>
                         <tr>
                             <td></td>
-                            <td style="padding: 10px; text-align: center;">'.$log->total.'</td>
-                            <td style="padding: 10px; text-align: center;">'.$log->sent.'</td>
-                            <td style="padding: 10px; text-align: center;">'.$log->failed.'</td>
-                            <td style="padding: 10px; text-align: center;">'.(property_exists($log, 'opened') ? $log->opened : '').'</td>
+                            <td style="padding: 10px; text-align: center;">'.( isset( $log->total ) ? $log->total : '' ).'</td>
+                            <td style="padding: 10px; text-align: center;">'.( isset( $log->sent ) ? $log->sent : '' ).'</td>
+                            <td style="padding: 10px; text-align: center;">'.( isset( $log->failed ) ? $log->failed : '' ).'</td>
+                            <td style="padding: 10px; text-align: center;">'.( isset( $log->opened ) ? $log->opened : '' ).'</td>
                         </tr>
                         ';
                     }
