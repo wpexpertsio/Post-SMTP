@@ -60,7 +60,8 @@ class PostmanEmailQueryLog {
                 'original_subject',
                 'to_header',
                 'success',
-                'time'
+                'time',
+                'original_to'
             );
 
         }

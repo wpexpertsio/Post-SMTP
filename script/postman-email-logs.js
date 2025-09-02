@@ -71,7 +71,6 @@ jQuery(document).ready(function($) {
 			[3, 'desc']
 		],
 		"createdRow": function ( row, data, index ) {
-			
 			var id = data['id'];
 			var status = jQuery( row ).find( 'td' )[4];
 
@@ -89,6 +88,7 @@ jQuery(document).ready(function($) {
 				<div class="ps-email-log-resend-container"></div>
 			` );
 
+			jQuery( row ).find( 'td:nth-child(3)').attr( 'title', data['original_to'] );
 			if( data['success'] == '<span title="Success">Success</span>' ) {
 
 				jQuery( status ).addClass( 'ps-email-log-status-success' );
@@ -627,7 +627,7 @@ jQuery(document).ready(function($) {
 	jQuery( document ).on( 'click', '.ps-email-log-resend', function( e ) {
 
 		e.preventDefault();
-		var sendTo = jQuery( this ).closest( 'tr' ).find( 'td:nth-child(3)' ).text();
+		var sendTo = jQuery( this ).closest( 'tr' ).find( 'td:nth-child(3)' ).attr('title');
 		var currentRow = jQuery( this ).closest( 'tr' );
 
 		jQuery( currentRow ).find( '.ps-email-log-resend-container' ).html( `
