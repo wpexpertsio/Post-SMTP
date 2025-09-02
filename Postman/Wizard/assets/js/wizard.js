@@ -327,6 +327,9 @@ jQuery( document ).ready(function() {
         var security = jQuery( '#security' ).val();
         var socket = jQuery( '.ps-wizard-step-1' ).attr( 'data-socket' );
 		var apikey = jQuery( '.ps-wizard-step-1' ).attr( 'data-apikey' );
+        var $btn = jQuery( this );
+        $btn.prop( 'disabled', true );
+        
         if( sendTo == '' ) {
             jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${PostSMTPWizard.Step3E4}` );
             return;
@@ -370,8 +373,8 @@ jQuery( document ).ready(function() {
                             },
                             success: function( response ) {
 
-                                jQuery( '.ps-loading-test-report' ).remove();
-                               
+                                jQuery( '.ps-loading-test-report' ).remove();  
+                                $btn.prop( 'disabled', false )
                                 if( response.data.message !== undefined && response.data.message === 'test_email_sent' ) {
 
                                     var title = response.data.data.title;
@@ -474,7 +477,7 @@ jQuery( document ).ready(function() {
 
                                 }
                                 else {
-
+                                    $btn.prop('disabled', false);
                                     if ( jQuery( '#ps-dns-results__el_id' ).length ) {
                                         jQuery( '#ps-dns-results__el_id' ).remove();
                                     }
@@ -489,6 +492,7 @@ jQuery( document ).ready(function() {
 
                             },
                             error: function(jqXHR, textStatus, errorThrown) {
+                                $btn.prop( 'disabled', false);
                                 jQuery( '.ps-loading-test-report' ).remove();
                                 if (jqXHR.status === 429) {
 
@@ -510,7 +514,7 @@ jQuery( document ).ready(function() {
 
                 }
                 if( response.success === false ) {
-
+                    $btn.prop( 'disabled', false);
                     var selectedSocket = jQuery( '.ps-wizard-socket-check:checked' ).val();
                     jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${response.data.message} <br><br>`  );
                     jQuery( '.ps-wizard-error' ).append( `<span class="dashicons dashicons-warning"></span> Test email failed. Please check and correct your SMTP configuration. The Email Health Checker cannot proceed until a test email is successfully sent.` );
