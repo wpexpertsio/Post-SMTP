@@ -84,6 +84,7 @@ class PostsmtpMailer extends PHPMailer {
 		$mail->SMTPDebug = 3;
 		$mail->isSMTP();
 		$mail->Host = $this->options->getHostname();
+		$mail->Hostname = $this->options->getHostname();
 
 		if ( $this->options->getAuthenticationType() !== 'none' ) {
 			$mail->SMTPAuth   = true;
