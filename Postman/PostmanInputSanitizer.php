@@ -173,19 +173,10 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 				}
 				// log it
 				$this->logSanitize( $desc, $new_input [ $key ] );
-				
-				// Check if password is already base64 encoded to prevent double encoding
-				if ( $new_input [ $key ] === $existingPassword ) {
-					// Password unchanged, keep existing encoded password
-					$this->logger->debug( sprintf( 'Keeping existing %s (unchanged)', $desc ) );
-				} else if ( base64_encode( base64_decode( $new_input [ $key ], true ) ) === $new_input [ $key ] ) {
-					// Password is already base64 encoded, don't encode again
-					$this->logger->debug( sprintf( 'Password %s is already encoded, keeping as-is', $desc ) );
-				} else {
-					// base-64 scramble password (only if not already encoded)
-					$new_input [ $key ] = base64_encode( $new_input [ $key ] );
-					$this->logger->debug( sprintf( 'Encoding %s as %s', $desc, $new_input [ $key ] ) );
-				}
+				// base-64 scramble password
+				$new_input [ $key ] = base64_encode( $new_input [ $key ] );
+
+				$this->logger->debug( sprintf( 'Encoding %s as %s', $desc, $new_input [ $key ] ) );
 			}
 		}
 
