@@ -59,6 +59,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizePassword( 'Mandrill API Key', PostmanOptions::MANDRILL_API_KEY, $input, $new_input, $this->options->getMandrillApiKey() );
 			$this->sanitizePassword( 'SendGrid API Key', PostmanOptions::SENDGRID_API_KEY, $input, $new_input, $this->options->getSendGridApiKey() );
 			$this->sanitizePassword( 'Resend API Key', PostmanOptions::RESEND_API_KEY, $input, $new_input, $this->options->getResendApiKey() );
+			$this->sanitizePassword( 'Emailit API Key', PostmanOptions::EMAILIT_API_KEY, $input, $new_input, $this->options->getEmailitApiKey() );
 			$this->sanitizePassword( 'MailerSend API Key', PostmanOptions::MAILERSEND_API_KEY, $input, $new_input, $this->options->getMailerSendApiKey() );
 			$this->sanitizePassword( 'Brevo API Key', PostmanOptions::SENDINBLUE_API_KEY, $input, $new_input, $this->options->getSendinblueApiKey() );
 			$this->sanitizePassword( 'Mailjet API Key', PostmanOptions::MAILJET_API_KEY, $input, $new_input, $this->options->getMailjetApiKey() );

@@ -73,7 +73,8 @@ class Post_SMTP_New_Wizard {
             'mailjet_api',
             'smtp2go_api',
             'sendpulse_api',
-            'mailersend_api'
+            'mailersend_api',
+            'emailit_api',
         );
         
         if( !is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' ) ) {
@@ -85,6 +86,7 @@ class Post_SMTP_New_Wizard {
         }
 
         $this->socket_sequence[] = 'mailersend_api';
+        $this->socket_sequence[] = 'emailit_api';
         $this->socket_sequence[] = 'smtp';
         $this->socket_sequence[] = 'default';
         
@@ -116,7 +118,7 @@ class Post_SMTP_New_Wizard {
     public function load_wizard() {
 
         $transports = PostmanTransportRegistry::getInstance()->getTransports();
-		
+        
         //Not for wizard
         $settings_registry = new PostmanSettingsRegistry();
         $this->options = PostmanOptions::getInstance();
@@ -178,7 +180,7 @@ class Post_SMTP_New_Wizard {
                                         $row  = 0;
 
                                         $transports = array_merge( array_flip( $this->socket_sequence ), $transports );
-										
+                                        
                                         foreach( $transports as $key => $transport ) {
 
                                             $urls = array(
@@ -199,7 +201,9 @@ class Post_SMTP_New_Wizard {
                                                 'elasticemail_api'  =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/elasticemail.png',
                                                 'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
                                                 'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png',
-                                                'resend_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/resend.png'
+                                                'resend_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/resend.png',
+                                                'emailit_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/emailit.png'
+
                                             );
 
                                             $url = '';
@@ -242,7 +246,7 @@ class Post_SMTP_New_Wizard {
                                                     $product_url = postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_microsoft&utm_campaign=plugin';
 
                                                 }
-                                                if( $transport_slug == 'zohomail_api' ) {
+                                              if( $transport_slug == 'zohomail_api' ) {
                                                     
                                                     $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png';
                                                     $slug = $transport_slug;
@@ -514,7 +518,7 @@ class Post_SMTP_New_Wizard {
 
         }
         $gmail_icon_url = POST_SMTP_URL . '/Postman/Wizard/assets/images/gmail.png';
-		$localized['gmail_icon'] = $gmail_icon_url; 
+        $localized['gmail_icon'] = $gmail_icon_url; 
         
         wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), POST_SMTP_VER );
         wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), POST_SMTP_VER );
@@ -622,6 +626,9 @@ class Post_SMTP_New_Wizard {
             case 'mandrill_api':
                 echo wp_kses( $this->render_mandrill_settings(), $this->allowed_tags );
             break;
+            case 'emailit_api':
+                echo wp_kses( $this->render_emailit_settings(), $this->allowed_tags );
+            break;
             case 'sendgrid_api';
                 echo wp_kses( $this->render_sendgrid_settings(), $this->allowed_tags );
             break;
@@ -662,7 +669,7 @@ class Post_SMTP_New_Wizard {
                 echo wp_kses( $this->render_zoho_settings(), $this->allowed_tags );
             break;
             case 'smtp2go_api':
-	            echo wp_kses( $this->render_smtp2go_settings(), $this->allowed_tags );
+                echo wp_kses( $this->render_smtp2go_settings(), $this->allowed_tags );
                 break;
         }
 
@@ -784,7 +791,7 @@ public function render_gmail_settings() {
 
 
     if ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) {
-	    $client_id_required     = '';
+        $client_id_required     = '';
         $client_secret_required = '';
     }
 
@@ -891,8 +898,8 @@ public function render_gmail_settings() {
                 ],
                 admin_url( 'admin-post.php' )
             ) );
-			if ( isset( $postman_auth_token['user_email'] ) ) {
-            	$html .= ' <span class="icon-circle"><span class="icon-check"></span> </span> <b class= "ps-wizard-success">' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_auth_token['user_email'] ) ) . '</b>';
+            if ( isset( $postman_auth_token['user_email'] ) ) {
+                $html .= ' <span class="icon-circle"><span class="icon-check"></span> </span> <b class= "ps-wizard-success">' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_auth_token['user_email'] ) ) . '</b>';
             }
             $html .= '<a href="' . $action_url . '" class="ps-remove-gmail-btn ps-disable-gmail-setup wizard-btn-css">';
             $html .= esc_html__( 'Remove Authorization', 'post-smtp' );
@@ -913,7 +920,24 @@ public function render_gmail_settings() {
     return $html;
 }
 
-
+    /**
+     * Render Emailit Settings
+     */
+    public function render_emailit_settings() {
+        $api_key = null !== $this->options->getEmailitApiKey() ? esc_attr ( $this->options->getEmailitApiKey() ) : '';
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p>',
+            esc_url( 'https://emailit.com/' ),
+            __( 'Emailit', 'post-smtp' ),
+            __( 'is a transactional email provider. Enter your API Key and Endpoint below.', 'post-smtp' )
+        );
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>API Key</label></div>
+            <input type="text" class="ps-emailit-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::EMAILIT_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
+        </div>';
+        return $html;
+    }
 
     /**
      * Render Mandrill Settings
@@ -1736,36 +1760,36 @@ public function render_gmail_settings() {
     }
 
     public function render_smtp2go_settings() {
-	    ob_start();
+        ob_start();
 
-	    $api_key = null === $this->options->getSmtp2GoApiKey() ? '' : esc_attr( $this->options->getSmtp2GoApiKey() );
+        $api_key = null === $this->options->getSmtp2GoApiKey() ? '' : esc_attr( $this->options->getSmtp2GoApiKey() );
 
-	    printf(
-		    '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
-		    esc_url( 'https://www.smtp2go.com/' ),
-		    __( 'SMTP2Go', 'post-smtp' ),
-		    __( 'is known for its reliable email delivery service, featuring global infrastructure, real-time analytics, and robust security. If you’re just starting out, their free plan allows sending up to 1,000 emails per month.', 'post-smtp' ),
-		    __( 'Let’s get started with our', 'post-smtp' ),
-		    esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-smtp2go-with-post-smtp/' ),
-		    __( 'SMTP2GO Documentation', 'post-smtp' )
-	    );
+        printf(
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
+            esc_url( 'https://www.smtp2go.com/' ),
+            __( 'SMTP2Go', 'post-smtp' ),
+            __( 'is known for its reliable email delivery service, featuring global infrastructure, real-time analytics, and robust security. If you’re just starting out, their free plan allows sending up to 1,000 emails per month.', 'post-smtp' ),
+            __( 'Let’s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-smtp2go-with-post-smtp/' ),
+            __( 'SMTP2GO Documentation', 'post-smtp' )
+        );
 
-	    echo '<div class="ps-form-control">
+        echo '<div class="ps-form-control">
             <div><label>API Key</label></div>
             <input type="text" class="ps-smtp2go-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SMTP2GO_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">';
-	    printf(
-		    '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
-		    __( 'Create an account at', 'post-smtp' ),
-		    esc_url( 'https://www.smtp2go.com/' ),
-		    esc_attr( 'SMTP2GO' ),
-		    __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-		    esc_url( 'https://app-eu.smtp2go.com/sending/apikeys/' ),
-		    __( 'API Key.', 'post-smtp' )
-	    );
+        printf(
+            '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div><div class="ps-form-control-info">%4$s <a href="%5$s" target="_blank">%6$s</a></div>',
+            __( 'Create an account at', 'post-smtp' ),
+            esc_url( 'https://www.smtp2go.com/' ),
+            esc_attr( 'SMTP2GO' ),
+            __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
+            esc_url( 'https://app-eu.smtp2go.com/sending/apikeys/' ),
+            __( 'API Key.', 'post-smtp' )
+        );
 
-	    echo '</div>';
+        echo '</div>';
 
-	    return ob_get_clean();
+        return ob_get_clean();
     }
 
 
@@ -1790,13 +1814,13 @@ public function render_gmail_settings() {
         ) {
 
             if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
-				
+                
                 $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
-				
+                
                 $options = get_option( PostmanOptions::POSTMAN_OPTIONS );
                 $_options = $options;
                 $options = $options ? $options : array();
-				
+                
                 //for the checkboxes
                 $sanitized['prevent_sender_email_override'] = isset( $sanitized['prevent_sender_email_override'] ) ? 1 : '';
                 $sanitized['prevent_sender_name_override'] = isset( $sanitized['prevent_sender_name_override'] ) ? 1 : '';
@@ -1811,9 +1835,11 @@ public function render_gmail_settings() {
                 $sanitized['sparkpost_api_key'] = isset( $sanitized['sparkpost_api_key'] ) ? $sanitized['sparkpost_api_key'] : '';
                 $sanitized['postmark_api_key'] = isset( $sanitized['postmark_api_key'] ) ? $sanitized['postmark_api_key'] : '';
                 $sanitized['mailgun_api_key'] = isset( $sanitized['mailgun_api_key'] ) ? $sanitized['mailgun_api_key'] : '';
+                $sanitized[PostmanOptions::EMAILIT_API_KEY] = isset( $sanitized[PostmanOptions::EMAILIT_API_KEY] ) ? base64_encode($sanitized[PostmanOptions::EMAILIT_API_KEY]) : '';
                 $sanitized[PostmanOptions::SENDGRID_API_KEY] = isset( $sanitized[PostmanOptions::SENDGRID_API_KEY] ) ? $sanitized[PostmanOptions::SENDGRID_API_KEY] : '';
                 $sanitized['sendgrid_region']  = isset( $sanitized['sendgrid_region'] ) ? $sanitized['sendgrid_region'] : '';
                 $sanitized['resend_api_key']  = isset( $sanitized['resend_api_key'] ) ? $sanitized['resend_api_key'] : '';
+                $sanitized[PostmanOptions::EMAILIT_API_KEY]  = isset( $sanitized[PostmanOptions::EMAILIT_API_KEY] ) ? $sanitized[PostmanOptions::EMAILIT_API_KEY] : '';
                 $sanitized['mandrill_api_key'] = isset( $sanitized['mandrill_api_key'] ) ? $sanitized['mandrill_api_key'] : '';
                 $sanitized[PostmanOptions::MAILERSEND_API_KEY] = isset( $sanitized[PostmanOptions::MAILERSEND_API_KEY] ) ? $sanitized[PostmanOptions::MAILERSEND_API_KEY] : '';
                 $sanitized['elasticemail_api_key'] = isset( $sanitized['elasticemail_api_key'] ) ? $sanitized['elasticemail_api_key'] : '';
@@ -1831,7 +1857,7 @@ public function render_gmail_settings() {
                 foreach( $sanitized as $key => $value ) {
                     $options[$key] = $value;
                 }
-				
+                
                 if( $options == $_options ) {
                     $response = true;
                 } else {
@@ -1965,23 +1991,23 @@ public function render_gmail_settings() {
         if ( isset( $_GET['action'] ) && $_GET['action'] === 'gmail_oauth_redirect' ) {
             // Sanitize and retrieve URL parameters
             $access_token  = isset( $_GET['access_token'] ) ? sanitize_text_field( $_GET['access_token'] ) : null;
- 		    $refresh_token = isset( $_GET['refresh_token'] ) ? sanitize_text_field( $_GET['refresh_token'] ) : null;
+            $refresh_token = isset( $_GET['refresh_token'] ) ? sanitize_text_field( $_GET['refresh_token'] ) : null;
             $expires_in    = isset( $_GET['expires_in'] ) ? intval( $_GET['expires_in'] ) : 0;
             $msg           = isset( $_GET['msg'] ) ? sanitize_text_field( $_GET['msg'] ) : '';
             $user_email    = isset( $_GET['user_email'] ) ? sanitize_email( $_GET['user_email'] ) : '';
             $auth_token_expires = time() + $expires_in;
 
-			if ( $access_token ) {
-				$oauth_data = array(
-					'access_token'      => $access_token,
-					'refresh_token'     => $refresh_token,
-					'auth_token_expires'=> $auth_token_expires,
-					'vendor_name'       => 'google',
-					'user_email'        => $user_email,
-				);
-            	// Save the OAuth parameters to the WordPress options table.
-            	update_option( 'postman_auth_token', $oauth_data );
-			}
+            if ( $access_token ) {
+                $oauth_data = array(
+                    'access_token'      => $access_token,
+                    'refresh_token'     => $refresh_token,
+                    'auth_token_expires'=> $auth_token_expires,
+                    'vendor_name'       => 'google',
+                    'user_email'        => $user_email,
+                );
+                // Save the OAuth parameters to the WordPress options table.
+                update_option( 'postman_auth_token', $oauth_data );
+            }
         }
     }
 
