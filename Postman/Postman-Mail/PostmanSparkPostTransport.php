@@ -311,6 +311,11 @@ if( !class_exists( 'PostmanSparkPostTransport' ) ):
 
         }
 
+        public static function get_provider_logs() {
+            // Placeholder: Implement SparkPost API log fetching here
+            return [];
+        }
+
     }
 
 endif;

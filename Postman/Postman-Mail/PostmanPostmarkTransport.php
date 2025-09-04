@@ -311,6 +311,11 @@ if( !class_exists( 'PostmanPostmarkTransport' ) ):
 
         }
 
+        public static function get_provider_logs() {
+            // Placeholder: Implement Postmark API log fetching here
+            return [];
+        }
+
     }
 
 endif;

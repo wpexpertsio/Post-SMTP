@@ -305,5 +305,15 @@ class PostmanResendTransport extends PostmanAbstractModuleTransport implements P
         $data [PostmanOptions::RESEND_API_KEY] = PostmanOptions::getInstance ()->getResendApiKey ();
         return $data;
     }
+
+    /**
+     * Placeholder: Implement Resend API log fetching here
+     * 
+     * @since 3.2.0
+     * @version 1.0
+     */
+    public static function get_provider_logs() {
+        return [];
+    }
 }
 endif;

@@ -341,5 +341,16 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
         $data [PostmanOptions::MAILJET_SECRET_KEY] = PostmanOptions::getInstance ()->getMailjetSecretKey ();
 		return $data;
 	}
+
+    /**
+	 * Get provider logs
+	 * 
+	 * @since 2.7.8
+	 * @version 1.0
+	 */
+	public static function get_provider_logs() {
+		// Placeholder: Implement Mailjet API log fetching here
+		return [];
+	}
 }
 endif;

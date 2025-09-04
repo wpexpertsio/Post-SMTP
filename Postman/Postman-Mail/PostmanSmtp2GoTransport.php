@@ -191,6 +191,11 @@
 			public function has_granted() {
 				return true;
 			}
+
+			public static function get_provider_logs() {
+				// Placeholder: Implement SMTP2GO API log fetching here
+				return [];
+			}
 		}
 	}
 

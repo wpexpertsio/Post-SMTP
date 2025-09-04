@@ -292,4 +292,58 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 		return true;
 
 	}
+
+	public static function get_mailgun_logs() {
+		$api_key = get_option('postman_mailgun_api_key');
+		$domain = get_option('postman_mailgun_domain');
+		if (empty($api_key) || empty($domain)) return [];
+		$url = "https://api.mailgun.net/v3/$domain/events";
+		$args = [
+			'headers' => [
+				'Authorization' => 'Basic ' . base64_encode('api:' . $api_key),
+			],
+			'timeout' => 15,
+		];
+		$response = wp_remote_get($url, $args);
+		if (is_wp_error($response)) return [];
+		$body = json_decode(wp_remote_retrieve_body($response), true);
+		if (empty($body['items'])) return [];
+		$logs = [];
+		foreach ($body['items'] as $item) {
+			$logs[] = [
+				'date'    => isset($item['timestamp']) ? date('Y-m-d H:i:s', $item['timestamp']) : '',
+				'to'      => $item['recipient'] ?? '',
+				'subject' => $item['message']['headers']['subject'] ?? '',
+				'status'  => $item['event'] ?? '',
+			];
+		}
+		return $logs;
+	}
+
+	public static function get_provider_logs() {
+		$api_key = get_option('postman_mailgun_api_key');
+		$domain = get_option('postman_mailgun_domain');
+		if (empty($api_key) || empty($domain)) return [];
+		$url = "https://api.mailgun.net/v3/$domain/events";
+		$args = [
+			'headers' => [
+				'Authorization' => 'Basic ' . base64_encode('api:' . $api_key),
+			],
+			'timeout' => 15,
+		];
+		$response = wp_remote_get($url, $args);
+		if (is_wp_error($response)) return [];
+		$body = json_decode(wp_remote_retrieve_body($response), true);
+		if (empty($body['items'])) return [];
+		$logs = [];
+		foreach ($body['items'] as $item) {
+			$logs[] = [
+				'date'    => isset($item['timestamp']) ? date('Y-m-d H:i:s', $item['timestamp']) : '',
+				'to'      => $item['recipient'] ?? '',
+				'subject' => $item['message']['headers']['subject'] ?? '',
+				'status'  => $item['event'] ?? '',
+			];
+		}
+		return $logs;
+	}
 }

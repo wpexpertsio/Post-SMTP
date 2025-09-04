@@ -317,5 +317,16 @@ class PostmanElasticEmailTransport extends PostmanAbstractModuleTransport implem
 		$data [PostmanOptions::ELASTICEMAIL_API_KEY] = PostmanOptions::getInstance ()->getElasticEmailApiKey ();
 		return $data;
 	}
+
+    /**
+	 * Get provider logs
+	 * 
+	 * @since 2.6.0
+	 * @version 1.0
+	 */
+	public static function get_provider_logs() {
+		// Placeholder: Implement Elastic Email API log fetching here
+		return [];
+	}
 }
 endif;

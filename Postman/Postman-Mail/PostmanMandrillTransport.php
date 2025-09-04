@@ -303,4 +303,9 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 		return true;
 
 	}
+
+	public static function get_provider_logs() {
+		// Placeholder: Implement Mandrill API log fetching here
+		return [];
+	}
 }

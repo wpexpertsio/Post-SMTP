@@ -282,4 +282,9 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 		return true;
 
 	}
+
+	public static function get_provider_logs() {
+		// Placeholder: Implement SendGrid API log fetching here
+		return [];
+	}
 }

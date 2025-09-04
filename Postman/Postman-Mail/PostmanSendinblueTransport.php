@@ -317,5 +317,36 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
 		$data [PostmanOptions::SENDINBLUE_API_KEY] = PostmanOptions::getInstance ()->getSendinblueApiKey ();
 		return $data;
 	}
+
+    public static function get_provider_logs() {
+        // Get API key from options
+        $apiKey = PostmanOptions::getInstance()->getSendinblueApiKey();
+        if (empty($apiKey)) return [];
+        $url = 'https://api.sendinblue.com/v3/smtp/statistics/events';
+        $args = [
+            'headers' => [
+                'api-key' => $apiKey,
+                'accept' => 'application/json',
+            ],
+            'timeout' => 15,
+        ];
+        $response = wp_remote_get($url, $args);
+        if (is_wp_error($response)) return [];
+        $body = json_decode(wp_remote_retrieve_body($response), true);
+
+        if (empty($body['events'])) return [];
+        $logs = [];
+        foreach ($body['events'] as $event) {
+            $logs[] = [
+                'id'      => $event['messageId'] ?? ($event['messageId'] ?? ''), // Use uuid or fallback to id if available
+                'subject' => $event['subject'] ?? '',
+                'from'    => $event['from'] ?? '',
+                'to'      => $event['email'] ?? '',
+                'date'    => isset($event['date']) ? $event['date'] : '',
+                'status'  => $event['event'] ?? '',
+            ];
+        }
+        return $logs;
+    }
 }
 endif;
