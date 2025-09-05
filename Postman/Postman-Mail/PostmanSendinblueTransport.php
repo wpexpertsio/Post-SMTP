@@ -318,35 +318,65 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
 		return $data;
 	}
 
+    /**
+     * Retrieve provider logs from Sendinblue API.
+     *
+     * This function fetches SMTP event logs from the Sendinblue API
+     * using the API key saved in plugin options. It then parses the
+     * response and returns an array of formatted logs.
+     *
+     * @since 1.0.0
+     *
+     * @return array List of logs with id, subject, from, to, date, and status.
+     */
     public static function get_provider_logs() {
-        // Get API key from options
-        $apiKey = PostmanOptions::getInstance()->getSendinblueApiKey();
-        if (empty($apiKey)) return [];
-        $url = 'https://api.sendinblue.com/v3/smtp/statistics/events';
+        // Get API key from plugin options.
+        $api_key = PostmanOptions::getInstance()->getSendinblueApiKey();
+
+        if ( empty( $api_key ) ) {
+            return [];
+        }
+
+        // Sendinblue API endpoint for fetching SMTP events.
+        $url  = 'https://api.sendinblue.com/v3/smtp/statistics/events';
         $args = [
             'headers' => [
-                'api-key' => $apiKey,
-                'accept' => 'application/json',
+                'api-key' => $api_key,
+                'accept'  => 'application/json',
             ],
             'timeout' => 15,
         ];
-        $response = wp_remote_get($url, $args);
-        if (is_wp_error($response)) return [];
-        $body = json_decode(wp_remote_retrieve_body($response), true);
 
-        if (empty($body['events'])) return [];
+        // Make the remote request.
+        $response = wp_remote_get( $url, $args );
+
+        if ( is_wp_error( $response ) ) {
+            return [];
+        }
+
+        // Decode the response body.
+        $body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+        if ( empty( $body['events'] ) ) {
+            return [];
+        }
+
         $logs = [];
-        foreach ($body['events'] as $event) {
+
+        // Loop through each event and format the log entry.
+        foreach ( $body['events'] as $event ) {
             $logs[] = [
-                'id'      => $event['messageId'] ?? ($event['messageId'] ?? ''), // Use uuid or fallback to id if available
+                'id'      => $event['messageId'] ?? '',
                 'subject' => $event['subject'] ?? '',
                 'from'    => $event['from'] ?? '',
                 'to'      => $event['email'] ?? '',
-                'date'    => isset($event['date']) ? $event['date'] : '',
+                'date'    => isset( $event['date'] ) ? $event['date'] : '',
                 'status'  => $event['event'] ?? '',
             ];
         }
+
         return $logs;
     }
+
 }
 endif;

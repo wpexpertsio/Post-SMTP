@@ -342,15 +342,72 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
 		return $data;
 	}
 
-    /**
-	 * Get provider logs
-	 * 
-	 * @since 2.7.8
-	 * @version 1.0
+	/**
+	 * Retrieve provider logs from Mailjet API.
+	 *
+	 * Uses Basic Auth with API Key + Secret Key.
+	 * Endpoint: GET https://api.mailjet.com/v3/REST/message
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $args Optional query filters (e.g. Limit, Offset, FromTS, ToTS).
+	 * @return array Normalized logs.
 	 */
-	public static function get_provider_logs() {
-		// Placeholder: Implement Mailjet API log fetching here
-		return [];
+	public static function get_provider_logs( $args = [] ) {
+		$api_key    = PostmanOptions::getInstance()->getMailjetApiKey();
+		$secret_key = PostmanOptions::getInstance()->getMailjetSecretKey();
+		if ( empty( $api_key ) || empty( $secret_key ) ) {
+			return [];
+		}
+
+		$base_url = 'https://api.mailjet.com/v3/REST/message';
+
+		// Default query params, merge with custom args
+		$query = wp_parse_args( $args, [
+			'Limit' => 50,
+		] );
+
+		$url = add_query_arg( $query, $base_url );
+
+		$request_args = [
+			'headers' => [
+				'Authorization' => 'Basic ' . base64_encode( $api_key . ':' . $secret_key ),
+				'Accept'        => 'application/json',
+			],
+			'timeout' => 20,
+		];
+
+		$response = wp_remote_get( $url, $request_args );
+		var_dump($response);
+
+		if ( is_wp_error( $response ) ) {
+			return [];
+		}
+
+		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+		var_dump($body);
+		if ( empty( $body['Data'] ) || ! is_array( $body['Data'] ) ) {
+			return [];
+		}
+
+		$logs = [];
+
+		foreach ( $body['Data'] as $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+
+			$logs[] = [
+				'id'      => $item['ID'] ?? '',
+				'subject' => $item['Subject'] ?? '',
+				'from'    => $item['FromEmail'] ?? '',
+				'to'      => $item['To'] ?? '',
+				'date'    => $item['ArrivedAt'] ?? $item['CreatedAt'] ?? '',
+				'status'  => $item['Status'] ?? '',
+			];
+		}
+
+		return $logs;
 	}
 }
 endif;

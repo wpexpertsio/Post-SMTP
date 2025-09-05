@@ -319,14 +319,80 @@ class PostmanElasticEmailTransport extends PostmanAbstractModuleTransport implem
 	}
 
     /**
-	 * Get provider logs
-	 * 
-	 * @since 2.6.0
-	 * @version 1.0
-	 */
-	public static function get_provider_logs() {
-		// Placeholder: Implement Elastic Email API log fetching here
-		return [];
-	}
+     * Retrieve provider logs from SMTP2GO API.
+     *
+     * This function fetches email activity logs from the SMTP2GO API
+     * using the API key saved in plugin options. It then parses the
+     * response and returns an array of formatted logs.
+     *
+     * Notes:
+     * - Auth header must be sent as `Authorization: Bearer {API_KEY}`.
+     * - Endpoint: https://api.smtp2go.com/v3/email/log
+     * - You can pass filters like limit, date ranges, status, etc.
+     *
+     * @since 1.0.0
+     *
+     * @return array List of logs with id, subject, from, to, date, and status.
+     */
+    public static function get_provider_logs() {
+        // Get API key from plugin options.
+        $api_key = PostmanOptions::getInstance()->getSmtp2GoApiKey();
+
+        if ( empty( $api_key ) ) {
+            return [];
+        }
+
+        // SMTP2GO API endpoint for fetching email logs.
+        $url  = 'https://api.smtp2go.com/v3/email/log';
+        $args = [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $api_key,
+                'accept'        => 'application/json',
+            ],
+            'timeout' => 15,
+        ];
+
+        // Example: fetch the last 100 logs.
+        $query = [
+            'limit' => 100,
+            // 'date_from' => gmdate( 'c', strtotime( '-7 days' ) ), // Optional filter.
+        ];
+
+        // Make the remote request.
+        $response = wp_remote_get( add_query_arg( $query, $url ), $args );
+
+        if ( is_wp_error( $response ) ) {
+            return [];
+        }
+
+        // Decode the response body.
+        $body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+        if ( empty( $body['data'] ) || ! is_array( $body['data'] ) ) {
+            return [];
+        }
+
+        $logs = [];
+
+        // Loop through each event and format the log entry.
+        foreach ( $body['data'] as $event ) {
+            if ( ! is_array( $event ) ) {
+                continue;
+            }
+
+            $logs[] = [
+                // SMTP2GO returns MessageID for each email.
+                'id'      => $event['message_id'] ?? '',
+                'subject' => $event['subject'] ?? '',
+                'from'    => $event['sender'] ?? '',
+                'to'      => $event['recipient'] ?? '',
+                'date'    => $event['date'] ?? '',
+                'status'  => $event['status'] ?? '',
+            ];
+        }
+
+        return $logs;
+}
+
 }
 endif;

@@ -283,8 +283,77 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 
 	}
 
+	/**
+	 * Retrieve provider logs from SendGrid API.
+	 *
+	 * This function fetches email activity logs from the SendGrid API
+	 * using the API key saved in plugin options. It then parses the
+	 * response and returns an array of formatted logs.
+	 *
+	 * Notes:
+	 * - Auth header must be sent as `Authorization: Bearer {API_KEY}`.
+	 * - Endpoint: https://api.sendgrid.com/v3/messages (GET).
+	 * - Response contains `messages[]`.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array List of logs with id, subject, from, to, date, and status.
+	 */
 	public static function get_provider_logs() {
-		// Placeholder: Implement SendGrid API log fetching here
-		return [];
+		// Get API key from plugin options.
+		$api_key = PostmanOptions::getInstance()->getSendgridApiKey();
+		if ( empty( $api_key ) ) {
+			return [];
+		}
+
+		// SendGrid API endpoint.
+		$url = 'https://api.sendgrid.com/v3/messages';
+
+		// Request params (adjust as needed).
+		$query = [
+			'limit' => 50,
+		];
+
+		$args = [
+			'headers' => [
+				'Authorization' => 'Bearer ' . $api_key,
+				'accept'        => 'application/json',
+			],
+			'timeout' => 15,
+		];
+
+		// Make the GET request.
+		$response = wp_remote_get( add_query_arg( $query, $url ), $args );
+		
+		if ( is_wp_error( $response ) ) {
+			return [];
+		}
+
+		// Decode the response body.
+		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+		if ( empty( $body['messages'] ) || ! is_array( $body['messages'] ) ) {
+			return [];
+		}
+
+		$logs = [];
+
+		// Loop through each message and format the log entry.
+		foreach ( $body['messages'] as $message ) {
+			if ( ! is_array( $message ) ) {
+				continue;
+			}
+
+			$logs[] = [
+				'id'      => $message['msg_id'] ?? '',
+				'subject' => $message['subject'] ?? '',
+				'from'    => $message['from_email'] ?? '',
+				'to'      => $message['to_email'] ?? '',
+				'date'    => $message['last_event_time'] ?? '',
+				'status'  => $message['status'] ?? '',
+			];
+		}
+
+		return $logs;
 	}
+
 }

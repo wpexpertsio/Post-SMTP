@@ -27,6 +27,7 @@
                 'resend'       => __( 'Resend', 'post-smtp' ),
                 'smtp2go'      => __( 'SMTP2GO', 'post-smtp' ),
                 'sparkpost'    => __( 'SparkPost', 'post-smtp' ),
+                'sendpulse'    => __( 'SendPulse', 'post-smtp' ),
             );
             ?>
             <label style="margin-right: 16px;">

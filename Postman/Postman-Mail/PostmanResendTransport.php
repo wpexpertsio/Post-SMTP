@@ -306,14 +306,74 @@ class PostmanResendTransport extends PostmanAbstractModuleTransport implements P
         return $data;
     }
 
-    /**
-     * Placeholder: Implement Resend API log fetching here
-     * 
-     * @since 3.2.0
-     * @version 1.0
-     */
-    public static function get_provider_logs() {
-        return [];
-    }
+	/**
+	 * Retrieve provider logs from Resend API.
+	 *
+	 * This function fetches email logs from the Resend API
+	 * using the API key saved in plugin options. It then parses
+	 * the response and returns an array of formatted logs.
+	 *
+	 * Notes:
+	 * - Auth header must be sent as `Authorization: Bearer {API_KEY}`.
+	 * - Endpoint: https://api.resend.com/emails (GET).
+	 * - Response contains `data[]`.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array List of logs with id, subject, from, to, date, and status.
+	 */
+	public static function get_provider_logs() {
+		// Get API key from plugin options.
+		$api_key = PostmanOptions::getInstance()->getResendApiKey();
+		if ( empty( $api_key ) ) {
+			return [];
+		}
+
+		// Resend API endpoint.
+		$url = 'https://api.resend.com/emails';
+
+		$args = [
+			'headers' => [
+				'Authorization' => 'Bearer ' . $api_key,
+				'accept'        => 'application/json',
+			],
+			'timeout' => 15,
+		];
+
+		// Make the GET request.
+		$response = wp_remote_get( $url, $args );
+
+		if ( is_wp_error( $response ) ) {
+			return [];
+		}
+
+		// Decode the response body.
+		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+		
+		if ( empty( $body['data'] ) || ! is_array( $body['data'] ) ) {
+			return [];
+		}
+
+		$logs = [];
+
+		// Loop through each email and format the log entry.
+		foreach ( $body['data'] as $email ) {
+			if ( ! is_array( $email ) ) {
+				continue;
+			}
+
+			$logs[] = [
+				'id'      => $email['id'] ?? '',
+				'subject' => $email['subject'] ?? '',
+				'from'    => $email['from'] ?? '',
+				'to'      => isset( $email['to'] ) ? implode( ',', (array) $email['to'] ) : '',
+				'date'    => $email['created_at'] ?? '',
+				'status'  => $email['last_event'] ?? '',
+			];
+		}
+
+		return $logs;
+	}
+
 }
 endif;

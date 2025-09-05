@@ -311,9 +311,78 @@ if( !class_exists( 'PostmanSparkPostTransport' ) ):
 
         }
 
+        /**
+         * Retrieve provider logs from SparkPost API.
+         *
+         * This function fetches email activity logs from the SparkPost API
+         * using the API key saved in plugin options. It then parses the
+         * response and returns an array of formatted logs.
+         *
+         * Notes:
+         * - Auth header must be sent as `Authorization: {API_KEY}` (no Bearer).
+         * - Endpoint: https://api.sparkpost.com/api/v1/events/message (GET).
+         * - Response contains `results[]`.
+         *
+         * @since 1.0.0
+         *
+         * @return array List of logs with id, subject, from, to, date, and status.
+         */
         public static function get_provider_logs() {
-            // Placeholder: Implement SparkPost API log fetching here
-            return [];
+            // Get API key from plugin options.
+            $api_key = PostmanOptions::getInstance()->getSparkPostApiKey();
+
+            if ( empty( $api_key ) ) {
+                return [];
+            }
+
+            // SparkPost API endpoint.
+            $url = 'https://api.sparkpost.com/api/v1/events/message';
+
+            // Request params (adjust as needed).
+            $query = [
+                'limit' => 50,
+            ];
+
+            $args = [
+                'headers' => [
+                    'Authorization' => $api_key, // No "Bearer"
+                    'accept'        => 'application/json',
+                ],
+                'timeout' => 15,
+            ];
+
+            // Make the GET request.
+            $response = wp_remote_get( add_query_arg( $query, $url ), $args );
+
+            if ( is_wp_error( $response ) ) {
+                return [];
+            }
+
+            // Decode the response body.
+            $body = json_decode( wp_remote_retrieve_body( $response ), true );
+            if ( empty( $body['results'] ) || ! is_array( $body['results'] ) ) {
+                return [];
+            }
+
+            $logs = [];
+
+            // Loop through each event and format the log entry.
+            foreach ( $body['results'] as $event ) {
+                if ( ! is_array( $event ) ) {
+                    continue;
+                }
+
+                $logs[] = [
+                    'id'      => $event['message_id'] ?? '',
+                    'subject' => $event['subject'] ?? '',
+                    'from'    => $event['friendly_from'] ?? '',
+                    'to'      => $event['rcpt_to'] ?? '',
+                    'date'    => $event['timestamp'] ?? '',
+                    'status'  => $event['type'] ?? '',
+                ];
+            }
+
+            return $logs;
         }
 
     }

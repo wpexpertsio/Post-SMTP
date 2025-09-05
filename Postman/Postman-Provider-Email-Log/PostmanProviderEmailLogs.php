@@ -155,6 +155,7 @@ public function enqueue_scripts( $hook ) {
 			'smtp2go'      => 'PostmanSmtp2goTransport',
 			'sparkpost'    => 'PostmanSparkpostTransport',
 			'smtp'         => 'PostsmtpMailer',
+			'sendpulse'    => 'PostmanSendpulseTransport',
 		);
 
 		if ( isset( $provider_map[ $provider ] ) && method_exists( $provider_map[ $provider ], 'get_provider_logs' ) ) {

@@ -192,10 +192,83 @@
 				return true;
 			}
 
+			/**
+			 * Retrieve provider logs from SMTP2GO API.
+			 *
+			 * This function fetches email activity logs from the SMTP2GO API
+			 * using the API key saved in plugin options. It then parses the
+			 * response and returns an array of formatted logs.
+			 *
+			 * Notes:
+			 * - Auth header must be sent as `X-Smtp2go-Api-Key: {API_KEY}`.
+			 * - Endpoint: https://api.smtp2go.com/v3/activity/search (POST).
+			 * - Response contains `data.events[]`.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @return array List of logs with id, subject, from, to, date, and status.
+			 */
 			public static function get_provider_logs() {
-				// Placeholder: Implement SMTP2GO API log fetching here
-				return [];
+				// Get API key from plugin options.
+				$api_key = PostmanOptions::getInstance()->getSmtp2GoApiKey();
+
+				if ( empty( $api_key ) ) {
+					return [];
+				}
+
+				// SMTP2GO API endpoint.
+				$url = 'https://api.smtp2go.com/v3/activity/search';
+
+				// Request body: customize filters as needed.
+				$body = [
+					'limit'        => 50,
+				];
+
+				$args = [
+					'headers' => [
+						'X-Smtp2go-Api-Key' => $api_key,
+						'Content-Type'      => 'application/json',
+						'accept'            => 'application/json',
+					],
+					'body'    => wp_json_encode( $body ),
+					'timeout' => 15,
+				];
+
+				// Make the POST request.
+				$response = wp_remote_post( $url, $args );
+
+				if ( is_wp_error( $response ) ) {
+					return [];
+				}
+
+				// Decode the response body.
+				$body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+				if ( empty( $body['data']['events'] ) || ! is_array( $body['data']['events'] ) ) {
+					return [];
+				}
+
+				$logs = [];
+
+				// Loop through each event and format the log entry.
+				foreach ( $body['data']['events'] as $event ) {
+					if ( ! is_array( $event ) ) {
+						continue;
+					}
+
+					$logs[] = [
+						'id'      => $event['email_id'] ?? '',
+						'subject' => $event['subject'] ?? '',
+						'from'    => $event['from'] ?? $event['sender'] ?? '',
+						'to'      => $event['to'] ?? $event['recipient'] ?? '',
+						'date'    => $event['date'] ?? '',
+						'status'  => $event['event'] ?? '',
+					];
+				}
+
+				return $logs;
 			}
+
 		}
 	}
 
