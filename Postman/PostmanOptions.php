@@ -603,7 +603,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
 
 			if ( isset( $this->options[ PostmanOptions::EMAILIT_API_KEY ] ) ) {
-				return base64_decode( base64_decode( $this->options[ PostmanOptions::EMAILIT_API_KEY ] ) );
+				return base64_decode( $this->options[ PostmanOptions::EMAILIT_API_KEY ] );
 			}
 			return null;
 		}
