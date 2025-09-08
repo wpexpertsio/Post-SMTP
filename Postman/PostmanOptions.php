@@ -467,10 +467,31 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				return POST_SMTP_FALLBACK_AUTH_PASSWORD;
 			}
 
-			if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_PASSWORD ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::FALLBACK_SMTP_PASSWORD ] );
+			if ( isset( $this->options[ PostmanOptions::FALLBACK_SMTP_PASSWORD ] ) ) {
+				$value = $this->options[ PostmanOptions::FALLBACK_SMTP_PASSWORD ];
+
+				// First decode
+				$decoded = base64_decode( $value, true );
+
+				// If decoding fails, return as is
+				if ( $decoded === false ) {
+					return $value;
+				}
+
+				// Check if it looks like another base64 string (only base64 chars and length multiple of 4)
+				if ( preg_match( '/^[A-Za-z0-9\/\r\n+]*={0,2}$/', $decoded ) && strlen( $decoded ) % 4 === 0 ) {
+					$double_decoded = base64_decode( $decoded, true );
+					if ( $double_decoded !== false ) {
+						return $double_decoded;
+					}
+				}
+
+				return $decoded;
 			}
+
+			return null;
 		}
+
 
 		// End Fallback
 
