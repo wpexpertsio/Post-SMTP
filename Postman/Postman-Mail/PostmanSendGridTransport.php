@@ -319,7 +319,7 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 				'Authorization' => 'Bearer ' . $api_key,
 				'accept'        => 'application/json',
 			],
-			'timeout' => 15,
+			'timeout' => 30,
 		];
 
 		// Make the GET request.

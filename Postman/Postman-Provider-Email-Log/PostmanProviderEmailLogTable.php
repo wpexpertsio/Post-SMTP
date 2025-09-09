@@ -16,11 +16,7 @@
             <?php
             // Define provider list. You can update this array as needed.
             $providers = array(
-                'mailgun'      => __( 'Mailgun', 'post-smtp' ),
-                'gmail'        => __( 'Gmail', 'post-smtp' ),
                 'sendinblue'   => __( 'Sendinblue', 'post-smtp' ),
-                'mailjet'      => __( 'Mailjet', 'post-smtp' ),
-                'mandrill'     => __( 'Mandrill', 'post-smtp' ),
                 'sendgrid'     => __( 'Sendgrid', 'post-smtp' ),
                 'elasticemail' => __( 'Elastic Email', 'post-smtp' ),
                 'postmark'     => __( 'Postmark', 'post-smtp' ),
@@ -28,6 +24,11 @@
                 'smtp2go'      => __( 'SMTP2GO', 'post-smtp' ),
                 'sparkpost'    => __( 'SparkPost', 'post-smtp' ),
                 'sendpulse'    => __( 'SendPulse', 'post-smtp' ),
+                'gmail'        => __( 'Gmail', 'post-smtp' ),
+                'aws_ses_api'  => __( 'AWS SES API', 'post-smtp' ),
+                'zohomail_api' => __( 'Zoho Mail API', 'post-smtp' ),
+                'office365_api' => __( 'Office 365 API', 'post-smtp' ),
+
             );
             ?>
             <label style="margin-right: 16px;">

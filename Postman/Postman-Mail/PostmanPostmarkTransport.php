@@ -311,10 +311,85 @@ if( !class_exists( 'PostmanPostmarkTransport' ) ):
 
         }
 
-        public static function get_provider_logs() {
-            // Placeholder: Implement Postmark API log fetching here
-            return [];
-        }
+		/**
+		 * Retrieve provider logs from Postmark API.
+		 *
+		 * This function fetches email activity logs from the Postmark API
+		 * using the API key saved in plugin options. It then parses the
+		 * response and returns an array of formatted logs.
+		 *
+		 * Notes:
+		 * - Auth header must be sent as `X-Postmark-Server-Token: {API_KEY}`.
+		 * - Endpoint: https://api.postmarkapp.com/messages/outbound (GET).
+		 * - Response contains `Messages[]`.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @return array List of logs with id, subject, from, to, date, and status.
+		 */
+		public static function get_provider_logs() {
+			// Get API key from plugin options.
+			$api_key = PostmanOptions::getInstance()->getPostmarkApiKey();
+
+			if ( empty( $api_key ) ) {
+				return [];
+			}
+
+			// Postmark API endpoint (latest 50 messages).
+			$url = 'https://api.postmarkapp.com/messages/outbound';
+
+			$args = [
+				'headers' => [
+					'X-Postmark-Server-Token' => $api_key,
+					'Content-Type'            => 'application/json',
+					'accept'                  => 'application/json',
+				],
+				'timeout' => 15,
+			];
+
+			// Make the GET request.
+			$response = wp_remote_get( $url, $args );
+
+			if ( is_wp_error( $response ) ) {
+				return [];
+			}
+
+			// Decode the response body.
+			$body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+			if ( empty( $body['Messages'] ) || ! is_array( $body['Messages'] ) ) {
+				return [];
+			}
+
+			$logs = [];
+
+			// Loop through each message and format the log entry.
+			foreach ( $body['Messages'] as $message ) {
+				if ( ! is_array( $message ) ) {
+					continue;
+				}
+
+				$to_emails = [];
+				if ( ! empty( $message['To'] ) && is_array( $message['To'] ) ) {
+					foreach ( $message['To'] as $recipient ) {
+						if ( ! empty( $recipient['Email'] ) ) {
+							$to_emails[] = $recipient['Email'];
+						}
+					}
+				}
+
+				$logs[] = [
+					'id'      => $message['MessageID'] ?? '',
+					'subject' => $message['Subject'] ?? '',
+					'from'    => $message['From'] ?? '',
+					'to'      => implode( ', ', $to_emails ),
+					'date'    => $message['ReceivedAt'] ?? '',
+					'status'  => $message['Status'] ?? '',
+				];
+			}
+
+			return $logs;
+		}
 
     }
 

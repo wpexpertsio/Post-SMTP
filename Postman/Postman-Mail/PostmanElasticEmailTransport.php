@@ -319,16 +319,16 @@ class PostmanElasticEmailTransport extends PostmanAbstractModuleTransport implem
 	}
 
     /**
-     * Retrieve provider logs from SMTP2GO API.
+     * Retrieve provider logs from Elastic Email API.
      *
-     * This function fetches email activity logs from the SMTP2GO API
+     * This function fetches email activity logs from the Elastic Email API
      * using the API key saved in plugin options. It then parses the
      * response and returns an array of formatted logs.
      *
      * Notes:
-     * - Auth header must be sent as `Authorization: Bearer {API_KEY}`.
-     * - Endpoint: https://api.smtp2go.com/v3/email/log
-     * - You can pass filters like limit, date ranges, status, etc.
+     * - Auth header must be sent as `X-ElasticEmail-ApiKey: {API_KEY}`.
+     * - Endpoint: https://api.elasticemail.com/v4/events
+     * - Response is an array of event objects.
      *
      * @since 1.0.0
      *
@@ -336,30 +336,26 @@ class PostmanElasticEmailTransport extends PostmanAbstractModuleTransport implem
      */
     public static function get_provider_logs() {
         // Get API key from plugin options.
-        $api_key = PostmanOptions::getInstance()->getSmtp2GoApiKey();
+        $api_key = PostmanOptions::getInstance()->getElasticEmailApiKey();
 
         if ( empty( $api_key ) ) {
             return [];
         }
 
-        // SMTP2GO API endpoint for fetching email logs.
-        $url  = 'https://api.smtp2go.com/v3/email/log';
+        // Elastic Email API endpoint (fetch last 50 events).
+        $url = 'https://api.elasticemail.com/v4/events?limit=50';
+
         $args = [
             'headers' => [
-                'Authorization' => 'Bearer ' . $api_key,
-                'accept'        => 'application/json',
+                'X-ElasticEmail-ApiKey' => $api_key,
+                'Content-Type'          => 'application/json',
+                'accept'                => 'application/json',
             ],
             'timeout' => 15,
         ];
 
-        // Example: fetch the last 100 logs.
-        $query = [
-            'limit' => 100,
-            // 'date_from' => gmdate( 'c', strtotime( '-7 days' ) ), // Optional filter.
-        ];
-
-        // Make the remote request.
-        $response = wp_remote_get( add_query_arg( $query, $url ), $args );
+        // Make the GET request.
+        $response = wp_remote_get( $url, $args );
 
         if ( is_wp_error( $response ) ) {
             return [];
@@ -368,31 +364,31 @@ class PostmanElasticEmailTransport extends PostmanAbstractModuleTransport implem
         // Decode the response body.
         $body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-        if ( empty( $body['data'] ) || ! is_array( $body['data'] ) ) {
+        if ( empty( $body ) || ! is_array( $body ) ) {
             return [];
         }
 
         $logs = [];
 
         // Loop through each event and format the log entry.
-        foreach ( $body['data'] as $event ) {
+        foreach ( $body as $event ) {
             if ( ! is_array( $event ) ) {
                 continue;
             }
 
             $logs[] = [
-                // SMTP2GO returns MessageID for each email.
-                'id'      => $event['message_id'] ?? '',
-                'subject' => $event['subject'] ?? '',
-                'from'    => $event['sender'] ?? '',
-                'to'      => $event['recipient'] ?? '',
-                'date'    => $event['date'] ?? '',
-                'status'  => $event['status'] ?? '',
+                'id'      => $event['TransactionID'] ?? $event['MsgID'] ?? '',
+                'subject' => $event['Subject'] ?? '',
+                'from'    => $event['FromEmail'] ?? '',
+                'to'      => $event['To'] ?? '',
+                'date'    => $event['EventDate'] ?? '',
+                'status'  => $event['EventType'] ?? '',
             ];
         }
 
         return $logs;
-}
+    }
+
 
 }
 endif;

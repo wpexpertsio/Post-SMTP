@@ -143,19 +143,22 @@ public function enqueue_scripts( $hook ) {
 
 		// Map provider slug to class.
 		$provider_map = array(
-			'mailgun'      => 'PostmanMailgunTransport',
-			'gmail'        => 'PostmanGmailApiModuleTransport',
+			// 'mailgun'      => 'PostmanMailgunTransport',
+			// 'mailjet'      => 'PostmanMailjetTransport',
+			// 'mandrill'     => 'PostmanMandrillTransport',
+			// 'smtp'         => 'PostsmtpMailer',
 			'sendinblue'   => 'PostmanSendinblueTransport',
-			'mailjet'      => 'PostmanMailjetTransport',
-			'mandrill'     => 'PostmanMandrillTransport',
 			'sendgrid'     => 'PostmanSendgridTransport',
 			'elasticemail' => 'PostmanElasticemailTransport',
 			'postmark'     => 'PostmanPostmarkTransport',
 			'resend'       => 'PostmanResendTransport',
 			'smtp2go'      => 'PostmanSmtp2goTransport',
 			'sparkpost'    => 'PostmanSparkpostTransport',
-			'smtp'         => 'PostsmtpMailer',
 			'sendpulse'    => 'PostmanSendpulseTransport',
+			'gmail'        => 'PostmanGmailApiModuleTransport',
+			'aws_ses_api'  => 'PostmanAwsSesApiModuleTransport',
+			'zohomail_api' => 'PostmanZohoMailApiModuleTransport',
+			'office365_api' => 'PostmanOffice365ApiModuleTransport',
 		);
 
 		if ( isset( $provider_map[ $provider ] ) && method_exists( $provider_map[ $provider ], 'get_provider_logs' ) ) {

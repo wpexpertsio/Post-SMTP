@@ -350,10 +350,15 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	}
 
 	public static function get_provider_logs() {
+		// Ensure Google Client library is loaded
+		if (!class_exists('Google_Client')) {
+			require_once dirname(__FILE__) . '/libs/vendor/autoload.php';
+		}
 	    // Fetch logs using Gmail API if credentials are available
-	    $client_id = get_option('postman_gmail_client_id');
-	    $client_secret = get_option('postman_gmail_client_secret');
-	    $refresh_token = get_option('postman_gmail_refresh_token');
+		$options = PostmanOptions::getInstance();
+		$client_id = $options->getClientId();
+		$client_secret = $options->getClientSecret();
+		$refresh_token = PostmanOAuthToken::getInstance()->getRefreshToken();
 	    if (empty($client_id) || empty($client_secret) || empty($refresh_token)) {
 	        return [];
 	    }
