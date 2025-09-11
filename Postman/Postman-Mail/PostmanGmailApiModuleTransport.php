@@ -350,51 +350,84 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	}
 
 	public static function get_provider_logs() {
-		// Ensure Google Client library is loaded
-		if (!class_exists('Google_Client')) {
-			require_once dirname(__FILE__) . '/libs/vendor/autoload.php';
+		// Fetch logs using Gmail API if credentials are available
+		$options        = PostmanOptions::getInstance();
+		$client_id      = $options->getClientId();
+		$client_secret  = $options->getClientSecret();
+		$refresh_token  = PostmanOAuthToken::getInstance()->getRefreshToken();
+
+		if ( empty( $client_id ) || empty( $client_secret ) || empty( $refresh_token ) ) {
+			return [
+				'success' => false,
+				'data'    => [],
+				'columns' => [],
+				'total'   => 0,
+			];
 		}
-	    // Fetch logs using Gmail API if credentials are available
-		$options = PostmanOptions::getInstance();
-		$client_id = $options->getClientId();
-		$client_secret = $options->getClientSecret();
-		$refresh_token = PostmanOAuthToken::getInstance()->getRefreshToken();
-	    if (empty($client_id) || empty($client_secret) || empty($refresh_token)) {
-	        return [];
-	    }
-	    try {
-	        $client = new \Google_Client();
-	        $client->setClientId($client_id);
-	        $client->setClientSecret($client_secret);
-	        $client->setAccessType('offline');
-	        $client->setApprovalPrompt('force');
-	        $client->setIncludeGrantedScopes(true);
-	        $client->setScopes([\Google_Service_Gmail::GMAIL_READONLY]);
-	        $client->setRedirectUri('urn:ietf:wg:oauth:2.0:oob');
-	        $client->refreshToken($refresh_token);
-	        $service = new \Google_Service_Gmail($client);
-	        $user = 'me';
-	        $messages = $service->users_messages->listUsersMessages($user, ['maxResults' => 10, 'labelIds' => ['SENT']]);
-	        $logs = [];
-	        foreach ($messages->getMessages() as $msg) {
-	            $msgDetail = $service->users_messages->get($user, $msg->getId(), ['format' => 'metadata', 'metadataHeaders' => ['To', 'Subject', 'Date']]);
-	            $headers = $msgDetail->getPayload()->getHeaders();
-	            $to = $subject = $date = '';
-	            foreach ($headers as $header) {
-	                if ($header->getName() === 'To') $to = $header->getValue();
-	                if ($header->getName() === 'Subject') $subject = $header->getValue();
-	                if ($header->getName() === 'Date') $date = $header->getValue();
-	            }
-	            $logs[] = [
-	                'date' => $date,
-	                'to' => $to,
-	                'subject' => $subject,
-	                'status' => 'Sent',
-	            ];
-	        }
-	        return $logs;
-	    } catch (\Exception $e) {
-	        return [];
-	    }
+
+		try {
+			// Load Google Client API
+			require_once 'libs/vendor/autoload.php';
+			$client = new Google_Client();
+			$client->setClientId( $client_id );
+			$client->setClientSecret( $client_secret );
+			$client->setAccessType( 'offline' );
+			$client->setApprovalPrompt( 'force' );
+			$client->setIncludeGrantedScopes( true );
+			$client->setScopes( [ Gmail::MAIL_GOOGLE_COM ] );
+			$client->setRedirectUri( 'urn:ietf:wg:oauth:2.0:oob' );
+			$client->refreshToken( $refresh_token );
+
+			$service  = new Gmail( $client );
+			$user     = 'me';
+			$messages = $service->users_messages->listUsersMessages(
+				$user,
+				[ 'maxResults' => 10, 'labelIds' => [ 'SENT' ] ]
+			);
+
+			$logs = [];
+			foreach ( $messages->getMessages() as $msg ) {
+				$msgDetail = $service->users_messages->get(
+					$user,
+					$msg->getId(),
+					[ 'format' => 'metadata', 'metadataHeaders' => [ 'To', 'Subject', 'Date' ] ]
+				);
+
+				$headers = $msgDetail->getPayload()->getHeaders();
+				$to = $subject = $date = '';
+
+				foreach ( $headers as $header ) {
+					if ( $header->getName() === 'To' ) {
+						$to = $header->getValue();
+					}
+					if ( $header->getName() === 'Subject' ) {
+						$subject = $header->getValue();
+					}
+					if ( $header->getName() === 'Date' ) {
+						$date = $header->getValue();
+					}
+				}
+
+				$logs[] = [
+					'id'        => $msg->getId(),
+					'messageId' => $msg->getId(),
+					'from'      => 'me',
+					'to'        => $to,
+					'subject'   => $subject,
+					'date'      => $date,
+					'status'    => 'Sent',
+				];
+			}
+			return $logs;
+
+		} catch ( \Exception $e ) {
+			return [
+				'success' => false,
+				'data'    => [],
+				'columns' => [],
+				'total'   => 0,
+				'error'   => $e->getMessage(),
+			];
+		}
 	}
 }
