@@ -372,7 +372,7 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		 * @param array $args Optional filters: limit, offset, date_from (YYYY-MM-DD), date_to (YYYY-MM-DD)
 		 * @return array Normalized logs array; empty array on error.
 		 */
-		public static function get_provider_logs( $args = [] ) {
+		public static function get_provider_logs( $from = '', $to = '' ) {
 			// Try to get an already saved access token first (optional).
 			$access_token = '';
 
@@ -423,13 +423,26 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 			// Build request to the SMTP emails endpoint.
 			$base_url = 'https://api.sendpulse.com/smtp/emails';
 
-			// Default query params, merge with user-provided $args.
-			$query = wp_parse_args( $args, [
-				'limit'  => 50,
-				'offset' => 0,
-			] );
+			   // Build query params from direct arguments
+			   $query = [];
+			   if ( $from ) {
+				   $query['from'] = $from;
+			   }
+			   if ( $to ) {
+				   $query['to'] = $to;
+			   }
+			   if ( $search ) {
+				   // SendPulse API does not have a generic 'search', but you can map to sender/recipient if needed
+				   $query['recipient'] = $search;
+			   }
+			   if ( $limit !== null ) {
+				   $query['limit'] = $limit;
+			   }
+			   if ( $offset !== null ) {
+				   $query['offset'] = $offset;
+			   }
 
-			$url = add_query_arg( $query, $base_url );
+			   $url = add_query_arg( $query, $base_url );
 
 			$request_args = [
 				'headers' => [

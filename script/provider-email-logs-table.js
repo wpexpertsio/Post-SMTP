@@ -77,31 +77,32 @@ jQuery(document).ready(function($) {
                 security: postman_provider_logs.nonce
             },
             success: function(response) {
-	
+                $('#ps-provider-log-loader').hide();
                 if (response.success && response.data.logs && response.data.logs.length > 0) {
                     providerLogs = response.data.logs;
                     renderTable(providerLogs);
                 } else {
                     providerLogs = [];
-                     if (table) {
-						table.clear().draw(); // ✅ clears old rows
-					}
-					$('#ps-email-log tbody').append(
-						'<tr class="ps-no-logs-row"><td colspan="6">' + 
-						(postman_provider_logs.none_label || 'No logs found.') + 
-						'</td></tr>'
-					);
+                    if (table) {
+                        table.clear().draw(); // ✅ clears old rows
+                    }
+                    $('#ps-email-log tbody').append(
+                        '<tr class="ps-no-logs-row"><td colspan="6">' + 
+                        (postman_provider_logs.none_label || 'No logs found.') + 
+                        '</td></tr>'
+                    );
                 }
             },
             error: function() {
-				  if (table) {
-					table.clear().draw(); // ✅ clears old rows
-				}
-				$('#ps-email-log tbody').append(
-					'<tr class="ps-no-logs-row"><td colspan="6">' + 
-					(postman_provider_logs.error_label || 'Error loading logs.') + 
-					'</td></tr>'
-				);
+                $('#ps-provider-log-loader').hide();
+                if (table) {
+                    table.clear().draw(); // ✅ clears old rows
+                }
+                $('#ps-email-log tbody').append(
+                    '<tr class="ps-no-logs-row"><td colspan="6">' + 
+                    (postman_provider_logs.error_label || 'Error loading logs.') + 
+                    '</td></tr>'
+                );
             }
         });
     }

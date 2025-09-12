@@ -349,7 +349,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 
 	}
 
-	public static function get_provider_logs() {
+	public static function get_provider_logs( $from = '', $to = '' ) {
 		// Fetch logs using Gmail API if credentials are available
 		$options        = PostmanOptions::getInstance();
 		$client_id      = $options->getClientId();
@@ -380,9 +380,21 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 
 			$service  = new Gmail( $client );
 			$user     = 'me';
+			
+			// Build query string for date filters.
+			$query_parts = [ 'in:sent' ];
+			
+			if ( ! empty( $from ) ) {
+				$query_parts[] = 'after:' . date( 'Y/m/d', strtotime( $from ) );
+			}
+			if ( ! empty( $to ) ) {
+				$query_parts[] = 'before:' . date( 'Y/m/d', strtotime( $to . ' +1 day' ) ); 
+			}
+			$query = implode( ' ', $query_parts );
+			
 			$messages = $service->users_messages->listUsersMessages(
 				$user,
-				[ 'maxResults' => 10, 'labelIds' => [ 'SENT' ] ]
+				[ 'maxResults' => 100, 'q' => $query ]
 			);
 
 			$logs = [];
@@ -419,6 +431,12 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 				];
 			}
 			return $logs;
+			return [
+				'success' => true,
+				'data'    => $logs,
+				'columns' => [ 'id', 'messageId', 'from', 'to', 'subject', 'date', 'status' ],
+				'total'   => $messages->getResultSizeEstimate() ?? count( $logs ),
+			];
 
 		} catch ( \Exception $e ) {
 			return [
@@ -430,4 +448,6 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 			];
 		}
 	}
+
+
 }

@@ -208,7 +208,7 @@
 			 *
 			 * @return array List of logs with id, subject, from, to, date, and status.
 			 */
-			public static function get_provider_logs() {
+			public static function get_provider_logs( $from = '', $to = '' ) {
 				// Get API key from plugin options.
 				$api_key = PostmanOptions::getInstance()->getSmtp2GoApiKey();
 
@@ -219,10 +219,17 @@
 				// SMTP2GO API endpoint.
 				$url = 'https://api.smtp2go.com/v3/activity/search';
 
-				// Request body: customize filters as needed.
-				$body = [
-					'limit'        => 50,
-				];
+				// Request body: add start_date, end_date, and search if provided.
+				$body = [];
+				if ( ! empty( $from ) ) {
+					$body['start_date'] = $from;
+				}
+				if ( ! empty( $to ) ) {
+					$body['end_date'] = $to;
+				}
+				if ( ! empty( $search ) ) {
+					$body['search'] = $search;
+				}
 
 				$args = [
 					'headers' => [

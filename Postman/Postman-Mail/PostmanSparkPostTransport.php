@@ -327,7 +327,7 @@ if( !class_exists( 'PostmanSparkPostTransport' ) ):
          *
          * @return array List of logs with id, subject, from, to, date, and status.
          */
-        public static function get_provider_logs() {
+        public static function get_provider_logs( $from = '', $to = '' ) {
             // Get API key from plugin options.
             $api_key = PostmanOptions::getInstance()->getSparkPostApiKey();
 
@@ -338,10 +338,16 @@ if( !class_exists( 'PostmanSparkPostTransport' ) ):
             // SparkPost API endpoint.
             $url = 'https://api.sparkpost.com/api/v1/events/message';
 
-            // Request params (adjust as needed).
+            // Request params (from/to in SparkPost format, per_page for max results)
             $query = [
-                'limit' => 50,
+                'per_page' => 1000,
             ];
+            if ( ! empty( $from ) ) {
+                $query['from'] = $from;
+            }
+            if ( ! empty( $to ) ) {
+                $query['to'] = $to;
+            }
 
             $args = [
                 'headers' => [

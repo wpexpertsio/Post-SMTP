@@ -334,7 +334,9 @@ class PostmanElasticEmailTransport extends PostmanAbstractModuleTransport implem
      *
      * @return array List of logs with id, subject, from, to, date, and status.
      */
-    public static function get_provider_logs() {
+
+
+    public static function get_provider_logs( $from = '', $to = '' ) {
         // Get API key from plugin options.
         $api_key = PostmanOptions::getInstance()->getElasticEmailApiKey();
 
@@ -342,8 +344,19 @@ class PostmanElasticEmailTransport extends PostmanAbstractModuleTransport implem
             return [];
         }
 
-        // Elastic Email API endpoint (fetch last 50 events).
-        $url = 'https://api.elasticemail.com/v4/events?limit=50';
+        // Build query params according to Elastic Email API v4 docs
+        $query = [
+            'orderBy' => 'DateDescending',
+            // 'limit' => 50, // add if you want to limit results
+            // 'eventTypes' => ['Sent','Bounce','FailedAttempt','Submission','Open','Click','Unsubscribe','Complaint'], // optionally filter event types
+        ];
+        if ( ! empty( $from ) ) {
+            $query['from'] = $from;
+        }
+        if ( ! empty( $to ) ) {
+            $query['to'] = $to;
+        }
+        $url = 'https://api.elasticemail.com/v4/events?' . http_build_query( $query );
 
         $args = [
             'headers' => [
