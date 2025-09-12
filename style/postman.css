@@ -1742,3 +1742,17 @@ label.ps-switch-1.ps-gmail-one-click:hover:before {
     background-size: 100%;
 
 }
+
+#ps-email-log-provider_paginate .paginate_button,
+#ps-email-log-provider_paginate .paginate_button.current {
+    background: #ff3333 !important;
+    color: #fff !important;
+    border-radius: 4px;
+    border: none;
+    margin: 0 2px;
+}
+
+#ps-email-log-provider_paginate .paginate_button.current {
+    font-weight: bold;
+    box-shadow: 0 0 4px #ff3333;
+}

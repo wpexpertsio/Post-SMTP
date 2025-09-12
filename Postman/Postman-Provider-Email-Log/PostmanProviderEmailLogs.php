@@ -143,10 +143,6 @@ public function enqueue_scripts( $hook ) {
 
 		// Map provider slug to class.
 		$provider_map = array(
-			// 'mailgun'      => 'PostmanMailgunTransport',
-			// 'mailjet'      => 'PostmanMailjetTransport',
-			// 'mandrill'     => 'PostmanMandrillTransport',
-			// 'smtp'         => 'PostsmtpMailer',
 			'sendinblue'   => 'PostmanSendinblueTransport',
 			'sendgrid'     => 'PostmanSendgridTransport',
 			'elasticemail' => 'PostmanElasticemailTransport',
@@ -161,8 +157,10 @@ public function enqueue_scripts( $hook ) {
 			'office365_api' => 'PostmanOffice365ApiModuleTransport',
 		);
 
+		$from = isset( $_POST['from'] ) ? sanitize_text_field( $_POST['from'] ) : '';
+		$to = isset( $_POST['to'] ) ? sanitize_text_field( $_POST['to'] ) : '';
 		if ( isset( $provider_map[ $provider ] ) && method_exists( $provider_map[ $provider ], 'get_provider_logs' ) ) {
-			$logs = call_user_func( array( $provider_map[ $provider ], 'get_provider_logs' ) );
+			$logs = call_user_func( array( $provider_map[ $provider ], 'get_provider_logs' ), $from, $to );
 		}
 
 		wp_send_json_success(

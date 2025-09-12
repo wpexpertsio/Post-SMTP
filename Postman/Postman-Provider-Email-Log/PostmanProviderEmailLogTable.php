@@ -11,8 +11,9 @@
     do_action( 'post_smtp_before_logs_table' );
     ?>
 
+
     <div id="ps-email-provider-log_wrapper" class="dataTables_wrapper">
-        <div class="dataTables_length" id="ps-email-log_length">
+        <div class="ps-flex-controls" style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 10px;">
             <?php
             // Define provider list. You can update this array as needed.
             $providers = array(
@@ -28,10 +29,9 @@
                 'aws_ses_api'  => __( 'AWS SES API', 'post-smtp' ),
                 'zohomail_api' => __( 'Zoho Mail API', 'post-smtp' ),
                 'office365_api' => __( 'Office 365 API', 'post-smtp' ),
-
             );
             ?>
-            <label style="margin-right: 16px;">
+            <label style="margin-bottom: 0;">
                 <?php esc_html_e( 'Provider:', 'post-smtp' ); ?>
                 <select name="ps-provider-log-select" id="ps-provider-log-select">
                     <option value="none"><?php esc_html_e( 'None', 'post-smtp' ); ?></option>
@@ -40,7 +40,7 @@
                     <?php endforeach; ?>
                 </select>
             </label>
-            <label>
+            <label style="margin-bottom: 0;">
                 <?php esc_html_e( 'Show', 'post-smtp' ); ?>
                 <select name="ps-email-log_length" aria-controls="ps-email-log">
                     <option value="25">25</option>
@@ -50,31 +50,30 @@
                 </select>
                 <?php esc_html_e( 'entries', 'post-smtp' ); ?>
             </label>
-        </div>
-
-        <div id="ps-email-log_filter" class="dataTables_filter">
-            <label>
-                <input type="search" placeholder="<?php esc_attr_e( 'Search', 'post-smtp' ); ?>" aria-controls="ps-email-log" />
+            <label style="margin-bottom: 0;">
+                <input type="search" id="ps-provider-log-search" placeholder="<?php esc_attr_e( 'Search', 'post-smtp' ); ?>" aria-controls="ps-email-log" />
             </label>
-        </div>
-
-        <div class="ps-email-log-date-filter">
-            <label>
-                <?php esc_html_e( 'From', 'post-smtp' ); ?>
-                <input type="date" class="ps-email-log-from" />
-            </label>
-            <label>
-                <?php esc_html_e( 'To', 'post-smtp' ); ?>
-                <input type="date" class="ps-email-log-to" />
-            </label>
-            <span class="ps-refresh-logs" title="<?php esc_attr_e( 'Refresh logs', 'post-smtp' ); ?>">
-                <span class="dashicons dashicons-image-rotate"></span>
-            </span>
+            <div class="ps-email-log-date-filter" style="display: flex; align-items: center; gap: 8px; margin-bottom: 0;">
+                <label style="margin-bottom: 0;">
+                    <?php esc_html_e( 'From', 'post-smtp' ); ?>
+                    <input type="date" class="ps-email-log-from" />
+                </label>
+                <label style="margin-bottom: 0;">
+                    <?php esc_html_e( 'To', 'post-smtp' ); ?>
+                    <input type="date" class="ps-email-log-to" />
+                </label>
+                <span class="ps-refresh-logs" title="<?php esc_attr_e( 'Refresh logs', 'post-smtp' ); ?>">
+                    <span class="dashicons dashicons-image-rotate"></span>
+                </span>
+            </div>
         </div>
     </div>
 
     <input type="hidden" id="ps-email-log-nonce" value="<?php echo esc_attr( wp_create_nonce( 'security' ) ); ?>" />
 
+    <div id="ps-provider-log-loader" style="display:none;text-align:center;padding:20px 0;">
+        <span class="spinner is-active" style="float:none;display:inline-block;"></span>
+    </div>
     <table width="100%" id="ps-email-log-provider">
         <thead>
             <tr>

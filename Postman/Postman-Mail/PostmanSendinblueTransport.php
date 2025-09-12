@@ -329,7 +329,7 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
      *
      * @return array List of logs with id, subject, from, to, date, and status.
      */
-    public static function get_provider_logs() {
+    public static function get_provider_logs( $from = '', $to = '' ) {
         // Get API key from plugin options.
         $api_key = PostmanOptions::getInstance()->getSendinblueApiKey();
 
@@ -339,6 +339,16 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
 
         // Sendinblue API endpoint for fetching SMTP events.
         $url  = 'https://api.sendinblue.com/v3/smtp/statistics/events';
+        $query = [];
+        if ( ! empty( $from ) ) {
+            $query['startDate'] = $from;
+        }
+        if ( ! empty( $to ) ) {
+            $query['endDate'] = $to;
+        }
+        if ( ! empty( $query ) ) {
+            $url .= '?' . http_build_query( $query );
+        }
         $args = [
             'headers' => [
                 'api-key' => $api_key,
