@@ -34,42 +34,17 @@ jQuery(document).ready(function($) {
 			// responsive: true,
 			maintainAspectRatio: false, // Maintain aspect ratio
             scales: {
-				x: {
-					type: 'time',
-					time: {
-						unit: 'day',
-						tooltipFormat: 'MMM DD',
-					},
-					distribution: 'series',
+				y: {
+					beginAtZero: true,
 					ticks: {
-						beginAtZero: true,
-						source: 'labels',
-						padding: 10,
-						minRotation: 25,
-						maxRotation: 25,
-						callback: function (value, index, values) {
-							var gap = Math.floor(values.length / 7); 
-							if (gap < 1) {
-								return value;
-							}
-							if ((values.length - index - 1) % gap === 0) {
-								return value;
-							}
-						}
+						stepSize: 1
 					}
 				},
-                y: {
-					ticks: {
-						beginAtZero: true,
-						maxTicksLimit: 6,
-						padding: 20,
-						callback: function (value) {
-							if (Math.floor(value) === value) {
-								return value;
-							}
-						}
-					},
-                }
+				x: {
+					grid: {
+						display: true
+					}
+				}
             },
 			elements: {
 				line: {
