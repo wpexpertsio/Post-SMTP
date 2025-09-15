@@ -37,8 +37,8 @@ jQuery(document).ready(function($) {
 				y: {
 					beginAtZero: true,
 					ticks: {
-						stepSize: 1
-					}
+						stepSize: 1,
+					},
 				},
 				x: {
 					grid: {
@@ -48,7 +48,7 @@ jQuery(document).ready(function($) {
             },
 			elements: {
 				line: {
-					tension: 0,
+					tension: 0.4,
 				},
 			},
 			animation: {
@@ -59,10 +59,11 @@ jQuery(document).ready(function($) {
 				animationDuration: 0,
 			},
 			legend: {
-				display: false,
+				display: true,
 			},
-			tooltips: {
-				displayColors: false,
+			tooltip: {
+				mode: 'index',
+				intersect: false
 			},
 			responsiveAnimationDuration: 0,
         },
