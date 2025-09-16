@@ -1756,3 +1756,6 @@ label.ps-switch-1.ps-gmail-one-click:hover:before {
     font-weight: bold;
     box-shadow: 0 0 4px #ff3333;
 }
+.wp-submenu a[href*="postman_mailer_logs"] {
+    display: none !important;
+}
