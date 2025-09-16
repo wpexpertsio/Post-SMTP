@@ -93,4 +93,53 @@ class PostmanSparkPost extends PostmanServiceRequest {
 
     }
 
+
+    /**
+     * Fetch provider logs from SparkPost API
+     *
+     * @param string $from Optional start date (YYYY-MM-DD)
+     * @param string $to   Optional end date (YYYY-MM-DD)
+     * @return array       List of logs with id, subject, from, to, date, and status.
+     */
+    public function get_logs( $from = '', $to = '' ) {
+        $endpoint = apply_filters( 'post_smtp_events_endpoint', 'sparkpost' );
+        
+        $url = $this->base_url . $endpoint;
+        
+        $query = array();
+        if ( $from ) {
+            $query['from'] = $from;
+        }
+        
+        if ( $to ) {
+            $query['to'] = $to;
+        }
+        
+        $args = array(
+            'headers' => $this->get_headers(),
+            'timeout' => 15,
+        );
+        
+        $response = wp_remote_get( add_query_arg( $query, $url ), $args );
+        if ( is_wp_error( $response ) ) {
+            return array();
+        }
+        
+        $body = json_decode( wp_remote_retrieve_body( $response ), true );
+        if ( empty( $body['results'] ) || ! is_array( $body['results'] ) ) {
+            return array();
+        }
+        
+        $events = $body['results'];
+        return array_map( static function( $event ) {
+            return array(
+                'id'      => $event['message_id'] ?? '',
+                'subject' => $event['subject'] ?? '',
+                'from'    => $event['friendly_from'] ?? '',
+                'to'      => $event['rcpt_to'] ?? '',
+                'date'    => $event['timestamp'] ?? '',
+                'status'  => $event['type'] ?? '',
+            );
+        }, $events );
+    }
 }

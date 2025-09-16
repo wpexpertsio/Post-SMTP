@@ -317,75 +317,26 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
 		$data [PostmanOptions::SENDINBLUE_API_KEY] = PostmanOptions::getInstance ()->getSendinblueApiKey ();
 		return $data;
 	}
-
+    
     /**
-     * Retrieve provider logs from Sendinblue API.
+     * Retrieve provider logs from Sendinblue (Brevo) via the Handler class.
      *
-     * This function fetches SMTP event logs from the Sendinblue API
-     * using the API key saved in plugin options. It then parses the
-     * response and returns an array of formatted logs.
+     * This static proxy method delegates the log fetching to the Handler,
+     * keeping all API and endpoint logic centralized in the Handler class.
      *
-     * @since 1.0.0
+     * @since 3.6.0
      *
-     * @return array List of logs with id, subject, from, to, date, and status.
+     * @param string $from Optional start date (YYYY-MM-DD)
+     * @param string $to   Optional end date (YYYY-MM-DD)
+     * @return array       List of logs with id, subject, from, to, date, and status.
      */
     public static function get_provider_logs( $from = '', $to = '' ) {
-        // Get API key from plugin options.
+        if ( !class_exists( 'PostmanSendinblue' ) ) {
+            require_once __DIR__ . '/Services/Sendinblue/Handler.php';
+        }
         $api_key = PostmanOptions::getInstance()->getSendinblueApiKey();
-
-        if ( empty( $api_key ) ) {
-            return [];
-        }
-
-        // Sendinblue API endpoint for fetching SMTP events.
-        $url  = 'https://api.sendinblue.com/v3/smtp/statistics/events';
-        $query = [];
-        if ( ! empty( $from ) ) {
-            $query['startDate'] = $from;
-        }
-        if ( ! empty( $to ) ) {
-            $query['endDate'] = $to;
-        }
-        if ( ! empty( $query ) ) {
-            $url .= '?' . http_build_query( $query );
-        }
-        $args = [
-            'headers' => [
-                'api-key' => $api_key,
-                'accept'  => 'application/json',
-            ],
-            'timeout' => 15,
-        ];
-
-        // Make the remote request.
-        $response = wp_remote_get( $url, $args );
-
-        if ( is_wp_error( $response ) ) {
-            return [];
-        }
-
-        // Decode the response body.
-        $body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-        if ( empty( $body['events'] ) ) {
-            return [];
-        }
-
-        $logs = [];
-
-        // Loop through each event and format the log entry.
-        foreach ( $body['events'] as $event ) {
-            $logs[] = [
-                'id'      => $event['messageId'] ?? '',
-                'subject' => $event['subject'] ?? '',
-                'from'    => $event['from'] ?? '',
-                'to'      => $event['email'] ?? '',
-                'date'    => isset( $event['date'] ) ? $event['date'] : '',
-                'status'  => $event['event'] ?? '',
-            ];
-        }
-
-        return $logs;
+        $handler = new \PostmanSendinblue( $api_key );
+        return $handler->get_logs( $from, $to );
     }
 
 }

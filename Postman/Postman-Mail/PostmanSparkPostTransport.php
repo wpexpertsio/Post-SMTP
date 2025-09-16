@@ -312,85 +312,24 @@ if( !class_exists( 'PostmanSparkPostTransport' ) ):
         }
 
         /**
-         * Retrieve provider logs from SparkPost API.
+         * Retrieve provider logs from SparkPost via the Handler class.
          *
-         * This function fetches email activity logs from the SparkPost API
-         * using the API key saved in plugin options. It then parses the
-         * response and returns an array of formatted logs.
+         * This static proxy method delegates the log fetching to the Handler,
+         * keeping all API and endpoint logic centralized in the Handler class.
          *
-         * Notes:
-         * - Auth header must be sent as `Authorization: {API_KEY}` (no Bearer).
-         * - Endpoint: https://api.sparkpost.com/api/v1/events/message (GET).
-         * - Response contains `results[]`.
+         * @since 3.6.0
          *
-         * @since 1.0.0
-         *
-         * @return array List of logs with id, subject, from, to, date, and status.
+         * @param string $from Optional start date (YYYY-MM-DD)
+         * @param string $to   Optional end date (YYYY-MM-DD)
+         * @return array       List of logs with id, subject, from, to, date, and status.
          */
         public static function get_provider_logs( $from = '', $to = '' ) {
-            // Get API key from plugin options.
+            if ( !class_exists( 'PostmanSparkPost' ) ) {
+                require_once __DIR__ . '/Services/SparkPost/Handler.php';
+            }
             $api_key = PostmanOptions::getInstance()->getSparkPostApiKey();
-
-            if ( empty( $api_key ) ) {
-                return [];
-            }
-
-            // SparkPost API endpoint.
-            $url = 'https://api.sparkpost.com/api/v1/events/message';
-
-            // Request params (from/to in SparkPost format, per_page for max results)
-            $query = [
-                'per_page' => 1000,
-            ];
-            if ( ! empty( $from ) ) {
-                $query['from'] = $from;
-            }
-            if ( ! empty( $to ) ) {
-                $query['to'] = $to;
-            }
-
-            $args = [
-                'headers' => [
-                    'Authorization' => $api_key, // No "Bearer"
-                    'accept'        => 'application/json',
-                ],
-                'timeout' => 15,
-            ];
-
-            // Make the GET request.
-            $response = wp_remote_get( add_query_arg( $query, $url ), $args );
-
-            if ( is_wp_error( $response ) ) {
-                return [];
-            }
-
-            // Decode the response body.
-            $body = json_decode( wp_remote_retrieve_body( $response ), true );
-            if ( empty( $body['results'] ) || ! is_array( $body['results'] ) ) {
-                return [];
-            }
-
-            $logs = [];
-
-            // Loop through each event and format the log entry.
-            foreach ( $body['results'] as $event ) {
-                if ( ! is_array( $event ) ) {
-                    continue;
-                }
-
-                $logs[] = [
-                    'id'      => $event['message_id'] ?? '',
-                    'subject' => $event['subject'] ?? '',
-                    'from'    => $event['friendly_from'] ?? '',
-                    'to'      => $event['rcpt_to'] ?? '',
-                    'date'    => $event['timestamp'] ?? '',
-                    'status'  => $event['type'] ?? '',
-                ];
-            }
-
-            return $logs;
+            $handler = new \PostmanSparkPost( $api_key );
+            return $handler->get_logs( $from, $to );
         }
-
     }
-
 endif;

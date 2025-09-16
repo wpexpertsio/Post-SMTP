@@ -362,174 +362,24 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		}
 		
 		/**
-		 * Retrieve provider logs from SendPulse SMTP API.
+		 * Retrieve provider logs from Sendpulse via the Handler class.
 		 *
-		 * - Obtains (and transient-caches) an OAuth access token if needed.
-		 * - Calls GET https://api.sendpulse.com/smtp/emails with optional filters.
+		 * This static proxy method delegates the log fetching to the Handler,
+		 * keeping all API and endpoint logic centralized in the Handler class.
 		 *
-		 * @since 1.0.0
+		 * @since 3.6.0
 		 *
-		 * @param array $args Optional filters: limit, offset, date_from (YYYY-MM-DD), date_to (YYYY-MM-DD)
-		 * @return array Normalized logs array; empty array on error.
+		 * @param string $from Optional start date (YYYY-MM-DD)
+		 * @param string $to   Optional end date (YYYY-MM-DD)
+		 * @return array       List of logs with id, subject, from, to, date, and status.
 		 */
 		public static function get_provider_logs( $from = '', $to = '' ) {
-			// Try to get an already saved access token first (optional).
-			$access_token = '';
-
-			// If token is empty or expired, request a new one using Client ID & Secret.
-			if ( empty( $access_token ) ) {
-				$client_id     = PostmanOptions::getInstance()->getSendpulseApiKey();
-				$client_secret = PostmanOptions::getInstance()->getSendpulseSecretKey();
-
-				if ( empty( $client_id ) || empty( $client_secret ) ) {
-					// No credentials available.
-					return [];
-				}
-
-				$token_url = 'https://api.sendpulse.com/oauth/access_token';
-				$token_body = [
-					'grant_type'    => 'client_credentials',
-					'client_id'     => $client_id,
-					'client_secret' => $client_secret,
-				];
-
-				$token_args = [
-					'headers' => [
-						'Content-Type' => 'application/json',
-						'Accept'       => 'application/json',
-					],
-					'body'    => wp_json_encode( $token_body ),
-					'timeout' => 15,
-				];
-
-				$token_resp = wp_remote_post( $token_url, $token_args );
-				if ( is_wp_error( $token_resp ) ) {
-					return [];
-				}
-
-				$token_decoded = json_decode( wp_remote_retrieve_body( $token_resp ), true );
-				if ( empty( $token_decoded['access_token'] ) ) {
-					// Failed to get token.
-					return [];
-				}
-
-				$access_token = $token_decoded['access_token'];
-
-				// Cache token transient for its lifetime (if expires_in provided).
-				$expires_in = ! empty( $token_decoded['expires_in'] ) ? intval( $token_decoded['expires_in'] ) : 3600;
-				set_transient( 'postman_sendpulse_access_token', $access_token, max( 300, $expires_in - 60 ) );
+			if ( !class_exists( 'PostmanSendpulse' ) ) {
+				require_once __DIR__ . '/Services/Sendpulse/Handler.php';
 			}
-
-			// Build request to the SMTP emails endpoint.
-			$base_url = 'https://api.sendpulse.com/smtp/emails';
-
-			   // Build query params from direct arguments
-			   $query = [];
-			   if ( $from ) {
-				   $query['from'] = $from;
-			   }
-			   if ( $to ) {
-				   $query['to'] = $to;
-			   }
-			   if ( $search ) {
-				   // SendPulse API does not have a generic 'search', but you can map to sender/recipient if needed
-				   $query['recipient'] = $search;
-			   }
-			   if ( $limit !== null ) {
-				   $query['limit'] = $limit;
-			   }
-			   if ( $offset !== null ) {
-				   $query['offset'] = $offset;
-			   }
-
-			   $url = add_query_arg( $query, $base_url );
-
-			$request_args = [
-				'headers' => [
-					'Authorization' => 'Bearer ' . $access_token,
-					'Accept'        => 'application/json',
-				],
-				'timeout' => 20,
-			];
-
-			$response = wp_remote_get( $url, $request_args );
-
-			if ( is_wp_error( $response ) ) {
-				return [];
-			}
-
-			$body = json_decode( wp_remote_retrieve_body( $response ), true );
-			if ( empty( $body ) ) {
-				return [];
-			}
-
-			$logs = [];
-
-			/*
-			 * SendPulse may return different shapes. Common forms:
-			 * - an array of objects,
-			 * - an object with 'data' or similar container.
-			 *
-			 * Defensive checks below attempt to find events/messages in likely fields.
-			 */
-
-			// Try common containers first.
-			$candidates = [];
-
-			if ( isset( $body['data'] ) && is_array( $body['data'] ) ) {
-				$candidates = $body['data'];
-			} elseif ( isset( $body['results'] ) && is_array( $body['results'] ) ) {
-				$candidates = $body['results'];
-			} elseif ( is_array( $body ) && self::is_assoc_array( $body ) === false ) {
-				// Body itself is a numerically indexed array of events.
-				$candidates = $body;
-			} elseif ( isset( $body['emails'] ) && is_array( $body['emails'] ) ) {
-				$candidates = $body['emails'];
-			}
-
-			// If nothing found, try to scan for any array child.
-			if ( empty( $candidates ) ) {
-				foreach ( $body as $v ) {
-					if ( is_array( $v ) ) {
-						$candidates = $v;
-						break;
-					}
-				}
-			}
-
-			if ( empty( $candidates ) ) {
-				return [];
-			}
-
-			foreach ( $candidates as $item ) {
-				if ( ! is_array( $item ) ) {
-					continue;
-				}
-
-				$logs[] = [
-					'id'      => $item['id'] ?? $item['email_id'] ?? $item['MessageID'] ?? '',
-					'subject' => $item['subject'] ?? $item['Subject'] ?? '',
-					'from'    => $item['from'] ?? $item['sender'] ?? $item['From'] ?? '',
-					'to'      => $item['to'] ?? $item['recipient'] ?? $item['Recipient'] ?? '',
-					'date'    => $item['send_date'] ?? $item['send_date'] ?? $item['send_date'] ?? '',
-					'status'  => $item['smtp_answer_code_explain'] ?? $item['smtp_answer_code_explain'] ?? $item['smtp_answer_code_explain'] ?? '',
-				];
-			}
-
-			return $logs;
-		}
-
-		/**
-		 * Helper: check if array is associative.
-		 *
-		 * @param array $arr
-		 * @return bool
-		 */
-		private static function is_assoc_array( $arr ) {
-			if ( ! is_array( $arr ) ) {
-				return false;
-			}
-			return array_keys( $arr ) !== range( 0, count( $arr ) - 1 );
+			$api_key = PostmanOptions::getInstance()->getSendpulseApiKey();
+			$handler = new \PostmanSendpulse( $api_key );
+			return $handler->get_logs( $from, $to );
 		}
 
 	}

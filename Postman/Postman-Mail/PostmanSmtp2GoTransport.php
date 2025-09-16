@@ -193,89 +193,24 @@
 			}
 
 			/**
-			 * Retrieve provider logs from SMTP2GO API.
+			 * Retrieve provider logs from SMTP2GO via the Handler class.
 			 *
-			 * This function fetches email activity logs from the SMTP2GO API
-			 * using the API key saved in plugin options. It then parses the
-			 * response and returns an array of formatted logs.
+			 * This static proxy method delegates the log fetching to the Handler,
+			 * keeping all API and endpoint logic centralized in the Handler class.
 			 *
-			 * Notes:
-			 * - Auth header must be sent as `X-Smtp2go-Api-Key: {API_KEY}`.
-			 * - Endpoint: https://api.smtp2go.com/v3/activity/search (POST).
-			 * - Response contains `data.events[]`.
+			 * @since 3.6.0
 			 *
-			 * @since 1.0.0
-			 *
-			 * @return array List of logs with id, subject, from, to, date, and status.
+			 * @param string $from Optional start date (YYYY-MM-DD)
+			 * @param string $to   Optional end date (YYYY-MM-DD)
+			 * @return array       List of logs with id, subject, from, to, date, and status.
 			 */
 			public static function get_provider_logs( $from = '', $to = '' ) {
-				// Get API key from plugin options.
+				if ( !class_exists( 'PostmanSmtp2GoHandler' ) ) {
+					require_once __DIR__ . '/Services/Smtp2Go/Handler.php';
+				}
 				$api_key = PostmanOptions::getInstance()->getSmtp2GoApiKey();
-
-				if ( empty( $api_key ) ) {
-					return [];
-				}
-
-				// SMTP2GO API endpoint.
-				$url = 'https://api.smtp2go.com/v3/activity/search';
-
-				// Request body: add start_date, end_date, and search if provided.
-				$body = [];
-				if ( ! empty( $from ) ) {
-					$body['start_date'] = $from;
-				}
-				if ( ! empty( $to ) ) {
-					$body['end_date'] = $to;
-				}
-				if ( ! empty( $search ) ) {
-					$body['search'] = $search;
-				}
-
-				$args = [
-					'headers' => [
-						'X-Smtp2go-Api-Key' => $api_key,
-						'Content-Type'      => 'application/json',
-						'accept'            => 'application/json',
-					],
-					'body'    => wp_json_encode( $body ),
-					'timeout' => 15,
-				];
-
-				// Make the POST request.
-				$response = wp_remote_post( $url, $args );
-
-				if ( is_wp_error( $response ) ) {
-					return [];
-				}
-
-				// Decode the response body.
-				$body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-				if ( empty( $body['data']['events'] ) || ! is_array( $body['data']['events'] ) ) {
-					return [];
-				}
-
-				$logs = [];
-
-				// Loop through each event and format the log entry.
-				foreach ( $body['data']['events'] as $event ) {
-					if ( ! is_array( $event ) ) {
-						continue;
-					}
-
-					$logs[] = [
-						'id'      => $event['email_id'] ?? '',
-						'subject' => $event['subject'] ?? '',
-						'from'    => $event['from'] ?? $event['sender'] ?? '',
-						'to'      => $event['to'] ?? $event['recipient'] ?? '',
-						'date'    => $event['date'] ?? '',
-						'status'  => $event['event'] ?? '',
-					];
-				}
-
-				return $logs;
+				$handler = new \PostmanSmtp2GoHandler( $api_key );
+				return $handler->get_logs( $from, $to );
 			}
-
 		}
 	}
-

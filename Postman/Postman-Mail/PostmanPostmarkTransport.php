@@ -312,84 +312,25 @@ if( !class_exists( 'PostmanPostmarkTransport' ) ):
         }
 
         /**
-         * Retrieve provider logs from Postmark API with optional from/to date filtering.
+         * Retrieve provider logs from Postmark via the Handler class.
          *
-         * @param string $from Start date/time (YYYY-MM-DD or ISO8601, Eastern Time)
-         * @param string $to   End date/time (YYYY-MM-DD or ISO8601, Eastern Time)
-         * @return array List of logs with id, subject, from, to, date, and status.
+         * This static proxy method delegates the log fetching to the Handler,
+         * keeping all API and endpoint logic centralized in the Handler class.
+         *
+         * @since 3.6.0
+         *
+         * @param string $from Optional start date (YYYY-MM-DD)
+         * @param string $to   Optional end date (YYYY-MM-DD)
+         * @return array       List of logs with id, subject, from, to, date, and status.
          */
         public static function get_provider_logs( $from = '', $to = '' ) {
-            // Get API key from plugin options.
+            if ( !class_exists( 'PostmanPostMark' ) ) { 
+                require_once __DIR__ . '/Services/PostMark/Handler.php';
+            }
             $api_key = PostmanOptions::getInstance()->getPostmarkApiKey();
-
-            if ( empty( $api_key ) ) {
-                return [];
-            }
-
-            // Build query params for fromdate and todate if provided.
-            $base_url = 'https://api.postmarkapp.com/messages/outbound';
-            $query = [];
-            if ( $from ) {
-                $query['fromdate'] = $from;
-            }
-            if ( $to ) {
-                $query['todate'] = $to;
-            }
-            $url = add_query_arg( $query, $base_url );
-
-            $args = [
-                'headers' => [
-                    'X-Postmark-Server-Token' => $api_key,
-                    'Content-Type'            => 'application/json',
-                    'accept'                  => 'application/json',
-                ],
-                'timeout' => 15,
-            ];
-
-            // Make the GET request.
-            $response = wp_remote_get( $url, $args );
-
-            if ( is_wp_error( $response ) ) {
-                return [];
-            }
-
-            // Decode the response body.
-            $body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-            if ( empty( $body['Messages'] ) || ! is_array( $body['Messages'] ) ) {
-                return [];
-            }
-
-            $logs = [];
-
-            // Loop through each message and format the log entry.
-            foreach ( $body['Messages'] as $message ) {
-                if ( ! is_array( $message ) ) {
-                    continue;
-                }
-
-                $to_emails = [];
-                if ( ! empty( $message['To'] ) && is_array( $message['To'] ) ) {
-                    foreach ( $message['To'] as $recipient ) {
-                        if ( ! empty( $recipient['Email'] ) ) {
-                            $to_emails[] = $recipient['Email'];
-                        }
-                    }
-                }
-
-                $logs[] = [
-                    'id'      => $message['MessageID'] ?? '',
-                    'subject' => $message['Subject'] ?? '',
-                    'from'    => $message['From'] ?? '',
-                    'to'      => implode( ', ', $to_emails ),
-                    'date'    => $message['ReceivedAt'] ?? '',
-                    'status'  => $message['Status'] ?? '',
-                ];
-            }
-
-            return $logs;
+            $handler = new \PostmanPostMark( $api_key );
+            return $handler->get_logs( $from, $to );
         }
-
     }
 
 endif;

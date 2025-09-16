@@ -306,7 +306,8 @@ class PostmanResendTransport extends PostmanAbstractModuleTransport implements P
         return $data;
     }
 
-	/**
+
+    /**
 	 * Retrieve provider logs from Resend API.
 	 *
 	 * This function fetches email logs from the Resend API
@@ -320,60 +321,18 @@ class PostmanResendTransport extends PostmanAbstractModuleTransport implements P
 	 *
 	 * @since 1.0.0
 	 *
+     * @param string $from Optional start date (YYYY-MM-DD)
+     * @param string $to   Optional end date (YYYY-MM-DD)
 	 * @return array List of logs with id, subject, from, to, date, and status.
 	 */
-	public static function get_provider_logs() {
-		// Get API key from plugin options.
-		$api_key = PostmanOptions::getInstance()->getResendApiKey();
-		if ( empty( $api_key ) ) {
-			return [];
-		}
-
-		// Resend API endpoint.
-		$url = 'https://api.resend.com/emails';
-
-		$args = [
-			'headers' => [
-				'Authorization' => 'Bearer ' . $api_key,
-				'accept'        => 'application/json',
-			],
-			'timeout' => 15,
-		];
-
-		// Make the GET request.
-		$response = wp_remote_get( $url, $args );
-
-		if ( is_wp_error( $response ) ) {
-			return [];
-		}
-
-		// Decode the response body.
-		$body = json_decode( wp_remote_retrieve_body( $response ), true );
-		
-		if ( empty( $body['data'] ) || ! is_array( $body['data'] ) ) {
-			return [];
-		}
-
-		$logs = [];
-
-		// Loop through each email and format the log entry.
-		foreach ( $body['data'] as $email ) {
-			if ( ! is_array( $email ) ) {
-				continue;
-			}
-
-			$logs[] = [
-				'id'      => $email['id'] ?? '',
-				'subject' => $email['subject'] ?? '',
-				'from'    => $email['from'] ?? '',
-				'to'      => isset( $email['to'] ) ? implode( ',', (array) $email['to'] ) : '',
-				'date'    => $email['created_at'] ?? '',
-				'status'  => $email['last_event'] ?? '',
-			];
-		}
-
-		return $logs;
-	}
+    public static function get_provider_logs( $from = '', $to = '' ) {
+        if ( !class_exists( 'PostmanResend' ) ) {
+            require_once __DIR__ . '/Services/Resend/Handler.php';
+        }
+        $api_key = PostmanOptions::getInstance()->getResendApiKey();
+        $handler = new \PostmanResend( $api_key );
+        return $handler->get_logs( $from, $to );
+    }
 
 }
 endif;

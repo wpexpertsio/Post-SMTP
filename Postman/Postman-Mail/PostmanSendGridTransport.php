@@ -284,76 +284,23 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 	}
 
 	/**
-	 * Retrieve provider logs from SendGrid API.
+	 * Retrieve provider logs from SendGrid via the Handler class.
 	 *
-	 * This function fetches email activity logs from the SendGrid API
-	 * using the API key saved in plugin options. It then parses the
-	 * response and returns an array of formatted logs.
+	 * This static proxy method delegates the log fetching to the Handler,
+	 * keeping all API and endpoint logic centralized in the Handler class.
 	 *
-	 * Notes:
-	 * - Auth header must be sent as `Authorization: Bearer {API_KEY}`.
-	 * - Endpoint: https://api.sendgrid.com/v3/messages (GET).
-	 * - Response contains `messages[]`.
+	 * @since 3.6.0
 	 *
-	 * @since 1.0.0
-	 *
-	 * @return array List of logs with id, subject, from, to, date, and status.
+	 * @param string $from Optional start date (YYYY-MM-DD)
+	 * @param string $to   Optional end date (YYYY-MM-DD)
+	 * @return array       List of logs with id, subject, from, to, date, and status.
 	 */
-	public static function get_provider_logs() {
-		// Get API key from plugin options.
-		$api_key = PostmanOptions::getInstance()->getSendgridApiKey();
-		if ( empty( $api_key ) ) {
-			return [];
+	public static function get_provider_logs( $from = '', $to = '' ) {
+		if ( !class_exists( 'PostmanSendGrid' ) ) {
+			require_once __DIR__ . '/Services/SendGrid/Handler.php';
 		}
-
-		// SendGrid API endpoint.
-		$url = 'https://api.sendgrid.com/v3/messages';
-
-		// Request params (adjust as needed).
-		$query = [
-			'limit' => 50,
-		];
-
-		$args = [
-			'headers' => [
-				'Authorization' => 'Bearer ' . $api_key,
-				'accept'        => 'application/json',
-			],
-			'timeout' => 30,
-		];
-
-		// Make the GET request.
-		$response = wp_remote_get( add_query_arg( $query, $url ), $args );
-		
-		if ( is_wp_error( $response ) ) {
-			return [];
-		}
-
-		// Decode the response body.
-		$body = json_decode( wp_remote_retrieve_body( $response ), true );
-		if ( empty( $body['messages'] ) || ! is_array( $body['messages'] ) ) {
-			return [];
-		}
-
-		$logs = [];
-
-		// Loop through each message and format the log entry.
-		foreach ( $body['messages'] as $message ) {
-			if ( ! is_array( $message ) ) {
-				continue;
-			}
-
-			$logs[] = [
-				'id'      => $message['msg_id'] ?? '',
-				'subject' => $message['subject'] ?? '',
-				'from'    => $message['from_email'] ?? '',
-				'to'      => $message['to_email'] ?? '',
-				'date'    => $message['last_event_time'] ?? '',
-				'status'  => $message['status'] ?? '',
-			];
-		}
-
-		return $logs;
+		$api_key = PostmanOptions::getInstance()->getSendGridApiKey();
+		$handler = new \PostmanSendGrid( $api_key );
+		return $handler->get_logs( $from, $to );
 	}
-
 }

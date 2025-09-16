@@ -83,4 +83,73 @@ class PostmanPostMark extends PostmanServiceRequest {
 
     }
 
+
+    /**
+     * Fetch provider logs from Postmark API
+     *
+     * @param string $from Optional start date (YYYY-MM-DD)
+     * @param string $to   Optional end date (YYYY-MM-DD)
+     * @return array       List of logs with id, subject, from, to, date, and status.
+     */
+    public function get_logs( $from = '', $to = '' ) {
+        if ( empty( $this->api_key ) ) {
+            return array();
+        }
+
+		 $query = array(
+			'count' => 50,
+			 'offset' => 0
+		);
+        if ( $from ) {
+            $query['fromdate'] = $from;
+        }
+        if ( $to ) {
+            $query['todate'] = $to;
+        }
+        
+        $endpoint = apply_filters( 'post_smtp_events_endpoint', 'postmark' );
+        $url = $this->base_url . $endpoint;
+  		
+        if ( $query ) {
+            $url .= '?' . http_build_query( $query );
+        }
+
+        $response = wp_remote_get( $url, [
+            'headers' => $this->get_headers(),
+            'timeout' => 15,
+        ]);
+
+        if ( is_wp_error( $response ) ) {
+            return array();
+        }
+
+        $body = json_decode( wp_remote_retrieve_body( $response ), true );
+        if ( empty( $body['Messages'] ) || ! is_array( $body['Messages'] ) ) {
+            return array();
+        }
+
+        $logs = array();
+        foreach ( $body['Messages'] as $message ) {
+            if ( ! is_array( $message ) ) {
+                continue;
+            }
+            $to_emails = array();
+            if ( ! empty( $message['To'] ) && is_array( $message['To'] ) ) {
+                foreach ( $message['To'] as $recipient ) {
+                    if ( ! empty( $recipient['Email'] ) ) {
+                        $to_emails[] = $recipient['Email'];
+                    }
+                }
+            }
+            $logs[] = array(
+                'id'      => isset($message['MessageID']) ? $message['MessageID'] : '',
+                'subject' => isset($message['Subject']) ? $message['Subject'] : '',
+                'from'    => isset($message['From']) ? $message['From'] : '',
+                'to'      => implode( ', ', $to_emails ),
+                'date'    => isset($message['ReceivedAt']) ? $message['ReceivedAt'] : '',
+                'status'  => isset($message['Status']) ? $message['Status'] : '',
+            );
+        }
+        return $logs;
+    }
 }

@@ -448,6 +448,4 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 			];
 		}
 	}
-
-
 }

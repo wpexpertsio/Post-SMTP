@@ -91,4 +91,46 @@ class PostmanSendGrid extends PostmanServiceRequest {
 
     }
 
+
+    /**
+     * Fetch provider logs from SendGrid API
+     *
+     * @param string $from Optional start date (YYYY-MM-DD)
+     * @param string $to   Optional end date (YYYY-MM-DD)
+     * @return array       List of logs with id, subject, from, to, date, and status.
+     */
+    public function get_logs( $from = '', $to = '' ) {
+        $baseurl = 'https://api.sendgrid.com/v3';
+        $endpoint = apply_filters( 'post_smtp_events_endpoint', 'sendgrid' );
+        $url = $baseurl . $endpoint;
+        $query = array( 'limit' => 50 );
+        if ( $from ) {
+            $query['start_time'] = strtotime( $from );
+        }
+        if ( $to ) {
+            $query['end_time'] = strtotime( $to );
+        }
+        $args = array(
+            'headers' => $this->get_headers(),
+            'timeout' => 30,
+        );
+        $response = wp_remote_get( add_query_arg( $query, $url ), $args );
+        if ( is_wp_error( $response ) ) {
+            return array();
+        }
+        $body = json_decode( wp_remote_retrieve_body( $response ), true );
+        if ( empty( $body['messages'] ) || ! is_array( $body['messages'] ) ) {
+            return array();
+        }
+        return array_map( static function( $message ) {
+            return array(
+                'id'      => $message['msg_id'] ?? '',
+                'subject' => $message['subject'] ?? '',
+                'from'    => $message['from_email'] ?? '',
+                'to'      => $message['to_email'] ?? '',
+                'date'    => $message['last_event_time'] ?? '',
+                'status'  => $message['status'] ?? '',
+            );
+        }, $body['messages'] );
+    }
 }

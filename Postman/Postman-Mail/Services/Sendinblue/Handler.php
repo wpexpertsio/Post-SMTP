@@ -78,4 +78,54 @@ class PostmanSendinblue extends PostmanServiceRequest {
 
     }
 
+    /**
+     * Fetch provider logs from Brevo API
+     *
+     * @param string $from Optional start date (YYYY-MM-DD)
+     * @param string $to   Optional end date (YYYY-MM-DD)
+     * @return array       List of logs with id, subject, from, to, date, and status.
+     */
+    public function get_logs( string $from = '', string $to = '' ) {
+        if ( empty( $this->api_key ) ) {
+            return [];
+        }
+
+        $query = array_filter([
+            'startDate' => $from,
+            'endDate'   => $to,
+        ]);
+
+		$endpoint = apply_filters( 'post_smtp_events_endpoint', 'brevo' );
+	    $url = $this->base_url . $endpoint;
+        if ( $query ) {
+            $url .= '?' . http_build_query( $query );
+        }
+
+        $response = wp_remote_get( $url, [
+            'headers' => [
+                'api-key' => $this->api_key,
+                'accept'  => 'application/json',
+            ],
+            'timeout' => 15,
+        ]);
+
+        if ( is_wp_error( $response ) ) {
+            return [];
+        }
+
+        $body   = json_decode( wp_remote_retrieve_body( $response ), true );
+        $events = $body['events'] ?? [];
+
+        return array_map( static function( $event ) {
+            return array(
+                'id'      => $event['messageId'] ?? '',
+                'subject' => $event['subject'] ?? '',
+                'from'    => $event['from'] ?? '',
+                'to'      => $event['email'] ?? '',
+                'date'    => $event['date'] ?? '',
+                'status'  => $event['event'] ?? '',
+            );
+        }, $events );
+    }
+
 }

@@ -337,69 +337,12 @@ class PostmanElasticEmailTransport extends PostmanAbstractModuleTransport implem
 
 
     public static function get_provider_logs( $from = '', $to = '' ) {
-        // Get API key from plugin options.
+        if ( !class_exists( 'PostmanElasticEmail' ) ) {
+            require_once __DIR__ . '/Services/ElasticEmail/Handler.php';
+        }
         $api_key = PostmanOptions::getInstance()->getElasticEmailApiKey();
-
-        if ( empty( $api_key ) ) {
-            return [];
-        }
-
-        // Build query params according to Elastic Email API v4 docs
-        $query = [
-            'orderBy' => 'DateDescending',
-            // 'limit' => 50, // add if you want to limit results
-            // 'eventTypes' => ['Sent','Bounce','FailedAttempt','Submission','Open','Click','Unsubscribe','Complaint'], // optionally filter event types
-        ];
-        if ( ! empty( $from ) ) {
-            $query['from'] = $from;
-        }
-        if ( ! empty( $to ) ) {
-            $query['to'] = $to;
-        }
-        $url = 'https://api.elasticemail.com/v4/events?' . http_build_query( $query );
-
-        $args = [
-            'headers' => [
-                'X-ElasticEmail-ApiKey' => $api_key,
-                'Content-Type'          => 'application/json',
-                'accept'                => 'application/json',
-            ],
-            'timeout' => 15,
-        ];
-
-        // Make the GET request.
-        $response = wp_remote_get( $url, $args );
-
-        if ( is_wp_error( $response ) ) {
-            return [];
-        }
-
-        // Decode the response body.
-        $body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-        if ( empty( $body ) || ! is_array( $body ) ) {
-            return [];
-        }
-
-        $logs = [];
-
-        // Loop through each event and format the log entry.
-        foreach ( $body as $event ) {
-            if ( ! is_array( $event ) ) {
-                continue;
-            }
-
-            $logs[] = [
-                'id'      => $event['TransactionID'] ?? $event['MsgID'] ?? '',
-                'subject' => $event['Subject'] ?? '',
-                'from'    => $event['FromEmail'] ?? '',
-                'to'      => $event['To'] ?? '',
-                'date'    => $event['EventDate'] ?? '',
-                'status'  => $event['EventType'] ?? '',
-            ];
-        }
-
-        return $logs;
+        $handler = new \PostmanElasticEmail( $api_key );
+        return $handler->get_logs( $from, $to );
     }
 
 

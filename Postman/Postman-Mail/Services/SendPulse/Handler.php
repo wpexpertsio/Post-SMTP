@@ -157,4 +157,74 @@ class PostmanSendpulse extends PostmanServiceRequest {
 			$this->email_sent_code
 		);
 	}
+
+	/**
+	 * Fetch provider logs from Sendpulse API
+	 *
+	 * @param string $from Optional start date (YYYY-MM-DD)
+	 * @param string $to   Optional end date (YYYY-MM-DD)
+	 * @return array       List of logs with id, subject, from, to, date, and status.
+	 */
+	public function get_logs( $from = '', $to = '' ) {
+		$query = array();
+		if ( $from ) {
+			$query['from'] = $from;
+		}
+		if ( $to ) {
+			$query['to'] = $to;
+		}
+
+		$endpoint = apply_filters( 'post_smtp_events_endpoint', 'sendpulse' );
+		$url = $this->base_url . $endpoint;
+		if ( $query ) {
+			$url .= '?' . http_build_query( $query );
+		}
+
+		$response = wp_remote_get( $url, [
+			'headers' => $this->get_headers(),
+			'timeout' => 20,
+		]);
+
+		if ( is_wp_error( $response ) ) {
+			return array();
+		}
+
+		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+		$candidates = array();
+		if ( isset( $body['data'] ) && is_array( $body['data'] ) ) {
+			$candidates = $body['data'];
+		} elseif ( isset( $body['results'] ) && is_array( $body['results'] ) ) {
+			$candidates = $body['results'];
+		} elseif ( is_array( $body ) && array_keys( $body ) === range( 0, count( $body ) - 1 ) ) {
+			$candidates = $body;
+		} elseif ( isset( $body['emails'] ) && is_array( $body['emails'] ) ) {
+			$candidates = $body['emails'];
+		}
+		if ( empty( $candidates ) ) {
+			foreach ( $body as $v ) {
+				if ( is_array( $v ) ) {
+					$candidates = $v;
+					break;
+				}
+			}
+		}
+		if ( empty( $candidates ) ) {
+			return array();
+		}
+		$logs = array();
+		foreach ( $candidates as $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+			$logs[] = array(
+				'id'      => $item['id'] ?? $item['email_id'] ?? $item['MessageID'] ?? '',
+				'subject' => $item['subject'] ?? $item['Subject'] ?? '',
+				'from'    => $item['from'] ?? $item['sender'] ?? $item['From'] ?? '',
+				'to'      => $item['to'] ?? $item['recipient'] ?? $item['Recipient'] ?? '',
+				'date'    => $item['send_date'] ?? '',
+				'status'  => $item['smtp_answer_code_explain'] ?? '',
+			);
+		}
+		return $logs;
+	}
 }

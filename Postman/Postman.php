@@ -304,7 +304,6 @@ class Postman {
 		require_once 'Postman-Controller/PostmanDashboardWidgetController.php';
 		require_once 'Postman-Controller/PostmanAdminPointer.php';
 		require_once 'Postman-Email-Log/PostmanEmailLogController.php';
-		require_once 'Postman-Provider-Email-Log/PostmanProviderEmailLogs.php';
 		require_once 'Postman-Connectivity-Test/PostmanConnectivityTestController.php';
 		require_once 'Postman-Configuration/PostmanConfigurationController.php';
 		require_once 'Postman-Send-Test-Email/PostmanSendTestEmailController.php';
