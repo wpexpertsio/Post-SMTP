@@ -261,6 +261,8 @@ return array(
 			__( 'Connectivity test', 'post-smtp' ),
 			__( 'Diagnostic test', 'post-smtp' ),
 			__( 'Reset plugin', 'post-smtp' ),
+			__( 'Mailer Logs', 'post-smtp' ),
+
 		),
 	),
 );
