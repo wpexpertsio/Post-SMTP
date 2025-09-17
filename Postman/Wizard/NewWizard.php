@@ -597,23 +597,24 @@ class Post_SMTP_New_Wizard {
         $from_name_enforced = $this->options->isPluginSenderNameEnforced() ? 'checked' : '';
         $from_email_enforced = $this->options->isPluginSenderEmailEnforced() ? 'checked' : '';
         $postman_connections = get_option( 'postman_connections' );
-	    if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
-			if ( isset( $_GET['id'] ) && isset( $postman_connections[ $_GET['id'] ] ) ) {
-				// Use specific connection (edit case)
-				$from_email = $postman_connections[ $_GET['id'] ]['sender_email'] ?? '';
-				$from_name  = $postman_connections[ $_GET['id'] ]['sender_name'] ?? '';
-
-			} elseif ( ! isset( $_GET['action'] ) || $_GET['action'] !== 'add' ) {
-				// No ID given — use the last connection
-				$last_connection = end( $postman_connections );
-				$from_email = $last_connection['sender_email'] ?? '';
-				$from_name  = $last_connection['sender_name'] ?? '';
-
-			}else{
-				$from_email =  '';
-				$from_name  = '';
-			}
-		}else {
+        if ( ! is_array( $postman_connections ) ) {
+            $postman_connections = array();
+        }
+        if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
+            if ( isset( $_GET['id'] ) && isset( $postman_connections[ $_GET['id'] ] ) ) {
+                // Use specific connection (edit case)
+                $from_email = $postman_connections[ $_GET['id'] ]['sender_email'] ?? '';
+                $from_name  = $postman_connections[ $_GET['id'] ]['sender_name'] ?? '';
+            } elseif ( ! isset( $_GET['action'] ) || $_GET['action'] !== 'add' ) {
+                // No ID given — use the last connection
+                $last_connection = end( $postman_connections );
+                $from_email = is_array($last_connection) && isset($last_connection['sender_email']) ? $last_connection['sender_email'] : '';
+                $from_name  = is_array($last_connection) && isset($last_connection['sender_name']) ? $last_connection['sender_name'] : '';
+            }else{
+                $from_email =  '';
+                $from_name  = '';
+            }
+        }else {
             // Fallback to stored options
             $from_name  = null !== $this->options->getMessageSenderName() ? esc_attr( $this->options->getMessageSenderName() ) : '';
             $from_email = null !== $this->options->getMessageSenderEmail() ? esc_attr( $this->options->getMessageSenderEmail() ) : '';
