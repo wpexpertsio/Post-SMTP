@@ -91,6 +91,8 @@ https://www.youtube.com/watch?v=Oxs3qintyLU
 == SMTP Mailer Options for Post SMTP ==
 With Post SMTP, you get many SMTP mailer options, such as:
 
+* [Emailit SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-email-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) - **Newly Added**
+
 * [Resend SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-resend-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) - **Newly Added**
 
 * [MailerSend SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mailersend-with-post-smtp/?utm_source=wp_org&utm_medium=read_me)
