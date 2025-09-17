@@ -313,6 +313,7 @@ class PostmanConfigurationController {
 			);
 		}
 		print '</div>';
+		
 		if ( $postman_db_version == POST_SMTP_DB_VERSION ) {
 			print '<div class="setting-form">';
 			do_settings_sections( 'manage_connections' );

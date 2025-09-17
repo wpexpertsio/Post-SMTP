@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 if ( ! class_exists( 'PostmanWpMail' ) ) {
 
@@ -26,7 +26,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			require_once 'Postman-Auth/PostmanAuthenticationManagerFactory.php';
 			require_once 'PostmanState.php';
 
-            PostmanEmailLogService::getInstance();
+			PostmanEmailLogService::getInstance();
 		}
 
 		/**
@@ -64,28 +64,28 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
          * @return PostmanMessage
          */
 		private function apply_default_headers( $message ) {
-            $headers[] = 'Message-ID: ' . $this->createMessageId();
-            $message->addHeaders($headers);
-        }
+			$headers[] = 'Message-ID: ' . $this->createMessageId();
+			$message->addHeaders($headers);
+		}
 
-        /**
-         * Creates the Message-ID
-         *
-         * @return string
-         */
-        public function createMessageId() {
+		/**
+		 * Creates the Message-ID
+		 *
+		 * @return string
+		 */
+		public function createMessageId() {
 
-            $id = md5(uniqid(time()));
+			$id = md5(uniqid(time()));
 
-            if (isset($_SERVER["SERVER_NAME"])) {
-                $hostName = sanitize_text_field($_SERVER["SERVER_NAME"]);
-            } else {
-                $hostName = php_uname('n');
-            }
+			if (isset($_SERVER["SERVER_NAME"])) {
+				$hostName = sanitize_text_field($_SERVER["SERVER_NAME"]);
+			} else {
+				$hostName = php_uname('n');
+			}
 
-            return $id . '@' . str_replace('www.', '', $hostName);
+			return $id . '@' . str_replace('www.', '', $hostName);
 
-        }
+		}
 
 		/**
 		 * Builds a PostmanMessage based on the WordPress wp_mail parameters
@@ -162,7 +162,15 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$options = PostmanOptions::getInstance();
 			// the From is set now so that it can be overridden
 			$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
-			$message->setFrom( $transport->getFromEmailAddress(), $transport->getFromName() );
+			if ( $transport !== null ) {
+				$fromEmail = $transport->getFromEmailAddress();
+				$fromName = $transport->getFromName();
+			} else {
+				// fallback to options or defaults if transport is null
+				$fromEmail = $options->getMessageSenderEmail();
+				$fromName = $options->getMessageSenderName();
+			}
+			$message->setFrom( $fromEmail, $fromName );
 			// the Reply-To is set now so that it can be overridden
 			$message->setReplyTo( $options->getReplyTo() );
 			$message->setCharset( get_bloginfo( 'charset' ) );
@@ -180,7 +188,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		 */
 		public function sendMessage( PostmanMessage $message, PostmanEmailLog $log ) {
 
-		    $this->apply_default_headers( $message );
+			$this->apply_default_headers( $message );
 
 			// get the Options and AuthToken
 			$options = PostmanOptions::getInstance();
@@ -263,9 +271,9 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 						$engine->send( $message );
 					    
 
-                    } else {
-                        $this->transcript = 'Bypassed By MailControl For Post SMTP';
-                    }
+					} else {
+						$this->transcript = 'Bypassed By MailControl For Post SMTP';
+					}
 
 					// increment the success counter, unless we are just tesitng
 					if ( ! $testMode ) {
@@ -366,9 +374,9 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				do_action( 'wp_mail_failed', new WP_Error( 'wp_mail_failed', $e->getMessage(), $mail_error_data ) );
 
 				// return failure
-                if ( PostmanOptions::getInstance()->getSmtpMailer() == 'phpmailer' ) {
-                    throw new phpmailerException($e->getMessage(), $e->getCode());
-                }
+				if ( PostmanOptions::getInstance()->getSmtpMailer() == 'phpmailer' ) {
+					throw new phpmailerException($e->getMessage(), $e->getCode());
+				}
 				return false;
 
 			}
@@ -377,7 +385,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		private function fallback( $log, $postMessage,$options ) {
 			$existing_db_version = get_option( 'postman_db_version' );
 
-            if ( ! $options->is_fallback && $options->getFallbackIsEnabled() && $options->getFallbackIsEnabled() == 'yes' ) {
+			if ( ! $options->is_fallback && $options->getFallbackIsEnabled() && $options->getFallbackIsEnabled() == 'yes' ) {
 
                 $options->is_fallback = true;
 				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
@@ -387,14 +395,14 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				}
                 $options->is_fallback = false;
 
-                return $status;
+				return $status;
 
-            } else {
-                $options->is_fallback = false;
-            }
+			} else {
+				$options->is_fallback = false;
+			}
 
 			return false;
-        }
+		}
 
 		/**
 		 * A convenient place for any code to inject a constructed PostmanMessage

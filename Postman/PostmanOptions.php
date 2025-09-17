@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 if ( ! interface_exists( 'PostmanOptionsInterface' ) ) {
 	interface PostmanOptionsInterface {
@@ -92,6 +92,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const MAILERSEND_API_KEY = 'mailersend_api_key';
 		const SENDGRID_REGION = 'sendgrid_region';
 		const SENDINBLUE_API_KEY = 'sendinblue_api_key';
+		const RESEND_API_KEY = 'resend_api_key';
 		const MAILJET_API_KEY = 'mailjet_api_key';
 		const MAILJET_SECRET_KEY = 'mailjet_secret_key';
 		const SENDPULSE_API_KEY = 'sendpulse_api_key';
@@ -132,6 +133,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
         const FALLBACK_SMTP_PASSWORD = 'fallback_smtp_password';
 		const FALLBACK_SELECTED      = 'selected_fallback';
 		const PRIMARY_CONNECTION     = 'primary_connection';
+		// Emailit integration
+		const EMAILIT_API_KEY = 'emailit_api_key';
 
 		// defaults
 		const DEFAULT_TRANSCRIPT_SIZE = 128;
@@ -150,9 +153,9 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const SMTP2GO_API_KEY = 'smtp2go_api_key';
 
 		const SMTP_MAILERS = [
-		    'phpmailer' => 'PHPMailer',
-            'postsmtp' => 'PostSMTP'
-        ];
+			'phpmailer' => 'PHPMailer',
+			'postsmtp' => 'PostSMTP'
+		];
 
 		public $is_fallback = false;
 
@@ -178,7 +181,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		}
 
 		public function save() {
-            update_option( PostmanOptions::POSTMAN_OPTIONS, $this->options );
+			update_option( PostmanOptions::POSTMAN_OPTIONS, $this->options );
 		}
 
 		public function reload() {
@@ -187,31 +190,31 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		public function load() {
 
-            $options = get_option( self::POSTMAN_OPTIONS );
+			$options = get_option( self::POSTMAN_OPTIONS );
 
-		    if ( is_multisite() ) {
-                $network_options = get_site_option( self::POSTMAN_NETWORK_OPTIONS );
+			if ( is_multisite() ) {
+				$network_options = get_site_option( self::POSTMAN_NETWORK_OPTIONS );
 
-                $blog_id = get_current_blog_id();
-                if ( isset( $network_options['post_smtp_global_settings'] ) ) {
-                    $blog_id = apply_filters( 'post_smtp_default_site_option', 1 );
-                }
+				$blog_id = get_current_blog_id();
+				if ( isset( $network_options['post_smtp_global_settings'] ) ) {
+					$blog_id = apply_filters( 'post_smtp_default_site_option', 1 );
+				}
 
-                switch_to_blog($blog_id);
-                $options = get_option( self::POSTMAN_OPTIONS );
-                restore_current_blog();
-            }
+				switch_to_blog($blog_id);
+				$options = get_option( self::POSTMAN_OPTIONS );
+				restore_current_blog();
+			}
 
-            $this->options = $options;
+			$this->options = $options;
 		}
 
 		public function isNew() {
 			return ! isset( $this->options [ PostmanOptions::TRANSPORT_TYPE ] );
 		}
 		public function isMailLoggingEnabled() {
-            if ( defined( 'POST_SMTP_CORE_MAIL_LOG' ) ) {
-                return POST_SMTP_CORE_MAIL_LOG;
-            }
+			if ( defined( 'POST_SMTP_CORE_MAIL_LOG' ) ) {
+				return POST_SMTP_CORE_MAIL_LOG;
+			}
 
 			$allowed = $this->isMailLoggingAllowed();
 			$enabled = $this->getMailLoggingEnabled() == self::MAIL_LOG_ENABLED_OPTION_YES;
@@ -234,7 +237,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			if ( isset( $this->options [ PostmanOptions::MAIL_LOG_ENABLED_OPTION ] ) ) {
 				return $this->options [ PostmanOptions::MAIL_LOG_ENABLED_OPTION ];
 			} else {
-			    return self::DEFAULT_MAIL_LOG_ENABLED;
+				return self::DEFAULT_MAIL_LOG_ENABLED;
 			}
 		}
 		public function getRunMode() {
@@ -291,9 +294,9 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		}
 		public function getHostname() {
 
-		    if ( $this->is_fallback ) {
-		        return $this->getFallbackHostname();
-            }
+			if ( $this->is_fallback ) {
+				return $this->getFallbackHostname();
+			}
 
 			if ( isset( $this->options [ PostmanOptions::HOSTNAME ] ) ) {
 				return $this->options [ PostmanOptions::HOSTNAME ]; 
@@ -302,9 +305,9 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		public function getPort() {
 
-            if ( $this->is_fallback ) {
-                return $this->getFallbackPort();
-            }
+			if ( $this->is_fallback ) {
+				return $this->getFallbackPort();
+			}
 
 			if ( isset( $this->options [ PostmanOptions::PORT ] ) ) {
 				return $this->options [ PostmanOptions::PORT ]; 
@@ -313,9 +316,9 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		public function getEnvelopeSender() {
 
-		    if ( $this->is_fallback ) {
-		        return $this->getFallbackFromEmail();
-            }
+			if ( $this->is_fallback ) {
+				return $this->getFallbackFromEmail();
+			}
 
 			if ( isset( $this->options [ PostmanOptions::ENVELOPE_SENDER ] ) ) {
 				return $this->options [ PostmanOptions::ENVELOPE_SENDER ]; 
@@ -324,9 +327,9 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		public function getMessageSenderEmail() {
 
-		    if ( $this->is_fallback ) {
-		        return $this->getFallbackFromEmail();
-            }
+			if ( $this->is_fallback ) {
+				return $this->getFallbackFromEmail();
+			}
 
 			if ( isset( $this->options [ PostmanOptions::MESSAGE_SENDER_EMAIL ] ) ) {
 				
@@ -373,9 +376,9 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		public function getTransportType() {
 
-		    if ( $this->is_fallback ) {
-		        return 'smtp';
-            }
+			if ( $this->is_fallback ) {
+				return 'smtp';
+			}
 
 			if ( isset( $this->options [ PostmanOptions::TRANSPORT_TYPE ] ) ) {
 				return $this->options [ PostmanOptions::TRANSPORT_TYPE ]; }
@@ -383,9 +386,9 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		public function getAuthenticationType() {
 
-		    if ( $this->is_fallback ) {
-		        return $this->getFallbackAuth();
-            }
+			if ( $this->is_fallback ) {
+				return $this->getFallbackAuth();
+			}
 
 			if ( isset( $this->options [ PostmanOptions::AUTHENTICATION_TYPE ] ) ) {
 				return $this->options [ PostmanOptions::AUTHENTICATION_TYPE ]; }
@@ -393,9 +396,9 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		public function getEncryptionType() {
 
-		    if ( $this->is_fallback ) {
-		        return $this->getFallbackSecurity();
-            }
+			if ( $this->is_fallback ) {
+				return $this->getFallbackSecurity();
+			}
 
 
 			if ( isset( $this->options [ PostmanOptions::SECURITY_TYPE ] ) ) {
@@ -405,59 +408,59 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		public function getUsername() {
 
-		    if ( $this->is_fallback ) {
-		        return $this->getFallbackUsername();
-            }
+			if ( $this->is_fallback ) {
+				return $this->getFallbackUsername();
+			}
 
-            if ( defined( 'POST_SMTP_AUTH_USERNAME' ) ) {
-                return POST_SMTP_AUTH_USERNAME;
-            }
+			if ( defined( 'POST_SMTP_AUTH_USERNAME' ) ) {
+				return POST_SMTP_AUTH_USERNAME;
+			}
 
 			if ( isset( $this->options [ PostmanOptions::BASIC_AUTH_USERNAME ] ) ) {
 				return $this->options [ PostmanOptions::BASIC_AUTH_USERNAME ];
 			}
 		}
 
-        public function getPassword() {
+		public function getPassword() {
 
-            if ( $this->is_fallback ) {
-                return $this->getFallbackPassword();
-            }
+			if ( $this->is_fallback ) {
+				return $this->getFallbackPassword();
+			}
 
-            if ( defined( 'POST_SMTP_AUTH_PASSWORD' ) ) {
-                return POST_SMTP_AUTH_PASSWORD;
-            }
+			if ( defined( 'POST_SMTP_AUTH_PASSWORD' ) ) {
+				return POST_SMTP_AUTH_PASSWORD;
+			}
 
-            if ( isset( $this->options [ PostmanOptions::BASIC_AUTH_PASSWORD ] ) ) {
-                return base64_decode( $this->options [ PostmanOptions::BASIC_AUTH_PASSWORD ] );
-            }
-        }
+			if ( isset( $this->options [ PostmanOptions::BASIC_AUTH_PASSWORD ] ) ) {
+				return base64_decode( $this->options [ PostmanOptions::BASIC_AUTH_PASSWORD ] );
+			}
+		}
 
-        // Fallback
-        public function getFallbackIsEnabled() {
-            if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_ENABLED ] ) ) {
-                return $this->options [ PostmanOptions::FALLBACK_SMTP_ENABLED ];
-            }
+		// Fallback
+		public function getFallbackIsEnabled() {
+			if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_ENABLED ] ) ) {
+				return $this->options [ PostmanOptions::FALLBACK_SMTP_ENABLED ];
+			}
 			return false;
-        }
+		}
 
-        public function getFallbackHostname() {
-            if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_HOSTNAME ] ) ) {
-                return $this->options [ PostmanOptions::FALLBACK_SMTP_HOSTNAME ];
-            }
-        }
+		public function getFallbackHostname() {
+			if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_HOSTNAME ] ) ) {
+				return $this->options [ PostmanOptions::FALLBACK_SMTP_HOSTNAME ];
+			}
+		}
 
-        public function getFallbackPort() {
-            if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_PORT ] ) ) {
-                return $this->options [ PostmanOptions::FALLBACK_SMTP_PORT ];
-            }
-        }
+		public function getFallbackPort() {
+			if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_PORT ] ) ) {
+				return $this->options [ PostmanOptions::FALLBACK_SMTP_PORT ];
+			}
+		}
 
-        public function getFallbackSecurity() {
-            if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_SECURITY ] ) ) {
-                return $this->options [ PostmanOptions::FALLBACK_SMTP_SECURITY ];
-            }
-        }
+		public function getFallbackSecurity() {
+			if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_SECURITY ] ) ) {
+				return $this->options [ PostmanOptions::FALLBACK_SMTP_SECURITY ];
+			}
+		}
 
 		public function getSelectedFallback() {
             if ( isset( $this->options [ PostmanOptions::FALLBACK_SELECTED ] ) ) {
@@ -517,28 +520,49 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
         }
 
-        public function getFallbackUsername() {
-            if ( defined( 'POST_SMTP_FALLBACK_AUTH_USERNAME' ) ) {
-                return POST_SMTP_FALLBACK_AUTH_USERNAME;
-            }
+		public function getFallbackUsername() {
+			if ( defined( 'POST_SMTP_FALLBACK_AUTH_USERNAME' ) ) {
+				return POST_SMTP_FALLBACK_AUTH_USERNAME;
+			}
 
-            if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_USERNAME ] ) ) {
-                return $this->options [ PostmanOptions::FALLBACK_SMTP_USERNAME ];
-            }
-        }
+			if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_USERNAME ] ) ) {
+				return $this->options [ PostmanOptions::FALLBACK_SMTP_USERNAME ];
+			}
+		}
 
 
-        public function getFallbackPassword() {
-            if ( defined( 'POST_SMTP_FALLBACK_AUTH_PASSWORD' ) ) {
-                return POST_SMTP_FALLBACK_AUTH_PASSWORD;
-            }
+		public function getFallbackPassword() {
+			if ( defined( 'POST_SMTP_FALLBACK_AUTH_PASSWORD' ) ) {
+				return POST_SMTP_FALLBACK_AUTH_PASSWORD;
+			}
 
-            if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_PASSWORD ] ) ) {
-                return base64_decode( $this->options [ PostmanOptions::FALLBACK_SMTP_PASSWORD ] );
-            }
-        }
+			if ( isset( $this->options[ PostmanOptions::FALLBACK_SMTP_PASSWORD ] ) ) {
+				$value = $this->options[ PostmanOptions::FALLBACK_SMTP_PASSWORD ];
 
-        // End Fallback
+				// First decode
+				$decoded = base64_decode( $value, true );
+
+				// If decoding fails, return as is
+				if ( $decoded === false ) {
+					return $value;
+				}
+
+				// Check if it looks like another base64 string (only base64 chars and length multiple of 4)
+				if ( preg_match( '/^[A-Za-z0-9\/\r\n+]*={0,2}$/', $decoded ) && strlen( $decoded ) % 4 === 0 ) {
+					$double_decoded = base64_decode( $decoded, true );
+					if ( $double_decoded !== false ) {
+						return $double_decoded;
+					}
+				}
+
+				return $decoded;
+			}
+
+			return null;
+		}
+
+
+		// End Fallback
 
 		public function getMandrillApiKey() {
 			if ( defined( 'POST_SMTP_API_KEY' ) ) {
@@ -642,18 +666,52 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				return $this->options [ PostmanOptions::DISABLE_EMAIL_VALIDAITON ]; }
 		}
 
+		/**
+		 * @since 2.1
+		 * @version 1.0
+		 */
+		public function getSendinblueApiKey() {
+
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+				return POST_SMTP_API_KEY;
+			}
+
+			if ( isset( $this->options[PostmanOptions::SENDINBLUE_API_KEY] ) ) {
+				return base64_decode( $this->options[PostmanOptions::SENDINBLUE_API_KEY] );
+			}
+
+		}
+
+		/**
+		 * Get Emailit API Key
+		 * @return string|null
+		 */
+		public function getEmailitApiKey() {
+            
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+                return POST_SMTP_API_KEY;
+            }
+
+			if ( isset( $this->options[ PostmanOptions::EMAILIT_API_KEY ] ) ) {
+				return base64_decode( $this->options[ PostmanOptions::EMAILIT_API_KEY ] );
+			}
+			return null;
+		}
+
         /**
-         * @since 2.1
+         * Get Resend API Key
+         * 
+         * @since 3.2.0
          * @version 1.0
          */
-        public function getSendinblueApiKey() {
+        public function getResendApiKey() {
 
             if ( defined( 'POST_SMTP_API_KEY' ) ) {
                 return POST_SMTP_API_KEY;
             }
 
-            if ( isset( $this->options[PostmanOptions::SENDINBLUE_API_KEY] ) ) {
-                return base64_decode( $this->options[PostmanOptions::SENDINBLUE_API_KEY] );
+            if ( isset( $this->options[PostmanOptions::RESEND_API_KEY] ) ) {
+                return base64_decode( $this->options[PostmanOptions::RESEND_API_KEY] );
             }
 
         }
@@ -661,82 +719,82 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		/**
 		 * Gets Mailjet API key
 		 * 
-         * @since 2.7
-         * @version 1.0
-         */
+		 * @since 2.7
+		 * @version 1.0
+		 */
 
 		public function getMailjetApiKey() {
 
-            if ( defined( 'POST_SMTP_API_KEY' ) ) {
-                return POST_SMTP_API_KEY;
-            }
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+				return POST_SMTP_API_KEY;
+			}
 
-            if ( isset( $this->options[PostmanOptions::MAILJET_API_KEY] ) ) {
-                return base64_decode( $this->options[PostmanOptions::MAILJET_API_KEY] );
-            }
+			if ( isset( $this->options[PostmanOptions::MAILJET_API_KEY] ) ) {
+				return base64_decode( $this->options[PostmanOptions::MAILJET_API_KEY] );
+			}
 
-        }
+		}
 
 		/**
 		 * Get SendPulse API key
 		 * 
-         * @since 2.7
-         * @version 1.0
-         */
+		 * @since 2.7
+		 * @version 1.0
+		 */
 		public function getSendpulseApiKey() {
 
-            if ( defined( 'POST_SMTP_API_KEY' ) ) {
-                return POST_SMTP_API_KEY;
-            }
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+				return POST_SMTP_API_KEY;
+			}
 
-            if ( isset( $this->options[PostmanOptions::SENDPULSE_API_KEY] ) ) {
-                return base64_decode( $this->options[PostmanOptions::SENDPULSE_API_KEY] );
-            }
+			if ( isset( $this->options[PostmanOptions::SENDPULSE_API_KEY] ) ) {
+				return base64_decode( $this->options[PostmanOptions::SENDPULSE_API_KEY] );
+			}
 
-        }
+		}
 
 		/**
 		 * Gets Mailjet Secret key
 		 * 
-         * @since 2.7
-         * @version 1.0
-         */
+		 * @since 2.7
+		 * @version 1.0
+		 */
 		public function getMailjetSecretKey() {
 
-            if ( defined( 'POST_SMTP_API_KEY' ) ) {
-                return POST_SMTP_API_KEY;
-            }
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+				return POST_SMTP_API_KEY;
+			}
 
-            if ( isset( $this->options[PostmanOptions::MAILJET_SECRET_KEY] ) ) {
-                return base64_decode( $this->options[PostmanOptions::MAILJET_SECRET_KEY] );
-            }
+			if ( isset( $this->options[PostmanOptions::MAILJET_SECRET_KEY] ) ) {
+				return base64_decode( $this->options[PostmanOptions::MAILJET_SECRET_KEY] );
+			}
 
-        }
+		}
 
 		/**
 		 * Gets SendPulse Secret key
 		 * 
-         * @since 2.7
-         * @version 1.0
-         */
+		 * @since 2.7
+		 * @version 1.0
+		 */
 		public function getSendpulseSecretKey() {
 
-            if ( defined( 'POST_SMTP_SECRET_KEY' ) ) {
-                return POST_SMTP_SECRET_KEY;
-            }
+			if ( defined( 'POST_SMTP_SECRET_KEY' ) ) {
+				return POST_SMTP_SECRET_KEY;
+			}
 
-            if ( isset( $this->options[PostmanOptions::SENDPULSE_SECRET_KEY] ) ) {
-                return base64_decode( $this->options[PostmanOptions::SENDPULSE_SECRET_KEY] );
-            }
+			if ( isset( $this->options[PostmanOptions::SENDPULSE_SECRET_KEY] ) ) {
+				return base64_decode( $this->options[PostmanOptions::SENDPULSE_SECRET_KEY] );
+			}
 
-        }
+		}
 
 		/**
 		 * Gets SparkPost API key
 		 * 
-         * @since 2.2
-         * @version 1.0
-         */
+		 * @since 2.2
+		 * @version 1.0
+		 */
 		public function getSparkPostApiKey() {
 
 			if ( defined( 'POST_SMTP_API_KEY' ) ) {
@@ -751,20 +809,20 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 
 		/**
-         * @since 2.6.0
-         * @version 1.0
-         */
-        public function getElasticEmailApiKey() {
+		 * @since 2.6.0
+		 * @version 1.0
+		 */
+		public function getElasticEmailApiKey() {
 
-            if ( defined( 'POST_SMTP_API_KEY' ) ) {
-                return POST_SMTP_API_KEY;
-            }
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+				return POST_SMTP_API_KEY;
+			}
 
-            if ( isset( $this->options[PostmanOptions::ELASTICEMAIL_API_KEY] ) ) {
-                return base64_decode( $this->options[PostmanOptions::ELASTICEMAIL_API_KEY] );
-            }
+			if ( isset( $this->options[PostmanOptions::ELASTICEMAIL_API_KEY] ) ) {
+				return base64_decode( $this->options[PostmanOptions::ELASTICEMAIL_API_KEY] );
+			}
 
-        }
+		}
 
 		/**
 		 * (non-PHPdoc)
@@ -807,12 +865,12 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		}
 
 		public function getSmtpMailer() {
-		    if ( empty($this->options [ 'smtp_mailers' ]) ) {
-		        return 'postsmtp';
-            }
+			if ( empty($this->options [ 'smtp_mailers' ]) ) {
+				return 'postsmtp';
+			}
 
-            return $this->options [ 'smtp_mailers' ];
-        }
+			return $this->options [ 'smtp_mailers' ];
+		}
 
 		public function isAuthTypePassword() {
 			return $this->isAuthTypeLogin() || $this->isAuthTypeCrammd5() || $this->isAuthTypePlain();
@@ -906,15 +964,15 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		public function getPostmarkApiKey() {
 
-            if ( defined( 'POST_SMTP_API_KEY' ) ) {
-                return POST_SMTP_API_KEY;
-            }
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+				return POST_SMTP_API_KEY;
+			}
 
-            if ( isset( $this->options[PostmanOptions::POSTMARK_API_KEY] ) ) {
-                return base64_decode( $this->options[PostmanOptions::POSTMARK_API_KEY] );
-            }
+			if ( isset( $this->options[PostmanOptions::POSTMARK_API_KEY] ) ) {
+				return base64_decode( $this->options[PostmanOptions::POSTMARK_API_KEY] );
+			}
 
-        }
+		}
 
 
 		/**

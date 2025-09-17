@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: smtp, gmail smtp, email,  email logs, office 365
 Requires at least: 5.6.0
 Tested up to: 6.8
-Stable tag: 3.3.0
+Stable tag: 3.5.0
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -91,7 +91,13 @@ https://www.youtube.com/watch?v=Oxs3qintyLU
 == SMTP Mailer Options for Post SMTP ==
 With Post SMTP, you get many SMTP mailer options, such as:
 
-* [Brevo (formerly Sendinblue) SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendinblue-aka-brevo-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) - **Recommended**
+* [Emailit SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-emailit-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) - **Newly Added**
+
+* [Resend SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-resend-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) - **Newly Added**
+
+* [MailerSend SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mailersend-with-post-smtp/?utm_source=wp_org&utm_medium=read_me)
+
+* [Brevo (formerly Sendinblue) SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendinblue-aka-brevo-with-post-smtp/?utm_source=wp_org&utm_medium=read_me)
 
 * [Microsoft 365 SMTP (Formerly Office 365 and Outlook)](https://postmansmtp.com/office-365-for-wordpress/?utm_source=wp_org&utm_medium=read_me) 
 
@@ -289,11 +295,37 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
+= 3.5.0 - Sept 17, 2025 =
+* NEW - Added [Emailit](https://postmansmtp.com/smtp-integrations/Emailit/) email service providers.
+* TWEAK - Wizard Send Test Email disble button till the email is being sent.
+* TWEAK - Limited the scope of Gmail.
+* IMPROVEMENT - PHP 8+ compatibility added.
+* IMPROVEMENT - Dashboard widget UI improvement.
+* FIX - Fallback mailer was not working.
+* FIX - SendGrid attachments were not working in some cases.
+* FIX - Resending emails to multiple recipients was not working in some cases.
+* FIX - PHP warning was appearing in some cases.
+* FIX - PHP error was appearing in some cases Uncaught Error: Call to a member function getFromEmailAddress().
+
+= 3.4.2 - Sept 01, 2025 =
+* Enhancement - Improved AJAX call security.
+* Improvement - PHP 8+ version compatibility.
+
+= 3.4.1 - Aug 20, 2025 =
+* TWEAK - Updated Plugin URI in header
+
+= 3.4.0 - Aug 18, 2025 =
+* NEW - Added [Resend](https://postmansmtp.com/smtp-integrations/resend/) email service providers.
+* UPDATED: Feedback SDK to the latest version.
+* TWEAK - Removed irrelevant notices from Post SMTP Wizard.
+* FIX - BCC/ CC fails with Sparkpost.
+* FIX - reply-to was not working with Gravit Forms notifications with SMTP2GO.
+
 = 3.3.0 - June 11, 2025 =
 * NEW - WP Dashboard Widget
 * NEW - Diagnostic Report Send Form
-* NEW - [Mailersend](https://www.mailersend.com/) Mailer Integration
-* FIX - Add Validation In Domain Checker  DNS, SPF, DMARC
+* NEW - [Mailersend](https://postmansmtp.com/smtp-integrations/mailersend-smtp/) Mailer Integration
+* FIX - Added Validation In Domain Checker  DNS, SPF, DMARC
 * FIX - LOCO Translate Issue 
 * FIX - Email Summary Improvement 
 * FIX - Vulnerability Fix. 

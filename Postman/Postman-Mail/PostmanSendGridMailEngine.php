@@ -90,19 +90,19 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 
 			$duplicates = array();
 
-			// add the to recipients
-			foreach ( (array) $message->getToRecipients() as $recipient ) {
-
+            // add the to recipients
+			foreach ( ( array ) $message->getToRecipients() as $recipient ) {
 				if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
-
+					$name = $recipient->getName();
+					if ( ! is_string( $name ) || $name === null ) {
+						$name = '';
+					}
 					$content['personalizations'][0]['to'][] = array(
-						'email' => $recipient->getEmail(),
-						'name'  => $recipient->getName(),
-					);
-
-					$duplicates[] = $recipient->getEmail();
-
-				}
+							'email' => $recipient->getEmail(),
+							'name'  => $name
+						);
+						$duplicates[] = $recipient->getEmail();
+					}
 			}
 
 			// add the subject
@@ -269,16 +269,18 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 			foreach ( $attArray as $file ) {
 				if ( ! empty( $file ) ) {
 					$this->logger->debug( 'Adding attachment: ' . $file );
-
-					$file_name     = basename( $file );
-					$file_parts    = explode( '.', $file_name );
-					$file_type     = wp_check_filetype( $file );
+					$file_name = basename( $file );
+					$file_type = wp_check_filetype( $file );
+					$type = $file_type['type'];
+					if ( !is_string( $type) || empty( $type ) ) {
+						$type = 'application/octet-stream';
+					}
 					$attachments[] = array(
-						'content'     => base64_encode( file_get_contents( $file ) ),
-						'type'        => $file_type['type'],
-						'filename'    => $file_name,
+						'content' => base64_encode( file_get_contents( $file ) ),
+						'type' => $type,
+						'filename' => $file_name,
 						'disposition' => 'attachment',
-						'name'        => $file_parts[0],
+						// 'name' removed for SendGrid API compatibility
 					);
 				}
 			}

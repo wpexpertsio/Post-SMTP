@@ -313,7 +313,7 @@ class PostmanEmailLogs {
 
         }
         else {
-                return $this->db->insert( $this->db->prefix . $this->db_name, $data  ) ? $this->db->insert_id : false;
+            return $this->db->insert( $this->db->prefix . $this->db_name, $data  ) ? $this->db->insert_id : false;
         }
 
     }
@@ -345,13 +345,12 @@ class PostmanEmailLogs {
      * @version 1.0
      */
     public function get_logs_ajax() {
-
         if( !wp_verify_nonce( $_GET['security'], 'security' ) ) {
 
             return;
 
         }
-
+  
         if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-get-email-logs' ) {
 
             $logs_query = new PostmanEmailQueryLog;
@@ -379,7 +378,7 @@ class PostmanEmailLogs {
                 $query['from'] = strtotime( sanitize_text_field( $_GET['from'] ) );
 
             }
-
+       
             if( isset( $_GET['to'] ) && !empty( $_GET['to'] ) ) {
 
                 $query['to'] = strtotime( sanitize_text_field( $_GET['to'] ) ) + 86400;
@@ -413,7 +412,7 @@ class PostmanEmailLogs {
                 '&quot;',
                 '&#039;'
             );
-
+   
             //Lets manage the Date format :)
             foreach( $data as $row ) {
 
@@ -423,7 +422,11 @@ class PostmanEmailLogs {
 
                     $row->success = '<span title="Success">Success</span>';
 
-                }
+                } else if( $row->success == 'Sent ( ** Fallback ** )' ){
+
+                    $row->success = '<span title="Sent ( ** Fallback ** )">Success</span><a href="#" class="ps-status-log ps-popup-btn">View details</a>';
+                    
+               }
                 elseif( $row->success == 'In Queue' ) {
 
                     $row->success = '<span title="In Queue">In Queue</span>';

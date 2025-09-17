@@ -351,12 +351,12 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				if ( null !== $message->getReplyTo() ) {
 					$log->replyTo = $message->getReplyTo()->format();
 				}
+				$log->success = $success;
+				$log->statusMessage = $statusMessage;
+				$log->transportUri = PostmanTransportRegistry::getInstance()->getPublicTransportUri( $transport );
+				$log->sessionTranscript = $log->transportUri . "\n\n" . $transcript;
+				return $log;
 			}
-			$log->success = $success;
-			$log->statusMessage = $statusMessage;
-			$log->transportUri = PostmanTransportRegistry::getInstance()->getPublicTransportUri( $transport );
-			$log->sessionTranscript = $log->transportUri . "\n\n" . $transcript;
-			return $log;
 		}
 
 		/**

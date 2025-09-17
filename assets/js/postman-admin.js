@@ -69,4 +69,24 @@ jQuery( document ).ready( function() {
 
     jQuery( '.postman_sent_mail-count' ).closest( 'li' ).css( 'display', 'none' );
 
+    //Discard less secure notification
+	jQuery( document ).on( 'click', '#discard-less-secure-notification', function( e ) {
+		e.preventDefault();
+
+		jQuery.ajax( {
+			type: 'POST',
+			url: ajaxurl,
+			data: {
+				action: 'ps-discard-less-secure-notification',
+				_wp_nonce: postmanPro.lessSecureNotice
+			},
+			success: function(data) {
+				jQuery( '.ps-less-secure-notice .notice-dismiss' ).click();
+            }
+		} )
+
+		jQuery( '.ps-less-secure-notice .notice-dismiss' ).click();
+	} )
+
+
 } );

@@ -265,7 +265,7 @@ class PostmanUtils {
 
 	static function deleteLockFile( $tempDirectory = null ) {
 		$path = PostmanUtils::calculateTemporaryLockPath( $tempDirectory );
-		$success = @unlink( $path );
+		$success = file_exists($path) ? @unlink($path) : true;
 		if ( PostmanUtils::$logger->isTrace() ) {
 			PostmanUtils::$logger->trace( sprintf( 'Deleting file %s : %s', $path, $success ) );
 		}
