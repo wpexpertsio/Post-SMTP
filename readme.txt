@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: smtp, gmail smtp, email,  email logs, office 365
 Requires at least: 5.6.0
 Tested up to: 6.8
-Stable tag: 3.4.2
+Stable tag: 3.5.0
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -290,6 +290,18 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 Important: If you are using version 2.8.7 or lower of our plugin, please update to the latest version as soon as possible. This update contains an urgent security fix that prevents potential vulnerabilities and attacks. We apologize for any inconvenience this may cause you and we appreciate your cooperation. Thank you for using our plugin.
 
 == Changelog ==
+
+= 3.5.0 - Sept 17, 2025 =
+* NEW - Added [Emailit](https://postmansmtp.com/smtp-integrations/Emailit/) email service providers.
+* TWEAK - Wizard Send Test Email disble button till the email is being sent.
+* TWEAK - Limited the scope of Gmail.
+* IMPROVEMENT - PHP 8+ compatibility added.
+* IMPROVEMENT - Dashboard widget UI improvement.
+* FIX - Fallback mailer was not working.
+* FIX - SendGrid attachments were not working in some cases.
+* FIX - Resending emails to multiple recipients was not working in some cases.
+* FIX - PHP warning was appearing in some cases.
+* FIX - PHP error was appearing in some cases Uncaught Error: Call to a member function getFromEmailAddress().
 
 = 3.4.2 - Sept 01, 2025 =
 * Enhancement - Improved AJAX call security.
