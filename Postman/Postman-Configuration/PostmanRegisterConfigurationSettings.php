@@ -606,7 +606,8 @@ class PostmanSettingsRegistry {
 			
 			//$status         = ( $key == $primary_connection ) ? 'Primary' : ( ( $key == $primary_fallback ) ? 'Fallback' : 'None' );
 			$is_primary = ( $key == $primary_connection );
-			$is_valid_fallback = isset( $connections[ $primary_fallback ] ) && $primary_fallback != $primary_connection && $key == $primary_fallback;
+			$is_fallback_enabled = $this->options->getFallbackIsEnabled() === 'yes';
+			$is_valid_fallback = $is_fallback_enabled && isset( $connections[ $primary_fallback ] ) && $primary_fallback != $primary_connection && $key == $primary_fallback;
 
 			$status = $is_primary ? 'Primary' : ( $is_valid_fallback ? 'Fallback' : 'None' );
 			echo '<tr><td>';
