@@ -1651,7 +1651,7 @@ class Post_SMTP_New_Wizard {
             $secret_key = $mail_connections[$id]['sendpulse_secret_key'];
         }
         $api_key = $api_key ?: esc_attr( $this->options->getSendpulseApiKey() ?? '' );
-        $secret_key = $api_key ?: esc_attr( $this->options->getSendpulseSecretKey() ?? '' );
+        $secret_key = $secret_key ?: esc_attr( $this->options->getSendpulseSecretKey() ?? '' );
 
         $html = sprintf(
             '<p>%1$s <a href="%2$s" target="_blank">SendPulse</a> %3$s</p><p>%4$s<p>%5$s <a href="%6$s" target="_blank">%7$s</a>',
