@@ -608,8 +608,8 @@ class Post_SMTP_New_Wizard {
             } elseif ( ! isset( $_GET['action'] ) || $_GET['action'] !== 'add' ) {
                 // No ID given — use the last connection
                 $last_connection = end( $postman_connections );
-                $from_email = is_array($last_connection) && isset($last_connection['sender_email']) ? $last_connection['sender_email'] : '';
-                $from_name  = is_array($last_connection) && isset($last_connection['sender_name']) ? $last_connection['sender_name'] : '';
+                $from_email = is_array( $last_connection ) && isset( $last_connection['sender_email'] ) ? $last_connection['sender_email'] : '';
+                $from_name  = is_array( $last_connection ) && isset( $last_connection['sender_name'] ) ? $last_connection['sender_name'] : '';
             }else{
                 $from_email =  '';
                 $from_name  = '';

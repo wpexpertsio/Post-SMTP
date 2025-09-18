@@ -540,7 +540,7 @@ class PostmanConfigurationController {
 						'office365_api'  => 'microsoft-365',
 						'aws_ses_api'    => 'amazon-ses',
 						'zohomail_api'   => 'zoho-mail',
-						'gmail_api'      => 'gmail-oneclick',
+						// 'gmail_api'      => 'gmail-oneclick',
 					);
 
 					// Active extensions.
@@ -553,6 +553,7 @@ class PostmanConfigurationController {
 						<?php esc_html_e( 'Select a fallback', 'post-smtp' ); ?>
 					</option>
 					<?php
+					krsort( $filtered_mail_connections );
 					foreach ( $filtered_mail_connections as $index => $connection ) {
 						$provider = isset( $connection['provider'] ) ? $connection['provider'] : '';
 

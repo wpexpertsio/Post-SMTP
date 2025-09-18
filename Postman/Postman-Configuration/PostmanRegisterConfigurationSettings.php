@@ -487,14 +487,14 @@ class PostmanSettingsRegistry {
 	 */
 	public function primary_connection_callback() {
 		$connections        = get_option( 'postman_connections', array() ); // Retrieve saved connections.
-
+		krsort( $connections );
 		$primary_connection = $this->options->getSelectedPrimary();
 		// Provider keys mapping (wizard-key lookup)
 		$provider_keys = array(
 			'office365_api'  => 'microsoft-365',
 			'aws_ses_api'    => 'amazon-ses',
 			'zohomail_api'   => 'zoho-mail',
-			'gmail_api'      => 'gmail-oneclick',
+			// 'gmail_api'      => 'gmail-oneclick',
 		);
 
 		// Get active extensions from option
@@ -516,7 +516,7 @@ class PostmanSettingsRegistry {
 
 				// Map provider to wizard-key if available
 				$wizard_key = isset( $provider_keys[$provider] ) ? $provider_keys[$provider] : $provider;
-				var_dump($wizard_key);
+
 				// Only enforce active extension check if provider is in provider_keys
 				if ( isset( $provider_keys[ $provider ] ) && ! in_array( $wizard_key, $active_extensions, true ) ) {
 					continue;
