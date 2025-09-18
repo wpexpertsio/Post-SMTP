@@ -570,6 +570,7 @@ class PostmanSettingsRegistry {
 	public function add_new_connection_callback() {
 		$connections        = get_option( 'postman_connections', array() );
 		$wizard_uri         = admin_url( 'admin.php?page=postman/configuration_wizard&action=add' );
+		$edit_wizard_uri    = admin_url( 'admin.php?page=postman/configuration_wizard' );
 		$primary_connection = $this->options->getSelectedPrimary();
 		$primary_fallback   = $this->options->getSelectedFallback();
 
@@ -621,7 +622,7 @@ class PostmanSettingsRegistry {
 					<img src="%s" alt="%s" style="vertical-align: middle; margin-right: 5px;" />
 					%s
 				</a>',
-				esc_url( $wizard_uri ),
+				esc_url( $edit_wizard_uri ),
 				esc_attr( $key ),
 				esc_url( plugin_dir_url( dirname( __DIR__, 1 ) ) . 'Postman/Dashboard/assets/new.svg' ),
 				esc_attr__( 'Edit With Wizard', 'post-smtp' ),

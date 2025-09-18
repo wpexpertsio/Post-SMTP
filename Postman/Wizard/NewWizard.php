@@ -866,11 +866,13 @@ class Post_SMTP_New_Wizard {
             $id = $_GET['id'] ?? null;
             $client_id = '';
             $client_secret = '';
-
             if ( isset( $mail_connections[ $id ] ) ) {
                 // Use the selected connection for editing
                 $client_id     = $mail_connections[ $id ]['oauth_client_id'] ?? '';
                 $client_secret = $mail_connections[ $id ]['oauth_client_secret'] ?? '';
+            } elseif ( $action === 'add' ) {
+                $client_id     = '';
+                $client_secret = '';
             } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
                 // No ID? Use the last connection in the list
                 $last_connection = end( $mail_connections );
@@ -892,16 +894,16 @@ class Post_SMTP_New_Wizard {
         $gmail_oneclick_enabled = in_array( 'gmail-oneclick', $bonus_extensions );
         $auth_url = get_option( 'post_smtp_gmail_auth_url' );
 
-    // Setup classes and attributes for form visibility
-    $hidden_class = $gmail_oneclick_enabled ? 'ps-hidden' : '';
-    $client_id_required = $gmail_oneclick_enabled ? '' : 'required';
-    $client_secret_required = $gmail_oneclick_enabled ? '' : 'required';
-    $one_click_class = 'ps-enable-gmail-one-click';
-    $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/wizard-google.png';
-    $transport_name = __( '<strong>1-Click</strong> Google Mailer Setup?', 'post-smtp' );
-    $product_url = postman_is_bfcm() ? 
-        'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 
-        'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_gmail_one_click&utm_campaign=plugin';
+        // Setup classes and attributes for form visibility
+        $hidden_class = $gmail_oneclick_enabled ? 'ps-hidden' : '';
+        $client_id_required = $gmail_oneclick_enabled ? '' : 'required';
+        $client_secret_required = $gmail_oneclick_enabled ? '' : 'required';
+        $one_click_class = 'ps-enable-gmail-one-click';
+        $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/wizard-google.png';
+        $transport_name = __( '<strong>1-Click</strong> Google Mailer Setup?', 'post-smtp' );
+        $product_url = postman_is_bfcm() ? 
+            'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 
+            'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_gmail_one_click&utm_campaign=plugin';
 
 
     if ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) {
