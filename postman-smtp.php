@@ -48,7 +48,7 @@ if ( ! function_exists( 'ps_fs' ) ) {
                 'type'                => 'plugin',
                 'public_key'          => 'pk_28fcefa3d0ae86f8cdf6b7f71c0cc',
                 'is_premium'          => false,
-                'has_addons'          => false,
+                'has_addons'          => true,
 				'bundle_id' 		  => '10910',
 				'bundle_public_key'   => 'pk_c5110ef04ba30cd57dd970a269a1a',
                 'has_paid_plans'      => false,
@@ -223,3 +223,19 @@ function post_setupPostman() {
 	$kevinCostner = new Postman( __FILE__, POST_SMTP_VER );
 	do_action( 'post_smtp_init');
 }
+
+/**
+ * Hide the "Addons" submenu in the Freemius-powered menu.
+ *
+ * @param bool   $is_visible Current visibility state.
+ * @param string $id         Submenu ID.
+ *
+ * @return bool Updated visibility state.
+ */
+function ps_fs_submenu_addon_visibility_handler( $is_visible, $id ) {
+    if ( 'addons' === $id ) {
+        $is_visible = false;
+    }
+    return $is_visible;
+}
+ps_fs()->add_filter( 'is_submenu_visible', 'ps_fs_submenu_addon_visibility_handler', 10, 2 );
