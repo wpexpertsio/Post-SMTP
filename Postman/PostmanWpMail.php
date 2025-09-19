@@ -385,7 +385,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		private function fallback( $log, $postMessage,$options ) {
 			$existing_db_version = get_option( 'postman_db_version' );
 
-			if ( ! $options->is_fallback && $options->getFallbackIsEnabled() && $options->getFallbackIsEnabled() == 'yes' && $options->getSelectedFallback != "" ) {
+			if ( ! $options->is_fallback && $options->getFallbackIsEnabled() && $options->getFallbackIsEnabled() == 'yes' && $options->getSelectedFallback() != "" ) {
 
                 $options->is_fallback = true;
 				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
