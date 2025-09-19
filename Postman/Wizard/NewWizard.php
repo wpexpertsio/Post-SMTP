@@ -2158,6 +2158,9 @@ class Post_SMTP_New_Wizard {
         $sanitized['prevent_sender_email_override'] = isset( $sanitized['prevent_sender_email_override'] ) ? 1 : '';
         $sanitized['prevent_sender_name_override'] = isset( $sanitized['prevent_sender_name_override'] ) ? 1 : '';
         $sanitized['envelope_sender'] = isset( $sanitized['sender_email'] ) ? $sanitized['sender_email'] : '';
+        $sanitized['slack_token'] = base64_decode( $options['slack_token'] );
+        $sanitized['pushover_user'] = base64_decode( $options['pushover_user'] );
+        $sanitized['pushover_token'] = base64_decode( $options['pushover_token'] );
 
         // Map of keys to preserve
         $keys = array(
@@ -2191,7 +2194,8 @@ class Post_SMTP_New_Wizard {
         $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
         $transport_type = isset( $sanitized['transport_type'] ) ? $sanitized['transport_type'] : '';
         $api_keys = $this->get_transport_type_keys( $transport_type );
-
+        $postman_options = get_option( 'postman_options', array() );
+        
         $new_connection = array(
             'provider' => $transport_type,
             'sender_email' => isset( $sanitized['sender_email'] ) ? $sanitized['sender_email'] : '',
@@ -2234,10 +2238,13 @@ class Post_SMTP_New_Wizard {
         $saved = update_option( 'postman_connections', $mail_connections );
 
         // ✅ Update sender email/name in postman_options globally
-        update_option( 'postman_options', array_merge( get_option( 'postman_options', array() ), array(
-            'sender_email' => $new_connection['sender_email'],
-            'sender_name'  => $new_connection['sender_name'],
-        ) ) );
+        $postman_options = array_merge( $postman_options, array(
+            'sender_email'   => $new_connection['sender_email'],
+            'sender_name'    => $new_connection['sender_name'],
+            'slack_token'    => base64_decode( $options['slack_token'] ),
+            'pushover_user'  => base64_decode( $options['pushover_user'] ),
+            'pushover_token' => base64_decode( $options['pushover_token'] ),
+        ) );
             
         return array(
             'index'  => $id,

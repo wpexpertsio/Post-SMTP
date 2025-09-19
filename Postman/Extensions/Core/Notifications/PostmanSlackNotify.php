@@ -9,11 +9,7 @@ class PostmanSlackNotify implements Postman_Notify {
     {
         $options = PostmanNotifyOptions::getInstance();
         $existing_db_version = get_option( 'postman_db_version' );
-        if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-            $api_url = base64_decode( $options->getSlackToken() );
-        }else{
-            $api_url = $options->getSlackToken();
-        }
+        $api_url = $options->getSlackToken();
       
 
         $headers = array(
