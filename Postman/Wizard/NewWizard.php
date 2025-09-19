@@ -365,8 +365,8 @@ class Post_SMTP_New_Wizard {
                                     <?php } ?>
                                     <?php if( isset( $_GET['o_access_token'] ) || isset( $_GET['o_refresh_token'] ) ){ ?>
                                       <input type="hidden" name="access_token" value="<?php echo esc_attr(  $_GET['o_access_token'] ); ?>" >
-                                      <!-- <input type="hidden" name="refresh_token" value="<?//php echo esc_attr(  $_GET['o_refresh_token'] ); ?>" >
-                                      <input type="hidden" name="token_expires" value="<?//php echo esc_attr(  $_GET['o_expires_in'] ); ?>" > -->
+                                      <input type="hidden" name="refresh_token" value="<?php echo esc_attr(  $_GET['o_refresh_token'] ); ?>" >
+                                      <input type="hidden" name="token_expires" value="<?php echo esc_attr(  $_GET['o_expires_in'] ); ?>" >
                                     <?php } ?>
                                     <?php if( isset( $_GET['g_access_token'] ) || isset( $_GET['g_refresh_token'] ) ){ ?>
                                       <input type="hidden" name="access_token" value="<?php echo esc_attr(  $_GET['g_access_token'] ); ?>" >
