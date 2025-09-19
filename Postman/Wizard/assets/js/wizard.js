@@ -748,9 +748,6 @@ jQuery( document ).ready(function() {
             e.preventDefault();
             var data = jQuery('#ps-one-click-data').val();
             var parsedData = JSON.parse(data);
-            console.log(parsedData);
-
-            
 
             jQuery('.ps-pro-for-img').attr('src', parsedData.url);
             jQuery('.ps-pro-product-url').attr('href', parsedData.product_url);
@@ -933,5 +930,26 @@ jQuery(document).ready(function ($) {
 	jQuery(document).on('click', '.ps-finish-wizard', function(e) {
 		jQuery.post( ajaxurl, { action: 'ps_expire_client_transients' });
 	});
+
+    		
+	jQuery( document ).on( 'click', '.ps-gmail-btn', function( e ) {
+        e.preventDefault();
+		var redirectURI = jQuery( this ).attr( 'href' );
+        jQuery.ajax( {
+            url: ajaxurl,
+            type: 'POST',
+            async: true,
+            data: {
+                action: 'ps-save-wizard',
+                FormData: jQuery( '#ps-wizard-form' ).serialize(),
+            },
+            success: function( response ) {
+                window.location.assign( redirectURI );
+
+            },
+
+        } );
+
+    } );
     
 });
