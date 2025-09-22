@@ -594,8 +594,6 @@ class Post_SMTP_New_Wizard {
      */
     public function render_name_email_settings() {
 
-        $from_name_enforced = $this->options->isPluginSenderNameEnforced() ? 'checked' : '';
-        $from_email_enforced = $this->options->isPluginSenderEmailEnforced() ? 'checked' : '';
         $postman_connections = get_option( 'postman_connections' );
         if ( ! is_array( $postman_connections ) ) {
             $postman_connections = array();
@@ -605,19 +603,30 @@ class Post_SMTP_New_Wizard {
                 // Use specific connection (edit case)
                 $from_email = $postman_connections[ $_GET['id'] ]['sender_email'] ?? '';
                 $from_name  = $postman_connections[ $_GET['id'] ]['sender_name'] ?? '';
+                $from_name_enforced = $postman_connections[ $_GET['id'] ]['prevent_sender_name_override'] ?? '';
+                $from_email_enforced = $postman_connections[ $_GET['id'] ]['prevent_sender_email_override'] ?? '';
             } elseif ( ! isset( $_GET['action'] ) || $_GET['action'] !== 'add' ) {
                 // No ID given — use the last connection
                 $last_connection = end( $postman_connections );
                 $from_email = is_array( $last_connection ) && isset( $last_connection['sender_email'] ) ? $last_connection['sender_email'] : '';
                 $from_name  = is_array( $last_connection ) && isset( $last_connection['sender_name'] ) ? $last_connection['sender_name'] : '';
+                $from_name_enforced = $last_connection['prevent_sender_name_override'] ?? '';
+                $from_email_enforced = $last_connection['prevent_sender_email_override'] ?? '';
             }else{
                 $from_email =  '';
                 $from_name  = '';
+                $from_name_enforced = '';
+                $from_email_enforced ='';
             }
+            // Fix: ensure checked if value is 1 or '1'
+            $from_email_enforced = ( $from_email_enforced == 1 || $from_email_enforced === '1') ? 'checked' : '';
+            $from_name_enforced = ( $from_name_enforced == 1 || $from_name_enforced === '1') ? 'checked' : '';
         }else {
             // Fallback to stored options
             $from_name  = null !== $this->options->getMessageSenderName() ? esc_attr( $this->options->getMessageSenderName() ) : '';
             $from_email = null !== $this->options->getMessageSenderEmail() ? esc_attr( $this->options->getMessageSenderEmail() ) : '';
+            $from_name_enforced = $this->options->isPluginSenderNameEnforced() ? 'checked' : '';
+            $from_email_enforced = $this->options->isPluginSenderEmailEnforced() ? 'checked' : '';
         }
 
         $html = '
@@ -2213,6 +2222,8 @@ class Post_SMTP_New_Wizard {
             'provider' => $transport_type,
             'sender_email' => isset( $sanitized['sender_email'] ) ? $sanitized['sender_email'] : '',
             'sender_name' => isset( $sanitized['sender_name'] ) ? $sanitized['sender_name'] : '',
+            'prevent_sender_email_override' => isset( $sanitized['prevent_sender_email_override'] ) ? 1 : '',
+            'prevent_sender_name_override' => isset( $sanitized['prevent_sender_name_override'] ) ? 1 : '',
         );
 
         foreach ( $api_keys as $key ) {
