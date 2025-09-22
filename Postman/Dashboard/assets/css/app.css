@@ -203,7 +203,109 @@
 }
 
 
-.customer-support[data-v-11086901] {
+.mailer-logs-popup-close[data-v-647592b9] {
+	position: absolute;
+	top: 10px;
+	right: 14px;
+	font-size: 20px;
+	color: #214A72;
+	cursor: pointer;
+	font-weight: 700;
+	z-index: 2;
+}
+.mailer-logs-popup[data-v-647592b9] {
+	position: relative;
+}
+.mailer-logs-popup-overlay[data-v-647592b9] {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0,0,0,0.4);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 9999;
+}
+.mailer-logs-popup[data-v-647592b9] {
+	width: 327px;
+	height: 163.09px;
+	border-radius: 8.2px;
+	border-width: 0.25px;
+	background: linear-gradient(350deg, #FFFFFF, #8ED2F5), linear-gradient(122deg, #DEEDF7 56.58%, #8ED2F5 90.53%);
+	box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+	padding: 24px 18px 18px 18px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}
+.mailer-logs-popup-header[data-v-647592b9] {
+	font-family: 'Bricolage Grotesque', sans-serif;
+	font-weight: 600;
+	font-style: SemiBold;
+	font-size: 16.39px;
+	line-height: 100%;
+	letter-spacing: -0.27px;
+	text-align: center;
+	color: #214A72;
+	margin-bottom: 12px;
+}
+.mailer-logs-popup-body[data-v-647592b9] {
+	font-family: 'Bricolage Grotesque', sans-serif;
+	font-weight: 400;
+	font-style: normal;
+	font-size: 11.47px;
+	line-height: 100%;
+	letter-spacing: -0.27px;
+	text-align: center;
+	color: #000;
+	margin-bottom: 24px;
+	width: 250px;
+}
+.mailer-logs-popup-footer[data-v-647592b9] {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+}
+.mailer-logs-upgrade-btn[data-v-647592b9] {
+	background: linear-gradient(270deg, #F9AA39 0%, #FFDAA5 100%),
+		linear-gradient(124.11deg, #FFF0C5 2.93%, #FB9E1F 88.64%);
+	color: #231F20;
+	border: none;
+	border-radius: 4px;
+	padding: 8px 18px;
+	font-family: 'Bricolage Grotesque', sans-serif;
+	font-weight: 600;
+	font-style: normal;
+	font-size: 11.47px;
+	line-height: 16.39px;
+	letter-spacing: 0px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	box-shadow: 0 1px 4px rgba(249,170,57,0.08);
+	border-radius:20px
+}
+.mailer-logs-upgrade-btn .arrow-right[data-v-647592b9] {
+	font-size: 18px;
+	margin-left: 4px;
+	display: inline-block;
+}
+.mailer-logs-close-btn[data-v-647592b9] {
+	background: #e0e0e0;
+	color: #333;
+	border: none;
+	border-radius: 4px;
+	padding: 8px 18px;
+	font-size: 15px;
+	font-weight: 600;
+	cursor: pointer;
+}
+.customer-support[data-v-647592b9] {
 	padding: 0 !important;
 	background: linear-gradient(180deg, #40518E 0%, #231F20 100%);
 	display: flex;
@@ -212,10 +314,10 @@
 	flex-direction: column;
 	height: 268px;
 }
-.customer-support-content[data-v-11086901] {
+.customer-support-content[data-v-647592b9] {
 	width: 213px;
 }
-.customer-support-content p[data-v-11086901] {
+.customer-support-content p[data-v-647592b9] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 500;
@@ -223,13 +325,13 @@
 	text-align: center;
 	color: #B8BDCA;
 }
-.troubleshooting[data-v-11086901] {
+.troubleshooting[data-v-647592b9] {
 	padding: 0 !important;
 }
-.mb-24[data-v-11086901] {
+.mb-24[data-v-647592b9] {
 	margin-bottom: 24px;
 }
-.troubleshooting-header[data-v-11086901] {
+.troubleshooting-header[data-v-647592b9] {
 	border-radius: 4px 4px 0 0;
 	background: #EFF4FD;
 	padding: 16px 24px;
@@ -240,25 +342,25 @@
 	line-height: 20px;
 	color: #231F20;
 }
-.troubleshooting-content[data-v-11086901] {
+.troubleshooting-content[data-v-647592b9] {
 	padding: 24px;
 }
-.troubleshoot.email[data-v-11086901] {
+.troubleshoot.email[data-v-647592b9] {
 	list-style: url(../57f4451f3be03da17463.svg) inside;
 }
-.troubleshoot.import-export[data-v-11086901] {
+.troubleshoot.import-export[data-v-647592b9] {
 	list-style: url(../d0a8e6270627cef66c74.svg) inside;
 }
-.troubleshoot.connectivity[data-v-11086901] {
+.troubleshoot.connectivity[data-v-647592b9] {
 	list-style: url(../5b76dc43e6c63f11fb6d.svg) inside;
 }
-.troubleshoot.diagnostic[data-v-11086901] {
+.troubleshoot.diagnostic[data-v-647592b9] {
 	list-style: url(../258d1cba1f474caf0c4b.svg) inside;
 }
-.troubleshoot.reset[data-v-11086901] {
+.troubleshoot.reset[data-v-647592b9] {
 	list-style: url(../9fdeee5472f16554c9e9.svg) inside;
 }
-.troubleshoot a[data-v-11086901] {
+.troubleshoot a[data-v-647592b9] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 400;

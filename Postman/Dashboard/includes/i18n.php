@@ -7,7 +7,15 @@
 
 defined( 'ABSPATH' ) || exit;
 
-
+$pro_options = get_option( 'post_smtp_pro', array() );
+$mailer_logs_active = true;
+if( is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' ) ){
+	$mailer_logs_active = (
+		! empty( $pro_options['bonus_extensions'] )
+		&& is_array( $pro_options['bonus_extensions'] )
+		&& in_array( 'mailer-logs', $pro_options['bonus_extensions'], true )
+	);
+}
 return array(
 	'ads'           => array(
 		'mobileApp'  => array(
@@ -261,7 +269,7 @@ return array(
 			__( 'Connectivity test', 'post-smtp' ),
 			__( 'Diagnostic test', 'post-smtp' ),
 			__( 'Reset plugin', 'post-smtp' ),
-			__( 'Mailer Logs', 'post-smtp' ),
+			$mailer_logs_active ? __( 'Mailer Logs', 'post-smtp' ) : null,
 
 		),
 	),
