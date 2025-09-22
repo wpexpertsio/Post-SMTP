@@ -873,6 +873,7 @@ class Post_SMTP_New_Wizard {
         $mail_connections = get_option( 'postman_connections' );
         if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
             $id = $_GET['id'] ?? null;
+            $action = isset($_GET['action']) ? $_GET['action'] : '';
             $client_id = '';
             $client_secret = '';
             if ( isset( $mail_connections[ $id ] ) ) {
