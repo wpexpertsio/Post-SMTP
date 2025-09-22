@@ -1040,7 +1040,14 @@ class Post_SMTP_New_Wizard {
      * Render Emailit Settings
      */
     public function render_emailit_settings() {
-        $api_key = null !== $this->options->getEmailitApiKey() ? esc_attr ( $this->options->getEmailitApiKey() ) : '';
+        
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['emailit_api_key'];
+        }
+		 $api_key = $api_key ?: esc_attr( $this->options->getEmailitApiKey() ?? '' );
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p>',
             esc_url( 'https://emailit.com/' ),
@@ -1381,7 +1388,13 @@ class Post_SMTP_New_Wizard {
      */
     public function render_resend_settings() {
 
-        $api_key = null !== $this->options->getResendApiKey() ? esc_attr ( $this->options->getResendApiKey() ) : '';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['resend_api_key'];
+        }
+		 $api_key = $api_key ?: esc_attr( $this->options->getResendApiKey() ?? '' );
 
         $html = sprintf(
             '<p><a href="%1$s" target="_blank">Resend</a> %2$s</p><p>%3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a>',
@@ -2458,6 +2471,8 @@ class Post_SMTP_New_Wizard {
             'smtp2go_api'    => array( 'smtp2go_api_key' ),
             'aws_ses_api'  => array( 'ses_access_key_id', 'ses_secret_access_key', 'ses_region' ),
             'mailersend_api' => array( 'mailersend_api_key' ),
+            'emailit_api' => array( 'emailit_api_key' ),
+            'resend_api' => array( 'resend_api_key' ),
         );
 
         /**

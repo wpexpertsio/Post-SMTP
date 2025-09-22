@@ -14,6 +14,8 @@ class PostmanResendMailEngine implements PostmanMailEngine {
     private $transcript;
 
     private $api_key;
+    private $is_fallback = false;
+    private $route_key = null;
 
     /**
      * @since 3.2.0
@@ -21,8 +23,13 @@ class PostmanResendMailEngine implements PostmanMailEngine {
      */
     public function __construct( $api_key ) {
         
-        assert( !empty( $api_key ) );
-        $this->api_key = $api_key;
+        if ( is_array( $credentials ) ) {
+			$this->api_key = isset( $credentials['api_key'] ) ? $credentials['api_key'] : ( isset( $credentials[0] ) ? $credentials[0] : '' );
+			$this->is_fallback = !empty( $credentials['is_fallback'] );
+			$this->route_key = isset( $credentials['route_key'] ) ? $credentials['route_key'] : null;
+		} else {
+			$this->api_key = $credentials;
+		}
 
         // create the logger
         $this->logger = new PostmanLogger( get_class( $this ) );
@@ -74,16 +81,39 @@ class PostmanResendMailEngine implements PostmanMailEngine {
     public function send( PostmanMessage $message ) { 
 
         $options = PostmanOptions::getInstance();
-        
+        $postman_db_version = get_option( 'postman_db_version' );
+	
+		// Sender logic (primary, fallback, routing)
+		$sender      = $message->getFromAddress();
+		$senderEmail = '';
+		$senderName  = '';
+        $resend = new PostmanResend( $this->api_key);
         //Resend preparation
         if ( $this->logger->isDebug() ) {
             $this->logger->debug( 'Creating Resend service with apiKey=' . $this->api_key );
         }
+        if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+			$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+			$senderName  = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
+	    }else{
+	        $connection_details = get_option( 'postman_connections' );
+			if ( $this->is_fallback == null ) {
+				$route_key = get_transient( 'post_smtp_smart_routing_route' );
+				if( $route_key != null && isset($connection_details[ $route_key ]) ){
+					$senderEmail = $connection_details[ $route_key ]['sender_email'];
+					$senderName  = isset($connection_details[ $route_key ]['sender_name']) ? $connection_details[ $route_key ]['sender_name'] : $options->getMessageSenderName();
+				}else{
+					$primary     = $options->getSelectedPrimary();
+					$senderEmail = isset($connection_details[ $primary ]['sender_email']) ? $connection_details[ $primary ]['sender_email'] : $options->getMessageSenderEmail();
+					$senderName  = isset($connection_details[ $primary ]['sender_name']) ? $connection_details[ $primary ]['sender_name'] : $options->getMessageSenderName();
+				}
+			} else {
+				$fallback    = $options->getSelectedFallback();
+				$senderEmail = isset($connection_details[ $fallback ]['sender_email']) ? $connection_details[ $fallback ]['sender_email'] : $options->getMessageSenderEmail();
+				$senderName  = isset($connection_details[ $fallback ]['sender_name']) ? $connection_details[ $fallback ]['sender_name'] : $options->getMessageSenderName();
+			}
+		}
 
-        $resend = new PostmanResend( $this->api_key);
-        $sender = $message->getFromAddress();
-        $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-        $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
         $headers = array();
         
         $sender->log( $this->logger, 'From' );

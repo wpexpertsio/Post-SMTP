@@ -1,3 +1,4 @@
+
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
@@ -111,6 +112,19 @@ class PostmanResendTransport extends PostmanAbstractModuleTransport implements P
 
         return $engine;
 
+    }
+
+    public function createMailEngineFallback() {
+        $connection_details = get_option( 'postman_connections' );
+        $fallback           = $this->options->getSelectedFallback();
+        $api_key            = isset( $connection_details[ $fallback ]['resend_api_key'] ) ? $connection_details[ $fallback ]['resend_api_key'] : '';
+        $api_credentials    = array(
+            'api_key'     => $api_key,
+            'is_fallback' => 1,
+        );
+        require_once 'PostmanResendMailEngine.php';
+        $engine = new PostmanResendMailEngine( $api_credentials );
+        return $engine;
     }
 
     /**

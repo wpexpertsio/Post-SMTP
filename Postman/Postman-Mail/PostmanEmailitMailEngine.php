@@ -3,22 +3,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+
 if ( ! class_exists( 'PostmanEmailItMailEngine' ) ) {
 
 	require_once 'Services/Emailit/Handler.php';
 
 	/**
-	 * Sends mail with the EmailIt API.
+	 * Sends mail with the EmailIt API, supporting fallback and smart routing.
 	 */
 	class PostmanEmailItMailEngine implements PostmanMailEngine {
 
 		protected $logger;
 		private   $transcript;
 		private   $apiKey;
+		private   $is_fallback = false;
+		private   $route_key = null;
 
-		public function __construct( $apiKey ) {
-			assert( ! empty( $apiKey ) );
-			$this->apiKey  = $apiKey;
+		/**
+		 * @param string|array $credentials API key string or array with keys: api_key, is_fallback, route_key
+		 */
+		public function __construct( $credentials ) {
+			if ( is_array( $credentials ) ) {
+				$this->apiKey = isset( $credentials['api_key'] ) ? $credentials['api_key'] : ( isset( $credentials[0] ) ? $credentials[0] : '' );
+				$this->is_fallback = !empty( $credentials['is_fallback'] );
+				$this->route_key = isset( $credentials['route_key'] ) ? $credentials['route_key'] : null;
+			} else {
+				$this->apiKey = $credentials;
+			}
 			$this->logger  = new PostmanLogger( get_class( $this ) );
 		}
 
@@ -30,19 +41,40 @@ if ( ! class_exists( 'PostmanEmailItMailEngine' ) ) {
 		 * @throws Exception On error.
 		 */
 		public function send( PostmanMessage $message ) {
-			$options  = PostmanOptions::getInstance();
+			$options            = PostmanOptions::getInstance();
+			$postman_db_version = get_option( 'postman_db_version' );
 			$emailit  = new PostmanEmailIt( $this->apiKey );
 
-			$recipients = [];
-			$duplicates = [];
-
-			// Sender.
+			// Sender logic (primary, fallback, routing)
 			$sender      = $message->getFromAddress();
-			$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-			$senderName  = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
+			$senderEmail = '';
+			$senderName  = '';
+			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+				$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+				$senderName  = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
+			} else {
+				$connection_details = get_option( 'postman_connections' );
+				if ( $this->is_fallback == null ) {
+					$route_key = get_transient( 'post_smtp_smart_routing_route' );
+					if( $route_key != null && isset($connection_details[ $route_key ]) ){
+						$senderEmail = $connection_details[ $route_key ]['sender_email'];
+						$senderName  = isset($connection_details[ $route_key ]['sender_name']) ? $connection_details[ $route_key ]['sender_name'] : $options->getMessageSenderName();
+					}else{
+						$primary     = $options->getSelectedPrimary();
+						$senderEmail = isset($connection_details[ $primary ]['sender_email']) ? $connection_details[ $primary ]['sender_email'] : $options->getMessageSenderEmail();
+						$senderName  = isset($connection_details[ $primary ]['sender_name']) ? $connection_details[ $primary ]['sender_name'] : $options->getMessageSenderName();
+					}
+				} else {
+					$fallback    = $options->getSelectedFallback();
+					$senderEmail = isset($connection_details[ $fallback ]['sender_email']) ? $connection_details[ $fallback ]['sender_email'] : $options->getMessageSenderEmail();
+					$senderName  = isset($connection_details[ $fallback ]['sender_name']) ? $connection_details[ $fallback ]['sender_name'] : $options->getMessageSenderName();
+				}
+			}
 			$sender->log( $this->logger, 'From' );
 
-			// Recipients.
+			// Recipients
+			$recipients = [];
+			$duplicates = [];
 			foreach ( (array) $message->getToRecipients() as $recipient ) {
 				if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 					$recipients[] = $recipient->getEmail();
@@ -50,33 +82,63 @@ if ( ! class_exists( 'PostmanEmailItMailEngine' ) ) {
 				}
 			}
 
-			// Subject and Body.
+			// CC and BCC
+			$ccs = [];
+			$cc_names = [];
+			foreach ( (array) $message->getCcRecipients() as $cc ) {
+				$ccs[] = $cc->getEmail();
+				if ( !empty($cc->getName()) ) $cc_names[] = $cc->getName();
+			}
+			$bccs = [];
+			$bcc_names = [];
+			foreach ( (array) $message->getBccRecipients() as $bcc ) {
+				$bccs[] = $bcc->getEmail();
+				if ( !empty($bcc->getName()) ) $bcc_names[] = $bcc->getName();
+			}
+
+			// Subject and Body
 			$subject     = $message->getSubject();
 			$textPart    = $message->getBodyTextPart();
 			$htmlPart    = $message->getBodyHtmlPart();
 			$htmlContent = ! empty( $htmlPart ) ? $htmlPart : nl2br( $textPart );
-
 			if ( empty( $htmlContent ) ) {
 				$htmlContent = '<p>(No content)</p>';
 			}
 
 			$content = [
-				'from'    => $senderEmail,
-				'to'      => implode( ',', $recipients ),
-				'subject' => $subject,
-				'html'    => $htmlContent,
-				'text'    => wp_strip_all_tags( $textPart ?: $htmlPart ),
+				'from'      => $senderEmail,
+				'from_name' => $senderName,
+				'to'        => implode( ',', $recipients ),
+				'subject'   => $subject,
+				'html'      => $htmlContent,
+				'text'      => wp_strip_all_tags( $textPart ?: $htmlPart ),
 			];
+			if ( !empty( $ccs ) ) {
+				$content['cc'] = implode( ',', $ccs );
+				if ( !empty($cc_names) ) $content['cc_names'] = implode( ',', $cc_names );
+			}
+			if ( !empty( $bccs ) ) {
+				$content['bcc'] = implode( ',', $bccs );
+				if ( !empty($bcc_names) ) $content['bcc_names'] = implode( ',', $bcc_names );
+			}
 
-			// Attachments.
+			// Attachments
 			$attachments = $this->addAttachmentsToMail( $message );
 			if ( ! empty( $attachments ) ) {
 				$content['attachments'] = $attachments;
 			}
 
-			// Send.
+			// Add fallback and route info for logging/debugging
+			if ( $this->is_fallback ) {
+				$content['fallback'] = true;
+			}
+			if ( $this->route_key ) {
+				$content['route_key'] = $this->route_key;
+			}
+
+			// Send
 			try {
-				$this->logger->debug( 'Sending mail via EmailIt' );
+				$this->logger->debug( 'Sending mail via EmailIt' . ( $this->is_fallback ? ' (Fallback)' : '' ) . ( $this->route_key ? ' [Route: ' . $this->route_key . ']' : '' ) );
 				$response = $emailit->send( $content );
 				$responseCode = wp_remote_retrieve_response_code( $response );
 				$responseBody = wp_remote_retrieve_body( $response );
