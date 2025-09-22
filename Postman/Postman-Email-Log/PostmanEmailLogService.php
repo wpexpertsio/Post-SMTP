@@ -110,8 +110,8 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 					$statusMessage = sprintf( '%s: %s', __( 'Warning', 'post-smtp' ), __( 'An empty subject line can result in delivery failure.', 'post-smtp' ) );
 					$status = 'WARN';
 				}
-				$this->createLog( $log, $message, $transcript, $statusMessage, $status, $transport, $is_fallback );
-				$this->writeToEmailLog( $log, $message, $is_fallback );
+				$this->createLog( $log, $transcript, $statusMessage, $status, $transport, $is_fallback, $message );
+				$this->writeToEmailLog( $log, $is_fallback, $message );
 			}
 		}
 
@@ -127,10 +127,10 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 * @param mixed                $originalMessage
 		 * @param mixed                $originalHeaders
 		 */
-		public function writeFailureLog( PostmanEmailLog $log, PostmanMessage $message = null, $transcript, PostmanModuleTransport $transport, $statusMessage, $is_fallback ) {
+		public function writeFailureLog( PostmanEmailLog $log, $transcript, PostmanModuleTransport $transport, $statusMessage, $is_fallback, ?PostmanMessage $message = null ) {
 			if ( PostmanOptions::getInstance()->isMailLoggingEnabled() ) {
-				$this->createLog( $log, $message, $transcript, $statusMessage, false, $transport, $is_fallback );
-				$this->writeToEmailLog( $log, $message, $is_fallback );
+				$this->createLog( $log, $transcript, $statusMessage, false, $transport, $is_fallback, $message );
+				$this->writeToEmailLog( $log, $is_fallback, $message );
 			}
 		}
 
@@ -175,7 +175,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 *
 		 * From http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields
 		 */
-		private function writeToEmailLog( PostmanEmailLog $log, PostmanMessage $message = null, $is_fallback = false ) {
+	private function writeToEmailLog( PostmanEmailLog $log, $is_fallback = false, ?PostmanMessage $message = null ) {
 
 		    $options = PostmanOptions::getInstance();
 
@@ -340,7 +340,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 * @param PostmanModuleTransport $transport
 		 * @return PostmanEmailLog
 		 */
-		private function createLog( PostmanEmailLog $log, PostmanMessage $message = null, $transcript, $statusMessage, $success, PostmanModuleTransport $transport, $is_fallback ) {
+		private function createLog( PostmanEmailLog $log, $transcript, $statusMessage, $success, PostmanModuleTransport $transport, $is_fallback, ?PostmanMessage $message = null ) {
 			if ( $message ) {
 				$log->sender = $message->getFromAddress()->format();
 				$log->toRecipients = $this->flattenEmails( $message->getToRecipients() );
