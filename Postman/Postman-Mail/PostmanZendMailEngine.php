@@ -83,7 +83,7 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			$options            = PostmanOptions::getInstance();
 			$postman_db_version = get_option( 'postman_db_version' );
 
-			if ( $postman_db_version != '1.0.1' ) {
+			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
 				$sender = $this->transport->getFromEmailAddress();
 			} else {
 				$connection_details = get_option( 'postman_connections' );
