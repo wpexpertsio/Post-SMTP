@@ -87,12 +87,13 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
             }
         }
 
-        public function write_failed_log($log, $message, $transcript, $transport, $statusMessage, $is_fallback) {
-            $options = PostmanOptions::getInstance();
-            if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION || $options->getRunMode() == PostmanOptions::RUN_MODE_LOG_ONLY ) {
-                $this->writeFailureLog( $log, $message, $transcript, $transport, $statusMessage, $is_fallback );
-            }
-        }
+		public function write_failed_log($log, $message, $transcript, $transport, $statusMessage, $is_fallback) {
+			$options = PostmanOptions::getInstance();
+			if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION || $options->getRunMode() == PostmanOptions::RUN_MODE_LOG_ONLY ) {
+				// Correct argument order: $log, $transcript, $transport, $statusMessage, $is_fallback, $message
+				$this->writeFailureLog( $log, $transcript, $transport, $statusMessage, $is_fallback, $message );
+			}
+		}
 
 		/**
 		 * Logs successful email attempts

@@ -1,5 +1,4 @@
 <?php
-
 if( !class_exists( 'Post_SMTP_New_Wizard' ) ):
 
 class Post_SMTP_New_Wizard {
