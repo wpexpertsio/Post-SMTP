@@ -285,24 +285,20 @@ class PostmanInstaller {
 		// &= does not work as expected in my PHP
 		$lockSuccess = $lockSuccess && PostmanUtils::deleteLockFile();
 
-		if( $postmanState ) {
-
-			$postmanState ['locking_enabled'] = $lockSuccess;
-
-		}
+		   if( is_array($postmanState) ) {
+			   $postmanState ['locking_enabled'] = $lockSuccess;
+		   }
 
 		// always update the version number
-		if ( ! isset( $postmanState ['install_date'] ) ) {
-			$this->logger->debug( 'Upgrading database: adding install_date' );
-			$postmanState ['install_date'] = time();
-		}
+		   if ( is_array($postmanState) && ! isset( $postmanState ['install_date'] ) ) {
+			   $this->logger->debug( 'Upgrading database: adding install_date' );
+			   $postmanState ['install_date'] = time();
+		   }
 		$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
 
-		if( $postmanState ) {
-
-			$postmanState ['version'] = $pluginData ['version'];
-
-		}
+		   if( is_array($postmanState) ) {
+			   $postmanState ['version'] = $pluginData ['version'];
+		   }
 
 		update_option( 'postman_state', $postmanState );
 				delete_option( 'postman_session' );
