@@ -75,6 +75,7 @@ class Post_SMTP_New_Wizard {
             'sendpulse_api',
             'mailersend_api',
             'emailit_api',
+            'maileroo_api',
         );
         
         if( !is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' ) ) {
@@ -85,8 +86,6 @@ class Post_SMTP_New_Wizard {
 
         }
 
-        $this->socket_sequence[] = 'mailersend_api';
-        $this->socket_sequence[] = 'emailit_api';
         $this->socket_sequence[] = 'smtp';
         $this->socket_sequence[] = 'default';
         
@@ -202,7 +201,8 @@ class Post_SMTP_New_Wizard {
                                                 'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
                                                 'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png',
                                                 'resend_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/resend.png',
-                                                'emailit_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/emailit.png'
+                                                'emailit_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/emailit.png',
+                                                'maileroo_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/maileroo.png'
 
                                             );
 
@@ -629,6 +629,9 @@ class Post_SMTP_New_Wizard {
             case 'emailit_api':
                 echo wp_kses( $this->render_emailit_settings(), $this->allowed_tags );
             break;
+            case 'maileroo_api':
+                echo wp_kses( $this->render_maileroo_settings(), $this->allowed_tags );
+            break;
             case 'sendgrid_api';
                 echo wp_kses( $this->render_sendgrid_settings(), $this->allowed_tags );
             break;
@@ -935,6 +938,25 @@ public function render_gmail_settings() {
         <div class="ps-form-control">
             <div><label>API Key</label></div>
             <input type="text" class="ps-emailit-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::EMAILIT_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
+        </div>';
+        return $html;
+    }
+
+    /**
+     * Render Maileroo Settings
+     */
+    public function render_maileroo_settings() {
+        $api_key = null !== $this->options->getMailerooApiKey() ? esc_attr ( $this->options->getMailerooApiKey() ) : '';
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p>',
+            esc_url( 'https://maileroo.com/' ),
+            __( 'Maileroo', 'post-smtp' ),
+            __( 'is a transactional email provider. Enter your API Key and Endpoint below.', 'post-smtp' )
+        );
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>API Key</label></div>
+            <input type="text" class="ps-maileroo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILEROO_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
         </div>';
         return $html;
     }
@@ -1839,6 +1861,7 @@ public function render_gmail_settings() {
                 $sanitized['sendgrid_region']  = isset( $sanitized['sendgrid_region'] ) ? $sanitized['sendgrid_region'] : '';
                 $sanitized['resend_api_key']  = isset( $sanitized['resend_api_key'] ) ? $sanitized['resend_api_key'] : '';
                 $sanitized[PostmanOptions::EMAILIT_API_KEY]  = isset( $sanitized[PostmanOptions::EMAILIT_API_KEY] ) ? $sanitized[PostmanOptions::EMAILIT_API_KEY] : '';
+                $sanitized[PostmanOptions::MAILEROO_API_KEY]  = isset( $sanitized[PostmanOptions::MAILEROO_API_KEY] ) ? $sanitized[PostmanOptions::MAILEROO_API_KEY] : '';
                 $sanitized['mandrill_api_key'] = isset( $sanitized['mandrill_api_key'] ) ? $sanitized['mandrill_api_key'] : '';
                 $sanitized[PostmanOptions::MAILERSEND_API_KEY] = isset( $sanitized[PostmanOptions::MAILERSEND_API_KEY] ) ? $sanitized[PostmanOptions::MAILERSEND_API_KEY] : '';
                 $sanitized['elasticemail_api_key'] = isset( $sanitized['elasticemail_api_key'] ) ? $sanitized['elasticemail_api_key'] : '';
