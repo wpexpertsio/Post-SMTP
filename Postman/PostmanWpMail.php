@@ -265,13 +265,18 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				// clean up
 				$this->postSend( $engine, $startTime, $options, $transport );
 
-				/**
-				 * Do stuff after successful delivery
-				 */
-				do_action( 'post_smtp_on_success', $log, $message, $engine->getTranscript(), $transport );
-
-				// return successful
-				return true;
+				   /**
+					* Do stuff after successful delivery
+					*/
+				   if ($transport !== null) {
+					   do_action( 'post_smtp_on_success', $log, $message, $engine->getTranscript(), $transport );
+				   } else {
+					   if ($this->logger) {
+						   $this->logger->warning('Transport is null, skipping post_smtp_on_success action to avoid fatal error.');
+					   }
+				   }
+				   // return successful
+				   return true;
 			} catch ( Exception $e ) {
 				// save the error for later
 				$this->exception = $e;
@@ -288,15 +293,21 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				$this->postSend( $engine, $startTime, $options, $transport );
 
 
-				/**
-				 * Do stuff after failed delivery
-				 */
-				do_action( 'post_smtp_on_failed', $log, $message, $engine->getTranscript(), $transport, $e->getMessage() );
+				   /**
+					* Do stuff after failed delivery
+					*/
+				   if ($transport !== null) {
+					   do_action( 'post_smtp_on_failed', $log, $message, $engine->getTranscript(), $transport, $e->getMessage() );
+				   } else {
+					   if ($this->logger) {
+						   $this->logger->warning('Transport is null, skipping post_smtp_on_failed action to avoid fatal error.');
+					   }
+				   }
 
-				// Fallback
-				if ( $this->fallback( $log, $message, $options ) ) {
+				   // Fallback
+				   if ( $this->fallback( $log, $message, $options ) ) {
 
-					return true;
+					   return true;
 
 				}
 
