@@ -484,9 +484,16 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	 * Get the settings option array and print one of its values
 	 */
 	public function basic_auth_password_callback() {
-		print ('<input tabindex="99" id="fake_password" name="fake[password]" style="position:absolute; top:-500px;" type="password" class="ps-input ps-w-75" value="Safari Autofill Me">') ;
-		printf( '<input type="password" id="input_basic_auth_password" name="postman_options[basic_auth_password]" value="%s" size="40" class="required ps-w-75" placeholder="%s"/>', null !== $this->options->getPassword() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getPassword() ) ) : '', __( 'Required', 'post-smtp' ) );
-		print ' <input type="button" id="togglePasswordField" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
+		printf(
+			'<input type="password" id="input_basic_auth_password" 
+				name="postman_options[basic_auth_password]" 
+				value="%s" size="40" 
+				class="required ps-w-75" 
+				placeholder="%s" 
+				autocomplete="new-password"/>',
+			null !== $this->options->getPassword() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getPassword() ) ) : '',
+			__( 'Required', 'post-smtp' )
+		);
 	}
 
 	/**
