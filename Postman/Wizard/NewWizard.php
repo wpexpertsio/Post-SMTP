@@ -632,10 +632,10 @@ class Post_SMTP_New_Wizard {
             case 'maileroo_api':
                 echo wp_kses( $this->render_maileroo_settings(), $this->allowed_tags );
             break;
-            case 'sendgrid_api';
+            case 'sendgrid_api':
                 echo wp_kses( $this->render_sendgrid_settings(), $this->allowed_tags );
             break;
-            case 'mailersend_api';
+            case 'mailersend_api':  
                 echo wp_kses( $this->render_mailersend_settings(), $this->allowed_tags );
             break;
             case 'mailgun_api':
