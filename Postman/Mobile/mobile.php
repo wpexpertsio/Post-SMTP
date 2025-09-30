@@ -138,7 +138,9 @@ class Post_SMTP_Mobile {
      */
     public function generate_qr_code() {
 
-        include_once 'includes/phpqrcode/qrlib.php';
+        if ( !class_exists('QRcode') ) {
+            include_once 'includes/phpqrcode/qrlib.php';
+        }
         $nonce = get_transient( 'post_smtp_auth_nonce' );
 		$authkey = $nonce ? $nonce : $this->generate_auth_key();
 		$site_title = get_bloginfo( 'name' );
