@@ -130,21 +130,32 @@ class PostsmtpMailer extends PHPMailer {
 		try {
 
 			$response = false;
+			$run_mode = $this->options->getRunMode();
 
-			if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) ) {
-				$result = $this->options->getTransportType() !== 'smtp' ?
-					$postmanWpMail->send( $to, $subject, $body, $headers, $attachments ) :
-					$response = $this->sendSmtp();
+			if ( $run_mode === PostmanOptions::RUN_MODE_IGNORE ) {
+				// No Action: Do not send, just log as ignored
+				$log->status = 'ignored';
+				$this->transcript = '';
+				return true;
+			} elseif ( $run_mode === PostmanOptions::RUN_MODE_LOG_ONLY ) {
+				// Log Only: Log as sent, but do not send
+				$log->status = 'logged_only';
+				$this->transcript = '';
+				do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport );
+				return true;
+			} else {
+				// Log Email and Send (production)
+				if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) ) {
+					$result = $this->options->getTransportType() !== 'smtp' ?
+						$postmanWpMail->send( $to, $subject, $body, $headers, $attachments ) :
+						$response = $this->sendSmtp();
 
 					if( $response ) {
-
 						do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport );
-
 					}
-
+				}
+				return $result;
 			}
-
-			return $result;
 
 		} catch (Exception $exc) {
 
