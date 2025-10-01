@@ -826,7 +826,7 @@ public function render_gmail_settings() {
     // Client ID and Secret inputs
     $html .= '<div class="ps-disable-one-click-setup ' . ( $gmail_oneclick_enabled ? 'ps-hidden' : '' ) . '">
     
-    <p>' . esc_html__( 'Manual Setup (FREE)', 'post-smtp' ) . '<br>' . esc_html__( 'The free Gmail mailer requires you to create an app manually to generate the Client ID and Client Secret.', 'post-smtp' ) . '</p>';
+    <p>' . esc_html__( 'Manual Setup (FREE)', 'post-smtp' ) . '</p><p>' . esc_html__( 'The free Gmail mailer requires you to create an app manually to generate the Client ID and Client Secret.', 'post-smtp' ) . '</p>';
 
     $html .= '
     <div class="ps-form-control">
