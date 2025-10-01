@@ -1,7 +1,3 @@
-(function ($) {
-    console.log('Post SMTP localize loaded.');
-})(jQuery)
-
 jQuery( document ).ready( function() {
 
     jQuery( document ).on( 'click', '.ps-db-update-notice .notice-dismiss', function( e ){
