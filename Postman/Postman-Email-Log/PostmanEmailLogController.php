@@ -109,7 +109,7 @@ class PostmanEmailLogController {
 			'DTCols'	=>	array(
 				array( 'data'	=>	'id' ),
 				array( 'data'	=>	'original_subject' ),
-				array( 'data'	=>	'to_header' ),
+				array( 'data'	=>	'original_to' ),
 				array( 'data'	=>	'time' ),
 				array( 'data'	=>	'success' ),
 				array( 'data'	=>	'actions' )
