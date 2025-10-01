@@ -202,6 +202,8 @@ function post_smtp_general_scripts() {
     wp_localize_script( 'post-smtp-localize', 'post_smtp_localize', $localize );
     wp_enqueue_script( 'post-smtp-localize' );
     wp_enqueue_script( 'post-smtp-hooks', POST_SMTP_URL . '/script/post-smtp-hooks.js', [], false );
+	// Add admin bar notification for Log Only or No Action delivery modes (only one message at a time)
+	add_action( 'admin_bar_menu', array( 'PostmanViewController', 'addDeliveryModeAdminBarNotice' ), 100 );
 }
 add_action( 'admin_enqueue_scripts', 'post_smtp_general_scripts', 8 );
 

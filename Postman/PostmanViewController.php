@@ -56,6 +56,35 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 
 		}
 
+		/**
+		 * Display delivery mode notification in admin bar
+		*/
+		public static function addDeliveryModeAdminBarNotice() {
+			if ( ! class_exists( 'PostmanOptions' ) ) return;
+			$run_mode = null;
+			if ( method_exists( 'PostmanOptions', 'getInstance' ) ) {
+				$run_mode = PostmanOptions::getInstance()->getRunMode();
+			}
+			if ( $run_mode === PostmanOptions::RUN_MODE_LOG_ONLY ) {
+				$msg = __( 'Post SMTP is in Log Only mode', 'post-smtp' );
+				$background = '#d32f2f';
+				$color = '#fff';
+			} elseif ( $run_mode === PostmanOptions::RUN_MODE_IGNORE ) {
+				$msg = __( 'Post SMTP is in No Action mode', 'post-smtp' );
+				$background = '#fbc02d';
+				$color = '#fff';
+			} else {
+				return;
+			}
+			global $wp_admin_bar;
+			if ( ! is_object( $wp_admin_bar ) ) return;
+			$wp_admin_bar->add_node( array(
+				'id'    => 'post_smtp_delivery_mode',
+				'title' => '<span style="padding:4px 12px;border-radius:3px;background:' . esc_attr($background) . ';color:' . esc_attr($color) . ';font-weight:bold;">' . esc_html($msg) . '</span>',
+				'meta'  => array( 'html' => true ),
+			) );
+		}
+
 
 		function dismiss_version_notify() {
             check_admin_referer( 'postsmtp', 'security' );
