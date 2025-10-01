@@ -89,6 +89,12 @@ jQuery(document).ready(function($) {
 			` );
 
 			jQuery( row ).find( 'td:nth-child(3)').attr( 'title', data['original_to'] );
+			
+			// Display each email on a new line, keeping the comma
+			jQuery( row ).find( 'td:nth-child(3)').html(
+				data['original_to'].replace(/,\s*/g, ',<br>')
+			);
+
 			if( data['success'] == '<span title="Success">Success</span>' ) {
 
 				jQuery( status ).addClass( 'ps-email-log-status-success' );
