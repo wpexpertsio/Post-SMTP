@@ -54,6 +54,7 @@ class Postman_Email_Tester {
         $email  = sanitize_email( $_POST['email'] );
         $socket = sanitize_text_field( $_POST['socket'] );
         $apikey = sanitize_text_field( $_POST['apikey'] );
+        $edit   = isset( $_POST['edit'] ) ? sanitize_text_field( $_POST['edit'] ) : '';
         $args = array(
             'method'  => WP_REST_Server::READABLE,
             'headers' => array(
@@ -70,7 +71,7 @@ class Postman_Email_Tester {
         if ( $this->requires_test_api_verification( $socket ) ) {
             $this->handle_sockets_check( $email, $args, $socket  );
         } else {
-            $this->handle_legacy_test( $email, $args );
+            $this->handle_legacy_test( $email, $args, $edit );
         }
     }
 
@@ -96,7 +97,12 @@ class Postman_Email_Tester {
     /**
      * Handles legacy test logic (/get-email, wp_mail, /test).
      */
-    private function handle_legacy_test( $email, $args ) {
+    private function handle_legacy_test( $email, $args, $edit = '' ) {
+        // Store edit parameter as transient if provided
+        if ( !empty( $edit ) && false === get_transient( 'post_smtp_fallback_edit' ) ) {
+            set_transient( 'post_smtp_fallback_edit', $edit,  0 );
+        }
+
         $response      = wp_remote_post( "{$this->base_url}/get-email?test_email={$email}", $args );
         $response_code = wp_remote_retrieve_response_code( $response );
         $response_body = wp_remote_retrieve_body( $response );

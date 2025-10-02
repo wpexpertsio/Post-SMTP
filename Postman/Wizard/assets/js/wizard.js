@@ -399,7 +399,8 @@ jQuery( document ).ready(function() {
                                 email: sendTo,  
                                 security: security,
                                 socket: socket,
-                                apikey: apikey
+                                apikey: apikey,
+                                edit: id
                             },
                             success: function( response ) {
 
