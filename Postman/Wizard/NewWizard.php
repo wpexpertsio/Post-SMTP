@@ -2261,14 +2261,17 @@ class Post_SMTP_New_Wizard {
         
         $saved = update_option( 'postman_connections', $mail_connections );
 
-        // ✅ Update sender email/name in postman_options globally
-        $postman_options = array_merge( $postman_options, array(
-            'sender_email'   => $new_connection['sender_email'],
-            'sender_name'    => $new_connection['sender_name'],
-            'slack_token'    => base64_decode( $options['slack_token'] ),
-            'pushover_user'  => base64_decode( $options['pushover_user'] ),
-            'pushover_token' => base64_decode( $options['pushover_token'] ),
-        ) );
+          $postman_options = array_merge( 
+			$postman_options, array(
+				'sender_email'   => $new_connection['sender_email'],
+				'sender_name'    => $new_connection['sender_name'],
+				'slack_token'    => base64_decode( $postman_options['slack_token'] ),
+				'pushover_user'  => base64_decode( $postman_options['pushover_user'] ),
+				'pushover_token' => base64_decode( $postman_options['pushover_token'] ),
+        	)
+		);
+
+        update_option( 'postman_options', $postman_options );
             
         return array(
             'index'  => $id,
