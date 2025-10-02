@@ -2187,8 +2187,8 @@ class Post_SMTP_New_Wizard {
         // Map of keys to preserve
         $keys = array(
             'office365_app_id', 'office365_app_password', PostmanOptions::SENDINBLUE_API_KEY,
-            'sparkpost_api_key', 'postmark_api_key', 'mailgun_api_key', 'mailersend_api_key',
-            PostmanOptions::SENDGRID_API_KEY, 'mandrill_api_key', 'elasticemail_api_key',
+            'sparkpost_api_key', 'postmark_api_key', 'mailgun_api_key', 'mailersend_api_key', 'emailit_api_key',
+            'resend_api_key', PostmanOptions::SENDGRID_API_KEY, 'mandrill_api_key', 'elasticemail_api_key',
             PostmanOptions::MAILJET_API_KEY, PostmanOptions::MAILJET_SECRET_KEY,
             'basic_auth_password', 'ses_access_key_id', 'ses_secret_access_key', 'ses_region'
         );

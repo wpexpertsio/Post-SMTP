@@ -261,7 +261,9 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'smtp2go_api_key',
 				'mailersend_api_key',
 				'mailjet_api_key',
-				'mailjet_secret_key'
+				'mailjet_secret_key',
+				'emailit_api_key',
+				'resend_api_key',
 			);
 			
 			// Decode sensitive keys if present
@@ -376,6 +378,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					'oauth_client_secret',
 				),
 				'mailersend_api'   => array( 'mailersend_api_key'),
+				'emailit_api'      => array( 'emailit_api_key'),
+				'resend_api'       => array( 'resend_api_key'),	
 			);
 
 			// Initialize the API keys array.
@@ -446,7 +450,9 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'smtp2go_api_key',
 				'mailersend_api_key',
 				'mailjet_api_key',
-				'mailjet_secret_key'
+				'mailjet_secret_key',
+				'emailit_api_key',
+				'resend_api_key',
 			);
 
 			// Decrypt only the sensitive keys before storing in the transient.
@@ -474,7 +480,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'mailersend_api_key', 'sendpulse_api_key', 'sendpulse_secret_key',
 				'postmark_api_key', 'sparkpost_api_key', 'mailgun_api_key',
 				'mailgun_domain_name', 'elasticemail_api_key', 'smtp2go_api_key',
-				'oauth_client_id', 'oauth_client_secret',
+				'oauth_client_id', 'oauth_client_secret','emailit_api_key',
+				'resend_api_key',
 			);
 
 			// Loop through the defined email keys.
@@ -520,7 +527,9 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'smtp2go_api_key',
 				'mailersend_api_key',
 				'mailjet_api_key',
-				'mailjet_secret_key'
+				'mailjet_secret_key',
+				'emailit_api_key',
+				'resend_api_key',
 			);
 
 			$deleted_email_settings = $this->get_expiring_option( 'deleted_email_settings' );
