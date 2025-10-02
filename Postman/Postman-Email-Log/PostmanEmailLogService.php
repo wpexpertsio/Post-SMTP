@@ -199,16 +199,25 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				$connection_details = get_option( 'postman_connections' );
 				$this->existing_db_version = get_option( 'postman_db_version' );
 				if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
-					$from =  $log->sender;
+					$from = $log->sender;
 				}else{
-					if ( $is_fallback ) {
-						$fallback = $options->getSelectedFallback();
-						$from = $connection_details[ $fallback ]['sender_name'] . ' <' . $connection_details[ $fallback ]['sender_email'] . '>';
-					} else {
-						$primary = $options->getSelectedPrimary();
-						$from = $connection_details[ $primary ]['sender_name'] . ' <' . $connection_details[ $primary ]['sender_email'] . '>';
+   					$selected = $is_fallback ? $options->getSelectedFallback() : $options->getSelectedPrimary();
+    				$details  = isset( $connection_details[ $selected ] ) ? $connection_details[ $selected ] : array();
+					$site_url = parse_url( get_option( 'siteurl' ), PHP_URL_HOST );
+					$from_name = get_bloginfo( 'name' );
+					$from_email = 'wordpress@' . $site_url;			
+
+					// Respect prevent override flags
+					if ( ! empty( $details['prevent_sender_name_override'] ) ) {
+						$from_name = $details['sender_name'];
 					}
+					if ( ! empty( $details['prevent_sender_email_override'] ) ) {
+						$from_email = $details['sender_email'];
+					}
+
+					$from = $from_name . ' <' . $from_email . '>';
 				}
+				
 				$data = array();
 				$data['solution']         = apply_filters( 'post_smtp_log_solution', null, $new_status, $log, $message );
 				$data['success']          = empty( $new_status ) ? 1 : $new_status;
