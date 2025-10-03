@@ -358,19 +358,19 @@ class Post_SMTP_New_Wizard {
                                       <input type="hidden" class="postman_fallback_edit" name="postman_fallback_edit" value="<?php echo esc_attr(  $_GET['id'] ); ?>" >
                                     <?php } ?>
                                     <?php if( isset( $_GET['access_token'] ) || isset( $_GET['refresh_token'] ) ){ ?>
-                                      <input type="hidden" name="access_token" value="<?php echo esc_attr(  $_GET['access_token'] ); ?>" >
-                                      <input type="hidden" name="refresh_token" value="<?php echo esc_attr(  $_GET['refresh_token'] ); ?>" >
-                                      <input type="hidden" name="token_expires" value="<?php echo esc_attr(  $_GET['expires_in'] ); ?>" >
+                                      <input type="hidden" name="access_token" value="<?php echo esc_attr( $_GET['access_token'] ?? '' ); ?>" >
+                                      <input type="hidden" name="refresh_token" value="<?php echo esc_attr( $_GET['refresh_token'] ?? '' ); ?>" >
+                                      <input type="hidden" name="token_expires" value="<?php echo esc_attr( $_GET['expires_in'] ?? '' ); ?>" >
                                     <?php } ?>
                                     <?php if( isset( $_GET['o_access_token'] ) || isset( $_GET['o_refresh_token'] ) ){ ?>
-                                      <input type="hidden" name="access_token" value="<?php echo esc_attr(  $_GET['o_access_token'] ); ?>" >
-                                      <input type="hidden" name="refresh_token" value="<?php echo esc_attr(  $_GET['o_refresh_token'] ); ?>" >
-                                      <input type="hidden" name="token_expires" value="<?php echo esc_attr(  $_GET['o_expires_in'] ); ?>" >
+                                      <input type="hidden" name="access_token" value="<?php echo esc_attr( $_GET['o_access_token'] ?? '' ); ?>" >
+                                      <input type="hidden" name="refresh_token" value="<?php echo esc_attr( $_GET['o_refresh_token'] ?? '' ); ?>" >
+                                      <input type="hidden" name="token_expires" value="<?php echo esc_attr( $_GET['o_expires_in'] ?? '' ); ?>" >
                                     <?php } ?>
                                     <?php if( isset( $_GET['g_access_token'] ) || isset( $_GET['g_refresh_token'] ) ){ ?>
-                                      <input type="hidden" name="access_token" value="<?php echo esc_attr(  $_GET['g_access_token'] ); ?>" >
-                                      <input type="hidden" name="refresh_token" value="<?php echo esc_attr(  $_GET['g_refresh_token'] ); ?>" >
-                                      <input type="hidden" name="token_expires" value="<?php echo esc_attr(  $_GET['g_expires_in'] ); ?>" >
+                                      <input type="hidden" name="access_token" value="<?php echo esc_attr( $_GET['g_access_token'] ?? '' ); ?>" >
+                                      <input type="hidden" name="refresh_token" value="<?php echo esc_attr( $_GET['g_refresh_token'] ?? '' ); ?>" >
+                                      <input type="hidden" name="token_expires" value="<?php echo esc_attr( $_GET['g_expires_in'] ?? '' ); ?>" >
                                     <?php } ?>
                                         <a href="" data-step="1" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span>Back</a>
                                         <?php
@@ -1806,11 +1806,16 @@ class Post_SMTP_New_Wizard {
 
         if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
             $id = $_GET['id'] ?? null;
-
+            $action = isset($_GET['action']) ? $_GET['action'] : '';
+            $app_client_id = '';
+            $app_client_secret = '';
             if ( isset( $mail_connections[ $id ] ) ) {
                 // Selected connection exists → use it
                 $app_client_id     = $mail_connections[ $id ]['office365_app_id'] ?? '';
                 $app_client_secret = $mail_connections[ $id ]['office365_app_password'] ?? '';
+            } elseif ( $action === 'add' ) {
+                $app_client_id     = '';
+                $app_client_secret = '';
             } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
                 // No ID? Use last connection in list
                 $last_connection   = end( $mail_connections );
@@ -1927,11 +1932,16 @@ class Post_SMTP_New_Wizard {
         if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
             $mail_connections = get_option( 'postman_connections' );
             $id = $_GET['id'] ?? null;
-
+            $action = isset($_GET['action']) ? $_GET['action'] : '';
+            $client_id = '';
+            $client_secret = '';
             if ( isset( $mail_connections[ $id ] ) ) {
                 // Selected connection
                 $client_id     = $mail_connections[ $id ]['zohomail_client_id'] ?? '';
                 $client_secret = $mail_connections[ $id ]['zohomail_client_secret'] ?? '';
+            } elseif ( $action === 'add' ) {
+                $client_id     = '';
+                $client_secret = '';
             } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
                 // No ID → fallback to last connection
                 $last_connection = end( $mail_connections );
