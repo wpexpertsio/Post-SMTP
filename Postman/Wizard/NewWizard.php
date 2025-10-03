@@ -1817,8 +1817,8 @@ class Post_SMTP_New_Wizard {
                 $app_client_id     = '';
                 $app_client_secret = '';
             } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
-                // No ID? Use last connection in list
-                $last_connection   = end( $mail_connections );
+                // No ID? Use last Office 365 connection, or any connection as fallback
+                $last_connection   = PostmanOptions::get_last_office365_credentials( $mail_connections );
                 $app_client_id     = $last_connection['office365_app_id'] ?? '';
                 $app_client_secret = $last_connection['office365_app_password'] ?? '';
             } else {
@@ -1943,10 +1943,10 @@ class Post_SMTP_New_Wizard {
                 $client_id     = '';
                 $client_secret = '';
             } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
-                // No ID → fallback to last connection
-                $last_connection = end( $mail_connections );
-                $client_id     = $last_connection['zohomail_client_id'] ?? '';
-                $client_secret = $last_connection['zohomail_client_secret'] ?? '';
+                // No ID → use helper function to find last Zoho credentials
+                $zoho_credentials = PostmanOptions::get_last_zoho_credentials( $mail_connections );
+                $client_id     = $zoho_credentials['client_id'];
+                $client_secret = $zoho_credentials['client_secret'];
             } else {
                 // Nothing found
                 $client_id     = '';
