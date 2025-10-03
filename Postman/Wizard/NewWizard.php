@@ -1053,7 +1053,7 @@ class Post_SMTP_New_Wizard {
         $mail_connections = get_option( 'postman_connections' );
         $id = $_GET['id'] ?? null;
         $api_key = '';
-        if ( isset( $_GET['id'] ) ) {
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['emailit_api_key'] ) ) {
             $api_key = $mail_connections[$id]['emailit_api_key'];
         }
 		 $api_key = $api_key ?: esc_attr( $this->options->getEmailitApiKey() ?? '' );
@@ -1084,7 +1084,7 @@ class Post_SMTP_New_Wizard {
         $mail_connections = get_option( 'postman_connections' );
         
         // Check if 'id' exists and 'mandrill_api_key' is set in the connection.
-        if ( isset( $_GET['id'] ) ) {
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['mandrill_api_key'] ) ) {
             $api_key = $mail_connections[$id]['mandrill_api_key'];
         }
         $api_key = $api_key ?: esc_attr( $this->options->getMandrillApiKey() ?? '' );
@@ -1137,7 +1137,7 @@ class Post_SMTP_New_Wizard {
         $mail_connections = get_option( 'postman_connections' );
         
         // Check if 'id' exists and 'sendgrid_api_key' is set in the connection.
-        if ( isset( $_GET['id'] ) ) {
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['sendgrid_api_key'] ) ) {
             $api_key = $mail_connections[$id]['sendgrid_api_key'];
         }
         $api_key = $api_key ?: esc_attr( $this->options->getSendGridApiKey() ?? '' );
@@ -1200,7 +1200,7 @@ class Post_SMTP_New_Wizard {
         $mail_connections = get_option( 'postman_connections' );
         $id = $_GET['id'] ?? null;
         $api_key = '';
-        if ( isset( $_GET['id'] ) ) {
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['mailersend_api_key'] ) ) {
             $api_key = $mail_connections[$id]['mailersend_api_key'];
         }
         $api_key = $api_key ?: esc_attr( $this->options->getMailerSendApiKey() ?? '' );
@@ -1257,8 +1257,8 @@ class Post_SMTP_New_Wizard {
         
         // Check if 'id' exists and 'mailgun_api_key' is set in the connection.
         if ( isset( $_GET['id'] ) ) {
-            $api_key = $mail_connections[$id]['mailgun_api_key'];
-            $domain_name = $mail_connections[$id]['mailgun_domain_name'];
+            $api_key = $mail_connections[$id]['mailgun_api_key'] ?? '';
+            $domain_name = $mail_connections[$id]['mailgun_domain_name'] ?? '';
         }
         $api_key = $api_key ?: esc_attr( $this->options->getMailgunApiKey() ?? '' );
         $domain_name = $api_key ?: esc_attr( $this->options->getMailgunDomainName() ?? '' );
@@ -1349,7 +1349,7 @@ class Post_SMTP_New_Wizard {
         $mail_connections = get_option( 'postman_connections' );
         $id = $_GET['id'] ?? null;
         $api_key = '';
-        if ( isset( $_GET['id'] ) ) {
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['sendinblue_api_key'] ) ) {
             $api_key = $mail_connections[$id]['sendinblue_api_key'];
         }
         $api_key = $api_key ?: esc_attr( $this->options->getSendinblueApiKey() ?? '' );
@@ -1400,7 +1400,7 @@ class Post_SMTP_New_Wizard {
         $mail_connections = get_option( 'postman_connections' );
         $id = $_GET['id'] ?? null;
         $api_key = '';
-        if ( isset( $_GET['id'] ) ) {
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['resend_api_key'] ) ) {
             $api_key = $mail_connections[$id]['resend_api_key'];
         }
 		 $api_key = $api_key ?: esc_attr( $this->options->getResendApiKey() ?? '' );
@@ -1453,7 +1453,7 @@ class Post_SMTP_New_Wizard {
         $api_key = '';
         
         // Check if 'id' exists and 'postmark_api_key' is set in the connection.
-        if ( isset( $_GET['id'] ) ) {
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['postmark_api_key'] ) ) {
             $api_key = $mail_connections[$id]['postmark_api_key'];
         }
         $api_key = $api_key ?: esc_attr( $this->options->getPostmarkApiKey() ?? '' );
@@ -1506,7 +1506,7 @@ class Post_SMTP_New_Wizard {
         $api_key = '';
         
         // Check if 'id' exists and 'sparkpost_api_key' is set in the connection.
-        if ( isset( $_GET['id'] ) ) {
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['sparkpost_api_key'] ) ) {
             $api_key = $mail_connections[$id]['sparkpost_api_key'];
         }
         $api_key = $api_key ?: esc_attr( $this->options->getSparkPostApiKey() ?? '' );
@@ -1558,7 +1558,7 @@ class Post_SMTP_New_Wizard {
         $api_key = '';
         
         // Check if 'id' exists and 'elasticemail_api_key' is set in the connection.
-        if ( isset( $_GET['id'] ) ) {
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['elasticemail_api_key'] ) ) {
             $api_key = $mail_connections[$id]['elasticemail_api_key'];
         }
         $api_key = $api_key ?: esc_attr( $this->options->getElasticEmailApiKey() ?? '' );
@@ -1610,8 +1610,8 @@ class Post_SMTP_New_Wizard {
         
         // Check if 'id' exists and 'mailjet_api_key' is set in the connection.
         if ( isset( $_GET['id'] ) ) {
-            $api_key = $mail_connections[$id]['mailjet_api_key'];
-            $secret_key = $mail_connections[$id]['mailjet_secret_key'];
+            $api_key = $mail_connections[$id]['mailjet_api_key'] ?? '';
+            $secret_key = $mail_connections[$id]['mailjet_secret_key'] ?? '';
         }
 
         $api_key = $api_key ?: esc_attr( $this->options->getMailjetApiKey() ?? '' );
@@ -1671,8 +1671,8 @@ class Post_SMTP_New_Wizard {
         
         // Check if 'id' exists and 'sendpulse_api_key' is set in the connection.
         if ( isset( $_GET['id'] ) ) {
-            $api_key = $mail_connections[$id]['sendpulse_api_key'];
-            $secret_key = $mail_connections[$id]['sendpulse_secret_key'];
+            $api_key = $mail_connections[$id]['sendpulse_api_key'] ?? '';
+            $secret_key = $mail_connections[$id]['sendpulse_secret_key'] ?? '';
         }
         $api_key = $api_key ?: esc_attr( $this->options->getSendpulseApiKey() ?? '' );
         $secret_key = $secret_key ?: esc_attr( $this->options->getSendpulseSecretKey() ?? '' );
@@ -2045,7 +2045,7 @@ class Post_SMTP_New_Wizard {
         $api_key = '';
         
         // Check if 'id' exists and 'smtp2go_api_key' is set in the connection.
-        if ( isset( $_GET['id'] ) ) {
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['smtp2go_api_key'] ) ) {
             $api_key = $mail_connections[$id]['smtp2go_api_key'];
         }
         $api_key = $api_key ?: esc_attr( $this->options->getSmtp2GoApiKey() ?? '' );
