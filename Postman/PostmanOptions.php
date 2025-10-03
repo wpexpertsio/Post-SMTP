@@ -1015,17 +1015,17 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		 * @param array $mail_connections Array of mail connections
 		 * @return array Array with 'client_id' and 'client_secret' keys, empty strings if not found
 		 */
-		public static function get_last_zoho_credentials($mail_connections) {
-			if (empty($mail_connections) || !is_array($mail_connections)) {
-				return array('client_id' => '', 'client_secret' => '');
+		public static function get_last_zoho_credentials( $mail_connections ) {
+			if ( empty( $mail_connections ) || !is_array( $mail_connections ) ) {
+				return array( 'client_id' => '', 'client_secret' => '' );
 			}
 			
 			// Reverse loop through connections to find the last one with Zoho credentials
-			$reversed_connections = array_reverse($mail_connections, true);
-			
-			foreach ($reversed_connections as $connection) {
-				if (isset($connection['provider']) && $connection['provider'] === 'zohomail_api' &&
-					(!empty($connection['zohomail_client_id']) || !empty($connection['zohomail_client_secret']))) {
+			$reversed_connections = array_reverse( $mail_connections, true );
+
+			foreach ( $reversed_connections as $connection ) {
+				if ( isset( $connection['provider'] ) && $connection['provider'] === 'zohomail_api' &&
+					( ! empty( $connection['zohomail_client_id'] ) || ! empty( $connection['zohomail_client_secret'] ) ) ) {
 					return array(
 						'client_id'     => $connection['zohomail_client_id'] ?? '',
 						'client_secret' => $connection['zohomail_client_secret'] ?? ''
@@ -1034,7 +1034,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 			
 			// If no Zoho connection found, return the last connection's Zoho fields (even if empty)
-			$last_connection = end($mail_connections);
+			$last_connection = end( $mail_connections );
 			return array(
 				'client_id'     => $last_connection['zohomail_client_id'] ?? '',
 				'client_secret' => $last_connection['zohomail_client_secret'] ?? ''
@@ -1048,25 +1048,25 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		 * @since 2.7.0
 		 * @version 1.0.0
 		 * @param array $mail_connections Array of mail connections
-		 * @return array|null The last Office 365 connection or null if none found
+		 * @return array Array with 'app_client_id' and 'app_client_secret' keys, empty strings if not found
 		 */
-		public static function get_last_office365_credentials($mail_connections) {
-			if (empty($mail_connections) || !is_array($mail_connections)) {
-				return null;
+		public static function get_last_office365_credentials( $mail_connections ) {
+			if ( empty( $mail_connections ) || !is_array( $mail_connections ) ) {
+				return array( 'office365_app_id' => '', 'office365_app_password' => '' );
 			}
 			
-			// First, try to find Office 365-specific connections
-			$office365_connections = array_filter($mail_connections, function($connection) {
-				return isset($connection['transport_type']) && $connection['transport_type'] === 'office365_api';
-			});
-			
-			if (!empty($office365_connections)) {
-				// Return the last Office 365 connection
-				return end($office365_connections);
-			}
-			
-			// If no Office 365 connections found, return the last connection of any type
-			return end($mail_connections);
+			// Reverse loop through connections to find the last one with Office 365 credentials
+			$reversed_connections = array_reverse( $mail_connections, true );
+
+			foreach ( $reversed_connections as $connection ) {
+				if ( isset( $connection['provider'] ) && $connection['provider'] === 'office365_api' &&
+					( ! empty( $connection['office365_app_id'] ) || ! empty( $connection['office365_app_password'] ) ) ) {
+					return array(
+						'office365_app_id'       => $connection['office365_app_id'] ?? '',
+						'office365_app_password' => $connection['office365_app_password'] ?? ''
+					);
+				}
+			}	
 		}
 	}
 }
