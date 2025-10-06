@@ -135,10 +135,27 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			<p><b><?php _e( 'Post SMTP database update required', 'post-smtp' ); ?></b></p>
 			<?php if ( $this->existing_db_version != POST_SMTP_DB_VERSION && $deleted_email_settings === false ) : ?>
 				<p><?php echo _e( 'Additional Socket support will be now available in our fallback module.', 'post-smtp' ); ?></p>
+				<?php 
+				// Check if Pro version meets requirements
+				$can_update_fallback = $this->can_update_fallback();
+				$pro_version_error = $this->get_pro_version_error();
+				?>
+				<?php if ( !$can_update_fallback && $pro_version_error ) : ?>
+					<div class="notice notice-error inline" style="margin: 10px 0; padding: 10px;">
+						<p><strong><?php _e( 'Fallback Update Blocked:', 'post-smtp' ); ?></strong> <?php echo esc_html( $pro_version_error ); ?></p>
+					</div>
+				<?php endif; ?>
 				<form method="post" class="fallback_migration_form" style="" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 					<input type="hidden" name="action" value="ps_fallback_update_action">
 					<input type="hidden" name="security" value="<?php echo esc_attr( $security ); ?>">
-					<button type="submit" class="button button-primary">Update for Fallback Support</button>
+					<button type="submit" class="button button-primary" <?php echo $can_update_fallback ? '' : 'disabled'; ?>>
+						<?php _e( 'Update for Fallback Support', 'post-smtp' ); ?>
+					</button>
+					<?php if ( !$can_update_fallback ) : ?>
+						<p class="description" style="margin-top: 5px; color: #d63638;">
+							<?php _e( 'Please update Post SMTP Pro to version 1.6.0 or higher to enable fallback support.', 'post-smtp' ); ?>
+						</p>
+					<?php endif; ?>
 				</form>
 			<?php endif; ?>
 			<?php if ( $deleted_email_settings !== false ) : ?>
@@ -207,6 +224,17 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			// Check security nonce
 			if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( $_POST['security'], 'ps-migrate-fallback-db' ) ) {
 				wp_die( 'Security check failed.' );
+			}
+
+			// Check Pro version requirements before proceeding
+			if ( ! $this->can_update_fallback() ) {
+				$error_message = $this->get_pro_version_error();
+				wp_die( 
+					sprintf( 
+						__( 'Fallback update blocked: %s', 'post-smtp' ), 
+						$error_message ?: __( 'Pro version requirements not met.', 'post-smtp' )
+					)
+				);
 			}
 
 			// Gather mail settings and save connections if security passes.
@@ -422,7 +450,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 
 			// Only update if the current version is 1.0.1.
 			if ( $current_db_version === '1.0.1' ) {
-				update_option( 'postman_db_version', '1.0.2' );
+				update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
 			}
 		}
 
@@ -603,6 +631,52 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			);
 
 			update_option( $option_name, $option_value );
+		}
+
+		/**
+		 * Check if fallback update is allowed based on Pro version requirements
+		 * 
+		 * @since 3.0.1
+		 * @version 1.0.0
+		 * @return bool True if update is allowed, false otherwise
+		 */
+		private function can_update_fallback() {
+			// Always allow if Pro is not installed
+			if ( ! defined( 'POST_SMTP_PRO_VERSION' ) ) {
+				return true;
+			}
+
+			// Check if Pro version meets minimum requirement
+			$required_version = '1.6.0';
+			$current_version = POST_SMTP_PRO_VERSION;
+
+			return version_compare( $current_version, $required_version, '>=' );
+		}
+
+		/**
+		 * Get Pro version error message if any
+		 * 
+		 * @since 3.0.1
+		 * @version 1.0.0
+		 * @return string|null Error message or null if no error
+		 */
+		private function get_pro_version_error() {
+			if ( ! defined( 'POST_SMTP_PRO_VERSION' ) ) {
+				return null; // No Pro plugin, no error
+			}
+
+			$required_version = '1.6.0';
+			$current_version = POST_SMTP_PRO_VERSION;
+
+			if ( version_compare( $current_version, $required_version, '<' ) ) {
+				return sprintf(
+					__( 'Post SMTP Pro version %s detected. Version %s or higher is required for fallback support.', 'post-smtp' ),
+					$current_version,
+					$required_version
+				);
+			}
+
+			return null; // No error
 		}
 	}
 

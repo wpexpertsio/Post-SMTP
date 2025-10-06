@@ -184,8 +184,12 @@ class PostmanEmailLogs {
         }
 
         if( !$this->db->last_error ) {
-
-            update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
+            $existing_options = get_option( PostmanOptions::POSTMAN_OPTIONS );
+            if ( !empty( $existing_options ) ) {
+                update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
+            } else {
+                update_option( 'postman_db_version', '1.0.1' );
+            }
 
         }
 
@@ -227,7 +231,7 @@ class PostmanEmailLogs {
 
         if( !$this->db->last_error ) {
 
-            update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
+            update_option( 'postman_db_version', '1.0.1' );
 
         }
 
