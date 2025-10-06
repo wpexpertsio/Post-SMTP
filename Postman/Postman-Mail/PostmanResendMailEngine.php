@@ -22,13 +22,13 @@ class PostmanResendMailEngine implements PostmanMailEngine {
      * @version 1.0
      */
     public function __construct( $api_key ) {
-        
-        if ( is_array( $credentials ) ) {
-			$this->api_key = isset( $credentials['api_key'] ) ? $credentials['api_key'] : ( isset( $credentials[0] ) ? $credentials[0] : '' );
-			$this->is_fallback = !empty( $credentials['is_fallback'] );
-			$this->route_key = isset( $credentials['route_key'] ) ? $credentials['route_key'] : null;
+        if ( is_array( $api_key ) ) {
+			$this->api_key = isset( $api_key['api_key'] ) ? $api_key['api_key'] : ( isset( $api_key[0] ) ? $api_key[0] : '' );
+			$this->is_fallback = !empty( $api_key['is_fallback'] );
+			$this->route_key = isset( $api_key['route_key'] ) ? $api_key['route_key'] : null;
 		} else {
-			$this->api_key = $credentials;
+			$this->api_key = $api_key;
+			$this->is_fallback = null;
 		}
 
         // create the logger
@@ -87,7 +87,7 @@ class PostmanResendMailEngine implements PostmanMailEngine {
 		$sender      = $message->getFromAddress();
 		$senderEmail = '';
 		$senderName  = '';
-        $resend = new PostmanResend( $this->api_key);
+        $resend = new PostmanResend( $this->api_key );
         //Resend preparation
         if ( $this->logger->isDebug() ) {
             $this->logger->debug( 'Creating Resend service with apiKey=' . $this->api_key );
