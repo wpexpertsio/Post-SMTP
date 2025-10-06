@@ -1803,7 +1803,7 @@ class Post_SMTP_New_Wizard {
     public function render_office365_settings() {
 
         $mail_connections  = get_option( 'postman_connections' );
-
+        $options = get_option( PostmanOptions::POSTMAN_OPTIONS, array() );
         if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
             $id = $_GET['id'] ?? null;
             $action = isset($_GET['action']) ? $_GET['action'] : '';
