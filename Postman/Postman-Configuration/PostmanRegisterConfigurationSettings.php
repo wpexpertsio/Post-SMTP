@@ -526,6 +526,18 @@ class PostmanSettingsRegistry {
 				$email    = isset( $connection['sender_email'] ) ? $connection['sender_email'] : '';
 				// Use provider_name if available, fallback to provider.
 				$raw_label = ! empty( $connection['provider_name'] ) ? $connection['provider_name'] : $connection['provider'];
+				
+				// Special handling for Gmail API - check if it's one-click setup
+				if ( $connection['provider'] === 'gmail_api' ) {
+					$oauth_client_id = $connection['oauth_client_id'] ?? '';
+					$oauth_client_secret = $connection['oauth_client_secret'] ?? '';
+					
+					// If both OAuth credentials are empty, it's Gmail One-Click setup
+					if ( empty( $oauth_client_id ) && empty( $oauth_client_secret ) ) {
+						$raw_label = ! empty( $connection['provider_name'] ) ? $connection['provider_name'] : 'gmail_one_click';
+					}
+				}
+				
 				// Format label.
 				$label = ucfirst( str_replace( '_', ' ', __( str_replace( 'api', 'API', $raw_label ), 'post-smtp' ) ) );
 				$label_with_email = sprintf( '%s (%s)', $label, $email );
@@ -601,6 +613,17 @@ class PostmanSettingsRegistry {
 			$sender_email   = esc_html( $connection['sender_email'] ?? '' );
 			$provider_label = ucfirst( str_replace( '_', ' ', __( str_replace( 'api', 'API', $connection['provider'] ), 'post-smtp' ) ) );
 			$raw_label = isset( $connection['provider_name'] ) && ! empty( $connection['provider_name'] ) ? $connection['provider_name'] : $connection['provider'];
+
+			// Special handling for Gmail API - check if it's one-click setup
+			if ( $connection['provider'] === 'gmail_api' ) {
+				$oauth_client_id = $connection['oauth_client_id'] ?? '';
+				$oauth_client_secret = $connection['oauth_client_secret'] ?? '';
+				
+				// If both OAuth credentials are empty, it's Gmail One-Click setup
+				if ( empty( $oauth_client_id ) && empty( $oauth_client_secret ) ) {
+					$raw_label = isset( $connection['provider_name'] ) && ! empty( $connection['provider_name'] ) ? $connection['provider_name'] : 'gmail_one_click';
+				}
+			}
 
 			$provider_label = ucfirst( str_replace( '_', ' ', __( str_replace( 'api', 'API', $raw_label ), 'post-smtp' ) ) );
 			

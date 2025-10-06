@@ -1066,7 +1066,49 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 						'office365_app_password' => $connection['office365_app_password'] ?? ''
 					);
 				}
-			}	
+			}
+			
+			// If no Office 365 connection found, return the last connection's Office 365 fields (even if empty)
+			$last_connection = end( $mail_connections );
+			return array(
+				'office365_app_id'       => $last_connection['office365_app_id'] ?? '',
+				'office365_app_password' => $last_connection['office365_app_password'] ?? ''
+			);
+		}
+
+		/**
+		 * Get the last Gmail credentials from connections
+		 * Intelligently finds Gmail-specific connections first, then falls back to any connection
+		 * 
+		 * @since 2.7.0
+		 * @version 1.0.0
+		 * @param array $mail_connections Array of mail connections
+		 * @return array Array with 'client_id' and 'client_secret' keys, empty strings if not found
+		 */
+		public static function get_last_gmail_credentials( $mail_connections ) {
+			if ( empty( $mail_connections ) || !is_array( $mail_connections ) ) {
+				return array( 'client_id' => '', 'client_secret' => '' );
+			}
+			
+			// Reverse loop through connections to find the last one with Gmail credentials
+			$reversed_connections = array_reverse( $mail_connections, true );
+
+			foreach ( $reversed_connections as $connection ) {
+				if ( isset( $connection['provider'] ) && $connection['provider'] === 'gmail_api' &&
+					( ! empty( $connection['oauth_client_id'] ) || ! empty( $connection['oauth_client_secret'] ) ) ) {
+					return array(
+						'client_id'     => $connection['oauth_client_id'] ?? '',
+						'client_secret' => $connection['oauth_client_secret'] ?? ''
+					);
+				}
+			}
+			
+			// If no Gmail connection found, return the last connection's OAuth fields (even if empty)
+			$last_connection = end( $mail_connections );
+			return array(
+				'client_id'     => $last_connection['oauth_client_id'] ?? '',
+				'client_secret' => $last_connection['oauth_client_secret'] ?? ''
+			);
 		}
 	}
 }
