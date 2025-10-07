@@ -79,14 +79,14 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 			return $inst;
 		}
 
-		public function write_success_log($log, $message, $transcript, $transport) {
+		public function write_success_log( $log, $message, $transcript, $transport = null ) {
 		    $options = PostmanOptions::getInstance();
             if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION || $options->getRunMode() == PostmanOptions::RUN_MODE_LOG_ONLY ) {
                 $this->writeSuccessLog( $log, $message, $transcript, $transport );
             }
         }
 
-        public function write_failed_log($log, $message, $transcript, $transport, $statusMessage) {
+        public function write_failed_log( $log, $message, $transcript, $transport = null, $statusMessage ) {
             $options = PostmanOptions::getInstance();
             if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION || $options->getRunMode() == PostmanOptions::RUN_MODE_LOG_ONLY ) {
 				$this->writeFailureLog( $log, $transcript, $statusMessage, $transport, $message );
