@@ -133,7 +133,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			if ( $session->isSetOauthInProgress() ) {
 				// there is only a three minute window that Postman will expect a Grant Code, once Grant is clicked by the user
 				$this->logger->debug( 'Looking for grant code' );
-				if ( isset( $_GET ['code'] ) ) {
+				if ( isset( $_GET['code'], $_GET['scope'] ) ) {
 					$this->logger->debug( 'Found authorization grant code' );
 
 					// queue the function that processes the incoming grant code
