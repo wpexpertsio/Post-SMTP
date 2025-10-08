@@ -101,13 +101,36 @@ class PostmanMailerooTransport extends PostmanAbstractModuleTransport implements
             printf('<input type="password" autocomplete="off" id="maileroo_api_key" name="postman_options[maileroo_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailerooApiKey() ? esc_attr(PostmanUtils::obfuscatePassword($this->options->getMailerooApiKey())) : '', __('Required', 'post-smtp'));
             print ' <input type="button" id="toggleMailerooApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
         }
-
+    
+        /**
+         * @since 3.2.0
+         * @version 1.0
+         */
         public function registerStylesAndScripts() {
-            // Add Maileroo-specific JS/CSS if needed
+
+            // register the stylesheet and javascript external resources
+            $pluginData = apply_filters ( 'postman_get_plugin_metadata', null );
+            wp_register_script (
+                'postman-maileroo',
+                plugins_url ( 'Postman/Postman-Mail/postman-maileroo.js', $this->rootPluginFilenameAndPath ),
+                array (
+                    PostmanViewController::JQUERY_SCRIPT,
+                    'jquery_validation',
+                    PostmanViewController::POSTMAN_SCRIPT
+                ),
+                $pluginData['version']
+            );
+
         }
 
+        /**
+         * @since 3.2.0
+         * @version 1.0
+         */
         public function enqueueScript() {
-            // Enqueue Maileroo-specific JS if needed
+
+            wp_enqueue_script( 'postman-maileroo' );
+
         }
 
         public function printWizardAuthenticationStep() {
