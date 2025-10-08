@@ -99,10 +99,18 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 		 * @version 3.0.1
 		 */
 		public function add_monthly_schedule( $schedules ) {
+			// Check if textdomain is loaded to avoid early translation loading
+			$display_text = 'Once Monthly';
+
+			if ( did_action( 'init' ) && function_exists( 'is_textdomain_loaded' ) && is_textdomain_loaded( 'post-smtp' ) ) {
+				$display_text = __( 'Once Monthly', 'post-smtp' );
+			}
+			
 			$schedules['monthly'] = array(
 				'interval' => 30 * DAY_IN_SECONDS,
-				'display'  => __( 'Once Monthly', 'post-smtp' ),
+				'display'  => $display_text,
 			);
+			
 			return $schedules;
     	}
 
