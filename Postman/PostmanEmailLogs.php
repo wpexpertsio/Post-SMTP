@@ -188,7 +188,7 @@ class PostmanEmailLogs {
             if ( !empty( $existing_options ) ) {
                 update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
             } else {
-                update_option( 'postman_db_version', '1.0.1' );
+                update_option( 'postman_db_version', '1.0.2' );
             }
 
         }
