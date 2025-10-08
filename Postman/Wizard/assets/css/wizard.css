@@ -725,7 +725,7 @@ span.ps-pro-close-popup {
 .ps-hidden {
   display: none;
 }
-.ps-gmail-btn{
+.ps-office365-btn{
   background-color: #4285f4 !important;
   border-radius: 0px !important;
   line-height: 40px !important;
@@ -748,13 +748,19 @@ span.ps-pro-close-popup {
   padding-top: 5px;
 }
 .ps-remove-gmail-btn{
+}
+
+.ps-remove-office365-btn{
   background-color: #d63638 !important;
   border-color: #d63638 !important;
   color: #fff !important;
   font-size: 14px !important;
   font-weight: 500;
   padding: 5px 10px !important;
+  margin-top:20px !important;
+  display: inline-block !important;
 }
+  
 .ps-wizard-socket .ps-remove-gmail-btn{
   margin-top:20px !important
 }
@@ -945,3 +951,11 @@ div#ps-pro-code-copy-notification {
     cursor: not-allowed;
     opacity: 0.6;	
 }
+
+.ps-disable-office365-setup b{
+  display: inline-block;
+  margin-left: 30px;
+  margin-top: 30px;
+}
+
+/* Lets make wizard responsive */

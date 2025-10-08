@@ -786,15 +786,35 @@ jQuery( document ).ready(function() {
     });
 
     const gmail_icon = PostSMTPWizard.gmail_icon;
+    const office365_icon = PostSMTPWizard.office365_icon;
+
     const css = `
       .ps-gmail-btn::before {
-          background-image: url( ${gmail_icon} );
+          background-image: url(${gmail_icon});
       }
-      `;
-    const style = jQuery('<style>').text(css);
-    jQuery('head').append(style);
+      .ps-office365-btn::before {
+          background-image: url(${office365_icon});
+      }
+    `;
 
-} );
+    const style = $('<style>').text(css);
+    jQuery('head').append(style);
+});
+
+
+jQuery(document).on('click', '.ps-enable-office365-one-click', function (e) {
+    	   
+    var enabled = jQuery(this).is(':checked');
+    if (enabled) {
+        jQuery('.ps-disable-one-click-setup').hide();
+        jQuery('.ps-disable-office365-setup').show();
+    } else {
+        jQuery('.ps-disable-office365-setup').hide();
+        jQuery('.ps-disable-one-click-setup').show();
+    }
+
+});
+
 
 jQuery(document).ready(function ($) {
     const toggleFields = () => {
@@ -848,5 +868,3 @@ jQuery(document).ready(function($) {
         }
     });
 });
-
-
