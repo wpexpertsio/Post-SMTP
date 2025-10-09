@@ -725,12 +725,36 @@ span.ps-pro-close-popup {
 .ps-hidden {
   display: none;
 }
+
 .ps-office365-btn{
   background-color: #4285f4 !important;
   border-radius: 0px !important;
   line-height: 40px !important;
   font-size: 15px !important;
-  width: 184px;;
+  width: 215px;
+  display: inline-flex !important;
+  align-items: center;
+  text-decoration: none;
+  height: 50px;
+}
+.ps-office365-btn::before {
+  content: '';
+  font-size: 20px;
+  display: inline-block;
+  background-size: auto;
+  background-repeat: no-repeat;
+  width: 36px;
+  height: 34px;
+  margin-right: 10px;
+  background-color: white;
+}
+
+.ps-gmail-btn{
+  background-color: #4285f4 !important;
+  border-radius: 0px !important;
+  line-height: 40px !important;
+  font-size: 15px !important;
+  width: 184px;
   display: inline-flex !important;
   align-items: center;
   text-decoration: none;
@@ -760,6 +784,7 @@ span.ps-pro-close-popup {
   margin-top:20px !important;
   display: inline-block !important;
 }
+
   
 .ps-wizard-socket .ps-remove-gmail-btn{
   margin-top:20px !important
@@ -954,7 +979,6 @@ div#ps-pro-code-copy-notification {
 
 .ps-disable-office365-setup b{
   display: inline-block;
-  margin-left: 30px;
   margin-top: 30px;
 }
 

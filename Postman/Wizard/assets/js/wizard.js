@@ -709,10 +709,6 @@ jQuery( document ).ready(function() {
             e.preventDefault();
             var data = jQuery('#ps-one-click-data').val();
             var parsedData = JSON.parse(data);
-            console.log(parsedData);
-
-            
-
             jQuery('.ps-pro-for-img').attr('src', parsedData.url);
             jQuery('.ps-pro-product-url').attr('href', parsedData.product_url);
             jQuery('.ps-pro-for').html(parsedData.transport_name);
@@ -797,7 +793,7 @@ jQuery( document ).ready(function() {
       }
     `;
 
-    const style = $('<style>').text(css);
+    const style = jQuery('<style>').text(css);
     jQuery('head').append(style);
 });
 
@@ -867,4 +863,42 @@ jQuery(document).ready(function($) {
             $p.html($p.data("short-text") + ' <a href="#" class="ps-toggle-text">Show More</a>');
         }
     });
+    jQuery( document ).on( 'click', '.ps-gmail-btn', function( e ) {
+        e.preventDefault();
+		var redirectURI = jQuery( this ).attr( 'href' );
+        jQuery.ajax( {
+            url: ajaxurl,
+            type: 'POST',
+            async: true,
+            data: {
+                action: 'ps-save-wizard',
+                FormData: jQuery( '#ps-wizard-form' ).serialize(),
+            },
+            success: function( response ) {
+                window.location.assign( redirectURI );
+
+            },
+
+        });
+    });
+
+	jQuery( document ).on( 'click', '.ps-office365-btn', function( e ) {
+        e.preventDefault();
+		var redirectURI = jQuery( this ).attr( 'href' );
+        jQuery.ajax( {
+            url: ajaxurl,
+            type: 'POST',
+            async: true,
+            data: {
+                action: 'ps-save-wizard',
+                FormData: jQuery( '#ps-wizard-form' ).serialize(),
+            },
+            success: function( response ) {
+                window.location.assign( redirectURI );
+
+            },
+
+        } );
+    });
+
 });

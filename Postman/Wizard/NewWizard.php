@@ -1546,7 +1546,7 @@ public function render_gmail_settings() {
 		
 	$html .= '<div class="ps-disable-office365-setup ' . ( $office365_oneclick_enabled ? '' : 'ps-hidden' ) . '">';
     if ( post_smtp_has_pro() ) {
-        if ( $postman_office365_auth_token ) {
+        if ( $postman_office365_auth_token  && isset( $postman_office365_auth_token['user_email'] ) ) {
             $nonce = wp_create_nonce( 'remove_365_oauth_action' );
             $action_url = esc_url( add_query_arg(
                 [
