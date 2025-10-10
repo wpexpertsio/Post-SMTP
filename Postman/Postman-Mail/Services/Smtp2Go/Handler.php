@@ -13,13 +13,16 @@
 			private $api_key = '';
 			private $base_url = 'https://api.smtp2go.com/v3/email';
 
-			public function __construct( $api_key ) {
-				$this->api_key = $api_key;
+		public function __construct( $api_key ) {
+			$this->api_key = $api_key;
 
-				parent::__construct( $this->base_url );
-			}
-
-			private function get_headers() {
+			parent::__construct( $this->base_url );
+			
+			// Set 30-second timeout for SMTP2GO requests
+			$this->set_additional_args( array( 'timeout' => 30 ) );
+		}			
+		
+		private function get_headers() {
 				return array(
 					'Content-Type'  =>  'application/json',
 					'X-Smtp2go-Api-Key' => $this->api_key,
