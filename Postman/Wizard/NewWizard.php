@@ -94,6 +94,7 @@ class Post_SMTP_New_Wizard {
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
         add_action( 'wp_ajax_ps-save-wizard', array( $this, 'save_wizard' ) );
         add_action( 'wp_ajax_update_post_smtp_pro_option', array( $this, 'update_post_smtp_pro_option_callback' ) );
+        add_action( 'wp_ajax_update_post_smtp_pro_option_office365', array( $this, 'update_post_smtp_pro_option_office365_callback' ) );
         add_action( 'admin_action_zoho_auth_request', array( $this, 'auth_zoho' ) );
         add_action( 'admin_post_remove_oauth_action', array( $this, 'post_smtp_remove_oauth_action' ) );
         add_action( 'admin_init', array( $this, 'handle_gmail_oauth_redirect' ) );
@@ -1803,6 +1804,60 @@ public function render_gmail_settings() {
         wp_send_json_success( array( 'message' => 'Option updated successfully!' ) );
     }
 
+    /**
+     * Update Post SMTP Pro Option for Office365 One-Click
+     * 
+     * @since 2.7.0
+     * @version 1.0.0
+     *
+     * @return void
+     */
+    public function update_post_smtp_pro_option_office365_callback() {
+
+        // Capability check: Only allow admins
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Unauthorized.' ) );
+            return;
+        }
+
+        // Nonce check for CSRF protection
+        if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'update_post_smtp_pro_option' ) ) {
+            wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ) );
+            return;
+        }
+
+        if ( ! isset( $_POST['enabled'] ) ) {
+            wp_send_json_error( array( 'message' => 'Invalid request.' ) );
+            return;
+        }
+
+        $options = get_option( 'post_smtp_pro', [] );
+        if ( ! isset( $options['extensions'] ) ) {
+            $options['extensions'] = [];
+        }
+
+        $enabled_value = sanitize_text_field( $_POST['enabled'] );
+
+        // Remove existing Office 365 related extensions
+        $options['extensions'] = array_diff( $options['extensions'], ['microsoft-365', 'microsoft-one-click'] );
+
+        if ( ! empty( $enabled_value ) ) {
+            // If one-click is enabled, add both microsoft-365 and microsoft-one-click
+            $options['extensions'][] = 'microsoft-365';
+            $options['extensions'][] = 'microsoft-one-click';
+        } else {
+            // If one-click is disabled, only add microsoft-365
+            $options['extensions'][] = 'microsoft-365';
+        }
+
+        // Remove duplicates
+        $options['extensions'] = array_unique( $options['extensions'] );
+
+        update_option( 'post_smtp_pro', $options );
+
+        wp_send_json_success( array( 'message' => 'Option updated successfully!' ) );
+    }
+
 
     /**
      * Redirect to Zoho Authentication
@@ -1832,29 +1887,39 @@ public function render_gmail_settings() {
 
     }
 	
-	/**
-	 * Handles the removal of Office 365 OAuth credentials from the WordPress database.
-	 *
-	 * This function processes a form submission to delete the stored OAuth access token
-	 * and user email associated with Office 365 API integration. It validates the request's
-	 * nonce for security, performs the deletion, and redirects the user back to the settings
-	 * page with a success message.
-	 */
-	public function post_smtp_remove_365_oauth_action() {
-		// Verify the nonce to ensure the request is secure and valid.
-		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'remove_365_oauth_action' ) ) {
-			wp_die( esc_html__( 'Nonce verification failed. Please try again.', 'post-smtp' ) );
-		}
-		// Remove the Office 365 OAuth access token option from the WordPress database.
-		delete_option( 'postman_office365_oauth' );
+    /**
+     * Handles the removal of Office 365 OAuth credentials from the WordPress database.
+     *
+     * This function removes only the sensitive fields (tokens, email, and expiration)
+     * from the stored Office 365 OAuth option instead of deleting the entire record.
+     */
+    public function post_smtp_remove_365_oauth_action() {
+        // Verify nonce for security
+        if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'remove_365_oauth_action' ) ) {
+            wp_die( esc_html__( 'Nonce verification failed. Please try again.', 'post-smtp' ) );
+        }
 
-		// Redirect the user back to the settings page with a success query parameter.
-		wp_redirect( admin_url( "admin.php?socket=office365_api&step=2&page=postman/configuration_wizard" ) );
+        // Get the saved Office 365 OAuth data
+        $oauth_data = get_option( 'postman_office365_oauth', [] );
 
-		// Terminate script execution to prevent further processing after the redirect.
-		exit;
-	}
-	
+        if ( ! empty( $oauth_data ) && is_array( $oauth_data ) ) {
+            // Unset only sensitive fields
+            unset(
+                $oauth_data['access_token'],
+                $oauth_data['refresh_token'],
+                $oauth_data['token_expires'],
+                $oauth_data['user_email']
+            );
+
+            // Update the option with sanitized data
+            update_option( 'postman_office365_oauth', $oauth_data );
+        }
+
+        // Redirect back to configuration wizard page
+        wp_redirect( admin_url( "admin.php?socket=office365_api&step=2&page=postman/configuration_wizard" ) );
+        exit;
+    }
+
 	/**
 	 * Handles the Office 365 OAuth redirect, retrieves the token parameters from the URL,
 	 * saves them in WordPress options, and redirects the user to a settings page.
@@ -1876,13 +1941,18 @@ public function render_gmail_settings() {
 			$msg           = isset( $_GET['msg'] ) ? sanitize_text_field( $_GET['msg'] ) : '';
 			$user_email    = isset( $_GET['user_email'] ) ? sanitize_email( $_GET['user_email'] ) : '';
 			$auth_token_expires = time() + $expires_in;
-
+            $redirect_uri = admin_url();
 			// Prepare the OAuth data array for storing in WordPress options
 			$oauth_data = array(
 				'access_token'      => $access_token,
 				'refresh_token'     => $refresh_token,
 				'token_expires'        => $auth_token_expires,
 				'user_email'        => $user_email,
+                'OAUTH_REDIRECT_URI'       => $redirect_uri,
+                'OAUTH_SCOPES'             => 'openid profile offline_access Mail.Send Mail.Send.Shared',
+                'OAUTH_AUTHORITY'          => 'https://login.microsoftonline.com/common',
+                'OAUTH_AUTHORIZE_ENDPOINT' => '/oauth2/v2.0/authorize',
+                'OAUTH_TOKEN_ENDPOINT'     => '/oauth2/v2.0/token',
 			);
 
 			// Save the OAuth parameters to the WordPress options table.

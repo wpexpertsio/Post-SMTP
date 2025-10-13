@@ -809,6 +809,24 @@ jQuery(document).on('click', '.ps-enable-office365-one-click', function (e) {
         jQuery('.ps-disable-one-click-setup').show();
     }
 
+    jQuery.ajax({
+        url: ajaxurl,
+        type: 'POST',
+        async: true,
+        data: {
+            action: 'update_post_smtp_pro_option_office365',
+            enabled: enabled ? 'gmail-oneclick' : '',
+            _wpnonce: (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.pro_option_nonce) ? PostSMTPWizard.pro_option_nonce : ''
+        },
+        success: function(response) {
+            if (response.success) {
+                console.log('Option updated successfully!');
+            } else {
+                console.log('Failed to update option.');
+            }
+        }
+    });
+
 });
 
 
