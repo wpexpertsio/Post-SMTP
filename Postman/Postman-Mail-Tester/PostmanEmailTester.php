@@ -78,8 +78,13 @@ class Postman_Email_Tester {
      * Handles modern auto-verification test logic.
      */
     private function handle_sockets_check( $email, $args, $socket ) {
+        // Ensure a longer timeout
+        $args['timeout'] = isset( $args['timeout'] ) ? $args['timeout'] : 30;
 
-        $verify_response = wp_remote_post( "{$this->base_url}/email-auth-check?test_email={$email}&selector={$socket}", $args );
+        $verify_response = wp_remote_post(
+            "{$this->base_url}/email-auth-check?test_email={$email}&selector={$socket}",
+            $args
+        );
         $verify_code     = wp_remote_retrieve_response_code( $verify_response );
         $verify_body     = wp_remote_retrieve_body( $verify_response );
         if ( $verify_code == 429 ) {
