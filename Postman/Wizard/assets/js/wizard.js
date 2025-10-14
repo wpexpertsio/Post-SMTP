@@ -804,9 +804,13 @@ jQuery(document).on('click', '.ps-enable-office365-one-click', function (e) {
     if (enabled) {
         jQuery('.ps-disable-one-click-setup').hide();
         jQuery('.ps-disable-office365-setup').show();
+		jQuery('.ps-office365-client-id').removeAttr('required');
+        jQuery('.ps-office365-client-secret').removeAttr('required')
     } else {
         jQuery('.ps-disable-office365-setup').hide();
         jQuery('.ps-disable-one-click-setup').show();
+		jQuery('.ps-office365-client-id').attr('required', 'required');
+	    jQuery('.ps-office365-client-secret').attr('required', 'required');
     }
 
     jQuery.ajax({

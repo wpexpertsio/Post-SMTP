@@ -775,14 +775,13 @@ span.ps-pro-close-popup {
 }
 
 .ps-remove-office365-btn{
-  background-color: #d63638 !important;
-  border-color: #d63638 !important;
-  color: #fff !important;
-  font-size: 14px !important;
-  font-weight: 500;
-  padding: 5px 10px !important;
-  margin-top:20px !important;
-  display: inline-block !important;
+    background: none !important;
+    color: red !important;
+    font-size: 10px !important;
+    margin-left: 20px !important;
+    border: none !important;
+    margin-top: 30px !important;
+    text-decoration: underline !important;
 }
 
   
@@ -978,8 +977,11 @@ div#ps-pro-code-copy-notification {
 }
 
 .ps-disable-office365-setup b{
-  display: inline-block;
-  margin-top: 30px;
+    display: inline-block;
+    margin-left: 5px;
+    margin-top: 30px !important;
+    color: green;
 }
+
 
 /* Lets make wizard responsive */

@@ -1540,7 +1540,7 @@ public function render_gmail_settings() {
         $html .= '
         <h3>'.__( 'Authorization (Required)', 'post-smtp' ).'</h3>
         <p>'.__( 'Before continuing, you\'ll need to allow this plugin to send emails using your Office 365 account.', 'post-smtp' ).'</p>
-        <input type="hidden" '.$required.' data-error="Please authenticate by clicking Connect to Office 365" />
+        <input type="hidden" '.$client_id_required.' data-error="Please authenticate by clicking Connect to Office 365" />
         <a class="button button-primary ps-blue-btn" id="ps-wizard-connect-office365">Connect to Office 365</a>';
 	
 	$html .= '</div>';
@@ -1557,7 +1557,7 @@ public function render_gmail_settings() {
                 admin_url( 'admin-post.php' )
             ) );
             if ( isset( $postman_office365_auth_token['user_email'] ) ) {
-              $html .= '<b>' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_office365_auth_token['user_email'] ) ) . '</b>';
+              $html .= '<span class="icon-circle"><span class="icon-check"></span> </span> <b>' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_office365_auth_token['user_email'] ) ) . '</b>';
             }
             $html .= '<a href="' . $action_url . '" class="button button-secondary ps-remove-office365-btn">';
             $html .= esc_html__( 'Remove Authorization', 'post-smtp' );
