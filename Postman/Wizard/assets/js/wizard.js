@@ -274,8 +274,10 @@ jQuery( document ).ready(function() {
 
         var stepID = jQuery( this ).data( 'step' );
         var selectedSocket = jQuery( '.ps-wizard-socket-check:checked' ).val();
+        var selectedFromEmail = jQuery( '.ps-from-email' ).val();
         jQuery('.ps-wizard-step-1').attr('data-socket', selectedSocket);
-        
+        jQuery('.ps-wizard-step-2').attr('data-from-email', selectedFromEmail);
+
         if( validateStep( stepID ) === true ) {
 
             nextStep( stepID );
@@ -327,6 +329,7 @@ jQuery( document ).ready(function() {
         var security = jQuery( '#security' ).val();
         var socket = jQuery( '.ps-wizard-step-1' ).attr( 'data-socket' );
 		var apikey = jQuery( '.ps-wizard-step-1' ).attr( 'data-apikey' );
+        var fromEmail = jQuery( '.ps-wizard-step-2' ).attr( 'data-from-email' );
         var $btn = jQuery( this );
         $btn.prop( 'disabled', true );
         
@@ -369,7 +372,8 @@ jQuery( document ).ready(function() {
                                 email: sendTo,  
                                 security: security,
                                 socket: socket,
-                                apikey: apikey
+                                apikey: apikey,
+                                from: fromEmail
                             },
                             success: function( response ) {
 
@@ -475,6 +479,10 @@ jQuery( document ).ready(function() {
                                     //jQuery( '.ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after' ).css( { 'height': '417px' } );
                                     jQuery( '.ps-wizard-footer-left' ).find( '.ps-in-active-nav' ).find( '.ps-wizard-line' ).addClass( 'ps-email-tester-line' );
 
+                                } else if( response.data.message !== undefined && response.data.message === 'default_mailer'){
+                                    if ( jQuery( '#ps-dns-results__el_id' ).length ) {
+                                        jQuery( '#ps-dns-results__el_id' ).remove();
+                                    }
                                 }
                                 else {
                                     $btn.prop('disabled', false);
