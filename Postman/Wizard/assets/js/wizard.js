@@ -835,12 +835,26 @@ jQuery(document).on('click', '.ps-enable-office365-one-click', function (e) {
                         // One-click is enabled and access token exists - remove required validation
                         office365RequireField.removeAttr( 'required' );
                         office365RequireField.removeAttr( 'data-error' );
+                        office365RequireField.val( '1' );
                     } else if ( enabled && !hasAccessToken ) {
                         // One-click is enabled but no access token - keep required validation
                         office365RequireField.attr( 'required', 'required' );
                         office365RequireField.attr( 'data-error', 'Please authenticate by clicking Connect to Office 365 API' );
+                        office365RequireField.val( '' );
+                    } else if ( !enabled ) {
+                        // One-click is disabled (normal setup) - check if access token exists
+                        if ( hasAccessToken ) {
+                            // Access token exists, no authentication required
+                            office365RequireField.removeAttr( 'required' );
+                            office365RequireField.removeAttr( 'data-error' );
+                            office365RequireField.val( '1' );
+                        } else {
+                            // No access token, require authentication
+                            office365RequireField.attr( 'required', 'required' );
+                            office365RequireField.attr( 'data-error', 'Please authenticate by clicking Connect to Office 365' );
+                            office365RequireField.val( '' );
+                        }
                     }
-                    // If one-click is disabled, the manual setup validation will handle requirements
                 }
             } else {
                 console.log('Failed to update option.');
@@ -864,8 +878,22 @@ jQuery(document).ready(function ($) {
             .toggle(!isChecked);
     };
 
+    // Initialize Office 365 validation based on current state
+    const initOffice365Validation = () => {
+        const office365OneClickEnabled = $('.ps-enable-office365-one-click').is(':checked');
+        const office365RequireField = jQuery('.office_365-require');
+        
+        // Don't override the PHP-set validation state on page load
+        // The PHP already sets the correct 'required' attribute based on access token existence
+        // Only set validation if one-click is currently enabled but we need to handle dynamic changes
+        
+        // If one-click is enabled, we might need to check access token status via AJAX
+        // For normal setup, trust the PHP-set validation state
+    };
+
     // Initialize visibility on page load
     toggleFields();
+    initOffice365Validation();
 
     // Listen for changes on the checkbox
     jQuery('.ps-enable-gmail-one-click').on('change', toggleFields);

@@ -1429,8 +1429,6 @@ public function render_gmail_settings() {
         $office365_oauth = get_option( 'postman_office365_oauth' );
         $has_access_token = $office365_oauth && isset( $office365_oauth['access_token'] ) && ! empty( $office365_oauth['access_token'] );
         
-        $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) || $has_access_token ? '' : 'required';
-     
         // Retrieve options for premium features and extensions
         $post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
         $postman_office365_auth_token = get_option( 'postman_office365_oauth' );
@@ -1461,7 +1459,15 @@ public function render_gmail_settings() {
         ];
         $json_data = htmlspecialchars( json_encode( $data ), ENT_QUOTES, 'UTF-8' );
 
-        
+ 	    // Set required based on context:
+        // - For one-click: only skip if access token exists or success param is set
+        // - For normal setup: skip if access token exists or success param is set
+        if ( $office365_oneclick_enabled ) {
+            $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) || $has_access_token ? '' : 'required';
+        } else {
+            $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) && $client_id_required ? '' : 'required';
+        }
+
         $html .= __( 'The configuration steps are more technical than other options, so our detailed guide will walk you through the whole process.', 'post-smtp' );
         $html .= '<hr />';
 
@@ -1545,7 +1551,7 @@ public function render_gmail_settings() {
         $html .= '
         <h3>'.__( 'Authorization (Required)', 'post-smtp' ).'</h3>
         <p>'.__( 'Before continuing, you\'ll need to allow this plugin to send emails using your Office 365 account.', 'post-smtp' ).'</p>
-        <input class="office_365-require type="hidden" '.$client_id_required.' data-error="Please authenticate by clicking Connect to Office 365" />
+          <input class="office_365-require" type="hidden" '.$required.'  data-error="Please authenticate by clicking Connect to Office 365" />
         <a class="button button-primary ps-blue-btn" id="ps-wizard-connect-office365">Connect to Office 365</a>';
 	
 	$html .= '</div>';
@@ -1570,7 +1576,7 @@ public function render_gmail_settings() {
         }else {
             $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
             $html .= '<p>' . esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Office 365 API.', 'post-smtp' ) . '</p>';
-            $html .= '<input class="office_365-require" type="hidden" ' . esc_attr( $required ) . ' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Office 365 API', 'post-smtp' ) . '" />';
+            $html .= '<input class="office_365-require" type="hidden" ' . esc_attr( $required ) . ' value="' . ( $has_access_token ? '1' : '' ) . '" data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Office 365 API', 'post-smtp' ) . '" />';
             $html .= '<a href="' . esc_url( $office365_auth_url ) . '" class="button button-primary ps-office365-btn">';
             $html .= esc_html__( 'Sign in with Microsoft', 'post-smtp' );
             $html .= '</a>';
