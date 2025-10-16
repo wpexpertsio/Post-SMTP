@@ -819,12 +819,29 @@ jQuery(document).on('click', '.ps-enable-office365-one-click', function (e) {
         async: true,
         data: {
             action: 'update_post_smtp_pro_option_office365',
-            enabled: enabled ? 'gmail-oneclick' : '',
+            enabled: enabled ? 'microsoft-one-click' : '',
             _wpnonce: (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.pro_option_nonce) ? PostSMTPWizard.pro_option_nonce : ''
         },
         success: function(response) {
             if (response.success) {
                 console.log('Option updated successfully!');
+                
+                // Handle office_365-require field based on access token availability
+                if ( response.data && typeof response.data.has_access_token !== 'undefined' ) {
+                    var hasAccessToken = response.data.has_access_token;
+                    var office365RequireField = jQuery('.office_365-require');
+                    
+                    if ( enabled && hasAccessToken ) {
+                        // One-click is enabled and access token exists - remove required validation
+                        office365RequireField.removeAttr( 'required' );
+                        office365RequireField.removeAttr( 'data-error' );
+                    } else if ( enabled && !hasAccessToken ) {
+                        // One-click is enabled but no access token - keep required validation
+                        office365RequireField.attr( 'required', 'required' );
+                        office365RequireField.attr( 'data-error', 'Please authenticate by clicking Connect to Office 365 API' );
+                    }
+                    // If one-click is disabled, the manual setup validation will handle requirements
+                }
             } else {
                 console.log('Failed to update option.');
             }
