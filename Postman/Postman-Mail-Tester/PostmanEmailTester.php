@@ -195,7 +195,8 @@ class Postman_Email_Tester {
             'smtp2go_api',
             'sendpulse_api',
             'gmail_api',
-            'office365_api'
+            'office365_api',
+            'smtp'
         );
 
         return in_array( $provider, $providers_requiring_test_api, true );
