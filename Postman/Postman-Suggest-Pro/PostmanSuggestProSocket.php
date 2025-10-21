@@ -272,6 +272,11 @@ class PostmanSuggestProSocket {
                 'title'       => __( 'One-Click Setup', 'post-smtp-pro' ),
                 'description' => __( 'Quick and easy way to configure the Google workspace / Gmail mailer in Post SMTP.', 'post-smtp-pro' ),
             ),
+            array(
+                'logo'        => $images_url . 'logos/office365.png',
+                'title'       => __( 'One-Click Setup', 'post-smtp-pro' ),
+                'description' => __( 'Quick and easy way to configure the Office 365 mailer in Post SMTP.', 'post-smtp-pro' ),
+            ),
 	    );
         
         $bonus = array(

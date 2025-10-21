@@ -833,9 +833,10 @@ jQuery(document).on('click', '.ps-enable-office365-one-click', function (e) {
                     
                     if ( enabled && hasAccessToken ) {
                         // One-click is enabled and access token exists - remove required validation
-                        office365RequireField.removeAttr( 'required' );
-                        office365RequireField.removeAttr( 'data-error' );
-                        office365RequireField.val( '1' );
+                        office365RequireField.attr( 'required', 'required' );
+                        office365RequireField.attr( 'data-error', 'Please authenticate by clicking Connect to Office 365 API' );
+                        office365RequireField.val( '' );
+
                     } else if ( enabled && !hasAccessToken ) {
                         // One-click is enabled but no access token - keep required validation
                         office365RequireField.attr( 'required', 'required' );
