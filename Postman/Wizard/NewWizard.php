@@ -867,7 +867,7 @@ public function render_gmail_settings() {
     $html .= '
     <h3>' . __( 'Authorization (Required)', 'post-smtp' ) . '</h3>
     <p>' . __( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ) . '</p>
-<input type="hidden"  class="ps-gmail-warning" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) ) . '" />
+    <input type="hidden"  class="ps-gmail-warning" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) ) . '" />
     <a href="' . esc_url( admin_url( 'admin-post.php?action=postman/requestOauthGrant' ) ) . '" class="button button-primary ps-blue-btn" id="ps-wizard-connect-gmail">' . __( 'Connect to Gmail API', 'post-smtp' ) . '</a>';
 
     // Remove OAuth action button
@@ -1445,8 +1445,8 @@ public function render_gmail_settings() {
 		$client_secret_required = $office365_oneclick_enabled ? '' : 'required';
 		$client_id_required = $office365_oneclick_enabled ? '' : 'required';
         $one_click_class = 'ps-enable-office365-one-click';
-        $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/google.png';
-        $transport_name = __( 'One-Click Setup', 'post-smtp' );
+        $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.png';
+        $transport_name = __( '<strong>1-Click</strong> Microsoft 365 Mailer Setup?', 'post-smtp' );
         $product_url = postman_is_bfcm() ? 
             'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 
             'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_microsoft&utm_campaign=plugin';
@@ -1486,16 +1486,52 @@ public function render_gmail_settings() {
 
         $html .= __( 'Enable the option for a quick and easy way to connect with Google without the need of manually creating an app.', 'post-smtp' );
 
+        // Check if user has business plan for Office 365 one-click
+        $is_business_plan = false;
+        if ( function_exists( 'pspro_fs' ) && pspro_fs()->is_plan( 'business' ) ) {
+            $is_business_plan = true;
+        }
+
+        // Check Post SMTP Pro version if user has business plan
+        $show_version_warning = false;
+        $required_pro_version = '1.7.0';
+        if ( $is_business_plan && defined( 'POST_SMTP_PRO_VERSION' ) ) {
+            $current_pro_version = POST_SMTP_PRO_VERSION;
+            if ( version_compare( $current_pro_version, $required_pro_version, '<' ) ) {
+                $show_version_warning = true;
+            }
+        }
+
         // One-click switch control
         $html .= "<div>
             <div class='ps-form-switch-control'>
-                <label class='ps-switch-1'>
-                    <input type='hidden' id='ps-one-click-data' value='" . esc_attr( $json_data ) . "'>
-                    <input type='checkbox' class='$one_click_class' " . ( $office365_oneclick_enabled ? 'checked' : '' ) . ">
+                <label class='ps-switch-1" . ( (!$is_business_plan && post_smtp_has_pro()) || $show_version_warning ? ' ps-office365-upgrade-required' : '' ) . "'>
+                    <input type='hidden' id='ps-one-click-data-office365' value='" . esc_attr( $json_data ) . "'>
+                    <input type='checkbox' class='$one_click_class' " . ( $office365_oneclick_enabled && $is_business_plan && !$show_version_warning ? 'checked' : '' ) . ( (!$is_business_plan && post_smtp_has_pro()) || $show_version_warning ? ' disabled' : '' ) . ">
                     <span class='slider round'></span>
                 </label> 
             </div>
         </div>";
+
+        // Show business plan upgrade notice if needed
+        if ( post_smtp_has_pro() && !$is_business_plan ) {
+            $html .= '<div class="ps-business-plan-notice" style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin: 10px 0; border-radius: 4px;">';
+            $html .= '<p style="margin: 0; color: #856404;"><strong>' . __( 'Business Plan Required', 'post-smtp' ) . '</strong><br>';
+            $html .= __( ' Office 365 One-Click Setup is available only with Business plan. Click on the toggle to upgrade.', 'post-smtp' ) . '</p>';
+            $html .= '</div>';
+        }
+
+        // Show version warning if user has business plan but outdated Post SMTP Pro version
+        if ( $show_version_warning ) {
+            $html .= '<div class="ps-version-warning-notice" style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; margin: 10px 0; border-radius: 4px;">';
+            $html .= '<p style="margin: 0; color: #721c24;"><strong>' . __( 'Post SMTP Pro Update Required', 'post-smtp' ) . '</strong><br>';
+            $html .= sprintf( 
+                __( 'Office 365 One-Click Setup requires Post SMTP Pro version %1$s or higher. Current version: %2$s. Please update your plugin to use this feature.', 'post-smtp' ), 
+                $required_pro_version, 
+                defined( 'POST_SMTP_PRO_VERSION' ) ? POST_SMTP_PRO_VERSION : __( 'Unknown', 'post-smtp' )
+            ) . '</p>';
+            $html .= '</div>';
+        }
  	  
 		$html .= '<div class="ps-disable-one-click-setup ' . ( $office365_oneclick_enabled ? 'ps-hidden' : '' ) . '">';
 		
@@ -1848,6 +1884,27 @@ public function render_gmail_settings() {
         }
 
         $enabled_value = sanitize_text_field( $_POST['enabled'] );
+
+        // Check version requirement for Office 365 one-click
+        if ( ! empty( $enabled_value ) ) {
+            $required_pro_version = '1.7.0';
+            if ( defined( 'POST_SMTP_PRO_VERSION' ) ) {
+                $current_pro_version = POST_SMTP_PRO_VERSION;
+                if ( version_compare( $current_pro_version, $required_pro_version, '<' ) ) {
+                    wp_send_json_error( array( 
+                        'message' => sprintf( 
+                            __( 'Post SMTP Pro version %1$s or higher is required for Office 365 One-Click Setup. Current version: %2$s', 'post-smtp' ), 
+                            $required_pro_version, 
+                            $current_pro_version 
+                        )
+                    ) );
+                    return;
+                }
+            } else {
+                wp_send_json_error( array( 'message' => 'Post SMTP Pro version could not be determined.' ) );
+                return;
+            }
+        }
 
         // Remove existing Office 365 related extensions
         $options['extensions'] = array_diff( $options['extensions'], ['microsoft-365', 'microsoft-one-click'] );

@@ -799,6 +799,12 @@ jQuery( document ).ready(function() {
 
 
 jQuery(document).on('click', '.ps-enable-office365-one-click', function (e) {
+    
+    // Check if this is a disabled checkbox due to business plan requirement
+    if (jQuery(this).is(':disabled') || jQuery(this).closest('.ps-office365-upgrade-required').length > 0) {
+        e.preventDefault();
+        return false;
+    }
     	   
     var enabled = jQuery(this).is(':checked');
     if (enabled) {
@@ -863,6 +869,43 @@ jQuery(document).on('click', '.ps-enable-office365-one-click', function (e) {
         }
     });
 
+});
+
+// Handle Office 365 upgrade required click
+jQuery(document).on('click', '.ps-office365-upgrade-required', function (e) {
+    e.preventDefault();
+    
+    // Check if this is a version warning or business plan requirement
+    if (jQuery('.ps-version-warning-notice').length > 0) {
+        // Show version update message in wizard error area instead of popup
+        jQuery('.ps-wizard-error').html('<span class="dashicons dashicons-warning"></span> <strong>Post SMTP Pro Update Required!</strong><br> Office 365 One-Click Setup requires the latest version of Post SMTP Pro (v1.7.0 or higher).<br>Please update your Post SMTP Pro plugin to use this feature.');
+        
+        // Scroll to error message
+        jQuery('html, body').animate({
+            scrollTop: jQuery('.ps-wizard-error').offset().top - 100
+        }, 500);
+        
+        return false;
+    }
+    
+    // Get data for the popup (business plan upgrade case)
+    var data = jQuery('#ps-one-click-data-office365').val();
+    var parsedData = JSON.parse(data);
+    
+    // Set popup content for Office 365
+    var office365Img = parsedData.url;
+    // Convert to popup image (replace .png with -popup.png)
+    office365Img = office365Img.replace('.png', '-popup.png');
+    
+    var upgradeUrl = parsedData.product_url;
+    var serviceName = parsedData.transport_name;
+    
+    jQuery('.ps-pro-for-img').attr('src', office365Img);
+    jQuery('.ps-pro-product-url').attr('href', upgradeUrl);
+    jQuery('.ps-pro-for').html(serviceName);
+    jQuery('.ps-pro-popup-overlay').fadeIn();
+    
+    return false;
 });
 
 

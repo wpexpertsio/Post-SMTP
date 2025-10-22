@@ -280,8 +280,9 @@ class PostmanSuggestProSocket {
 	    );
         
         $bonus = array(
-           
-            'email-logs-attachment'      => array(
+
+            'email-logs-attachment' =>
+            array(
                 'logo'          => $images_url . 'logos/email-delivery-log.png',
                 'title'         => __( 'Email Log Attachment', 'post-smtp-pro' ),
                 'description'   => __( 'View and resend any email attachment right from you email log screen to streamline email communication.', 'post-smtp-pro' )

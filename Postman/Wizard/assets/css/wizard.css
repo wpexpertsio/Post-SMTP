@@ -983,5 +983,15 @@ div#ps-pro-code-copy-notification {
     color: green;
 }
 
+/* Office 365 Business Plan Upgrade Styles */
+.ps-office365-upgrade-required {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.ps-office365-upgrade-required input[type="checkbox"] {
+    pointer-events: none;
+}
+
 
 /* Lets make wizard responsive */
