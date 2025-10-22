@@ -79,17 +79,17 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 			return $inst;
 		}
 
-		public function write_success_log($log, $message, $transcript, $transport) {
+		public function write_success_log( $log, $message, $transcript, $transport = null ) {
 		    $options = PostmanOptions::getInstance();
             if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION || $options->getRunMode() == PostmanOptions::RUN_MODE_LOG_ONLY ) {
                 $this->writeSuccessLog( $log, $message, $transcript, $transport );
             }
         }
 
-        public function write_failed_log($log, $message, $transcript, $transport, $statusMessage) {
+        public function write_failed_log( $log, $message, $transcript, $transport = null, $statusMessage ) {
             $options = PostmanOptions::getInstance();
             if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION || $options->getRunMode() == PostmanOptions::RUN_MODE_LOG_ONLY ) {
-				$this->writeFailureLog( $log, $transcript, $transport, $statusMessage, $message );
+				$this->writeFailureLog( $log, $transcript, $statusMessage, $transport, $message );
             }
         }
 
@@ -98,9 +98,9 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 *
 		 * @param PostmanMessage         $message
 		 * @param mixed                $transcript
-		 * @param PostmanModuleTransport $transport
+		 * @param PostmanModuleTransport|null $transport
 		 */
-		public function writeSuccessLog( PostmanEmailLog $log, PostmanMessage $message, $transcript, PostmanModuleTransport $transport ) {
+		public function writeSuccessLog( PostmanEmailLog $log, PostmanMessage $message, $transcript, ?PostmanModuleTransport $transport = null ) {
 			if ( PostmanOptions::getInstance()->isMailLoggingEnabled() ) {
 				$statusMessage = '';
 				$status = true;
@@ -109,7 +109,13 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 					$statusMessage = sprintf( '%s: %s', __( 'Warning', 'post-smtp' ), __( 'An empty subject line can result in delivery failure.', 'post-smtp' ) );
 					$status = 'WARN';
 				}
-				   $this->createLog( $log, $transcript, $statusMessage, $status, $transport, $message );
+				
+				$logger = $this->logger;
+				if ( is_null( $transport ) ) {
+					$logger->warn( 'writeSuccessLog called with null transport' );
+				}
+				
+				$this->createLog( $log, $transcript, $statusMessage, $status, $transport, $message );
 				$this->writeToEmailLog( $log );
 			}
 		}
@@ -119,15 +125,20 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 *
 		 * @param PostmanMessage         $message
 		 * @param mixed                $transcript
-		 * @param PostmanModuleTransport $transport
 		 * @param mixed                $statusMessage
 		 * @param mixed                $originalTo
 		 * @param mixed                $originalSubject
 		 * @param mixed                $originalMessage
+		 * @param PostmanModuleTransport|null $transport
 		 * @param mixed                $originalHeaders
 		 */
-	public function writeFailureLog( PostmanEmailLog $log, $transcript, PostmanModuleTransport $transport, $statusMessage, ?PostmanMessage $message = null ) {
+	public function writeFailureLog( PostmanEmailLog $log, $transcript, $statusMessage, ?PostmanModuleTransport $transport = null, ?PostmanMessage $message = null ) {
 			if ( PostmanOptions::getInstance()->isMailLoggingEnabled() ) {
+				
+				if ( is_null( $transport ) ) {
+					$this->logger->warn( 'writeFailureLog called with null transport' );
+				}
+
 				$this->createLog( $log, $transcript, $statusMessage, false, $transport, $message );
 				$this->writeToEmailLog( $log,$message );
 			}
@@ -320,27 +331,32 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 * @param mixed                $transcript
 		 * @param mixed                $statusMessage
 		 * @param mixed                $success
-		 * @param PostmanModuleTransport $transport
+		 * @param PostmanModuleTransport|null $transport
 		 * @return PostmanEmailLog
 		 */
-		private function createLog( PostmanEmailLog $log, $transcript, $statusMessage, $success, PostmanModuleTransport $transport, ?PostmanMessage $message = null ) {
-				if ( $message ) {
-					$log->sender = $message->getFromAddress()->format();
-					$log->toRecipients = $this->flattenEmails( $message->getToRecipients() );
-					$log->ccRecipients = $this->flattenEmails( $message->getCcRecipients() );
-					$log->bccRecipients = $this->flattenEmails( $message->getBccRecipients() );
-					$log->subject = $message->getSubject();
-					$log->body = $message->getBody();
-					if ( null !== $message->getReplyTo() ) {
+		private function createLog( PostmanEmailLog $log, $transcript, $statusMessage, $success, ?PostmanModuleTransport $transport, ?PostmanMessage $message = null ) {
+			if ( $message ) {
+				$log->sender = $message->getFromAddress()->format();
+				$log->toRecipients = $this->flattenEmails( $message->getToRecipients() );
+				$log->ccRecipients = $this->flattenEmails( $message->getCcRecipients() );
+				$log->bccRecipients = $this->flattenEmails( $message->getBccRecipients() );
+				$log->subject = $message->getSubject();
+				$log->body = $message->getBody();
+				if ( null !== $message->getReplyTo() ) {
 						$log->replyTo = $message->getReplyTo()->format();
-					}
 				}
-				$log->success = $success;
-				$log->statusMessage = $statusMessage;
+			}
+			$log->success = $success;
+			$log->statusMessage = $statusMessage;
+			if ( $transport ) {
 				$log->transportUri = PostmanTransportRegistry::getInstance()->getPublicTransportUri( $transport );
 				$log->sessionTranscript = $log->transportUri . "\n\n" . $transcript;
-				return $log;
+			} else {
+				$log->transportUri = '';
+				$log->sessionTranscript = $transcript;
 			}
+			return $log;
+		}
 
 		/**
 		 * Creates a readable "TO" entry based on the recipient header
