@@ -12,10 +12,19 @@ class PostmanMailerooMailEngine implements PostmanMailEngine {
     protected $logger;
     private $transcript;
     private $api_key;
+    private $is_fallback = false;
 
-    public function __construct( $api_key ) {
-        assert( !empty( $api_key ) );
-        $this->api_key = $api_key;
+    /**
+     * @param string|array $credentials Either raw API key string or an array ['api_key'=>..., 'is_fallback'=>1]
+     */
+    public function __construct( $credentials ) {
+        if ( is_array( $credentials ) ) {
+            $this->api_key     = isset( $credentials['api_key'] ) ? $credentials['api_key'] : '';
+            $this->is_fallback = ! empty( $credentials['is_fallback'] );
+        } else {
+            $this->api_key = $credentials;
+        }
+        assert( ! empty( $this->api_key ) );
         $this->logger = new PostmanLogger( get_class( $this ) );
     }
 
@@ -88,7 +97,7 @@ class PostmanMailerooMailEngine implements PostmanMailEngine {
         }
 
         try {
-            $this->logger->debug( 'Sending mail via Maileroo' );
+            $this->logger->debug( 'Sending mail via Maileroo' . ( $this->is_fallback ? ' [fallback]' : '' ) );
             $response = $maileroo->send( $content );
             $responseCode = wp_remote_retrieve_response_code( $response );
             $responseBody = wp_remote_retrieve_body( $response );

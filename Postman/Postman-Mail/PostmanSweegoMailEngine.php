@@ -15,10 +15,19 @@ if ( ! class_exists( 'PostmanSweegoMailEngine' ) ) {
 		protected $logger;
 		private   $transcript;
 		private   $apiKey;
+		private   $is_fallback = false;
 
-		public function __construct( $apiKey ) {
-			assert( ! empty( $apiKey ) );
-			$this->apiKey  = $apiKey;
+		/**
+		 * @param string|array $credentials Either raw API key string or an array ['api_key'=>..., 'is_fallback'=>1]
+		 */
+		public function __construct( $credentials ) {
+			if ( is_array( $credentials ) ) {
+				$this->apiKey     = isset( $credentials['api_key'] ) ? $credentials['api_key'] : '';
+				$this->is_fallback = ! empty( $credentials['is_fallback'] );
+			} else {
+				$this->apiKey = $credentials;
+			}
+			assert( ! empty( $this->apiKey ) );
 			$this->logger  = new PostmanLogger( get_class( $this ) );
 		}
 
@@ -76,7 +85,7 @@ if ( ! class_exists( 'PostmanSweegoMailEngine' ) ) {
 
 			// Send.
 			try {
-				$this->logger->debug( 'Sending mail via Sweego' );
+				$this->logger->debug( 'Sending mail via Sweego' . ( $this->is_fallback ? ' [fallback]' : '' ) );
 				// $response = $sweego->send( $content ); // Uncomment and implement handler
 				$responseCode = 200; // Replace with actual response code
 				$responseBody = '{}'; // Replace with actual response body

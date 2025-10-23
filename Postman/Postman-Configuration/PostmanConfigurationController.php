@@ -925,11 +925,39 @@ class PostmanConfigurationController {
 			'office365_api'    => array(
 				'provider' => 'office365_api',
 			),
-			'mailersend_api' => array(
+			'emailit_api' => array(
+				'provider'    => 'emailit_api',
+				'title'       => __( 'Authentication', 'post-smtp' ),
+				'description' => __( 'Create an account at <a href="https://www.emailit.com/" target="_blank">emailit.com</a> and enter your API key below.', 'post-smtp' ),
+				'emailit_api_key',
+				'sender_name',
+				'sender_email',
+			),'mailersend_api' => array(
 				'provider'    => 'mailersend_api',
 				'title'       => __( 'Authentication', 'post-smtp' ),
 				'description' => __( 'Create an account at <a href="https://www.mailersend.com/" target="_blank">mailersend.com</a> and enter your API key below.', 'post-smtp' ),
 				'mailersend_api_key',
+				'sender_name',
+				'sender_email',
+			),'resend_api' => array(
+				'provider'    => 'resend_api',
+				'title'       => __( 'Authentication', 'post-smtp' ),
+				'description' => __( 'Create an account at <a href="https://www.resend.com/" target="_blank">resend.com</a> and enter your API key below.', 'post-smtp' ),
+				'resend_api_key',
+				'sender_name',
+				'sender_email',
+			),'maileroo_api' => array(
+				'provider'    => 'maileroo_api',
+				'title'       => __( 'Authentication', 'post-smtp' ),
+				'description' => __( 'Create an account at <a href="https://www.maileroo.com/" target="_blank">maileroo.com</a> and enter your API key below.', 'post-smtp' ),
+				'maileroo_api_key',
+				'sender_name',
+				'sender_email',
+			),'sweego_api' => array(
+				'provider'    => 'sweego_api',
+				'title'       => __( 'Authentication', 'post-smtp' ),
+				'description' => __( 'Create an account at <a href="https://www.sweego.com/" target="_blank">sweego.com</a> and enter your API key below.', 'post-smtp' ),
+				'sweego_api_key',
 				'sender_name',
 				'sender_email',
 			),

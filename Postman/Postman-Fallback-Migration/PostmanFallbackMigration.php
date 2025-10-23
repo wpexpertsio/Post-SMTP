@@ -291,6 +291,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'mailjet_api_key',
 				'mailjet_secret_key',
 				'emailit_api_key',
+				'maileroo_api_key',
+				'sweego_api_key',
 				'resend_api_key',
 			);
 			
@@ -408,6 +410,9 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'mailersend_api'   => array( 'mailersend_api_key'),
 				'emailit_api'      => array( 'emailit_api_key'),
 				'resend_api'       => array( 'resend_api_key'),	
+				/* Added Maileroo and Sweego (custom providers) */
+				'maileroo_api'     => array( 'maileroo_api_key' ),
+				'sweego_api'       => array( 'sweego_api_key' ),
 			);
 
 			// Initialize the API keys array.
@@ -481,6 +486,9 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'mailjet_secret_key',
 				'emailit_api_key',
 				'resend_api_key',
+				// Maileroo and Sweego
+				'maileroo_api_key',
+				'sweego_api_key',
 			);
 
 			// Decrypt only the sensitive keys before storing in the transient.
@@ -510,6 +518,9 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'mailgun_domain_name', 'elasticemail_api_key', 'smtp2go_api_key',
 				'oauth_client_id', 'oauth_client_secret','emailit_api_key',
 				'resend_api_key',
+				// Maileroo and Sweego keys
+				'maileroo_api_key',
+				'sweego_api_key',
 			);
 
 			// Loop through the defined email keys.
@@ -558,6 +569,9 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'mailjet_secret_key',
 				'emailit_api_key',
 				'resend_api_key',
+				// Maileroo and Sweego
+				'maileroo_api_key',
+				'sweego_api_key',
 			);
 
 			$deleted_email_settings = $this->get_expiring_option( 'deleted_email_settings' );

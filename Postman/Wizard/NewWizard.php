@@ -722,6 +722,7 @@ class Post_SMTP_New_Wizard {
             break;
             case 'maileroo_api':
                 echo wp_kses( $this->render_maileroo_settings(), $this->allowed_tags );
+            break;
             case 'sweego_api':
                 echo wp_kses( $this->render_sweego_settings(), $this->allowed_tags );
             break;
@@ -1118,18 +1119,26 @@ class Post_SMTP_New_Wizard {
      * Render Emailit Settings
      */
     public function render_sweego_settings() {
-        $api_key = null !== $this->options->getSweegoApiKey() ? esc_attr ( $this->options->getSweegoApiKey() ) : '';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['sweego_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['sweego_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getSweegoApiKey() ?? '' );
+
         $html = sprintf(
-            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p>',
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
             esc_url( 'https://sweego.com/' ),
             __( 'Sweego', 'post-smtp' ),
-            __( 'is a transactional email provider. Enter your API Key and Endpoint below.', 'post-smtp' )
+            __( 'is a transactional email provider. Enter your API Key and Endpoint below.', 'post-smtp' ),
+            __( 'Let\'s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sweego-with-post-smtp/' ),
+            __( 'Sweego Documentation', 'post-smtp' )
         );
-        $html .= '
-        <div class="ps-form-control">
-            <div><label>API Key</label></div>
-            <input type="text" class="ps-sweego-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SWEEGO_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
-        </div>';
+
+        $html .= '<div class="ps-form-control"><div><label>API Key</label></div>       <input type="text" class="ps-sweego-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SWEEGO_API_KEY ) .']" value="' . $api_key . '" placeholder="API Key"></div>';
+
         return $html;
     }
 
@@ -1137,18 +1146,26 @@ class Post_SMTP_New_Wizard {
      * Render Maileroo Settings
      */
     public function render_maileroo_settings() {
-        $api_key = null !== $this->options->getMailerooApiKey() ? esc_attr ( $this->options->getMailerooApiKey() ) : '';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['maileroo_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['maileroo_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getMailerooApiKey() ?? '' );
+
         $html = sprintf(
-            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p>',
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
             esc_url( 'https://maileroo.com/' ),
             __( 'Maileroo', 'post-smtp' ),
-            __( 'is a transactional email provider. Enter your API Key and Endpoint below.', 'post-smtp' )
+            __( 'is a transactional email provider. Enter your API Key and Endpoint below.', 'post-smtp' ),
+            __( 'Let\'s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-maileroo-with-post-smtp/' ),
+            __( 'Maileroo Documentation', 'post-smtp' )
         );
-        $html .= '
-        <div class="ps-form-control">
-            <div><label>API Key</label></div>
-            <input type="text" class="ps-maileroo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILEROO_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
-        </div>';
+
+        $html .= '<div class="ps-form-control"><div><label>API Key</label></div>       <input type="text" class="ps-maileroo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILEROO_API_KEY ) .']" value="' . $api_key . '" placeholder="API Key"></div>';
+
         return $html;
     }
 
