@@ -38,6 +38,9 @@ class PostmanMandrill extends PostmanServiceRequest {
         $this->api_key = $api_key;
 
         parent::__construct( $this->base_url );
+        
+        // Set 30-second timeout for Mandrill requests
+		$this->set_additional_args( array( 'timeout' => 30 ) );
 
     }
 

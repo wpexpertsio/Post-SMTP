@@ -54,6 +54,8 @@ class PostmanMailGun extends PostmanServiceRequest {
         
         $this->api_key = $api_key;
         parent::__construct( $base_url );
+        // Set 30-second timeout for Mailgun requests
+		$this->set_additional_args( array( 'timeout' => 30 ) );
 
     }
 
