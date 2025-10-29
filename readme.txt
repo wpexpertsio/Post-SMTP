@@ -293,6 +293,12 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
+= 3.6.1 – Oct 29, 2025 =
+* IMPROVEMENT: Removed GIF from the plugin to enhance performance and reduce load time.
+* IMPROVEMENT: Increased the request timeout for email sending to improve reliability and prevent timeouts.
+* FIX: Resolved a missing authorization vulnerability.
+* FIX: Addressed a WordPress error triggered when accessing the plugin settings page due to conflict with another theme/ plugin.
+
 = 3.6.0 – Oct 14, 2025 =
 * NEW – Added [Maileroo](https://postmansmtp.com/docs/mailers/how-to-setup-maileroo-with-post-smtp/) as an email service provider.
 * TWEAK – Enhanced Setup Wizard content for better user guidance.
