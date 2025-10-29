@@ -303,6 +303,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 * NEW – Added [Maileroo](https://postmansmtp.com/docs/mailers/how-to-setup-maileroo-with-post-smtp/) as an email service provider.
 * TWEAK – Enhanced Setup Wizard content for better user guidance.
 * TWEAK – Added a “Notify” button on the WordPress dashboard.
+* IMPROVEMENT – Updated multiple recipient view in email logs for better clarity.
 * FIX – Resolved undefined property issue in Post SMTP report after update.
 * FIX – Fixed “Limit Exceeded” error during Email DNS test.
 * FIX – Corrected failed message entries in logs.
@@ -311,8 +312,6 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 * FIX – Addressed PHPMailer BCC and CC handling issues.
 * FIX – Fixed host impersonation domain name issue.
 * FIX – Removed unnecessary console logs from the admin dashboard.
-
-IMPROVEMENT – Updated multiple recipient view in email logs for better clarity.
 
 = 3.5.0 - Sept 17, 2025 =
 * NEW - Added [Emailit](https://postmansmtp.com/smtp-integrations/Emailit/) email service providers.
