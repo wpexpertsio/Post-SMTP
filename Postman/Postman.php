@@ -260,6 +260,9 @@ class Postman {
 		// register the check for configuration errors on the wp_loaded hook,
 		// because we want it to run after the OAuth Grant Code check on the init hook
 		$this->check_for_configuration_errors();
+
+		// Also check for wp_mail conflicts even if Postman didn't try to bind
+		$this->check_for_wpmail_conflicts();
 	}
 
 	/**
@@ -353,7 +356,8 @@ class Postman {
 				// I've adopted their error message as well, for shits and giggles .... :D
 				$reflFunc = new ReflectionFunction( 'wp_mail' );
 
-				$message = __( 'Postman: wp_mail has been declared by another plugin or theme, so you won\'t be able to use Postman until the conflict is resolved.', 'post-smtp' );
+				$message = __( 'Post SMTP Notice:', 'post-smtp' );
+				$main_line = __( 'wp_mail() is being overridden by another plugin', 'post-smtp' );
 
 				$plugin_full_path = $reflFunc->getFileName();
 
@@ -361,55 +365,24 @@ class Postman {
 
 					require_once ABSPATH . '/wp-admin/includes/plugin.php';
 
-					preg_match( '/([a-z]+\/[a-z]+\.php)$/', $plugin_full_path, $output_array );
-
-					$plugin_file = $output_array[1];
+					// Use core helper to get plugin file (handles dashes, underscores, numbers, etc.)
+					$plugin_file = plugin_basename( $plugin_full_path );
 					$plugin_data = get_plugin_data( $plugin_full_path );
 
 					$deactivate_url = '<a href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( $plugin_file ) . '&amp;plugin_status=active&amp;paged=1&amp;s=deactivate-plugin_' . $plugin_file ) . '" aria-label="' . esc_attr( sprintf( _x( 'Deactivate %s', 'plugin' ), $plugin_data['Name'] ) ) . '">' . __( 'Deactivate' ) . '</a><br>';
-					$message .= '<br><strong>Plugin Name:</strong> ' . $plugin_data['Name'];
+					$main_line .= ' (' . esc_html( $plugin_data['Name'] ) . ')';
+					$message .= '<br>' . esc_html( $main_line ) . ' ' . __( 'Please deactivate it to use Post SMTP.', 'post-smtp' );
 					$message .= '<br>' . $deactivate_url;
 				}
 
-				$message .= '<br><strong>More info that may help</strong> - ' . $reflFunc->getFileName() . ':' . $reflFunc->getStartLine();
+				// Keep warning concise: no extra details beyond plugin name and deactivate link
 
-				// PHPmailer Recommandation
-				ob_start();
-				Postman::getMailerTypeRecommend();
-				$message .= ob_get_clean();
-
-				$this->messageHandler->addError( $message );
-			}
-		} else {
-			$transport = PostmanTransportRegistry::getInstance()->getCurrentTransport();
-			$scribe = $transport->getScribe();
-
-			$virgin = $options->isNew();
-			if ( ! $transport->isConfiguredAndReady() ) {
-				// if the configuration is broken, and the user has started to configure the plugin
-				// show this error message
-				$messages = $transport->getConfigurationMessages();
-				foreach ( $messages as $message ) {
-					if ( $message ) {
-						// log the warning message
-						$this->logger->warn( sprintf( '%s Transport has a configuration problem: %s', $transport->getName(), $message ) );
-
-						if ( PostmanUtils::isAdmin() && PostmanUtils::isCurrentPagePostmanAdmin() ) {
-							// on pages that are Postman admin pages only, show this error message
-							$this->messageHandler->addError( $message );
-						}
-					}
-				}
-			}
-
-			// on pages that are NOT Postman admin pages only, show this error message
-			if ( PostmanUtils::isAdmin() && ! PostmanUtils::isCurrentPagePostmanAdmin() && ! $transport->isConfiguredAndReady() ) {
-				// on pages that are *NOT* Postman admin pages only....
-				// if the configuration is broken show this error message
-				add_action( 'admin_notices', array(
+				if ( ! has_action( 'admin_notices', array( $this, 'display_wpmail_conflict_notice' ) ) ) {
+					add_action( 'admin_notices', array(
 						$this,
-						'display_configuration_required_warning',
-				) );
+						'display_wpmail_conflict_notice',
+					) );
+				}
 			}
 		}
 	}
@@ -469,6 +442,133 @@ class Postman {
 			if ( $msg['error'] == true && ! $hide ) {
 				$this->messageHandler->printMessage( $message, 'postman-not-configured-notice notice notice-error is-dismissible' );
 			}
+		}
+	}
+
+		/**
+	 * Display the wp_mail conflict notice on all admin pages
+	 */
+	public function display_wpmail_conflict_notice() {
+		static $printed = false;
+		if ( $printed ) {
+			return;
+		}
+		// Only display on admin pages
+		if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		
+		if ( $this->logger->isDebug() ) {
+			$this->logger->debug( 'Displaying wp_mail conflict notice' );
+		}
+		
+		// Get the conflict information
+		$conflict_info = $this->get_wpmail_conflict_info();
+		
+		if ( empty( $conflict_info ) ) {
+			return;
+		}
+		
+		$message = '<strong>' . esc_html__( 'Post SMTP Notice:', 'post-smtp' ) . '</strong>';
+		$main_line = esc_html__( 'wp_mail() is being overridden by another plugin', 'post-smtp' );
+		if ( ! empty( $conflict_info['plugin_name'] ) ) {
+			$main_line .= ' (' . esc_html( $conflict_info['plugin_name'] ) . ')';
+		}
+		$main_line .= esc_html__( '. Please deactivate it to use Post SMTP.', 'post-smtp' );
+		$message .= '<br>' . $main_line;
+		
+		if ( ! empty( $conflict_info['deactivate_link'] ) ) {
+			$message .= '<br>' . $conflict_info['deactivate_link'];
+		}
+		
+		// Output the notice
+		?>
+		<div class="notice notice-error is-dismissible">
+			<p><?php echo $message; ?></p>
+		</div>
+		<?php
+		$printed = true;
+	}
+	
+	/**
+	 * Get wp_mail conflict information
+	 * 
+	 * @return array Conflict information including plugin name, deactivate link, and file location
+	 */
+	private function get_wpmail_conflict_info() {
+		$info = array();
+		
+		try {
+			if ( ! function_exists( 'wp_mail' ) ) {
+				return $info;
+			}
+			
+			$reflFunc = new ReflectionFunction( 'wp_mail' );
+			$plugin_full_path = $reflFunc->getFileName();
+			
+			// Check if the wp_mail function is from another plugin
+			if ( strpos( $plugin_full_path, 'plugins' ) !== false ) {
+				require_once ABSPATH . '/wp-admin/includes/plugin.php';
+				
+			$plugin_file = plugin_basename( $plugin_full_path );
+			if ( ! empty( $plugin_file ) ) {
+				$plugin_data = get_plugin_data( $plugin_full_path );
+				$info['plugin_name'] = $plugin_data['Name'];
+				$info['deactivate_link'] = '<a href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( $plugin_file ) . '&amp;plugin_status=active&amp;paged=1&amp;s=', 'deactivate-plugin_' . $plugin_file ) . '">' . esc_html__( 'Deactivate', 'post-smtp' ) . '</a>';
+			}
+			}
+			
+			$info['file_location'] = $reflFunc->getFileName() . ':' . $reflFunc->getStartLine();
+			
+		} catch ( ReflectionException $e ) {
+			// If reflection fails, return empty info
+			$this->logger->warn( 'Could not detect wp_mail conflict: ' . $e->getMessage() );
+		}
+		
+		return $info;
+	}
+	
+	/**
+	 * Check for wp_mail conflicts independently of Postman's binding status
+	 */
+	private function check_for_wpmail_conflicts() {
+		// Only check on admin pages
+		if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		
+		// Check if wp_mail exists and if it's from another plugin/theme
+		try {
+			if ( ! function_exists( 'wp_mail' ) ) {
+				return;
+			}
+			
+			$reflFunc = new ReflectionFunction( 'wp_mail' );
+			$file_path = $reflFunc->getFileName();
+			
+			// If wp_mail is from another plugin (not WordPress core), show a warning
+			// WordPress core wp_mail is in wp-includes/pluggable.php
+			if ( strpos( $file_path, 'wp-includes/pluggable.php' ) === false && 
+				 strpos( $file_path, WP_CONTENT_DIR ) !== false ) {
+				
+				// This means another plugin/theme has overridden wp_mail
+				// Add admin notice (only once)
+				if ( ! has_action( 'admin_notices', array( $this, 'display_wpmail_conflict_notice' ) ) ) {
+					add_action( 'admin_notices', array(
+							$this,
+							'display_wpmail_conflict_notice',
+					) );
+				}
+				
+				// Log it as a warning
+				$this->logger->warn( sprintf( 
+					'wp_mail() has been overridden by another plugin/theme: %s',
+					$file_path
+				) );
+			}
+		} catch ( ReflectionException $e ) {
+			// If we can't inspect the function, skip
+			$this->logger->trace( 'Could not check wp_mail conflict: ' . $e->getMessage() );
 		}
 	}
 
