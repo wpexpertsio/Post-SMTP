@@ -985,7 +985,7 @@ div#ps-pro-code-copy-notification {
 
 /* Office 365 Business Plan Upgrade Styles */
 .ps-office365-upgrade-required {
-    opacity: 0.5;
+  
     cursor: not-allowed;
 }
 
@@ -993,5 +993,20 @@ div#ps-pro-code-copy-notification {
     pointer-events: none;
 }
 
+label.ps-office365-upgrade-required:hover:before {
+  content: "";
+  position: absolute;
+  left: 160px;
+  right: 0;
+  width: 400px;
+  height: 288px;
+   background: url(images/office-once-click.gif) no-repeat #ffff;
+  box-shadow: 0px 3px 36px -7px #000;
+  border-radius: 5px;
+  z-index: 2;
+  top: -40px;
+  background-size: 100%;
+
+}
 
 /* Lets make wizard responsive */
