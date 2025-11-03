@@ -60,6 +60,14 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
 			$has_post_smtp_pro  = in_array( 'post-smtp-pro/post-smtp-pro.php', $has_post_smtp_pro, true )
 				? 'true' : 'false';
 
+            // Check if user has Professional or Basic plan
+            $is_professional_or_basic = 'false';
+            if ( function_exists( 'pspro_fs' ) ) {
+                if ( pspro_fs()->is_plan( 'professional', true ) || pspro_fs()->is_plan( 'basic', true ) ) {
+                    $is_professional_or_basic = 'true';
+                }
+            }
+
 	        $ad_position = get_option('postman_dashboard_ad', 'maximize' );
             echo '<div id="post-smtp-app">
                 <post-smtp-app-wrapper
@@ -68,6 +76,7 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
                     :is-mobile-app-configured="' . esc_attr( $app_connected ) . '"
                     :is-main-wp-configured="' . esc_attr( $main_wp_configured ) . '"
                     :is-domain-spam-score-configured="false"
+                    :is-professional-or-basic="' . esc_attr( $is_professional_or_basic ) . '"
                     
                     ad-position="' . esc_attr( $ad_position ) . '"
                     
