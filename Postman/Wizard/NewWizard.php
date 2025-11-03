@@ -1525,7 +1525,7 @@ public function render_gmail_settings() {
 
         // Check Post SMTP Pro version if user has business plan
         $show_version_warning = false;
-        $required_pro_version = '1.7.0';
+        $required_pro_version = '1.5.0';
         if ( $is_business_plan && defined( 'POST_SMTP_PRO_VERSION' ) ) {
             $current_pro_version = POST_SMTP_PRO_VERSION;
             if ( version_compare( $current_pro_version, $required_pro_version, '<' ) ) {
@@ -1919,7 +1919,7 @@ public function render_gmail_settings() {
 
         // Check version requirement for Office 365 one-click
         if ( ! empty( $enabled_value ) ) {
-            $required_pro_version = '1.7.0';
+            $required_pro_version = '1.5.0';
             if ( defined( 'POST_SMTP_PRO_VERSION' ) ) {
                 $current_pro_version = POST_SMTP_PRO_VERSION;
                 if ( version_compare( $current_pro_version, $required_pro_version, '<' ) ) {
