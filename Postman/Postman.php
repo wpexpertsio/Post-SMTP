@@ -73,6 +73,7 @@ class Postman {
 		require_once 'Postman-Mail/PostmanMailjetTransport.php';
 		require_once 'Postman-Mail/PostmanEmailitTransport.php';
 		require_once 'Postman-Mail/PostmanMailerooTransport.php';
+		require_once 'Postman-Mail/PostmanSweegoTransport.php';
 		require_once 'Postman-Mail/PostmanSendpulseTransport.php';
 		require_once 'Postman-Suggest-Pro/PostmanSuggestProSocket.php';
 		require_once 'Postman-Mail/PostmanPostmarkTransport.php';
@@ -505,6 +506,7 @@ class Postman {
 		$postman_transport_registry->registerTransport( new PostmanSmtp2GoTransport( $rootPluginFilenameAndPath ) );
 		$postman_transport_registry->registerTransport( new PostmanEmailitTransport( $rootPluginFilenameAndPath ) );
 		$postman_transport_registry->registerTransport( new PostmanMailerooTransport( $rootPluginFilenameAndPath ) );
+		$postman_transport_registry->registerTransport( new PostmanSweegoTransport( $rootPluginFilenameAndPath ) );
 
 		do_action( 'postsmtp_register_transport', $postman_transport_registry );
 	}
