@@ -502,13 +502,13 @@
   !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-dashboard.vue?vue&type=style&index=0&id=dd15bc6c&scoped=true&lang=css ***!
   \************************************************************************************************************************************************************************************************************************************************************************/
 
-.mb-24[data-v-dd15bc6c] {
+.mb-24[data-v-49a0d06a] {
 	margin-bottom: 24px;
 }
-.post-smtp-selector-wrapper[data-v-dd15bc6c] {
+.post-smtp-selector-wrapper[data-v-49a0d06a] {
 	position: relative;
 }
-.post-smtp-selector-wrapper a.re-launch-wizard[data-v-dd15bc6c] {
+.post-smtp-selector-wrapper a.re-launch-wizard[data-v-49a0d06a] {
 	float: right;
 	padding: 8px 16px;
 	background: #f3f7ff;
@@ -521,7 +521,7 @@
 	text-align: left;
 	text-decoration: none;
 }
-.post-smtp-selector-wrapper[data-v-dd15bc6c]::after {
+.post-smtp-selector-wrapper[data-v-49a0d06a]::after {
 	content: '';
 	clear: both;
 	display: table;
@@ -754,7 +754,7 @@
   !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[6].use[0]!./src/components/post-smtp-banners.vue?vue&type=style&index=0&id=5de74806&scoped=true&lang=css ***!
   \**********************************************************************************************************************************************************************************************************************************************************************/
 
-.post-smtp-button[data-v-5de74806] {
+.post-smtp-button[data-v-950af6bc] {
 	display: inline-block;
 	padding: 8px 16px !important;
 	justify-content: center;
