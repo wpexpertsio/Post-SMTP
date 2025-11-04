@@ -28,6 +28,10 @@ if (! class_exists ( 'PostmanBasicAuthConfigurationFactory' )) {
 			$config = array (
 					'port' => $port 
 			);
+			
+			// Add common SMTP compatibility settings
+			$config['novalidate-cert'] = true; // Disable cert validation for problematic servers
+			
 			$logger->debug ( sprintf ( 'Using %s:%s ', $hostname, $port ) );
 			if ($securityType != PostmanOptions::SECURITY_TYPE_NONE) {
 				$config ['ssl'] = $securityType;
@@ -36,10 +40,18 @@ if (! class_exists ( 'PostmanBasicAuthConfigurationFactory' )) {
 				$logger->debug ( 'Using no encryption' );
 			}
 			if ($authType != PostmanOptions::AUTHENTICATION_TYPE_NONE) {
-				$config ['auth'] = $authType;
+				// Use explicit authentication type for better compatibility
+				if ( $authType === 'plain' || $authType === 'login' || $authType === 'crammd5' ) {
+					$config ['auth'] = $authType;
+				} else {
+					// Default to login if auth type is not recognized or is generic
+					$config ['auth'] = 'login';
+					$logger->debug ( 'Using default LOGIN authentication for unrecognized auth type: ' . $authType );
+				}
+				
 				$config ['username'] = $username;
 				$config ['password'] = $password;
-				$logger->debug ( sprintf ( 'Using auth %s with username %s and password %s', $authType, $username, PostmanUtils::obfuscatePassword ( $password ) ) );
+				$logger->debug ( sprintf ( 'Using auth %s with username %s and password %s', $config['auth'], $username, PostmanUtils::obfuscatePassword ( $password ) ) );
 			} else {
 				$logger->debug ( 'Using no authentication' );
 			}

@@ -90,6 +90,16 @@ class PostsmtpMailer extends PHPMailer {
 			$mail->SMTPAuth   = true;
 			$mail->Username   = $this->options->getUsername();
 			$mail->Password   = $this->options->getPassword();
+			
+			// Improve authentication compatibility
+			$authType = $this->options->getAuthenticationType();
+			if ( $authType === 'login' || $authType === 'plain' ) {
+				// Explicitly set auth type for better compatibility
+				$mail->AuthType = strtoupper($authType);
+			}
+			
+			// Disable automatic TLS upgrade which can cause auth issues
+			$mail->SMTPAutoTLS = false;
 		}
 
 		if ( $this->options->getEncryptionType() !== 'none' ) {
@@ -132,17 +142,25 @@ class PostsmtpMailer extends PHPMailer {
 
 			$response = false;
 
-			if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) ) {
-				$result = $this->options->getTransportType() !== 'smtp' ?
-					$postmanWpMail->send( $to, $subject, $body, $headers, $attachments ) :
+			if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) && apply_filters( 'post_smtp_send_email', true ) ) {
+				if ( $this->options->getTransportType() !== 'smtp' ) {
+					$result = $postmanWpMail->send( $to, $subject, $body, $headers, $attachments );
+				} else {
 					$response = $this->sendSmtp();
-
+					$result = $response;
+					
 					if( $response ) {
-
 						do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport );
-
+					} else {
+						// Log SMTP failures
+						$errorMessage = $this->ErrorInfo ?: 'SMTP sending failed';
+						do_action( 'post_smtp_on_failed', $log, $postmanMessage, $this->transcript, $transport, $errorMessage );
 					}
-
+				}
+			} else {
+				$result = true; // Return success when bypassed by filters
+				// Log bypassed emails for tracking
+				do_action( 'post_smtp_on_success', $log, $postmanMessage, 'Email bypassed by filter', $transport );
 			}
 
 			return $result;
@@ -166,10 +184,36 @@ class PostsmtpMailer extends PHPMailer {
 	}
 
 	public function sendSmtp() {
-		if (!$this->preSend()) {
-			return false;
+		try {
+			if (!$this->preSend()) {
+				return false;
+			}
+			return $this->postSend();
+		} catch (Exception $e) {
+			// If authentication fails, try with LOGIN method as fallback
+			if (strpos($e->getMessage(), 'authentication') !== false || 
+				strpos($e->getMessage(), 'AUTH') !== false ||
+				strpos($e->getMessage(), 'login') !== false) {
+				
+				$this->transcript .= "\nAuthentication failed, attempting fallback...\n";
+				
+				// Reset connection and try with LOGIN auth
+				$this->getSMTPInstance()->reset();
+				$this->AuthType = 'LOGIN';
+				$this->SMTPAutoTLS = false;
+				
+				try {
+					if (!$this->preSend()) {
+						return false;
+					}
+					return $this->postSend();
+				} catch (Exception $e2) {
+					// If still failing, throw the original exception
+					throw $e;
+				}
+			}
+			throw $e;
 		}
-		return $this->postSend();
 	}
 
 
