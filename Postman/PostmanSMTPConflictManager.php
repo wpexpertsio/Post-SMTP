@@ -33,6 +33,9 @@ class PostmanSMTPConflictManager {
         // Hook into AJAX for dismissing notices
         add_action( 'wp_ajax_dismiss_smtp_conflict_notice', array( $this, 'dismiss_notice_ajax' ) );
         
+        // Enqueue scripts for dismissing notices
+        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_dismiss_script' ) );
+        
     }
 
     /**
@@ -483,10 +486,15 @@ class PostmanSMTPConflictManager {
         }
 
         $conflicting_plugins = $this->get_conflicting_plugins();
-        $dismissed_notices = get_option( self::DISMISSED_NOTICES_OPTION, array() );
 
         foreach ( $conflicting_plugins as $plugin ) {
             $notice_id = sanitize_key( $plugin['name'] );
+            
+            // Skip if notice has been dismissed and not expired
+            if ( $this->is_notice_dismissed( $notice_id ) ) {
+                continue;
+            }
+            
             $this->display_conflict_notice( $plugin, $notice_id );
         }
     }
@@ -498,26 +506,31 @@ class PostmanSMTPConflictManager {
      * @param string $notice_id Unique notice ID
      */
     private function display_conflict_notice( $plugin, $notice_id ) {
-		 
-	//echo "<pre>"; ar_dump($plugin);
-
         $plugin_name = esc_html( $plugin['name'] );
-        $custom_message = isset( $plugin['message'] ) ? $plugin['message'] : '';
+        $plugin_slug = isset( $plugin['slug'] ) ? $plugin['slug'] : '';
+        
+        // Build deactivate link if plugin slug is available
+        $deactivate_link = '';
+        if ( ! empty( $plugin_slug ) ) {
+            $deactivate_url = wp_nonce_url( 
+                admin_url( 'plugins.php?action=deactivate&plugin=' . urlencode( $plugin_slug ) . '&plugin_status=all&paged=1&s=' ), 
+                'deactivate-plugin_' . $plugin_slug 
+            );
+            $deactivate_link = '<a href="' . esc_url( $deactivate_url ) . '">' . esc_html__( 'Deactivate', 'post-smtp' ) . ' ' . $plugin_name . '</a>';
+        }
              
-        echo '<div class="notice notice-warning is-dismissible postman-smtp-conflict-notice" data-notice-id="' . esc_attr( $notice_id ) . '">';
-        echo '<h3>' . esc_html__( 'Post SMTP - Plugin Conflict Detected', 'post-smtp' ) . '</h3>';
+        echo '<div class="notice notice-error is-dismissible postman-smtp-conflict-notice" data-notice-id="' . esc_attr( $notice_id ) . '">';
+        echo '<p><strong>' . esc_html__( 'Post SMTP Notice:', 'post-smtp' ) . '</strong></p>';
         echo '<p>';
         printf( 
-            /* translators: %s: conflicting plugin name */
-            esc_html__( 'You have %s activated alongside Post SMTP. This may cause email delivery issues or conflicts. We recommend deactivating one of these plugins to ensure reliable email delivery.', 'post-smtp' ),
+            /* translators: %1$s: conflicting plugin name */
+            esc_html__( 'wp_mail() is being overridden by another plugin (%1$s). Please deactivate it to use Post SMTP.', 'post-smtp' ),
             '<strong>' . $plugin_name . '</strong>'
         );
         echo '</p>';
-        
-        if ( ! empty( $custom_message ) ) {
-            echo '<p>' . wp_kses_post( $custom_message ) . '</p>';
+        if ( ! empty( $deactivate_link ) ) {
+            echo '<p>' . $deactivate_link . '</p>';
         }
-        
         echo '</div>';
     }
 
@@ -547,16 +560,69 @@ class PostmanSMTPConflictManager {
 
         $dismissed_notices = get_option( self::DISMISSED_NOTICES_OPTION, array() );
         
-        if ( ! in_array( $notice_id, $dismissed_notices ) ) {
-            $dismissed_notices[] = $notice_id;
-            if ( update_option( self::DISMISSED_NOTICES_OPTION, $dismissed_notices ) ) {
-                wp_send_json_success( array( 'message' => 'Notice dismissed successfully' ) );
-            } else {
-                wp_send_json_error( array( 'message' => 'Failed to save dismissal' ) );
-            }
+        // Store dismissal with current timestamp (7 days expiration)
+        $dismissed_notices[ $notice_id ] = time();
+        
+        if ( update_option( self::DISMISSED_NOTICES_OPTION, $dismissed_notices ) ) {
+            wp_send_json_success( array( 'message' => 'Notice dismissed successfully' ) );
         } else {
-            wp_send_json_success( array( 'message' => 'Notice already dismissed' ) );
+            wp_send_json_error( array( 'message' => 'Failed to save dismissal' ) );
         }
+    }
+
+    /**
+     * Check if a notice is dismissed and not expired
+     * 
+     * @param string $notice_id Notice ID to check
+     * @return bool True if dismissed and not expired, false otherwise
+     */
+    private function is_notice_dismissed( $notice_id ) {
+        $dismissed_notices = get_option( self::DISMISSED_NOTICES_OPTION, array() );
+        
+        // Handle old format (array of notice IDs) - migrate to new format
+        if ( ! empty( $dismissed_notices ) && is_array( $dismissed_notices ) ) {
+            $keys = array_keys( $dismissed_notices );
+            $needs_migration = false;
+            
+            // Check if old format (numeric keys or string keys with non-numeric values)
+            foreach ( $keys as $key ) {
+                if ( is_numeric( $key ) || ! is_numeric( $dismissed_notices[ $key ] ) ) {
+                    $needs_migration = true;
+                    break;
+                }
+            }
+            
+            if ( $needs_migration ) {
+                // Old format detected - convert to new format with current timestamp
+                $new_format = array();
+                foreach ( $dismissed_notices as $key => $value ) {
+                    if ( is_numeric( $key ) ) {
+                        $new_format[ $value ] = time();
+                    } else {
+                        $new_format[ $key ] = is_numeric( $value ) ? $value : time();
+                    }
+                }
+                $dismissed_notices = $new_format;
+                update_option( self::DISMISSED_NOTICES_OPTION, $dismissed_notices );
+            }
+        }
+        
+        if ( ! isset( $dismissed_notices[ $notice_id ] ) ) {
+            return false;
+        }
+        
+        $dismissed_time = $dismissed_notices[ $notice_id ];
+        
+        // Check if 7 days have passed (7 days = 604800 seconds)
+        $expiration_time = 7 * DAY_IN_SECONDS;
+        if ( ( time() - $dismissed_time ) > $expiration_time ) {
+            // Expired - remove from dismissed notices
+            unset( $dismissed_notices[ $notice_id ] );
+            update_option( self::DISMISSED_NOTICES_OPTION, $dismissed_notices );
+            return false;
+        }
+        
+        return true;
     }
 
 
@@ -626,5 +692,37 @@ class PostmanSMTPConflictManager {
         }
 
         return $status;
+    }
+
+    /**
+     * Enqueue JavaScript for handling notice dismissal
+     */
+    public function enqueue_dismiss_script( $hook ) {
+        // Only enqueue if there are conflicts
+        if ( ! $this->has_conflicts() ) {
+            return;
+        }
+
+        // Get plugin data for version
+        $plugin_data = apply_filters( 'postman_get_plugin_metadata', null );
+        $version = isset( $plugin_data['version'] ) ? $plugin_data['version'] : '1.0.0';
+
+        // Enqueue the script
+        wp_enqueue_script(
+            'postman-smtp-conflict-notice',
+            POST_SMTP_URL . '/script/postman-smtp-conflict-notice.js',
+            array( 'jquery' ),
+            $version,
+            true
+        );
+
+        // Localize script with nonce
+        wp_localize_script(
+            'postman-smtp-conflict-notice',
+            'postmanSmtpConflict',
+            array(
+                'nonce' => wp_create_nonce( 'postman_smtp_conflict_nonce' )
+            )
+        );
     }
 }
