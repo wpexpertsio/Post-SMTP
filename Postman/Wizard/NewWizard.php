@@ -1766,6 +1766,23 @@ public function render_gmail_settings() {
     public function handle_gmail_oauth_redirect() {
         // Check if the required OAuth parameters are present in the URL.
         if ( isset( $_GET['action'] ) && $_GET['action'] === 'gmail_oauth_redirect' ) {
+            
+        // Capability check: Only allow administrators to update OAuth tokens
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'post-smtp' ) );
+        }
+        
+        // CSRF protection: Verify nonce (required by security report)
+        if ( ! isset( $_GET['_wpnonce'] ) || empty( $_GET['_wpnonce'] ) ) {
+            wp_die( esc_html__( 'Security check failed. Nonce is missing.', 'post-smtp' ) );
+        }
+        
+        // Verify the nonce
+        $nonce = sanitize_text_field( $_GET['_wpnonce'] );
+        if ( ! wp_verify_nonce( $nonce, 'gmail_oauth_redirect' ) ) {
+            wp_die( esc_html__( 'Security check failed. Invalid nonce. Please try again.', 'post-smtp' ) );
+        }
+            
             // Sanitize and retrieve URL parameters
             $access_token  = isset( $_GET['access_token'] ) ? sanitize_text_field( $_GET['access_token'] ) : null;
             $refresh_token = isset( $_GET['refresh_token'] ) ? sanitize_text_field( $_GET['refresh_token'] ) : null;
@@ -1787,6 +1804,7 @@ public function render_gmail_settings() {
             }
         }
     }
+
 
 
 }
