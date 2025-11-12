@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'PostmanSweegoMailEngine' ) ) {
 
-	// require Sweego handler here, e.g. require_once 'Services/Sweego/Handler.php';
+	require_once 'Services/Sweego/Handler.php';
 
 	/**
 	 * Sends mail with the Sweego API.
@@ -29,14 +29,12 @@ if ( ! class_exists( 'PostmanSweegoMailEngine' ) ) {
 		 * @return void
 		 * @throws Exception On error.
 		 */
-		public function send( PostmanMessage $message ) {
-			$options  = PostmanOptions::getInstance();
-			// $sweego  = new PostmanSweego( $this->apiKey ); // Uncomment and implement handler
+	public function send( PostmanMessage $message ) {
+		$options  = PostmanOptions::getInstance();
+		$sweego  = new PostmanSweego( $this->apiKey );
 
-			$recipients = [];
-			$duplicates = [];
-
-			// Sender.
+		$recipients = [];
+		$duplicates = [];			// Sender.
 			$sender      = $message->getFromAddress();
 			$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
 			$senderName  = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
@@ -50,63 +48,117 @@ if ( ! class_exists( 'PostmanSweegoMailEngine' ) ) {
 				}
 			}
 
-			// Subject and Body.
-			$subject     = $message->getSubject();
-			$textPart    = $message->getBodyTextPart();
-			$htmlPart    = $message->getBodyHtmlPart();
-			$htmlContent = ! empty( $htmlPart ) ? $htmlPart : nl2br( $textPart );
+		// Subject and Body.
+		$subject     = $message->getSubject();
+		$textPart    = $message->getBodyTextPart();
+		$htmlPart    = $message->getBodyHtmlPart();
+		$htmlContent = ! empty( $htmlPart ) ? $htmlPart : nl2br( $textPart );
 
-			if ( empty( $htmlContent ) ) {
-				$htmlContent = '<p>(No content)</p>';
-			}
+		if ( empty( $htmlContent ) ) {
+			$htmlContent = '<p>(No content)</p>';
+		}
 
-			$content = [
-				'from'    => $senderEmail,
-				'to'      => implode( ',', $recipients ),
-				'subject' => $subject,
-				'html'    => $htmlContent,
-				'text'    => wp_strip_all_tags( $textPart ?: $htmlPart ),
+		// Prepare content for Sweego API
+		$content = [
+			'provider'      => 'string',
+			'campaign-type' => 'market',
+			'from'          => [
+				'email' => $senderEmail,
+				'name'  => $senderName,
+			],
+			'recipients'    => [],
+			'subject'       => $subject,
+			'message-html'  => $htmlContent,
+			'message-txt'   => wp_strip_all_tags( $textPart ?: $htmlPart ),
+		];
+
+		// Add recipients
+		foreach ( (array) $message->getToRecipients() as $recipient ) {
+			$content['recipients'][] = [
+				'email' => $recipient->getEmail(),
+				'name'  => $recipient->getName() ?: '',
 			];
+		}
 
-			// Attachments.
+		// Add CC recipients if any
+		$ccRecipients = $message->getCcRecipients();
+		if ( ! empty( $ccRecipients ) ) {
+			$content['cc'] = [];
+			foreach ( $ccRecipients as $ccRecipient ) {
+				$content['cc'][] = [
+					'email' => $ccRecipient->getEmail(),
+					'name'  => $ccRecipient->getName() ?: '',
+				];
+			}
+		}
+
+		// Add BCC recipients if any
+		$bccRecipients = $message->getBccRecipients();
+		if ( ! empty( $bccRecipients ) ) {
+			$content['bcc'] = [];
+			foreach ( $bccRecipients as $bccRecipient ) {
+				$content['bcc'][] = [
+					'email' => $bccRecipient->getEmail(),
+					'name'  => $bccRecipient->getName() ?: '',
+				];
+			}
+		}
+
+		// Add Reply-To if set
+		$replyTo = $message->getReplyTo();
+		if ( $replyTo ) {
+			$content['replyTo'] = [
+				'email' => $replyTo->getEmail(),
+				'name'  => $replyTo->getName() ?: '',
+			];
+		}			// Attachments.
 			$attachments = $this->addAttachmentsToMail( $message );
 			if ( ! empty( $attachments ) ) {
 				$content['attachments'] = $attachments;
 			}
 
-			// Send.
-			try {
-				$this->logger->debug( 'Sending mail via Sweego' );
-				// $response = $sweego->send( $content ); // Uncomment and implement handler
-				$responseCode = 200; // Replace with actual response code
-				$responseBody = '{}'; // Replace with actual response body
+		// Send.
+		try {
+			$this->logger->debug( 'Sending mail via Sweego' );
+			
+			// Make API call using Sweego Handler
+			$response = $sweego->send( $content );
+			$responseCode = $sweego->get_response_code();
+			$responseBody = $sweego->get_response_body();
 
-				if ( $responseCode === 200 || $responseCode === 202 ) {
-					$this->transcript  = 'Email sent successfully.' . PHP_EOL;
-					$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS . PHP_EOL;
-					$this->transcript .= print_r( $content, true );
-					$this->logger->debug( 'Transcript=' . $this->transcript );
-				} else {
-					$decodedBody  = json_decode( $responseBody, true );
-					$errorMessage = $this->extractErrorMessage( $decodedBody, $responseCode );
-					throw new Exception( $errorMessage );
-				}
-			} catch ( Exception $e ) {
-				$this->transcript  = $e->getMessage() . PHP_EOL;
+			// Log the response for debugging
+			$this->logger->debug( 'Sweego API Response Code: ' . $responseCode );
+			$this->logger->debug( 'Sweego API Response Body: ' . $responseBody );
+
+			if ( $responseCode === 200 || $responseCode === 202 ) {
+				$this->transcript  = 'Email sent successfully via Sweego API.' . PHP_EOL;
+				$this->transcript .= 'Response Code: ' . $responseCode . PHP_EOL;
+				$this->transcript .= 'Response: ' . $responseBody . PHP_EOL;
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS . PHP_EOL;
 				$this->transcript .= print_r( $content, true );
 				$this->logger->debug( 'Transcript=' . $this->transcript );
-				throw $e;
+			} else {
+				$decodedBody  = json_decode( $responseBody, true );
+				$errorMessage = $this->extractErrorMessage( $decodedBody, $responseCode );
+				$this->logger->error( 'Sweego API Error: ' . $errorMessage );
+				throw new Exception( $errorMessage );
 			}
+		} catch ( Exception $e ) {
+			$this->transcript  = $e->getMessage() . PHP_EOL;
+			$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS . PHP_EOL;
+			$this->transcript .= print_r( $content, true );
+			$this->logger->debug( 'Transcript=' . $this->transcript );
+			throw $e;
 		}
+	}
 
-		/**
-		 * Prepares attachments for the API.
-		 *
-		 * @param PostmanMessage $message The message object.
-		 * @return array
-		 */
-		private function addAttachmentsToMail( PostmanMessage $message ) {
+	/**
+	 * Prepares attachments for the API.
+	 *
+	 * @param PostmanMessage $message The message object.
+	 * @return array
+	 */
+	private function addAttachmentsToMail( PostmanMessage $message ) {
 			$attachments = $message->getAttachments();
 			$attArray    = is_array( $attachments ) ? $attachments : explode( PHP_EOL, $attachments );
 			$result      = [];

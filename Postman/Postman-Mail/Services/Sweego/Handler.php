@@ -39,7 +39,7 @@ class PostmanSweego extends PostmanServiceRequest {
         return array(
             'Content-Type'  =>  'application/json',
             'Accept'        =>  'application/json',
-            'Authorization' =>  'Bearer ' . $this->api_key
+            'Api-Key'   =>  $this->api_key
         );
     }
 
