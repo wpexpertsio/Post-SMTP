@@ -637,6 +637,7 @@ class Post_SMTP_New_Wizard {
             break;
             case 'maileroo_api':
                 echo wp_kses( $this->render_maileroo_settings(), $this->allowed_tags );
+            break;
             case 'sweego_api':
                 echo wp_kses( $this->render_sweego_settings(), $this->allowed_tags );
             break;
