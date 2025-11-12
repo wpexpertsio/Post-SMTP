@@ -61,9 +61,10 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizePassword( 'Resend API Key', PostmanOptions::RESEND_API_KEY, $input, $new_input, $this->options->getResendApiKey() );
 			$this->sanitizePassword( 'Emailit API Key', PostmanOptions::EMAILIT_API_KEY, $input, $new_input, $this->options->getEmailitApiKey() );
 			$this->sanitizePassword( 'Maileroo API Key', PostmanOptions::MAILEROO_API_KEY, $input, $new_input, $this->options->getMailerooApiKey() );
-			$this->sanitizePassword( 'MailerSend API Key', PostmanOptions::MAILERSEND_API_KEY, $input, $new_input, $this->options->getMailerSendApiKey() );
-			$this->sanitizePassword( 'Brevo API Key', PostmanOptions::SENDINBLUE_API_KEY, $input, $new_input, $this->options->getSendinblueApiKey() );
-			$this->sanitizePassword( 'Mailjet API Key', PostmanOptions::MAILJET_API_KEY, $input, $new_input, $this->options->getMailjetApiKey() );
+		$this->sanitizePassword( 'MailerSend API Key', PostmanOptions::MAILERSEND_API_KEY, $input, $new_input, $this->options->getMailerSendApiKey() );
+		$this->sanitizePassword( 'Brevo API Key', PostmanOptions::SENDINBLUE_API_KEY, $input, $new_input, $this->options->getSendinblueApiKey() );
+		$this->sanitizePassword( 'Mailtrap API Key', PostmanOptions::MAILTRAP_API_KEY, $input, $new_input, $this->options->getMailtrapApiKey() );
+		$this->sanitizePassword( 'Mailjet API Key', PostmanOptions::MAILJET_API_KEY, $input, $new_input, $this->options->getMailjetApiKey() );
 			$this->sanitizePassword( 'Mailjet Secret Key', PostmanOptions::MAILJET_SECRET_KEY, $input, $new_input, $this->options->getMailjetSecretKey() );
 			$this->sanitizePassword( 'Sendpulse API Key', PostmanOptions::SENDPULSE_API_KEY, $input, $new_input, $this->options->getSendpulseApiKey() );
 			$this->sanitizePassword( 'Sendpulse Secret Key', PostmanOptions::SENDPULSE_SECRET_KEY, $input, $new_input, $this->options->getSendpulseSecretKey() );
