@@ -166,7 +166,11 @@ class PostsmtpMailer extends PHPMailer {
 
 			$this->setError($exc->getMessage());
 
-            do_action( 'post_smtp_on_failed', $log, $postmanMessage,  $this->transcript, $transport, $exc->getMessage() );
+			// Only fire the failed action for SMTP transport type
+			// For other transports, PostmanWpMail->send() already handles this
+			if ( $this->options->getTransportType() === 'smtp' ) {
+				do_action( 'post_smtp_on_failed', $log, $postmanMessage,  $this->transcript, $transport, $exc->getMessage() );
+			}
 
 			if ($this->exceptions) {
 				throw $exc;
