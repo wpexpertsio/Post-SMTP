@@ -64,6 +64,7 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 		private $message;
 		private $transcript;
 		private $api_base_url;
+		private $gmail_oneclick_enabled;
 		
 		/**
 		 * EOL character string used by transport

@@ -259,7 +259,7 @@ class PostmanEmailLogController {
 	 */
 	private function getRequestParameter( $parameterName ) {
 		if ( isset( $_POST [ $parameterName ] ) ) {
-			$value = filter_var( $_POST [ $parameterName ], FILTER_SANITIZE_STRING );
+			$value = sanitize_text_field( $_POST [ $parameterName ] );
 			$this->logger->trace( sprintf( 'Found parameter "%s"', $parameterName ) );
 			$this->logger->trace( $value );
 			return $value;

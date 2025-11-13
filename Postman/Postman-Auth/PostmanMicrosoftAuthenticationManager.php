@@ -79,7 +79,7 @@ if (! class_exists ( "PostmanMicrosoftAuthenticationManager" )) {
 		 */
 		public function processAuthorizationGrantCode($transactionId) {
 			if (isset ( $_GET ['code'] )) {
-				$code = filter_input( INPUT_GET, 'code', FILTER_SANITIZE_STRING );
+				$code = filter_input( INPUT_GET, 'code', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 				$this->getLogger ()->debug ( 'Found authorization code in request header' );
 				$postvals = array (
 						'client_id' => $this->getClientId (),

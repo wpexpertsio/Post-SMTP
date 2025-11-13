@@ -80,7 +80,7 @@ $testListTable->prepare_items();
 	<form id="movies-filter" method="get">
 		<!-- For plugins, we also need to ensure that the form posts back to our current page -->
 		<input type="hidden" name="page"
-			value="<?php echo filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING ); ?>" />
+			value="<?php echo esc_attr( filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ?: '' ); ?>" />
 
 		<!-- Now we can render the completed list table -->
 			<?php $testListTable->display()?>
