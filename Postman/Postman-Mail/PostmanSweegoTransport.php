@@ -90,10 +90,21 @@ class PostmanSweegoTransport extends PostmanAbstractModuleTransport implements P
         print ' <input type="button" id="toggleSweegoApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
     }
     public function registerStylesAndScripts() {
-        // Add Sweego-specific JS/CSS if needed
+        // register the stylesheet and javascript external resources
+        $pluginData = apply_filters( 'postman_get_plugin_metadata', null );
+        wp_register_script(
+            'postman-sweego',
+            plugins_url( 'Postman/Postman-Mail/postman-sweego.js', $this->rootPluginFilenameAndPath ),
+            array(
+                PostmanViewController::JQUERY_SCRIPT,
+                'jquery_validation',
+                PostmanViewController::POSTMAN_SCRIPT
+            ),
+            $pluginData['version']
+        );
     }
     public function enqueueScript() {
-        // Enqueue Sweego-specific JS if needed
+        wp_enqueue_script( 'postman-sweego' );
     }
     public function printWizardAuthenticationStep() {
         print '<section class="wizard_sweego">';
