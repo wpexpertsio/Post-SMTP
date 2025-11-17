@@ -134,12 +134,30 @@ class PostsmtpMailer extends PHPMailer {
 			$run_mode = $this->options->getRunMode();
 
 			if ( $run_mode === PostmanOptions::RUN_MODE_IGNORE ) {
-				// No Action: Do not send, just log as ignored
+				// No Action: Validate, do not send, just log as ignored if valid
+				try {
+					$postmanMessage->validate($transport);
+				} catch (Exception $exc) {
+					$this->error = $exc;
+					$this->setError($exc->getMessage());
+					$this->transcript = '';
+					// Optionally log error here
+					return false;
+				}
 				$log->status = 'ignored';
 				$this->transcript = '';
 				return true;
 			} elseif ( $run_mode === PostmanOptions::RUN_MODE_LOG_ONLY ) {
-				// Log Only: Log as sent, but do not send
+				// Log Only: Validate, do not send, just log as sent if valid
+				try {
+					$postmanMessage->validate($transport);
+				} catch (Exception $exc) {
+					$this->error = $exc;
+					$this->setError($exc->getMessage());
+					$this->transcript = '';
+					// Optionally log error here
+					return false;
+				}
 				$log->status = 'logged_only';
 				$this->transcript = '';
 				do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport );
