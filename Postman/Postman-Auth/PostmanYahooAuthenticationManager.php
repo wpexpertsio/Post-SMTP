@@ -77,7 +77,7 @@ if (! class_exists ( "PostmanYahooAuthenticationManager" )) {
 		 */
 		public function processAuthorizationGrantCode($transactionId) {
 			if (isset ( $_GET ['code'] )) {
-				$code = filter_input( INPUT_GET, 'code', FILTER_SANITIZE_STRING );
+				$code = filter_input( INPUT_GET, 'code', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 				$this->getLogger ()->debug ( sprintf ( 'Found authorization code %s in request header', $code ) );
 				if (isset ( $_GET ['state'] ) && $_GET ['state'] == $transactionId) {
 					$this->getLogger ()->debug ( 'Found valid state in request header' );

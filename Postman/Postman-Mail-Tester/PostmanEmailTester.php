@@ -51,9 +51,9 @@ class Postman_Email_Tester {
     public function test_mail() {
         check_admin_referer( 'post-smtp', 'security' );
 
-        $email  = sanitize_email( $_POST['email'] );
-        $socket = sanitize_text_field( $_POST['socket'] );
-        $apikey = sanitize_text_field( $_POST['apikey'] );
+        $email  = sanitize_email( $_POST['email'] ?? '' );
+        $socket = sanitize_text_field( $_POST['socket'] ?? '' );
+        $apikey = sanitize_text_field( $_POST['apikey'] ?? '' );
         $args = array(
             'method'  => WP_REST_Server::READABLE,
             'headers' => array(

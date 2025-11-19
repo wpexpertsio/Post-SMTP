@@ -1629,9 +1629,9 @@ public function render_gmail_settings() {
                 $sanitized['ses_region'] = isset( $sanitized['ses_region'] ) ? $sanitized['ses_region'] : '';
                 $sanitized['enc_type'] = 'tls';
                 $sanitized['auth_type'] = 'login';
-				$sanitized['slack_token'] = base64_decode( $options['slack_token'] );
-                $sanitized['pushover_user'] = base64_decode( $options['pushover_user'] );
-                $sanitized['pushover_token'] = base64_decode( $options['pushover_token'] );
+                $sanitized['slack_token'] = base64_decode( isset( $options['slack_token'] ) ? $options['slack_token'] : '' );
+                $sanitized['pushover_user'] = base64_decode( isset( $options['pushover_user'] ) ? $options['pushover_user'] : '' );
+                $sanitized['pushover_token'] = base64_decode( isset( $options['pushover_token'] ) ? $options['pushover_token'] : '' );
                 foreach( $sanitized as $key => $value ) {
                     $options[$key] = $value;
                 }

@@ -89,7 +89,7 @@ if (! class_exists ( "PostmanGoogleAuthenticationManager" )) {
 		public function processAuthorizationGrantCode($transactionId) {
 			if (isset ( $_GET ['code'] )) {
 				$this->getLogger ()->debug ( 'Found authorization code in request header' );
-				$code = filter_input( INPUT_GET, 'code', FILTER_SANITIZE_STRING );
+				$code = filter_input( INPUT_GET, 'code', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 				if (isset ( $_GET ['state'] ) && $_GET ['state'] == $transactionId) {
 					$this->getLogger ()->debug ( 'Found valid state in request header' );
 				} else {
