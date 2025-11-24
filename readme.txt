@@ -293,6 +293,10 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
+= 3.6.2 - Nov 24, 2025 =
+* IMPROVEMENT - Added PHP 8+ compatibility.
+* FIX - Added authorization checks related to OAuth token updates for authenticated users.
+
 = 3.6.1 – Oct 29, 2025 =
 * IMPROVEMENT: Removed GIF from the plugin to enhance performance and reduce load time.
 * IMPROVEMENT: Increased the request timeout for email sending to improve reliability and prevent timeouts.
