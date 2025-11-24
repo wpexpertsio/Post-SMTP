@@ -13,7 +13,6 @@ require_once 'PostmanZendMailTransportConfigurationFactory.php';
 class PostmanTransportRegistry {
 	private $transports;
 	private $logger;
-	private $registration_attempted = false;
 
 	/**
 	 */
@@ -35,117 +34,6 @@ class PostmanTransportRegistry {
 	}
 	public function getTransports() {
 		return $this->transports;
-	}
-
-	/**
-	 * Centralized method to register all transports.
-	 * This is called from both:
-	 * 1. Postman::on_init() - Normal initialization
-	 * 2. ensureTransportsRegistered() - Early initialization (before init hook)
-	 * 
-	 * This method is idempotent - safe to call multiple times.
-	 * 
-	 * @param string $rootPluginFilenameAndPath The root plugin file path
-	 * @return bool True if transports were registered, false if already registered
-	 */
-	public function registerAllTransports( $rootPluginFilenameAndPath ) {
-		// If transports are already registered, skip
-		if ( $this->transports !== null && ! empty( $this->transports ) ) {
-			return false;
-		}
-
-		// Prevent concurrent registration attempts
-		if ( $this->registration_attempted ) {
-			// Wait a moment for concurrent registration to complete
-			$attempts = 0;
-			while ( $this->transports === null && $attempts < 10 ) {
-				usleep( 10000 ); // 10ms
-				$attempts++;
-			}
-			return $this->transports !== null;
-		}
-
-		$this->registration_attempted = true;
-
-		// Load required files if not already loaded
-		if ( ! class_exists( 'PostmanDefaultModuleTransport' ) ) {
-			$pluginPath = defined( 'POST_SMTP_PATH' ) ? POST_SMTP_PATH : dirname( dirname( __FILE__ ) );
-			
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanDefaultModuleTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanSmtpModuleTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanGmailApiModuleTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanMandrillTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanSendGridTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanMailerSendTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanMailgunTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanSendinblueTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanResendTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanMailjetTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanSendpulseTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanPostmarkTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanSparkPostTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanElasticEmailTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanSmtp2GoTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanEmailitTransport.php';
-			require_once $pluginPath . '/Postman/Postman-Mail/PostmanMailerooTransport.php';
-		}
-
-		// Register all transports
-		$this->registerTransport( new PostmanDefaultModuleTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanSmtpModuleTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanGmailApiModuleTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanMandrillTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanSendGridTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanMailerSendTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanMailgunTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanSendinblueTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanResendTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanMailjetTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanSendpulseTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanPostmarkTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanSparkPostTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanElasticEmailTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanSmtp2GoTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanEmailitTransport( $rootPluginFilenameAndPath ) );
-		$this->registerTransport( new PostmanMailerooTransport( $rootPluginFilenameAndPath ) );
-
-		// Allow other plugins to register transports
-		do_action( 'postsmtp_register_transport', $this );
-
-		if ( $this->logger->isDebug() ) {
-			$this->logger->debug( 'All transports registered successfully' );
-		}
-
-		return true;
-	}
-
-	/**
-	 * Ensure transports are registered if they haven't been yet.
-	 * This is called on-demand when wp_mail() is called before the init hook.
-	 * 
-	 * This method is optimized to:
-	 * - Only attempt registration if transports are null
-	 * - Use centralized registration logic
-	 * - Prevent duplicate registration attempts
-	 * - Have minimal performance overhead
-	 */
-	private function ensureTransportsRegistered() {
-		// Quick check: if transports are already registered, skip
-		if ( $this->transports !== null ) {
-			return;
-		}
-
-		// Check if Postman class is available and has the root plugin path
-		if ( class_exists( 'Postman' ) && property_exists( 'Postman', 'rootPlugin' ) && ! empty( Postman::$rootPlugin ) ) {
-			$rootPluginFilenameAndPath = Postman::$rootPlugin;
-			
-			// Use centralized registration method
-			$registered = $this->registerAllTransports( $rootPluginFilenameAndPath );
-			
-			if ( $registered && $this->logger->isDebug() ) {
-				$this->logger->debug( 'Transports registered on-demand before init hook' );
-			}
-		}
 	}
 
 	/**
@@ -194,12 +82,11 @@ class PostmanTransportRegistry {
 	public function getCurrentTransport() {
 		$selectedTransport = PostmanOptions::getInstance()->getTransportType();
 		$transports = $this->getTransports();
-		if ( $transports !== null && isset( $transports [ $selectedTransport ] ) ) {
-			return $transports [ $selectedTransport ];
-		} elseif ( $transports !== null && isset( $transports ['default'] ) ) {
+		if ( ! isset( $transports [ $selectedTransport ] ) ) {
 			return $transports ['default'];
+		} else {
+			return $transports [ $selectedTransport ];
 		}
-		return null;
 	}
 
 	/**
@@ -209,34 +96,27 @@ class PostmanTransportRegistry {
 	 * @return boolean
 	 */
 	public function getActiveTransport() {
-		// Ensure transports are registered if they haven't been yet
-		$this->ensureTransportsRegistered();
-		
 	    // During fallback mode, always use SMTP transport
 	    $options = PostmanOptions::getInstance();
 	    if ( $options->is_fallback ) {
 	        $transports = $this->getTransports();
-	        if ( $transports !== null && isset( $transports['smtp'] ) ) {
+	        if ( isset( $transports['smtp'] ) ) {
 	            return $transports['smtp'];
-	        } elseif ( $transports !== null && isset( $transports['default'] ) ) {
+	        } else {
 	            return $transports['default'];
 	        }
-	        return null;
 	    }
 	    
 		$selectedTransport = PostmanOptions::getInstance()->getTransportType();
 		
 		$transports = $this->getTransports();
-		if ( $transports !== null && isset( $transports [ $selectedTransport ] ) ) {
+		if ( isset( $transports [ $selectedTransport ] ) ) {
 			$transport = $transports [ $selectedTransport ];
 			if ( $transport->getSlug() == $selectedTransport && $transport->isConfiguredAndReady() ) {
 				return $transport;
 			}
 		}
-		if ( $transports !== null && isset( $transports ['default'] ) ) {
-			return $transports ['default'];
-		}
-		return null;
+		return $transports ['default'];
 	}
 
 	/**
@@ -247,12 +127,11 @@ class PostmanTransportRegistry {
 	public function getSelectedTransport() {
 		$selectedTransport = PostmanOptions::getInstance()->getTransportType();
 		$transports = $this->getTransports();
-		if ( $transports !== null && isset( $transports [ $selectedTransport ] ) ) {
+		if ( isset( $transports [ $selectedTransport ] ) ) {
 			return $transports [ $selectedTransport ];
-		} elseif ( $transports !== null && isset( $transports ['default'] ) ) {
+		} else {
 			return $transports ['default'];
 		}
-		return null;
 	}
 
 	/**
