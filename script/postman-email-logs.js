@@ -448,7 +448,7 @@ jQuery(document).ready(function($) {
 							</tr>
 							<tr>
 								<td><strong>To:</strong></td>
-								<td>${response.data.to_header}</td>
+								<td>${response.data.original_to}</td>
 							</tr>`;
 
 							if( 

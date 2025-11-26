@@ -118,7 +118,30 @@ class PostsmtpMailer extends PHPMailer {
 
 		// build the email log entry
 		$log = new PostmanEmailLog();
-		$log->originalTo = $to;
+		
+		// Merge forced recipients with original $to for logging
+		$forcedTo = $this->options->getForcedToRecipients();
+		$allRecipients = array();
+		
+		// Add original recipients
+		if ( is_array( $to ) ) {
+			$allRecipients = array_merge( $allRecipients, $to );
+		} elseif ( ! empty( $to ) ) {
+			// Split comma-separated string into array
+			$allRecipients = array_merge( $allRecipients, array_map( 'trim', explode( ',', $to ) ) );
+		}
+		
+		// Add forced recipients if set
+		if ( ! empty( $forcedTo ) ) {
+			// Split comma-separated string into array
+			$forcedRecipients = array_map( 'trim', explode( ',', $forcedTo ) );
+			$allRecipients = array_merge( $allRecipients, $forcedRecipients );
+		}
+		
+		// Remove duplicates and empty values, then convert back to comma-separated string
+		$allRecipients = array_unique( array_filter( $allRecipients ) );
+		$log->originalTo = implode( ', ', $allRecipients );
+		
 		$log->originalSubject = $subject;
 		$log->originalMessage = $body;
 		$log->originalHeaders = $headers;
