@@ -318,7 +318,14 @@ class Post_SMTP_Mobile_Rest_API {
 	
 	public function filter_query( $query ) {
 		
-		$query .= $this->filter == 'success' ? ' WHERE `success` = 1 ' : ' WHERE `success` != 1 ';
+		// Include both regular success (success = 1) and fallback success entries
+		// Fallback entries have status messages like 'Sent ( ** Fallback ** )' or '( ** Fallback ** ) ...'
+		if ( $this->filter == 'success' ) {
+			$query .= " WHERE (`success` = 1 OR `success` = 'Sent ( ** Fallback ** )' OR `success` LIKE '( ** Fallback ** )%') ";
+		} else {
+			// Exclude successful entries (both regular and fallback)
+			$query .= " WHERE (`success` != 1 AND `success` != 'Sent ( ** Fallback ** )' AND `success` NOT LIKE '( ** Fallback ** )%') ";
+		}
 		
 		return $query;
 		

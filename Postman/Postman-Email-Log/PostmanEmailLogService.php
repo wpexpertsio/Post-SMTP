@@ -204,7 +204,15 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 			if( $this->new_logging ) {
 				$data = array();
 				$data['solution']         = apply_filters( 'post_smtp_log_solution', null, $new_status, $log, $message );
-				$data['success']          = empty( $new_status ) ? 1 : $new_status;
+				// Store success status: for successful emails, store status message in success field for display
+				// The filtering logic will handle both success = 1 and fallback status messages
+				if ( $log->success === true || $log->success === 'WARN' || $log->success === 1 ) {
+					// For successful emails (including fallback), store status message or 1
+					$data['success'] = empty( $new_status ) ? 1 : $new_status;
+				} else {
+					// For failed emails, store the error message
+					$data['success'] = empty( $new_status ) ? 0 : $new_status;
+				}
 				$data['from_header']      = $log->sender;
 				$data['to_header']        = $this->sanitize_emails( $log->toRecipients );
 				$data['cc_header']        = $this->sanitize_emails( $log->ccRecipients );
