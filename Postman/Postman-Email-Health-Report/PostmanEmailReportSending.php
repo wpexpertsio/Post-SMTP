@@ -134,8 +134,6 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 			$where = ( ! empty( $from ) && ! empty( $to ) ) ? " WHERE pl.time >= {$from} && pl.time <= {$to}" : '';
 
 
-			// Include both regular success (success = 1) and fallback success entries in sent count
-			// Fallback entries have status messages like 'Sent ( ** Fallback ** )' or '( ** Fallback ** ) ...'
 			$query = "SELECT pl.original_subject AS subject, COUNT( pl.original_subject ) AS total, 
 				SUM( pl.success = 1 OR pl.success = 'Sent ( ** Fallback ** )' OR pl.success LIKE '( ** Fallback ** )%' ) As sent, 
 				SUM( pl.success != 1 AND pl.success != 'Sent ( ** Fallback ** )' AND pl.success NOT LIKE '( ** Fallback ** )%' ) As failed 
