@@ -177,7 +177,10 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				return filter_var( $email, FILTER_VALIDATE_EMAIL ) ? sanitize_email( $email ) : '';
 			}, $emails );
 
-			return implode( ', ', array_filter( $sanitized_emails ) );
+			// Remove duplicates and empty values
+			$sanitized_emails = array_unique( array_filter( $sanitized_emails ) );
+
+			return implode( ', ', $sanitized_emails );
 		}
 
 		/**
