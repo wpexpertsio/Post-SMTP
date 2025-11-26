@@ -167,7 +167,6 @@ class PostsmtpMailer extends PHPMailer {
 					// Optionally log error here
 					return false;
 				}
-				$log->status = 'ignored';
 				$this->transcript = '';
 				return true;
 			} elseif ( $run_mode === PostmanOptions::RUN_MODE_LOG_ONLY ) {
@@ -178,7 +177,8 @@ class PostsmtpMailer extends PHPMailer {
 					$this->error = $exc;
 					$this->setError($exc->getMessage());
 					$this->transcript = '';
-					// Optionally log error here
+					// Log failed attempt in LOG_ONLY mode
+					do_action( 'post_smtp_on_failed', $log, $postmanMessage, $this->transcript, $transport, $exc->getMessage() );
 					return false;
 				}
 				$log->status = 'logged_only';
