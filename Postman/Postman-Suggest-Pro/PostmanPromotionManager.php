@@ -95,11 +95,19 @@ class Postman_Promotion_Manager {
      */
     public function skip_bfcm() {
 
-        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-skip-bfcm' ) {
+        if ( isset( $_GET['action'] ) && $_GET['action'] === 'ps-skip-bfcm' ) {
 
             set_transient( 'ps-skip-bfcm', true, 604800 );
 
-            wp_redirect( wp_get_referer() );
+            $redirect_url = wp_get_referer();
+
+            if ( $redirect_url ) {
+                wp_safe_redirect( $redirect_url );
+            } else {
+                wp_safe_redirect( admin_url( 'admin.php?page=postman' ) );
+            }
+
+            exit;
 
         }
 

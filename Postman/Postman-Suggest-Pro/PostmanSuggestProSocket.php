@@ -204,11 +204,12 @@ class PostmanSuggestProSocket {
      */
     public function skip_pro_banner() {
 
-        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps_skip_pro_banner' ) {
+        if ( isset( $_GET['action'] ) && $_GET['action'] === 'ps_skip_pro_banner' ) {
 
             set_transient( 'post_smtp_skip_banner', 23668200 );
 
-            wp_redirect( admin_url( 'admin.php?page=postman' ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=postman' ) );
+            exit;
 
         }
 

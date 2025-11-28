@@ -139,19 +139,19 @@ class Post_SMTP_New_Wizard {
                     <div class="ps-wizard-section">
                         <div class="ps-wizard-nav">
                             <table>
-                                <tr class="<?php echo esc_attr( $in_active ) ?>">
+                                <tr class="<?php echo esc_attr( $in_active ); ?>">
                                     <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"></span></td>
-                                    <td class="ps-wizard-text"><?php _e( 'Choose your SMTP Mailer', 'post-smtp' ) ?></td>
+                                    <td class="ps-wizard-text"><?php esc_html_e( 'Choose your SMTP Mailer', 'post-smtp' ); ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="1"></span></td>
                                 </tr>
-                                <tr class="<?php echo esc_attr( $is_active ) ?>">
+                                <tr class="<?php echo esc_attr( $is_active ); ?>">
                                     <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"><span class="ps-wizard-line"></span></span></td>
-                                    <td class="ps-wizard-text"><?php _e( 'Configure Mailer Settings', 'post-smtp' ) ?></td>
+                                    <td class="ps-wizard-text"><?php esc_html_e( 'Configure Mailer Settings', 'post-smtp' ); ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="2"></span></td>
                                 </tr>
                                 <tr class="ps-in-active-nav">
                                     <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"><span class="ps-wizard-line"></span></span></td>
-                                    <td class="ps-wizard-text"><?php _e( 'Send Test Email', 'post-smtp' ) ?></td>
+                                    <td class="ps-wizard-text"><?php esc_html_e( 'Send Test Email', 'post-smtp' ); ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="3"></span></td>
                                 </tr>
                             </table>
@@ -270,13 +270,13 @@ class Post_SMTP_New_Wizard {
 
                                             ?>
                                             <div class="ps-wizard-socket-radio-outer">
-                                                <div class="ps-wizard-socket-radio <?php echo !empty( $is_pro ) ? esc_attr( $is_pro ) . '-outer' : ''; ?>" <?php echo !empty( $is_pro ) ? 'data-url="' . esc_url( $product_url ) . '"' : ''; ?>>
-                                                    <?php if( !empty( $is_pro ) ): ?>
-                                                        <span class="<?php echo $is_pro . '-tag' ?>">PRO</span>
+                                                <div class="ps-wizard-socket-radio <?php echo ! empty( $is_pro ) ? esc_attr( $is_pro ) . '-outer' : ''; ?>" <?php echo ! empty( $is_pro ) ? 'data-url="' . esc_url( $product_url ) . '"' : ''; ?>>
+                                                    <?php if ( ! empty( $is_pro ) ) : ?>
+                                                        <span class="<?php echo esc_attr( $is_pro . '-tag' ); ?>">PRO</span>
                                                     <?php endif; ?>
-                                                    <?php if( empty( $is_pro ) ) : ?> <label for="ps-wizard-socket-<?php echo esc_attr( $slug ); ?>"><?php endif; ?>                                                    
-                                                        <?php if( empty( $is_pro ) ) : ?> 
-                                                            <input type="radio" <?php echo esc_attr( $checked ) ;?> class="ps-wizard-socket-check <?php echo esc_attr( $is_pro ); ?>" id="ps-wizard-socket-<?php echo esc_attr( $slug ); ?>" value="<?php echo esc_attr( $slug ); ?>" name="<?php echo 'postman_options[' . esc_attr( PostmanOptions::TRANSPORT_TYPE ) . ']'; ?>">
+                                                    <?php if ( empty( $is_pro ) ) : ?> <label for="ps-wizard-socket-<?php echo esc_attr( $slug ); ?>"><?php endif; ?>                                                    
+                                                        <?php if ( empty( $is_pro ) ) : ?> 
+                                                            <input type="radio" <?php echo esc_attr( $checked ); ?> class="ps-wizard-socket-check <?php echo esc_attr( $is_pro ); ?>" id="ps-wizard-socket-<?php echo esc_attr( $slug ); ?>" value="<?php echo esc_attr( $slug ); ?>" name="<?php echo 'postman_options[' . esc_attr( PostmanOptions::TRANSPORT_TYPE ) . ']'; ?>">
                                                         <?php endif; ?>
                                                         <img src="<?php echo esc_url( $url ); ?>">
                                                         <?php if( empty( $is_pro ) ) : ?>
@@ -296,12 +296,15 @@ class Post_SMTP_New_Wizard {
                                         ?>
                                         </div>
                                         <p style="width: 70%; margin-bottom: 30px;">
-                                        <?php echo sprintf(
+                                        <?php
+                                        $help_text = sprintf(
                                             '%1$s <i><a href="%2$s">%3$s</a></i>',
-                                            __( 'Need help in choosing one?', 'post-smtp' ),
+                                            esc_html__( 'Need help in choosing one?', 'post-smtp' ),
                                             esc_url( admin_url( 'admin.php?page=postman-contact' ) ),
-                                            __( 'Check out our Mailer Guide.', 'post-smtp' )
-                                        ); ?>
+                                            esc_html__( 'Check out our Mailer Guide.', 'post-smtp' )
+                                        );
+                                        echo wp_kses_post( $help_text );
+                                        ?>
                                         </p>
 
                                         <p style="width: 70%; margin-bottom: 30px;">
@@ -315,13 +318,13 @@ class Post_SMTP_New_Wizard {
 
                                             $this->render_name_email_settings();
 
-                                            foreach( $this->sockets as $key => $title ) {
+                                            foreach ( $this->sockets as $key => $title ) {
 
-                                                $active_socket = ( isset( $_GET['socket'] ) && $_GET['socket'] == $key ) ? 'style="display: block;"' : '';
+                                                $is_active_socket = ( isset( $_GET['socket'] ) && $_GET['socket'] == $key );
 
                                                 ?>
-                                                <div class="ps-form-ui ps-wizard-socket <?php echo esc_attr( $key ); ?>" <?php echo $active_socket; ?>>
-                                                    <h3><?php echo $title == 'Default' ? '' : esc_attr( $title ); ?></h3>
+                                                <div class="ps-form-ui ps-wizard-socket <?php echo esc_attr( $key ); ?>"<?php echo $is_active_socket ? ' style="display: block;"' : ''; ?>>
+                                                    <h3><?php echo ( 'Default' === $title ) ? '' : esc_html( $title ); ?></h3>
                                                     <?php $this->render_socket_settings( $key ); ?>
                                                 </div>
                                                 <?php
@@ -332,16 +335,19 @@ class Post_SMTP_New_Wizard {
                                         ?>
                                     </div>
                                     <div class="ps-wizard-step ps-wizard-step-3">
-                                        <a href="" data-step="2" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span><?php _e( 'Back', 'post-smtp' ) ?></a>
-                                        <p><?php _e( 'Send a test email message to check your SMTP mailer’s connection. If there is a problem, Post SMTP will give up after 60 seconds.', 'post-smtp' ); ?></p>
+                                        <a href="" data-step="2" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span><?php esc_html_e( 'Back', 'post-smtp' ); ?></a>
+                                        <p><?php esc_html_e( 'Send a test email message to check your SMTP mailer’s connection. If there is a problem, Post SMTP will give up after 60 seconds.', 'post-smtp' ); ?></p>
                                         <div class="ps-form-ui">
                                             <div class="ps-form-control">
-                                                <div><label><?php _e( 'Recipient Email Address', 'post-smtp' ) ?></label></div>
+                                                <div><label><?php esc_html_e( 'Recipient Email Address', 'post-smtp' ); ?></label></div>
                                                 <input type="text" class="ps-test-to" required data-error="Enter Recipient Email Address" name="postman_test_options[test_email]" value="<?php echo esc_attr( wp_get_current_user()->user_email ); ?>" placeholder="Recipient Email Address">
-                                                <span class="ps-form-control-info"><?php _e( 'Enter the email address where you want to send a test email message.', 'post-smtp' ) ?></span>
-                                                <p class="ps-form-control-info"><?php _e( 'Are your WordPress emails getting broken? Here how you can ', 'post-smtp' ) ?> <a href="https://postmansmtp.com/fix-for-broken-emails/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank"><?php _e( 'fix Broken Emails', 'post-smtp' ) ?></a>.</p>
+                                                <span class="ps-form-control-info"><?php esc_html_e( 'Enter the email address where you want to send a test email message.', 'post-smtp' ); ?></span>
+                                                <p class="ps-form-control-info">
+                                                    <?php esc_html_e( 'Are your WordPress emails getting broken? Here how you can ', 'post-smtp' ); ?>
+                                                    <a href="https://postmansmtp.com/fix-for-broken-emails/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank"><?php esc_html_e( 'fix Broken Emails', 'post-smtp' ); ?></a>.
+                                                </p>
                                             </div>
-                                            <button class="button button-primary ps-blue-btn ps-wizard-send-test-email" data-step="3"><?php _e( 'Send Test Email', 'post-smtp' ) ?> <span class="dashicons dashicons-email"></span></button>
+                                            <button class="button button-primary ps-blue-btn ps-wizard-send-test-email" data-step="3"><?php esc_html_e( 'Send Test Email', 'post-smtp' ); ?> <span class="dashicons dashicons-email"></span></button>
                                             <div>
                                                 <p class="ps-wizard-error"></p>
                                                 <p class="ps-wizard-success"></p>
@@ -350,40 +356,40 @@ class Post_SMTP_New_Wizard {
                                         </div>
                                     </div>
                                     <div class="ps-wizard-step ps-wizard-step-4">
-                                        <h4>❤ <?php _e( 'Share Your Feedback', 'post-smtp' ) ?></h4>
+                                        <h4>❤ <?php esc_html_e( 'Share Your Feedback', 'post-smtp' ); ?></h4>
                                         <p><?php 
                                         /**
                                          * Translators: %1$s Text, %2$s URL, %3$s URL Text
                                          */
                                         printf(
                                             '%1$s <a href="%2$s" target="_blank">%3$s</a>',
-                                            __( 'We value your opinion on your experience with Post SMTP and would appreciate your feedback. ', 'post-smtp' ),
+                                            esc_html__( 'We value your opinion on your experience with Post SMTP and would appreciate your feedback. ', 'post-smtp' ),
                                             esc_url( 'https://wordpress.org/support/plugin/post-smtp/reviews/#new-post' ),
-                                            __( 'Leave a review here.', 'post-smtp' )
-                                        ) ?></p>
+                                            esc_html__( 'Leave a review here.', 'post-smtp' )
+                                        ); ?></p>
                                         <div class="ps-home-middle-right" style="background-image: url(<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/mobile-banner.png' ) ?>); float: unset; width: 100%; height: 230px;">
                                             <div class="ps-mobile-notice-content">
-                                                <p><?php _e( 'Introducing NEW Post SMTP Mobile App' ); ?></p>
+                                                <p><?php esc_html_e( 'Introducing NEW Post SMTP Mobile App', 'post-smtp' ); ?></p>
                                                 <div class="ps-mobile-notice-features">
                                                     <div class="ps-mobile-feature-left">
                                                         <span class="dashicons dashicons-yes-alt"></span>
-                                                        <?php _e( 'Easy Email Tracking', 'post-smtp' ) ?>
+                                                        <?php esc_html_e( 'Easy Email Tracking', 'post-smtp' ); ?>
                                                         <br>
                                                         <span class="dashicons dashicons-yes-alt"></span>
-                                                        <?php _e( 'Quickly View Error Details', 'post-smtp' ) ?>
+                                                        <?php esc_html_e( 'Quickly View Error Details', 'post-smtp' ); ?>
                                                         <br>
                                                         <span class="dashicons dashicons-yes-alt"></span>
-                                                        <?php _e( 'Easy Email Tracking', 'post-smtp' ) ?>                                                   			
+                                                        <?php esc_html_e( 'Easy Email Tracking', 'post-smtp' ); ?>                                                   			
                                                     </div>
                                                     <div class="ps-mobile-feature-right">
                                                         <span class="dashicons dashicons-yes-alt"></span>
-                                                        <?php _e( 'Get Email Preview', 'post-smtp' ) ?>                                               
+                                                        <?php esc_html_e( 'Get Email Preview', 'post-smtp' ); ?>                                               
                                                         <br>
                                                         <span class="dashicons dashicons-yes-alt"></span>
-                                                        <?php _e( 'Resend Failed Emails', 'post-smtp' ) ?>                                                    
+                                                        <?php esc_html_e( 'Resend Failed Emails', 'post-smtp' ); ?>                                                    
                                                         <br>
                                                         <span class="dashicons dashicons-yes-alt"></span>
-                                                        <?php _e( 'Support multiple sites', 'post-smtp' ) ?>                                                      
+                                                        <?php esc_html_e( 'Support multiple sites', 'post-smtp' ); ?>                                                      
                                                     </div>
                                                 </div>
                                                 <div style="display: flex; margin-top: 15px;">
@@ -418,30 +424,38 @@ class Post_SMTP_New_Wizard {
                         <div class="ps-wizard-footer-right">
                             <div class="ps-wizard-step ps-wizard-step-1">
                                 <p class="ps-wizard-error"></p>
-                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="1"><?php _e( 'Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
+                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="1"><?php esc_html_e( 'Continue', 'post-smtp' ); ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                                 <div style="clear: both"></div>
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-2">
-                                <p class="ps-wizard-success"><?php echo ( isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
-                                <p class="ps-wizard-error"><?php echo ( !isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
-                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="2"></span><?php _e( 'Save and Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
+                                <p class="ps-wizard-success">
+                                    <?php
+                                    echo ( isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? esc_html( sanitize_text_field( wp_unslash( $_GET['msg'] ) ) ) : '';
+                                    ?>
+                                </p>
+                                <p class="ps-wizard-error">
+                                    <?php
+                                    echo ( ! isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? esc_html( sanitize_text_field( wp_unslash( $_GET['msg'] ) ) ) : '';
+                                    ?>
+                                </p>
+                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="2"></span><?php esc_html_e( 'Save and Continue', 'post-smtp' ); ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                                 <div style="clear: both"></div>
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-3">
-                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn ps-finish-wizard" data-step="3"><?php _e( 'I\'ll send a test email later.', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
+                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn ps-finish-wizard" data-step="3"><?php esc_html_e( 'I\'ll send a test email later.', 'post-smtp' ); ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-4">
                                 <div class="ps-wizard-congrates">
-                                    <h2>👏 <?php _e( 'Great you are all done!', 'post-smtp' ); ?></h2>
+                                    <h2>👏 <?php esc_html_e( 'Great you are all done!', 'post-smtp' ); ?></h2>
                                     <?php 
                                     printf( 
                                         '<a href="%1$s" style="font-size: 12px;">%2$s <b>%3$s</b> %4$s <b>%5$s</b> %6$s</a>', 
                                         esc_url( admin_url( 'admin.php?page=postman/configuration' ) ),
-                                        __( 'Visit settings to setup', 'post-smtp' ),
-                                        __( 'Notifications', 'post-smtp' ),
-                                        __( 'and', 'post-smtp' ),
-                                        __( 'Fallback SMTP'),
-                                        __( 'options.', 'post-smtp' )
+                                        esc_html__( 'Visit settings to setup', 'post-smtp' ),
+                                        esc_html__( 'Notifications', 'post-smtp' ),
+                                        esc_html__( 'and', 'post-smtp' ),
+                                        esc_html__( 'Fallback SMTP', 'post-smtp' ),
+                                        esc_html__( 'options.', 'post-smtp' )
                                     );
                                     ?>
                                 </div>
@@ -456,9 +470,9 @@ class Post_SMTP_New_Wizard {
                     </div>
                 </div>
                 <div class="ps-wizard-page-footer">
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration_wizard&wizard=legacy' ) ); ?>"><?php _e( 'Continue with legacy wizard', 'post-smtp' ); ?></a>
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman' ) );?>"><?php _e( 'Go back to dashboard', 'post-smtp' ); ?></a>
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration' ) );?>"><?php _e( 'Switch to settings section', 'post-smtp' ); ?></a>
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration_wizard&wizard=legacy' ) ); ?>"><?php esc_html_e( 'Continue with legacy wizard', 'post-smtp' ); ?></a>
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman' ) );?>"><?php esc_html_e( 'Go back to dashboard', 'post-smtp' ); ?></a>
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman/configuration' ) );?>"><?php esc_html_e( 'Switch to settings section', 'post-smtp' ); ?></a>
                 </div>
             </div>
         </div>
@@ -1542,10 +1556,10 @@ public function render_gmail_settings() {
         ';
         
         $html .= '
-        <h3>'.__( 'Authorization (Required)', 'post-smtp' ).'</h3>
-        <p>'.__( 'Before continuing, you\'ll need to allow this plugin to send emails using Zoho.', 'post-smtp' ).'</p>
-        <input type="hidden" '.$required.' data-error="Please authenticate by clicking Connect to Zoho" />
-        <a href="'.admin_url( 'admin.php?postman/configuration_wizard&action=zoho_auth_request' ).'" class="button button-primary ps-blue-btn" id="ps-wizard-connect-zoho">Connect to Zoho</a>';
+        <h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>
+        <p>' . esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Zoho.', 'post-smtp' ) . '</p>
+        <input type="hidden" ' . esc_attr( $required ) . ' data-error="Please authenticate by clicking Connect to Zoho" />
+        <a href="' . esc_url( admin_url( 'admin.php?postman/configuration_wizard&action=zoho_auth_request' ) ) . '" class="button button-primary ps-blue-btn" id="ps-wizard-connect-zoho">' . esc_html__( 'Connect to Zoho', 'post-smtp' ) . '</a>';
 
         return $html;
 
@@ -1554,14 +1568,15 @@ public function render_gmail_settings() {
     public function render_smtp2go_settings() {
         ob_start();
 
-        $api_key = null === $this->options->getSmtp2GoApiKey() ? '' : esc_attr( $this->options->getSmtp2GoApiKey() );
+        $raw_api_key = $this->options->getSmtp2GoApiKey();
+        $api_key     = ( null === $raw_api_key ) ? '' : $raw_api_key;
 
 
         echo '<p>' . esc_html__( 'It is easy to integrate SMTP2GO mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-setup-smtp2go-with-post-smtp/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
 
         echo '<div class="ps-form-control">
-            <div><label>API Key</label></div>
-            <input type="text" class="ps-smtp2go-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SMTP2GO_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">';
+            <div><label>' . esc_html__( 'API Key', 'post-smtp' ) . '</label></div>
+            <input type="text" class="ps-smtp2go-api-key" required data-error="' . esc_attr__( 'Please enter API Key.', 'post-smtp' ) . '" name="postman_options[' . esc_attr( PostmanOptions::SMTP2GO_API_KEY ) . ']" value="' . esc_attr( $api_key ) . '" placeholder="API Key">';
 
         echo '<div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://app-eu.smtp2go.com/sending/apikeys/" target="_blank">' . esc_html__( 'the API key', 'post-smtp' ) . '</a>' . esc_html__( ' in your SMTP2GO account.', 'post-smtp' ) . '</div>';
 
@@ -1724,8 +1739,9 @@ public function render_gmail_settings() {
         $redirect_url = $PostmanOauthClient->getZohoMailAuthURL( array(
             'state' => $state,
         ) );
-
-        wp_redirect( $redirect_url );
+        
+        wp_safe_redirect( $redirect_url );
+        exit;
 
     }
 
@@ -1747,7 +1763,7 @@ public function render_gmail_settings() {
         delete_option( 'postman_auth_token' );
 
         // Redirect the user back to the settings page with a success query parameter.
-        wp_redirect( admin_url( "admin.php?socket=gmail_api&step=2&page=postman/configuration_wizard" ) );
+        wp_safe_redirect( admin_url( "admin.php?socket=gmail_api&step=2&page=postman/configuration_wizard" ) );
 
         // Terminate script execution to prevent further processing after the redirect.
         exit;

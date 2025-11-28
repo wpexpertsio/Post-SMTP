@@ -40,7 +40,7 @@ if ( ! function_exists( 'ps_fs' ) ) {
 
         if ( ! isset( $ps_fs ) ) {
             // Include Freemius SDK.
-            require_once dirname(__FILE__) . '/freemius/start.php';
+           require_once dirname(__FILE__) . '/freemius/start.php';
 
             $ps_fs = fs_dynamic_init( array(
                 'id'                  => '10461',

@@ -58,7 +58,7 @@ class PostmanEmailLogs {
 
             // Check if user has permission to view email logs
             if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) ) {
-                wp_die( __( 'Sorry, you are not allowed to access this page.', 'post-smtp' ) );
+                wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'post-smtp' ) );
             }
 
             // Print
@@ -72,9 +72,14 @@ class PostmanEmailLogs {
             $email_query_log = new PostmanEmailQueryLog();
             $log = $email_query_log->get_log( $id, '' );
             $header = $log['original_headers'];
-            $msg = $log['original_message'];
- 			$msg = $this->purify_html( $msg );
-           	echo ( isset ( $header ) && strpos( $header, "text/html" ) ) ? $msg : '' . $msg . '' ;
+            $msg    = $log['original_message'];
+            $msg    = $this->purify_html( $msg );
+
+            if ( isset( $header ) && strpos( $header, 'text/html' ) !== false ) {
+                echo wp_kses_post( $msg );
+            } else {
+                echo esc_html( $msg );
+            }
 
             die;
 

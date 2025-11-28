@@ -186,7 +186,7 @@ class PostmanUtils {
 		if ( PostmanUtils::$logger->isTrace() ) {
 			PostmanUtils::$logger->trace( sprintf( "Redirecting to '%s'", $url ) );
 		}
-		wp_redirect( $url );
+		wp_safe_redirect( $url );
 		exit();
 	}
 	static function parseBoolean( $var ) {

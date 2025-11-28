@@ -108,8 +108,12 @@ if (! class_exists ( 'PostmanMessageHandler' )) {
 		 * @param mixed $message        	
 		 * @param mixed $className        	
 		 */
-		public function printMessage($message, $className) {
-			printf ( '<div class="%s"><p>%s</p></div>', $className, $message );
+		public function printMessage( $message, $className ) {
+			printf(
+				'<div class="%s"><p>%s</p></div>',
+				esc_attr( $className ),
+				esc_html( $message )
+			);
 		}
 	}
 }

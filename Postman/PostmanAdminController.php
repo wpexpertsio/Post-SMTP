@@ -405,12 +405,10 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 					$message = __( 'The OAuth 2.0 authorization was successful. Ready to send e-mail.', 'post-smtp' );
 					$this->messageHandler->addMessage( $message );
 
-					//Let's redirect to New Wizard
-					if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
-						
-						wp_redirect( "{$redirect_uri}&msg={$message}&success=1" );
+					// Let's redirect to New Wizard
+					if ( ! apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+						wp_safe_redirect( "{$redirect_uri}&msg={$message}&success=1" );
 						exit();
-
 					}
 
 				} else {
@@ -419,12 +417,10 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 
 					$this->messageHandler->addError( $message );
 
-					//Let's redirect to New Wizard
-					if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
-						
-						wp_redirect( "{$redirect_uri}&msg={$message}" );
+					// Let's redirect to New Wizard
+					if ( ! apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+						wp_safe_redirect( "{$redirect_uri}&msg={$message}" );
 						exit();
-
 					}
 
 				}
@@ -434,13 +430,11 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 
 				$this->messageHandler->addError( $message );
 
-				//Let's redirect to New Wizard
-                if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
-                    
-                    wp_redirect( "{$redirect_uri}&msg={$message}" );
-                    exit();
-
-                }
+				// Let's redirect to New Wizard
+				if ( ! apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+					wp_safe_redirect( "{$redirect_uri}&msg={$message}" );
+					exit();
+				}
 
 			} catch ( Exception $e ) {
 				$logger->error( 'Error: ' . get_class( $e ) . ' code=' . $e->getCode() . ' message=' . $e->getMessage() );
@@ -450,13 +444,11 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				/* translators: %s is the error message */
 				$this->messageHandler->addError( $message );
 
-				//Let's redirect to New Wizard
-                if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
-                    
-                    wp_redirect( "{$redirect_uri}&msg={$message}" );
-                    exit();
-
-                }
+				// Let's redirect to New Wizard
+				if ( ! apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+					wp_safe_redirect( "{$redirect_uri}&msg={$message}" );
+					exit();
+				}
 
 			}
 

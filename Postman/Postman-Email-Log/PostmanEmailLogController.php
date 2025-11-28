@@ -319,7 +319,7 @@ class PostmanEmailLogController {
 	function view_log_item() {
 		// Check if user has permission to view email logs
 		if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) ) {
-			wp_die( __( 'Sorry, you are not allowed to view email logs.', 'post-smtp' ) );
+			wp_die( esc_html__( 'Sorry, you are not allowed to view email logs.', 'post-smtp' ) );
 		}
 		
 		$this->logger->trace( 'handling view item' );
@@ -338,35 +338,67 @@ class PostmanEmailLogController {
     background: #bbb;
 }</style></head><body>';
 			print '<table>';
-			if ( ! empty( $meta_values ['from_header'] [0] ) ) {
-				printf( '<tr><th style="text-align:right">%s:</th><td>%s</td></tr>', _x( 'From', 'Who is this message From?', 'post-smtp' ), esc_html( $meta_values ['from_header'] [0] ) );
+			if ( ! empty( $meta_values['from_header'][0] ) ) {
+				printf(
+					'<tr><th style="text-align:right">%s:</th><td>%s</td></tr>',
+					esc_html_x( 'From', 'Who is this message From?', 'post-smtp' ),
+					esc_html( $meta_values['from_header'][0] )
+				);
 			}
 			// show the To header (it's optional)
-			if ( ! empty( $meta_values ['to_header'] [0] ) ) {
-				printf( '<tr><th style="text-align:right">%s:</th><td>%s</td></tr>', _x( 'To', 'Who is this message To?', 'post-smtp' ), esc_html( $meta_values ['to_header'] [0] ) );
+			if ( ! empty( $meta_values['to_header'][0] ) ) {
+				printf(
+					'<tr><th style="text-align:right">%s:</th><td>%s</td></tr>',
+					esc_html_x( 'To', 'Who is this message To?', 'post-smtp' ),
+					esc_html( $meta_values['to_header'][0] )
+				);
 			}
 			// show the Cc header (it's optional)
-			if ( ! empty( $meta_values ['cc_header'] [0] ) ) {
-				printf( '<tr><th style="text-align:right">%s:</th><td>%s</td></tr>', _x( 'Cc', 'Who is this message Cc\'d to?', 'post-smtp' ), esc_html( $meta_values ['cc_header'] [0] ) );
+			if ( ! empty( $meta_values['cc_header'][0] ) ) {
+				printf(
+					'<tr><th style="text-align:right">%s:</th><td>%s</td></tr>',
+					esc_html_x( 'Cc', 'Who is this message Cc\'d to?', 'post-smtp' ),
+					esc_html( $meta_values['cc_header'][0] )
+				);
 			}
 			// show the Bcc header (it's optional)
-			if ( ! empty( $meta_values ['bcc_header'] [0] ) ) {
-				printf( '<tr><th style="text-align:right">%s:</th><td>%s</td></tr>', _x( 'Bcc', 'Who is this message Bcc\'d to?', 'post-smtp' ), esc_html( $meta_values ['bcc_header'] [0] ) );
+			if ( ! empty( $meta_values['bcc_header'][0] ) ) {
+				printf(
+					'<tr><th style="text-align:right">%s:</th><td>%s</td></tr>',
+					esc_html_x( 'Bcc', 'Who is this message Bcc\'d to?', 'post-smtp' ),
+					esc_html( $meta_values['bcc_header'][0] )
+				);
 			}
 			// show the Reply-To header (it's optional)
-			if ( ! empty( $meta_values ['reply_to_header'] [0] ) ) {
-				printf( '<tr><th style="text-align:right">%s:</th><td>%s</td></tr>', __( 'Reply-To', 'post-smtp' ), esc_html( $meta_values ['reply_to_header'] [0] ) );
+			if ( ! empty( $meta_values['reply_to_header'][0] ) ) {
+				printf(
+					'<tr><th style="text-align:right">%s:</th><td>%s</td></tr>',
+					esc_html__( 'Reply-To', 'post-smtp' ),
+					esc_html( $meta_values['reply_to_header'][0] )
+				);
 			}
-			printf( '<tr><th style="text-align:right">%s:</th><td>%s</td></tr>', _x( 'Date', 'What is the date today?', 'post-smtp' ), $post->post_date );
-			printf( '<tr><th style="text-align:right">%s:</th><td>%s</td></tr>', _x( 'Subject', 'What is the subject of this message?', 'post-smtp' ), esc_html( $post->post_title ) );
+			printf(
+				'<tr><th style="text-align:right">%s:</th><td>%s</td></tr>',
+				esc_html_x( 'Date', 'What is the date today?', 'post-smtp' ),
+				esc_html( $post->post_date )
+			);
+			printf(
+				'<tr><th style="text-align:right">%s:</th><td>%s</td></tr>',
+				esc_html_x( 'Subject', 'What is the subject of this message?', 'post-smtp' ),
+				esc_html( $post->post_title )
+			);
 			// The Transport UI is always there, in more recent versions that is
-			if ( ! empty( $meta_values ['transport_uri'] [0] ) ) {
-				printf( '<tr><th style="text-align:right">%s:</th><td>%s</td></tr>', _x( 'Delivery-URI', 'What is the unique URI of the configuration?', 'post-smtp' ), esc_html( $meta_values ['transport_uri'] [0] ) );
+			if ( ! empty( $meta_values['transport_uri'][0] ) ) {
+				printf(
+					'<tr><th style="text-align:right">%s:</th><td>%s</td></tr>',
+					esc_html_x( 'Delivery-URI', 'What is the unique URI of the configuration?', 'post-smtp' ),
+					esc_html( $meta_values['transport_uri'][0] )
+				);
 			}
 		print '</table>';
 		print '<hr/>';
 		print '<pre>';
-		print $this->sanitize_message( $post->post_content );
+		echo wp_kses_post( $this->sanitize_message( $post->post_content ) );
 		print '</pre>';
 		print '</body></html>';
 		die();
@@ -384,7 +416,7 @@ class PostmanEmailLogController {
 	function view_transcript_log_item() {
 		// Check if user has permission to view email logs
 		if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) ) {
-			wp_die( __( 'Sorry, you are not allowed to view email logs.', 'post-smtp' ) );
+			wp_die( esc_html__( 'Sorry, you are not allowed to view email logs.', 'post-smtp' ) );
 		}
 		
 		$this->logger->trace( 'handling view transcript item' );
@@ -397,14 +429,17 @@ class PostmanEmailLogController {
     border-bottom: 1px dashed #ccc;
     background: #bbb;
 }</style></head><body>';
-			printf( '<p>%s</p>', __( 'This is the conversation between Postman and the mail server. It can be useful for diagnosing problems. <b>DO NOT</b> post it on-line, it may contain your account password.', 'post-smtp' ) );
+			printf(
+				'<p>%s</p>',
+				esc_html__( 'This is the conversation between Postman and the mail server. It can be useful for diagnosing problems. DO NOT post it on-line, it may contain your account password.', 'post-smtp' )
+			);
 			print '<hr/>';
 			print '<pre>';
 			if ( ! empty( $meta_values ['session_transcript'] [0] ) ) {
 				print esc_html( $meta_values ['session_transcript'] [0] );
 			} else {
 				/* Translators: Meaning "Not Applicable" */
-				print __( 'n/a', 'post-smtp' );
+				print esc_html__( 'n/a', 'post-smtp' );
 			}
 		print '</pre>';
 		print '</body></html>';

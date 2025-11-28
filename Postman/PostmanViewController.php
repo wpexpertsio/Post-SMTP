@@ -435,31 +435,31 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
                         </div>
                         <div>
                             <a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" /><?php echo esc_html__( 'Microsoft 365/ Office 365', 'post-smtp' ); ?></a>
-                            <span class="<?php echo $badgesDisplay; ?>">Pro</span>
+                            <span class="<?php echo esc_attr( $badgesDisplay ); ?>">Pro</span>
                         </div>
                         <div>
                             <a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Amazon SES', 'post-smtp' ); ?></a>
-                            <span class="<?php echo $badgesDisplay; ?>">Pro</span>
+                            <span class="<?php echo esc_attr( $badgesDisplay ); ?>">Pro</span>
                         </div>
                         <div>
                             <a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/email-log-attachment/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Email Log attachment support', 'post-smtp' ); ?></a>
-                            <span class="<?php echo $badgesDisplay; ?>">Pro</span>
+                            <span class="<?php echo esc_attr( $badgesDisplay ); ?>">Pro</span>
                         </div>
                         <div>
                             <a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/reporting-and-tracking-extension/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Report & Tracking', 'post-smtp' ); ?></a>
-                            <span class="<?php echo $badgesDisplay; ?>">Pro</span>
+                            <span class="<?php echo esc_attr( $badgesDisplay ); ?>">Pro</span>
                         </div>
                         <div>
                             <a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/advanced-email-delivery/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Advanced Email Delivery & Logs', 'post-smtp' ); ?></a>
-                            <span class="<?php echo $badgesDisplay; ?>">Pro</span>
+                            <span class="<?php echo esc_attr( $badgesDisplay ); ?>">Pro</span>
                         </div>
                         <div>
                             <a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/twilio-extension-pro/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Twilio', 'post-smtp' ); ?></a>
-                            <span class="<?php echo $badgesDisplay; ?>">Pro</span>
+                            <span class="<?php echo esc_attr( $badgesDisplay ); ?>">Pro</span>
                         </div>
                         <div>
                             <a href="<?php echo esc_url( 'https://postmansmtp.com/extensions/zoho-mail-pro-extension/?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin' ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" ><?php echo esc_html__( 'Zoho Mail', 'post-smtp' ); ?></a>
-                            <span class="<?php echo $badgesDisplay; ?>">Pro</span>
+                            <span class="<?php echo esc_attr( $badgesDisplay ); ?>">Pro</span>
                         </div>
                     </div>
                     <div class="ps-setting-box">
@@ -474,13 +474,13 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
                             </a>
                         </div>
                         <div>
-                            <a href="<?php echo $this->getPageUrl( PostmanConnectivityTestController::PORT_TEST_SLUG ); ?>">
+                            <a href="<?php echo esc_url( $this->getPageUrl( PostmanConnectivityTestController::PORT_TEST_SLUG ) ); ?>">
                                 <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />
 					            <?php echo esc_html__( 'Connectivity Test', 'post-smtp' ); ?>
                             </a>
                         </div>
                         <div>
-                            <a href="<?php echo $this->getPageUrl( PostmanDiagnosticTestController::DIAGNOSTICS_SLUG ); ?>">
+                            <a href="<?php echo esc_url( $this->getPageUrl( PostmanDiagnosticTestController::DIAGNOSTICS_SLUG ) ); ?>">
                                 <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/finger.png' ) ?>" width="15" />
 					            <?php echo esc_html__( 'Diagnostic Test', 'post-smtp' ); ?>
                             </a>
@@ -578,7 +578,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 							            esc_html__( 'Please consider', 'post-smtp' ),
 							            esc_url( 'https://wordpress.org/support/plugin/post-smtp/reviews/?filter=5' ),
 							            esc_html__( 'leaving a review', 'post-smtp' ),
-							            __( 'to help spread the word! :D', 'post-smtp' )
+							            esc_html__( 'to help spread the word! :D', 'post-smtp' )
 						            );
 					            }
 
@@ -601,37 +601,41 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			            ?>
                     </div>
 
-                    <div class="ps-home-middle-right" style="background-image: url(<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/mobile-banner.png' ) ?>)">
+                    <div class="ps-home-middle-right" style="background-image: url(<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/mobile-banner.png' ); ?>)">
                         <div class="ps-mobile-notice-content">
-                            <p><?php _e( 'Introducing NEW Post SMTP Mobile App' ); ?></p>
+                            <p><?php esc_html_e( 'Introducing NEW Post SMTP Mobile App', 'post-smtp' ); ?></p>
                             <div class="ps-mobile-notice-features">
                                 <div class="ps-mobile-feature-left">
                                     <span class="dashicons dashicons-yes-alt"></span>
-                                    Easy Email Tracking
+                                    <?php esc_html_e( 'Easy Email Tracking', 'post-smtp' ); ?>
                                     <br>
                                     <span class="dashicons dashicons-yes-alt"></span>
-                                    Quickly View Error Details
+                                    <?php esc_html_e( 'Quickly View Error Details', 'post-smtp' ); ?>
                                     <br>
                                     <span class="dashicons dashicons-yes-alt"></span>
-                                    Easy Email Tracking
+                                    <?php esc_html_e( 'Easy Email Tracking', 'post-smtp' ); ?>
                                 </div>
                                 <div class="ps-mobile-feature-right">
                                     <span class="dashicons dashicons-yes-alt"></span>
-                                    Get Email Preview
+                                    <?php esc_html_e( 'Get Email Preview', 'post-smtp' ); ?>
                                     <br>
                                     <span class="dashicons dashicons-yes-alt"></span>
-                                    Resend Failed Emails
+                                    <?php esc_html_e( 'Resend Failed Emails', 'post-smtp' ); ?>
                                     <br>
                                     <span class="dashicons dashicons-yes-alt"></span>
-                                    Support multiple sites
+                                    <?php esc_html_e( 'Support multiple sites', 'post-smtp' ); ?>
                                 </div>
                             </div>
                             <div style="display: flex;">
                                 <div class="ps-app-download-button">
-                                    <a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26utm_campaign%3Dplugin%26anid%3Dadmob" target="_blank">Download on Android</a>
+                                    <a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26utm_campaign%3Dplugin%26anid%3Dadmob" target="_blank">
+                                        <?php esc_html_e( 'Download on Android', 'post-smtp' ); ?>
+                                    </a>
                                 </div>
                                 <div class="ps-app-download-button">
-                                    <a href="https://apps.apple.com/us/app/post-smtp/id6473368559?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin" target="_blank">Download on iOS</a>
+                                    <a href="https://apps.apple.com/us/app/post-smtp/id6473368559?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin" target="_blank">
+                                        <?php esc_html_e( 'Download on iOS', 'post-smtp' ); ?>
+                                    </a>
                                 </div>
                             </div>
                         </div>

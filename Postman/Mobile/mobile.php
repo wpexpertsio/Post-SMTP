@@ -365,7 +365,8 @@ class Post_SMTP_Mobile {
 				
 			}
 			
-			wp_redirect( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) );
+			wp_safe_redirect( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) );
+			exit;
 			
 		}
 		
@@ -379,11 +380,12 @@ class Post_SMTP_Mobile {
      */
     public function dismiss_app_notice() {
 
-        if( isset( $_GET['action'] ) && $_GET['action'] === 'ps_dimiss_app_notice' ) {
+        if ( isset( $_GET['action'] ) && $_GET['action'] === 'ps_dimiss_app_notice' ) {
 
             update_option( 'ps_dismissed_mobile_notice', 1 );
 
-            wp_redirect( admin_url( 'admin.php?page=postman' ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=postman' ) );
+            exit;
 
         }
 
@@ -397,17 +399,18 @@ class Post_SMTP_Mobile {
      */
     public function regenerate_qrcode() {
 
-        if( ! isset( $_GET['_psnonce'] ) || ! wp_verify_nonce( $_GET['_psnonce'], 'ps-regenerate-qrcode-nonce' ) ) {
+        if ( ! isset( $_GET['_psnonce'] ) || ! wp_verify_nonce( $_GET['_psnonce'], 'ps-regenerate-qrcode-nonce' ) ) {
 
             die( 'Security Check' );
 
         }
 
-        if( isset( $_GET['action'] ) && $_GET['action'] === 'regenerate-qrcode' ) {
+        if ( isset( $_GET['action'] ) && $_GET['action'] === 'regenerate-qrcode' ) {
 
             delete_transient( 'post_smtp_auth_nonce' );
 
-            wp_redirect( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) );
+            exit;
 
         }
 

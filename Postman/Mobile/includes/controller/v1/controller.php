@@ -65,7 +65,7 @@ class Post_SMTP_Mobile_Controller {
 				
 			}
 			
-			wp_redirect( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) );
+			wp_safe_redirect( admin_url( 'admin.php?page=postman/configuration#mobile-app' ) );
 			
 		}
 		

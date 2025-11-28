@@ -34,12 +34,16 @@ class PostmanInstaller {
 
 		$table_version = get_option( 'postman_db_version' );
 
-		//If no logs in _posts table
+		// If no logs in _posts table.
 		global $wpdb;
 
-        $have_old_logs = $wpdb->get_results(
-            "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'postman_sent_mail' LIMIT 1;"
-        );
+		$have_old_logs = get_posts(
+			array(
+				'post_type'      => 'postman_sent_mail',
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+			)
+		);
 
 		if( !class_exists( 'PostmanEmailLogs' ) ) {
 
@@ -47,12 +51,16 @@ class PostmanInstaller {
 
 		}
 
-		$email_logs = new PostmanEmailLogs();
-		$logs_table = $wpdb->prefix . $email_logs->db_name;
-		$meta_table = $wpdb->prefix . $email_logs->meta_table;
-		// Check if the table exists
-		$logs_table = $wpdb->get_var( "SHOW TABLES LIKE '$logs_table'" );
-		$meta_table = $wpdb->get_var( "SHOW TABLES LIKE '$meta_table'" );
+		$email_logs      = new PostmanEmailLogs();
+		$logs_table_name = $wpdb->prefix . $email_logs->db_name;
+		$meta_table_name = $wpdb->prefix . $email_logs->meta_table;
+		// Check if the tables exist. Direct queries are acceptable here during activation.
+		$logs_table = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare( 'SHOW TABLES LIKE %s', $logs_table_name )
+		);
+		$meta_table = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare( 'SHOW TABLES LIKE %s', $meta_table_name )
+		);
 
 		//Lets Install New Fresh Logs Table
 		//Doesn't have table? but wp_options has postman_db_version

@@ -44,19 +44,31 @@ class PostmanNotify {
 		$webhook_alerts     = $currentKey == 'webhook_alerts' ? 'block' : 'none';
 		$notification_email = $currentKey == 'default' ? 'block' : 'none';
 
-		echo '<div id="email_notify" style="display: ' . $notification_email . ';">';
+		printf(
+			'<div id="email_notify" style="display: %s;">',
+			esc_attr( $notification_email )
+		);
 		do_settings_sections( self::NOTIFICATION_EMAIL );
 		echo '</div>';
 
-		echo '<div id="pushover_cred" style="display: ' . $pushover . ';">';
+		printf(
+			'<div id="pushover_cred" style="display: %s;">',
+			esc_attr( $pushover )
+		);
 		do_settings_sections( self::NOTIFICATIONS_PUSHOVER_CRED );
 		echo '</div>';
 
-		echo '<div id="slack_cred" style="display: ' . $slack . ';">';
+		printf(
+			'<div id="slack_cred" style="display: %s;">',
+			esc_attr( $slack )
+		);
 		do_settings_sections( self::NOTIFICATIONS_SLACK_CRED );
 		echo '</div>';
 
-		echo '<div id="webhook_alert_urls" style="display: ' . $webhook_alerts . ';">';
+		printf(
+			'<div id="webhook_alert_urls" style="display: %s;">',
+			esc_attr( $webhook_alerts )
+		);
 		do_settings_sections( self::NOTIFICATIONS_WEBHOOK_ALERT_URLS );
 		echo '</div>';
 
@@ -236,20 +248,40 @@ class PostmanNotify {
 	}
 
 	public function notification_chrome_uid_callback() {
-		printf( '<input type="password" id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]" value="%3$s" />', 'postman_options', 'notification_chrome_uid', PostmanUtils::obfuscatePassword( $this->options->getNotificationChromeUid() ) );
+		printf(
+			'<input type="password" id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]" value="%3$s" />',
+			'postman_options',
+			'notification_chrome_uid',
+			esc_attr( PostmanUtils::obfuscatePassword( $this->options->getNotificationChromeUid() ) )
+		);
 	}
 
 	public function pushover_user_callback() {
-		printf( '<input type="password" id="pushover_user" name="%s[%s]" value="%s" />', 'postman_options', PostmanNotifyOptions::PUSHOVER_USER, $this->options->getPushoverUser() );
+		printf(
+			'<input type="password" id="pushover_user" name="%s[%s]" value="%s" />',
+			'postman_options',
+			PostmanNotifyOptions::PUSHOVER_USER,
+			esc_attr( $this->options->getPushoverUser() )
+		);
 	}
 
 	public function pushover_token_callback() {
-		printf( '<input type="password" id="pushover_token" name="%s[%s]" value="%s" />', 'postman_options', PostmanNotifyOptions::PUSHOVER_TOKEN, $this->options->getPushoverToken() );
+		printf(
+			'<input type="password" id="pushover_token" name="%s[%s]" value="%s" />',
+			'postman_options',
+			PostmanNotifyOptions::PUSHOVER_TOKEN,
+			esc_attr( $this->options->getPushoverToken() )
+		);
 	}
 
 	public function slack_token_callback() {
-		printf( '<input type="password" id="slack_token" name="%s[%s]" value="%s" />', 'postman_options', PostmanNotifyOptions::SLACK_TOKEN, $this->options->getSlackToken() );
-		echo '<a target="_blank" href="https://slack.postmansmtp.com/">' . __( 'Get your webhook URL here', 'post-smtp' ) . '</a>';
+		printf(
+			'<input type="password" id="slack_token" name="%s[%s]" value="%s" />',
+			'postman_options',
+			PostmanNotifyOptions::SLACK_TOKEN,
+			esc_attr( $this->options->getSlackToken() )
+		);
+		echo '<a target="_blank" href="https://slack.postmansmtp.com/">' . esc_html__( 'Get your webhook URL here', 'post-smtp' ) . '</a>';
 	}
 
 	/**
@@ -270,8 +302,8 @@ class PostmanNotify {
 			$remove_btn = $i == 0 ? '' : '<span class="post-smtp-remove-webhook-url dashicons dashicons-trash"></span>';
 
 			echo "<tr class='post-smtp-webhook-url-container'>
-                    <th>" . __( 'Webhook URL', 'post-smtp' ) . "</th>
-                    <td><input type='text' name='postman_options[webhook_alerts_urls][]' value='" . esc_url( $webhook_urls[ $i ] ) . "' />" . $remove_btn . '</td>
+                    <th>" . esc_html__( 'Webhook URL', 'post-smtp' ) . "</th>
+                    <td><input type='text' name='postman_options[webhook_alerts_urls][]' value='" . esc_url( $webhook_urls[ $i ] ) . "' />" . wp_kses_post( $remove_btn ) . '</td>
                 </tr>';
 
 			++$i;
@@ -280,7 +312,7 @@ class PostmanNotify {
 
 		echo "<tr>
                 <td></td>
-                <td><a href='' class='button button-primary post-smtp-add-webhook-url'>" . __( 'Add Another Webhook URL', 'post-smtp' ) . '</a></td>
+                <td><a href='' class='button button-primary post-smtp-add-webhook-url'>" . esc_html__( 'Add Another Webhook URL', 'post-smtp' ) . '</a></td>
             </tr>
         </table>';
 	}
@@ -391,10 +423,11 @@ class PostmanNotify {
 		);
 		$currentKey = $this->options->getNotificationService();
 		$logs_url   = admin_url( 'admin.php?page=postman_email_log' );
+		$logs_link  = '<a href="' . esc_url( $logs_url ) . '" target="_blank">log section</a>';
 
 		echo '<p>' . sprintf(
 			esc_html__( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %s if required.', 'post-smtp' ),
-			'<a href="' . $logs_url . '" target="_blank">log section</a>'
+			wp_kses_post( $logs_link )
 		) . '</p>';
 
 		?>
@@ -511,12 +544,12 @@ class PostmanNotify {
 
 		?>
 		<div class="ps-chrome-extension">
-			<p><?php _e( 'You can also get notifications in chrome for Post SMTP in case of email delivery failure.', 'post-smtp' ); ?></p>
+			<p><?php esc_html_e( 'You can also get notifications in chrome for Post SMTP in case of email delivery failure.', 'post-smtp' ); ?></p>
 			<a target="_blank" class="ps-chrome-download" href="https://chrome.google.com/webstore/detail/npklmbkpbknkmbohdbpikeidiaekjoch">
 				<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/logos/chrome-24x24.png' ); ?>" />
 				<?php esc_html_e( 'Download Chrome extension', 'post-smtp' ); ?>
 			</a>
-			<a href="https://postmansmtp.com/post-smtp-1-9-6-new-chrome-extension/" target="_blank"><?php _e( 'Detailed Documentation.', 'post-smtp' ); ?></a>
+			<a href="https://postmansmtp.com/post-smtp-1-9-6-new-chrome-extension/" target="_blank"><?php esc_html_e( 'Detailed Documentation.', 'post-smtp' ); ?></a>
 		</div>
 		<?php
 	}

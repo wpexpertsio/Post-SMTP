@@ -109,23 +109,19 @@ class PostmanEmailLogsMigration {
      * @since 2.5.0
      * @version 1.0.0
      */
-    public function have_old_logs() {
+	public function have_old_logs() {
 
-        global $wpdb;
+		$logs = get_posts(
+			array(
+				'post_type'      => 'postman_sent_mail',
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+			)
+		);
 
-        $data = $wpdb->get_results(
-            "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'postman_sent_mail' LIMIT 1;"
-        );
-        
-        if( !empty( $data ) ) {
+		return ! empty( $logs );
 
-            return true;
-            
-        }
-
-        return false;
-
-    }
+	}
     
 
     /**
@@ -154,10 +150,10 @@ class PostmanEmailLogsMigration {
         ?>
         <div class="notice ps-db-update-notice <?php echo esc_attr( $dismissible ); ?>" style="border: 1px solid #2271b1; border-left-width: 4px;">
             <input type="hidden" value="<?php echo esc_attr( $security ); ?>" class="ps-security">
-            <p><b><?php _e( 'Post SMTP database update required', 'post-smtp' ); ?></b></p>
-            <?php if( $this->have_old_logs && !$this->migrating && !$this->is_migrated() ): ?>
-                <p><?php echo _e( 'Post SMTP has been updated! To keep things running smoothly, we have to update your database to the newest version, migrate email logs to new system. The database update process runs in the background and may take a little while, so please be patient.', 'post-smtp' ); ?></p>
-                <a href="<?php echo esc_url( $migration_url ) ?>" class="button button-primary">Update and Migrate Logs</a>
+            <p><b><?php esc_html_e( 'Post SMTP database update required', 'post-smtp' ); ?></b></p>
+            <?php if ( $this->have_old_logs && ! $this->migrating && ! $this->is_migrated() ) : ?>
+                <p><?php esc_html_e( 'Post SMTP has been updated! To keep things running smoothly, we have to update your database to the newest version, migrate email logs to new system. The database update process runs in the background and may take a little while, so please be patient.', 'post-smtp' ); ?></p>
+                <a href="<?php echo esc_url( $migration_url ); ?>" class="button button-primary"><?php esc_html_e( 'Update and Migrate Logs', 'post-smtp' ); ?></a>
             <?php endif; ?>
             <?php if(  
                 ( $this->is_migrated() && $current_page !== 'postman_email_log' )
@@ -165,9 +161,9 @@ class PostmanEmailLogsMigration {
                 ( $this->migrating )
                 &&
                 ( $current_page !== 'postman_email_log' )
-            ): ?>
-                <p><?php echo _e( 'Post SMTP is migrating logs to new system.', 'post-smtp' ); ?></p>
-                <a href="<?php echo esc_url( $status_url ); ?>" class="button button-secondary">View Progress →</a>
+            ) : ?>
+                <p><?php esc_html_e( 'Post SMTP is migrating logs to new system.', 'post-smtp' ); ?></p>
+                <a href="<?php echo esc_url( $status_url ); ?>" class="button button-secondary"><?php esc_html_e( 'View Progress →', 'post-smtp' ); ?></a>
             <?php endif; ?>
             <?php
             if(  
@@ -178,19 +174,24 @@ class PostmanEmailLogsMigration {
                 ( $current_page == 'postman_email_log' )
                 &&
                 $new_logging
-            ): ?>
-                <p><?php echo _e( 'Great! You have successfully migrated to new logs.', 'post-smtp' ); ?> 
-                    <?php echo file_exists( $this->logging_file ) ? '<a href="'.$this->logging_file_url.'" target="_blank">View Migration Log</a>' : ''; ?>
+            ) : ?>
+                <p>
+                    <?php esc_html_e( 'Great! You have successfully migrated to new logs.', 'post-smtp' ); ?>
+                    <?php
+                    if ( file_exists( $this->logging_file ) ) {
+                        echo ' <a href="' . esc_url( $this->logging_file_url ) . '" target="_blank">' . esc_html__( 'View Migration Log', 'post-smtp' ) . '</a>';
+                    }
+                    ?>
                 </p>
-                <a href="<?php echo esc_url( $switch_back ); ?>" class="button button-primary">View old logs</a>
-                <a href="<?php echo esc_url( $delete_url ); ?>" class="button button-primary">Delete old Logs</a>
+                <a href="<?php echo esc_url( $switch_back ); ?>" class="button button-primary"><?php esc_html_e( 'View old logs', 'post-smtp' ); ?></a>
+                <a href="<?php echo esc_url( $delete_url ); ?>" class="button button-primary"><?php esc_html_e( 'Delete old Logs', 'post-smtp' ); ?></a>
             <?php endif; ?>
             <?php if( 
                 $this->migrating 
                 && 
                 ( isset( $_GET['page'] ) && $_GET['page'] == 'postman_email_log' ) 
-            ): ?>
-                <p><?php _e( 'Post SMTP is migrating logs to new system.', 'post-smtp' ); ?></p>
+            ) : ?>
+                <p><?php esc_html_e( 'Post SMTP is migrating logs to new system.', 'post-smtp' ); ?></p>
             <?php endif; ?>
             <?php if( 
                 !$new_logging
@@ -327,7 +328,7 @@ class PostmanEmailLogsMigration {
         global $wpdb;
 
         return $wpdb->get_results(
-            "SELECT * FROM {$wpdb->postmeta} WHERE post_id = ( SELECT ID FROM {$wpdb->posts} ORDER BY ID DESC LIMIT 1 )"
+			"SELECT * FROM {$wpdb->postmeta} WHERE post_id = ( SELECT ID FROM {$wpdb->posts} ORDER BY ID DESC LIMIT 1 )" // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         );
 
     }
@@ -452,16 +453,19 @@ class PostmanEmailLogsMigration {
                 $limit
             ),
             OBJECT_K
-        );
-        $log_ids = array_keys( $logs );
-        $log_ids = implode( ',', $log_ids );
+        ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $log_ids        = array_keys( $logs );
+        $log_ids_string = implode( ',', $log_ids );
 
-        $this->log( 'Info: `get_old_logs` Log IDs: ' . $log_ids );
+        $this->log( 'Info: `get_old_logs` Log IDs: ' . $log_ids_string );
 
-        if( $log_ids ) {
+        if ( $log_ids ) {
+
+            $placeholders = implode( ',', array_fill( 0, count( $log_ids ), '%d' ) );
+            $sql          = "SELECT post_id as ID, meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id IN ($placeholders);";
 
             $logs_meta = $wpdb->get_results(
-                "SELECT post_id as ID, meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id IN ({$log_ids});"
+                $wpdb->prepare( $sql, $log_ids ) // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             );
 
             $this->log( 'Info: `get_old_logs` Logs Meta ' );
@@ -477,9 +481,7 @@ class PostmanEmailLogsMigration {
 
                 $this->log( 'Error: `get_old_logs` No logs meta found: ', $logs_meta );
 
-                $log_ids = explode( ',', $log_ids );
-
-                foreach( $log_ids as $ID ) {
+                foreach ( $log_ids as $ID ) {
 
                     $this->log( 'Error: `get_old_logs` Marking as pinged: ' . $ID );
 
@@ -537,18 +539,15 @@ class PostmanEmailLogsMigration {
 
         global $wpdb;
 
-        $response =  $wpdb->get_results(
-            "SELECT 
-            count(*) AS count
-            FROM 
-            {$wpdb->posts}
-            WHERE 
-            post_type = 'postman_sent_mail'
-            &&
-            pinged = 1"
+        $sql = $wpdb->prepare(
+            "SELECT COUNT(*) AS count FROM {$wpdb->posts} WHERE post_type = %s AND pinged = %d",
+            'postman_sent_mail',
+            1
         );
-        
-        return empty( $response ) ? false : (int)$response[0]->count;
+
+        $count = (int) $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+        return $count;
 
     }
 
@@ -583,33 +582,32 @@ class PostmanEmailLogsMigration {
      */
     public function trash_all_old_logs() {
 
-        if( wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
+        if ( wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
 
-            global $wpdb;
-
-            $result = $wpdb->get_results(
-                "SELECT ID 
-                FROM {$wpdb->posts} 
-                WHERE post_type = 'postman_sent_mail';",
-                OBJECT_K
-            );
-            $log_ids = array_keys( $result );
-            $log_ids = implode( ',', $log_ids );
-
-            $this->log( 'Info: `trash_all_old_logs` Delete log IDs: ' . $log_ids );
-
-            $result = $wpdb->get_results(
-                "DELETE p.*, pm.*
-                FROM {$wpdb->posts} AS p
-                INNER JOIN 
-                {$wpdb->postmeta} AS pm
-                ON p.ID = pm.post_id
-                WHERE p.post_type = 'postman_sent_mail' && p.ID IN ({$log_ids});"
+            $logs = get_posts(
+                array(
+                    'post_type'      => 'postman_sent_mail',
+                    'posts_per_page' => -1,
+                    'fields'         => 'ids',
+                )
             );
 
-            $result = $result ? 'Successfully deleted' : 'Failed';
+            if ( ! empty( $logs ) ) {
 
-            $this->log( 'Info: `trash_all_old_logs` Delete result: ' . print_r( $result, true ) );
+                $log_ids_string = implode( ',', array_map( 'absint', $logs ) );
+                $this->log( 'Info: `trash_all_old_logs` Delete log IDs: ' . $log_ids_string );
+
+                foreach ( $logs as $log_id ) {
+                    wp_delete_post( $log_id, true );
+                }
+
+                $this->log( 'Info: `trash_all_old_logs` Delete result: Successfully deleted' );
+
+            } else {
+
+                $this->log( 'Info: `trash_all_old_logs` No logs to delete' );
+
+            }
 
             //Delete log file
             if( file_exists( $this->logging_file ) ) {
@@ -618,7 +616,8 @@ class PostmanEmailLogsMigration {
 
             }
 
-            wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+            exit;
 
         }
 
@@ -639,7 +638,8 @@ class PostmanEmailLogsMigration {
 
             delete_option( 'postman_db_version' );
 
-            wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+            exit;
 
         } 
 
@@ -660,7 +660,8 @@ class PostmanEmailLogsMigration {
 
             update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
 
-            wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+            exit;
 
         } 
 
@@ -770,18 +771,7 @@ class PostmanEmailLogsMigration {
      */
     public function has_migrated() {
 
-        global $wpdb;
-
-        $response =  $wpdb->get_results(
-            "SELECT 
-            count(*) AS count
-            FROM 
-            {$wpdb->posts}
-            WHERE 
-            post_type = 'postman_sent_mail'"
-        );
-        
-        $total_old_logs = empty( $response ) ? 0 : (int)$response[0]->count;
+        $total_old_logs = wp_count_posts( 'postman_sent_mail' )->private;
 
         if( $this->get_migrated_count() >= (int)$total_old_logs ) {
 
@@ -833,8 +823,12 @@ class PostmanEmailLogsMigration {
             
                 global $wpdb;
                 $response = $wpdb->query(
-                    "UPDATE {$wpdb->posts} SET pinged = '' WHERE post_type = 'postman_sent_mail';"                
-                );
+                    $wpdb->prepare(
+                        "UPDATE {$wpdb->posts} SET pinged = %s WHERE post_type = %s",
+                        '',
+                        'postman_sent_mail'
+                    )
+                ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
                 if( $response ) {
 
@@ -844,7 +838,8 @@ class PostmanEmailLogsMigration {
 
             }
 
-            wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+            exit;
 
         }
 
@@ -870,34 +865,34 @@ class PostmanEmailLogsMigration {
             $email_logs->install_table();
     
             $this->log( 'Info: Table created' );
-            
-            global $wpdb;
 
-            $result = $wpdb->get_results(
-                "SELECT ID 
-                FROM {$wpdb->posts} 
-                WHERE post_type = 'postman_sent_mail';",
-                OBJECT_K
-            );
-            $log_ids = array_keys( $result );
-            $log_ids = implode( ',', $log_ids );
-
-            $this->log( 'Info: `trash_all_old_logs` Delete log IDs: ' . $log_ids );
-
-            $result = $wpdb->get_results(
-                "DELETE p.*, pm.*
-                FROM {$wpdb->posts} AS p
-                INNER JOIN 
-                {$wpdb->postmeta} AS pm
-                ON p.ID = pm.post_id
-                WHERE p.post_type = 'postman_sent_mail' && p.ID IN ({$log_ids});"
+            $logs = get_posts(
+                array(
+                    'post_type'      => 'postman_sent_mail',
+                    'posts_per_page' => -1,
+                    'fields'         => 'ids',
+                )
             );
 
-            $result = $result ? 'Successfully deleted' : 'Failed';
+            if ( ! empty( $logs ) ) {
 
-            $this->log( 'Info: `trash_all_old_logs` Delete result: ' . print_r( $result, true ) );
+                $log_ids_string = implode( ',', array_map( 'absint', $logs ) );
+                $this->log( 'Info: `trash_all_old_logs` Delete log IDs: ' . $log_ids_string );
 
-            wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+                foreach ( $logs as $log_id ) {
+                    wp_delete_post( $log_id, true );
+                }
+
+                $this->log( 'Info: `trash_all_old_logs` Delete result: Successfully deleted' );
+
+            } else {
+
+                $this->log( 'Info: `trash_all_old_logs` No logs to delete' );
+
+            }
+
+            wp_safe_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+            exit;
 
         }
 

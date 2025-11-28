@@ -101,7 +101,7 @@ class PostmanDiagnosticTestController {
 		// test features
 		print '<div class="wrap">';
 
-		PostmanViewController::outputChildPageHeader( __( 'Diagnostic Test', 'post-smtp' ) );
+		PostmanViewController::outputChildPageHeader( esc_html__( 'Diagnostic Test', 'post-smtp' ) );
 
 		?>
         <form>
@@ -110,37 +110,47 @@ class PostmanDiagnosticTestController {
 
 		<div class="post_smtp_diagnostic_container">
 			<form action="#" id="post_smtp_diagnostic_form" method="POST">
-				<h3><?php echo __( 'Send Diagnostic Report via Email', 'post-smtp' ); ?></h3>
+				<h3><?php esc_html_e( 'Send Diagnostic Report via Email', 'post-smtp' ); ?></h3>
 				<div class="form-group">
-					<label for="post-smtp-diagnostic-email-address"><?php echo __( 'Email Address', 'post-smtp' ); ?></label>
+					<label for="post-smtp-diagnostic-email-address"><?php esc_html_e( 'Email Address', 'post-smtp' ); ?></label>
 					<input type="email" id="post-smtp-diagnostic-email-address" name="post_smtp_diagnostic_email_address" value="support@wpexperts.io" required>
 				</div>
 				<div class="form-group">
-					<label for="post-smtp-diagnostic-ticket-number"><?php echo __( 'Ticket Number / Forum Username', 'post-smtp' ); ?></label>
-					<input type="text" id="post-smtp-diagnostic-ticket-number" name="post_smtp_diagnostic_ticket_number" required placeholder="<?php echo __( 'Enter your ticket number or forum username', 'post-smtp' ); ?>">
+					<label for="post-smtp-diagnostic-ticket-number"><?php esc_html_e( 'Ticket Number / Forum Username', 'post-smtp' ); ?></label>
+					<input type="text" id="post-smtp-diagnostic-ticket-number" name="post_smtp_diagnostic_ticket_number" required placeholder="<?php esc_attr_e( 'Enter your ticket number or forum username', 'post-smtp' ); ?>">
 				</div>
 				<div class="form-group">
-					<p class="report_validation_error"><?php echo __( 'Please fill in all required fields.', 'post-smtp' ); ?></p>
-					<button type="submit" class="post-smtp-diagnostic-submit-btn"><?php echo __( 'Send', 'post-smtp' ); ?></button>
-					<p class="report_sent_message"><?php echo __( 'Diagnostic Report Sent Successfully.', 'post-smtp' ); ?></p>
+					<p class="report_validation_error"><?php esc_html_e( 'Please fill in all required fields.', 'post-smtp' ); ?></p>
+					<button type="submit" class="post-smtp-diagnostic-submit-btn"><?php esc_html_e( 'Send', 'post-smtp' ); ?></button>
+					<p class="report_sent_message"><?php esc_html_e( 'Diagnostic Report Sent Successfully.', 'post-smtp' ); ?></p>
 				</div>
 				<hr>
 				<div class="form-group">
-					<label for="post-smtp-diagnostic-ticket-number"><?php echo __( 'Are you having issues with Postman?', 'post-smtp' ); ?></label>
+					<label for="post-smtp-diagnostic-ticket-number"><?php esc_html_e( 'Are you having issues with Postman?', 'post-smtp' ); ?></label>
 					<?php
-					printf( '<p>%s</p>', sprintf( __( 'Please check the <a href="%1$s">troubleshooting and error messages</a> page and the <a href="%2$s">support forum</a>.', 'post-smtp' ), 'https://wordpress.org/plugins/post-smtp/other_notes/', 'https://wordpress.org/support/plugin/post-smtp' ) );
+					$troubleshooting_link = '<a href="https://wordpress.org/plugins/post-smtp/other_notes/">' . esc_html__( 'troubleshooting and error messages', 'post-smtp' ) . '</a>';
+					$support_forum_link   = '<a href="https://wordpress.org/support/plugin/post-smtp">' . esc_html__( 'support forum', 'post-smtp' ) . '</a>';
+
+					$text_with_links = sprintf(
+						/* translators: 1: troubleshooting link, 2: support forum link */
+						esc_html__( 'Please check the %1$s page and the %2$s.', 'post-smtp' ),
+						$troubleshooting_link,
+						$support_forum_link
+					);
+
+					echo wp_kses_post( '<p>' . $text_with_links . '</p>' );
 					?>
 				</div>
 				<hr>
 				<div class="form-group copy_div">
 					<h3 class="diagnostic-report-heading">
-						<?php echo __( 'Diagnostic Test Report', 'post-smtp' ); ?>
-						<button type="submit" class="copy_diagnostic_report"><?php echo __( 'Copy Report', 'post-smtp' ); ?></button>
+						<?php esc_html_e( 'Diagnostic Test Report', 'post-smtp' ); ?>
+						<button type="submit" class="copy_diagnostic_report"><?php esc_html_e( 'Copy Report', 'post-smtp' ); ?></button>
 					</h3>
 					<table id="diagnostic-text" border='1' cellpadding='10' cellspacing='0'>
-						<p class="fetching_diagnostic_report">Checking...</p>
+						<p class="fetching_diagnostic_report"><?php esc_html_e( 'Checking...', 'post-smtp' ); ?></p>
 					</table>
-					<input type="hidden" class="diagnostic_report" value="<?php echo get_option( 'post_smtp_clean_diagnostic_report_data' ); ?>" >
+					<input type="hidden" class="diagnostic_report" value="<?php echo esc_attr( get_option( 'post_smtp_clean_diagnostic_report_data' ) ); ?>" >
 				</div>
 			</form>
 		</div>

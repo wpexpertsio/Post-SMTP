@@ -10,16 +10,24 @@ $testListTable->prepare_items();
 	<div id="icon-users" class="icon32">
 		<br />
 	</div>
-	<h2><?php
-	/* Translators where (%s) is the name of the plugin */
-		echo sprintf( __( '%s Email Log', 'post-smtp' ), __( 'Post SMTP', 'post-smtp' ) )?></h2>
+	<h2>
+		<?php
+		/* Translators where (%s) is the name of the plugin */
+		echo esc_html(
+			sprintf(
+				__( '%s Email Log', 'post-smtp' ),
+				__( 'Post SMTP', 'post-smtp' )
+			)
+		);
+		?>
+	</h2>
 
     <?php //include_once POST_SMTP_PATH . '/Postman/extra/donation.php'; ?>
 
 	<div class="ps-config-bar">
-		<p><?php
-
-		echo __( 'This is a record of deliveries made to the mail server. It does not neccessarily indicate sucessful delivery to the recipient.', 'post-smtp' )?></p>
+		<p>
+			<?php esc_html_e( 'This is a record of deliveries made to the mail server. It does not neccessarily indicate sucessful delivery to the recipient.', 'post-smtp' ); ?>
+		</p>
 	</div>
 
 	<?php
@@ -30,46 +38,50 @@ $testListTable->prepare_items();
 	$postman_page_records = isset( $_GET['postman_page_records'] ) ? absint( $_GET['postman_page_records'] ) : '';
 	?>
 
-	<form id="postman-email-log-filter" action="<?php echo admin_url( PostmanUtils::POSTMAN_EMAIL_LOG_PAGE_RELATIVE_URL ); ?>" method="get">
+	<form id="postman-email-log-filter" action="<?php echo esc_url( admin_url( PostmanUtils::POSTMAN_EMAIL_LOG_PAGE_RELATIVE_URL ) ); ?>" method="get">
         <input type="hidden" name="page" value="postman_email_log">
         <input type="hidden" name="post-smtp-filter" value="1">
         <?php wp_nonce_field('post-smtp', 'post-smtp-log-nonce'); ?>
 
 		<div id="email-log-filter" class="postman-log-row">
 			<div class="form-control">
-				<label for="from_date"><?php _e( 'From Date', 'post-smtp' ); ?></label>
-				<input id="from_date" class="email-log-date" value="<?php echo esc_attr($from_date); ?>" type="text" name="from_date" placeholder="<?php _e( 'From Date', 'post-smtp' ); ?>">
+				<label for="from_date"><?php esc_html_e( 'From Date', 'post-smtp' ); ?></label>
+				<input id="from_date" class="email-log-date" value="<?php echo esc_attr( $from_date ); ?>" type="text" name="from_date" placeholder="<?php esc_attr_e( 'From Date', 'post-smtp' ); ?>">
 			</div>
 			<div class="form-control">
-				<label for="to_date"><?php _e( 'To Date', 'post-smtp' ); ?></label>
-				<input id="to_date" class="email-log-date" value="<?php echo esc_attr($to_date); ?>" type="text" name="to_date" placeholder="<?php _e( 'To Date', 'post-smtp' ); ?>">
+				<label for="to_date"><?php esc_html_e( 'To Date', 'post-smtp' ); ?></label>
+				<input id="to_date" class="email-log-date" value="<?php echo esc_attr( $to_date ); ?>" type="text" name="to_date" placeholder="<?php esc_attr_e( 'To Date', 'post-smtp' ); ?>">
 			</div>
 			<div class="form-control">
-				<label for="search"><?php _e( 'Search', 'post-smtp' ); ?></label>
-				<input id="search" type="text" name="search" value="<?php echo esc_attr($search); ?>" placeholder="<?php _e( 'Search', 'post-smtp' ); ?>">
+				<label for="search"><?php esc_html_e( 'Search', 'post-smtp' ); ?></label>
+				<input id="search" type="text" name="search" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Search', 'post-smtp' ); ?>">
 			</div>
 			<div class="form-control">
-				<label id="postman_page_records"><?php _e( 'Records per page', 'post-smtp' ); ?></label>
+				<label id="postman_page_records"><?php esc_html_e( 'Records per page', 'post-smtp' ); ?></label>
 				<select id="postman_page_records" name="postman_page_records">
 					<?php
 					foreach ( $page_records as $value ) {
 						$selected = selected( $postman_page_records, $value, false );
-						echo '<option value="' . $value . '"' . $selected . '>' . $value . '</option>';
+						printf(
+							'<option value="%1$s"%2$s>%1$s</option>',
+							esc_attr( $value ),
+							$selected // $selected already contains safe attribute text.
+						);
 					}
 					?>
 				</select>
 			</div>
 
             <div class="form-control" style="padding: 0 5px 0 5px;">
-                <button type="submit" name="filter" class="ps-btn-orange"><?php _e( 'Filter/Search', 'post-smtp' ); ?></button>
+                <button type="submit" name="filter" class="ps-btn-orange"><?php esc_html_e( 'Filter/Search', 'post-smtp' ); ?></button>
             </div>
 
             <div class="form-control" style="padding: 0 5px 0 0px;">
-                <button type="submit" id="postman_export_csv" name="postman_export_csv" class="ps-btn-orange"><?php _e( 'Export To CSV', 'post-smtp' ); ?></button>
+                <button type="submit" id="postman_export_csv" name="postman_export_csv" class="ps-btn-orange"><?php esc_html_e( 'Export To CSV', 'post-smtp' ); ?></button>
             </div>
 
 			<div class="form-control">
-				<button type="submit" id="postman_trash_all" name="postman_trash_all" class="ps-btn-red"><?php _e( 'Trash All', 'post-smtp' ); ?></button>
+				<button type="submit" id="postman_trash_all" name="postman_trash_all" class="ps-btn-red"><?php esc_html_e( 'Trash All', 'post-smtp' ); ?></button>
 			</div>
 
         </div>

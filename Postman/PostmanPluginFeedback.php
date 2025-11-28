@@ -113,31 +113,31 @@ class PostmanPluginFeedback {
 					<li class="postman-reason">
 						<label>
 							<span><input value="no time for this" type="radio" name="reason" checked/></span>
-							<span><?php _e( 'I have no time for this', 'postman' ); ?></span>
+							<span><?php esc_html_e( 'I have no time for this', 'postman' ); ?></span>
 						</label>					
 					</li>				
 					<li class="postman-reason postman-custom-input">
 						<label>
 							<span><input value="Found a better plugin" type="radio" name="reason" data-reason="What is the name of the plugin?" /></span>
-							<span><?php _e( 'Found a better plugin', 'postman' ); ?></span>
+							<span><?php esc_html_e( 'Found a better plugin', 'postman' ); ?></span>
 						</label>				
 					</li>
 					<li class="postman-reason postman-custom-input">
 						<label>
 							<span><input value="<?php echo esc_attr( "The plugin didn't work" ); ?>" type="radio" name="reason" /></span>
-							<span><?php _e( 'The plugin didn\'t work', 'postman' ); ?></span>
+							<span><?php esc_html_e( 'The plugin didn\'t work', 'postman' ); ?></span>
 						</label>					
 					</li>					
 					<li class="postman-reason postman-custom-input">
 						<label>
 							<span><input value="Other Reason" type="radio" name="reason" /></span>
-							<span><?php _e( 'Other Reason', 'postman' ); ?></span>
+							<span><?php esc_html_e( 'Other Reason', 'postman' ); ?></span>
 						</label>
 					</li>
 					<li class="postman-reason postman-support-input">
 						<label>
 							<span><input value="Support Ticket" type="radio" name="reason" /></span>
-							<span><?php _e( 'Open A support ticket for me', 'postman' ); ?></span>
+							<span><?php esc_html_e( 'Open A support ticket for me', 'postman' ); ?></span>
 						</label>
 						<div class="postman-reason-input" style="display: none;">
 							<input type="email" name="support[email]" placeholder="Your Email Address" required>

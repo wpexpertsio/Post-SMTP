@@ -318,13 +318,17 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 					'headers' => $message->getHeaders(),
 					'attachments' => $message->getAttachments()
 				);
-				$mail_error_data['phpmailer_exception_code'] = $e->getCode();
+				// Sanitize exception data before passing it along to hooks or other handlers.
+				$phpmailer_exception_code = (int) $e->getCode();
+				$phpmailer_exception_msg  = sanitize_text_field( $e->getMessage() );
 
-				do_action( 'wp_mail_failed', new WP_Error( 'wp_mail_failed', $e->getMessage(), $mail_error_data ) );
+				$mail_error_data['phpmailer_exception_code'] = $phpmailer_exception_code;
+
+				do_action( 'wp_mail_failed', new WP_Error( 'wp_mail_failed', $phpmailer_exception_msg, $mail_error_data ) );
 
 				// return failure
 				if ( PostmanOptions::getInstance()->getSmtpMailer() == 'phpmailer' ) {
-					throw new phpmailerException($e->getMessage(), $e->getCode());
+					throw new phpmailerException( $phpmailer_exception_msg, $phpmailer_exception_code );
 				}
 				return false;
 
