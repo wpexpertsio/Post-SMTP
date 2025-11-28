@@ -94,6 +94,7 @@ class Post_SMTP_New_Wizard {
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
         add_action( 'wp_ajax_ps-save-wizard', array( $this, 'save_wizard' ) );
         add_action( 'wp_ajax_update_post_smtp_pro_option', array( $this, 'update_post_smtp_pro_option_callback' ) );
+        add_action( 'wp_ajax_ps_get_gmail_auth_url', array( $this, 'ajax_get_gmail_auth_url' ) );
         add_action( 'admin_action_zoho_auth_request', array( $this, 'auth_zoho' ) );
         add_action( 'admin_post_remove_oauth_action', array( $this, 'post_smtp_remove_oauth_action' ) );
         add_action( 'admin_init', array( $this, 'handle_gmail_oauth_redirect' ) );
@@ -493,6 +494,9 @@ class Post_SMTP_New_Wizard {
             ),
             // Add the nonce for pro option AJAX
             'pro_option_nonce' => wp_create_nonce('update_post_smtp_pro_option'),
+            // Nonce and messages for Gmail One-Click auth AJAX
+            'gmail_auth_nonce' => wp_create_nonce( 'ps_get_gmail_auth_url' ),
+            'gmailAuthErrorText' => __( 'Failed to start Google authentication. Please reload the page and try again.', 'post-smtp' ),
         );
 
         if( class_exists( 'Post_Smtp_Office365' ) ) {
@@ -888,7 +892,8 @@ public function render_gmail_settings() {
                 $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
                 $html .= '<p>' . esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ) . '</p>';
                 $html .= '<input type="hidden" ' . esc_attr( $required ) . ' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) . '" />';
-                $html .= '<a href="' . esc_url( $auth_url ) . '" class="button button-primary ps-gmail-btn">';
+                // One-Click Gmail auth button: URL will be obtained via AJAX to ensure a fresh nonce.
+                $html .= '<a href="#" class="button button-primary ps-gmail-btn ps-gmail-oneclick-btn">';
                 $html .= esc_html__( 'Sign in with Google', 'post-smtp' );
                 $html .= '</a>';
                 $html .= "<p>By signing in with Google, you can send emails using different 'From' addresses. To do this, disable the 'Force From Email' setting and use your registered aliases as the 'From' address across your WordPress site.</p> <p>Removing the OAuth connection will give you the ability to redo the OAuth connection or link to another Google account.</p>";
@@ -1650,6 +1655,43 @@ public function render_gmail_settings() {
 
         wp_send_json( array(), 200 );
 
+    }
+
+    /**
+     * AJAX callback to generate a fresh Gmail One-Click OAuth URL.
+     *
+     * This endpoint is called when the user clicks the "Sign in with Google" button
+     * for the Gmail One-Click setup. It validates the request nonce and current user
+     * capability, then uses the shared helper `post_smtp_get_gmail_auth_url()` to
+     * create an auth URL that contains a fresh `gmail_oauth_redirect` nonce.
+     *
+     * The URL is returned as JSON and the browser is redirected client-side.
+     *
+     * @since 3.1.0
+     */
+    public function ajax_get_gmail_auth_url() {
+
+        // Capability check: Only allow administrators.
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Unauthorized.' ), 403 );
+        }
+
+        // Nonce check for CSRF protection.
+        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_gmail_auth_url' ) ) {
+            wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ), 400 );
+        }
+
+        if ( ! function_exists( 'post_smtp_get_gmail_auth_url' ) ) {
+            wp_send_json_error( array( 'message' => 'Gmail One-Click is not available.' ), 500 );
+        }
+
+        $auth_url = post_smtp_get_gmail_auth_url();
+
+        if ( empty( $auth_url ) ) {
+            wp_send_json_error( array( 'message' => 'Failed to generate Gmail auth URL.' ), 500 );
+        }
+
+        wp_send_json_success( array( 'auth_url' => esc_url_raw( $auth_url ) ) );
     }
 
     /**

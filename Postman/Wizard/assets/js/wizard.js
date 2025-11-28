@@ -669,6 +669,63 @@ jQuery( document ).ready(function() {
 
     } );
 
+    // Gmail One-Click auth
+    jQuery( document ).on( 'click', '.ps-gmail-oneclick-btn', function( e ) {
+
+        e.preventDefault();
+
+        var $button = jQuery( this );
+        var originalText = $button.text();
+
+        $button.prop( 'disabled', true ).text( 'Redirecting...' );
+
+        // First, save the current wizard settings (From Name/Email, etc.).
+        jQuery.ajax( {
+            url: ajaxurl,
+            type: 'POST',
+            async: true,
+            data: {
+                action: 'ps-save-wizard',
+                FormData: jQuery( '#ps-wizard-form' ).serialize(),
+            },
+            success: function() {
+                // Then, request a fresh Gmail One-Click auth URL with a fresh nonce.
+                jQuery.ajax( {
+                    url: ajaxurl,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        action: 'ps_get_gmail_auth_url',
+                        nonce: ( typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmail_auth_nonce ) ? PostSMTPWizard.gmail_auth_nonce : ''
+                    },
+                    success: function( response ) {
+                        if ( response.success && response.data && response.data.auth_url ) {
+                            window.location.assign( response.data.auth_url );
+                        } else {
+                            $button.prop( 'disabled', false ).text( originalText );
+                            if ( typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmailAuthErrorText ) {
+                                alert( PostSMTPWizard.gmailAuthErrorText );
+                            }
+                        }
+                    },
+                    error: function() {
+                        $button.prop( 'disabled', false ).text( originalText );
+                        if ( typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmailAuthErrorText ) {
+                            alert( PostSMTPWizard.gmailAuthErrorText );
+                        }
+                    }
+                } );
+            },
+            error: function() {
+                $button.prop( 'disabled', false ).text( originalText );
+                if ( typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmailAuthErrorText ) {
+                    alert( PostSMTPWizard.gmailAuthErrorText );
+                }
+            }
+        } );
+
+    } );
+
     refreshWizard();
 
     if( getUrlParameter( 'socket' ) ) {
@@ -709,10 +766,6 @@ jQuery( document ).ready(function() {
             e.preventDefault();
             var data = jQuery('#ps-one-click-data').val();
             var parsedData = JSON.parse(data);
-            console.log(parsedData);
-
-            
-
             jQuery('.ps-pro-for-img').attr('src', parsedData.url);
             jQuery('.ps-pro-product-url').attr('href', parsedData.product_url);
             jQuery('.ps-pro-for').html(parsedData.transport_name);
