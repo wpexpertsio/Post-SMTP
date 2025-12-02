@@ -199,7 +199,8 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
             }
 
             if ( $options->is_fallback &&  ! empty( $log->statusMessage ) ) {
-                $new_status = '( ** Fallback ** ) ' . $log->statusMessage;
+                // $new_status = '( ** Fallback ** ) ' . $log->statusMessage;
+				$new_status = $log->statusMessage;
             }
 
             $new_status = apply_filters( 'post_smtp_log_status', $new_status, $log, $message );
