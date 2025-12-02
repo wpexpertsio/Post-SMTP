@@ -873,13 +873,28 @@ jQuery(document).on('click', '.ps-office365-upgrade-required', function (e) {
     
     // Check if this is a version warning or business plan requirement
     if (jQuery('.ps-version-warning-notice').length > 0) {
-        // Show version update message in wizard error area instead of popup
-        jQuery('.ps-wizard-error').html('<span class="dashicons dashicons-warning"></span> <strong>Post SMTP Pro Update Required!</strong><br> Office 365 One-Click Setup requires the latest version of Post SMTP Pro (v1.5.0 or higher).<br>Please update your Post SMTP Pro plugin to use this feature.');
-        
-        // Scroll to error message
-        jQuery('html, body').animate({
-            scrollTop: jQuery('.ps-wizard-error').offset().top - 100
-        }, 500);
+        // Prefer the Step 2 wizard error container (the one shown for mailer settings)
+        var $errorSection = jQuery('.ps-wizard-step-2 .ps-wizard-error');
+
+        // Fallback to the first visible wizard error container if Step 2 one is not found
+        if (!$errorSection.length) {
+            $errorSection = jQuery('.ps-wizard-error:visible').first();
+        }
+
+        // As a last resort, fall back to any wizard error container
+        if (!$errorSection.length) {
+            $errorSection = jQuery('.ps-wizard-error').first();
+        }
+
+        if ($errorSection.length) {
+            // Show version update message in the resolved error area instead of popup
+            $errorSection.html('<span class="dashicons dashicons-warning"></span> <strong>Post SMTP Pro Update Required!</strong><br> Office 365 One-Click Setup requires the latest version of Post SMTP Pro (v1.5.0 or higher).<br>Please update your Post SMTP Pro plugin to use this feature.');
+            
+            // Scroll to the resolved error message container
+            jQuery('html, body').animate({
+                scrollTop: $errorSection.offset().top - 100
+            }, 500);
+        }
         
         return false;
     }
