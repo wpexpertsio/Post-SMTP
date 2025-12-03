@@ -474,14 +474,19 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 					)
 				);
 			}
-			// Loop through logs to count sent and failed emails.
-			foreach( $logs as $log ) {
-				if (isset($log->success)) {
-					// Check if success is a truthy value (e.g., 1 for success).
-					if ($log->success == 1) {
+			// Loop through logs to count sent and failed emails, including fallback sent.
+			foreach ( $logs as $log ) {
+				if ( isset( $log->success ) ) {
+					// Treat normal success and successful fallback ("Sent ( ** Fallback ** )") as sent.
+					$success_value = $log->success;
+
+					$is_normal_success = ( 1 === $success_value || '1' === $success_value );
+					$is_fallback_sent  = is_string( $success_value ) && 0 === strpos( $success_value, 'Sent ( ** Fallback ** )' );
+
+					if ( $is_normal_success || $is_fallback_sent ) {
 						$sent_count++;
 					} else {
-						// If success contains an error message or a falsy value, consider it failed.
+						// Any other value (including fallback failures) is considered failed.
 						$failed_count++;
 					}
 				}
