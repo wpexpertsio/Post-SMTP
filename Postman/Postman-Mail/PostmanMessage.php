@@ -59,18 +59,28 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			$message = __( '<code>%1$s</code> property of a <code>PostmanMessage</code> object is <strong>not supported</strong>. For now all of this class properties are private.', 'post-smtp' );
 
 			if ( WP_DEBUG ) {
-				trigger_error( sprintf( $message, $name ) );
+				$safe_message = sprintf(
+					wp_kses_post( $message ),
+					esc_html( $name )
+				);
+				trigger_error( $safe_message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		}
 
-		function __call($name, $args) {
-			$class = new ReflectionClass(__CLASS__);
-			$methods = $class->getMethods(ReflectionMethod::IS_PUBLIC );
+		function __call( $name, $args ) {
+			$class   = new ReflectionClass( __CLASS__ );
+			$methods = $class->getMethods( ReflectionMethod::IS_PUBLIC );
 
 			$message = __( '<code>%1$s</code> method of a <code>PostmanMessage</code> object is <strong>not supported</strong>. Use one of the following methods <pre><code>%2$s</code></pre>', 'post-smtp' );
 
 			if ( WP_DEBUG ) {
-				trigger_error( sprintf( $message, $name, print_r( $methods, true ) ) );
+				$methods_list = esc_html( print_r( $methods, true ) );
+				$safe_message = sprintf(
+					wp_kses_post( $message ),
+					esc_html( $name ),
+					$methods_list
+				);
+				trigger_error( $safe_message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		}
 

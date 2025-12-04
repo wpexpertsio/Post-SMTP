@@ -145,9 +145,14 @@ class PostmanServiceRequest {
      */
     public function exception() {
 
-        $message = "Code: {$this->get_response_code()}, Message: {$this->get_response_message()}, Body: {$this->get_response_body()}";
+		$message = sprintf(
+			'Code: %1$s, Message: %2$s, Body: %3$s',
+			esc_html( $this->get_response_code() ),
+			esc_html( $this->get_response_message() ),
+			esc_html( $this->get_response_body() )
+		);
 
-        throw new Exception( $message );
+		throw new Exception( $message ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 
     }
 

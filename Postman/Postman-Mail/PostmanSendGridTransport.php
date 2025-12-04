@@ -201,13 +201,27 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 	}
 	public function printSendGridAuthSectionInfo() {
 		/* Translators: Where (1) is the service URL and (2) is the service name and (3) is a api key URL */
-		printf ( '<p id="wizard_sendgrid_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ), 'https://sendgrid.com', 'SendGrid.com', 'https://app.sendgrid.com/settings/api_keys' ) );
+		printf(
+			'<p id="wizard_sendgrid_auth_help">%s</p>',
+			wp_kses_post(
+				sprintf(
+					__( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
+					'https://sendgrid.com',
+					'SendGrid.com',
+					'https://app.sendgrid.com/settings/api_keys'
+				)
+			)
+		);
 	}
 	
 	/**
 	 */
 	public function sendgrid_api_key_callback() {
-		printf ( '<input type="password" autocomplete="off" id="sendgrid_api_key" name="postman_options[sendgrid_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getSendGridApiKey () ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getSendGridApiKey () ) ) : '', __ ( 'Required', 'post-smtp' ) );
+		printf(
+			'<input type="password" autocomplete="off" id="sendgrid_api_key" name="postman_options[sendgrid_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>',
+			null !== $this->options->getSendGridApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getSendGridApiKey() ) ) : '',
+			esc_attr__( 'Required', 'post-smtp' )
+		);
 		print ' <input type="button" id="toggleSendGridApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 	}
 
@@ -224,8 +238,8 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 		$selected_region = isset( $options[ PostmanOptions::SENDGRID_REGION ] ) ? $options[ PostmanOptions::SENDGRID_REGION ] : 'Global';
 	
 		echo '<select name="postman_options[' . esc_attr( PostmanOptions::SENDGRID_REGION ) . ']">';
-		echo '<option value="Global"' . selected( $selected_region, 'Global', false ) . '>' . __( 'Global', 'post-smtp' ) . '</option>';
-		echo '<option value="EU"' . selected( $selected_region, 'EU', false ) . '>' . __( 'Europe (EU)', 'post-smtp' ) . '</option>';
+		echo '<option value="Global"' . selected( $selected_region, 'Global', false ) . '>' . esc_html__( 'Global', 'post-smtp' ) . '</option>';
+		echo '<option value="EU"' . selected( $selected_region, 'EU', false ) . '>' . esc_html__( 'Europe (EU)', 'post-smtp' ) . '</option>';
 		echo '</select>';
 	}
 	
@@ -252,9 +266,9 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 	public function printWizardAuthenticationStep() {
 		print '<section class="wizard_sendgrid">';
 		$this->printSendGridAuthSectionInfo ();
-		printf ( '<label for="api_key">%s</label>', __ ( 'API Key', 'post-smtp' ) );
+		printf( '<label for="api_key">%s</label>', esc_html__( 'API Key', 'post-smtp' ) );
 		print '<br />';
-		print $this->sendgrid_api_key_callback ();
+		$this->sendgrid_api_key_callback();
 		print '</section>';
 	}
 

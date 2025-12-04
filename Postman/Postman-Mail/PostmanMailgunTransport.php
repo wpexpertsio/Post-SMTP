@@ -212,25 +212,52 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	}
 	public function printMailgunAuthSectionInfo() {
 		/* Translators: Where (1) is the service URL and (2) is the service name and (3) is a api key URL */
-		printf( '<p id="wizard_mailgun_auth_help">%s</p>', sprintf( __( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ), 'https://mailgun.com', 'mailgun.com', 'https://app.mailgun.com/app/domains/' ) );
+		printf(
+			'<p id="wizard_mailgun_auth_help">%s</p>',
+			wp_kses_post(
+				sprintf(
+					__( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
+					'https://mailgun.com',
+					'mailgun.com',
+					'https://app.mailgun.com/app/domains/'
+				)
+			)
+		);
 	}
 
 	/**
 	 */
 	public function mailgun_api_key_callback() {
-		printf( '<input type="password" autocomplete="off" id="mailgun_api_key" name="postman_options[mailgun_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailgunApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getMailgunApiKey() ) ) : '', __( 'Required', 'post-smtp' ) );
+		printf(
+			'<input type="password" autocomplete="off" id="mailgun_api_key" name="postman_options[mailgun_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>',
+			null !== $this->options->getMailgunApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getMailgunApiKey() ) ) : '',
+			esc_attr__( 'Required', 'post-smtp' )
+		);
 		print '<input type="button" id="toggleMailgunApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
-		print '<p><span class="postman_input_description">Follow this link to get an API Key from Mailgun: <a target="_blank" href="https://app.mailgun.com/app/account/security/api_keys">Get a Private API Key.</a></span></p>';
+		print '<p><span class="postman_input_description">';
+		echo esc_html__( 'Follow this link to get an API Key from Mailgun:', 'post-smtp' ) . ' ';
+		echo '<a target="_blank" href="' . esc_url( 'https://app.mailgun.com/app/account/security/api_keys' ) . '">' . esc_html__( 'Get a Private API Key.', 'post-smtp' ) . '</a>';
+		print '</span></p>';
 	}
 
 	function mailgun_domain_name_callback() {
-		printf( '<input type="text" autocomplete="off" id="mailgun_domain_name" name="postman_options[mailgun_domain_name]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailgunDomainName() ? esc_attr( $this->options->getMailgunDomainName() ) : '', __( 'Required', 'post-smtp' ) );
-		print '<p><span class="postman_input_description"> Follow this link to get a Domain Name from Mailgun:<a target="_blank" href="https://app.mailgun.com/app/domains"> Get a Domain Name.</a></span></p>';
+		printf(
+			'<input type="text" autocomplete="off" id="mailgun_domain_name" name="postman_options[mailgun_domain_name]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>',
+			null !== $this->options->getMailgunDomainName() ? esc_attr( $this->options->getMailgunDomainName() ) : '',
+			esc_attr__( 'Required', 'post-smtp' )
+		);
+		print '<p><span class="postman_input_description">';
+		echo esc_html__( 'Follow this link to get a Domain Name from Mailgun:', 'post-smtp' ) . ' ';
+		echo '<a target="_blank" href="' . esc_url( 'https://app.mailgun.com/app/domains' ) . '">' . esc_html__( 'Get a Domain Name.', 'post-smtp' ) . '</a>';
+		print '</span></p>';
 	}
 
 	function mailgun_region_callback() {
 		$value = $this->options->getMailgunRegion();
-		printf( '<input type="checkbox" id="mailgun_region" name="postman_options[mailgun_region]"%s />', null !== $value ? ' checked' : '' );
+		printf(
+			'<input type="checkbox" id="mailgun_region" name="postman_options[mailgun_region]" %s />',
+			checked( null !== $value, true, false )
+		);
 	}
 
 	/**
@@ -256,16 +283,16 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	public function printWizardAuthenticationStep() {
 		print '<section class="wizard_mailgun">';
 		$this->printMailgunAuthSectionInfo();
-		printf( '<label for="api_key">%s</label>', __( 'API Key', 'post-smtp' ) );
+		printf( '<label for="api_key">%s</label>', esc_html__( 'API Key', 'post-smtp' ) );
 		print '<br />';
-		print $this->mailgun_api_key_callback();
-		printf( '<label for="domain_name">%s</label>', __( 'Domain Name', 'post-smtp' ) );
+		$this->mailgun_api_key_callback();
+		printf( '<label for="domain_name">%s</label>', esc_html__( 'Domain Name', 'post-smtp' ) );
 		print '<br />';
-		print $this->mailgun_domain_name_callback();
+		$this->mailgun_domain_name_callback();
 		print '<br />';
-		printf( '<label for="mailgun_region">%s</label>', __( 'Mailgun Europe Region?', 'post-smtp' ) );
+		printf( '<label for="mailgun_region">%s</label>', esc_html__( 'Mailgun Europe Region?', 'post-smtp' ) );
 		print '<br />';
-		print $this->mailgun_region_callback();
+		$this->mailgun_region_callback();
 		print '</section>';
 	}
 

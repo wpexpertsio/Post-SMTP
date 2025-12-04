@@ -77,14 +77,21 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
         }
 
         public function opened_email_count( $count, $args ) {
-            $current_time = $args['current_time'];
-            $filter       = $args['filter'];
+            $current_time = isset( $args['current_time'] ) ? (int) $args['current_time'] : 0;
+            $filter       = isset( $args['filter'] ) ? (int) $args['filter'] : 0;
 
             global $wpdb;
-            $sql = 'SELECT COUNT( * ) FROM %i WHERE event_type = "open-email" AND time <= %d AND time >= %d';
-            $sql = $wpdb->prepare( $sql, $wpdb->prefix . 'post_smtp_tracking', $current_time, $filter );
 
-            return $wpdb->get_var( $sql );
+            $table_name = $wpdb->prefix . 'post_smtp_tracking';
+
+            $sql = $wpdb->prepare(
+                "SELECT COUNT( * ) FROM {$table_name} WHERE event_type = %s AND time <= %d AND time >= %d",
+                'open-email',
+                $current_time,
+                $filter
+            );
+
+            return (int) $wpdb->get_var( $sql ); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         }
     }
     

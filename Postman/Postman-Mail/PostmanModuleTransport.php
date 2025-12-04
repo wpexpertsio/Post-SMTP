@@ -156,7 +156,7 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 	 * @since 2.1 Removed HTML 
 	 */
 	public function printActionMenuItem() {
-		echo $this->getScribe ()->getRequestPermissionLinkText ();
+		echo wp_kses_post( $this->getScribe()->getRequestPermissionLinkText() );
 	}
 	
 	/**

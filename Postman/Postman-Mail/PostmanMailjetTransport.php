@@ -208,9 +208,16 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
      */
     public function printMailjetAuthSectionInfo() {
 
-        printf (
-            '<p id="wizard_mailjet_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s </a> and enter <a href="%3$s" target="_blank">an API key and Secret Key</a> below.', 'post-smtp' ),
-            'https://app.mailjet.com', 'mailjet.com', 'https://app.mailjet.com/account/apikeys' )
+        printf(
+            '<p id="wizard_mailjet_auth_help">%s</p>',
+            wp_kses_post(
+                sprintf(
+                    __( 'Create an account at <a href="%1$s" target="_blank">%2$s </a> and enter <a href="%3$s" target="_blank">an API key and Secret Key</a> below.', 'post-smtp' ),
+                    'https://app.mailjet.com',
+                    'mailjet.com',
+                    'https://app.mailjet.com/account/apikeys'
+                )
+            )
         );
 
     }
@@ -221,7 +228,11 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
      */
     public function mailjet_api_key_callback() {
 
-        printf ( '<input type="password" autocomplete="off" id="mailjet_api_key" name="postman_options[mailjet_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailjetApiKey() ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getMailjetApiKey()) ) : '', __ ( 'Required', 'post-smtp' ) );
+        printf(
+            '<input type="password" autocomplete="off" id="mailjet_api_key" name="postman_options[mailjet_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>',
+            null !== $this->options->getMailjetApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getMailjetApiKey() ) ) : '',
+            esc_attr__( 'Required', 'post-smtp' )
+        );
         print ' <input type="button" id="toggleMailjetApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 
     }
@@ -232,7 +243,11 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
      */
     public function mailjet_secret_key_callback(){
 
-        printf ( '<input type="password" autocomplete="off" id="mailjet_secret_key" name="postman_options[mailjet_secret_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailjetSecretKey() ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getMailjetSecretKey()) ) : '', __ ( 'Required', 'post-smtp' ) );
+        printf(
+            '<input type="password" autocomplete="off" id="mailjet_secret_key" name="postman_options[mailjet_secret_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>',
+            null !== $this->options->getMailjetSecretKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getMailjetSecretKey() ) ) : '',
+            esc_attr__( 'Required', 'post-smtp' )
+        );
         print ' <input type="button" id="toggleMailjetSecretKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
     
     }
@@ -275,12 +290,12 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
     public function printWizardAuthenticationStep() {
         print '<section class="wizard_mailjet">';
         $this->printMailjetAuthSectionInfo();
-        printf ( '<label for="api_key">%s</label>', __ ( 'API Key', 'post-smtp' ) );
+        printf( '<label for="api_key">%s</label>', esc_html__( 'API Key', 'post-smtp' ) );
         print '<br />';
-        print $this->mailjet_api_key_callback();
-        printf ( '<label for="secret_key">%s</label>', __ ( 'Secret Key', 'post-smtp' ) );
+        $this->mailjet_api_key_callback();
+        printf( '<label for="secret_key">%s</label>', esc_html__( 'Secret Key', 'post-smtp' ) );
         print '<br />';
-        print $this->mailjet_secret_key_callback();
+        $this->mailjet_secret_key_callback();
         print '</section>';
     }
 
@@ -319,11 +334,11 @@ class PostmanMailjetTransport extends PostmanAbstractModuleTransport implements 
 		$messages = parent::validateTransportConfiguration ();
 		$apiKey = $this->options->getMailjetApiKey ();
 		if (empty ( $apiKey )) {
-			array_push ( $messages, __ ( 'API Key can not be empty', 'post-smtp' ) . '.' );
+			array_push( $messages, esc_html__( 'API Key can not be empty', 'post-smtp' ) . '.' );
 			$this->setNotConfiguredAndReady ();
 		}
 		if (! $this->isSenderConfigured ()) {
-			array_push ( $messages, __ ( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
+			array_push( $messages, esc_html__( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
 			$this->setNotConfiguredAndReady ();
 		}
 		return $messages;

@@ -420,21 +420,39 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	 * Print the Section text
 	 */
 	public function printSmtpSectionInfo() {
-		print __( 'Configure the communication with the mail server.', 'post-smtp' );
+		esc_html_e( 'Configure the communication with the mail server.', 'post-smtp' );
 	}
 
 	/**
 	 * Get the settings option array and print one of its values
 	 */
 	public function hostname_callback() {
-		printf( '<input type="text" id="input_hostname" name="postman_options[hostname]" value="%s" size="40" class="required" placeholder="%s"/>', null !== $this->options->getHostname() ? esc_attr( $this->options->getHostname() ) : '', __( 'Required', 'post-smtp' ) );
+		printf(
+			'<input type="text" id="input_hostname" name="postman_options[hostname]" value="%s" size="40" class="required" placeholder="%s"/>',
+			null !== $this->options->getHostname() ? esc_attr( $this->options->getHostname() ) : '',
+			esc_attr__( 'Required', 'post-smtp' )
+		);
 	}
 
 	/**
 	 * Get the settings option array and print one of its values
 	 */
 	public function port_callback( $args ) {
-		printf( '<input type="text" id="input_port" name="postman_options[port]" value="%s" %s placeholder="%s"/>', null !== $this->options->getPort() ? esc_attr( $this->options->getPort() ) : '', isset( $args ['style'] ) ? $args ['style'] : '', __( 'Required', 'post-smtp' ) );
+		$style_attr = '';
+		if ( isset( $args['style'] ) && is_string( $args['style'] ) ) {
+			// Only allow inline style attribute in the form style="...".
+			$style_value = trim( preg_replace( '/^style=/i', '', $args['style'] ) );
+			if ( '' !== $style_value ) {
+				$style_attr = 'style="' . esc_attr( $style_value ) . '"';
+			}
+		}
+
+		printf(
+			'<input type="text" id="input_port" name="postman_options[port]" value="%s" %s placeholder="%s"/>',
+			null !== $this->options->getPort() ? esc_attr( $this->options->getPort() ) : '',
+			$style_attr,
+			esc_attr__( 'Required', 'post-smtp' )
+		);
 	}
 
 	/**
@@ -443,9 +461,24 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	public function encryption_type_callback() {
 		$encType = $this->options->getEncryptionType();
 		print '<select id="input_enc_type" class="input_encryption_type" name="postman_options[enc_type]">';
-		printf( '<option class="input_enc_type_none" value="%s" %s>%s</option>', PostmanOptions::SECURITY_TYPE_NONE, $encType == PostmanOptions::SECURITY_TYPE_NONE ? 'selected="selected"' : '', __( 'None', 'post-smtp' ) );
-		printf( '<option class="input_enc_type_ssl" value="%s" %s>%s</option>', PostmanOptions::SECURITY_TYPE_SMTPS, $encType == PostmanOptions::SECURITY_TYPE_SMTPS ? 'selected="selected"' : '', 'SMTPS' );
-		printf( '<option class="input_enc_type_tls" value="%s" %s>%s</option>', PostmanOptions::SECURITY_TYPE_STARTTLS, $encType == PostmanOptions::SECURITY_TYPE_STARTTLS ? 'selected="selected"' : '', 'STARTTLS' );
+		printf(
+			'<option class="input_enc_type_none" value="%s" %s>%s</option>',
+			esc_attr( PostmanOptions::SECURITY_TYPE_NONE ),
+			selected( $encType, PostmanOptions::SECURITY_TYPE_NONE, false ),
+			esc_html__( 'None', 'post-smtp' )
+		);
+		printf(
+			'<option class="input_enc_type_ssl" value="%s" %s>%s</option>',
+			esc_attr( PostmanOptions::SECURITY_TYPE_SMTPS ),
+			selected( $encType, PostmanOptions::SECURITY_TYPE_SMTPS, false ),
+			esc_html__( 'SMTPS', 'post-smtp' )
+		);
+		printf(
+			'<option class="input_enc_type_tls" value="%s" %s>%s</option>',
+			esc_attr( PostmanOptions::SECURITY_TYPE_STARTTLS ),
+			selected( $encType, PostmanOptions::SECURITY_TYPE_STARTTLS, false ),
+			esc_html__( 'STARTTLS', 'post-smtp' )
+		);
 		print '</select>';
 	}
 
@@ -455,11 +488,36 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	public function authentication_type_callback() {
 		$authType = $this->options->getAuthenticationType();
 		printf( '<select id="input_%2$s" class="input_%2$s" name="%1$s[%2$s]">', PostmanOptions::POSTMAN_OPTIONS, PostmanOptions::AUTHENTICATION_TYPE );
-		printf( '<option class="input_auth_type_none" value="%s" %s>%s</option>', PostmanOptions::AUTHENTICATION_TYPE_NONE, $authType == PostmanOptions::AUTHENTICATION_TYPE_NONE ? 'selected="selected"' : '', 'None' );
-		printf( '<option class="input_auth_type_plain" value="%s" %s>%s</option>', PostmanOptions::AUTHENTICATION_TYPE_PLAIN, $authType == PostmanOptions::AUTHENTICATION_TYPE_PLAIN ? 'selected="selected"' : '', 'Plain' );
-		printf( '<option class="input_auth_type_login" value="%s" %s>%s</option>', PostmanOptions::AUTHENTICATION_TYPE_LOGIN, $authType == PostmanOptions::AUTHENTICATION_TYPE_LOGIN ? 'selected="selected"' : '', 'Login' );
-		printf( '<option class="input_auth_type_crammd5" value="%s" %s>%s</option>', PostmanOptions::AUTHENTICATION_TYPE_CRAMMD5, $authType == PostmanOptions::AUTHENTICATION_TYPE_CRAMMD5 ? 'selected="selected"' : '', 'CRAM-MD5' );
-		printf( '<option class="input_auth_type_oauth2" value="%s" %s>%s</option>', PostmanOptions::AUTHENTICATION_TYPE_OAUTH2, $authType == PostmanOptions::AUTHENTICATION_TYPE_OAUTH2 ? 'selected="selected"' : '', 'OAuth 2.0' );
+		printf(
+			'<option class="input_auth_type_none" value="%s" %s>%s</option>',
+			esc_attr( PostmanOptions::AUTHENTICATION_TYPE_NONE ),
+			selected( $authType, PostmanOptions::AUTHENTICATION_TYPE_NONE, false ),
+			esc_html__( 'None', 'post-smtp' )
+		);
+		printf(
+			'<option class="input_auth_type_plain" value="%s" %s>%s</option>',
+			esc_attr( PostmanOptions::AUTHENTICATION_TYPE_PLAIN ),
+			selected( $authType, PostmanOptions::AUTHENTICATION_TYPE_PLAIN, false ),
+			esc_html__( 'Plain', 'post-smtp' )
+		);
+		printf(
+			'<option class="input_auth_type_login" value="%s" %s>%s</option>',
+			esc_attr( PostmanOptions::AUTHENTICATION_TYPE_LOGIN ),
+			selected( $authType, PostmanOptions::AUTHENTICATION_TYPE_LOGIN, false ),
+			esc_html__( 'Login', 'post-smtp' )
+		);
+		printf(
+			'<option class="input_auth_type_crammd5" value="%s" %s>%s</option>',
+			esc_attr( PostmanOptions::AUTHENTICATION_TYPE_CRAMMD5 ),
+			selected( $authType, PostmanOptions::AUTHENTICATION_TYPE_CRAMMD5, false ),
+			esc_html__( 'CRAM-MD5', 'post-smtp' )
+		);
+		printf(
+			'<option class="input_auth_type_oauth2" value="%s" %s>%s</option>',
+			esc_attr( PostmanOptions::AUTHENTICATION_TYPE_OAUTH2 ),
+			selected( $authType, PostmanOptions::AUTHENTICATION_TYPE_OAUTH2, false ),
+			esc_html__( 'OAuth 2.0', 'post-smtp' )
+		);
 		print '</select>';
 	}
 
@@ -467,17 +525,22 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	 * Print the Section text
 	 */
 	public function printBasicAuthSectionInfo() {
-		print __( 'Enter the account credentials.', 'post-smtp' );
+		esc_html_e( 'Enter the account credentials.', 'post-smtp' );
 	}
 
 	/**
 	 * Get the settings option array and print one of its values
 	 */
 	public function basic_auth_username_callback() {
-		$inputValue = (null !== $this->options->getUsername() ? esc_attr( $this->options->getUsername() ) : '');
-		$inputDescription = __( 'The Username is usually the same as the Envelope-From Email Address.', 'post-smtp' );
+		$inputValue      = ( null !== $this->options->getUsername() ? esc_attr( $this->options->getUsername() ) : '' );
+		$inputDescription = esc_html__( 'The Username is usually the same as the Envelope-From Email Address.', 'post-smtp' );
 		print ('<input tabindex="99" id="fake_user_name" name="fake_user[name]" style="position:absolute; top:-500px;" type="text" value="Safari Autofill Me">') ;
-		printf( '<input type="text" id="input_basic_auth_username" name="postman_options[basic_auth_username]" value="%s" size="40" class="required ps-w-75" placeholder="%s"/><br/><span class="postman_input_description ps-input ps-w-75">%s</span>', $inputValue, __( 'Required', 'post-smtp' ), $inputDescription );
+		printf(
+			'<input type="text" id="input_basic_auth_username" name="postman_options[basic_auth_username]" value="%s" size="40" class="required ps-w-75" placeholder="%s"/><br/><span class="postman_input_description ps-input ps-w-75">%s</span>',
+			$inputValue,
+			esc_attr__( 'Required', 'post-smtp' ),
+			$inputDescription
+		);
 	}
 
 	/**
@@ -492,7 +555,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 				placeholder="%s" 
 				autocomplete="new-password"/>',
 			null !== $this->options->getPassword() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getPassword() ) ) : '',
-			__( 'Required', 'post-smtp' )
+			esc_attr__( 'Required', 'post-smtp' )
 		);
 	}
 
@@ -500,14 +563,22 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	 * Get the settings option array and print one of its values
 	 */
 	public function oauth_client_id_callback() {
-		printf( '<input type="text" onClick="this.setSelectionRange(0, this.value.length)" id="oauth_client_id" name="postman_options[oauth_client_id]" value="%s" size="60" class="required ps-w-75" placeholder="%s"/>', null !== $this->options->getClientId() ? esc_attr( $this->options->getClientId() ) : '', __( 'Required', 'post-smtp' ) );
+		printf(
+			'<input type="text" onClick="this.setSelectionRange(0, this.value.length)" id="oauth_client_id" name="postman_options[oauth_client_id]" value="%s" size="60" class="required ps-w-75" placeholder="%s"/>',
+			null !== $this->options->getClientId() ? esc_attr( $this->options->getClientId() ) : '',
+			esc_attr__( 'Required', 'post-smtp' )
+		);
 	}
 
 	/**
 	 * Get the settings option array and print one of its values
 	 */
 	public function oauth_client_secret_callback() {
-		printf( '<input type="text" onClick="this.setSelectionRange(0, this.value.length)" autocomplete="off" id="oauth_client_secret" name="postman_options[oauth_client_secret]" value="%s" size="60" class="required ps-w-75" placeholder="%s"/>', null !== $this->options->getClientSecret() ? esc_attr( $this->options->getClientSecret() ) : '', __( 'Required', 'post-smtp' ) );
+		printf(
+			'<input type="text" onClick="this.setSelectionRange(0, this.value.length)" autocomplete="off" id="oauth_client_secret" name="postman_options[oauth_client_secret]" value="%s" size="60" class="required ps-w-75" placeholder="%s"/>',
+			null !== $this->options->getClientSecret() ? esc_attr( $this->options->getClientSecret() ) : '',
+			esc_attr__( 'Required', 'post-smtp' )
+		);
 	}
 
 	/**
@@ -527,21 +598,21 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
 		$bonus_extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : array();
     	$gmail_oneclick_enabled = in_array( 'gmail-oneclick', $bonus_extensions );
-		$is_checked  = $gmail_oneclick_enabled ? 'checked' : '';
-		$is_disabled = ! post_smtp_has_pro() ? 'disabled' : '';
-		$class       = 'ps-enable-gmail-one-click ' . ( ! post_smtp_has_pro() ? ' disabled' : '' );
+		$is_checked  = $gmail_oneclick_enabled;
+		$is_disabled = ! post_smtp_has_pro();
+		$class       = 'ps-enable-gmail-one-click ' . ( $is_disabled ? ' disabled' : '' );
 		
 		// Add popup trigger file
 		require_once POST_SMTP_PATH. '/Postman/Popup/popup.php';
 		
-		echo '<div class="ps-form-switch-control">
-			<label class="ps-switch-1 '.(!post_smtp_has_pro() ? 'ps-gmail-one-click' : '').'">
-				<input type="hidden" id="ps-one-click-data" value="' . esc_attr( $json_data ) . '">
-				<input type="checkbox" class="' . esc_attr( $class ) . '" name="enable_gmail_oneclick" ' . $is_checked .'>
-				<span class="slider round"></span>
-			</label> 
-			'.esc_html__('Enable the option for a quick and easy way to connect with Google without the need of manually creating an app.', 'post-smtp').'
-		</div>';
+		echo '<div class="ps-form-switch-control">';
+		echo '<label class="ps-switch-1 ' . ( $is_disabled ? 'ps-gmail-one-click' : '' ) . '">';
+		echo '<input type="hidden" id="ps-one-click-data" value="' . esc_attr( $json_data ) . '">';
+		echo '<input type="checkbox" class="' . esc_attr( $class ) . '" name="enable_gmail_oneclick" ' . checked( $is_checked, true, false ) . '>';
+		echo '<span class="slider round"></span>';
+		echo '</label>';
+		echo esc_html__( 'Enable the option for a quick and easy way to connect with Google without the need of manually creating an app.', 'post-smtp' );
+		echo '</div>';
 	}
 
 	/**
@@ -568,11 +639,13 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		) );
 
 		// Determine whether to hide the entire Gmail auth section
-		$hide_style = $gmail_oneclick_enabled ? '' : 'style="display:none;"';
-		
 		$helping_text =  "<p>By signing in with Google, you can send emails using different 'From' addresses. To do this, disable the 'Force From Email' setting and use your registered aliases as the 'From' address across your WordPress site.</p> <p>Removing the OAuth connection will give you the ability to redo the OAuth connection or link to another Google account.</p>";
-
-		echo '<div id="ps-gmail-auth-buttons" ' . $hide_style . '>';
+		
+		echo '<div id="ps-gmail-auth-buttons"';
+		if ( ! $gmail_oneclick_enabled ) {
+			echo ' style="display:none;"';
+		}
+		echo '>';
 
 		if ( ! empty( $postman_auth_token ) && isset( $postman_auth_token['user_email'] ) ) {
 			// Show the "Remove Authorization" button if token exists
@@ -591,7 +664,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 			echo '<a href="' . esc_url( $auth_url ) . '" class="button button-primary ps-gmail-btn" id="ps-wizard-connect-gmail">';
 			echo esc_html__( 'Sign in with Google', 'post-smtp' );
 			echo '</a>';
-			echo $helping_text;
+			echo wp_kses_post( $helping_text );
 		}
 
 		echo '</div>';
@@ -607,14 +680,20 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$this->options = $this->options;
 		$transport = $this;
 		$oauthScribe = $transport->getScribe();
-		printf( '<p id="wizard_oauth2_help">%s</p>', $oauthScribe->getOAuthHelp() );
+		printf(
+			'<p id="wizard_oauth2_help">%s</p>',
+			wp_kses_post( $oauthScribe->getOAuthHelp() )
+		);
 	}
 
 	/**
 	 * Get the settings option array and print one of its values
 	 */
 	public function callback_domain_callback() {
-		printf( '<input type="text" onClick="this.setSelectionRange(0, this.value.length)" readonly="readonly" class="ps-input ps-w-75" id="input_oauth_callback_domain" value="%s" size="60"/>', $this->getCallbackDomain() );
+		printf(
+			'<input type="text" onClick="this.setSelectionRange(0, this.value.length)" readonly="readonly" class="ps-input ps-w-75" id="input_oauth_callback_domain" value="%s" size="60"/>',
+			esc_attr( $this->getCallbackDomain() )
+		);
 	}
 
 	/**
@@ -637,41 +716,66 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$this->options = $this->options;
 		$transport = $this;
 		$oauthScribe = $transport->getScribe();
-		printf( '<input type="text" onClick="this.setSelectionRange(0, this.value.length)" readonly="readonly" id="input_oauth_redirect_url" class="ps-input ps-w-75" value="%s" size="60"/>', $oauthScribe->getCallbackUrl() );
+		printf(
+			'<input type="text" onClick="this.setSelectionRange(0, this.value.length)" readonly="readonly" id="input_oauth_redirect_url" class="ps-input ps-w-75" value="%s" size="60"/>',
+			esc_attr( $oauthScribe->getCallbackUrl() )
+		);
 	}
 
 	/**
 	 * Get the settings option array and print one of its values
 	 */
 	public function sender_email_callback() {
-		$inputValue = (null !== $this->options->getEnvelopeSender() ? esc_attr( $this->options->getEnvelopeSender() ) : '');
-		$requiredLabel = __( 'Required', 'post-smtp' );
+		$inputValue          = ( null !== $this->options->getEnvelopeSender() ? esc_attr( $this->options->getEnvelopeSender() ) : '' );
+		$requiredLabel       = esc_attr__( 'Required', 'post-smtp' );
 		$envelopeFromMessage = __( 'This address, like the <b>return address</b> printed on an envelope, identifies the account owner to the SMTP server.', 'post-smtp' );
-		$spfMessage = sprintf( __( 'For reliable delivery, this domain must specify an <a target="_blank" href="%s">SPF record</a> permitting the use of the SMTP server named above.', 'post-smtp' ), 'https://www.mail-tester.com/spf/' );
-		printf( '<input type="email" id="input_envelope_sender_email" name="postman_options[envelope_sender]" value="%s" size="40" class="required" placeholder="%s"/> <br/><span class="postman_input_description">%s %s</span>', $inputValue, $requiredLabel, $envelopeFromMessage, $spfMessage );
+		$spfMessage          = sprintf(
+			__( 'For reliable delivery, this domain must specify an <a target="_blank" href="%s">SPF record</a> permitting the use of the SMTP server named above.', 'post-smtp' ),
+			'https://www.mail-tester.com/spf/'
+		);
+		printf(
+			'<input type="email" id="input_envelope_sender_email" name="postman_options[envelope_sender]" value="%s" size="40" class="required" placeholder="%s"/> <br/><span class="postman_input_description">%s %s</span>',
+			$inputValue,
+			$requiredLabel,
+			wp_kses_post( $envelopeFromMessage ),
+			wp_kses_post( $spfMessage )
+		);
 	}
 
 	/**
 	 */
 	public function printWizardMailServerHostnameStep() {
-		printf( '<legend>%s</legend>', _x( 'Which host will relay the mail?', 'Wizard Step Title', 'post-smtp' ) );
-		printf( '<p><label>%s</label></p>', __( 'If you want to use SendinBlue, Mandrill, Mailgun, SendGrid or other (API), You can skip this step by pressing next.', 'post-smtp' ) );
-		printf( '<p>%s</p>', __( 'This is the Outgoing (SMTP) Mail Server, or Mail Submission Agent (MSA), which Postman delegates mail delivery to. This server is specific to your email account, and if you don\'t know what to use, ask your email service provider.', 'post-smtp' ) );
-		printf( '<p><label>%s<label></p>', __( 'Note that many WordPress hosts, such as GoDaddy, Bluehost and Dreamhost, require that you use their mail accounts with their mail servers, and prevent you from using others.', 'post-smtp' ) );
+		printf( '<legend>%s</legend>', esc_html_x( 'Which host will relay the mail?', 'Wizard Step Title', 'post-smtp' ) );
+		printf( '<p><label>%s</label></p>', esc_html__( 'If you want to use SendinBlue, Mandrill, Mailgun, SendGrid or other (API), You can skip this step by pressing next.', 'post-smtp' ) );
+		printf( '<p>%s</p>', esc_html__( 'This is the Outgoing (SMTP) Mail Server, or Mail Submission Agent (MSA), which Postman delegates mail delivery to. This server is specific to your email account, and if you don\'t know what to use, ask your email service provider.', 'post-smtp' ) );
+		printf( '<p><label>%s<label></p>', esc_html__( 'Note that many WordPress hosts, such as GoDaddy, Bluehost and Dreamhost, require that you use their mail accounts with their mail servers, and prevent you from using others.', 'post-smtp' ) );
 
 		//printf( '<div><strong><u>%s</u></strong></div><br>', __( 'If you plan to use An API and not SMTP just type any value.', 'post-smtp' ) );
-		printf( '<label for="hostname">%s</label>', __( 'Outgoing Mail Server Hostname', 'post-smtp' ) );
-		print $this->hostname_callback();
-		printf( '<p class="ajax-loader" style="display:none"><img src="%s"/></p>', plugins_url( 'post-smtp/style/ajax-loader.gif' ) );
-		$warning = __( 'Warning', 'post-smtp' );
+		printf( '<label for="hostname">%s</label>', esc_html__( 'Outgoing Mail Server Hostname', 'post-smtp' ) );
+		$this->hostname_callback();
+		printf( '<p class="ajax-loader" style="display:none"><img src="%s"/></p>', esc_url( plugins_url( 'post-smtp/style/ajax-loader.gif' ) ) );
+		$warning = esc_html__( 'Warning', 'post-smtp' );
 		/* Translators: Where (%s) is the name of the web host */
-		$nonGodaddyDomainMessage = sprintf( __( 'Your email address <b>requires</b> access to a remote SMTP server blocked by %s.', 'post-smtp' ), 'GoDaddy' );
-		$nonGodaddyDomainMessage .= sprintf( ' %s', __( 'If you have access to cPanel, enable the Remote Mail Exchanger.', 'post-smtp' ) );
-		printf( '<p id="godaddy_block"><span style="background-color:yellow"><b>%s</b>: %s</span></p>', $warning, $nonGodaddyDomainMessage );
+		$nonGodaddyDomainMessage  = sprintf( __( 'Your email address <b>requires</b> access to a remote SMTP server blocked by %s.', 'post-smtp' ), 'GoDaddy' );
+		$nonGodaddyDomainMessage .= ' ' . __( 'If you have access to cPanel, enable the Remote Mail Exchanger.', 'post-smtp' );
+		printf(
+			'<p id="godaddy_block"><span style="background-color:yellow"><b>%s</b>: %s</span></p>',
+			$warning,
+			wp_kses_post( $nonGodaddyDomainMessage )
+		);
 		/* Translators: Where (%1$s) is the SPF-info URL and (%2$s) is the name of the web host */
-		$godaddyCustomDomainMessage = sprintf( __( 'If you own this domain, make sure it has an <a href="%1$s">SPF record authorizing %2$s</a> as a relay, or you will have delivery problems.', 'post-smtp' ), 'http://www.mail-tester.com/spf/godaddy', 'GoDaddy' );
-		$godaddy_note = __( 'Note: You may have delivery problems if you continue using the default outgoing mail server hostname.', 'post-smtp' );
-		printf( '<div id="godaddy_spf_required"><p><span style="background-color:yellow"><b>%s</b>: %s</span></p><p class="ps-default-host-name"><label>%s<label></p></div>', $warning, $godaddyCustomDomainMessage, $godaddy_note );
+		$godaddyCustomDomainMessage = sprintf(
+			__( 'If you own this domain, make sure it has an <a href="%1$s">SPF record authorizing %2$s</a> as a relay, or you will have delivery problems.', 'post-smtp' ),
+			'http://www.mail-tester.com/spf/godaddy',
+			'GoDaddy'
+		);
+		$godaddy_note = esc_html__( 'Note: You may have delivery problems if you continue using the default outgoing mail server hostname.', 'post-smtp' );
+		printf(
+			'<div id="godaddy_spf_required"><p><span style="background-color:yellow"><b>%s</b>: %s</span></p><p class="ps-default-host-name"><label>%s<label></p></div>',
+			$warning,
+			wp_kses_post( $godaddyCustomDomainMessage ),
+			$godaddy_note
+		);
 	}
 
 	/**
@@ -679,31 +783,43 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	public function printWizardAuthenticationStep() {
 		print '<section class="wizard-auth-oauth2">';
 		print '<p id="wizard_oauth2_help"></p>';
-		printf( '<label id="callback_domain" for="callback_domain">%s</label>', $this->getScribe()->getCallbackDomainLabel() );
+		printf(
+			'<label id="callback_domain" for="callback_domain">%s</label>',
+			esc_html( $this->getScribe()->getCallbackDomainLabel() )
+		);
 		print '<br />';
 		print $this->callback_domain_callback();
 		print '<br />';
-		printf( '<label id="redirect_url" for="redirect_uri">%s</label>', $this->getScribe()->getCallbackUrlLabel() );
+		printf(
+			'<label id="redirect_url" for="redirect_uri">%s</label>',
+			esc_html( $this->getScribe()->getCallbackUrlLabel() )
+		);
 		print '<br />';
 		print $this->redirect_url_callback();
 		print '<br />';
-		printf( '<label id="client_id" for="client_id">%s</label>', $this->getScribe()->getClientIdLabel() );
+		printf(
+			'<label id="client_id" for="client_id">%s</label>',
+			esc_html( $this->getScribe()->getClientIdLabel() )
+		);
 		print '<br />';
 		print $this->oauth_client_id_callback();
 		print '<br />';
-		printf( '<label id="client_secret" for="client_secret">%s</label>', $this->getScribe()->getClientSecretLabel() );
+		printf(
+			'<label id="client_secret" for="client_secret">%s</label>',
+			esc_html( $this->getScribe()->getClientSecretLabel() )
+		);
 		print '<br />';
 		print $this->oauth_client_secret_callback();
 		print '<br />';
 		print '</section>';
 
 		print '<section class="wizard-auth-basic">';
-		printf( '<p class="port-explanation-ssl">%s</p>', __( 'Enter the account credentials.', 'post-smtp' ) );
-		printf( '<label for="username">%s</label>', __( 'Username', 'post-smtp' ) );
+		printf( '<p class="port-explanation-ssl">%s</p>', esc_html__( 'Enter the account credentials.', 'post-smtp' ) );
+		printf( '<label for="username">%s</label>', esc_html__( 'Username', 'post-smtp' ) );
 		print '<br />';
 		print $this->basic_auth_username_callback();
 		print '<br />';
-		printf( '<label for="password">%s</label>', __( 'Password', 'post-smtp' ) );
+		printf( '<label for="password">%s</label>', esc_html__( 'Password', 'post-smtp' ) );
 		print '<br />';
 		print $this->basic_auth_password_callback();
 		print '</section>';

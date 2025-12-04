@@ -241,13 +241,27 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 	 */
 	public function printMandrillAuthSectionInfo() {
 		/* Translators: Where (1) is the service URL and (2) is the service name and (3) is a api key URL */
-		printf ( '<p id="wizard_mandrill_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ), 'https://mandrillapp.com', 'Mandrillapp.com', 'https://mandrillapp.com/settings' ) );
+		printf(
+			'<p id="wizard_mandrill_auth_help">%s</p>',
+			wp_kses_post(
+				sprintf(
+					__( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
+					'https://mandrillapp.com',
+					'Mandrillapp.com',
+					'https://mandrillapp.com/settings'
+				)
+			)
+		);
 	}
 	
 	/**
 	 */
 	public function mandrill_api_key_callback() {
-		printf ( '<input type="password" autocomplete="off" id="mandrill_api_key" name="postman_options[mandrill_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMandrillApiKey () ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getMandrillApiKey () ) ) : '', __ ( 'Required', 'post-smtp' ) );
+		printf(
+			'<input type="password" autocomplete="off" id="mandrill_api_key" name="postman_options[mandrill_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>',
+			null !== $this->options->getMandrillApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getMandrillApiKey() ) ) : '',
+			esc_attr__( 'Required', 'post-smtp' )
+		);
 		print ' <input type="button" id="toggleMandrillApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 	}
 	
@@ -274,9 +288,9 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 	public function printWizardAuthenticationStep() {
 		print '<section class="wizard_mandrill">';
 		$this->printMandrillAuthSectionInfo ();
-		printf ( '<label for="api_key">%s</label>', __ ( 'API Key', 'post-smtp' ) );
+		printf( '<label for="api_key">%s</label>', esc_html__( 'API Key', 'post-smtp' ) );
 		print '<br />';
-		print $this->mandrill_api_key_callback ();
+		$this->mandrill_api_key_callback();
 		print '</section>';
 	}
 

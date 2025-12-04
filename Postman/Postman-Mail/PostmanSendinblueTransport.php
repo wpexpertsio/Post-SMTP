@@ -199,9 +199,16 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
      */
     public function printSendinblueAuthSectionInfo() {
 
-        printf (
-            '<p id="wizard_sendinblue_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s (formely Sendinblue)</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
-                'https://www.brevo.com/', 'brevo.com', 'https://account.brevo.com/advanced/api' )
+        printf(
+            '<p id="wizard_sendinblue_auth_help">%s</p>',
+            wp_kses_post(
+                sprintf(
+                    __( 'Create an account at <a href="%1$s" target="_blank">%2$s (formely Sendinblue)</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
+                    'https://www.brevo.com/',
+                    'brevo.com',
+                    'https://account.brevo.com/advanced/api'
+                )
+            )
         );
 
     }
@@ -212,7 +219,11 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
      */
     public function sendinblue_api_key_callback() {
 
-        printf ( '<input type="password" autocomplete="off" id="sendinblue_api_key" name="postman_options[sendinblue_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getSendinblueApiKey() ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getSendinblueApiKey() ) ) : '', __ ( 'Required', 'post-smtp' ) );
+        printf(
+            '<input type="password" autocomplete="off" id="sendinblue_api_key" name="postman_options[sendinblue_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>',
+            null !== $this->options->getSendinblueApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getSendinblueApiKey() ) ) : '',
+            esc_attr__( 'Required', 'post-smtp' )
+        );
         print ' <input type="button" id="toggleSendinblueApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 
     }
@@ -255,9 +266,9 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
     public function printWizardAuthenticationStep() {
         print '<section class="wizard_sendinblue">';
         $this->printSendinblueAuthSectionInfo();
-        printf ( '<label for="api_key">%s</label>', __ ( 'API Key', 'post-smtp' ) );
+        printf( '<label for="api_key">%s</label>', esc_html__( 'API Key', 'post-smtp' ) );
         print '<br />';
-        print $this->sendinblue_api_key_callback();
+        $this->sendinblue_api_key_callback();
         print '</section>';
     }
 
@@ -296,11 +307,11 @@ class PostmanSendinblueTransport extends PostmanAbstractModuleTransport implemen
 		$messages = parent::validateTransportConfiguration ();
 		$apiKey = $this->options->getSendinblueApiKey ();
 		if (empty ( $apiKey )) {
-			array_push ( $messages, __ ( 'API Key can not be empty', 'post-smtp' ) . '.' );
+			array_push ( $messages, esc_html__( 'API Key can not be empty', 'post-smtp' ) . '.' );
 			$this->setNotConfiguredAndReady ();
 		}
 		if (! $this->isSenderConfigured ()) {
-			array_push ( $messages, __ ( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
+			array_push ( $messages, esc_html__( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
 			$this->setNotConfiguredAndReady ();
 		}
 		return $messages;

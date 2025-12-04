@@ -410,7 +410,7 @@ if (! class_exists ( 'PostmanWpMailBankOptions' )) {
 				global $wpdb;
 				$wpdb->show_errors ();
 				$wpdb->suppress_errors ();
-				$mb_email_configuration_data =  $wpdb->get_row(
+				$mb_email_configuration_data =  $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 					$wpdb->prepare(
 						'SELECT meta_value FROM ' . $wpdb->prefix . 'mail_bank_meta WHERE meta_key = %s', 'email_configuration'
 					), ARRAY_A

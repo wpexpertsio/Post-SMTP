@@ -327,9 +327,9 @@ class PostmanEmailLogsMigration {
 
         global $wpdb;
 
-        return $wpdb->get_results(
-			"SELECT * FROM {$wpdb->postmeta} WHERE post_id = ( SELECT ID FROM {$wpdb->posts} ORDER BY ID DESC LIMIT 1 )" // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        );
+		return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			"SELECT * FROM {$wpdb->postmeta} WHERE post_id = ( SELECT ID FROM {$wpdb->posts} ORDER BY ID DESC LIMIT 1 )"
+		);
 
     }
 
@@ -447,13 +447,13 @@ class PostmanEmailLogsMigration {
 
         global $wpdb;
 
-        $logs = $wpdb->get_results(
+        $logs = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->prepare(
                 "SELECT p.ID, p.post_date FROM {$wpdb->posts} AS p WHERE p.post_type = 'postman_sent_mail' && p.pinged != 1 LIMIT %d;",
                 $limit
             ),
             OBJECT_K
-        ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        );
         $log_ids        = array_keys( $logs );
         $log_ids_string = implode( ',', $log_ids );
 
@@ -464,8 +464,8 @@ class PostmanEmailLogsMigration {
             $placeholders = implode( ',', array_fill( 0, count( $log_ids ), '%d' ) );
             $sql          = "SELECT post_id as ID, meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id IN ($placeholders);";
 
-            $logs_meta = $wpdb->get_results(
-                $wpdb->prepare( $sql, $log_ids ) // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $logs_meta = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                $wpdb->prepare( $sql, $log_ids )
             );
 
             $this->log( 'Info: `get_old_logs` Logs Meta ' );
@@ -822,13 +822,13 @@ class PostmanEmailLogsMigration {
                 $this->log( 'Info: `revert_migration` Tables Uninstalled' );
             
                 global $wpdb;
-                $response = $wpdb->query(
+                $response = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                     $wpdb->prepare(
                         "UPDATE {$wpdb->posts} SET pinged = %s WHERE post_type = %s",
                         '',
                         'postman_sent_mail'
                     )
-                ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                );
 
                 if( $response ) {
 

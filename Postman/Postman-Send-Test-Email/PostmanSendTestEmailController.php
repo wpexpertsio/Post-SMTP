@@ -155,7 +155,18 @@ class PostmanSendTestEmailController {
 		$user_email = wp_get_current_user()->user_email;
 		
 		$nonce_field = wp_nonce_field( 'post-smtp', 'security', true, false );
-		echo '
+		$allowed_nonce_html = array(
+			'input' => array(
+				'type'  => true,
+				'id'    => true,
+				'name'  => true,
+				'value' => true,
+			),
+		);
+		$nonce_field = wp_kses( $nonce_field, $allowed_nonce_html );
+		echo
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		'
 		<div class="send-test-email">
 		
 		<div class="ps-logo">

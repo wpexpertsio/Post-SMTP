@@ -195,9 +195,16 @@ if( !class_exists( 'PostmanSparkPostTransport' ) ):
          */
         public function printSparkPostAuthSectionInfo() {
 
-            printf (
-                '<p id="wizard_sparkpost_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API Key</a> below.', 'post-smtp' ),
-                'https://app.sparkpost.com/join', 'SparkPost', 'https://app.sparkpost.com/account/api-keys' )
+            printf(
+                '<p id="wizard_sparkpost_auth_help">%s</p>',
+                wp_kses_post(
+                    sprintf(
+                        __( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API Key</a> below.', 'post-smtp' ),
+                        'https://app.sparkpost.com/join',
+                        'SparkPost',
+                        'https://app.sparkpost.com/account/api-keys'
+                    )
+                )
             );
 
         }
@@ -208,7 +215,11 @@ if( !class_exists( 'PostmanSparkPostTransport' ) ):
          */
         public function sparkpost_api_key_callback() {
 
-            printf ( '<input type="password" autocomplete="off" id="sparkpost_api_key" name="postman_options[sparkpost_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getSparkPostApiKey() ? esc_attr ( PostmanUtils::obfuscatePassword ( $this->options->getSparkPostApiKey() ) ) : '', __ ( 'Required', 'post-smtp' ) );
+            printf(
+                '<input type="password" autocomplete="off" id="sparkpost_api_key" name="postman_options[sparkpost_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>',
+                null !== $this->options->getSparkPostApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getSparkPostApiKey() ) ) : '',
+                esc_attr__( 'Required', 'post-smtp' )
+            );
             print ' <input type="button" id="toggleSparkPostApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 
         }
@@ -251,9 +262,9 @@ if( !class_exists( 'PostmanSparkPostTransport' ) ):
         public function printWizardAuthenticationStep() {
             print '<section class="wizard_sparkpost">';
             $this->printSparkPostAuthSectionInfo();
-            printf ( '<label for="api_key">%s</label>', __ ( 'API Key', 'post-smtp' ) );
+            printf( '<label for="api_key">%s</label>', esc_html__( 'API Key', 'post-smtp' ) );
             print '<br />';
-            print $this->sparkpost_api_key_callback();
+            $this->sparkpost_api_key_callback();
             print '
             <div class="sparkpost-documentation">
                 <div>

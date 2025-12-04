@@ -417,15 +417,30 @@ class Postman {
 	public static function getMailerTypeRecommend() {
 		?>
 		<div>
-			<p style="font-size: 18px; font-weight: bold;">Please notice</p>
+			<p style="font-size: 18px; font-weight: bold;"><?php esc_html_e( 'Please notice', 'post-smtp' ); ?></p>
 			<p style="font-size: 14px; line-height: 1.7;">
-				<?php _e('Post SMTP v2 includes and new feature called: <b>Mailer Type</b>.', 'post-smtp' ); ?><br>
-				<?php _e('I recommend to change it and <strong>TEST</strong> Post SMTP with the value <code>PHPMailer</code>.', 'post-smtp' ); ?><br>
-				<?php _e('<strong>ONLY</strong> if the default mailer type is not working for you.', 'post-smtp' ); ?><br>
-				<a target="_blank" href="<?php echo POST_SMTP_ASSETS; ?>images/gif/mailer-type.gif">
+				<?php
+				echo wp_kses_post(
+					__( 'Post SMTP v2 includes and new feature called: <b>Mailer Type</b>.', 'post-smtp' )
+				);
+				?>
+				<br>
+				<?php
+				echo wp_kses_post(
+					__( 'I recommend to change it and <strong>TEST</strong> Post SMTP with the value <code>PHPMailer</code>.', 'post-smtp' )
+				);
+				?>
+				<br>
+				<?php
+				echo wp_kses_post(
+					__( '<strong>ONLY</strong> if the default mailer type is not working for you.', 'post-smtp' )
+				);
+				?>
+				<br>
+				<a target="_blank" href="<?php echo esc_url( POST_SMTP_ASSETS . 'images/gif/mailer-type.gif' ); ?>">
 					<div>
-						<img width="300" src="<?php echo POST_SMTP_ASSETS; ?>images/gif/mailer-type.gif" alt="how to set mailer type">
-						<figcaption><?php _e('click to enlarge image.', 'post-smtp' ); ?></figcaption>
+						<img width="300" src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/gif/mailer-type.gif' ); ?>" alt="<?php esc_attr_e( 'how to set mailer type', 'post-smtp' ); ?>">
+						<figcaption><?php esc_html_e( 'click to enlarge image.', 'post-smtp' ); ?></figcaption>
 					</div>
 				</a>
 			</p>
@@ -515,7 +530,12 @@ class Postman {
 	 * http://striderweb.com/nerdaphernalia/2008/06/give-your-wordpress-plugin-credit/
 	 */
 	function print_signature() {
-		printf( '<a href="https://wordpress.org/plugins/post-smtp/">%s</a> %s<br/>', $this->pluginData ['name'], $this->pluginData ['version'] );
+		printf(
+			'<a href="%s">%s</a> %s<br/>',
+			esc_url( 'https://wordpress.org/plugins/post-smtp/' ),
+			esc_html( $this->pluginData['name'] ),
+			esc_html( $this->pluginData['version'] )
+		);
 	}
 
 	/**

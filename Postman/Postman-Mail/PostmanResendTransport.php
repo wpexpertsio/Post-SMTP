@@ -183,9 +183,16 @@ class PostmanResendTransport extends PostmanAbstractModuleTransport implements P
      */
     public function printResendAuthSectionInfo() {
 
-        printf (
-            '<p id="wizard_resend_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
-                'https://resend.com/', 'resend.com', 'https://resend.com/api-keys' )
+        printf(
+            '<p id="wizard_resend_auth_help">%s</p>',
+            wp_kses_post(
+                sprintf(
+                    __( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
+                    'https://resend.com/',
+                    'resend.com',
+                    'https://resend.com/api-keys'
+                )
+            )
         );
 
     }
@@ -199,7 +206,7 @@ class PostmanResendTransport extends PostmanAbstractModuleTransport implements P
         printf(
             '<input type="password" autocomplete="off" id="resend_api_key" name="postman_options[resend_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>',
             null !== $this->options->getResendApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getResendApiKey() ) ) : '',
-            __( 'Required', 'post-smtp' )
+            esc_attr__( 'Required', 'post-smtp' )
         );
         print ' <input type="button" id="toggleResendApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
 
@@ -243,9 +250,9 @@ class PostmanResendTransport extends PostmanAbstractModuleTransport implements P
     public function printWizardAuthenticationStep() {
         print '<section class="wizard_resend">';
         $this->printResendAuthSectionInfo();
-        printf ( '<label for="api_key">%s</label>', __ ( 'API Key', 'post-smtp' ) );
+        printf( '<label for="api_key">%s</label>', esc_html__( 'API Key', 'post-smtp' ) );
         print '<br />';
-        print $this->resend_api_key_callback();
+        $this->resend_api_key_callback();
         print '</section>';
     }
 
@@ -284,11 +291,11 @@ class PostmanResendTransport extends PostmanAbstractModuleTransport implements P
         $messages = parent::validateTransportConfiguration ();
         $apiKey = $this->options->getResendApiKey ();
         if (empty ( $apiKey )) {
-            array_push ( $messages, __ ( 'API Key can not be empty', 'post-smtp' ) . '.' );
+            array_push( $messages, esc_html__( 'API Key can not be empty', 'post-smtp' ) . '.' );
             $this->setNotConfiguredAndReady ();
         }
         if (! $this->isSenderConfigured ()) {
-            array_push ( $messages, __ ( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
+            array_push( $messages, esc_html__( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
             $this->setNotConfiguredAndReady ();
         }
         return $messages;

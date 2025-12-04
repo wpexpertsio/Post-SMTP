@@ -121,10 +121,20 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 
 				include_once POST_SMTP_PATH . '/Postman/Postman-Email-Log/PostmanEmailQueryLog.php';
 			}
+
+			global $wpdb;
+
 			$ps_query = new PostmanEmailQueryLog();
 
-			$where = ( ! empty( $from ) && ! empty( $to ) ) ? " WHERE pl.time >= {$from} && pl.time <= {$to}" : '';
+			$from  = absint( $from );
+			$to    = absint( $to );
+			$limit = absint( $limit );
 
+			$where = '';
+
+			if ( ! empty( $from ) && ! empty( $to ) ) {
+				$where = $wpdb->prepare( ' WHERE pl.time >= %d AND pl.time <= %d', $from, $to );
+			}
 
 			$query = "SELECT pl.original_subject AS subject, COUNT( pl.original_subject ) AS total, SUM( pl.success = 1 ) As sent, SUM( pl.success != 1 ) As failed FROM {$ps_query->table} AS pl";
 
@@ -137,10 +147,13 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 			$query = apply_filters( 'postman_health_count', $query );
 
 			$query .= "{$where} GROUP BY pl.original_subject";
-			$query .= ! empty( $limit ) ? " LIMIT {$limit}" : '';
 
-			global $wpdb;
-			$response = $wpdb->get_results( $query );
+			if ( ! empty( $limit ) ) {
+				// Use prepare to safely add LIMIT clause.
+				$query .= $wpdb->prepare( ' LIMIT %d', $limit );
+			}
+
+			$response = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 			return $response ? $response : false;
 		}

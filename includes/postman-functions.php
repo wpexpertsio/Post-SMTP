@@ -19,7 +19,7 @@ function postman_add_log_meta( $log_id, $meta_key, $meta_value ) {
     global $wpdb;
     $email_logs =  new PostmanEmailLogs();
 
-    return $wpdb->insert(
+    return $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->prefix . $email_logs->meta_table,
         array(
             'log_id'        =>  $log_id,
@@ -47,18 +47,19 @@ if ( ! function_exists( 'postman_update_log_meta' ) ) {
     function postman_update_log_meta( $log_id, $meta_key, $meta_value ) {
         global $wpdb;
         $email_logs = new PostmanEmailLogs();
+		$meta_table = sanitize_key( $email_logs->meta_table );
 
-        $existing_meta = $wpdb->get_row(
+        $existing_meta = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
             $wpdb->prepare(
-                "SELECT * FROM {$wpdb->prefix}{$email_logs->meta_table} WHERE log_id = %d AND meta_key = %s",
+				"SELECT * FROM {$wpdb->prefix}{$meta_table} WHERE log_id = %d AND meta_key = %s",
                 $log_id,
                 $meta_key
-            )
+			)
         );
 
         if ( $existing_meta ) {
-            return $wpdb->update(
-                $wpdb->prefix . $email_logs->meta_table,
+            return $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->prefix . $meta_table,
                 array(
                     'meta_value' => $meta_value
                 ),
@@ -75,8 +76,8 @@ if ( ! function_exists( 'postman_update_log_meta' ) ) {
                 )
             );
         } else {
-            return $wpdb->insert(
-                $wpdb->prefix . $email_logs->meta_table,
+            return $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->prefix . $meta_table,
                 array(
                     'log_id' => $log_id,
                     'meta_key' => $meta_key,
@@ -105,26 +106,27 @@ function postman_get_log_meta( $log_id, $key = '' ) {
 
     global $wpdb;
     $email_logs = new PostmanEmailLogs();
+	$meta_table = sanitize_key( $email_logs->meta_table );
 
     if( empty( $key ) ) {
 
-        return $wpdb->get_results(
+        return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
             $wpdb->prepare(
-                "SELECT `meta_key`, `meta_value` FROM {$wpdb->prefix}{$email_logs->meta_table}
+				"SELECT `meta_key`, `meta_value` FROM {$wpdb->prefix}{$meta_table}
                 WHERE `log_id` = %d",
                 $log_id
-            )
+			)
         );
 
     }
 
-    $result = $wpdb->get_row(
+    $result = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
         $wpdb->prepare(
-            "SELECT `meta_value` FROM {$wpdb->prefix}{$email_logs->meta_table}
+			"SELECT `meta_value` FROM {$wpdb->prefix}{$meta_table}
             WHERE `log_id` = %d && `meta_key` = %s",
             $log_id,
             $key
-        )
+		)
     ); 
 
     return $result ? $result->meta_value : false;
@@ -162,7 +164,7 @@ function postman_delete_log_meta( $log_id, $meta_key, $meta_value = '' ) {
 
     }
 
-    return $wpdb->delete(
+    return $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->prefix . $email_logs->meta_table,
         $where,
         $where_format

@@ -169,8 +169,10 @@ class PostmanUtils {
 
 		// pre-process the response
 		if ( is_wp_error( $response ) ) {
-			PostmanUtils::$logger->error( $response->get_error_message() );
-			throw new Exception( 'Error executing wp_remote_post: ' . $response->get_error_message() );
+			// Sanitize and escape the error message before logging or throwing.
+			$error_message = esc_html( $response->get_error_message() );
+			PostmanUtils::$logger->error( $error_message );
+			throw new Exception( 'Error executing wp_remote_post: ' . $error_message ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		} else {
 			return $response;
 		}

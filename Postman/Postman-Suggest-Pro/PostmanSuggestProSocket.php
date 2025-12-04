@@ -21,11 +21,11 @@ class PostmanSuggestProSocket {
     public function __construct() {
 
         $this->pro_extenstions();
-        $this->fs = freemius( 10461 );
+       $this->fs = freemius( 10461 );
         $hide_notice = get_transient( 'post_smtp_skip_banner' );
 
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-        $this->fs->add_action( 'addons/after_addons', array( $this, 'promote_bundles_fs' ) );
+       $this->fs->add_action( 'addons/after_addons', array( $this, 'promote_bundles_fs' ) );
         
         
         if( !post_smtp_has_pro() ) {
@@ -128,7 +128,7 @@ class PostmanSuggestProSocket {
                     <a style="text-decoration:none; color:#231F20;" href="<?php echo esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=banner&utm_campaign=plugin' ); ?>">🎉 UNLOCK THE FULL POTENTIAL OF POST SMTP WITH PRO FEATURES</a>
                 </div>                
                 <div style="margin-top:8px">
-                    <a style="font-size:10px; color:#0019ff;" href="<?php echo admin_url( 'admin.php?action=ps_skip_pro_banner' ); ?>">Not interested, Hide for now.</a>
+                    <a style="font-size:10px; color:#0019ff;" href="<?php echo esc_url( admin_url( 'admin.php?action=ps_skip_pro_banner' ) ); ?>">Not interested, Hide for now.</a>
                 </div>
             </div>
             <div style="margin: 11px 0;">
@@ -479,7 +479,8 @@ class PostmanSuggestProSocket {
         </div>
         
         <?php
-        echo ob_get_clean();
+        $output = ob_get_clean();
+        echo wp_kses_post( $output );
     }
 
 }

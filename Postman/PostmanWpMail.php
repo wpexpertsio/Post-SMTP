@@ -318,9 +318,9 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 					'headers' => $message->getHeaders(),
 					'attachments' => $message->getAttachments()
 				);
-				// Sanitize exception data before passing it along to hooks or other handlers.
+				// Sanitize and escape exception data before passing it along to hooks or other handlers.
 				$phpmailer_exception_code = (int) $e->getCode();
-				$phpmailer_exception_msg  = sanitize_text_field( $e->getMessage() );
+				$phpmailer_exception_msg  = esc_html( $e->getMessage() );
 
 				$mail_error_data['phpmailer_exception_code'] = $phpmailer_exception_code;
 
@@ -328,7 +328,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 				// return failure
 				if ( PostmanOptions::getInstance()->getSmtpMailer() == 'phpmailer' ) {
-					throw new phpmailerException( $phpmailer_exception_msg, $phpmailer_exception_code );
+					throw new phpmailerException( $phpmailer_exception_msg, $phpmailer_exception_code ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 				}
 				return false;
 
