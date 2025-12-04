@@ -60,8 +60,13 @@ if ( ! class_exists( 'PostmanEmailItMailEngine' ) ) {
 				$htmlContent = '<p>(No content)</p>';
 			}
 
+			$from = $senderEmail;
+			if ( ! empty( $senderName ) ) {
+				$from = sprintf( '%s <%s>', $senderName, $senderEmail );
+			}
+
 			$content = [
-				'from'    => $senderEmail,
+				'from'    => $from,
 				'to'      => implode( ',', $recipients ),
 				'subject' => $subject,
 				'html'    => $htmlContent,
