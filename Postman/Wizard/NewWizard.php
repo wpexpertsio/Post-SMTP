@@ -1771,6 +1771,8 @@ public function render_gmail_settings() {
             &&
             'ps-save-wizard' == $_POST['action'] 
             &&
+            isset( $form_data['security'] )
+            &&
             wp_verify_nonce( $form_data['security'], 'post-smtp' )
         ) {
 
