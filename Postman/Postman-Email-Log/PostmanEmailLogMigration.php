@@ -771,7 +771,8 @@ class PostmanEmailLogsMigration {
      */
     public function has_migrated() {
 
-        $total_old_logs = wp_count_posts( 'postman_sent_mail' )->private;
+        $counts        = wp_count_posts( 'postman_sent_mail' );
+        $total_old_logs = isset( $counts->private ) ? (int) $counts->private : 0;
 
         if( $this->get_migrated_count() >= (int)$total_old_logs ) {
 
