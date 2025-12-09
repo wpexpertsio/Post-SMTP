@@ -192,7 +192,7 @@ class Post_SMTP_Mobile {
         if( function_exists( 'ImageCreate' ) ):
         ?>
         <section id="mobile-app">
-            <h2><?php _e( 'Mobile Application', 'post-smtp' ); ?></h2>
+            <h2><?php esc_html_e( 'Mobile Application', 'post-smtp' ); ?></h2>
             <div class="download-app">
                 <div style="float: left;">
                     <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/mobile.png' ) ?>" width="55px" />
@@ -224,32 +224,38 @@ class Post_SMTP_Mobile {
                     <?php 
                     if( !$this->app_connected ) {
                         
-                        echo '<img src="data:image/jpeg;base64,'. $this->qr_code.'" width="300"/>'; 
+                        echo '<img src="data:image/jpeg;base64,' . $this->qr_code . '" width="300"/>'; 
                         ?>
                         <div>
-                            <a href="<?php echo esc_url( admin_url( "admin-post.php?action=regenerate-qrcode&_psnonce=$nonce" ) ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
+                            <a href="<?php echo esc_url( admin_url( "admin-post.php?action=regenerate-qrcode&_psnonce=$nonce" ) ); ?>"><?php esc_html_e( 'Regenerate QR Code', 'post-smtp' ); ?></a>
                         </div>
                         <?php
 
                     }
 					else {
 						
-						echo "<b>Connected Device:</b> ";
+						echo '<b>' . esc_html__( 'Connected Device:', 'post-smtp' ) . '</b> ';
 						
 						$nonce = wp_create_nonce( 'ps-disconnect-app-nonce' );
 						
 						foreach( $this->app_connected as $device ) {
 							
-							$url = admin_url( "admin.php?action=post_smtp_disconnect_app&auth_token={$device['fcm_token']}&ps_disconnect_app_nonce={$nonce}" );
-							$checked = $device['enable_notification'] == 1 ? 'checked="checked"' : '';
-							
-							echo  esc_html( $device['device'] ) . "<a href='{$url}' style='color: red'>Disconnect</a>";
+							$url     = esc_url( admin_url( "admin.php?action=post_smtp_disconnect_app&auth_token={$device['fcm_token']}&ps_disconnect_app_nonce={$nonce}" ) );
+							$token   = isset( $device['fcm_token'] ) ? esc_attr( $device['fcm_token'] ) : '';
+							$label   = esc_html__( 'Send failed email notification', 'post-smtp' );
+
+							printf(
+								'%s <a href="%s" style="color: red">%s</a>',
+								esc_html( $device['device'] ),
+								$url,
+								esc_html__( 'Disconnect', 'post-smtp' )
+							);
 							echo '<br />';
-							echo sprintf(
-								'<label for="enable-app-notice">%s <input type="checkbox" id="enable-app-notice" name="postman_app_connection[%s]" %s /></label>',
-								__( 'Send failed email notification' ),
-								$device['fcm_token'],
-								$checked
+							printf(
+								'<label for="enable-app-notice">%1$s <input type="checkbox" id="enable-app-notice" name="postman_app_connection[%2$s]" %3$s /></label>',
+								$label,
+								$token,
+								checked( ! empty( $device['enable_notification'] ), true, false )
 							);
 							
 						}
@@ -266,14 +272,15 @@ class Post_SMTP_Mobile {
         if( !function_exists( 'ImageCreate' ) ):
             ?>
             <section id="mobile-app">
-                <h2><?php _e( 'Mobile Application', 'post-smtp' ); ?></h2>
-                <?php 
-                    printf(
-                        '%s <a href="%s" target="_blank">%s</a>',
-                        __( 'Your server does not have GD Library Installed/ Enabled, talk to your host provider to enable to enjoy Post SMTP Mobile Application', 'post-smtp' ),
-                        esc_url( 'https://www.php.net/manual/en/image.installation.php' ),
-                        __( 'learn more.', 'post-smtp' )
-                    ) 
+                <h2><?php esc_html_e( 'Mobile Application', 'post-smtp' ); ?></h2>
+                <?php
+                $message = sprintf(
+                    '%s <a href="%s" target="_blank">%s</a>',
+                    esc_html__( 'Your server does not have GD Library Installed/ Enabled, talk to your host provider to enable to enjoy Post SMTP Mobile Application', 'post-smtp' ),
+                    esc_url( 'https://www.php.net/manual/en/image.installation.php' ),
+                    esc_html__( 'learn more.', 'post-smtp' )
+                );
+                echo wp_kses_post( $message );
                 ?>
             </section>
             <?php

@@ -233,13 +233,32 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		 * Create the function to output the contents of our Dashboard Widget.
 		 */
 		public function printDashboardWidget() {
-			$goToSettings = sprintf ( '<a href="%s">%s</a>', PostmanUtils::getSettingsPageUrl (), __ ( 'Settings', 'post-smtp' ) );
-			$goToEmailLog = sprintf ( '%s', _x ( 'Email Log', 'The log of Emails that have been delivered', 'post-smtp' ) );
-			if ($this->options->isMailLoggingEnabled ()) {
-				$goToEmailLog = sprintf ( '<a href="%s">%s</a>', PostmanUtils::getEmailLogPageUrl (), $goToEmailLog );
+			$goToSettings = sprintf(
+				'<a href="%s">%s</a>',
+				esc_url( PostmanUtils::getSettingsPageUrl() ),
+				esc_html__( 'Settings', 'post-smtp' )
+			);
+
+			$goToEmailLog = esc_html_x(
+				'Email Log',
+				'The log of Emails that have been delivered',
+				'post-smtp'
+			);
+
+			if ( $this->options->isMailLoggingEnabled() ) {
+				$goToEmailLog = sprintf(
+					'<a href="%s">%s</a>',
+					esc_url( PostmanUtils::getEmailLogPageUrl() ),
+					$goToEmailLog
+				);
 			}
+
 			apply_filters ( 'print_postman_status', null );
-			printf ( '<p>%s | %s</p>', $goToEmailLog, $goToSettings );
+			printf(
+				'<p>%s | %s</p>',
+				wp_kses_post( $goToEmailLog ),
+				wp_kses_post( $goToSettings )
+			);
 		}
 		
 		/**
@@ -267,16 +286,26 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 								</p>
 							</div>
 						</div>
-						<?php } else if ( ! class_exists( 'Post_SMTP_Report_And_Tracking' ) ) { ?>
+					<?php } elseif ( ! class_exists( 'Post_SMTP_Report_And_Tracking' ) ) { ?>
 						<div class="post-smtp-dash-widget-chart-upgrade">
 							<div class="post-smtp-dash-widget-modal">
-								<?php $extension_page_url = '<a href="'.PostmanUtils::getPageUrl ( 'post-smtp-pro' ).'" target="_blank" rel="noopener noreferrer">Reporting and Tracking</a>' ?>
+								<?php
+								$extension_page_url = sprintf(
+									'<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
+									esc_url( PostmanUtils::getPageUrl( 'post-smtp-pro' ) ),
+									esc_html__( 'Reporting and Tracking', 'post-smtp' )
+								);
+								?>
 								<p>
-									<?php printf(
-										/* translators: %s is the link text */
-										esc_html__( 'Activate %s Extension to get Graphs Insights', 'post-smtp' ),
-										$extension_page_url
-									); ?>
+									<?php
+									echo wp_kses_post(
+										sprintf(
+											/* translators: %s is the link text */
+											__( 'Activate %s Extension to get Graphs Insights', 'post-smtp' ),
+											$extension_page_url
+										)
+									);
+									?>
 								</p>
 							</div>
 						</div>
@@ -335,18 +364,13 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 				'sent_emails'   => esc_html__( 'Sent Emails', 'post-smtp' ),
 				'failed_emails' => esc_html__( 'Failed Emails', 'post-smtp' ),
 			);
-			if ( ! post_smtp_has_pro() ) {
-				$disabled = 'disabled';
-			} else {
-				$disabled = '';
-			}
 			?>
 			<select id="post-smtp-dash-widget-email-type" class="post-smtp-dash-widget-select-email-type" title="<?php esc_attr_e( 'Select email type', 'post-smtp' ); ?>">
 				<option value="all_emails">
 					<?php esc_html_e( 'All Emails', 'post-smtp' ); ?>
 				</option>
 				<?php foreach ( $options as $key => $title ) : ?>
-					<option value="<?php echo sanitize_key( $key ); ?>" <?php echo $disabled; ?>>
+					<option value="<?php echo esc_attr( sanitize_key( $key ) ); ?>" <?php disabled( ! post_smtp_has_pro(), true, false ); ?>>
 						<?php echo esc_html( $title ); ?>
 					</option>
 				<?php endforeach; ?>
@@ -361,11 +385,21 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		 * @since 1.4.0
 		 */
 		private function viewFullEmailLogs() {
-			$goToEmailLog = sprintf ( '%s', _x ( 'View Full Log', 'The log of Emails that have been delivered', 'post-smtp' ) );
-			if ($this->options->isMailLoggingEnabled ()) {
-				$goToEmailLog = sprintf ( '<a href="%s">%s</a>', PostmanUtils::getEmailLogPageUrl (), $goToEmailLog );
+			$goToEmailLog = esc_html_x(
+				'View Full Log',
+				'The log of Emails that have been delivered',
+				'post-smtp'
+			);
+
+			if ( $this->options->isMailLoggingEnabled() ) {
+				$goToEmailLog = sprintf(
+					'<a href="%s">%s</a>',
+					esc_url( PostmanUtils::getEmailLogPageUrl() ),
+					$goToEmailLog
+				);
 			}
-			printf ( '<p>%s</p>', $goToEmailLog );
+
+			printf( '<p>%s</p>', wp_kses_post( $goToEmailLog ) );
 		}
 		
 		/**
@@ -374,16 +408,14 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		 * @since 1.4.0
 		 */
 		private function TimespanSelectHtml() {
-			// Check if Post SMTP Pro is available, disable options if not
-			$disabled = post_smtp_has_pro() ? '' : 'disabled';
 			?>
 			<select id="post-smtp-dash-widget-timespan" class="post-smtp-dash-widget-select-timespan" title="<?php esc_attr_e( 'Select timespan', 'post-smtp' ); ?>">
 				<?php 
 					if ( ! post_smtp_has_pro() ) { ?>
 						<option value=""><?php esc_html_e( 'Select a timespan', 'post-smtp' ); ?></option>
-					<?php } 
+					<?php }
 					foreach ( [ 7, 14, 30 ] as $option ) : ?>
-					<option value="<?php echo absint( $option ); ?>" <?php echo $disabled; ?>>
+					<option value="<?php echo absint( $option ); ?>" <?php disabled( ! post_smtp_has_pro(), true, false ); ?>>
 						<?php /* translators: %d - Number of days. */ ?>
 						<?php echo esc_html( sprintf( _n( 'Last %d day', 'Last %d days', absint( $option ), 'post-smtp' ), absint( $option ) ) ); ?>
 					</option>
@@ -401,11 +433,6 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 			
 			$chart_style = $this->post_smtp_get_widget_meta( 'chart_style' );
 
-			if ( ! post_smtp_has_pro() ) {
-				$disabled = 'disabled';
-			} else {
-				$disabled = '';
-			}
 			?>
 			<div class="post-smtp-dash-widget-settings-container">
 				<button id="post-smtp-dash-widget-settings-button" class="post-smtp-dash-widget-settings-button button" type="button">
@@ -418,16 +445,16 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 						<h4><?php esc_html_e( 'Graph Style', 'post-smtp' ); ?></h4>
 						<div>
 							<div class="post-smtp-dash-widget-settings-menu-item">
-								<input type="radio" id="post-smtp-dash-widget-settings-style-bar" class="post-smtp-dash-widget-settings-style" name="post-smtp-chart-style" value="bar" <?php echo $chart_style == 'bar' ? 'checked' : ''; ?> <?php echo $disabled; ?>>
+								<input type="radio" id="post-smtp-dash-widget-settings-style-bar" class="post-smtp-dash-widget-settings-style" name="post-smtp-chart-style" value="bar" <?php checked( 'bar', $chart_style ); ?> <?php disabled( ! post_smtp_has_pro(), true, false ); ?>>
 								<label for="post-smtp-dash-widget-settings-style-bar"><?php esc_html_e( 'Bar', 'post-smtp' ); ?></label>
 							</div>
 							<div class="post-smtp-dash-widget-settings-menu-item">
-								<input type="radio" id="post-smtp-dash-widget-settings-style-line" class="post-smtp-dash-widget-settings-style" name="post-smtp-chart-style" value="line" <?php echo $chart_style == 'line' ? 'checked' : ''; ?> <?php echo $disabled; ?>>
+								<input type="radio" id="post-smtp-dash-widget-settings-style-line" class="post-smtp-dash-widget-settings-style" name="post-smtp-chart-style" value="line" <?php checked( 'line', $chart_style ); ?> <?php disabled( ! post_smtp_has_pro(), true, false ); ?>>
 								<label for="post-smtp-dash-widget-settings-style-line"><?php esc_html_e( 'Line', 'post-smtp' ); ?></label>
 							</div>
 						</div>
 					</div>
-					<button type="button" class="button post-smtp-dash-widget-settings-menu-save" <?php echo $disabled; ?>><?php esc_html_e( 'Save Changes', 'post-smtp' ); ?></button>
+					<button type="button" class="button post-smtp-dash-widget-settings-menu-save" <?php disabled( ! post_smtp_has_pro(), true, false ); ?>><?php esc_html_e( 'Save Changes', 'post-smtp' ); ?></button>
 				</div>
 			</div>
 			<?php
@@ -552,21 +579,56 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		 * Print the human-readable plugin state
 		 */
 		public function print_postman_status() {
-			if (! PostmanPreRequisitesCheck::isReady ()) {
-				printf ( '<p><span style="color:red">%s</span></p>', __ ( 'Error: Postman is missing a required PHP library.', 'post-smtp' ) );
-			} else if ($this->wpMailBinder->isUnboundDueToException ()) {
-				printf ( '<p><span style="color:red">%s</span></p>', __ ( 'Postman: wp_mail has been declared by another plugin or theme, so you won\'t be able to use Postman until the conflict is resolved.', 'post-smtp' ) );
+			if ( ! PostmanPreRequisitesCheck::isReady() ) {
+				printf(
+					'<p><span style="color:red">%s</span></p>',
+					esc_html__( 'Error: Postman is missing a required PHP library.', 'post-smtp' )
+				);
+			} elseif ( $this->wpMailBinder->isUnboundDueToException() ) {
+				printf(
+					'<p><span style="color:red">%s</span></p>',
+					esc_html__( 'Postman: wp_mail has been declared by another plugin or theme, so you won\'t be able to use Postman until the conflict is resolved.', 'post-smtp' )
+				);
 			} else {
-				if ($this->options->getRunMode () != PostmanOptions::RUN_MODE_PRODUCTION) {
-					printf ( '<p><span style="background-color:yellow">%s</span></p>', __ ( 'Postman is in <em>non-Production</em> mode and is dumping all emails.', 'post-smtp' ) );
-				} else if (PostmanTransportRegistry::getInstance ()->getSelectedTransport ()->isConfiguredAndReady ()) {
-					printf ( '<p class="wp-menu-image dashicons-before dashicons-email"> %s </p>', sprintf ( _n ( '<span style="color:green">Postman is configured</span> and has delivered <span style="color:green">%d</span> email.', '<span style="color:green">Postman is configured</span> and has delivered <span style="color:green">%d</span> emails.', PostmanState::getInstance ()->getSuccessfulDeliveries (), 'post-smtp' ), PostmanState::getInstance ()->getSuccessfulDeliveries () ) );
+				if ( $this->options->getRunMode() !== PostmanOptions::RUN_MODE_PRODUCTION ) {
+					printf(
+						'<p><span style="background-color:yellow">%s</span></p>',
+						wp_kses_post(
+							__( 'Postman is in <em>non-Production</em> mode and is dumping all emails.', 'post-smtp' )
+						)
+					);
+				} elseif ( PostmanTransportRegistry::getInstance()->getSelectedTransport()->isConfiguredAndReady() ) {
+					$successful_deliveries = PostmanState::getInstance()->getSuccessfulDeliveries();
+					$message               = sprintf(
+						_n(
+							'<span style="color:green">Postman is configured</span> and has delivered <span style="color:green">%d</span> email.',
+							'<span style="color:green">Postman is configured</span> and has delivered <span style="color:green">%d</span> emails.',
+							$successful_deliveries,
+							'post-smtp'
+						),
+						$successful_deliveries
+					);
+
+					printf(
+						'<p class="wp-menu-image dashicons-before dashicons-email"> %s </p>',
+						wp_kses_post( $message )
+					);
 				} else {
-					printf ( '<p><span style="color:red">%s</span></p>', __ ( 'Postman is <em>not</em> configured and is mimicking out-of-the-box WordPress email delivery.', 'post-smtp' ) );
+					printf(
+						'<p><span style="color:red">%s</span></p>',
+						wp_kses_post(
+							__( 'Postman is <em>not</em> configured and is mimicking out-of-the-box WordPress email delivery.', 'post-smtp' )
+						)
+					);
 				}
-				$currentTransport = PostmanTransportRegistry::getInstance ()->getActiveTransport ();
-				$deliveryDetails = $currentTransport->getDeliveryDetails ( $this->options );
-				printf ( '<p>%s</p>', $deliveryDetails );
+
+				$currentTransport = PostmanTransportRegistry::getInstance()->getActiveTransport();
+				$deliveryDetails  = $currentTransport->getDeliveryDetails( $this->options );
+
+				printf(
+					'<p>%s</p>',
+					wp_kses_post( $deliveryDetails )
+				);
 			}
 		}
 		
@@ -574,7 +636,10 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 		 * Create the function to output the contents of our Dashboard Widget.
 		 */
 		public function printNetworkDashboardWidget() {
-			printf ( '<p class="wp-menu-image dashicons-before dashicons-email"> %s</p>', __ ( 'Postman is operating in per-site mode.', 'post-smtp' ) );
+			printf(
+				'<p class="wp-menu-image dashicons-before dashicons-email"> %s</p>',
+				esc_html__( 'Postman is operating in per-site mode.', 'post-smtp' )
+			);
 		}
 		
 		/**

@@ -61,11 +61,10 @@ $testListTable->prepare_items();
 				<select id="postman_page_records" name="postman_page_records">
 					<?php
 					foreach ( $page_records as $value ) {
-						$selected = selected( $postman_page_records, $value, false );
 						printf(
 							'<option value="%1$s"%2$s>%1$s</option>',
 							esc_attr( $value ),
-							$selected // $selected already contains safe attribute text.
+							selected( $postman_page_records, $value, false )
 						);
 					}
 					?>

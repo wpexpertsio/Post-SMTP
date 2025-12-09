@@ -58,7 +58,7 @@ class PostmanWelcomeController {
 			.post-badge {
 			    position: absolute;
 			    top: 0;
-			    right: 0;	
+			    right: 0;
 			    padding-top: 142px;
 			    height: 50px;
 			    width: 140px;
@@ -67,8 +67,8 @@ class PostmanWelcomeController {
 			    font-size: 14px;
 			    text-align: center;
 			    margin: 0 -5px;
-			    background: url( <?php echo $this->pluginUrl; ?>/images/badge.png) no-repeat;	
-			}	
+			    background: url( <?php echo esc_url( $this->pluginUrl . '/images/badge.png' ); ?> ) no-repeat;
+			}
 
 			.about-wrap [class$="-col"] {
 				flex-wrap: nowrap !important;
@@ -97,7 +97,7 @@ class PostmanWelcomeController {
 						<h4><?php esc_html_e( 'Email log filter', 'post-smtp' ); ?></h4>
 						<p>
 							<?php esc_html_e( 'You can easily filter by dates and search in your log.', 'post-smtp' ); ?>
-							<img src="<?php echo $this->pluginUrl; ?>/images/filter-preview.gif">	
+							<img src="<?php echo esc_url( $this->pluginUrl . '/images/filter-preview.gif' ); ?>" alt="Post SMTP filter preview">
 						</p>
 					</div>
 
@@ -105,7 +105,7 @@ class PostmanWelcomeController {
 						<h4><?php esc_html_e( 'Multiple emails resend', 'post-smtp' ); ?></h4>
 						<p>
 							<?php esc_html_e( 'Resend any email to the original recipient or any other emails you choose.', 'post-smtp' ); ?>
-							<img src="<?php echo $this->pluginUrl; ?>/images/resend-preview.gif">	
+							<img src="<?php echo esc_url( $this->pluginUrl . '/images/resend-preview.gif' ); ?>" alt="Post SMTP resend preview">
 						</p>
 					</div>
 				</div>
@@ -160,7 +160,7 @@ class PostmanWelcomeController {
 			.post-badge {
 			    position: absolute;
 			    top: 0;
-			    right: 0;	
+			    right: 0;
 			    padding-top: 142px;
 			    height: 50px;
 			    width: 140px;
@@ -169,8 +169,8 @@ class PostmanWelcomeController {
 			    font-size: 14px;
 			    text-align: center;
 			    margin: 0 -5px;
-			    background: url( <?php echo $this->pluginUrl; ?>/images/badge.png) no-repeat;	
-			}			
+			    background: url( <?php echo esc_url( $this->pluginUrl . '/images/badge.png' ); ?> ) no-repeat;
+			}
 		</style>
 		<div class="wrap about-wrap">
 			<h1><?php printf( esc_html__( 'Welcome to Post SMTP %s', 'post-smtp' ), $this->version ); ?></h1>

@@ -269,7 +269,15 @@ class PostmanEmailLogView extends WP_List_Table {
 	function prepare_items() {
 
         if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) ) {
-	        wp_die( sprintf( 'You need to add to this user the %s capability. You can try disable and enable the plugin or you can do it with a plugin like `user role editor`.', Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) );
+	        wp_die(
+				esc_html(
+					sprintf(
+						/* translators: %s is a capability name */
+						__( 'You need to add to this user the %s capability. You can try disable and enable the plugin or you can do it with a plugin like `user role editor`.', 'post-smtp' ),
+						Postman::MANAGE_POSTMAN_CAPABILITY_LOGS
+					)
+				)
+			);
         }
 
 	    /**

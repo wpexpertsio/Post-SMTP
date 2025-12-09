@@ -10,7 +10,7 @@
      */
     do_action( 'post_smtp_before_logs_table' );
     ?>
-    <input type="hidden" id="ps-email-log-nonce" value="<?php echo wp_create_nonce( 'security' ) ?>" />
+    <input type="hidden" id="ps-email-log-nonce" value="<?php echo esc_attr( wp_create_nonce( 'security' ) ); ?>" />
     <table width="100%" id="ps-email-log">
         <thead>
             <tr>
@@ -47,7 +47,7 @@
             <a href="https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024" target="_blank">
                 <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/bfcm-2024/dashboard.png' ) ?>" style="width: 100%;" />
             </a>
-            <a href="<?php echo admin_url( 'admin.php?action=ps-skip-bfcm' ); ?>" style="font-size: 10px;">Not interested, Hide for now.</a>
+            <a href="<?php echo esc_url( admin_url( 'admin.php?action=ps-skip-bfcm' ) ); ?>" style="font-size: 10px;">Not interested, Hide for now.</a>
             <?php
 
             }

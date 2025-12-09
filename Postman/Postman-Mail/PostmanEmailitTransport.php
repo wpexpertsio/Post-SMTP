@@ -144,12 +144,16 @@ class PostmanEmailitTransport extends PostmanAbstractModuleTransport implements 
     public function printEmailitAuthSectionInfo() {
         printf(
             '<p id="wizard_emailit_auth_help">%s</p>',
-            sprintf(
-                __(
-                    'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">your API key</a> and endpoint below.',
-                    'post-smtp'
-                ),
-                'https://emailit.com/', 'emailit.com', 'https://emailit.com/'
+            wp_kses_post(
+                sprintf(
+                    __(
+                        'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">your API key</a> and endpoint below.',
+                        'post-smtp'
+                    ),
+                    'https://emailit.com/',
+                    'emailit.com',
+                    'https://emailit.com/'
+                )
             )
         );
     }
@@ -159,7 +163,11 @@ class PostmanEmailitTransport extends PostmanAbstractModuleTransport implements 
      * @version 1.0
      */
     public function emailit_api_key_callback() {
-        printf('<input type="password" autocomplete="off" id="emailit_api_key" name="postman_options[emailit_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getEmailitApiKey() ? esc_attr(PostmanUtils::obfuscatePassword($this->options->getEmailitApiKey())) : '', __('Required', 'post-smtp'));
+        printf(
+            '<input type="password" autocomplete="off" id="emailit_api_key" name="postman_options[emailit_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>',
+            null !== $this->options->getEmailitApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getEmailitApiKey() ) ) : '',
+            esc_attr__( 'Required', 'post-smtp' )
+        );
         print ' <input type="button" id="toggleEmailitApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
     }
 
@@ -201,7 +209,7 @@ class PostmanEmailitTransport extends PostmanAbstractModuleTransport implements 
     public function printWizardAuthenticationStep() {
         print '<section class="wizard_emailit">';
         $this->printEmailitAuthSectionInfo();
-        printf('<label for="api_key">%s</label>', __('API Key', 'post-smtp'));
+        printf( '<label for="api_key">%s</label>', esc_html__( 'API Key', 'post-smtp' ) );
         print '<br />';
         $this->emailit_api_key_callback();
         print '</section>';

@@ -53,18 +53,18 @@ if (! class_exists ( 'PostmanEmailAddress' )) {
 		 *
 		 * @throws Exception
 		 */
-		public function validate($desc = '') {
-			if (! PostmanUtils::validateEmail ( $this->email )) {
-				if (empty ( $desc )) {
+		public function validate( $desc = '' ) {
+			if ( ! PostmanUtils::validateEmail( $this->email ) ) {
+				if ( empty( $desc ) ) {
 					/* Translators: Where %s is the email address */
-					$message = sprintf ( 'Invalid e-mail address "%s"', $this->email );
+					$message = sprintf( 'Invalid e-mail address "%s"', esc_html( $this->email ) );
 				} else {
 					/* Translators: Where (1) is the header name (eg. To) and (2) is the email address */
-					$message = sprintf ( 'Invalid "%1$s" e-mail address "%2$s"', $desc, $this->email );
+					$message = sprintf( 'Invalid "%1$s" e-mail address "%2$s"', esc_html( $desc ), esc_html( $this->email ) );
 				}
-				$logger = new PostmanLogger ( get_class ( $this ) );
-				$logger->warn ( $message );
-				throw new Exception ( $message );
+				$logger = new PostmanLogger( get_class( $this ) );
+				$logger->warn( $message );
+				throw new Exception( $message ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			}
 		}
 		

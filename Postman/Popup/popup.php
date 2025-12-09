@@ -4,7 +4,7 @@
             <div class="ps-pro-popup-body">
                 <span class="dashicons dashicons-no-alt ps-pro-close-popup"></span>
                 <div class="ps-pro-popup-content">
-                    <img src="<?php echo  POST_SMTP_URL . '/Postman/Wizard/assets/images/wizard-google.png' ?>" class="ps-pro-for-img" />
+                    <img src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/wizard-google.png' ); ?>" class="ps-pro-for-img" />
                     <h1>Ready to Supercharge Your Emails via <span class="ps-pro-for">Google Mailer Setup?</span></h1>
                     <h4>Unlock this <strong>Pro Feature NOW</strong> and get a </h4> 
                     <span class="smily">🤩 <strong>HUGE 25% discount! </strong>🤩</span>

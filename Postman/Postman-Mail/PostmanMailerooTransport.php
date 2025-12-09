@@ -94,11 +94,18 @@ class PostmanMailerooTransport extends PostmanAbstractModuleTransport implements
         }
 
         public function printMailerooAuthSectionInfo() {
-            printf('<p id="wizard_maileroo_auth_help">%s</p>', sprintf(__('Enter your Maileroo API key and endpoint below.', 'post-smtp')));
+            printf(
+                '<p id="wizard_maileroo_auth_help">%s</p>',
+                esc_html__( 'Enter your Maileroo API key and endpoint below.', 'post-smtp' )
+            );
         }
 
         public function maileroo_api_key_callback() {
-            printf('<input type="password" autocomplete="off" id="maileroo_api_key" name="postman_options[maileroo_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getMailerooApiKey() ? esc_attr(PostmanUtils::obfuscatePassword($this->options->getMailerooApiKey())) : '', __('Required', 'post-smtp'));
+            printf(
+                '<input type="password" autocomplete="off" id="maileroo_api_key" name="postman_options[maileroo_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>',
+                null !== $this->options->getMailerooApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getMailerooApiKey() ) ) : '',
+                esc_attr__( 'Required', 'post-smtp' )
+            );
             print ' <input type="button" id="toggleMailerooApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
         }
     
@@ -136,9 +143,9 @@ class PostmanMailerooTransport extends PostmanAbstractModuleTransport implements
         public function printWizardAuthenticationStep() {
             print '<section class="wizard_maileroo">';
             $this->printMailerooAuthSectionInfo();
-            printf('<label for="api_key">%s</label>', __('API Key', 'post-smtp'));
+            printf( '<label for="api_key">%s</label>', esc_html__( 'API Key', 'post-smtp' ) );
             print '<br />';
-            print $this->maileroo_api_key_callback();
+            $this->maileroo_api_key_callback();
             print '</section>';
         }
 

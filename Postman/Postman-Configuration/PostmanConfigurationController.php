@@ -683,7 +683,23 @@ class PostmanConfigurationController {
 			
 			?>
 			<h2><?php esc_html_e( 'Select notification service', 'post-smtp' ); ?></h2>
-			<p><?php printf( esc_html__( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %s if required.', 'post-smtp' ), '<a href="'.$logs_url.'" target="_blank">log section</a>' ) ?></p>
+			<?php
+			$logs_link = sprintf(
+				'<a href="%s" target="_blank">%s</a>',
+				esc_url( $logs_url ),
+				esc_html__( 'log section', 'post-smtp' )
+			);
+			printf(
+				'<p>%s</p>',
+				wp_kses_post(
+					sprintf(
+						/* translators: %s: link to the log section. */
+						__( 'Select a service to notify you when an email delivery will fail. It helps keep track, so you can resend any such emails from the %s if required.', 'post-smtp' ),
+						$logs_link
+					)
+				)
+			);
+			?>
 			<div class="ps-notify-radios">
 				<div class="ps-notify-radio-outer">
 					<div class="ps-notify-radio">
@@ -774,17 +790,17 @@ class PostmanConfigurationController {
 			</div>
 			<div id="use-chrome-extension" class="ps-use-chrome-extension">
 				<h2><?php esc_html_e( 'Setup Chrome extension (optional)', 'post-smtp' ); ?></h2>
-				<p><?php _e( 'You can also get notifications in chrome for Post SMTP in case of email delivery failure.', 'post-smtp' ) ?></p>
+				<p><?php esc_html_e( 'You can also get notifications in chrome for Post SMTP in case of email delivery failure.', 'post-smtp' ); ?></p>
 				<a target="_blank" class="ps-chrome-download" href="https://chrome.google.com/webstore/detail/npklmbkpbknkmbohdbpikeidiaekjoch">
 					<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/logos/chrome-24x24.png' ) ?>" />
 					<?php esc_html_e( 'Download Chrome extension', 'post-smtp' ); ?>
 				</a>
-				<a href="https://postmansmtp.com/post-smtp-1-9-6-new-chrome-extension/" target="_blank"><?php _e( 'Detailed Documentation.', 'post-smtp' ) ?></a>
+				<a href="https://postmansmtp.com/post-smtp-1-9-6-new-chrome-extension/" target="_blank"><?php esc_html_e( 'Detailed Documentation.', 'post-smtp' ); ?></a>
 				<div>
 					<table>
 						<tr>
 							<td>
-								<?php _e( 'Enable chrome extension', 'post-smtp' ) ?>
+								<?php esc_html_e( 'Enable chrome extension', 'post-smtp' ); ?>
 							</td>
 							<td>
 								<label class="ps-switch-1">
@@ -795,7 +811,7 @@ class PostmanConfigurationController {
 						</tr>
 						<tr>
 							<td>
-								<?php _e( 'Your UID', 'post-smtp' ) ?>
+								<?php esc_html_e( 'Your UID', 'post-smtp' ); ?>
 							</td>
 							<td>
 								<input type="password" id="notification_chrome_uid" name="postman_options[notification_chrome_uid]" value="">
@@ -924,7 +940,9 @@ class PostmanManageConfigurationAjaxHandler extends PostmanAbstractAjaxHandler {
 		// the Gmail API transport doesn't use an SMTP server
 		$transport = PostmanTransportRegistry::getInstance()->getTransport( $queryTransportType );
 		if ( ! $transport ) {
-			throw new Exception( 'Unable to find transport ' . $queryTransportType );
+			$safe_transport_type = esc_html( (string) $queryTransportType );
+			$message             = sprintf( 'Unable to find transport %s', $safe_transport_type );
+			throw new Exception( $message ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 
 		// create the response

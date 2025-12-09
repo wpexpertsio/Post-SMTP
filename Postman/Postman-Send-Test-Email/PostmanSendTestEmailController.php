@@ -163,7 +163,6 @@ class PostmanSendTestEmailController {
 				'value' => true,
 			),
 		);
-		$nonce_field = wp_kses( $nonce_field, $allowed_nonce_html );
 		echo
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		'
@@ -214,7 +213,7 @@ class PostmanSendTestEmailController {
 											</div>
 
 											<input id="postman_test_options_test_email" type="text" class="ps-test-to" required="" data-error="Enter Recipient Email Address" name="postman_test_options[test_email]" value="' . esc_attr( $user_email ) . '" placeholder="Recipient Email Address">
-											' . $nonce_field . '
+											' . wp_kses( $nonce_field, $allowed_nonce_html ) . '
 
 											<span class="ps-form-control-info">
 												' . esc_html__( 'Enter the email address where you want to send the test email.', 'post-smtp' ) . '

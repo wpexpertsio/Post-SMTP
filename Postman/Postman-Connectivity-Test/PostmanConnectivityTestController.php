@@ -135,7 +135,10 @@ class PostmanConnectivityTestController {
 		if ( empty( $hostname ) ) {
 			$hostname = PostmanTransportRegistry::getInstance()->getActiveTransport()->getHostname();
 		}
-		printf( '<input type="text" id="input_hostname" name="postman_options[hostname]" value="%s" size="40" class="required"/>', $hostname );
+		printf(
+			'<input type="text" id="input_hostname" name="postman_options[hostname]" value="%s" size="40" class="required"/>',
+			esc_attr( $hostname )
+		);
 	}
 
 	/**
@@ -145,49 +148,115 @@ class PostmanConnectivityTestController {
 
 		wp_nonce_field('post-smtp', 'security');
 
-		PostmanViewController::outputChildPageHeader( __( 'Connectivity Test', 'post-smtp' ) );
+		PostmanViewController::outputChildPageHeader( esc_html__( 'Connectivity Test', 'post-smtp' ) );
 
 		print '<p>';
-		print __( 'This test determines which well-known ports are available for Postman to use.', 'post-smtp' );
+		esc_html_e( 'This test determines which well-known ports are available for Postman to use.', 'post-smtp' );
 		print '<form id="port_test_form_id" method="post">';
 
 		wp_nonce_field('post-smtp', 'security' );
 
-		printf( '<label for="hostname">%s</label>', __( 'Outgoing Mail Server Hostname', 'post-smtp' ) );
+		printf( '<label for="hostname">%s</label>', esc_html__( 'Outgoing Mail Server Hostname', 'post-smtp' ) );
 		$this->port_test_hostname_callback();
 		submit_button( _x( 'Begin Test', 'Button Label', 'post-smtp' ), 'primary', 'begin-port-test', true );
 		print '</form>';
 		print '<table id="connectivity_test_table">';
-		print sprintf( '<tr><th rowspan="2">%s</th><th rowspan="2">%s</th><th rowspan="2">%s</th><th rowspan="2">%s</th><th rowspan="2">%s</th><th colspan="5">%s</th></tr>', __( 'Transport', 'post-smtp' ), _x( 'Socket', 'A socket is the network term for host and port together', 'post-smtp' ), __( 'Status', 'post-smtp' ) . '<sup>*</sup>', __( 'Service Available', 'post-smtp' ), __( 'Server ID', 'post-smtp' ), __( 'Authentication', 'post-smtp' ) );
-		print sprintf( '<tr><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>', 'None', 'Login', 'Plain', 'CRAM-MD5', 'OAuth 2.0' );
+		print sprintf(
+			'<tr><th rowspan="2">%s</th><th rowspan="2">%s</th><th rowspan="2">%s</th><th rowspan="2">%s</th><th rowspan="2">%s</th><th colspan="5">%s</th></tr>',
+			esc_html__( 'Transport', 'post-smtp' ),
+			esc_html_x( 'Socket', 'A socket is the network term for host and port together', 'post-smtp' ),
+			// Keep the <sup> tag via kses.
+			wp_kses_post( esc_html__( 'Status', 'post-smtp' ) . '<sup>*</sup>' ),
+			esc_html__( 'Service Available', 'post-smtp' ),
+			esc_html__( 'Server ID', 'post-smtp' ),
+			esc_html__( 'Authentication', 'post-smtp' )
+		);
+		print sprintf(
+			'<tr><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>',
+			esc_html__( 'None', 'post-smtp' ),
+			esc_html__( 'Login', 'post-smtp' ),
+			esc_html__( 'Plain', 'post-smtp' ),
+			esc_html__( 'CRAM-MD5', 'post-smtp' ),
+			esc_html__( 'OAuth 2.0', 'post-smtp' )
+		);
 		$sockets = PostmanTransportRegistry::getInstance()->getSocketsForSetupWizardToProbe();
 		foreach ( $sockets as $socket ) {
 			if ( $socket ['smtp'] ) {
-				print sprintf( '<tr id="%s"><th class="name">%s</th><td class="socket">%s:%s</td><td class="firewall resettable">-</td><td class="service resettable">-</td><td class="reported_id resettable">-</td><td class="auth_none resettable">-</td><td class="auth_login resettable">-</td><td class="auth_plain resettable">-</td><td class="auth_crammd5 resettable">-</td><td class="auth_xoauth2 resettable">-</td></tr>', $socket ['id'], $socket ['transport_name'], $socket ['host'], $socket ['port'] );
+				print sprintf(
+					'<tr id="%s"><th class="name">%s</th><td class="socket">%s:%s</td><td class="firewall resettable">-</td><td class="service resettable">-</td><td class="reported_id resettable">-</td><td class="auth_none resettable">-</td><td class="auth_login resettable">-</td><td class="auth_plain resettable">-</td><td class="auth_crammd5 resettable">-</td><td class="auth_xoauth2 resettable">-</td></tr>',
+					esc_attr( $socket['id'] ),
+					esc_html( $socket['transport_name'] ),
+					esc_html( $socket['host'] ),
+					esc_html( $socket['port'] )
+				);
 			} else {
-				print sprintf( '<tr id="%s"><th class="name">%s</th><td class="socket">%s:%s</td><td class="firewall resettable">-</td><td class="service resettable">-</td><td class="reported_id resettable">-</td><td colspan="5">%s</td></tr>', $socket ['id'], $socket ['transport_name'], $socket ['host'], $socket ['port'], __( 'n/a', 'post-smtp' ) );
+				print sprintf(
+					'<tr id="%s"><th class="name">%s</th><td class="socket">%s:%s</td><td class="firewall resettable">-</td><td class="service resettable">-</td><td class="reported_id resettable">-</td><td colspan="5">%s</td></tr>',
+					esc_attr( $socket['id'] ),
+					esc_html( $socket['transport_name'] ),
+					esc_html( $socket['host'] ),
+					esc_html( $socket['port'] ),
+					esc_html__( 'n/a', 'post-smtp' )
+				);
 			}
 		}
 		print '</table>';
 		/* Translators: Where %s is the name of the service providing Internet connectivity test */
-		printf( '<p class="portquiz" style="display:none; font-size:0.8em">* %s</p>', sprintf( __( 'According to %s', 'post-smtp' ), '<a target="_blank" href="http://portquiz.net">portquiz.net</a>' ) );
-		printf( '<p class="ajax-loader" style="display:none"><img src="%s"/></p>', plugins_url( 'post-smtp/style/ajax-loader.gif' ) );
+		printf(
+			'<p class="portquiz" style="display:none; font-size:0.8em">* %s</p>',
+			wp_kses_post(
+				sprintf(
+					__( 'According to %s', 'post-smtp' ),
+					'<a target="_blank" href="http://portquiz.net">portquiz.net</a>'
+				)
+			)
+		);
+		printf(
+			'<p class="ajax-loader" style="display:none"><img src="%s"/></p>',
+			esc_url( plugins_url( 'post-smtp/style/ajax-loader.gif' ) )
+		);
 		print '<section id="conclusion" style="display:none">';
-		print sprintf( '<h3>%s:</h3>', __( 'Summary', 'post-smtp' ) );
+		print sprintf( '<h3>%s:</h3>', esc_html__( 'Summary', 'post-smtp' ) );
 		print '<ol class="conclusion">';
 		print '</ol>';
 		print '</section>';
 		print '<section id="blocked-port-help" style="display:none">';
-		print sprintf( '<p><b>%s</b></p>', __( 'A test with <span style="color:red">"No"</span> Service Available indicates one or more of these issues:', 'post-smtp' ) );
+		print sprintf(
+			'<p><b>%s</b></p>',
+			wp_kses_post(
+				__( 'A test with <span style="color:red">"No"</span> Service Available indicates one or more of these issues:', 'post-smtp' )
+			)
+		);
 		print '<ol>';
-		printf( '<li>%s</li>', __( 'Your web host has placed a firewall between this site and the Internet', 'post-smtp' ) );
-		printf( '<li>%s</li>', __( 'The SMTP hostname is wrong or the mail server does not provide service on this port', 'post-smtp' ) );
+		printf( '<li>%s</li>', esc_html__( 'Your web host has placed a firewall between this site and the Internet', 'post-smtp' ) );
+		printf( '<li>%s</li>', esc_html__( 'The SMTP hostname is wrong or the mail server does not provide service on this port', 'post-smtp' ) );
 		/* translators: where (1) is the URL and (2) is the system */
 		$systemBlockMessage = __( 'Your <a href="%1$s">%2$s configuration</a> is preventing outbound connections', 'post-smtp' );
-		printf( '<li>%s</li>', sprintf( $systemBlockMessage, 'http://php.net/manual/en/filesystem.configuration.php#ini.allow-url-fopen', 'PHP' ) );
-		printf( '<li>%s</li>', sprintf( $systemBlockMessage, 'http://wp-mix.com/disable-external-url-requests/', 'WordPress' ) );
+		printf(
+			'<li>%s</li>',
+			wp_kses_post(
+				sprintf(
+					$systemBlockMessage,
+					'http://php.net/manual/en/filesystem.configuration.php#ini.allow-url-fopen',
+					'PHP'
+				)
+			)
+		);
+		printf(
+			'<li>%s</li>',
+			wp_kses_post(
+				sprintf(
+					$systemBlockMessage,
+					'http://wp-mix.com/disable-external-url-requests/',
+					'WordPress'
+				)
+			)
+		);
 		print '</ol></p>';
-		print sprintf( '<p><b>%s</b></p>', __( 'If the issues above can not be resolved, your last option is to configure Postman to use an email account managed by your web host with an SMTP server managed by your web host.', 'post-smtp' ) );
+		print sprintf(
+			'<p><b>%s</b></p>',
+			esc_html__( 'If the issues above can not be resolved, your last option is to configure Postman to use an email account managed by your web host with an SMTP server managed by your web host.', 'post-smtp' )
+		);
 		print '</section>';
 		print '</div>';
 	}
