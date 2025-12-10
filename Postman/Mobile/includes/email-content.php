@@ -132,7 +132,7 @@ class Post_SMTP_Email_Content {
 									</tbody>
 								</table>
 								<div class="message-body">
-									<?php echo $log['original_message']; ?>
+									<?php echo wp_kses_post( $log['original_message'] ); ?>
 								</div>
 							</div>
 						</body>
@@ -180,7 +180,7 @@ class Post_SMTP_Email_Content {
 					<body>
 						<div class="container">
 							<div class="message-body">
-								<?php echo $log['session_transcript']; ?>
+								<pre><?php echo esc_html( $log['session_transcript'] ); ?></pre>
 							</div>
 						</div>
 					</body>
@@ -228,7 +228,7 @@ class Post_SMTP_Email_Content {
 					<body>
 						<div class="container">
 							<div class="message-body">
-								<?php echo $log['success']; ?>
+								<?php echo esc_html( $log['success'] ); ?>
 							</div>
 						</div>
 					</body>
