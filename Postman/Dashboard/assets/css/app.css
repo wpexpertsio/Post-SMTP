@@ -203,7 +203,7 @@
 }
 
 
-.customer-support[data-v-d95494b8] {
+.customer-support[data-v-7b742791] {
 	padding: 0 !important;
 	background: linear-gradient(180deg, #40518E 0%, #231F20 100%);
 	display: flex;
@@ -212,10 +212,10 @@
 	flex-direction: column;
 	height: 268px;
 }
-.customer-support-content[data-v-d95494b8] {
+.customer-support-content[data-v-7b742791] {
 	width: 213px;
 }
-.customer-support-content p[data-v-d95494b8] {
+.customer-support-content p[data-v-7b742791] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 500;
@@ -223,13 +223,13 @@
 	text-align: center;
 	color: #B8BDCA;
 }
-.troubleshooting[data-v-d95494b8] {
+.troubleshooting[data-v-7b742791] {
 	padding: 0 !important;
 }
-.mb-24[data-v-d95494b8] {
+.mb-24[data-v-7b742791] {
 	margin-bottom: 24px;
 }
-.troubleshooting-header[data-v-d95494b8] {
+.troubleshooting-header[data-v-7b742791] {
 	border-radius: 4px 4px 0 0;
 	background: #EFF4FD;
 	padding: 16px 24px;
@@ -240,25 +240,25 @@
 	line-height: 20px;
 	color: #231F20;
 }
-.troubleshooting-content[data-v-d95494b8] {
+.troubleshooting-content[data-v-7b742791] {
 	padding: 24px;
 }
-.troubleshoot.email[data-v-d95494b8] {
+.troubleshoot.email[data-v-7b742791] {
 	list-style: url(../57f4451f3be03da17463.svg) inside;
 }
-.troubleshoot.import-export[data-v-d95494b8] {
+.troubleshoot.import-export[data-v-7b742791] {
 	list-style: url(../d0a8e6270627cef66c74.svg) inside;
 }
-.troubleshoot.connectivity[data-v-d95494b8] {
+.troubleshoot.connectivity[data-v-7b742791] {
 	list-style: url(../5b76dc43e6c63f11fb6d.svg) inside;
 }
-.troubleshoot.diagnostic[data-v-d95494b8] {
+.troubleshoot.diagnostic[data-v-7b742791] {
 	list-style: url(../258d1cba1f474caf0c4b.svg) inside;
 }
-.troubleshoot.reset[data-v-d95494b8] {
+.troubleshoot.reset[data-v-7b742791] {
 	list-style: url(../9fdeee5472f16554c9e9.svg) inside;
 }
-.troubleshoot a[data-v-d95494b8] {
+.troubleshoot a[data-v-7b742791] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 400;
