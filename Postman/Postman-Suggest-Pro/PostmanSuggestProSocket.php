@@ -317,9 +317,9 @@ class PostmanSuggestProSocket {
             esc_attr__( 'Office365, Amazon SES, and Zoho SMTP.', 'post-smtp' ),
 	        esc_attr__( 'Resend failed emails in bulk.', 'post-smtp' ),
 	        esc_attr__( 'Auto-resend failed emails.', 'post-smtp' ),
-	        esc_attr__( 'Open email tracking.', 'post-smtp' ),
-	        esc_attr__( 'Advance email report and tracking.', 'post-smtp' ),
-	        esc_attr__( 'Post SMTP Mobile App PRO.', 'post-smtp' ),
+	        esc_attr__( 'Open emails tracking.', 'post-smtp' ),
+	        esc_attr__( 'Google / Microsoft One-Click Setup.', 'post-smtp' ),
+	        esc_attr__( 'Post SMTP Mobile App Pro.', 'post-smtp' ),
         );
 
         ob_start();
@@ -452,14 +452,14 @@ class PostmanSuggestProSocket {
                 
                 <span class="post-smtp-close-button">&times;</span>
                 
-                <div class="post-smtp-logo post-smtp-container">
-                    <img src="<?php echo esc_attr( POST_SMTP_ASSETS ) . 'images/reporting/post_logo.png'; ?>" alt="Post SMTP Logo" />
+                <div class="post-smtp-logo post-smtp-container" style="padding-bottom: 10px;">
+                    <img style="width: 180px;" src="<?php echo esc_attr( POST_SMTP_ASSETS ) . 'images/reporting/post_logo_p.png'; ?>" alt="Post SMTP Logo" />
                 </div>
                 
                 <div class="post-smtp-container" style="padding-top:0;padding-bottom: 0;">
                     
                     <h2 class="post-smtp-h2">
-                        <?php esc_html_e( 'Unlock Pro SMTP Mailers & More Advanced Features!', 'post-smtp' ); ?>
+                        <?php esc_html_e( 'Enhance Your Email Deliverability With Premium Features.', 'post-smtp' ); ?>
                     </h2>
                     
                     <ul class="post-smtp-unorderlist">
