@@ -1555,8 +1555,8 @@ public function render_gmail_settings() {
         // Show business plan upgrade notice if needed
         if ( post_smtp_has_pro() && !$is_business_plan ) {
             $html .= '<div class="ps-business-plan-notice" style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin: 10px 0; border-radius: 4px;">';
-            $html .= '<p style="margin: 0; color: #856404;"><strong>' . __( 'Business Plan Required', 'post-smtp' ) . '</strong><br>';
-            $html .= __( ' Office 365 One-Click Setup is available only with Business plan. Click on the toggle to upgrade.', 'post-smtp' ) . '</p>';
+            $html .= '<p style="margin: 0; color: #856404;"><strong>' . __( 'Microsoft 365 (Outlook)', 'post-smtp' ) . '</strong><br>';
+            $html .= __( ' One-Click Setup is available only with Business plan. Click on the toggle to update.', 'post-smtp' ) . '</p>';
             $html .= '</div>';
         }
 
@@ -1579,7 +1579,7 @@ public function render_gmail_settings() {
             esc_url( 'https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account?icid=azurefreeaccount' ),
             __( 'Office 365', 'post-smtp' ),
             __( 'is a popular transactional email provider that sends more than 35 billion emails every month. If you\'re just starting out, the free plan allows you to send up to 100 emails each day without entering your credit card details', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-configure-post-smtp-with-office-365/' ),
+            esc_url( 'https://postmansmtp.com/docs/mailers/microsoft-365-one-click-smtp/' ),
             __( 'Read how to setup Office 365', 'post-smtp' )
         );
        
