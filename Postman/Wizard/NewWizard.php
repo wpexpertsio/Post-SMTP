@@ -327,7 +327,14 @@ class Post_SMTP_New_Wizard {
 
                                                 ?>
                                                 <div class="ps-form-ui ps-wizard-socket <?php echo esc_attr( $key ); ?>" <?php echo $active_socket; ?>>
-                                                    <h3><?php echo $title == 'Default' ? '' : esc_attr( $title ); ?></h3>
+                                                    <?php
+                                                    // Custom display title for Office 365 transport
+                                                    $display_title = $title;
+                                                    if ( 'office365_api' === $key ) {
+                                                        $display_title = 'Microsoft 365 / Outlook';
+                                                    }
+                                                    ?>
+                                                    <h3><?php echo $display_title == 'Default' ? '' : esc_attr( $display_title ); ?></h3>
                                                     <?php $this->render_socket_settings( $key ); ?>
                                                 </div>
                                                 <?php
@@ -1516,7 +1523,7 @@ public function render_gmail_settings() {
             $one_click_class .= ' disabled';
         }
 
-        $html .= __( 'Enable the option for a quick and easy way to connect with Google without the need of manually creating an app.', 'post-smtp' );
+        $html .= __( 'Enable the option for a quick and easy way to connect with Microsoft 365 / Outlook without the need of manually creating an app', 'post-smtp' );
 
         // Check if user has business plan for Office 365 one-click
         $is_business_plan = false;
