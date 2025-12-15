@@ -693,7 +693,7 @@ jQuery( document ).ready(function() {
             placeholder = 'Zoho Mailer?';
         }
         if(placeholder == "Microsoft 365") {
-            placeholder = 'Microsoft 365 One-Click / Manual Mailer?';
+            placeholder = 'Microsoft 365 One-Click / Manual Setup?';
         }
 
         jQuery( '.ps-pro-for-img' ).attr( 'src', imgSrc );
