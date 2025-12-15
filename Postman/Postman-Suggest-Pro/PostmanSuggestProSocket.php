@@ -269,13 +269,13 @@ class PostmanSuggestProSocket {
 		    ),
             array(
                 'logo'        => $images_url . 'logos/wizard-google.png',
-                'title'       => __( 'One-Click Setup', 'post-smtp-pro' ),
-                'description' => __( 'Quick and easy way to configure the Google workspace / Gmail mailer in Post SMTP.', 'post-smtp-pro' ),
+                'title'       => __( 'Google One-Click SMTP', 'post-smtp-pro' ),
+                'description' => __( 'Instantly connect with Google Workspace (Gmail) SMTP by authorizing your Google account.', 'post-smtp-pro' ),
             ),
             array(
                 'logo'        => $images_url . 'logos/office365.png',
-                'title'       => __( 'One-Click Setup', 'post-smtp-pro' ),
-                'description' => __( 'Quick and easy way to configure the Office 365 mailer in Post SMTP.', 'post-smtp-pro' ),
+                'title'       => __( 'Microsoft 365 One-Click SMTP', 'post-smtp-pro' ),
+                'description' => __( 'Instantly connect with your Microsoft 365/ Office 365 account without manually configuring your own app.', 'post-smtp-pro' ),
             ),
 	    );
         
