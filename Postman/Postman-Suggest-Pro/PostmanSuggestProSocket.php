@@ -305,7 +305,7 @@ class PostmanSuggestProSocket {
             array(
                 'logo' => $images_url . 'logos/email-delivery-and-logs.png',
                 'title' => esc_html__( 'Email Delivery and Logs', 'post-smtp' ),
-                'description' => esc_html__( 'Get more advance logs filter with all technical details.', 'post-smtp' ),
+                'description' => esc_html__( 'Send emails from the back-end, manage your email quota, retry failed emails, and delete log history to optimize email delivery.', 'post-smtp' ),
             ),
             array(
                 'logo' => $images_url . 'logos/microsoft-teams.png',
