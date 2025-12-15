@@ -1563,12 +1563,7 @@ public function render_gmail_settings() {
         // Show version warning if user has business plan but outdated Post SMTP Pro version
         if ( $show_version_warning ) {
             $html .= '<div class="ps-version-warning-notice" style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; margin: 10px 0; border-radius: 4px;">';
-            $html .= '<p style="margin: 0; color: #721c24;"><strong>' . __( 'Post SMTP Pro Update Required', 'post-smtp' ) . '</strong><br>';
-            $html .= sprintf( 
-                __( 'Office 365 One-Click Setup requires Post SMTP Pro version %1$s or higher. Current version: %2$s. Please update your plugin to use this feature.', 'post-smtp' ), 
-                $required_pro_version, 
-                defined( 'POST_SMTP_PRO_VERSION' ) ? POST_SMTP_PRO_VERSION : __( 'Unknown', 'post-smtp' )
-            ) . '</p>';
+            $html .= '<p style="margin: 0; color: #721c24;">' . __( 'Please update your Post SMTP Pro plugin to use this feature.', 'post-smtp' ) . '</p>';
             $html .= '</div>';
         }
  	  
