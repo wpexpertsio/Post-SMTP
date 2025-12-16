@@ -314,12 +314,12 @@ class PostmanSuggestProSocket {
             ),
         );
         $features         = array(
-            esc_attr__( 'Office365, Amazon SES, and Zoho SMTP.', 'post-smtp' ),
-	        esc_attr__( 'Resend failed emails in bulk.', 'post-smtp' ),
-	        esc_attr__( 'Auto-resend failed emails.', 'post-smtp' ),
-	        esc_attr__( 'Open emails tracking.', 'post-smtp' ),
-	        esc_attr__( 'Google / Microsoft One-Click Setup.', 'post-smtp' ),
-	        esc_attr__( 'Post SMTP Mobile App Pro.', 'post-smtp' ),
+            esc_attr__( 'Office365, Amazon SES, and Zoho SMTP', 'post-smtp' ),
+	        esc_attr__( 'Resend failed emails in bulk', 'post-smtp' ),
+	        esc_attr__( 'Auto-resend failed emails', 'post-smtp' ),
+	        esc_attr__( 'Open emails tracking', 'post-smtp' ),
+	        esc_attr__( 'Google / Microsoft One-Click Setup', 'post-smtp' ),
+	        esc_attr__( 'Post SMTP Mobile App Pro', 'post-smtp' ),
         );
 
         ob_start();
@@ -475,9 +475,9 @@ class PostmanSuggestProSocket {
                 
                 <div class="post-smtp-text-center" style="margin-top: 25px;">
                     <a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=extension_screen_pop_up&utm_campaign=plugin" class="post-smtp-cta">
-                        <img style="margin: 0 4px -6px 0;" alt="diamond" src="<?php echo esc_attr( $images_url ); ?>diamond.png" />
-                        <?php esc_html_e( 'Get Post SMTP Pro', 'post-smtp' ); ?>
-                        <img style="margin: 0 0 -4px 4px;" alt="arrow" src="<?php echo esc_attr( $images_url ); ?>arrow.png" />
+                        <!-- <img style="margin: 0 4px -6px 0;" alt="diamond" src="<?//php echo esc_attr( $images_url ); ?>diamond.png" /> -->
+                        <?php esc_html_e( 'Upgrade Now', 'post-smtp' ); ?>
+                        <img style="margin: 0 0 -2px 4px;" alt="arrow" src="<?php echo esc_attr( $images_url ); ?>arrow_1.png" />
                     </a>
                 </div>
             </div>
