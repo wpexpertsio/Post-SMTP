@@ -307,6 +307,9 @@ class PostmanConfigurationController {
         print '<div id="sendinblue_settings" class="authentication_setting non-basic non-oauth2">';
         do_settings_sections( PostmanSendinblueTransport::SENDINBLUE_AUTH_OPTIONS );
         print '</div>';
+        print '<div id="mailtrap_settings" class="authentication_setting non-basic non-oauth2">';
+        do_settings_sections( PostmanMailtrapTransport::MAILTRAP_AUTH_OPTIONS );
+        print '</div>';
         print '<div id="resend_settings" class="authentication_setting non-basic non-oauth2">';
         do_settings_sections( PostmanResendTransport::RESEND_AUTH_OPTIONS );
         print '</div>';

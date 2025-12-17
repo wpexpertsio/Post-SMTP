@@ -69,6 +69,7 @@ class Postman {
 		require_once 'Postman-Mail/PostmanMailerSendTransport.php';
 		require_once 'Postman-Mail/PostmanMailgunTransport.php';
         require_once 'Postman-Mail/PostmanSendinblueTransport.php';
+        require_once 'Postman-Mail/PostmanMailtrapTransport.php';
         require_once 'Postman-Mail/PostmanResendTransport.php';
 		require_once 'Postman-Mail/PostmanMailjetTransport.php';
 		require_once 'Postman-Mail/PostmanEmailitTransport.php';
@@ -496,6 +497,7 @@ class Postman {
         $postman_transport_registry->registerTransport( new PostmanMailerSendTransport( $rootPluginFilenameAndPath ) );
         $postman_transport_registry->registerTransport( new PostmanMailgunTransport( $rootPluginFilenameAndPath ) );
         $postman_transport_registry->registerTransport( new PostmanSendinblueTransport( $rootPluginFilenameAndPath ) );
+        $postman_transport_registry->registerTransport( new PostmanMailtrapTransport( $rootPluginFilenameAndPath ) );
 		$postman_transport_registry->registerTransport( new PostmanResendTransport( $rootPluginFilenameAndPath ) );
 		$postman_transport_registry->registerTransport( new PostmanMailjetTransport( $rootPluginFilenameAndPath ) );
 		$postman_transport_registry->registerTransport( new PostmanSendpulseTransport( $rootPluginFilenameAndPath ) );

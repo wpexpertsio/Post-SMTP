@@ -64,6 +64,7 @@ class Post_SMTP_New_Wizard {
             'gmail_api',
             'resend_api',
             'sendinblue_api',
+            'mailtrap_api',
             'sendgrid_api',
             'mailgun_api',
             'elasticemail_api',
@@ -180,6 +181,7 @@ class Post_SMTP_New_Wizard {
                                                 'mailersend_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailersend.png',
                                                 'mailgun_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailgun.png',
                                                 'sendinblue_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/brevo.png',
+                                                'mailtrap_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailtrap.png',
                                                 'postmark_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/postmark.png',
                                                 'sparkpost_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sparkpost.png',
                                                 'mailjet_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailjet.png',
@@ -641,6 +643,9 @@ class Post_SMTP_New_Wizard {
             break;
             case 'sendinblue_api':
                 echo wp_kses( $this->render_brevo_settings(), $this->allowed_tags );
+            break;
+            case 'mailtrap_api':
+                echo wp_kses( $this->render_mailtrap_settings(), $this->allowed_tags );
             break;
             case 'resend_api':
                 echo wp_kses( $this->render_resend_settings(), $this->allowed_tags );
@@ -1135,6 +1140,35 @@ public function render_gmail_settings() {
 
     }
 
+    /**
+     * Render Mailtrap Settings
+     * 
+     * @since 2.9.0
+     * @version 1.0.0
+     */
+    public function render_mailtrap_settings() {
+
+        $api_key = null !== $this->options->getMailtrapApiKey() ? esc_attr ( $this->options->getMailtrapApiKey() ) : '';
+
+
+        $html = '<p>' . esc_html__( 'It is easy to integrate Mailtrap mailer to your WordPress website. We recommend you to check the documentation for a successful integration.', 'post-smtp' ) . '</p>';
+
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>API Token</label></div>
+            <input type="text" class="ps-mailtrap-api-key" required data-error="'.__( 'Please enter API Token.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILTRAP_API_KEY ) .']" value="'.$api_key.'" placeholder="API Token">'.
+            /**
+             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
+             */
+             '<div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://mailtrap.io/api-tokens" target="_blank">' . esc_html__( 'the API token', 'post-smtp' ) . '</a>' . esc_html__( ' in your Mailtrap account.', 'post-smtp' ) . '</div>'
+            .
+        '</div>
+        ';
+
+        return $html;
+
+    }
+
 
     /**
      * Render Resend Settings
@@ -1610,6 +1644,7 @@ public function render_gmail_settings() {
                 $sanitized['office365_app_id'] = isset( $sanitized['office365_app_id'] ) ? $sanitized['office365_app_id'] : '';
                 $sanitized['office365_app_password'] = isset( $sanitized['office365_app_password'] ) ? $sanitized['office365_app_password'] : '';
                 $sanitized[PostmanOptions::SENDINBLUE_API_KEY] = isset( $sanitized[PostmanOptions::SENDINBLUE_API_KEY] ) ? $sanitized[PostmanOptions::SENDINBLUE_API_KEY] : '';
+                $sanitized[PostmanOptions::MAILTRAP_API_KEY] = isset( $sanitized[PostmanOptions::MAILTRAP_API_KEY] ) ? $sanitized[PostmanOptions::MAILTRAP_API_KEY] : '';
                 $sanitized['sparkpost_api_key'] = isset( $sanitized['sparkpost_api_key'] ) ? $sanitized['sparkpost_api_key'] : '';
                 $sanitized['postmark_api_key'] = isset( $sanitized['postmark_api_key'] ) ? $sanitized['postmark_api_key'] : '';
                 $sanitized['mailgun_api_key'] = isset( $sanitized['mailgun_api_key'] ) ? $sanitized['mailgun_api_key'] : '';

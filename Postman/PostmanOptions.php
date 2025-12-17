@@ -90,10 +90,11 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const MANDRILL_API_KEY = 'mandrill_api_key';
 		const SENDGRID_API_KEY = 'sendgrid_api_key';
 		const MAILERSEND_API_KEY = 'mailersend_api_key';
-		const SENDGRID_REGION = 'sendgrid_region';
-		const SENDINBLUE_API_KEY = 'sendinblue_api_key';
-		const RESEND_API_KEY = 'resend_api_key';
-		const MAILJET_API_KEY = 'mailjet_api_key';
+	const SENDGRID_REGION = 'sendgrid_region';
+	const SENDINBLUE_API_KEY = 'sendinblue_api_key';
+	const MAILTRAP_API_KEY = 'mailtrap_api_key';
+	const RESEND_API_KEY = 'resend_api_key';
+	const MAILJET_API_KEY = 'mailjet_api_key';
 		const MAILJET_SECRET_KEY = 'mailjet_secret_key';
 		const SENDPULSE_API_KEY = 'sendpulse_api_key';
 		const SENDPULSE_SECRET_KEY = 'sendpulse_secret_key';
@@ -598,29 +599,45 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				return $this->options [ PostmanOptions::DISABLE_EMAIL_VALIDAITON ]; }
 		}
 
-		/**
-		 * @since 2.1
-		 * @version 1.0
-		 */
-		public function getSendinblueApiKey() {
+	/**
+	 * @since 2.1
+	 * @version 1.0
+	 */
+	public function getSendinblueApiKey() {
 
-			if ( defined( 'POST_SMTP_API_KEY' ) ) {
-				return POST_SMTP_API_KEY;
-			}
-
-			if ( isset( $this->options[PostmanOptions::SENDINBLUE_API_KEY] ) ) {
-				return base64_decode( $this->options[PostmanOptions::SENDINBLUE_API_KEY] );
-			}
-
+		if ( defined( 'POST_SMTP_API_KEY' ) ) {
+			return POST_SMTP_API_KEY;
 		}
 
-		/**
-		 * Get Emailit API Key
-		 * @return string|null
-		 */
-		public function getEmailitApiKey() {
-            
-			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+		if ( isset( $this->options[PostmanOptions::SENDINBLUE_API_KEY] ) ) {
+			return base64_decode( $this->options[PostmanOptions::SENDINBLUE_API_KEY] );
+		}
+
+	}
+
+	/**
+	 * Get Mailtrap API Key
+	 * @since 2.9.0
+	 * @version 1.0
+	 * @return string|null
+	 */
+	public function getMailtrapApiKey() {
+
+		if ( defined( 'POST_SMTP_API_KEY' ) ) {
+			return POST_SMTP_API_KEY;
+		}
+
+		if ( isset( $this->options[PostmanOptions::MAILTRAP_API_KEY] ) ) {
+			return base64_decode( $this->options[PostmanOptions::MAILTRAP_API_KEY] );
+		}
+
+	}
+
+	/**
+	 * Get Emailit API Key
+	 * @return string|null
+	 */
+	public function getEmailitApiKey() {			if ( defined( 'POST_SMTP_API_KEY' ) ) {
                 return POST_SMTP_API_KEY;
             }
 
