@@ -3,7 +3,7 @@ Plugin URI: https://postmansmtp.com/
 Contributors: wpexpertsio
 Tags: smtp, gmail smtp, email,  email logs, office 365
 Requires at least: 5.6.0
-Tested up to: 6.8
+Tested up to: 6.9
 Stable tag: 3.6.3
 Requires PHP: 7.0
 License: GPLv2 or later
@@ -292,6 +292,9 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 Important: If you are using version 2.8.7 or lower of our plugin, please update to the latest version as soon as possible. This update contains an urgent security fix that prevents potential vulnerabilities and attacks. We apologize for any inconvenience this may cause you and we appreciate your cooperation. Thank you for using our plugin.
 
 == Changelog ==
+
+= 3.6.3 - Dec 17, 2025 =
+* FIX - Escape email content. 
 
 = 3.6.2 - Nov 24, 2025 =
 * IMPROVEMENT - Added PHP 8+ compatibility.
