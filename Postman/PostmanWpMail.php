@@ -49,15 +49,85 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// build the message
 			$postmanMessage = $this->processWpMailCall( $to, $subject, $message, $headers, $attachments );
 
-			// build the email log entry
+			/*
+			 * Build the email log entry from the *final* message, after all wp_mail
+			 * filters and header parsing have been applied.
+			 *
+			 * This makes the log reflect what was actually sent to the recipient
+			 * (subject, body, headers, recipients), instead of the raw wp_mail()
+			 * arguments.
+			 */
 			$log = new PostmanEmailLog();
-			$log->originalTo = $to;
-			$log->originalSubject = $subject;
-			$log->originalMessage = $message;
-			$log->originalHeaders = $headers;
+			$log->originalTo      = $this->format_recipients_for_log( $postmanMessage->getToRecipients() );
+			$log->originalSubject = $postmanMessage->getSubject();
+			$log->originalMessage = $postmanMessage->getBody();
+			$log->originalHeaders = $this->flatten_headers_for_log( $postmanMessage );
 
 			// send the message and return the result
 			return $this->sendMessage( $postmanMessage, $log );
+		}
+
+		/**
+		 * Convert PostmanEmailAddress recipients to a string suitable for logging
+		 * and for passing back into wp_mail() when resending.
+		 *
+		 * @param array $recipients Array of PostmanEmailAddress objects.
+		 *
+		 * @return string Comma separated list of recipients in "Name <email>" format.
+		 */
+		private function format_recipients_for_log( $recipients ) {
+			if ( empty( $recipients ) || ! is_array( $recipients ) ) {
+				return '';
+			}
+
+			$emails = array();
+
+			foreach ( $recipients as $recipient ) {
+				if ( $recipient instanceof PostmanEmailAddress ) {
+					$emails[] = $recipient->format();
+				}
+			}
+
+			return implode( ', ', $emails );
+		}
+
+		/**
+		 * Build a wp_mail()-compatible headers string from the PostmanMessage.
+		 *
+		 * Historically we stored the original $headers argument exactly as it was
+		 * passed into wp_mail(). To keep resend behaviour working while still
+		 * reflecting the final email, we reconstruct the headers from the parsed
+		 * PostmanMessage structure.
+		 *
+		 * @param PostmanMessage $message
+		 *
+		 * @return string Header lines separated by "\r\n".
+		 */
+		private function flatten_headers_for_log( PostmanMessage $message ) {
+			$lines = array();
+
+			// Generic headers collected during parsing (X-*, custom headers, etc).
+			foreach ( (array) $message->getHeaders() as $header ) {
+				if ( isset( $header['name'], $header['content'] ) && '' !== trim( $header['content'] ) ) {
+					$lines[] = trim( $header['name'] ) . ': ' . trim( $header['content'] );
+				}
+			}
+
+			// Explicit Reply-To header if present.
+			if ( $message->getReplyTo() instanceof PostmanEmailAddress ) {
+				$lines[] = 'Reply-To: ' . $message->getReplyTo()->format();
+			}
+
+			// Content-Type + charset.
+			if ( $message->getContentType() ) {
+				$header = 'Content-Type: ' . $message->getContentType();
+				if ( $message->getCharset() ) {
+					$header .= '; charset=' . $message->getCharset();
+				}
+				$lines[] = $header;
+			}
+
+			return implode( "\r\n", array_unique( $lines ) );
 		}
 
         /**

@@ -116,12 +116,15 @@ class PostsmtpMailer extends PHPMailer {
 		// build the message
 		$postmanMessage = $postmanWpMail->processWpMailCall( $to, $subject, $body, $headers, $attachments );
 
-		// build the email log entry
+		/*
+		 * Build the email log entry from the *final* PostmanMessage, after the
+		 * wp_mail filter has run, so the log matches what PHPMailer actually sends.
+		 */
 		$log = new PostmanEmailLog();
-		$log->originalTo = $to;
-		$log->originalSubject = $subject;
-		$log->originalMessage = $body;
-		$log->originalHeaders = $headers;
+		$log->originalTo      = $this->format_recipients_for_log( $postmanMessage->getToRecipients() );
+		$log->originalSubject = $postmanMessage->getSubject();
+		$log->originalMessage = $postmanMessage->getBody();
+		$log->originalHeaders = $this->flatten_headers_for_log( $postmanMessage );
 
 		// get the transport and create the transportConfig and engine
 		$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
@@ -163,6 +166,61 @@ class PostsmtpMailer extends PHPMailer {
 			return false;
 		}
 
+	}
+
+	/**
+	 * Convert PostmanEmailAddress recipients to a string suitable for logging
+	 * and for passing back into wp_mail() when resending.
+	 *
+	 * @param array $recipients Array of PostmanEmailAddress objects.
+	 *
+	 * @return string Comma separated list of recipients in "Name <email>" format.
+	 */
+	private function format_recipients_for_log( $recipients ) {
+		if ( empty( $recipients ) || ! is_array( $recipients ) ) {
+			return '';
+		}
+
+		$emails = array();
+
+		foreach ( $recipients as $recipient ) {
+			if ( $recipient instanceof PostmanEmailAddress ) {
+				$emails[] = $recipient->format();
+			}
+		}
+
+		return implode( ', ', $emails );
+	}
+
+	/**
+	 * Build a wp_mail()-compatible headers string from the PostmanMessage.
+	 *
+	 * @param PostmanMessage $message
+	 *
+	 * @return string Header lines separated by "\r\n".
+	 */
+	private function flatten_headers_for_log( PostmanMessage $message ) {
+		$lines = array();
+
+		foreach ( (array) $message->getHeaders() as $header ) {
+			if ( isset( $header['name'], $header['content'] ) && '' !== trim( $header['content'] ) ) {
+				$lines[] = trim( $header['name'] ) . ': ' . trim( $header['content'] );
+			}
+		}
+
+		if ( $message->getReplyTo() instanceof PostmanEmailAddress ) {
+			$lines[] = 'Reply-To: ' . $message->getReplyTo()->format();
+		}
+
+		if ( $message->getContentType() ) {
+			$header = 'Content-Type: ' . $message->getContentType();
+			if ( $message->getCharset() ) {
+				$header .= '; charset=' . $message->getCharset();
+			}
+			$lines[] = $header;
+		}
+
+		return implode( "\r\n", array_unique( $lines ) );
 	}
 
 	public function sendSmtp() {
