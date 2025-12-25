@@ -1478,7 +1478,7 @@ public function render_gmail_settings() {
         $client_id_required = $office365_oneclick_enabled ? '' : 'required';
         $one_click_class = 'ps-enable-office365-one-click';
         $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.png';
-        $transport_name = __( '<strong>1-Click</strong> Microsoft Mailer Setup?', 'post-smtp' );
+        $transport_name = __( '<strong>One-Click</strong> Microsoft Mailer Setup?', 'post-smtp' );
         $product_url = postman_is_bfcm() ? 
             'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 
             'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_microsoft&utm_campaign=plugin';
