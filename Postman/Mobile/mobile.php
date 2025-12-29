@@ -133,26 +133,42 @@ class Post_SMTP_Mobile {
     /**
      * Generate QR code
      *
+     * Safely loads the bundled PHPQRCode library and avoids fatals if another
+     * plugin/theme has defined an incompatible QRcode class.
+     *
      * @since 2.7.0
-     * @version 1.0.0
+     * @version 1.1.0
      */
     public function generate_qr_code() {
 
-        if ( !class_exists('QRcode') ) {
-            include_once 'includes/phpqrcode/qrlib.php';
+        // Load bundled QR library if QRcode is not already defined.
+        if ( ! class_exists( 'QRcode' ) ) {
+            include_once __DIR__ . '/includes/phpqrcode/qrlib.php';
         }
-        $nonce = get_transient( 'post_smtp_auth_nonce' );
-		$authkey = $nonce ? $nonce : $this->generate_auth_key();
-		$site_title = get_bloginfo( 'name' );
+
+        // If QRcode exists but doesn't have png(), another component is conflicting.
+        // Bail out gracefully so the page doesn't fatal; QR code simply won't render.
+        if ( ! class_exists( 'QRcode' ) || ! is_callable( array( 'QRcode', 'png' ) ) ) {
+            return;
+        }
+
+        $nonce      = get_transient( 'post_smtp_auth_nonce' );
+        $authkey    = $nonce ? $nonce : $this->generate_auth_key();
+        $site_title = get_bloginfo( 'name' );
+
         set_transient( 'post_smtp_auth_nonce', $authkey, 1800 );
+
         $endpoint = site_url( "?authkey={$authkey}&site_title={$site_title}" );
+
         ob_start();
         QRcode::png( urlencode_deep( $endpoint ) );
         $result_qr_content_in_png = ob_get_contents();
         ob_end_clean();
-        // PHPQRCode change the content-type into image/png... we change it again into html
-        header("Content-type: text/html");
-        $this->qr_code =  base64_encode( $result_qr_content_in_png );
+
+        // PHPQRCode changes the content-type to image/png; restore HTML.
+        header( 'Content-type: text/html' );
+
+        $this->qr_code = base64_encode( $result_qr_content_in_png );
 
     }
 
