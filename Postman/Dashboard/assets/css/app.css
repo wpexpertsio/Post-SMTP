@@ -1,27 +1,27 @@
 @import url(https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap);
 
-.post-smtp__wrapper[data-v-0c10f342] {
+.post-smtp__wrapper[data-v-3112b8ca] {
 	background: #F9FBFF;
 }
-.mr-25[data-v-0c10f342] {
+.mr-25[data-v-3112b8ca] {
 	margin-right: 25px;
 }
-.container[data-v-0c10f342] {
+.container[data-v-3112b8ca] {
 	padding: 0 51px;
 }
-.mt-32[data-v-0c10f342] {
+.mt-32[data-v-3112b8ca] {
 	margin-top: 32px;
 }
-.app-wrapper[data-v-0c10f342] {
+.app-wrapper[data-v-3112b8ca] {
 	width: calc( 100% - 276px - 25px );
 }
-.app-sidebar[data-v-0c10f342] {
+.app-sidebar[data-v-3112b8ca] {
 	width: 276px;
 }
-.float-left[data-v-0c10f342] {
+.float-left[data-v-3112b8ca] {
 	float: left;
 }
-.clearfix[data-v-0c10f342]::after {
+.clearfix[data-v-3112b8ca]::after {
 	clear: both;
 	content: "";
 	display: table;
@@ -203,7 +203,7 @@
 }
 
 
-.customer-support[data-v-5fd607f9] {
+.customer-support[data-v-7b742791] {
 	padding: 0 !important;
 	background: linear-gradient(180deg, #40518E 0%, #231F20 100%);
 	display: flex;
@@ -212,10 +212,10 @@
 	flex-direction: column;
 	height: 268px;
 }
-.customer-support-content[data-v-5fd607f9] {
+.customer-support-content[data-v-7b742791] {
 	width: 213px;
 }
-.customer-support-content p[data-v-5fd607f9] {
+.customer-support-content p[data-v-7b742791] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 500;
@@ -223,13 +223,13 @@
 	text-align: center;
 	color: #B8BDCA;
 }
-.troubleshooting[data-v-5fd607f9] {
+.troubleshooting[data-v-7b742791] {
 	padding: 0 !important;
 }
-.mb-24[data-v-5fd607f9] {
+.mb-24[data-v-7b742791] {
 	margin-bottom: 24px;
 }
-.troubleshooting-header[data-v-5fd607f9] {
+.troubleshooting-header[data-v-7b742791] {
 	border-radius: 4px 4px 0 0;
 	background: #EFF4FD;
 	padding: 16px 24px;
@@ -240,25 +240,25 @@
 	line-height: 20px;
 	color: #231F20;
 }
-.troubleshooting-content[data-v-5fd607f9] {
+.troubleshooting-content[data-v-7b742791] {
 	padding: 24px;
 }
-.troubleshoot.email[data-v-5fd607f9] {
+.troubleshoot.email[data-v-7b742791] {
 	list-style: url(../57f4451f3be03da17463.svg) inside;
 }
-.troubleshoot.import-export[data-v-5fd607f9] {
+.troubleshoot.import-export[data-v-7b742791] {
 	list-style: url(../d0a8e6270627cef66c74.svg) inside;
 }
-.troubleshoot.connectivity[data-v-5fd607f9] {
+.troubleshoot.connectivity[data-v-7b742791] {
 	list-style: url(../5b76dc43e6c63f11fb6d.svg) inside;
 }
-.troubleshoot.diagnostic[data-v-5fd607f9] {
+.troubleshoot.diagnostic[data-v-7b742791] {
 	list-style: url(../258d1cba1f474caf0c4b.svg) inside;
 }
-.troubleshoot.reset[data-v-5fd607f9] {
+.troubleshoot.reset[data-v-7b742791] {
 	list-style: url(../9fdeee5472f16554c9e9.svg) inside;
 }
-.troubleshoot a[data-v-5fd607f9] {
+.troubleshoot a[data-v-7b742791] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 400;
@@ -469,13 +469,13 @@
 }
 
 
-.mb-24[data-v-463de2e0] {
+.mb-24[data-v-b8fab578] {
 	margin-bottom: 24px;
 }
-.post-smtp-selector-wrapper[data-v-463de2e0] {
+.post-smtp-selector-wrapper[data-v-b8fab578] {
 	position: relative;
 }
-.post-smtp-selector-wrapper a.re-launch-wizard[data-v-463de2e0] {
+.post-smtp-selector-wrapper a.re-launch-wizard[data-v-b8fab578] {
 	float: right;
 	padding: 8px 16px;
 	background: #f3f7ff;
@@ -488,7 +488,7 @@
 	text-align: left;
 	text-decoration: none;
 }
-.post-smtp-selector-wrapper[data-v-463de2e0]::after {
+.post-smtp-selector-wrapper[data-v-b8fab578]::after {
 	content: '';
 	clear: both;
 	display: table;
@@ -709,7 +709,7 @@
 }
 
 
-.post-smtp-button[data-v-c092be8e] {
+.post-smtp-button[data-v-b0a24b2e] {
 	display: inline-block;
 	padding: 8px 16px !important;
 	justify-content: center;
@@ -1347,6 +1347,14 @@ a.gmail-click:hover,a.gmail-click:focus{
     color: #fff;
     text-decoration: none;
     box-shadow: none;
+}
+
+.office-one-click{
+    width:274px
+}
+.office-wrapper{
+    padding: 0px !important;
+    border-bottom: none !important;
 }
 
 /*# sourceMappingURL=app.css.map*/

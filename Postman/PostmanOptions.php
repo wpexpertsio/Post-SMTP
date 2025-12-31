@@ -137,6 +137,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const EMAILIT_API_KEY = 'emailit_api_key';
 		const MAILEROO_API_KEY = 'maileroo_api_key';
 
+		const SWEEGO_API_KEY  = 'sweego_api_key';
 
 		// defaults
 		const DEFAULT_TRANSCRIPT_SIZE = 128;
@@ -663,6 +664,23 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			return null;
 		}
 		
+
+				
+		/**
+		 * Get Maileroo API Key
+		 * @return string|null
+		 */
+		public function getSweegoApiKey() {
+            
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+				return POST_SMTP_API_KEY;
+			}
+
+			if ( isset( $this->options[ PostmanOptions::SWEEGO_API_KEY ] ) ) {
+				return base64_decode( $this->options[ PostmanOptions::SWEEGO_API_KEY ] );
+			}
+			return null;
+		}
 
         /**
          * Get Resend API Key

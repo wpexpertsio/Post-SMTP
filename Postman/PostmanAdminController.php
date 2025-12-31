@@ -302,7 +302,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			if ( PostmanUtils::isAdmin() ) {
 				$mylinks = array(
                         //sprintf( '<a href="%s" target="_blank" class="postman_settings">%s</a>', 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=yehudahas@gmail.com&item_name=Donation+for+PostSMTP', __( 'Donate', 'post-smtp' ) ),
-						sprintf( '<a href="%s" class="postman_settings">%s</a>', PostmanUtils::getSettingsPageUrl(), __( 'Settings', 'post-smtp' ) ),
+						sprintf( '<a href="%s" class="postman_settings">%s</a>',  admin_url( 'admin.php?page=postman%2Fconfiguration' ), __( 'Settings', 'post-smtp' ) ),
 						sprintf( '<a href="%s" class="postman_settings">%s</a>', 'https://postmansmtp.com', __( 'Visit us', 'post-smtp' ) ),
 				);
 				return array_merge( $mylinks, $links );

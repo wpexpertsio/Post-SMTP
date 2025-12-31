@@ -99,10 +99,18 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 		 * @version 3.0.1
 		 */
 		public function add_monthly_schedule( $schedules ) {
+			// Check if textdomain is loaded to avoid early translation loading
+			$display_text = 'Once Monthly';
+
+			if ( did_action( 'init' ) && function_exists( 'is_textdomain_loaded' ) && is_textdomain_loaded( 'post-smtp' ) ) {
+				$display_text = __( 'Once Monthly', 'post-smtp' );
+			}
+			
 			$schedules['monthly'] = array(
 				'interval' => 30 * DAY_IN_SECONDS,
-				'display'  => __( 'Once Monthly', 'post-smtp' ),
+				'display'  => $display_text,
 			);
+			
 			return $schedules;
     	}
 
@@ -126,7 +134,10 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 			$where = ( ! empty( $from ) && ! empty( $to ) ) ? " WHERE pl.time >= {$from} && pl.time <= {$to}" : '';
 
 
-			$query = "SELECT pl.original_subject AS subject, COUNT( pl.original_subject ) AS total, SUM( pl.success = 1 ) As sent, SUM( pl.success != 1 ) As failed FROM {$ps_query->table} AS pl";
+			$query = "SELECT pl.original_subject AS subject, COUNT( pl.original_subject ) AS total, 
+				SUM( pl.success = 1 OR pl.success = 'Sent ( ** Fallback ** )' OR pl.success LIKE '( ** Fallback ** )%' ) As sent, 
+				SUM( pl.success != 1 AND pl.success != 'Sent ( ** Fallback ** )' AND pl.success NOT LIKE '( ** Fallback ** )%' ) As failed 
+				FROM {$ps_query->table} AS pl";
 
 			/**
 			 * Filter to get query from extension

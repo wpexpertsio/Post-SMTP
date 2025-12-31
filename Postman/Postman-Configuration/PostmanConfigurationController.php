@@ -298,6 +298,9 @@ class PostmanConfigurationController {
 		print '<div id="maileroo_settings" class="authentication_setting non-basic non-oauth2">';
 		do_settings_sections( PostmanMailerooTransport::MAILEROO_AUTH_OPTIONS );
 		print '</div>';
+		print '<div id="sweego_settings" class="authentication_setting non-basic non-oauth2">';
+		do_settings_sections( PostmanSweegoTransport::SWEEGO_AUTH_OPTIONS );
+		print '</div>';
 		print '<div id="mailersend_settings" class="authentication_setting non-basic non-oauth2">';
 		do_settings_sections( PostmanMailerSendTransport::MAILERSEND_AUTH_OPTIONS );
 		print '</div>';

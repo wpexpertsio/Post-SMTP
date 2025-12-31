@@ -177,7 +177,10 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				return filter_var( $email, FILTER_VALIDATE_EMAIL ) ? sanitize_email( $email ) : '';
 			}, $emails );
 
-			return implode( ', ', array_filter( $sanitized_emails ) );
+			// Remove duplicates and empty values
+			$sanitized_emails = array_unique( array_filter( $sanitized_emails ) );
+
+			return implode( ', ', $sanitized_emails );
 		}
 
 		/**
@@ -196,7 +199,8 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
             }
 
             if ( $options->is_fallback &&  ! empty( $log->statusMessage ) ) {
-                $new_status = '( ** Fallback ** ) ' . $log->statusMessage;
+                // $new_status = '( ** Fallback ** ) ' . $log->statusMessage;
+				$new_status = $log->statusMessage;
             }
 
             $new_status = apply_filters( 'post_smtp_log_status', $new_status, $log, $message );
@@ -204,7 +208,12 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 			if( $this->new_logging ) {
 				$data = array();
 				$data['solution']         = apply_filters( 'post_smtp_log_solution', null, $new_status, $log, $message );
-				$data['success']          = empty( $new_status ) ? 1 : $new_status;
+				// The filtering logic will handle both success = 1 and fallback status messages
+				if ( $log->success === true || $log->success === 'WARN' || $log->success === 1 ) {
+					$data['success'] = empty( $new_status ) ? 1 : $new_status;
+				} else {
+					$data['success'] = empty( $new_status ) ? 0 : $new_status;
+				}
 				$data['from_header']      = $log->sender;
 				$data['to_header']        = $this->sanitize_emails( $log->toRecipients );
 				$data['cc_header']        = $this->sanitize_emails( $log->ccRecipients );

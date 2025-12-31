@@ -46,15 +46,39 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// initialize for sending
 			$this->init();
 
-			// build the message
-			$postmanMessage = $this->processWpMailCall( $to, $subject, $message, $headers, $attachments );
+		// build the message
+		$postmanMessage = $this->processWpMailCall( $to, $subject, $message, $headers, $attachments );
 
-			// build the email log entry
-			$log = new PostmanEmailLog();
-			$log->originalTo = $to;
-			$log->originalSubject = $subject;
-			$log->originalMessage = $message;
-			$log->originalHeaders = $headers;
+		// build the email log entry
+		$log = new PostmanEmailLog();
+		
+		// Merge forced recipients with original $to for logging
+		$options = PostmanOptions::getInstance();
+		$forcedTo = $options->getForcedToRecipients();
+		$allRecipients = array();
+		
+		// Add original recipients
+		if ( is_array( $to ) ) {
+			$allRecipients = array_merge( $allRecipients, $to );
+		} elseif ( ! empty( $to ) ) {
+			// Split comma-separated string into array
+			$allRecipients = array_merge( $allRecipients, array_map( 'trim', explode( ',', $to ) ) );
+		}
+		
+		// Add forced recipients if set
+		if ( ! empty( $forcedTo ) ) {
+			// Split comma-separated string into array
+			$forcedRecipients = array_map( 'trim', explode( ',', $forcedTo ) );
+			$allRecipients = array_merge( $allRecipients, $forcedRecipients );
+		}
+		
+		// Remove duplicates and empty values, then convert back to comma-separated string
+		$allRecipients = array_unique( array_filter( $allRecipients ) );
+		$log->originalTo = implode( ', ', $allRecipients );
+		
+		$log->originalSubject = $subject;
+		$log->originalMessage = $message;
+		$log->originalHeaders = $headers;
 
 			// send the message and return the result
 			return $this->sendMessage( $postmanMessage, $log );
