@@ -26,7 +26,7 @@ class PostmanSweegoTransport extends PostmanAbstractModuleTransport implements P
         return self::SLUG;
     }
     public function getName() {
-        return __('Sweego API', 'post-smtp');
+        return __('Sweego', 'post-smtp');
     }
     public function getHostname() {
         return self::HOST;
