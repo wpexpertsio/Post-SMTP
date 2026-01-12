@@ -82,11 +82,12 @@ if ( ! class_exists( 'PostmanEmailItMailEngine' ) ) {
 			// Send.
 			try {
 				$this->logger->debug( 'Sending mail via EmailIt' );
-				$response = $emailit->send( $content );
+				$response     = $emailit->send( $content );
 				$responseCode = wp_remote_retrieve_response_code( $response );
 				$responseBody = wp_remote_retrieve_body( $response );
 
-				if ( $responseCode === 200 || $responseCode === 202 ) {
+				// Treat any 2xx status code (including 201 Created) as success.
+				if ( $responseCode >= 200 && $responseCode < 300 ) {
 					$this->transcript  = 'Email sent successfully.' . PHP_EOL;
 					$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS . PHP_EOL;
 					$this->transcript .= print_r( $content, true );
