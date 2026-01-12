@@ -144,18 +144,18 @@ class Post_SMTP_New_Wizard {
                 <div class="ps-wizard-outer <?php echo esc_attr( $socket ); ?>">
                     <div class="ps-wizard-section">
                         <div class="ps-wizard-nav">
-                            <table>
-                                <tr class="<?php echo esc_attr( $in_active ) ?>">
+                        <table>
+                                <tr class="ps-wizard-step-start <?php echo esc_attr( $in_active ) ?>">
                                     <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"></span></td>
                                     <td class="ps-wizard-text"><?php _e( 'Choose your SMTP Mailer', 'post-smtp' ) ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="1"></span></td>
                                 </tr>
-                                <tr class="<?php echo esc_attr( $is_active ) ?>">
+                                <tr class="ps-wizard-step-between <?php echo esc_attr( $is_active ) ?>">
                                     <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"><span class="ps-wizard-line"></span></span></td>
                                     <td class="ps-wizard-text"><?php _e( 'Configure Mailer Settings', 'post-smtp' ) ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="2"></span></td>
                                 </tr>
-                                <tr class="ps-in-active-nav">
+                                <tr class="ps-wizard-step-end ps-in-active-nav">
                                     <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"><span class="ps-wizard-line"></span></span></td>
                                     <td class="ps-wizard-text"><?php _e( 'Send Test Email', 'post-smtp' ) ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="3"></span></td>

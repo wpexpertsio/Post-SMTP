@@ -232,75 +232,75 @@
 }
 
 .smtp-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 837px;
+  height: 837px !important;
 }
 
 .gmail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 1100px;
+  height: 1100px !important;
 }
 
 .mandrill_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 535px;
+  height: 540px !important;
 }
 
 .sendgrid_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 608px;
+  height: 608px !important;
 }
 
 .mailersend_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 608px;
+  height: 608px !important;
 }
 
 .mailgun_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 763px;
+  height: 763px !important;
 }
 
 .sendinblue_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 583px;
+  height: 590px !important;
 }
 
 .resend_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 583px;
+  height: 583px !important;
 }
 
 .postmark_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 535px;
+  height: 540px !important;
 }
 
 .sparkpost_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 535px;
+  height: 540px !important;
 }
 
 .elasticemail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 535px;
+  height: 540px !important;
 }
 
 .office365_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 837px;
+  height: 837px !important;
 }
 
 .zohomail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 946px;
+  height: 946px !important;
 }
 
 .aws_ses_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 746px;
+  height: 746px !important;
 }
 
 .mailjet_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 638px;
+  height: 645px !important;
 }
 
 .sendpulse_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 635px;
+  height: 640px !important;
 }
 
-.ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-    height: 429px;
+.emailit_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
+  height: 500px !important;
 }
 
-.ps-wizard-footer-left .ps-in-active-nav .ps-email-tester-line.ps-wizard-line:after {
-  height: 417px;
+.maileroo_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
+  height: 500px !important;
 }
 
 .ps-wizard-sockets {
@@ -1007,6 +1007,9 @@ label.ps-office365-upgrade-required:hover:before {
   top: -40px;
   background-size: 100%;
 
+}
+.ps-wizard .ps-wizard-footer .ps-wizard-nav .ps-wizard-line:after{
+	height: 540px;
 }
 
 /* Lets make wizard responsive */

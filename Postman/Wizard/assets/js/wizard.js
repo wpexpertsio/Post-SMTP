@@ -156,7 +156,7 @@ jQuery( document ).ready(function() {
                         jQuery( '.ps-wizard-error' ).html( '' );
                         nextStep( stepID );
                         var _element = jQuery( '.ps-wizard-outer' ).removeClass();
-                        jQuery( _element ).addClass( 'ps-wizard-outer' );
+                        jQuery( _element ).addClass( 'ps-wizard-outer ps-wizard-send-email' );
 
                     },
                     error: function( response ) {
