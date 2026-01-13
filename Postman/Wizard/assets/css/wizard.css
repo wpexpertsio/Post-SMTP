@@ -1033,7 +1033,7 @@ label.ps-office365-upgrade-required:hover:before {
 	height: 540px;
 }
 .ps-wizard .ps-wizard-send-email .ps-wizard-footer .ps-wizard-nav .ps-wizard-line:after{
-	height: 350px;
+	height: 347px;
 }
 span.ps-wizard-line:after {
     content: '';
