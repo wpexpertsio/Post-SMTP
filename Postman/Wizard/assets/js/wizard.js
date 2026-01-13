@@ -281,6 +281,11 @@ jQuery( document ).ready(function() {
             nextStep( stepID );
 
         }
+        var enabled = jQuery('.ps-enable-gmail-one-click').is(':checked');
+        if (enabled) {
+           jQuery('.gmail_api-outer').addClass('gmail-enabled');
+       }
+       console.log(enabled)
 
     } );
 
@@ -703,6 +708,7 @@ jQuery( document ).ready(function() {
 
     } );
 
+
     jQuery(document).on('click', '.ps-enable-gmail-one-click', function (e) {
     	
         if (jQuery(this).hasClass('disabled')) {
@@ -722,11 +728,13 @@ jQuery( document ).ready(function() {
         var enabled = jQuery(this).is(':checked');
         if (enabled) {
             jQuery('.ps-disable-gmail-setup').show();
+            jQuery('.gmail_api-outer').addClass('gmail-enabled');
             jQuery('.ps-disable-one-click-setup').hide();
             jQuery('.ps-gmail-api-client-id').removeAttr('required');
             jQuery('.ps-gmail-api-client-secret').removeAttr('required')
 			jQuery('#ps-gmail-auth-buttons').show();
         } else {
+            jQuery('.gmail_api-outer').removeClass('gmail-enabled');
             jQuery('.ps-disable-one-click-setup').show();
             jQuery('.ps-disable-gmail-setup').hide();
             jQuery('.ps-gmail-api-client-id').attr('required', 'required');
