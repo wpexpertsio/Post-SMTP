@@ -7,6 +7,16 @@ jQuery( document ).ready(function() {
         jQuery( this ).find( '.ps-wizard-socket-tick-container' ).css( { 'opacity': 1 } );
         
     } )
+	
+	   var enabled_gmail = jQuery('.ps-enable-gmail-one-click').is(':checked');
+        if (enabled_gmail) {
+           jQuery('.gmail_api-outer').addClass('gmail-enabled');
+       }
+
+   		var enabled_office = jQuery('.ps-enable-office365-one-click').is(':checked');
+        if (enabled_office) {
+           jQuery('.office365_api-outer').addClass('office-enabled');
+       }
 
     /**
      * Refresh the wizard to show the current step
@@ -281,11 +291,15 @@ jQuery( document ).ready(function() {
             nextStep( stepID );
 
         }
-        var enabled = jQuery('.ps-enable-gmail-one-click').is(':checked');
-        if (enabled) {
+        var enabled_gmail = jQuery('.ps-enable-gmail-one-click').is(':checked');
+        if (enabled_gmail) {
            jQuery('.gmail_api-outer').addClass('gmail-enabled');
        }
-       console.log(enabled)
+
+   		var enabled_office = jQuery('.ps-enable-office365-one-click').is(':checked');
+        if (enabled_office) {
+           jQuery('.office365_api-outer').addClass('office-enabled');
+       }
 
     } );
 
@@ -817,10 +831,12 @@ jQuery(document).on('click', '.ps-enable-office365-one-click', function (e) {
     var enabled = jQuery(this).is(':checked');
     if (enabled) {
         jQuery('.ps-disable-one-click-setup').hide();
+		 jQuery('.office365_api-outer').addClass('office-enabled');
         jQuery('.ps-disable-office365-setup').show();
 		jQuery('.ps-office365-client-id').removeAttr('required');
         jQuery('.ps-office365-client-secret').removeAttr('required')
     } else {
+		jQuery('.office365_api-outer').removeClass('office-enabled');
         jQuery('.ps-disable-office365-setup').hide();
         jQuery('.ps-disable-one-click-setup').show();
 		jQuery('.ps-office365-client-id').attr('required', 'required');

@@ -232,11 +232,11 @@
 }
 
 .smtp-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 840px !important;
+  height: 842px !important;
 }
 
 .gmail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 1100px !important;
+  height: 1088px !important;
 }
 
 .mandrill_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
@@ -252,11 +252,11 @@
 }
 
 .mailgun_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 763px !important;
+  height: 770px !important;
 }
 
 .sendinblue_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 583px !important;
+  height: 590px !important;
 }
 
 .resend_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
@@ -276,7 +276,7 @@
 }
 
 .office365_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-  height: 840px !important;
+   height: 1047px !important;
 }
 
 .zohomail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
@@ -303,8 +303,14 @@
 .mailtrap_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
    height: 494px !important;
 }
+.sweego_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
+   height: 494px !important;
+}
 .gmail-enabled .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
   height: 1021px !important;
+}
+.office-enabled .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
+  height: 840px !important
 }
 
 /* .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
@@ -1027,7 +1033,16 @@ label.ps-office365-upgrade-required:hover:before {
 	height: 540px;
 }
 .ps-wizard .ps-wizard-send-email .ps-wizard-footer .ps-wizard-nav .ps-wizard-line:after{
-	height: 345px;
+	height: 350px;
+}
+span.ps-wizard-line:after {
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: 39px;
+    left: 23px;
+    bottom: 41px;
+    z-index: -3;
 }
 
 /* Lets make wizard responsive */
