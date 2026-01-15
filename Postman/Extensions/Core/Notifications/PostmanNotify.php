@@ -476,7 +476,7 @@ class PostmanNotify {
 			}
 			if ( ! array_key_exists( 'microsoft-teams', $options ) && ! post_smtp_has_pro() ) {
 				?>
-				<a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=ms_teams_notification_settings&utm_campaign=plugin" target="_blank">
+				<a href="https://postmansmtp.com/extensions/microsoft-teams-alerts" target="_blank">
 					<div class="ps-notify-radio-outer">
 						<div class="ps-notify-radio pro-container">
 							<label for="ps-notify-teams-pro">

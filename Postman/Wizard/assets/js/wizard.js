@@ -334,6 +334,16 @@ jQuery( document ).ready(function() {
 
         switchStep( stepID );
 
+        var enabled_gmail = jQuery('.ps-enable-gmail-one-click').is(':checked');
+        if (enabled_gmail) {
+           jQuery('.gmail_api-outer').addClass('gmail-enabled');
+        }
+
+   		var enabled_office = jQuery('.ps-enable-office365-one-click').is(':checked');
+        if (enabled_office) {
+           jQuery('.office365_api-outer').addClass('office-enabled');
+         }
+
     } );
 
 

@@ -948,12 +948,15 @@ public function render_gmail_settings() {
      */
     public function render_sweego_settings() {
         $api_key = null !== $this->options->getSweegoApiKey() ? esc_attr ( $this->options->getSweegoApiKey() ) : '';
-        $html = sprintf(
-            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p>',
-            esc_url( 'https://sweego.com/' ),
-            __( 'Sweego', 'post-smtp' ),
-            __( 'is a transactional email provider. Enter your API Key and Endpoint below.', 'post-smtp' )
-        );
+		$html = sprintf(
+			'<p>
+				%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s
+			</p>',
+			__( 'Integrating Sweego with your WordPress site. We recommend checking the', 'post-smtp' ),
+			esc_url( 'https://postmansmtp.com/docs/mailers/how-to-setup-sweego-with-post-smtp/' ),
+			__( 'documentation', 'post-smtp' ),
+			__( 'for a successful integration.', 'post-smtp' )
+		);
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
@@ -1593,6 +1596,15 @@ public function render_gmail_settings() {
             $html .= '<p style="margin: 0; color: #856404;"><strong>' . __( 'Microsoft 365 (Outlook)', 'post-smtp' ) . '</strong><br>';
             $html .= __( ' One-Click Setup is available only with Business plan. Click on the toggle to update.', 'post-smtp' ) . '</p>';
             $html .= '</div>';
+            // Inject conditional CSS
+            add_action( 'admin_footer', function () {
+                echo '<style>
+                    .office365_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
+                        height: 1089px !important;
+                    }
+                </style>';
+            });
+
         }
 
         // Show version warning if user has business plan but outdated Post SMTP Pro version
