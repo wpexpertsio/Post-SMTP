@@ -17,6 +17,11 @@ jQuery( document ).ready(function() {
         if (enabled_office) {
            jQuery('.office365_api-outer').addClass('office-enabled');
        }
+       
+       jQuery(document).on('click', 'table tr:last-child .ps-wizard-edit', function (e) {
+            e.preventDefault();
+            jQuery('.ps-wizard-outer').addClass('ps-wizard-send-email');
+        });
 
     /**
      * Refresh the wizard to show the current step
