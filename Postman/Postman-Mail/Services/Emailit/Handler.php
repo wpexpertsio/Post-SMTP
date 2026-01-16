@@ -4,7 +4,7 @@ class PostmanEmailit extends PostmanServiceRequest {
     /**
      * Success Code
      */
-	private $email_sent_code = 201;
+	private $email_sent_code = 200;
 
     /**
      * API Key
