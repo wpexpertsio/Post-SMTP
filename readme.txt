@@ -298,6 +298,14 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
+= 3.8.0 – Jan 19, 2026 =
+* NEW – Added [Sweego](https://www.sweego.io/) as an email service provider.
+* NEW – Introduced the "Send Test Notification" feature for Post SMTP failure alerts.
+* TWEAK – Added a hide option for wp_mail conflict notice.
+* FIX – PHPMailer with "Log Only" mode was sending emails.
+* FIX – Corrected improper call to the function _load_textdomain_just_in_time.
+* FIX – Fixed redirection issue that incorrectly navigated users to the Post SMTP settings page.
+
 = 3.7.0 - Dec 24, 2025 =
 * NEW – Added Mailtrap.io as an email service provider.
 * FIX – The PHPMailerException already exist.
