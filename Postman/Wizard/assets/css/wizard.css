@@ -13,7 +13,7 @@
 }
 
 .ps-wizard-outer {
-  border: 2px solid #375caf;
+  border: 2px solid #214A72;
   border-radius: 7px;
   width: 875px;
   margin: 0 auto;
@@ -131,7 +131,7 @@
 }
 
 .ps-active-nav .ps-wizard-circle span.ps-tick:before {
-  background-color: #375caf;
+  background-color: #214A72;
 }
 
 .ps-in-active-nav  .ps-wizard-circle span.ps-tick:before {
@@ -162,7 +162,7 @@
 .ps-wizard-circle span.ps-tick {
   font-size: 44px;
   display: inline-table;
-  color: #375caf;
+  color: #214A72;
 }
 
 .ps-wizard-text {
@@ -202,12 +202,12 @@
 }
 
 .ps-in-active-nav .ps-wizard-line:after {
-  background: #d9d9d9;
+  background: #CDCDCD;
 }
 
 .ps-active-nav .ps-wizard-line:after,
 .ps-wizard-line:after {
-  background: #375caf;
+  background: #214A72;
 }
 
 .ps-wizard-footer .ps-active-nav .ps-wizard-line:after {
@@ -372,8 +372,8 @@
 }
 
 .ps-wizard-socket-tick span {
-  font-size: 15px;
-  background-color: #4caf50;
+  font-size: 14px;
+  background-color: #214A72;
   color: #fff;
   border-radius: 100%;
   height: 15px;
@@ -390,12 +390,12 @@
 }
 
 .ps-wizard-socket-radio:has(.ps-wizard-socket-check:checked) {
-  border: 2px solid #4db556;
+  border: 2px solid #375CAF;
 }
 
 .button-primary.ps-blue-btn {
-  border: #485b87;
-  background: #375caf;
+  border: #214A72;
+  background: #214A72;
   border-radius: 0px;
   line-height: 40px;
   width: 184px;
