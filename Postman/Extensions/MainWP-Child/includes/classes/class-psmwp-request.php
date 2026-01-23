@@ -133,6 +133,44 @@ class Post_SMTP_MainWP_Child_Request {
 			$success = ( $code >= 200 && $code < 300 );
 		}
 
+		/**
+		 * If the parent sent back detailed Email Log entries (for example, a primary attempt that failed
+		 * and a fallback attempt that succeeded), derive the overall success from those logs so that
+		 * wp_post_smtp_mainwp_logs accurately reflects whether at least one attempt delivered the email.
+		 *
+		 * - If any parent log has a "success" value that represents delivery (1 or "Sent ( ** Fallback ** )"),
+		 *   we treat the whole operation as successful.
+		 * - If we have logs but none indicate delivery, we treat the operation as failed.
+		 */
+		if ( ! empty( $parent_logs ) && is_array( $parent_logs ) ) {
+			$any_success_log = false;
+
+			foreach ( $parent_logs as $parent_log ) {
+				if ( ! is_array( $parent_log ) || ! array_key_exists( 'success', $parent_log ) ) {
+					continue;
+				}
+
+				$log_success = $parent_log['success'];
+
+				// In the logs table, "success" is:
+				// - int(1) for normal success
+				// - string 'Sent ( ** Fallback ** )' when fallback delivered
+				// - other strings for errors / queue states.
+				if (
+					1 === $log_success ||
+					'1' === $log_success ||
+					true === $log_success ||
+					'Sent ( ** Fallback ** )' === $log_success
+				) {
+					$any_success_log = true;
+					break;
+				}
+			}
+
+			// If we have detailed logs, prefer their outcome over the top-level "success" flag.
+			$success = $any_success_log;
+		}
+
 		$this->log_email_result(
 			$to,
 			$subject,
@@ -151,6 +189,14 @@ class Post_SMTP_MainWP_Child_Request {
 					$this->sync_parent_log_to_child( $parent_log );
 				}
 			}
+		} elseif ( $success ) {
+			// Parent responded without per-attempt Email Logs. To avoid having no entries in wp_post_smtp_logs
+			// on the child site, create a minimal log row that at least records the successful delivery.
+			$this->create_basic_child_log( $to, $subject, $message, $headers, $status_message );
+		} else {
+			// Overall send failed and the parent did not provide detailed logs; record a minimal failure
+			// entry in wp_post_smtp_logs so the child Email Log and failure widgets can still show it.
+			$this->create_basic_child_failure_log( $to, $subject, $message, $headers, $status_message );
 		}
 
 		if ( ! $success ) {
@@ -246,6 +292,138 @@ class Post_SMTP_MainWP_Child_Request {
 				'%s',
 			)
 		);
+	}
+
+	/**
+	 * When the MainWP Dashboard does not return individual Email Log rows in its API response,
+	 * create a minimal log entry in the child's main Email Log table so that successful sends
+	 * are still visible under wp_post_smtp_logs.
+	 *
+	 * This is a fallback and only runs when we know the overall send was successful but we
+	 * did not receive detailed logs to mirror.
+	 *
+	 * @param string|array $to
+	 * @param string       $subject
+	 * @param string       $message
+	 * @param string|array $headers
+	 * @param string       $status_message
+	 */
+	private function create_basic_child_log( $to, $subject, $message, $headers, $status_message ) {
+		if ( ! class_exists( 'PostmanEmailLogs' ) && defined( 'POST_SMTP_PATH' ) ) {
+			require_once POST_SMTP_PATH . '/Postman/PostmanEmailLogs.php';
+		}
+
+		if ( ! class_exists( 'PostmanEmailLogs' ) ) {
+			return;
+		}
+
+		$email_logs = new PostmanEmailLogs();
+
+		$data = array(
+			// Match the semantics from PostmanEmailLogService::writeToEmailLog for successful sends.
+			'success'          => 1,
+			'solution'         => is_string( $status_message ) ? $status_message : '',
+			'original_subject' => is_string( $subject ) ? sanitize_text_field( $subject ) : '',
+			'original_message' => is_string( $message ) ? $message : '',
+			'time'             => current_time( 'timestamp' ),
+		);
+
+		// Populate recipient fields if we have them.
+		if ( ! empty( $to ) ) {
+			$sanitized_to = '';
+
+			if ( class_exists( 'PostmanEmailLogService' ) ) {
+				// Re-use the core sanitizer so formats like "Name <email@domain>" are handled correctly.
+				$service      = PostmanEmailLogService::getInstance();
+				$sanitized_to = $service->sanitize_emails( $to );
+			} else {
+				$emails       = is_array( $to ) ? $to : explode( ',', (string) $to );
+				$emails       = array_map( 'trim', $emails );
+				$emails       = array_map( 'sanitize_email', $emails );
+				$emails       = array_filter( $emails );
+				$sanitized_to = implode( ', ', $emails );
+			}
+
+			if ( ! empty( $sanitized_to ) ) {
+				$data['to_header']     = $sanitized_to;
+				$data['original_to']   = $sanitized_to;
+			}
+		}
+
+		// Optionally persist headers for debugging / resends.
+		if ( ! empty( $headers ) ) {
+			$data['original_headers'] = is_array( $headers ) ? maybe_serialize( $headers ) : (string) $headers;
+		}
+
+		$email_logs->save( $data );
+	}
+
+	/**
+	 * Create a minimal failure log in the child's main Email Log table when the MainWP Dashboard
+	 * reports that sending failed and does not return detailed log rows to mirror.
+	 *
+	 * The "success" field is populated with the error message so that it is rendered as a Failed
+	 * status in the Email Log UI, matching how core Post SMTP treats failure entries.
+	 *
+	 * @param string|array $to
+	 * @param string       $subject
+	 * @param string       $message
+	 * @param string|array $headers
+	 * @param string       $status_message
+	 */
+	private function create_basic_child_failure_log( $to, $subject, $message, $headers, $status_message ) {
+		if ( ! class_exists( 'PostmanEmailLogs' ) && defined( 'POST_SMTP_PATH' ) ) {
+			require_once POST_SMTP_PATH . '/Postman/PostmanEmailLogs.php';
+		}
+
+		if ( ! class_exists( 'PostmanEmailLogs' ) ) {
+			return;
+		}
+
+		$email_logs = new PostmanEmailLogs();
+
+		// If we don't have a meaningful status message, fall back to a generic one.
+		if ( ! is_string( $status_message ) || '' === trim( $status_message ) ) {
+			$status_message = __( 'Email sending failed on MainWP Dashboard site.', 'post-smtp' );
+		}
+
+		$data = array(
+			// For failures, Post SMTP stores a descriptive string in "success" which is later used
+			// as the title attribute on the "Failed" label in the UI.
+			'success'          => $status_message,
+			'solution'         => '',
+			'original_subject' => is_string( $subject ) ? sanitize_text_field( $subject ) : '',
+			'original_message' => is_string( $message ) ? $message : '',
+			'time'             => current_time( 'timestamp' ),
+		);
+
+		// Populate recipient fields if we have them.
+		if ( ! empty( $to ) ) {
+			$sanitized_to = '';
+
+			if ( class_exists( 'PostmanEmailLogService' ) ) {
+				$service      = PostmanEmailLogService::getInstance();
+				$sanitized_to = $service->sanitize_emails( $to );
+			} else {
+				$emails       = is_array( $to ) ? $to : explode( ',', (string) $to );
+				$emails       = array_map( 'trim', $emails );
+				$emails       = array_map( 'sanitize_email', $emails );
+				$emails       = array_filter( $emails );
+				$sanitized_to = implode( ', ', $emails );
+			}
+
+			if ( ! empty( $sanitized_to ) ) {
+				$data['to_header']   = $sanitized_to;
+				$data['original_to'] = $sanitized_to;
+			}
+		}
+
+		// Optionally persist headers for debugging / resends.
+		if ( ! empty( $headers ) ) {
+			$data['original_headers'] = is_array( $headers ) ? maybe_serialize( $headers ) : (string) $headers;
+		}
+
+		$email_logs->save( $data );
 	}
 
 	/**

@@ -56,7 +56,7 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
             $configured         = $transport->isConfiguredAndReady() ? 'true' : 'false';
             $app_connected      = empty( $app_connected ) ? 'false' : 'true';
 	        $main_wp_configured = empty( $main_wp_configured ) ? 'false' : 'true';
-			if ( ! empty( $main_wp_configured ) ) {
+			if ( $main_wp_configured == 'true' ) {
                 $configured = 'true';
             }
             $has_post_smtp_pro  = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
