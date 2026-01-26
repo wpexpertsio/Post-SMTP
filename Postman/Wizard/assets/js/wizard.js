@@ -7,7 +7,185 @@ jQuery( document ).ready(function() {
         jQuery( this ).find( '.ps-wizard-socket-tick-container' ).css( { 'opacity': 1 } );
         
     } )
-	
+
+    /**
+     * Step 1 - limit mailer rows and add "See More" toggle
+     *
+     * - Show only the first two rows of non‑PRO mailers by default.
+     * - The last visible non‑PRO card in the second row moves to the
+     *   first hidden row so the second row still has a maximum of 4 items.
+     * - PRO mailers (ps-pro-extension-outer: Office 365, Amazon SES, Zoho)
+     *   are never hidden and are not affected by the See More toggle.
+     */
+    const initMailerSeeMore = function() {
+
+        const $step1 = jQuery( '.ps-wizard-step-1' );
+
+        if ( ! $step1.length ) {
+            return;
+        }
+
+        const $rows = $step1.find( '.ps-wizard-sockets' );
+
+        // Need at least 3 rows before we add the toggle
+        if ( $rows.length <= 2 ) {
+            return;
+        }
+
+        // Rows that contain PRO mailers
+        const $proRows = $rows.filter( function() {
+            return jQuery( this ).find( '.ps-pro-extension-outer' ).length > 0;
+        } );
+
+        const $extraRows = $rows.slice( 2 );
+
+        // Rows that can be hidden / shown (non‑PRO rows after the 2nd row)
+        let $hideableRows = $extraRows.not( $proRows );
+
+        // If there is nothing to hide, do not add See More
+        if ( ! $hideableRows.length ) {
+            return;
+        }
+
+        // Hide rows after the second row by default, excluding PRO rows
+        $hideableRows.addClass( 'ps-hidden ps-wizard-sockets-extra' );
+
+        const $secondRow = $rows.eq( 1 );
+
+        if ( ! $secondRow.length ) {
+            return;
+        }
+
+        const $firstHiddenRow = $hideableRows.first();
+
+        // Move the last non‑PRO card from the second row into the first
+        // hidden row so the See More tile becomes the 10th box.
+        if ( $firstHiddenRow.length ) {
+
+            const $secondRowCards = $secondRow
+                .find( '.ps-wizard-socket-radio-outer' )
+                .filter( function() {
+                    return ! jQuery( this ).find( '.ps-pro-extension-outer' ).length;
+                } );
+
+            const $lastCard = $secondRowCards.last();
+
+            if ( $lastCard.length ) {
+                $firstHiddenRow.prepend( $lastCard );
+            }
+
+            // Ensure the first hidden row still has a maximum of 4 boxes.
+            // Any overflow sockets are moved into the LAST hideable row
+            // so tiles like Mailgun stay inside the grid (in the last
+            // non‑PRO row) instead of overflowing.
+            let $firstHiddenRowCards = $firstHiddenRow.find( '.ps-wizard-socket-radio-outer' );
+
+            if ( $firstHiddenRowCards.length > 4 ) {
+
+                const $overflowCards = $firstHiddenRowCards.slice( 4 );
+                const $lastHideableRow = $hideableRows.last();
+
+                if ( $lastHideableRow.length ) {
+                    $lastHideableRow.append( $overflowCards );
+                }
+
+            }
+
+        }
+
+        // Ensure Mailgun appears before "Other SMTP" and "Default"
+        // in the last non‑PRO row.
+        const $lastNonProRow = $hideableRows.last();
+
+        if ( $lastNonProRow.length ) {
+
+            const $mailgun = $lastNonProRow.find( '#ps-wizard-socket-mailgun_api' ).closest( '.ps-wizard-socket-radio-outer' );
+
+            if ( $mailgun.length ) {
+
+                const $smtp = $lastNonProRow.find( '#ps-wizard-socket-smtp' ).closest( '.ps-wizard-socket-radio-outer' );
+                const $default = $lastNonProRow.find( '#ps-wizard-socket-default' ).closest( '.ps-wizard-socket-radio-outer' );
+
+                if ( $smtp.length ) {
+
+                    $smtp.before( $mailgun );
+
+                } else if ( $default.length ) {
+
+                    $default.before( $mailgun );
+
+                }
+
+            }
+
+        }
+
+        const seeMoreLabel = ( typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.seeMoreLabel ) ? PostSMTPWizard.seeMoreLabel : 'See More';
+        const seeLessLabel = ( typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.seeLessLabel ) ? PostSMTPWizard.seeLessLabel : 'See Less';
+
+        const seeMoreHtml = `
+            <div class="ps-wizard-socket-radio-outer ps-wizard-see-more-outer">
+                <div class="ps-wizard-socket-radio ps-wizard-see-more">
+                    <label>
+                        <div class="ps-wizard-see-more-icon"></div>
+                        <h4 class="ps-wizard-see-more-text">${seeMoreLabel}</h4>
+                    </label>
+                </div>
+            </div>
+        `;
+
+        $secondRow.append( seeMoreHtml );
+
+        jQuery( document ).on( 'click', '.ps-wizard-see-more', function( e ) {
+
+            e.preventDefault();
+
+            const isOpen = ! $hideableRows.first().hasClass( 'ps-hidden' );
+            const $text = jQuery( this ).find( '.ps-wizard-see-more-text' );
+
+            if ( isOpen ) {
+
+                $hideableRows.addClass( 'ps-hidden' );
+                $text.text( seeMoreLabel );
+                jQuery( '.ps-wizard' ).removeClass( 'ps-see-more-open' );
+
+                // When collapsing "See More", also clear any selected mailer
+                // and disable the Step 1 Continue button again.
+                jQuery( '.ps-wizard-socket-check' ).prop( 'checked', false );
+                jQuery( '.ps-wizard-socket-tick-container' ).css( { 'opacity': 0 } );
+                $step1ContinueBtn.addClass( 'ps-disabled' ).prop( 'disabled', true );
+
+            } else {
+
+                $hideableRows.removeClass( 'ps-hidden' );
+                $text.text( seeLessLabel );
+                jQuery( '.ps-wizard' ).addClass( 'ps-see-more-open' );
+
+            }
+
+        } );
+
+    };
+
+    initMailerSeeMore();
+
+    // Initially disable Step 1 "Continue" button until a mailer is selected
+    const $step1ContinueBtn = jQuery( '.ps-wizard-step-1 .ps-wizard-next-btn[data-step="1"]' );
+    $step1ContinueBtn.addClass( 'ps-disabled' ).prop( 'disabled', true );
+
+    // Enable/disable Step 1 button when a mailer is (de)selected
+    jQuery( document ).on( 'change', '.ps-wizard-socket-check', function() {
+
+        const hasSelection = jQuery( '.ps-wizard-socket-check' ).is( ':checked' );
+
+        if ( hasSelection ) {
+            $step1ContinueBtn.removeClass( 'ps-disabled' ).prop( 'disabled', false );
+        } else {
+            $step1ContinueBtn.addClass( 'ps-disabled' ).prop( 'disabled', true );
+        }
+
+    } );
+
 	   var enabled_gmail = jQuery('.ps-enable-gmail-one-click').is(':checked');
         if (enabled_gmail) {
            jQuery('.gmail_api-outer').addClass('gmail-enabled');
@@ -288,6 +466,13 @@ jQuery( document ).ready(function() {
         e.preventDefault();
 
         var stepID = jQuery( this ).data( 'step' );
+
+        // If this is the Step 1 "Continue" button and it's disabled,
+        // do not allow navigation.
+        if ( stepID == 1 && jQuery( this ).hasClass( 'ps-disabled' ) ) {
+            return;
+        }
+
         var selectedSocket = jQuery( '.ps-wizard-socket-check:checked' ).val();
         jQuery('.ps-wizard-step-1').attr('data-socket', selectedSocket);
         
@@ -315,6 +500,22 @@ jQuery( document ).ready(function() {
         e.preventDefault();
 
         var stepID = jQuery( this ).data( 'step' );
+
+        // When attempting to go to Step 2 directly from the sidebar,
+        // enforce the same validation as the "Continue" button.
+        // If no mailer is selected, stay on Step 1 and show the error.
+        if ( stepID == 2 ) {
+
+            var hasSelection = jQuery( '.ps-wizard-socket-check' ).is( ':checked' );
+
+            if ( ! hasSelection ) {
+
+                jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${PostSMTPWizard.Step1E1}` );
+                return;
+
+            }
+
+        }
 
         if( stepID == 1 ) {
 

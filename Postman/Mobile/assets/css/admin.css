@@ -40,7 +40,7 @@
 }
 
 .ps-mobile-notice-content span {
-    color: #12d726;
+    color: #00B888;
 }
 .ps-mobile-notice-content{
     margin-left: 8px;
@@ -78,7 +78,7 @@
 }
 .ps-app-download-button {
     width: 140px;
-    background-color: #F9AA39;
+    background-color: #fff;
     border-radius: 4px;
     padding: 4px;
     text-align: center;
