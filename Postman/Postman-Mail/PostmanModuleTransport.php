@@ -220,7 +220,13 @@ abstract class PostmanAbstractModuleTransport implements PostmanModuleTransport 
 		return PostmanOptions::getInstance ()->getEnvelopeSender ();
 	}
 	public function isEmailValidationSupported() {
-		return ! PostmanOptions::getInstance ()->isEmailValidationDisabled ();
+		$disabled = PostmanOptions::getInstance()->isEmailValidationDisabled();
+	
+		if ( $disabled ) {
+			return false; // validation is OFF
+		}
+	
+		return true; // validation is ON
 	}
 	
 	/**
