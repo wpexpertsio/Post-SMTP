@@ -54,6 +54,7 @@ class Postman_Email_Tester {
         $email  = sanitize_email( $_POST['email'] ?? '' );
         $socket = sanitize_text_field( $_POST['socket'] ?? '' );
         $apikey = sanitize_text_field( $_POST['apikey'] ?? '' );
+        $from_email = sanitize_email( $_POST['from'] ?? '' );
         $args = array(
             'method'  => WP_REST_Server::READABLE,
             'headers' => array(
@@ -68,7 +69,7 @@ class Postman_Email_Tester {
         }
    
         if ( $this->requires_test_api_verification( $socket ) ) {
-            $this->handle_sockets_check( $email, $args, $socket  );
+            $this->handle_sockets_check( $from_email, $args, $socket  );
         } else {
             $this->handle_legacy_test( $email, $args );
         }
@@ -78,6 +79,19 @@ class Postman_Email_Tester {
      * Handles modern auto-verification test logic.
      */
     private function handle_sockets_check( $email, $args, $socket ) {
+
+        // Check if it's Gmail API or Office API with default domains
+        if ( $this->is_default_domain_provider( $email, $socket ) ) {
+            // Return success directly for default domains
+            $success_body = json_encode( array(
+                'success' => true,
+                'message' => 'Test email verification skipped for default domain provider',
+                'provider' => $socket,
+                'email_domain' => $this->get_email_domain( $email )
+            ) );
+            $this->send_success_response( 'default_mailer', $success_body );
+            return;
+        }
 
         $verify_response = wp_remote_post( "{$this->base_url}/email-auth-check?test_email={$email}&selector={$socket}", $args );
         $verify_code     = wp_remote_retrieve_response_code( $verify_response );
@@ -179,10 +193,72 @@ class Postman_Email_Tester {
             'mandrill_api',
             'sparkpost_api',
             'smtp2go_api',
-            'sendpulse_api'
+            'sendpulse_api',
+            'gmail_api',
+            'office365_api',
+            'smtp'
         );
 
         return in_array( $provider, $providers_requiring_test_api, true );
+    }
+
+    /**
+     * Check if the provider is Gmail API or Office API with default email domains.
+     *
+     * @param string $email The email address to check.
+     * @param string $socket The provider/socket identifier.
+     * @return bool True if it's a default domain provider that should skip endpoint verification.
+     */
+    private function is_default_domain_provider( $email, $socket ) {
+        $email_domain = $this->get_email_domain( $email );
+        
+        // Gmail API default domains
+        $gmail_default_domains = array(
+            'gmail.com',
+            'googlemail.com'
+        );
+        
+        // Office/Outlook API default domains
+        $office_default_domains = array(
+            'outlook.com',
+            'outlook.co.uk',
+            'outlook.fr',
+            'outlook.de',
+            'outlook.jp',
+            'hotmail.com',
+            'hotmail.co.uk',
+            'hotmail.fr',
+            'hotmail.de',
+            'hotmail.it',
+            'live.com',
+            'live.co.uk',
+            'live.fr',
+            'live.de',
+            'msn.com'
+        );
+
+        // Check Gmail API with default domains
+        if ( in_array( $socket, array( 'gmail_api' ) ) && in_array( $email_domain, $gmail_default_domains ) ) {
+            return true;
+        }
+
+        // Check Office API with default domains
+        if ( in_array( $socket, array( 'office365_api' ) ) && in_array( $email_domain, $office_default_domains ) ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Extract the domain part from an email address.
+     *
+     * @param string $email The email address.
+     * @return string The domain part of the email address.
+     */
+    private function get_email_domain( $email ) {
+        $parts = explode( '@', $email );
+        return isset( $parts[1] ) ? strtolower( trim( $parts[1] ) ) : '';
     }
 
 
