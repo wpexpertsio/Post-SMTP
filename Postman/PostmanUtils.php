@@ -265,11 +265,19 @@ class PostmanUtils {
 
 	static function deleteLockFile( $tempDirectory = null ) {
 		$path = PostmanUtils::calculateTemporaryLockPath( $tempDirectory );
-		$success = file_exists($path) ? @unlink($path) : true;
-		if ( PostmanUtils::$logger->isTrace() ) {
-			PostmanUtils::$logger->trace( sprintf( 'Deleting file %s : %s', $path, $success ) );
+
+		if ( file_exists( $path ) ) {
+			$success = @unlink( $path );
+			if (PostmanUtils::$logger->isTrace()) {
+				PostmanUtils::$logger->trace( sprintf( 'Deleting file %s : %s', $path, $success ) );
+			}
+			return $success;
+		} else {
+			if (PostmanUtils::$logger->isTrace()) {
+				PostmanUtils::$logger->trace( sprintf( 'Lock file %s does not exist.', $path ) );
+			}
+			return false;
 		}
-		return $success;
 	}
 	static function createLockFile( $tempDirectory = null ) {
 		if ( self::lockFileExists() ) {
