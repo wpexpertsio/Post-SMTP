@@ -169,9 +169,15 @@ jQuery( document ).ready(function() {
 
     initMailerSeeMore();
 
-    // Initially disable Step 1 "Continue" button until a mailer is selected
+    // Step 1 "Continue" button - enable if a mailer is already selected.
     const $step1ContinueBtn = jQuery( '.ps-wizard-step-1 .ps-wizard-next-btn[data-step="1"]' );
-    $step1ContinueBtn.addClass( 'ps-disabled' ).prop( 'disabled', true );
+    const hasInitialSelection = jQuery( '.ps-wizard-socket-check' ).is( ':checked' );
+
+    if ( hasInitialSelection ) {
+        $step1ContinueBtn.removeClass( 'ps-disabled' ).prop( 'disabled', false );
+    } else {
+        $step1ContinueBtn.addClass( 'ps-disabled' ).prop( 'disabled', true );
+    }
 
     // Enable/disable Step 1 button when a mailer is (de)selected
     jQuery( document ).on( 'change', '.ps-wizard-socket-check', function() {

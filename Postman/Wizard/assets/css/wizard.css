@@ -73,7 +73,7 @@
 }
 
 .ps-wizard-footer {
-  background: #fff;
+  /* background: #fff; */
   padding: 17px 0;
 }
 
@@ -560,11 +560,11 @@
 }
 
 .ps-wizard-error {
-  color: red;
+  color: red !important;
 }
 
 .ps-wizard-success {
-  color: green;
+  color: green !important;
 }
 
 .ps-wizard-error,
@@ -1212,4 +1212,91 @@ span.ps-wizard-line:after {
   color: #214A72;
   font-size: 12px;
   font-weight: 600;
+}
+
+.ps-home-middle-right {
+  height: 250px !important;
+  border-radius: 8.225px !important;
+  position: relative;
+  overflow: visible;
+}
+
+.ps-mobile-notice-content {
+  padding: 30px 30px 0px 0px;
+}
+
+
+.ps-mobile-feature-left {
+  font-size: 10.58px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.ps-mobile-feature-right {
+  font-size: 10.58px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.ps-app-download-button {
+  width: 130.622px;
+  height: 36.74px;
+}
+
+.ps-app-download-button a {
+  font-size: 5px;
+}
+
+.ps-mobile-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  margin-right: 4px;
+}
+.ps-mobile-check svg {
+  display: block;
+}
+
+.ps-app-download-button {
+  width: 95px !important;
+  padding: 2px !important;
+  margin-top: 0px !important;
+  background-color: #fff;
+  border-radius: 4px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+}
+.ps-mobile-notice-content-title{
+  color: #214A72 !important;
+  font-family: Poppins;
+  font-size: 13.16px !important;;
+  font-style: normal;
+  font-weight: 700 !important;;
+  line-height: 150%; /* 19.74px */
+}
+.ps-app-download-button a{
+  padding-top: 5px;
+}
+
+.ps-sprinkle {
+  position: absolute;
+  width: 80px;
+  height: auto;
+  pointer-events: none;
+}
+.ps-sprinkle-left {
+  left: -50px;
+  top: 150px;
+}
+
+.ps-sprinkle-right {
+  right: -35px;
+  top: 190px;
+}
+.ps-sprinkle-bottom {
+  left: 50%;
+  bottom: -70px;
+  transform: translateX(-50%);
 }

@@ -398,37 +398,121 @@ class Post_SMTP_New_Wizard {
                                             esc_url( 'https://wordpress.org/support/plugin/post-smtp/reviews/#new-post' ),
                                             __( 'Leave a review here.', 'post-smtp' )
                                         ) ?></p>
-                                        <div class="ps-home-middle-right" style="background-image: url(<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/mobile-banner.png' ); ?>); float: right;">
+                                        <div class="ps-home-middle-right" style="background: #E2E9FB;">
+                                            <img class="ps-sprinkle ps-sprinkle-left" src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/sprinkles.png' ); ?>" alt="">
+                                            <img class="ps-sprinkle ps-sprinkle-right" src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/sprinkles.png' ); ?>" alt="">
+                                            <img class="ps-sprinkle ps-sprinkle-bottom" src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/sprinkles.png' ); ?>" alt="">
                                             <div class="ps-mobile-notice-content">
-                                                <p><?php _e( 'The First & Only WP SMTP Plugin With a Mobile App', 'post-smtp' ); ?></p>
+                                                <img src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/success-img.svg' ); ?>" >
+                                            </div> 
+                                            <div class="ps-mobile-notice-content">
+                                                <p class="ps-mobile-notice-content-title"><?php _e( 'The First & Only WP SMTP Plugin With a Mobile App', 'post-smtp' ); ?></p>
                                                 <div class="ps-mobile-notice-features">
                                                     <div class="ps-mobile-feature-left">
-                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                    <span class="ps-mobile-check">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                                            <g clip-path="url(#clip0_1886_7278)">
+                                                                <path d="M8.40768 4.41333V4.75329C8.40723 5.54157 8.15198 6.30859 7.67999 6.93995C7.208 7.57131 6.54457 8.03318 5.78864 8.25669C5.03271 8.48019 4.22479 8.45335 3.48536 8.18017C2.74592 7.90699 2.11461 7.40211 1.68557 6.74081C1.25652 6.07952 1.05274 5.29726 1.1046 4.51068C1.15647 3.72411 1.46121 2.97538 1.97337 2.37615C2.48553 1.77692 3.17768 1.3593 3.94658 1.18558C4.71548 1.01186 5.51993 1.09134 6.23997 1.41217"
+                                                                stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path d="M8.77395 1.46289L4.7529 5.48394L3.65625 4.38729" stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_1886_7278">
+                                                                    <rect width="9.86985" height="9.86985" fill="white" />
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                        </span>
                                                         <?php _e( 'Easy Email Tracking', 'post-smtp' ) ?>
                                                         <br>
-                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                        <span class="ps-mobile-check">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                                            <g clip-path="url(#clip0_1886_7278)">
+                                                                <path d="M8.40768 4.41333V4.75329C8.40723 5.54157 8.15198 6.30859 7.67999 6.93995C7.208 7.57131 6.54457 8.03318 5.78864 8.25669C5.03271 8.48019 4.22479 8.45335 3.48536 8.18017C2.74592 7.90699 2.11461 7.40211 1.68557 6.74081C1.25652 6.07952 1.05274 5.29726 1.1046 4.51068C1.15647 3.72411 1.46121 2.97538 1.97337 2.37615C2.48553 1.77692 3.17768 1.3593 3.94658 1.18558C4.71548 1.01186 5.51993 1.09134 6.23997 1.41217"
+                                                                stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path d="M8.77395 1.46289L4.7529 5.48394L3.65625 4.38729" stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_1886_7278">
+                                                                    <rect width="9.86985" height="9.86985" fill="white" />
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                        </span>
                                                         <?php _e( 'Quickly View Error Details', 'post-smtp' ) ?>
                                                         <br>
-                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                        <span class="ps-mobile-check">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                                            <g clip-path="url(#clip0_1886_7278)">
+                                                                <path d="M8.40768 4.41333V4.75329C8.40723 5.54157 8.15198 6.30859 7.67999 6.93995C7.208 7.57131 6.54457 8.03318 5.78864 8.25669C5.03271 8.48019 4.22479 8.45335 3.48536 8.18017C2.74592 7.90699 2.11461 7.40211 1.68557 6.74081C1.25652 6.07952 1.05274 5.29726 1.1046 4.51068C1.15647 3.72411 1.46121 2.97538 1.97337 2.37615C2.48553 1.77692 3.17768 1.3593 3.94658 1.18558C4.71548 1.01186 5.51993 1.09134 6.23997 1.41217"
+                                                                stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path d="M8.77395 1.46289L4.7529 5.48394L3.65625 4.38729" stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_1886_7278">
+                                                                    <rect width="9.86985" height="9.86985" fill="white" />
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                        </span>
                                                         <?php _e( 'Easy Email Tracking', 'post-smtp' ) ?>
                                                     </div>
                                                     <div class="ps-mobile-feature-right">
-                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                         <span class="ps-mobile-check">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                                            <g clip-path="url(#clip0_1886_7278)">
+                                                                <path d="M8.40768 4.41333V4.75329C8.40723 5.54157 8.15198 6.30859 7.67999 6.93995C7.208 7.57131 6.54457 8.03318 5.78864 8.25669C5.03271 8.48019 4.22479 8.45335 3.48536 8.18017C2.74592 7.90699 2.11461 7.40211 1.68557 6.74081C1.25652 6.07952 1.05274 5.29726 1.1046 4.51068C1.15647 3.72411 1.46121 2.97538 1.97337 2.37615C2.48553 1.77692 3.17768 1.3593 3.94658 1.18558C4.71548 1.01186 5.51993 1.09134 6.23997 1.41217"
+                                                                stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path d="M8.77395 1.46289L4.7529 5.48394L3.65625 4.38729" stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_1886_7278">
+                                                                    <rect width="9.86985" height="9.86985" fill="white" />
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                        </span>
                                                         <?php _e( 'Get Email Preview', 'post-smtp' ) ?>                                               
                                                         <br>
-                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                        <span class="ps-mobile-check">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                                            <g clip-path="url(#clip0_1886_7278)">
+                                                                <path d="M8.40768 4.41333V4.75329C8.40723 5.54157 8.15198 6.30859 7.67999 6.93995C7.208 7.57131 6.54457 8.03318 5.78864 8.25669C5.03271 8.48019 4.22479 8.45335 3.48536 8.18017C2.74592 7.90699 2.11461 7.40211 1.68557 6.74081C1.25652 6.07952 1.05274 5.29726 1.1046 4.51068C1.15647 3.72411 1.46121 2.97538 1.97337 2.37615C2.48553 1.77692 3.17768 1.3593 3.94658 1.18558C4.71548 1.01186 5.51993 1.09134 6.23997 1.41217"
+                                                                stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path d="M8.77395 1.46289L4.7529 5.48394L3.65625 4.38729" stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_1886_7278">
+                                                                    <rect width="9.86985" height="9.86985" fill="white" />
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                        </span>
                                                         <?php _e( 'Resend Failed Emails', 'post-smtp' ) ?>                                                    
                                                         <br>
-                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                        <span class="ps-mobile-check">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                                            <g clip-path="url(#clip0_1886_7278)">
+                                                                <path d="M8.40768 4.41333V4.75329C8.40723 5.54157 8.15198 6.30859 7.67999 6.93995C7.208 7.57131 6.54457 8.03318 5.78864 8.25669C5.03271 8.48019 4.22479 8.45335 3.48536 8.18017C2.74592 7.90699 2.11461 7.40211 1.68557 6.74081C1.25652 6.07952 1.05274 5.29726 1.1046 4.51068C1.15647 3.72411 1.46121 2.97538 1.97337 2.37615C2.48553 1.77692 3.17768 1.3593 3.94658 1.18558C4.71548 1.01186 5.51993 1.09134 6.23997 1.41217"
+                                                                stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path d="M8.77395 1.46289L4.7529 5.48394L3.65625 4.38729" stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_1886_7278">
+                                                                    <rect width="9.86985" height="9.86985" fill="white" />
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                        </span>
                                                         <?php _e( 'Support multiple sites', 'post-smtp' ) ?>                                                      
                                                     </div>
                                                 </div>
-                                                <div style="display: flex; margin-top: 15px;">
+                                                <div style="display: flex;">
                                                     <div class="ps-app-download-button">
-                                                        <a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26utm_campaign%3Dplugin%26anid%3Dadmob" target="_blank"><img src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/android-icon.png' ); ?>"><div><p style="font-size: 12px;">Get it On</p><p style="font-size: 14px; font-weight: 750">Google Play</p></div></a>
+                                                        <a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26utm_campaign%3Dplugin%26anid%3Dadmob" target="_blank"><img src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/androidicon.png' ); ?>"><div><p style="font-size: 8px;">Get it On</p><p style="font-size: 9px; font-weight: 750">Google Play</p></div></a>
                                                     </div>
                                                     <div class="ps-app-download-button">
-                                                        <a href="https://apps.apple.com/us/app/post-smtp/id6473368559?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin" target="_blank"><img src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/apple-icon.png' ); ?>"><div><p style="font-size: 12px;">Download on the</p><p style="font-size: 14px; font-weight: 750;">App Store</p></div></a>
+                                                        <a href="https://apps.apple.com/us/app/post-smtp/id6473368559?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin" target="_blank"><img src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/apple-icon.png' ); ?>"><div><p style="font-size: 8px;">Download on the</p><p style="font-size: 9px; font-weight: 750;">App Store</p></div></a>
                                                     </div>
                                                 </div>
                                             </div>
