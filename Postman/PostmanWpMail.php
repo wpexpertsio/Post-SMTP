@@ -46,42 +46,119 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// initialize for sending
 			$this->init();
 
-		// build the message
-		$postmanMessage = $this->processWpMailCall( $to, $subject, $message, $headers, $attachments );
+			// build the message
+			$postmanMessage = $this->processWpMailCall( $to, $subject, $message, $headers, $attachments );
 
-		// build the email log entry
-		$log = new PostmanEmailLog();
-		
-		// Merge forced recipients with original $to for logging
-		$options = PostmanOptions::getInstance();
-		$forcedTo = $options->getForcedToRecipients();
-		$allRecipients = array();
-		
-		// Add original recipients
-		if ( is_array( $to ) ) {
-			$allRecipients = array_merge( $allRecipients, $to );
-		} elseif ( ! empty( $to ) ) {
-			// Split comma-separated string into array
-			$allRecipients = array_merge( $allRecipients, array_map( 'trim', explode( ',', $to ) ) );
-		}
-		
-		// Add forced recipients if set
-		if ( ! empty( $forcedTo ) ) {
-			// Split comma-separated string into array
-			$forcedRecipients = array_map( 'trim', explode( ',', $forcedTo ) );
-			$allRecipients = array_merge( $allRecipients, $forcedRecipients );
-		}
-		
-		// Remove duplicates and empty values, then convert back to comma-separated string
-		$allRecipients = array_unique( array_filter( $allRecipients ) );
-		$log->originalTo = implode( ', ', $allRecipients );
-		
-		$log->originalSubject = $subject;
-		$log->originalMessage = $message;
-		$log->originalHeaders = $headers;
+			// build the email log entry
+		//	$log = new PostmanEmailLog();
+			
+			// Merge forced recipients with original $to for logging
+			// $options = PostmanOptions::getInstance();
+			// $forcedTo = $options->getForcedToRecipients();
+			// $allRecipients = array();
+			
+			// // Add original recipients
+			// if ( is_array( $to ) ) {
+			// 	$allRecipients = array_merge( $allRecipients, $to );
+			// } elseif ( ! empty( $to ) ) {
+			// 	// Split comma-separated string into array
+			// 	$allRecipients = array_merge( $allRecipients, array_map( 'trim', explode( ',', $to ) ) );
+			// }
+			
+			// // Add forced recipients if set
+			// if ( ! empty( $forcedTo ) ) {
+			// 	// Split comma-separated string into array
+			// 	$forcedRecipients = array_map( 'trim', explode( ',', $forcedTo ) );
+			// 	$allRecipients = array_merge( $allRecipients, $forcedRecipients );
+			// }
+			
+			// // Remove duplicates and empty values, then convert back to comma-separated string
+			// $allRecipients = array_unique( array_filter( $allRecipients ) );
+			// $log->originalTo = implode( ', ', $allRecipients );
+			
+			// $log->originalSubject = $subject;
+			// $log->originalMessage = $message;
+			// $log->originalHeaders = $headers;
+
+			/*
+			 * Build the email log entry from the *final* message, after all wp_mail
+			 * filters and header parsing have been applied.
+			 *
+			 * This makes the log reflect what was actually sent to the recipient
+			 * (subject, body, headers, recipients), instead of the raw wp_mail()
+			 * arguments.
+			 */
+			$log = new PostmanEmailLog();
+			$log->originalTo      = $this->format_recipients_for_log( $postmanMessage->getToRecipients() );
+			$log->originalSubject = $postmanMessage->getSubject();
+			$log->originalMessage = $postmanMessage->getBody();
+			$log->originalHeaders = $this->flatten_headers_for_log( $postmanMessage );
 
 			// send the message and return the result
 			return $this->sendMessage( $postmanMessage, $log );
+		}
+
+		/**
+		 * Convert PostmanEmailAddress recipients to a string suitable for logging
+		 * and for passing back into wp_mail() when resending.
+		 *
+		 * @param array $recipients Array of PostmanEmailAddress objects.
+		 *
+		 * @return string Comma separated list of recipients in "Name <email>" format.
+		 */
+		private function format_recipients_for_log( $recipients ) {
+			if ( empty( $recipients ) || ! is_array( $recipients ) ) {
+				return '';
+			}
+
+			$emails = array();
+
+			foreach ( $recipients as $recipient ) {
+				if ( $recipient instanceof PostmanEmailAddress ) {
+					$emails[] = $recipient->format();
+				}
+			}
+
+			return implode( ', ', $emails );
+		}
+
+		/**
+		 * Build a wp_mail()-compatible headers string from the PostmanMessage.
+		 *
+		 * Historically we stored the original $headers argument exactly as it was
+		 * passed into wp_mail(). To keep resend behaviour working while still
+		 * reflecting the final email, we reconstruct the headers from the parsed
+		 * PostmanMessage structure.
+		 *
+		 * @param PostmanMessage $message
+		 *
+		 * @return string Header lines separated by "\r\n".
+		 */
+		private function flatten_headers_for_log( PostmanMessage $message ) {
+			$lines = array();
+
+			// Generic headers collected during parsing (X-*, custom headers, etc).
+			foreach ( (array) $message->getHeaders() as $header ) {
+				if ( isset( $header['name'], $header['content'] ) && '' !== trim( $header['content'] ) ) {
+					$lines[] = trim( $header['name'] ) . ': ' . trim( $header['content'] );
+				}
+			}
+
+			// Explicit Reply-To header if present.
+			if ( $message->getReplyTo() instanceof PostmanEmailAddress ) {
+				$lines[] = 'Reply-To: ' . $message->getReplyTo()->format();
+			}
+
+			// Content-Type + charset.
+			if ( $message->getContentType() ) {
+				$header = 'Content-Type: ' . $message->getContentType();
+				if ( $message->getCharset() ) {
+					$header .= '; charset=' . $message->getCharset();
+				}
+				$lines[] = $header;
+			}
+
+			return implode( "\r\n", array_unique( $lines ) );
 		}
 
         /**
