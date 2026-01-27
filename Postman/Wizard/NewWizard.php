@@ -399,9 +399,6 @@ class Post_SMTP_New_Wizard {
                                             __( 'Leave a review here.', 'post-smtp' )
                                         ) ?></p>
                                         <div class="ps-home-middle-right" style="background: #E2E9FB;">
-                                            <img class="ps-sprinkle ps-sprinkle-left" src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/sprinkles.png' ); ?>" alt="">
-                                            <img class="ps-sprinkle ps-sprinkle-right" src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/sprinkles.png' ); ?>" alt="">
-                                            <img class="ps-sprinkle ps-sprinkle-bottom" src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/sprinkles.png' ); ?>" alt="">
                                             <div class="ps-mobile-notice-content">
                                                 <img src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/success-img.svg' ); ?>" >
                                             </div> 
@@ -643,8 +640,23 @@ class Post_SMTP_New_Wizard {
         $office365_icon_url = POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.png';
 		$localized['office365_icon'] = $office365_icon_url; 
 
-        wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), rand() );
-        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), rand() );
+        wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), POST_SMTP_VER  );
+        // and place it at that path so this enqueue works.
+        wp_enqueue_script(
+            'post-smtp-party',
+            POST_SMTP_URL . '/Postman/Wizard/assets/js/party.min.js',
+            array(),
+            POST_SMTP_VER ,
+            true
+        );
+
+        wp_enqueue_script(
+            'post-smtp-wizard',
+            POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js',
+            array( 'jquery', 'post-smtp-party' ),
+            POST_SMTP_VER,
+            true
+        );
         wp_localize_script( 'post-smtp-wizard', 'PostSMTPWizard', $localized );
 
     }

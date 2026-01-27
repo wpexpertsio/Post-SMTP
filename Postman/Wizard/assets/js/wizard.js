@@ -1,4 +1,5 @@
 jQuery( document ).ready(function() {
+    let finalStepConfettiShown = false;
     jQuery( '.ps-wizard-socket-check:checked' ).siblings( '.ps-wizard-socket-tick-container' ).css( { 'opacity': 1 } );
 
     jQuery( document ).on( 'click', '.ps-wizard-socket-radio label', function() {
@@ -224,6 +225,21 @@ jQuery( document ).ready(function() {
             var stepID = jQuery( tableRow ).find( '.dashicons-edit' ).data( 'step' );
             jQuery( '.ps-wizard-step' ).hide();
             jQuery( `.ps-wizard-step-${stepID}` ).fadeIn( 'slow' );
+
+            // When we arrive on the final step for the first time,
+            // trigger a short confetti animation on the mobile app banner.
+            if ( stepID === 4 && !finalStepConfettiShown && typeof party !== 'undefined' ) {
+
+                const target = jQuery( '.ps-home-middle-right' )[0] || jQuery( `.ps-wizard-step-${stepID}` )[0];
+
+                if ( target ) {
+                    party.confetti( target, {
+                        count: party.variation.range( 20, 80 ),
+                        size: party.variation.range( 0.8, 1.2 ),
+                    } );
+                    finalStepConfettiShown = true;
+                }
+            }
 
         }
 

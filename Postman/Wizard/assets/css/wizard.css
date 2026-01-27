@@ -1279,24 +1279,3 @@ span.ps-wizard-line:after {
 .ps-app-download-button a{
   padding-top: 5px;
 }
-
-.ps-sprinkle {
-  position: absolute;
-  width: 80px;
-  height: auto;
-  pointer-events: none;
-}
-.ps-sprinkle-left {
-  left: -50px;
-  top: 150px;
-}
-
-.ps-sprinkle-right {
-  right: -35px;
-  top: 190px;
-}
-.ps-sprinkle-bottom {
-  left: 50%;
-  bottom: -70px;
-  transform: translateX(-50%);
-}
