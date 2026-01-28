@@ -109,6 +109,17 @@ class Post_SMTP_MainWP_Child_Request {
 		if ( ! empty( $body_raw ) ) {
 			$decoded = json_decode( $body_raw, true );
 
+			// In some environments PHP warnings/notices (HTML) are echoed before the JSON body.
+			// If the first decode fails, try to locate the first \"{\" and decode from there so
+			// we can still read the JSON structure returned by wp_send_json_*().
+			if ( ! is_array( $decoded ) ) {
+				$json_start = strpos( $body_raw, '{' );
+				if ( false !== $json_start ) {
+					$maybe_json = substr( $body_raw, $json_start );
+					$decoded    = json_decode( $maybe_json, true );
+				}
+			}
+
 			if ( is_array( $decoded ) && array_key_exists( 'success', $decoded ) ) {
 				$success = (bool) $decoded['success'];
 
