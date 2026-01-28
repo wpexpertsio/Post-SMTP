@@ -39,7 +39,9 @@ class Post_SMTP_New_Wizard {
             'id'            =>  array()
         ),
         'p'             =>  array(),
-        'h3'            =>  array(),
+        'h3'            =>  array(
+            'class'         =>  array(),
+        ),
         'select'        =>  array(
             'name'          =>  array()
         ),
@@ -62,25 +64,29 @@ class Post_SMTP_New_Wizard {
 
         $this->socket_sequence = array(
             'gmail_api',
-            'resend_api',
-            'sendinblue_api',
-            'mailtrap_api',
             'sendgrid_api',
-            'mailgun_api',
-            'elasticemail_api',
-            'mandrill_api',
+            'sendinblue_api',
             'postmark_api',
-            'sparkpost_api',
-            'mailjet_api',
-            'smtp2go_api',
-            'sendpulse_api',
+            'maileroo_api',
+            'mailtrap_api',
             'mailersend_api',
             'emailit_api',
-            'maileroo_api',
-            'sweego_api'
+            'sweego_api',
+            'resend_api',
+            'elasticemail_api',
+            'mailgun_api',
+            'smtp2go_api',
+            'mandrill_api',
+            'sparkpost_api',
+            'mailjet_api',
+            'sendpulse_api',
             
         );
         
+        
+        $this->socket_sequence[] = 'smtp';
+        $this->socket_sequence[] = 'default';
+
         if( !is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' ) ) {
 
             $this->socket_sequence[] = 'office365_api';
@@ -88,9 +94,6 @@ class Post_SMTP_New_Wizard {
             $this->socket_sequence[] = 'zohomail_api';
 
         }
-
-        $this->socket_sequence[] = 'smtp';
-        $this->socket_sequence[] = 'default';
         
         add_filter( 'post_smtp_legacy_wizard', '__return_false' );
         add_action( 'post_smtp_new_wizard', array( $this, 'load_wizard' ) );
@@ -137,10 +140,15 @@ class Post_SMTP_New_Wizard {
  
         
         <div class="wrap">
-            <div class="ps-wizard">
+            <div class="ps-wizard-top">
                 <div class="ps-logo">
                     <img src="<?php echo esc_attr( POST_SMTP_ASSETS ) . '/images/logos/post-smtp-logo-large.svg'; ?>" width="250px" />
                 </div>
+                <a href="<?php echo esc_url( admin_url() ); ?>" class="button ps-back-dashboard">
+                    <?php esc_html_e( 'Back to Dashboard', 'post-smtp' ); ?>
+                </a>
+            </div>
+            <div class="ps-wizard">
                 <div class="ps-wizard-outer <?php echo esc_attr( $socket ); ?>">
                     <div class="ps-wizard-section">
                         <div class="ps-wizard-nav">
@@ -167,25 +175,26 @@ class Post_SMTP_New_Wizard {
                                 <?php wp_nonce_field( 'post-smtp', 'security' );  ?>
                                 <div class="ps-wizard-screens-container">
                                     <div class="ps-wizard-step ps-wizard-step-1">
-                                        <p style="width: 70%; margin-bottom: 30px;"><?php echo esc_html__( 'Choose a mailer from the following options.', 'post-smtp' ); ?></p>
+                                        <p style="width: 100%; margin-bottom: 10px;color:#707070"><?php echo esc_html__( 'Which mailer would you like to use to send emails? Not sure which mailer to choose? Check out our complete mailer guide for details on each option.', 'post-smtp' ); ?></p>
                                         <div class="ps-wizard-sockets">      
                                         <?php
 
                                         $row  = 0;
+                                        $in_pro_row = false;
 
                                         $transports = array_merge( array_flip( $this->socket_sequence ), $transports );
                                         
                                         foreach( $transports as $key => $transport ) {
 
                                             $urls = array(
-                                                'default'           =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.png',
-                                                'smtp'              =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.png',
+                                                'default'           =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.svg',
+                                                'smtp'              =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.svg',
                                                 'gmail_api'         =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/gmail.png',
                                                 'mandrill_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mandrill.png',
                                                 'sendgrid_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendgrid.png',
                                                 'mailersend_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailersend.png',
                                                 'mailgun_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailgun.png',
-                                                'sendinblue_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/brevo.png',
+                                                'sendinblue_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/brevo.svg',
                                                 'mailtrap_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailtrap.png',
                                                 'postmark_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/postmark.png',
                                                 'sparkpost_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sparkpost.png',
@@ -264,7 +273,22 @@ class Post_SMTP_New_Wizard {
 
                                             }
 
-                                            if( $row >= 4 ) {
+                                            // When we hit the first PRO mailer, close the current
+                                            // sockets row and start a dedicated PRO row so all
+                                            // PRO mailers appear together on their own line.
+                                            if ( ! empty( $is_pro ) && ! $in_pro_row ) {
+
+                                                $in_pro_row = true;
+                                                $row = 0;
+                                                ?>
+                                                </div>
+                                                <div class="ps-wizard-sockets ps-wizard-sockets-pro">
+                                                <?php
+
+                                            }
+
+                                            // Regular (non‑PRO) mailers are grouped in rows of 4.
+                                            if( $row >= 4 && empty( $is_pro ) ) {
 
                                                 $row = 0;
 
@@ -303,21 +327,20 @@ class Post_SMTP_New_Wizard {
                                         }
                                         ?>
                                         </div>
-                                        <p style="width: 70%; margin-bottom: 30px;">
+                                        <p style="width: 70%; margin-bottom: 0px;color: #707070;">
                                         <?php echo sprintf(
-                                            '%1$s <i><a href="%2$s">%3$s</a></i>',
-                                            __( 'Need help in choosing one?', 'post-smtp' ),
+                                            '%1$s <i><a style="color: #707070;" href="%2$s">%3$s</a></i>',
+                                            __( 'Need help in choosing one? Check out our ', 'post-smtp' ),
                                             esc_url( admin_url( 'admin.php?page=postman-contact' ) ),
-                                            __( 'Check out our Mailer Guide.', 'post-smtp' )
+                                            __( ' Mailer Guide.', 'post-smtp' )
                                         ); ?>
                                         </p>
 
-                                        <p style="width: 70%; margin-bottom: 30px;">
+                                        <p style="width: 70%; margin-bottom: 30px;color: #707070;">
                                             <?php echo esc_html__( 'Did we miss out on what you are looking for? Feel free to suggest your Mailer.', 'post-smtp' ); ?>
                                         </p>
                                     </div>
                                     <div class="ps-wizard-step ps-wizard-step-2">
-                                        <a href="" data-step="1" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span>Back</a>
                                         <?php
                                         if( !empty( $this->sockets ) ) {
 
@@ -347,14 +370,13 @@ class Post_SMTP_New_Wizard {
                                         ?>
                                     </div>
                                     <div class="ps-wizard-step ps-wizard-step-3">
-                                        <a href="" data-step="2" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span><?php _e( 'Back', 'post-smtp' ) ?></a>
-                                        <p><?php _e( 'Send a test email message to check your SMTP mailer’s connection. If there is a problem, Post SMTP will give up after 60 seconds.', 'post-smtp' ); ?></p>
+                                        <p style="color: #707070;"><?php _e( 'This step allows you to send an email message for testing. If there is a problem, Post SMTP will give up after 60 seconds.', 'post-smtp' ); ?></p>
                                         <div class="ps-form-ui">
                                             <div class="ps-form-control">
                                                 <div><label><?php _e( 'Recipient Email Address', 'post-smtp' ) ?></label></div>
                                                 <input type="text" class="ps-test-to" required data-error="Enter Recipient Email Address" name="postman_test_options[test_email]" value="<?php echo esc_attr( wp_get_current_user()->user_email ); ?>" placeholder="Recipient Email Address">
                                                 <span class="ps-form-control-info"><?php _e( 'Enter the email address where you want to send a test email message.', 'post-smtp' ) ?></span>
-                                                <p class="ps-form-control-info"><?php _e( 'Are your WordPress emails getting broken? Here how you can ', 'post-smtp' ) ?> <a href="https://postmansmtp.com/fix-for-broken-emails/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank"><?php _e( 'fix Broken Emails', 'post-smtp' ) ?></a>.</p>
+                                                <p style="color: #B3B3B3;" class="ps-form-control-info"><?php _e( 'Are your WordPress emails getting broken? Here how you can ', 'post-smtp' ) ?> <a href="https://postmansmtp.com/fix-for-broken-emails/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank"><?php _e( 'fix Broken Emails', 'post-smtp' ) ?></a>.</p>
                                             </div>
                                             <button class="button button-primary ps-blue-btn ps-wizard-send-test-email" data-step="3"><?php _e( 'Send Test Email', 'post-smtp' ) ?> <span class="dashicons dashicons-email"></span></button>
                                             <div>
@@ -365,7 +387,7 @@ class Post_SMTP_New_Wizard {
                                         </div>
                                     </div>
                                     <div class="ps-wizard-step ps-wizard-step-4">
-                                        <h4>❤ <?php _e( 'Share Your Feedback', 'post-smtp' ) ?></h4>
+                                        <h4 class="ps-feedback-heading"><span class="ps-heart">❤</span><?php _e( 'Share Your Feedback', 'post-smtp' ) ?></h4>
                                         <p><?php 
                                         /**
                                          * Translators: %1$s Text, %2$s URL, %3$s URL Text
@@ -376,37 +398,118 @@ class Post_SMTP_New_Wizard {
                                             esc_url( 'https://wordpress.org/support/plugin/post-smtp/reviews/#new-post' ),
                                             __( 'Leave a review here.', 'post-smtp' )
                                         ) ?></p>
-                                        <div class="ps-home-middle-right" style="background-image: url(<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/mobile-banner.png' ) ?>); float: unset; width: 100%; height: 230px;">
+                                        <div class="ps-home-middle-right" style="background: #E2E9FB;">
                                             <div class="ps-mobile-notice-content">
-                                                <p><?php _e( 'Introducing NEW Post SMTP Mobile App' ); ?></p>
+                                                <img src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/success-img.svg' ); ?>" >
+                                            </div> 
+                                            <div class="ps-mobile-notice-content">
+                                                <p class="ps-mobile-notice-content-title"><?php _e( 'The First & Only WP SMTP Plugin With a Mobile App', 'post-smtp' ); ?></p>
                                                 <div class="ps-mobile-notice-features">
                                                     <div class="ps-mobile-feature-left">
-                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                    <span class="ps-mobile-check">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                                            <g clip-path="url(#clip0_1886_7278)">
+                                                                <path d="M8.40768 4.41333V4.75329C8.40723 5.54157 8.15198 6.30859 7.67999 6.93995C7.208 7.57131 6.54457 8.03318 5.78864 8.25669C5.03271 8.48019 4.22479 8.45335 3.48536 8.18017C2.74592 7.90699 2.11461 7.40211 1.68557 6.74081C1.25652 6.07952 1.05274 5.29726 1.1046 4.51068C1.15647 3.72411 1.46121 2.97538 1.97337 2.37615C2.48553 1.77692 3.17768 1.3593 3.94658 1.18558C4.71548 1.01186 5.51993 1.09134 6.23997 1.41217"
+                                                                stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path d="M8.77395 1.46289L4.7529 5.48394L3.65625 4.38729" stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_1886_7278">
+                                                                    <rect width="9.86985" height="9.86985" fill="white" />
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                        </span>
                                                         <?php _e( 'Easy Email Tracking', 'post-smtp' ) ?>
                                                         <br>
-                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                        <span class="ps-mobile-check">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                                            <g clip-path="url(#clip0_1886_7278)">
+                                                                <path d="M8.40768 4.41333V4.75329C8.40723 5.54157 8.15198 6.30859 7.67999 6.93995C7.208 7.57131 6.54457 8.03318 5.78864 8.25669C5.03271 8.48019 4.22479 8.45335 3.48536 8.18017C2.74592 7.90699 2.11461 7.40211 1.68557 6.74081C1.25652 6.07952 1.05274 5.29726 1.1046 4.51068C1.15647 3.72411 1.46121 2.97538 1.97337 2.37615C2.48553 1.77692 3.17768 1.3593 3.94658 1.18558C4.71548 1.01186 5.51993 1.09134 6.23997 1.41217"
+                                                                stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path d="M8.77395 1.46289L4.7529 5.48394L3.65625 4.38729" stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_1886_7278">
+                                                                    <rect width="9.86985" height="9.86985" fill="white" />
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                        </span>
                                                         <?php _e( 'Quickly View Error Details', 'post-smtp' ) ?>
                                                         <br>
-                                                        <span class="dashicons dashicons-yes-alt"></span>
-                                                        <?php _e( 'Easy Email Tracking', 'post-smtp' ) ?>                                                   			
+                                                        <span class="ps-mobile-check">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                                            <g clip-path="url(#clip0_1886_7278)">
+                                                                <path d="M8.40768 4.41333V4.75329C8.40723 5.54157 8.15198 6.30859 7.67999 6.93995C7.208 7.57131 6.54457 8.03318 5.78864 8.25669C5.03271 8.48019 4.22479 8.45335 3.48536 8.18017C2.74592 7.90699 2.11461 7.40211 1.68557 6.74081C1.25652 6.07952 1.05274 5.29726 1.1046 4.51068C1.15647 3.72411 1.46121 2.97538 1.97337 2.37615C2.48553 1.77692 3.17768 1.3593 3.94658 1.18558C4.71548 1.01186 5.51993 1.09134 6.23997 1.41217"
+                                                                stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path d="M8.77395 1.46289L4.7529 5.48394L3.65625 4.38729" stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_1886_7278">
+                                                                    <rect width="9.86985" height="9.86985" fill="white" />
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                        </span>
+                                                        <?php _e( 'Easy Email Tracking', 'post-smtp' ) ?>
                                                     </div>
                                                     <div class="ps-mobile-feature-right">
-                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                         <span class="ps-mobile-check">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                                            <g clip-path="url(#clip0_1886_7278)">
+                                                                <path d="M8.40768 4.41333V4.75329C8.40723 5.54157 8.15198 6.30859 7.67999 6.93995C7.208 7.57131 6.54457 8.03318 5.78864 8.25669C5.03271 8.48019 4.22479 8.45335 3.48536 8.18017C2.74592 7.90699 2.11461 7.40211 1.68557 6.74081C1.25652 6.07952 1.05274 5.29726 1.1046 4.51068C1.15647 3.72411 1.46121 2.97538 1.97337 2.37615C2.48553 1.77692 3.17768 1.3593 3.94658 1.18558C4.71548 1.01186 5.51993 1.09134 6.23997 1.41217"
+                                                                stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path d="M8.77395 1.46289L4.7529 5.48394L3.65625 4.38729" stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_1886_7278">
+                                                                    <rect width="9.86985" height="9.86985" fill="white" />
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                        </span>
                                                         <?php _e( 'Get Email Preview', 'post-smtp' ) ?>                                               
                                                         <br>
-                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                        <span class="ps-mobile-check">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                                            <g clip-path="url(#clip0_1886_7278)">
+                                                                <path d="M8.40768 4.41333V4.75329C8.40723 5.54157 8.15198 6.30859 7.67999 6.93995C7.208 7.57131 6.54457 8.03318 5.78864 8.25669C5.03271 8.48019 4.22479 8.45335 3.48536 8.18017C2.74592 7.90699 2.11461 7.40211 1.68557 6.74081C1.25652 6.07952 1.05274 5.29726 1.1046 4.51068C1.15647 3.72411 1.46121 2.97538 1.97337 2.37615C2.48553 1.77692 3.17768 1.3593 3.94658 1.18558C4.71548 1.01186 5.51993 1.09134 6.23997 1.41217"
+                                                                stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path d="M8.77395 1.46289L4.7529 5.48394L3.65625 4.38729" stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_1886_7278">
+                                                                    <rect width="9.86985" height="9.86985" fill="white" />
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                        </span>
                                                         <?php _e( 'Resend Failed Emails', 'post-smtp' ) ?>                                                    
                                                         <br>
-                                                        <span class="dashicons dashicons-yes-alt"></span>
+                                                        <span class="ps-mobile-check">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                                            <g clip-path="url(#clip0_1886_7278)">
+                                                                <path d="M8.40768 4.41333V4.75329C8.40723 5.54157 8.15198 6.30859 7.67999 6.93995C7.208 7.57131 6.54457 8.03318 5.78864 8.25669C5.03271 8.48019 4.22479 8.45335 3.48536 8.18017C2.74592 7.90699 2.11461 7.40211 1.68557 6.74081C1.25652 6.07952 1.05274 5.29726 1.1046 4.51068C1.15647 3.72411 1.46121 2.97538 1.97337 2.37615C2.48553 1.77692 3.17768 1.3593 3.94658 1.18558C4.71548 1.01186 5.51993 1.09134 6.23997 1.41217"
+                                                                stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                                <path d="M8.77395 1.46289L4.7529 5.48394L3.65625 4.38729" stroke="#00B888" stroke-width="0.7311" stroke-linecap="round" stroke-linejoin="round" />
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_1886_7278">
+                                                                    <rect width="9.86985" height="9.86985" fill="white" />
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                        </span>
                                                         <?php _e( 'Support multiple sites', 'post-smtp' ) ?>                                                      
                                                     </div>
                                                 </div>
-                                                <div style="display: flex; margin-top: 15px;">
+                                                <div style="display: flex;">
                                                     <div class="ps-app-download-button">
-                                                        <a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26utm_campaign%3Dplugin%26anid%3Dadmob" target="_blank"><img src=<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/android-icon.png' ) ?>><div><p style="font-size: 12px;">Get it On</p><p style="font-size: 14px; font-weight: 750">Google Play</p></div></a>
+                                                        <a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Ddashboard%26utm_campaign%3Dplugin%26anid%3Dadmob" target="_blank"><img src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/androidicon.png' ); ?>"><div><p style="font-size: 8px;">Get it On</p><p style="font-size: 9px; font-weight: 750">Google Play</p></div></a>
                                                     </div>
                                                     <div class="ps-app-download-button">
-                                                        <a href="https://apps.apple.com/us/app/post-smtp/id6473368559?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin" target="_blank"><img src=<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/apple-icon.png' ) ?>><div><p style="font-size: 12px;">Download on the</p><p style="font-size: 14px; font-weight: 750;">App Store</p></div></a>
+                                                        <a href="https://apps.apple.com/us/app/post-smtp/id6473368559?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin" target="_blank"><img src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/apple-icon.png' ); ?>"><div><p style="font-size: 8px;">Download on the</p><p style="font-size: 9px; font-weight: 750;">App Store</p></div></a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -431,6 +534,7 @@ class Post_SMTP_New_Wizard {
                             </div>
                         </div>
                         <div class="ps-wizard-footer-right">
+                            
                             <div class="ps-wizard-step ps-wizard-step-1">
                                 <p class="ps-wizard-error"></p>
                                 <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="1"><?php _e( 'Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
@@ -439,10 +543,12 @@ class Post_SMTP_New_Wizard {
                             <div class="ps-wizard-step ps-wizard-step-2">
                                 <p class="ps-wizard-success"><?php echo ( isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
                                 <p class="ps-wizard-error"><?php echo ( !isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
+                                <a href="" data-step="1" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span><?php _e( 'Back', 'post-smtp' ); ?></a>
                                 <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="2"></span><?php _e( 'Save and Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                                 <div style="clear: both"></div>
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-3">
+                                <a href="" data-step="2" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span><?php _e( 'Back', 'post-smtp' ) ?></a>
                                 <button class="button button-primary ps-blue-btn ps-wizard-next-btn ps-finish-wizard" data-step="3"><?php _e( 'I\'ll send a test email later.', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-4">
@@ -497,6 +603,8 @@ class Post_SMTP_New_Wizard {
             'Step2E3'           => __( 'Please try again, something went wrong.', 'post-smtp' ),
             'Step3E4'           => __( 'Please enter recipient email address.', 'post-smtp' ),
             'finish'            => __( 'Finish', 'post-smtp' ),
+            'seeMoreLabel'      => __( 'See More', 'post-smtp' ),
+            'seeLessLabel'      => __( 'See Less', 'post-smtp' ),
             'adminURL'          => admin_url(),
             'connectivityTestMsg'  => sprintf( 
                 '%1$s %2$s <a href="%3$s" target="_blank">%4$s</a> %5$s',
@@ -532,8 +640,23 @@ class Post_SMTP_New_Wizard {
         $office365_icon_url = POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.png';
 		$localized['office365_icon'] = $office365_icon_url; 
 
-        wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), POST_SMTP_VER );
-        wp_enqueue_script( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js', array( 'jquery' ), POST_SMTP_VER );
+        wp_enqueue_style( 'post-smtp-wizard', POST_SMTP_URL . '/Postman/Wizard/assets/css/wizard.css', array(), POST_SMTP_VER  );
+        // and place it at that path so this enqueue works.
+        wp_enqueue_script(
+            'post-smtp-party',
+            POST_SMTP_URL . '/Postman/Wizard/assets/js/party.min.js',
+            array(),
+            POST_SMTP_VER ,
+            true
+        );
+
+        wp_enqueue_script(
+            'post-smtp-wizard',
+            POST_SMTP_URL . '/Postman/Wizard/assets/js/wizard.js',
+            array( 'jquery', 'post-smtp-party' ),
+            POST_SMTP_VER,
+            true
+        );
         wp_localize_script( 'post-smtp-wizard', 'PostSMTPWizard', $localized );
 
     }
@@ -555,20 +678,17 @@ class Post_SMTP_New_Wizard {
         $html = '
         <div class="ps-form-ui ps-name-email-settings">
             <div class="ps-form-control">
-                <h3>From Address</h3>
-                <p>'. sprintf(
+                <h3 class="ps-step-heading">Configure Mailer Settings</h3>
+                <h3 class="ps-from-address">From Address</h3>
+                <p class="ps-from-description">'. sprintf(
                     '%1$s',
                     esc_html__( 'It is important to indicate the origin (email and name) of a message for the receiver. The From Address provides these details.', 'post-smtp' )
                 ) .'</p>
-                     <p>'. sprintf(
-                    '%1$s',
-                    esc_html__( 'You may edit the following field if you do not wish to use default settings.', 'post-smtp' )
-                ) .'</p>
-                <div><label>From Email</label></div>
+                <div><label class="ps-from-label">From Email</label></div>
                 <input type="text" class="ps-from-email" required data-error="'.__( 'Please enter From Email.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_EMAIL ).']" value="'.$from_email.'" placeholder="From Email">
-                <span class="ps-form-control-info">'.__( 'The email address that emails are sent from.', 'post-smtp' ).'</span>
-                <div class="ps-form-control-info">'.__( 'Please note that other plugins may override this field, to prevent this use the setting below.', 'post-smtp' ).'</div>
-                <div>
+
+                 <div class="ps-force ps-force-email">
+                   <p class="ps-force-heading">'.esc_html__( 'Force From Email', 'post-smtp' ).'</p>
                     <div class="ps-form-switch-control">
                         <label class="ps-switch-1">
                             <input type="checkbox" '.$from_email_enforced.' name="postman_options['.esc_attr( PostmanOptions::PREVENT_MESSAGE_SENDER_EMAIL_OVERRIDE ).']">
@@ -589,10 +709,10 @@ class Post_SMTP_New_Wizard {
                 </div> 
             </div>
             <div class="ps-form-control">
-                <div><label>From Name</label></div>
+                <div><label class="ps-from-label">From Name</label></div>
                 <input type="text" class="ps-from-name" required data-error="'.__( 'Please enter From Name.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_NAME ).']" value="'.$from_name.'" placeholder="From Name">
-                <span class="ps-form-control-info">'.__( 'The name that emails are sent from.', 'post-smtp' ).'</span>
-                <div>
+                <div class="ps-force ps-force-name">
+                    <p class="ps-force-heading">'.esc_html__( 'Force From Name', 'post-smtp' ).'</p>
                     <div class="ps-form-switch-control">
                         <label class="ps-switch-1">
                             <input type="checkbox" '.$from_name_enforced.' name="postman_options['.esc_attr( PostmanOptions::PREVENT_MESSAGE_SENDER_NAME_OVERRIDE ).']">

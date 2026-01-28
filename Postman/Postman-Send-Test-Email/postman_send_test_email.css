@@ -58,7 +58,7 @@
 	width: 48px;
 	height: 48px;
 	font-size: 44px;
-	color: #375caf;
+	color: #214A72;
 	position: relative;
 	z-index: 8;
 }
@@ -72,7 +72,7 @@
 	vertical-align: top;
 	line-height: 1;
 	margin: auto;
-	background-color: #375caf;
+	background-color: #214A72;
 }
 
 .send-test-email  .ps-circle .birth-check.ps-tick::before {
@@ -145,16 +145,16 @@
 }
 
 .send-test-email .ps-blue-button {
-	border: #485b87;
-	background: #375caf;
+	border: #214A72;
+	background: #214A72;
 	border-radius: 0px;
 	line-height: 40px;
 	width: 184px;
 }
 
 .send-test-email .ps-blue-button:hover {
-	background: #4c6fbd;
-	border-color: #4c6fbd;
+	background: #214A72;
+	border-color: #214A72;
 }
 
 .send-test-email .ps-blue-button span {
