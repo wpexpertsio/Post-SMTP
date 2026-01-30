@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require 'Postman-Email-Log/PostmanEmailQueryLog.php';
-require POST_SMTP_PATH . '/includes/libs/HTMLPurifier/HTMLPurifier.auto.php';
+require_once POST_SMTP_PATH . '/includes/libs/HTMLPurifier/HTMLPurifier.auto.php';
 
 class PostmanEmailLogs {
 
@@ -93,6 +93,10 @@ class PostmanEmailLogs {
      * 
      */
 	public function purify_html( $html_content ) {
+		// Ensure HTML Purifier is loaded (handles load-order edge cases on some hosts).
+		if ( ! class_exists( 'HTMLPurifier_Config', false ) ) {
+			require_once POST_SMTP_PATH . '/includes/libs/HTMLPurifier/HTMLPurifier.auto.php';
+		}
 		// Configure HTMLPurifier.
 		$config = HTMLPurifier_Config::createDefault();
 		$config->set('Core.Encoding', 'UTF-8');
