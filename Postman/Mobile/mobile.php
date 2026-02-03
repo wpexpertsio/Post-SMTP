@@ -131,6 +131,28 @@ class Post_SMTP_Mobile {
     }
 
     /**
+     * Resolve which QR code class to use, without loading our phpqrcode lib if another plugin
+     * has already loaded one (avoids "Constant already defined" / "Cannot redeclare class").
+     *
+     * @since 2.7.0
+     * @return string|null Class name with static png() method, or null if none available.
+     */
+    private function get_qrcode_class() {
+        $candidates = array( 'QRcode', 'Yeekitqrcode' );
+        $candidates = apply_filters( 'post_smtp_qrcode_class_candidates', $candidates );
+        foreach ( $candidates as $class_name ) {
+            if ( class_exists( $class_name ) && method_exists( $class_name, 'png' ) ) {
+                return $class_name;
+            }
+        }
+        if ( defined( 'QR_MODE_NUL' ) || class_exists( 'qrstr' ) ) {
+            return null;
+        }
+        include_once dirname( __FILE__ ) . '/includes/phpqrcode/qrlib.php';
+        return class_exists( 'QRcode' ) ? 'QRcode' : null;
+    }
+
+    /**
      * Generate QR code
      *
      * @since 2.7.0
@@ -138,16 +160,19 @@ class Post_SMTP_Mobile {
      */
     public function generate_qr_code() {
 
-        if ( !class_exists('QRcode') ) {
-            include_once 'includes/phpqrcode/qrlib.php';
+        $qr_class = $this->get_qrcode_class();
+        if ( $qr_class === null ) {
+            $this->qr_code = null;
+            return;
         }
+
         $nonce = get_transient( 'post_smtp_auth_nonce' );
 		$authkey = $nonce ? $nonce : $this->generate_auth_key();
 		$site_title = get_bloginfo( 'name' );
         set_transient( 'post_smtp_auth_nonce', $authkey, 1800 );
         $endpoint = site_url( "?authkey={$authkey}&site_title={$site_title}" );
         ob_start();
-        QRcode::png( urlencode_deep( $endpoint ) );
+        $qr_class::png( urlencode_deep( $endpoint ) );
         $result_qr_content_in_png = ob_get_contents();
         ob_end_clean();
         // PHPQRCode change the content-type into image/png... we change it again into html
@@ -223,14 +248,16 @@ class Post_SMTP_Mobile {
                 <div class="mobile-app-internal-box ps-qr-box" style="line-height: 30px;">
                     <?php 
                     if( !$this->app_connected ) {
-                        
-                        echo '<img src="data:image/jpeg;base64,'. $this->qr_code.'" width="300"/>'; 
-                        ?>
-                        <div>
-                            <a href="<?php echo esc_url( admin_url( "admin-post.php?action=regenerate-qrcode&_psnonce=$nonce" ) ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
-                        </div>
-                        <?php
-
+                        if ( $this->qr_code !== null ) {
+                            echo '<img src="data:image/png;base64,' . esc_attr( $this->qr_code ) . '" width="300"/>';
+                            ?>
+                            <div>
+                                <a href="<?php echo esc_url( admin_url( "admin-post.php?action=regenerate-qrcode&_psnonce=$nonce" ) ); ?>"><?php _e( 'Regenerate QR Code', 'post-smtp' ) ?></a>
+                            </div>
+                            <?php
+                        } else {
+                            echo '<p>' . esc_html__( 'QR code is unavailable because another plugin has already loaded a conflicting QR code library. Please temporarily disable other plugins that use QR codes, or contact support.', 'post-smtp' ) . '</p>';
+                        }
                     }
 					else {
 						
