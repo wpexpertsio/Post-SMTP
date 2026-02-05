@@ -53,11 +53,12 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
             $transport          = PostmanTransportRegistry::getInstance()->getActiveTransport();
             $app_connected      = get_option( 'post_smtp_mobile_app_connection' );
 	        $main_wp_configured = get_option( 'post_smtp_use_from_main_site' );
+            $post_smtp_parent_configured = get_option( 'post_smtp_parent_configured' );
             $configured         = $transport->isConfiguredAndReady() ? 'true' : 'false';
             $app_connected      = empty( $app_connected ) ? 'false' : 'true';
 	        $main_wp_configured = empty( $main_wp_configured ) ? 'false' : 'true';
 			if ( $main_wp_configured == 'true' ) {
-                $configured = 'true';
+                $configured = $post_smtp_parent_configured ? 'true' : 'false';
             }
             $has_post_smtp_pro  = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
 			$has_post_smtp_pro  = in_array( 'post-smtp-pro/post-smtp-pro.php', $has_post_smtp_pro, true )

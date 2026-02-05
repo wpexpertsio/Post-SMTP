@@ -45,17 +45,22 @@ return array(
 		),
 	),
 	'banners'       => array(
-		'configured'    => array(
+		'configured'       => array(
 			'text'   => __( 'Post SMTP is configured!', 'post-smtp' ),
 			'button' => __( 'Send a test email', 'post-smtp' ),
 		),
-		'notConfigured' => array(
+		'notConfigured'    => array(
 			'text'   => __( 'Post SMTP is not configured and is mimicking out-of-the-box WordPress email delivery.', 'post-smtp' ),
 			'button' => __( 'Setup the wizard', 'post-smtp' ),
 		),
-		'isLogOnly'     => array(
+		'isLogOnly'        => array(
 			'text'   => __( 'Postman is in non-Production mode and is dumping all emails.', 'post-smtp' ),
 			'button' => __( 'Setup the wizard', 'post-smtp' ),
+		),
+		// Shown on the child site when connected to MainWP parent but the parent mailer
+		// is not yet configured.
+		'mainwpConnected' => array(
+			'text' => __( 'Connected to the MainWP Parent Site.', 'post-smtp' ),
 		),
 	),
 	'cards'         => array(
