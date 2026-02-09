@@ -345,7 +345,14 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 */
 		private function createLog( PostmanEmailLog $log, $transcript, $statusMessage, $success, ?PostmanModuleTransport $transport, ?PostmanMessage $message = null ) {
 			if ( $message ) {
-				$log->sender = $message->getFromAddress()->format();
+				$options = PostmanOptions::getInstance();
+				if ( $options->isPluginSenderEmailEnforced() ) {
+					$name = $options->getMessageSenderName();
+					$email = $options->getMessageSenderEmail();
+					$log->sender = ! empty( $name ) ? sprintf( '%s <%s>', $name, $email ) : $email;
+				} else {
+					$log->sender = $message->getFromAddress()->format();
+				}
 				$log->toRecipients = $this->flattenEmails( $message->getToRecipients() );
 				$log->ccRecipients = $this->flattenEmails( $message->getCcRecipients() );
 				$log->bccRecipients = $this->flattenEmails( $message->getBccRecipients() );
