@@ -698,7 +698,7 @@ class Post_SMTP_New_Wizard {
                     <span>'.
                     sprintf( 
                         '%1$s <b>%2$s</b> %3$s <b>%4$s</b> %5$s <b>%6$s</b>',
-                        __( 'Check this to prevent changes on the', 'post-smtp' ),
+                        __( 'Enable this to prevent changes on the', 'post-smtp' ),
                         __( 'From Email', 'post-smtp' ),
                         __( 'field by other', 'post-smtp' ),
                         __( 'Plugins', 'post-smtp' ),
@@ -722,7 +722,7 @@ class Post_SMTP_New_Wizard {
                     <span>'.
                     sprintf( 
                         '%1$s <b>%2$s</b> %3$s <b>%4$s</b> %5$s <b>%6$s</b>',
-                        __( 'Check this to prevent changes on the', 'post-smtp' ),
+                        __( 'Enable this to prevent changes on the', 'post-smtp' ),
                         __( 'From Name', 'post-smtp' ),
                         __( 'field by other', 'post-smtp' ),
                         __( 'Plugins', 'post-smtp' ),
