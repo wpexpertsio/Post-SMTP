@@ -393,7 +393,7 @@ jQuery(document).ready(function () {
 
             var selectedSocket = jQuery('.ps-wizard-socket-check:checked').val();
             selectedSocket = jQuery(`.${selectedSocket}`).find('input');
-            var validated = false;
+            var validated = true;
 
             jQuery(selectedSocket).each(function (index, element) {
 
