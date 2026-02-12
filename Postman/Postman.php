@@ -244,10 +244,17 @@ class Postman {
 		// register the email transports
 		$this->registerTransports( $this->rootPluginFilenameAndPath );
 
+
 		// register the setup_admin function on plugins_loaded because we need to call
 		// current_user_can to verify the capability of the current user
 		if ( PostmanUtils::isAdmin() && is_admin() ) {
 			$this->setup_admin();
+		}
+
+		if ( get_option( 'post_smtp_activation_redirect' ) ) {
+			delete_option( 'post_smtp_activation_redirect' );
+			wp_safe_redirect( admin_url( 'admin.php?page=postman/configuration_wizard' ) );
+			exit;
 		}
 		
 	}
@@ -276,6 +283,8 @@ class Postman {
 		require_once 'PostmanInstaller.php';
 		$upgrader = new PostmanInstaller();
 		$upgrader->activatePostman();
+		
+		add_option( 'post_smtp_activation_redirect', true );
 	}
 
 	/**
