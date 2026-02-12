@@ -41,22 +41,20 @@ jQuery(document).ready(function () {
         // Or if we already created the button, we continue.
 
         // Collect all mailer cards (excluding the See More button container)
-        // usage of detach() preserves event data
-        let $cards = $rows.find('.ps-wizard-socket-radio-outer').not('.ps-wizard-see-more-outer').detach();
+        // Collect all socket cards
+        let $allCards = $rows.find('.ps-wizard-socket-radio-outer').not('.ps-wizard-see-more-outer').detach();
 
-        if ($rows.length <= 2 && $cards.length <= 8) {
-            // Not enough items to justify See More, just put them back
-            let cardIdx = 0;
-            $rows.each(function () {
-                jQuery(this).empty(); // clear potential garbage
-                for (let i = 0; i < 4; i++) {
-                    if (cardIdx < $cards.length) {
-                        jQuery(this).append($cards[cardIdx++]);
-                    }
-                }
-            });
-            return;
-        }
+        // Identify "Special" Active Pro Cards that should be at the bottom
+        // defined by specific values/IDs that correspond to Pro mailers
+        const specialMailers = ['office365_api', 'aws_ses_api', 'zohomail_api'];
+
+        let $bottomCards = $allCards.filter(function () {
+            const val = jQuery(this).find('input').val();
+            return specialMailers.includes(val);
+        });
+
+        // The rest are standard cards
+        let $standardCards = $allCards.not($bottomCards);
 
         // Handle "See More" button creation/retrieval
         let $seeMoreBtn = $step1.find('.ps-wizard-see-more-outer');
@@ -79,66 +77,69 @@ jQuery(document).ready(function () {
             $seeMoreBtn.detach();
         }
 
-        // Update State
+        // Update Button State
         const $text = $seeMoreBtn.find('.ps-wizard-see-more-text');
         if (isExpanded) {
             $text.text(seeLessLabel);
             jQuery('.ps-wizard').addClass('ps-see-more-open');
-            $rows.removeClass('ps-hidden ps-wizard-sockets-extra');
         } else {
             $text.text(seeMoreLabel);
             jQuery('.ps-wizard').removeClass('ps-see-more-open');
-            // Hide rows after the second one
-            // Note: We might re-show them during loop if we are reflowing into them, 
-            // but then add class hidden to the ones > index 1
         }
 
-        // Redistributions
-        let cardIdx = 0;
-        const cardsArray = $cards.toArray();
-
-        // Remove any dynamically added rows from previous expansions so we start clean
-        // Strategy: We will use the existing rows defined by HTML. If we need more, we create them.
-        // Wait, removing rows might be dangerous if we lose reference or if they were original.
-        // Let's just empty existing rows and reuse them.
-
-        $rows.each(function (index, row) {
-            jQuery(row).empty();
+        // Clear all rows
+        $rows.each(function () {
+            jQuery(this).empty();
         });
 
-        // We might need to handle the case where we have more cards than fit in available rows
-        // If we are expanded.
+        // Helper to get or create row
+        const getRow = (index) => {
+            // We need to re-fetch rows every time because we might add new ones
+            let $currentRows = $step1.find('.ps-wizard-sockets').not('.ps-pro-row-container'); // Exclude our special container if we label it? 
+            // Actually, let's just stick to standard class but manage indices carefully.
+
+            // Re-query standard rows
+            // Note: We need to filter out the PRO rows that are NOT part of our grid reflow (the original static pro rows)
+            // But earlier we filtered `$rows` to exclude them. Logic needs to persist.
+            $currentRows = $currentRows.filter(function () {
+                return jQuery(this).find('.ps-pro-extension-outer').length === 0 && !jQuery(this).hasClass('ps-wizard-sockets-bottom');
+            });
+
+            let $row = $currentRows.eq(index);
+
+            if ($row.length === 0) {
+                $row = jQuery('<div class="ps-wizard-sockets"></div>');
+
+                // Append after the last standard row we found, or at end of container
+                let $last = $currentRows.last();
+                if ($last.length) {
+                    $last.after($row);
+                } else {
+                    // Fallback
+                    $step1.find('h4').first().after($row); // Just ensuring it goes somewhere valid
+                }
+
+                return $row;
+            }
+            return $row;
+        };
 
         let currentRowIdx = 0;
+        let cardIdx = 0;
+        const cardsArray = $standardCards.toArray();
 
+        // 1. Fill Standard Cards
         while (cardIdx < cardsArray.length) {
 
-            // Get or create row
-            let $currentRow = $rows.eq(currentRowIdx);
-            if ($currentRow.length === 0) {
-                // Create new row
-                $currentRow = jQuery('<div class="ps-wizard-sockets"></div>');
-                // Insert after the last known row
-                if (currentRowIdx > 0) {
-                    $rows.eq(currentRowIdx - 1).after($currentRow);
-                } else {
-                    // Should not happen as we checked length <= 2 above
-                    // But if it does, append to container? 
-                    // Let's assume there is at least one row
-                }
-                // Refresh $rows collection
-                $rows = $step1.find('.ps-wizard-sockets').not(function () {
-                    return jQuery(this).find('.ps-pro-extension-outer').length > 0;
-                });
-            }
+            let $currentRow = getRow(currentRowIdx);
 
+            // Determine capacity
             let capacity = 4;
-            // If collapsed and we are at 2nd row (index 1), leave 1 spot for button
+            // If Collapsed and row index 1, leave spot for button
             if (!isExpanded && currentRowIdx === 1) {
                 capacity = 3;
             }
 
-            // Fill row
             let addedCount = 0;
             while (addedCount < capacity && cardIdx < cardsArray.length) {
                 $currentRow.append(cardsArray[cardIdx]);
@@ -146,7 +147,7 @@ jQuery(document).ready(function () {
                 addedCount++;
             }
 
-            // If we are collapsed and at row 2, add button
+            // If Collapsed and row 1, add button
             if (!isExpanded && currentRowIdx === 1) {
                 $currentRow.append($seeMoreBtn);
             }
@@ -154,44 +155,103 @@ jQuery(document).ready(function () {
             currentRowIdx++;
         }
 
-        // After placing all cards:
-        // If Expanded, place button at the very end
+        // 2. Place Button if Expanded (at end of standard cards)
         if (isExpanded) {
-            // Check last row capacity
-            let $lastRow = $rows.eq(currentRowIdx - 1); // Last row used
+            let lastRowIdx = currentRowIdx > 0 ? currentRowIdx - 1 : 0;
+            let $lastRow = getRow(lastRowIdx);
 
-            // If last row has 4 items, we need a new row for the button
             if ($lastRow.children().length >= 4) {
-                const $newRow = jQuery('<div class="ps-wizard-sockets"></div>');
-                $lastRow.after($newRow);
-                $newRow.append($seeMoreBtn);
-                // We don't need to update $rows here strictly, but good for consistency
+                // New row for button
+                currentRowIdx = lastRowIdx + 1;
+                $lastRow = getRow(currentRowIdx);
+                $lastRow.append($seeMoreBtn);
             } else {
                 $lastRow.append($seeMoreBtn);
             }
+            // Ensure we move to next row for potential next content? 
+            // effectively yes, but we are done with standard content.
         }
 
-        // Finally, ensure visibility logic is applied correctly
-        // Re-fetch rows in case we added some
-        $rows = $step1.find('.ps-wizard-sockets').not(function () {
-            return jQuery(this).find('.ps-pro-extension-outer').length > 0;
+        // 3. Handle Bottom Cards (Active Pro Mailers)
+        if ($bottomCards.length > 0) {
+            // Find or create the dedicated bottom row
+            // We give it a specific class to identify it
+            let $bottomRow = $step1.find('.ps-wizard-sockets-bottom');
+            if ($bottomRow.length === 0) {
+                $bottomRow = jQuery('<div class="ps-wizard-sockets ps-wizard-sockets-bottom"></div>');
+                // Place it AFTER the last standard row
+                // We re-query rows to find the last one
+                let $allRows = $step1.find('.ps-wizard-sockets').not('.ps-wizard-sockets-bottom');
+                if ($allRows.length > 0) {
+                    $allRows.last().after($bottomRow);
+                } else {
+                    // If no standard rows, append after the first h4 or similar
+                    $step1.find('h4').first().after($bottomRow);
+                }
+            }
+            $bottomRow.empty();
+            $bottomRow.append($bottomCards);
+        } else {
+            // Remove if empty
+            $step1.find('.ps-wizard-sockets-bottom').remove();
+        }
+
+        // 4. Cleanup empty standard rows
+        $step1.find('.ps-wizard-sockets').not('.ps-wizard-sockets-bottom').each(function () {
+            // Only remove if it doesn't have the pro extension outer checks? 
+            // We are inside the reflow logic, safe to assume these are managed by us.
+            if (jQuery(this).children().length === 0 && jQuery(this).find('.ps-pro-extension-outer').length === 0) {
+                jQuery(this).remove();
+            }
         });
 
+        // 5. Apply Visibility
+        // Re-query all sockets rows
+        const $finalRows = $step1.find('.ps-wizard-sockets');
+
+        $finalRows.each(function (index) {
+            const $row = jQuery(this);
+            const isBottom = $row.hasClass('ps-wizard-sockets-bottom');
+            const hasProStatic = $row.find('.ps-pro-extension-outer').length > 0;
+
+            // Logic:
+            // Standard Rows 0 and 1: Always Visible.
+            // Bottom Row: Always Visible.
+            // Static Pro Rows: Always Visible.
+            // Other Standard Rows: Hidden if Collapsed.
+
+            // We need to determine the index in terms of "Standard" rows to know if it's > 1
+            // But simpler: if we are expanded, show everything.
+
+            if (isExpanded || isBottom || hasProStatic) {
+                $row.removeClass('ps-hidden ps-wizard-sockets-extra');
+            } else {
+                // Collapsed state
+                // If it's one of the first 2 "Standard" rows, show it.
+                // We iterate and count standard rows.
+            }
+        });
+
+        // Refined Visibility Loop for Collapsed State
         if (!isExpanded) {
-            $rows.each(function (index) {
-                if (index > 1) {
-                    jQuery(this).addClass('ps-hidden ps-wizard-sockets-extra');
+            let standardRowCount = 0;
+            $finalRows.each(function () {
+                const $row = jQuery(this);
+                const isBottom = $row.hasClass('ps-wizard-sockets-bottom');
+                const hasProStatic = $row.find('.ps-pro-extension-outer').length > 0;
+
+                if (isBottom || hasProStatic) {
+                    $row.removeClass('ps-hidden ps-wizard-sockets-extra');
                 } else {
-                    jQuery(this).removeClass('ps-hidden ps-wizard-sockets-extra');
+                    // Standard Row
+                    if (standardRowCount < 2) {
+                        $row.removeClass('ps-hidden ps-wizard-sockets-extra');
+                    } else {
+                        $row.addClass('ps-hidden ps-wizard-sockets-extra');
+                    }
+                    standardRowCount++;
                 }
             });
-            // Also ensure step 1 continue button is disabled if selection hidden?
-            // Existing logic: 
-            // jQuery('.ps-wizard-socket-check').prop('checked', false);
-            // We should do this only if the selected one is now hidden?
-            // The handler below handles this.
-        } else {
-            $rows.removeClass('ps-hidden ps-wizard-sockets-extra');
         }
     };
 
