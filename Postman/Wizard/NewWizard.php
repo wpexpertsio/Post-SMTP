@@ -685,7 +685,7 @@ class Post_SMTP_New_Wizard {
                     esc_html__( 'It is important to indicate the origin (email and name) of a message for the receiver. The From Address provides these details.', 'post-smtp' )
                 ) .'</p>
                 <div><label class="ps-from-label">From Email</label></div>
-                <input type="text" class="ps-from-email" required data-error="'.__( 'Please enter From Email.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_EMAIL ).']" value="'.$from_email.'" placeholder="From Email">
+                <input type="text" class="ps-from-email" required data-error="'.__( 'Please enter From Email.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_EMAIL ).']" value="'.$from_email.'" placeholder="Email address that emails are sent from">
 
                  <div class="ps-force ps-force-email">
                    <p class="ps-force-heading">'.esc_html__( 'Force From Email', 'post-smtp' ).'</p>
@@ -710,7 +710,7 @@ class Post_SMTP_New_Wizard {
             </div>
             <div class="ps-form-control">
                 <div><label class="ps-from-label">From Name</label></div>
-                <input type="text" class="ps-from-name" required data-error="'.__( 'Please enter From Name.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_NAME ).']" value="'.$from_name.'" placeholder="From Name">
+                <input type="text" class="ps-from-name" required data-error="'.__( 'Please enter From Name.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_NAME ).']" value="'.$from_name.'" placeholder="Name that is sending the emails">
                 <div class="ps-force ps-force-name">
                     <p class="ps-force-heading">'.esc_html__( 'Force From Name', 'post-smtp' ).'</p>
                     <div class="ps-form-switch-control">
