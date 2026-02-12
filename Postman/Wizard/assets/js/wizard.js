@@ -18,157 +18,202 @@ jQuery(document).ready(function () {
      * - PRO mailers (ps-pro-extension-outer: Office 365, Amazon SES, Zoho)
      *   are never hidden and are not affected by the See More toggle.
      */
-    const initMailerSeeMore = function () {
+    /**
+     * Reflows the mailer sockets grid to ensure proper layout
+     * when toggling between "See More" and "See Less".
+     * 
+     * @param {boolean} isExpanded Whether the list is expanded (See Less) or collapsed (See More)
+     */
+    const reflowSockets = function (isExpanded) {
 
         const $step1 = jQuery('.ps-wizard-step-1');
-
         if (!$step1.length) {
             return;
         }
 
-        const $rows = $step1.find('.ps-wizard-sockets');
-
-        // Need at least 3 rows before we add the toggle
-        if ($rows.length <= 2) {
-            return;
-        }
-
-        // Rows that contain PRO mailers
-        const $proRows = $rows.filter(function () {
+        // Get all rows that DO NOT contain PRO extensions
+        let $rows = $step1.find('.ps-wizard-sockets').not(function () {
             return jQuery(this).find('.ps-pro-extension-outer').length > 0;
         });
 
-        const $extraRows = $rows.slice(2);
+        // If we don't have enough rows (e.g. less than 3), we might not need "See More"
+        // But we should stick to the logic: if we have more than 2 rows worth of content.
+        // Or if we already created the button, we continue.
 
-        // Rows that can be hidden / shown (non‑PRO rows after the 2nd row)
-        let $hideableRows = $extraRows.not($proRows);
+        // Collect all mailer cards (excluding the See More button container)
+        // usage of detach() preserves event data
+        let $cards = $rows.find('.ps-wizard-socket-radio-outer').not('.ps-wizard-see-more-outer').detach();
 
-        // If there is nothing to hide, do not add See More
-        if (!$hideableRows.length) {
+        if ($rows.length <= 2 && $cards.length <= 8) {
+            // Not enough items to justify See More, just put them back
+            let cardIdx = 0;
+            $rows.each(function () {
+                jQuery(this).empty(); // clear potential garbage
+                for (let i = 0; i < 4; i++) {
+                    if (cardIdx < $cards.length) {
+                        jQuery(this).append($cards[cardIdx++]);
+                    }
+                }
+            });
             return;
         }
 
-        // Hide rows after the second row by default, excluding PRO rows
-        $hideableRows.addClass('ps-hidden ps-wizard-sockets-extra');
-
-        const $secondRow = $rows.eq(1);
-
-        if (!$secondRow.length) {
-            return;
-        }
-
-        const $firstHiddenRow = $hideableRows.first();
-
-        // Move the last non‑PRO card from the second row into the first
-        // hidden row so the See More tile becomes the 10th box.
-        if ($firstHiddenRow.length) {
-
-            const $secondRowCards = $secondRow
-                .find('.ps-wizard-socket-radio-outer')
-                .filter(function () {
-                    return !jQuery(this).find('.ps-pro-extension-outer').length;
-                });
-
-            const $lastCard = $secondRowCards.last();
-
-            if ($lastCard.length) {
-                $firstHiddenRow.prepend($lastCard);
-            }
-
-            // Ensure the first hidden row still has a maximum of 4 boxes.
-            // Any overflow sockets are moved into the LAST hideable row
-            // so tiles like Mailgun stay inside the grid (in the last
-            // non‑PRO row) instead of overflowing.
-            let $firstHiddenRowCards = $firstHiddenRow.find('.ps-wizard-socket-radio-outer');
-
-            if ($firstHiddenRowCards.length > 4) {
-
-                const $overflowCards = $firstHiddenRowCards.slice(4);
-                const $lastHideableRow = $hideableRows.last();
-
-                if ($lastHideableRow.length) {
-                    $lastHideableRow.append($overflowCards);
-                }
-
-            }
-
-        }
-
-        // Ensure Mailgun appears before "Other SMTP" and "Default"
-        // in the last non‑PRO row.
-        const $lastNonProRow = $hideableRows.last();
-
-        if ($lastNonProRow.length) {
-
-            const $mailgun = $lastNonProRow.find('#ps-wizard-socket-mailgun_api').closest('.ps-wizard-socket-radio-outer');
-
-            if ($mailgun.length) {
-
-                const $smtp = $lastNonProRow.find('#ps-wizard-socket-smtp').closest('.ps-wizard-socket-radio-outer');
-                const $default = $lastNonProRow.find('#ps-wizard-socket-default').closest('.ps-wizard-socket-radio-outer');
-
-                if ($smtp.length) {
-
-                    $smtp.before($mailgun);
-
-                } else if ($default.length) {
-
-                    $default.before($mailgun);
-
-                }
-
-            }
-
-        }
-
+        // Handle "See More" button creation/retrieval
+        let $seeMoreBtn = $step1.find('.ps-wizard-see-more-outer');
         const seeMoreLabel = (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.seeMoreLabel) ? PostSMTPWizard.seeMoreLabel : 'See More';
         const seeLessLabel = (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.seeLessLabel) ? PostSMTPWizard.seeLessLabel : 'See Less';
 
-        const seeMoreHtml = `
-            <div class="ps-wizard-socket-radio-outer ps-wizard-see-more-outer">
-                <div class="ps-wizard-socket-radio ps-wizard-see-more">
-                    <label>
-                        <div class="ps-wizard-see-more-icon"></div>
-                        <h4 class="ps-wizard-see-more-text">${seeMoreLabel}</h4>
-                    </label>
+        if ($seeMoreBtn.length === 0) {
+            const seeMoreHtml = `
+                <div class="ps-wizard-socket-radio-outer ps-wizard-see-more-outer">
+                    <div class="ps-wizard-socket-radio ps-wizard-see-more">
+                        <label>
+                            <div class="ps-wizard-see-more-icon"></div>
+                            <h4 class="ps-wizard-see-more-text">${seeMoreLabel}</h4>
+                        </label>
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+            $seeMoreBtn = jQuery(seeMoreHtml);
+        } else {
+            $seeMoreBtn.detach();
+        }
 
-        $secondRow.append(seeMoreHtml);
+        // Update State
+        const $text = $seeMoreBtn.find('.ps-wizard-see-more-text');
+        if (isExpanded) {
+            $text.text(seeLessLabel);
+            jQuery('.ps-wizard').addClass('ps-see-more-open');
+            $rows.removeClass('ps-hidden ps-wizard-sockets-extra');
+        } else {
+            $text.text(seeMoreLabel);
+            jQuery('.ps-wizard').removeClass('ps-see-more-open');
+            // Hide rows after the second one
+            // Note: We might re-show them during loop if we are reflowing into them, 
+            // but then add class hidden to the ones > index 1
+        }
 
-        jQuery(document).on('click', '.ps-wizard-see-more', function (e) {
+        // Redistributions
+        let cardIdx = 0;
+        const cardsArray = $cards.toArray();
 
-            e.preventDefault();
+        // Remove any dynamically added rows from previous expansions so we start clean
+        // Strategy: We will use the existing rows defined by HTML. If we need more, we create them.
+        // Wait, removing rows might be dangerous if we lose reference or if they were original.
+        // Let's just empty existing rows and reuse them.
 
-            const isOpen = !$hideableRows.first().hasClass('ps-hidden');
-            const $text = jQuery(this).find('.ps-wizard-see-more-text');
-
-            if (isOpen) {
-
-                $hideableRows.addClass('ps-hidden');
-                $text.text(seeMoreLabel);
-                jQuery('.ps-wizard').removeClass('ps-see-more-open');
-
-                // When collapsing "See More", also clear any selected mailer
-                // and disable the Step 1 Continue button again.
-                jQuery('.ps-wizard-socket-check').prop('checked', false);
-                jQuery('.ps-wizard-socket-tick-container').css({ 'opacity': 0 });
-                $step1ContinueBtn.addClass('ps-disabled').prop('disabled', true);
-
-            } else {
-
-                $hideableRows.removeClass('ps-hidden');
-                $text.text(seeLessLabel);
-                jQuery('.ps-wizard').addClass('ps-see-more-open');
-
-            }
-
+        $rows.each(function (index, row) {
+            jQuery(row).empty();
         });
 
+        // We might need to handle the case where we have more cards than fit in available rows
+        // If we are expanded.
+
+        let currentRowIdx = 0;
+
+        while (cardIdx < cardsArray.length) {
+
+            // Get or create row
+            let $currentRow = $rows.eq(currentRowIdx);
+            if ($currentRow.length === 0) {
+                // Create new row
+                $currentRow = jQuery('<div class="ps-wizard-sockets"></div>');
+                // Insert after the last known row
+                if (currentRowIdx > 0) {
+                    $rows.eq(currentRowIdx - 1).after($currentRow);
+                } else {
+                    // Should not happen as we checked length <= 2 above
+                    // But if it does, append to container? 
+                    // Let's assume there is at least one row
+                }
+                // Refresh $rows collection
+                $rows = $step1.find('.ps-wizard-sockets').not(function () {
+                    return jQuery(this).find('.ps-pro-extension-outer').length > 0;
+                });
+            }
+
+            let capacity = 4;
+            // If collapsed and we are at 2nd row (index 1), leave 1 spot for button
+            if (!isExpanded && currentRowIdx === 1) {
+                capacity = 3;
+            }
+
+            // Fill row
+            let addedCount = 0;
+            while (addedCount < capacity && cardIdx < cardsArray.length) {
+                $currentRow.append(cardsArray[cardIdx]);
+                cardIdx++;
+                addedCount++;
+            }
+
+            // If we are collapsed and at row 2, add button
+            if (!isExpanded && currentRowIdx === 1) {
+                $currentRow.append($seeMoreBtn);
+            }
+
+            currentRowIdx++;
+        }
+
+        // After placing all cards:
+        // If Expanded, place button at the very end
+        if (isExpanded) {
+            // Check last row capacity
+            let $lastRow = $rows.eq(currentRowIdx - 1); // Last row used
+
+            // If last row has 4 items, we need a new row for the button
+            if ($lastRow.children().length >= 4) {
+                const $newRow = jQuery('<div class="ps-wizard-sockets"></div>');
+                $lastRow.after($newRow);
+                $newRow.append($seeMoreBtn);
+                // We don't need to update $rows here strictly, but good for consistency
+            } else {
+                $lastRow.append($seeMoreBtn);
+            }
+        }
+
+        // Finally, ensure visibility logic is applied correctly
+        // Re-fetch rows in case we added some
+        $rows = $step1.find('.ps-wizard-sockets').not(function () {
+            return jQuery(this).find('.ps-pro-extension-outer').length > 0;
+        });
+
+        if (!isExpanded) {
+            $rows.each(function (index) {
+                if (index > 1) {
+                    jQuery(this).addClass('ps-hidden ps-wizard-sockets-extra');
+                } else {
+                    jQuery(this).removeClass('ps-hidden ps-wizard-sockets-extra');
+                }
+            });
+            // Also ensure step 1 continue button is disabled if selection hidden?
+            // Existing logic: 
+            // jQuery('.ps-wizard-socket-check').prop('checked', false);
+            // We should do this only if the selected one is now hidden?
+            // The handler below handles this.
+        } else {
+            $rows.removeClass('ps-hidden ps-wizard-sockets-extra');
+        }
     };
 
-    initMailerSeeMore();
+    // Initial Reflow
+    reflowSockets(false);
+
+    // Event Handler for See More
+    jQuery(document).on('click', '.ps-wizard-see-more', function (e) {
+        e.preventDefault();
+        const isOpen = jQuery('.ps-wizard').hasClass('ps-see-more-open');
+
+        reflowSockets(!isOpen);
+
+        if (isOpen) {
+            // We just collapsed
+            // Clear selection and disable button
+            jQuery('.ps-wizard-socket-check').prop('checked', false);
+            jQuery('.ps-wizard-socket-tick-container').css({ 'opacity': 0 });
+            // $step1ContinueBtn is defined below this block in original code, so we use selector
+            jQuery('.ps-wizard-step-1 .ps-wizard-next-btn[data-step="1"]').addClass('ps-disabled').prop('disabled', true);
+        }
+    });
 
     // Step 1 "Continue" button - enable if a mailer is already selected.
     const $step1ContinueBtn = jQuery('.ps-wizard-step-1 .ps-wizard-next-btn[data-step="1"]');
@@ -322,7 +367,8 @@ jQuery(document).ready(function () {
                         else {
 
                             //remove error, since everything is good to go :).
-                        } );
+                        }
+                    });
 
                 }
 
