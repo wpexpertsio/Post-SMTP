@@ -405,7 +405,8 @@
   margin-right: 15px;
   border-radius: 3px;
 }
-.ps-wizard-see-more-outer .ps-wizard-socket-radio{
+.ps-wizard-see-more-outer .ps-wizard-socket-radio,
+.ps-wizard-see-more-outer .ps-wizard-socket-radio label {
   cursor: pointer;
 }
 .ps-wizard-see-more-icon{
