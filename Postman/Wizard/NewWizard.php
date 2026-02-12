@@ -731,6 +731,7 @@ class Post_SMTP_New_Wizard {
                     ).
                     '</span>
                 </div>
+                <div class="ps-wizard-divider"></div>
             </div>
         </div>
         ';
@@ -851,7 +852,7 @@ class Post_SMTP_New_Wizard {
 
         $html = '<p>' . esc_html__( 'You can set up any SMTP of your choice, but it is important to remember that custom SMTP may not have adequate security.', 'post-smtp' ) . '</p>';
         $html .= '<p>' . esc_html__( 'Kindly check our ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-other-smtp" target="_blank">' . esc_html__( 'SMTP documentation', 'post-smtp' ) . '</a>' . esc_html__( ' before implementation.', 'post-smtp' ) . '</p>';
-
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>Host Name</label></div>
@@ -1077,6 +1078,7 @@ public function render_gmail_settings() {
 			__( 'documentation', 'post-smtp' ),
 			__( 'for a successful integration.', 'post-smtp' )
 		);
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
@@ -1096,6 +1098,7 @@ public function render_gmail_settings() {
             __( 'Maileroo', 'post-smtp' ),
             __( 'is a transactional email provider. Enter your API Key and Endpoint below.', 'post-smtp' )
         );
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
@@ -1116,7 +1119,7 @@ public function render_gmail_settings() {
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Mandrill mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mandrill-with-post-smtp/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
-
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
@@ -1148,12 +1151,12 @@ public function render_gmail_settings() {
 
         $html = '<p>' . esc_html__( 'It is easy to integrate SendGrid mailer to your WordPress website. We recommend you to check the ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendgrid-with-post-smtp/" target="_blank">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
 
-
+        $html .= '<div class="ps-wizard-divider"></div>';
 
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-sendgrid-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDGRID_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
+            <input type="text" class="ps-sendgrid-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDGRID_API_KEY ) .']" value="'.$api_key.'" placeholder="">
             <div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://app.sendgrid.com/settings/api_keys" target="_blank">' . esc_html__( 'the API key above', 'post-smtp' ) . '</a> ' . esc_html__( 'in your SendGrid account.', 'post-smtp' ) . '</div>' .
         '</div>';
 
@@ -1183,7 +1186,7 @@ public function render_gmail_settings() {
         $api_key = null !== $this->options->getMailerSendApiKey() ? esc_attr ( $this->options->getMailerSendApiKey() ) : '';
 
         $html = '<p>' . esc_html__( 'It is easy to integrate MailerSend API mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mailersend-with-post-smtp/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
-
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
@@ -1212,7 +1215,7 @@ public function render_gmail_settings() {
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Mailgun mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-configure-post-smtp-with-mail-gun/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
-
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
@@ -1284,7 +1287,7 @@ public function render_gmail_settings() {
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Brevo mailer to your WordPress website. We recommend you to check the documentation for a successful integration.', 'post-smtp' ) . '</p>';
-
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
@@ -1313,7 +1316,7 @@ public function render_gmail_settings() {
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Mailtrap mailer to your WordPress website. We recommend you to check the documentation for a successful integration.', 'post-smtp' ) . '</p>';
-
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API Token</label></div>
@@ -1350,7 +1353,7 @@ public function render_gmail_settings() {
             esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-resend-with-post-smtp/' ),
             __( 'Resend Documentation', 'post-smtp' )
         );
-
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
@@ -1386,9 +1389,8 @@ public function render_gmail_settings() {
 
         $api_key = null !== $this->options->getPostmarkApiKey() ? esc_attr ( $this->options->getPostmarkApiKey() ) : '';
 
-
         $html = '<p>' . esc_html__( 'It is easy to integrate Postmark mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/postmark/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
-
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
@@ -1416,10 +1418,8 @@ public function render_gmail_settings() {
     public function render_sparkpost_settings() {
 
         $api_key = null !== $this->options->getSparkPostApiKey() ? esc_attr ( $this->options->getSparkPostApiKey() ) : '';
-
-
         $html = '<p>' . esc_html__( 'It is easy to integrate SparkPost mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/sparkpost/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
-
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
@@ -1449,7 +1449,7 @@ public function render_gmail_settings() {
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Elastic Email mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-elastic-email" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
-
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
@@ -1480,7 +1480,7 @@ public function render_gmail_settings() {
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Mailjet mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-mailjet" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
-
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
@@ -1517,7 +1517,7 @@ public function render_gmail_settings() {
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate SendPulse mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-sendpulse/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
-
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API ID</label></div>
@@ -1570,7 +1570,7 @@ public function render_gmail_settings() {
 
         $html = '<p>' . esc_html__( 'Due to the technical nature of this SMTP implementation, it is recommended to study this step-by-step guide at the time of setup.', 'post-smtp' ) . '</p>';
         $html .= '<p>⚠️ ' . esc_html__( 'You must have a working SSL certificate installed on your WordPress site to use it with Amazon SES.', 'post-smtp' ) . '</p>';
-
+        $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>Access Key ID</label></div>
@@ -1910,7 +1910,7 @@ public function render_gmail_settings() {
 
 
         echo '<p>' . esc_html__( 'It is easy to integrate SMTP2GO mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-setup-smtp2go-with-post-smtp/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
-
+        echo '<div class="ps-wizard-divider"></div>';
         echo '<div class="ps-form-control">
             <div><label>API Key</label></div>
             <input type="text" class="ps-smtp2go-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SMTP2GO_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">';

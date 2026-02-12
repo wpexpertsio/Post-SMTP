@@ -368,6 +368,11 @@
   margin: 15px 0 15px 0;
 }
 
+.ps-wizard-divider {
+  border-top: 1px solid #E0E0E0;
+  margin: 24px 0;
+}
+
 .ps-wizard-socket-radio label {
   margin: 0;
   overflow: hidden;
