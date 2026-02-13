@@ -376,7 +376,7 @@ class Post_SMTP_New_Wizard {
                                                 <div><label><?php _e( 'Recipient Email Address', 'post-smtp' ) ?></label></div>
                                                 <input type="text" class="ps-test-to" required data-error="Enter Recipient Email Address" name="postman_test_options[test_email]" value="<?php echo esc_attr( wp_get_current_user()->user_email ); ?>" placeholder="Recipient Email Address">
                                                 <span class="ps-form-control-info"><?php _e( 'Enter the email address where you want to send a test email message.', 'post-smtp' ) ?></span>
-                                                <p style="color: #B3B3B3;" class="ps-form-control-info"><?php _e( 'Are your WordPress emails getting broken? Here how you can ', 'post-smtp' ) ?> <a href="https://postmansmtp.com/fix-for-broken-emails/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank"><?php _e( 'fix Broken Emails', 'post-smtp' ) ?></a>.</p>
+                                                <p style="color: #B3B3B3;" class="ps-form-control-info"><?php _e( 'Are your WordPress emails getting broken? Check out our guide on', 'post-smtp' ) ?> <a href="https://postmansmtp.com/fix-for-broken-emails/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank"><?php _e( 'how to fix Broken Emails', 'post-smtp' ) ?></a>.</p>
                                             </div>
                                             <button class="button button-primary ps-blue-btn ps-wizard-send-test-email" data-step="3"><?php _e( 'Send Test Email', 'post-smtp' ) ?> <span class="dashicons dashicons-email"></span></button>
                                             <div>
@@ -568,7 +568,7 @@ class Post_SMTP_New_Wizard {
                                 </div>
                                 <div class="ps-wizard-view-logs">
                                     <div><a href="<?php echo esc_url( admin_url( 'admin.php?page=postman_email_log' ) ); ?>" class="button button-primary ps-blue-btn"><?php esc_html_e( 'View logs', 'post-smtp' ); ?> <span class="dashicons dashicons-arrow-right-alt"></span></a></div>
-                                    <div><a href="<?php echo esc_url( admin_url( 'admin.php?page=postman' ) ); ?>" style="font-size: 12px; color: #999999;"><?php esc_html_e( 'Skip to dashboard', 'post-smtp' ); ?></a></div>
+                                    <div style="text-align:center"><a href="<?php echo esc_url( admin_url( 'admin.php?page=postman' ) ); ?>" style="font-size: 12px; color: #999999;"><?php esc_html_e( 'Skip to dashboard', 'post-smtp' ); ?></a></div>
                                 </div>
                                 <div style="clear: both"></div>
                             </div>
@@ -948,10 +948,10 @@ public function render_gmail_settings() {
     $html .= '<hr />';
     if ( post_smtp_has_pro() ) {
         $one_click = true;
-        $html .= sprintf( '<h3>%1$s</h3>', __( 'One-Click Setup', 'post-smtp' ) );
+        $html .= sprintf( '<div class="ps-force"><h3>%1$s</h3>', __( 'One-Click Setup', 'post-smtp' ) );
     } else {
         $html .= sprintf(
-            '<h3 class="%1$s" >%1$s <span class="ps-wizard-pro-tag">%2$s</span></h3>',
+            '<div class="ps-force"><h3 class="%1$s" >%1$s <span class="ps-wizard-pro-tag">%2$s</span></h3>',
             __( 'One-Click Setup', 'post-smtp' ),
             __( 'PRO', 'post-smtp' )
         );
@@ -971,7 +971,7 @@ public function render_gmail_settings() {
                 <span class='slider round'></span>
             </label> 
         </div>
-    </div>";
+    </div></div>";
     // Client ID and Secret inputs
     $html .= '<div class="ps-disable-one-click-setup ' . ( $gmail_oneclick_enabled ? 'ps-hidden' : '' ) . '">
     
@@ -980,13 +980,13 @@ public function render_gmail_settings() {
     $html .= '
     <div class="ps-form-control">
         <div><label>' . __( 'Client ID', 'post-smtp' ) . '</label></div>
-        <input type="text" class="ps-gmail-api-client-id" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please enter Client ID.', 'post-smtp' ) ) . '" name="postman_options[' . esc_attr( PostmanOptions::CLIENT_ID ) . ']" value="' . $client_id . '" placeholder="Client ID">
+        <input type="text" class="ps-gmail-api-client-id" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please enter Client ID.', 'post-smtp' ) ) . '" name="postman_options[' . esc_attr( PostmanOptions::CLIENT_ID ) . ']" value="' . $client_id . '" placeholder="">
     </div>';
 
     $html .= '
     <div class="ps-form-control">
         <div><label>' . __( 'Client Secret', 'post-smtp' ) . '</label></div>
-        <input type="text" class="ps-gmail-client-secret" ' . esc_attr( $client_secret_required ) . ' data-error="' . esc_attr( __( 'Please enter Client Secret.', 'post-smtp' ) ) . '" name="postman_options[' . esc_attr( PostmanOptions::CLIENT_SECRET ) . ']" value="' . $client_secret . '" placeholder="Client Secret">
+        <input type="text" class="ps-gmail-client-secret" ' . esc_attr( $client_secret_required ) . ' data-error="' . esc_attr( __( 'Please enter Client Secret.', 'post-smtp' ) ) . '" name="postman_options[' . esc_attr( PostmanOptions::CLIENT_SECRET ) . ']" value="' . $client_secret . '" placeholder="">
     </div>';
 
     $html .= '
@@ -999,14 +999,11 @@ public function render_gmail_settings() {
     <div class="ps-form-control">
         <div><label>' . __( 'Authorized redirect URI', 'post-smtp' ) . '</label></div>
         <input type="text" class="ps-gmail-redirect-uri" value="' . esc_url( admin_url( 'options-general.php?page=postman' ) ) . '" readonly>
-        <span class="ps-form-control-info">
-        ' . __( 'Please copy this URL into the "Authorized redirect URL" field of your Gmail account settings.', 'post-smtp' ) . '
-        </span>
+   
     </div>';
 
     $html .= '
-    <h3>' . __( 'Authorization (Required)', 'post-smtp' ) . '</h3>
-    <p>' . __( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ) . '</p>
+
     <input type="hidden"  class="ps-gmail-warning" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) ) . '" />
     <a href="' . esc_url( admin_url( 'admin-post.php?action=postman/requestOauthGrant' ) ) . '" class="button button-primary ps-blue-btn" id="ps-wizard-connect-gmail">' . __( 'Connect to Gmail API', 'post-smtp' ) . '</a>';
 
@@ -1073,7 +1070,7 @@ public function render_gmail_settings() {
 			'<p>
 				%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s
 			</p>',
-			__( 'Integrating Sweego with your WordPress site. We recommend checking the', 'post-smtp' ),
+			__( 'It is easy to integrate Sweego API mailer to your WordPress website.  We recommend checking the', 'post-smtp' ),
 			esc_url( 'https://postmansmtp.com/docs/mailers/how-to-setup-sweego-with-post-smtp/' ),
 			__( 'documentation', 'post-smtp' ),
 			__( 'for a successful integration.', 'post-smtp' )
@@ -1102,7 +1099,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-maileroo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILEROO_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
+            <input type="text" class="ps-maileroo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILEROO_API_KEY ) .']" value="'.$api_key.'" placeholder="">
         </div>';
         return $html;
     }
@@ -1123,7 +1120,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-mandrill-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MANDRILL_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <input type="text" class="ps-mandrill-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MANDRILL_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1190,7 +1187,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-mailersend-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILERSEND_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <input type="text" class="ps-mailersend-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILERSEND_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
          '<div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://app.mailersend.com/api-tokens" target="_blank">' . esc_html__( 'the API key', 'post-smtp' ) . '</a>' . esc_html__( ' in your Mailersend account.', 'post-smtp' ) . '</div>'
             .'
         </div>
@@ -1219,7 +1216,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-mailgun-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILGUN_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <input type="text" class="ps-mailgun-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILGUN_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1239,7 +1236,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>Domain Name</label></div>
-            <input type="text" class="ps-mailgun-domain-name" required data-error="'.__( 'Please Domain Name.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILGUN_DOMAIN_NAME ) .']" value="'.$domain_name.'" placeholder="Domain Name">
+            <input type="text" class="ps-mailgun-domain-name" required data-error="'.__( 'Please Domain Name.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILGUN_DOMAIN_NAME ) .']" value="'.$domain_name.'" placeholder="">
             <span class="ps-form-control-info">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
@@ -1255,8 +1252,8 @@ public function render_gmail_settings() {
         ';
 
         $html .= '
-        <div class="ps-form-control">
-            <div><label>Mailgun Europe Region?</label></div>
+        <div class="ps-form-control ps-force" >
+            <div><label>Mailgun Europe Region</label></div>
             <div class="ps-form-switch-control">
                 <label class="ps-switch-1">
                     <input type="checkbox" '.$region.' name="postman_options['.esc_attr( PostmanOptions::MAILGUN_REGION ).']">
@@ -1265,7 +1262,7 @@ public function render_gmail_settings() {
             </div>
             '.
 
-            '<div class="ps-form-control-info">' . esc_html__( 'Set your endpoint in Europe if your business operates under EU laws. ', 'post-smtp' ) . '<a href="https://www.mailgun.com/about/regions/" target="_blank">' . esc_html__( 'Learn', 'post-smtp' ) . '</a></div>'
+            '<div class="ps-form-control-info">' . esc_html__( 'Set your endpoint in Europe if your business operates under EU laws. ', 'post-smtp' ) . '<a href="https://www.mailgun.com/about/regions/" target="_blank">' . esc_html__( 'Learn more about Mailgun regions.', 'post-smtp' ) . '</a></div>'
             .'
         </div> 
         ';
@@ -1291,7 +1288,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-brevo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDINBLUE_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <input type="text" class="ps-brevo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDINBLUE_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1320,7 +1317,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Token</label></div>
-            <input type="text" class="ps-mailtrap-api-key" required data-error="'.__( 'Please enter API Token.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILTRAP_API_KEY ) .']" value="'.$api_key.'" placeholder="API Token">'.
+            <input type="text" class="ps-mailtrap-api-key" required data-error="'.__( 'Please enter API Token.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILTRAP_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1357,7 +1354,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-resend-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::RESEND_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <input type="text" class="ps-resend-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::RESEND_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1394,7 +1391,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-postmark-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::POSTMARK_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <input type="text" class="ps-postmark-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::POSTMARK_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1423,7 +1420,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-sparkpost-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SPARKPOST_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <input type="text" class="ps-sparkpost-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SPARKPOST_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1453,7 +1450,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::ELASTICEMAIL_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">'.
+            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::ELASTICEMAIL_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1484,13 +1481,13 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key"></div>
+            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_API_KEY ) .']" value="'.$api_key.'" placeholder=""></div>
         ';
 
         $html .= '
         <div class="ps-form-control">
             <div><label>Secret Key</label></div>
-            <input type="text" class="ps-elasticemail-secret-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="Secret Key">'.
+            <input type="text" class="ps-elasticemail-secret-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1521,27 +1518,27 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>API ID</label></div>
-            <input type="text" class="ps-sendpulse-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDPULSE_API_KEY ) .']" value="'.$api_key.'" placeholder="API ID">
+            <input type="text" class="ps-sendpulse-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDPULSE_API_KEY ) .']" value="'.$api_key.'" placeholder=">
         '.
-        sprintf(
-            '<div class="ps-form-control-info"><a href="%1$s" target="_blank">%2$s</a> %3$s</div>',
-            esc_url( 'https://sendpulse.com/features/transactional' ),
-            __( 'Click here', 'post-smtp' ),
-            __( 'to create an account at SendPulse', 'post-smtp' )
-        ).
-        sprintf(
-            '<div class="ps-form-control-info">%1$s<a href="%2$s" target="_blank">%3$s</a></div>',
-            __( 'If you are already logged in follow this ink to get your API ID from Sendpulse ', 'post-smtp' ),
-            esc_url( 'https://login.sendpulse.com/settings/#api' ),
-            __( 'Get API ID', 'post-smtp' )
-        ).
+        // sprintf(
+        //     '<div class="ps-form-control-info"><a href="%1$s" target="_blank">%2$s</a> %3$s</div>',
+        //     esc_url( 'https://sendpulse.com/features/transactional' ),
+        //     __( 'Click here', 'post-smtp' ),
+        //     __( 'to create an account at SendPulse', 'post-smtp' )
+        // ).
+        // sprintf(
+        //     '<div class="ps-form-control-info">%1$s<a href="%2$s" target="_blank">%3$s</a></div>',
+        //     __( 'If you are already logged in follow this ink to get your API ID from Sendpulse ', 'post-smtp' ),
+        //     esc_url( 'https://login.sendpulse.com/settings/#api' ),
+        //     __( 'Get API ID', 'post-smtp' )
+        // ).
         '</div>'
         ;
 
         $html .= '
         <div class="ps-form-control">
             <div><label>API Secret</label></div>
-            <input type="text" class="ps-sendpulse-secret-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDPULSE_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="API Secret">'.
+            <input type="text" class="ps-sendpulse-secret-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDPULSE_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1574,12 +1571,12 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>Access Key ID</label></div>
-            <input type="text" class="ps-amazon-key-id" required data-error="'.__( 'Please enter Access Key ID', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ) .']" value="'.$access_key_id.'" placeholder="Access Key ID"></div>';
+            <input type="text" class="ps-amazon-key-id" required data-error="'.__( 'Please enter Access Key ID', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ) .']" value="'.$access_key_id.'" placeholder=""></div>';
 
         $html .= '
         <div class="ps-form-control">
             <div><label>Access Key Secret</label></div>
-            <input type="text" class="ps-amazon-key-secret" required data-error="'.__( 'Please enter Access Key Secret', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ) .']" value="'.$access_key_secret.'" placeholder="Access Key Secret">'.
+            <input type="text" class="ps-amazon-key-secret" required data-error="'.__( 'Please enter Access Key Secret', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ) .']" value="'.$access_key_secret.'" placeholder="">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1670,10 +1667,10 @@ public function render_gmail_settings() {
 
         if ( post_smtp_has_pro() ) {
             $one_click = true;
-            $html .= sprintf( '<h3>%1$s</h3>', __( 'One-Click Setup', 'post-smtp' ) );
+            $html .= sprintf( '<div class="ps-force"><h3>%1$s</h3>', __( 'One-Click Setup', 'post-smtp' ) );
         } else {
             $html .= sprintf(
-                '<h3>%1$s <span class="ps-wizard-pro-tag">%2$s</span></h3>',
+                '<div class="ps-force"><h3>%1$s <span class="ps-wizard-pro-tag">%2$s</span></h3>',
                 __( 'One-Click Setup', 'post-smtp' ),
                 __( 'PRO', 'post-smtp' )
             );
@@ -1708,7 +1705,7 @@ public function render_gmail_settings() {
                     <span class='slider round'></span>
                 </label> 
             </div>
-        </div>";
+        </div></div>";
 
         // Show business plan upgrade notice if needed
         if ( post_smtp_has_pro() && !$is_business_plan ) {
@@ -1749,7 +1746,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>'.__( 'Application (Client) ID', 'post-smtp' ).'</label></div>
-            <input type="text" class="ps-office365-client-id" ' . $client_id_required . '  data-error="'.__( 'Please enter Application (Client) ID.', 'post-smtp' ).'" name="postman_options[office365_app_id]" value="'.$app_client_id.'" placeholder="Application (Client) ID">
+            <input type="text" class="ps-office365-client-id" ' . $client_id_required . '  data-error="'.__( 'Please enter Application (Client) ID.', 'post-smtp' ).'" name="postman_options[office365_app_id]" value="'.$app_client_id.'" placeholder="">
             <span class="ps-form-control-info">'.
             '<div class="ps-form-control-info">' . esc_html__( 'You can find the ', 'post-smtp' ) . '<a href="https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize?redirect_uri=https%3A%2F%2Fportal.azure.com%2Fsignin%2Findex%2F&response_type=code%20id_token&scope=https%3A%2F%2Fmanagement.core.windows.net%2F%2Fuser_impersonation%20openid%20email%20profile&state=OpenIdConnect.AuthenticationProperties%3D3ck4pNl3uhpmQz6zVF-QK4L_RKv9glDdJlITzamc-wID4UbZU1Qb1lYDEbqyr7cc4qml3HIpLuGSbrYKEdzvAnslPezoXRu-_TkLEDHNWCPkZE2SqMJPPkcruP29vocPdJeuKpQbUtwtOQkHhU_0dJU_drkiHPqXROXPu9GJQZyJCyQ5rGsQWp0iZFhlRou7VL8PQOzgBoaCvcVH6XzNgZJFgmeYXjmxj7qK_RUQAcm1BkN2p30gkxAiDgtXHUBNFg-qk0aK_n2Nu-eACOL9oW1dZ2PckrjpZNo7SNgCoxG7dzqRAl3nH-hMoqrCq7HyvoA6LQQ9Bx6r071wB-cbwQA6oNP5E4GLAu9WpGs-tsFJvqnq-QR0PM-FZlD1ZupsKIuyNAWm0s4SlLneNh5hi8aMbVo5AJA5G7221N3Vz3zk3jVsD6kq5JZnJZLALPq6BdmTuBvZZfAF6_pSO47bgxdh6hUVNsRSCtGOqTsGcd8&response_mode=form_post&nonce=638717524432120598.YjE5MDc1ZDctYThiZS00NzZhLTgzOGMtZGYwMzMxMTAxNzA3MjFhMWE0OGQtMjIxMS00NDRlLWI5Y2UtODg1YmFjOTNmNTIw&client_id=c44b4083-3bb0-49c1-b47d-974e53cbdf3c&site_id=501430&client-request-id=844ca630-139b-496b-b93c-9a7b66797706&x-client-SKU=ID_NET472&x-client-ver=7.5.0.0" target="_blank">' . esc_html__( 'client id', 'post-smtp' ) . '</a>' . esc_html__( ' here.', 'post-smtp' ) . '</div>'
             .'</span>
@@ -1759,7 +1756,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>'.__( 'Client Secret (Value)', 'post-smtp' ).'</label></div>
-            <input type="text" class="ps-office365-client-secret" ' . $client_secret_required . '  data-error="'.__( 'Please enter Client Secret (Value).', 'post-smtp' ).'" name="postman_options[office365_app_password]" value="'.$app_client_secret.'" placeholder="Client Secret (Value)">
+            <input type="text" class="ps-office365-client-secret" ' . $client_secret_required . '  data-error="'.__( 'Please enter Client Secret (Value).', 'post-smtp' ).'" name="postman_options[office365_app_password]" value="'.$app_client_secret.'" placeholder="">
             <span class="ps-form-control-info">'.
             /**
              * Translators: %1$s URL, %2$s URL Text, %3$s Text
@@ -1786,7 +1783,6 @@ public function render_gmail_settings() {
         ';
 
         $html .= '
-        <h3>'.__( 'Authorization (Required)', 'post-smtp' ).'</h3>
         <p>'.__( 'Before continuing, you\'ll need to allow this plugin to send emails using your Office 365 account.', 'post-smtp' ).'</p>
           <input class="office_365-require" type="hidden" '.$required.'  data-error="Please authenticate by clicking Connect to Office 365" />
         <a class="button button-primary ps-blue-btn" id="ps-wizard-connect-office365">Connect to Office 365</a>';
@@ -1869,14 +1865,14 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>Client ID</label></div>
-            <input type="text" class="ps-zoho-client-id" required data-error="'.__( 'Please enter Client ID.', 'post-smtp' ).'" name="postman_options['. esc_attr( ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ) .']" value="'.$client_id.'" placeholder="Client ID">
+            <input type="text" class="ps-zoho-client-id" required data-error="'.__( 'Please enter Client ID.', 'post-smtp' ).'" name="postman_options['. esc_attr( ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ) .']" value="'.$client_id.'" placeholder="">
         </div>
         ';
 
         $html .= '
         <div class="ps-form-control">
             <div><label>Client Secret</label></div>
-            <input type="text" class="ps-zoho-client-secret" required data-error="'.__( 'Please enter Client Secret.', 'post-smtp' ).'" name="postman_options['. esc_attr( ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ) .']" value="'.$client_secret.'" placeholder="Client Secret">
+            <input type="text" class="ps-zoho-client-secret" required data-error="'.__( 'Please enter Client Secret.', 'post-smtp' ).'" name="postman_options['. esc_attr( ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ) .']" value="'.$client_secret.'" placeholder="">
             <div class="ps-form-control-info">
                 ' . esc_html__( 'Check your ', 'post-smtp' ) . '<a href="https://api-console.zoho.com/" target="_blank">' . esc_html__( 'Zoho API credentials', 'post-smtp' ) . '</a>' . esc_html__( ' to find the Client ID and Secret.', 'post-smtp' ) . '
             </div>
@@ -1913,7 +1909,7 @@ public function render_gmail_settings() {
         echo '<div class="ps-wizard-divider"></div>';
         echo '<div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-smtp2go-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SMTP2GO_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">';
+            <input type="text" class="ps-smtp2go-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SMTP2GO_API_KEY ) .']" value="'.$api_key.'" placeholder="">';
 
         echo '<div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://app-eu.smtp2go.com/sending/apikeys/" target="_blank">' . esc_html__( 'the API key', 'post-smtp' ) . '</a>' . esc_html__( ' in your SMTP2GO account.', 'post-smtp' ) . '</div>';
 
