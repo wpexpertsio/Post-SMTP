@@ -575,7 +575,7 @@
 
 .ps-wizard-error,
 .ps-wizard-success {
-  display: inline-block;
+  display: block;
   font-weight: 600;;
 }
 
