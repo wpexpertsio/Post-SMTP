@@ -434,13 +434,11 @@ jQuery(document).ready(function () {
 
             });
 
-            // Validate Email Format for From Email
+            // Validate Email Format for From Email (only check that it contains "@")
             jQuery('.ps-name-email-settings').find('.ps-from-email').each(function (index, element) {
 
                 var email = jQuery(element).val();
-                var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-
-                if (email != '' && !emailReg.test(email)) {
+                if (email !== '' && email.indexOf('@') === -1) {
                     var error = 'Invalid Email Address';
                     jQuery('.ps-wizard-error').html(`<span class="dashicons dashicons-warning"></span> ${error}`);
                     validated = false;
