@@ -175,7 +175,7 @@ class Post_SMTP_New_Wizard {
                                 <?php wp_nonce_field( 'post-smtp', 'security' );  ?>
                                 <div class="ps-wizard-screens-container">
                                     <div class="ps-wizard-step ps-wizard-step-1">
-                                        <p style="width: 100%; margin-bottom: 10px;color:#707070"><?php echo esc_html__( 'Which mailer would you like to use to send emails? Not sure which mailer to choose? Check out our complete mailer guide for details on each option.', 'post-smtp' ); ?></p>
+                                        <p style="width: 100%; margin-bottom: 10px;color:#707070"><?php echo esc_html__( 'Choose a mailer from the following options.', 'post-smtp' ); ?></p>
                                         <div class="ps-wizard-sockets">      
                                         <?php
 
@@ -682,7 +682,11 @@ class Post_SMTP_New_Wizard {
                 <h3 class="ps-from-address">From Address</h3>
                 <p class="ps-from-description">'. sprintf(
                     '%1$s',
-                    esc_html__( 'It is important to indicate the origin (email and name) of a message for the receiver. The From Address provides these details.', 'post-smtp' )
+                    esc_html__( 'It is important to indicate the origin (email and name) of a message for the receiver. The “From Address” provides these details.', 'post-smtp' )
+                ) .'</p>
+                <p class="ps-from-description">'. sprintf(
+                    '%1$s',
+                    esc_html__( 'You may edit the following field if you do not wish to use default settings.', 'post-smtp' )
                 ) .'</p>
                 <div><label class="ps-from-label">From Email</label></div>
                 <input type="text" class="ps-from-email" required data-error="'.__( 'Please enter From Email.', 'post-smtp' ).'" name="postman_options['.esc_attr( PostmanOptions::MESSAGE_SENDER_EMAIL ).']" value="'.$from_email.'" placeholder="Email address that emails are sent from">
@@ -698,7 +702,7 @@ class Post_SMTP_New_Wizard {
                     <span>'.
                     sprintf( 
                         '%1$s <b>%2$s</b> %3$s <b>%4$s</b> %5$s <b>%6$s</b>',
-                        __( 'Enable this to prevent changes on the', 'post-smtp' ),
+                        __( 'Check this to prevent changes on the', 'post-smtp' ),
                         __( 'From Email', 'post-smtp' ),
                         __( 'field by other', 'post-smtp' ),
                         __( 'Plugins', 'post-smtp' ),
@@ -722,7 +726,7 @@ class Post_SMTP_New_Wizard {
                     <span>'.
                     sprintf( 
                         '%1$s <b>%2$s</b> %3$s <b>%4$s</b> %5$s <b>%6$s</b>',
-                        __( 'Enable this to prevent changes on the', 'post-smtp' ),
+                        __( 'Check this to prevent changes on the', 'post-smtp' ),
                         __( 'From Name', 'post-smtp' ),
                         __( 'field by other', 'post-smtp' ),
                         __( 'Plugins', 'post-smtp' ),
@@ -888,7 +892,7 @@ class Post_SMTP_New_Wizard {
             <div><label>Password</label></div>
             <input type="text" class="ps-smtp-password" required data-error="'.__( 'Please enter Password.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::BASIC_AUTH_PASSWORD ) .']" value="'.$password.'" placeholder="Password">
             <span class="ps-form-control-info">
-            '.__( 'Password or App Password.', 'post-smtp' ).'
+            '.__( 'App Password.', 'post-smtp' ).'
             </span>
         </div>
         ';
@@ -948,10 +952,10 @@ public function render_gmail_settings() {
     $html .= '<hr />';
     if ( post_smtp_has_pro() ) {
         $one_click = true;
-        $html .= sprintf( '<div class="ps-force"><h3>%1$s</h3>', __( 'One-Click Setup', 'post-smtp' ) );
+        $html .= sprintf( '<h3>%1$s</h3>', __( 'One-Click Setup', 'post-smtp' ) );
     } else {
         $html .= sprintf(
-            '<div class="ps-force"><h3 class="%1$s" >%1$s <span class="ps-wizard-pro-tag">%2$s</span></h3>',
+            '<h3 class="%1$s" >%1$s <span class="ps-wizard-pro-tag">%2$s</span></h3>',
             __( 'One-Click Setup', 'post-smtp' ),
             __( 'PRO', 'post-smtp' )
         );
@@ -971,12 +975,12 @@ public function render_gmail_settings() {
                 <span class='slider round'></span>
             </label> 
         </div>
-    </div></div>";
+    </div>";
     // Client ID and Secret inputs
     $html .= '<div class="ps-disable-one-click-setup ' . ( $gmail_oneclick_enabled ? 'ps-hidden' : '' ) . '">
-    
-    <p>' . esc_html__( 'Manual Setup (FREE)', 'post-smtp' ) . '</p><p>' . esc_html__( 'The free Gmail mailer requires you to create an app manually to generate the Client ID and Client Secret.', 'post-smtp' ) . '</p>';
 
+    <h3 class="%1$s" >Manual Setup</h3>
+    <p>' . esc_html__( 'The free Gmail mailer requires you to create an app manually to generate the Client ID and Client Secret. This step-by-step guide will walk you through the whole process.', 'post-smtp' ) . '</p>';
     $html .= '
     <div class="ps-form-control">
         <div><label>' . __( 'Client ID', 'post-smtp' ) . '</label></div>
@@ -999,11 +1003,13 @@ public function render_gmail_settings() {
     <div class="ps-form-control">
         <div><label>' . __( 'Authorized redirect URI', 'post-smtp' ) . '</label></div>
         <input type="text" class="ps-gmail-redirect-uri" value="' . esc_url( admin_url( 'options-general.php?page=postman' ) ) . '" readonly>
-   
+        <span class="ps-form-control-info">'. esc_html__( 'Please copy this URL into the Authorized Redirect URI field of your Gmail account settings.', 'post-smtp' ) .'</span>
     </div>';
 
     $html .= '
-
+	 <h3>Authorization (Required)</h3>
+    <p>Before continuing, you will need to allow this plugin to send emails using Gmail API.</p>
+    
     <input type="hidden"  class="ps-gmail-warning" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) ) . '" />
     <a href="' . esc_url( admin_url( 'admin-post.php?action=postman/requestOauthGrant' ) ) . '" class="button button-primary ps-blue-btn" id="ps-wizard-connect-gmail">' . __( 'Connect to Gmail API', 'post-smtp' ) . '</a>';
 
@@ -1056,7 +1062,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-emailit-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::EMAILIT_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
+            <input type="text" class="ps-emailit-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::EMAILIT_API_KEY ) .']" value="'.$api_key.'" placeholder="">
         </div>';
         return $html;
     }
@@ -1079,7 +1085,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-sweego-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SWEEGO_API_KEY ) .']" value="'.$api_key.'" placeholder="API Key">
+            <input type="text" class="ps-sweego-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SWEEGO_API_KEY ) .']" value="'.$api_key.'" placeholder="">
         </div>';
         return $html;
     }
@@ -1590,8 +1596,7 @@ public function render_gmail_settings() {
         $html .= '
         <div class="ps-form-control">
             <div><label>SES Region</label></div>
-            <input type="text" class="ps-amazon-region" required data-error="'.__( 'Please enter SES Region', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ) .']" value="'.$region.'" placeholder="SES Region">
-            <span class="ps-form-control-info">' . esc_html__( 'Enter the correct region', 'post-smtp' ) . '</span>
+            <input type="text" class="ps-amazon-region" required data-error="'.__( 'Please enter SES Region', 'post-smtp' ).'" name="postman_options['. esc_attr( PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ) .']" value="'.$region.'" placeholder="Enter the correct region">
         </div>
         ';
 
@@ -1662,7 +1667,6 @@ public function render_gmail_settings() {
                 $required = ( ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) || ( $has_access_token && $has_email ) ) && $client_id_required ? '' : 'required';
             }
 
-        $html .= __( 'The configuration steps are more technical than other options, so our detailed guide will walk you through the whole process.', 'post-smtp' );
         $html .= '<hr />';
 
         if ( post_smtp_has_pro() ) {
@@ -1678,7 +1682,7 @@ public function render_gmail_settings() {
             $one_click_class .= ' disabled';
         }
 
-        $html .= __( 'Enable the option for a quick and easy way to connect with Microsoft 365 / Outlook without the need of manually creating an app', 'post-smtp' );
+        $html .= __( 'Enable the option for a quick, easy way to connect to Microsoft 365 without manually creating an app.', 'post-smtp' );
 
         // Check if user has business plan for Office 365 one-click
         $is_business_plan = false;
@@ -1733,16 +1737,17 @@ public function render_gmail_settings() {
  	  
 		$html .= '<div class="ps-disable-one-click-setup ' . ( $office365_oneclick_enabled ? 'ps-hidden' : '' ) . '">';
 		
-        $html .= sprintf(
-            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s </p><a href="%4$s" target="_blank">%5$s</a>',
-            esc_url( 'https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account?icid=azurefreeaccount' ),
-            __( 'Office 365', 'post-smtp' ),
-            __( 'is a popular transactional email provider that sends more than 35 billion emails every month. If you\'re just starting out, the free plan allows you to send up to 100 emails each day without entering your credit card details', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/docs/mailers/microsoft-365-one-click-smtp/' ),
-            __( 'Read how to setup Office 365', 'post-smtp' )
-        );
+        // $html .= sprintf(
+        //     '<p><a href="%1$s" target="_blank">%2$s</a> %3$s </p><a href="%4$s" target="_blank">%5$s</a>',
+        //     esc_url( 'https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account?icid=azurefreeaccount' ),
+        //     __( 'Office 365', 'post-smtp' ),
+        //     __( 'is a popular transactional email provider that sends more than 35 billion emails every month. If you\'re just starting out, the free plan allows you to send up to 100 emails each day without entering your credit card details', 'post-smtp' ),
+        //     esc_url( 'https://postmansmtp.com/docs/mailers/microsoft-365-one-click-smtp/' ),
+        //     __( 'Read how to setup Office 365', 'post-smtp' )
+        // );
        
-		
+		$html .= '<hr /> <h3>Manual Setup</h3>';
+
         $html .= '
         <div class="ps-form-control">
             <div><label>'.__( 'Application (Client) ID', 'post-smtp' ).'</label></div>
@@ -1783,6 +1788,7 @@ public function render_gmail_settings() {
         ';
 
         $html .= '
+        <h3>Authorization (Required)</h3>
         <p>'.__( 'Before continuing, you\'ll need to allow this plugin to send emails using your Office 365 account.', 'post-smtp' ).'</p>
           <input class="office_365-require" type="hidden" '.$required.'  data-error="Please authenticate by clicking Connect to Office 365" />
         <a class="button button-primary ps-blue-btn" id="ps-wizard-connect-office365">Connect to Office 365</a>';

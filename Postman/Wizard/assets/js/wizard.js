@@ -1356,7 +1356,7 @@ jQuery(document).ready(function ($) {
             $p.data("short-text", shortText);
 
             // Start with short text
-            $p.html(shortText + ' <a href="#" class="ps-toggle-text">Show More</a>');
+            // $p.html(shortText + ' <a href="#" class="ps-toggle-text">Show More</a>');
         }
     });
 
@@ -1409,5 +1409,19 @@ jQuery(document).ready(function ($) {
 
         });
     });
+
+	jQuery(function ($) {
+        jQuery(".ps-form-ui.ps-wizard-socket.gmail_api h3")
+          .first()
+          .text("Google Workspace (Gmail) API");
+        
+        jQuery(".ps-form-ui.ps-wizard-socket.mandrill_api h3")
+          .first()
+          .text("Mandrill (Mailchimp Transactional) API");
+  
+        jQuery(".ps-form-ui.ps-wizard-socket.office365_api h3")
+          .first()
+          .text("Microsoft Office 365 API");
+      });
 
 });
