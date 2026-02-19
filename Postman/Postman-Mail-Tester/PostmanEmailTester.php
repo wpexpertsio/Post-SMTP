@@ -69,10 +69,11 @@ class Postman_Email_Tester {
         }
    
         if ( $this->requires_test_api_verification( $socket ) ) {
-            $this->handle_sockets_check( $from_email, $args, $socket  );
-        } else {
-            $this->handle_legacy_test( $email, $args );
-        }
+            $this->handle_sockets_check( $email, $args, $socket  );
+        } 
+        // else {
+        //     $this->handle_legacy_test( $email, $args );
+        // }
     }
 
     /**
