@@ -36,6 +36,21 @@ jQuery(document).ready(function () {
             return jQuery(this).find('.ps-pro-extension-outer').length > 0;
         });
 
+        var enabled_gmail = jQuery('.ps-enable-gmail-one-click').is(':checked');
+        if (enabled_gmail) {
+            jQuery('.gmail_api-outer').addClass('gmail-enabled');
+        }
+
+        var enabled_office = jQuery('.ps-enable-office365-one-click').is(':checked');
+        if (enabled_office) {
+            jQuery('.office365_api-outer').addClass('office-enabled');
+        }
+
+        jQuery(document).on('click', 'table tr:last-child .ps-wizard-edit', function (e) {
+            e.preventDefault();
+            jQuery('.ps-wizard-outer').addClass('ps-wizard-send-email');
+        });
+
         // If we don't have enough rows (e.g. less than 3), we might not need "See More"
         // But we should stick to the logic: if we have more than 2 rows worth of content.
         // Or if we already created the button, we continue.
@@ -1392,6 +1407,11 @@ jQuery(document).ready(function ($) {
     jQuery(document).on('click', '.ps-office365-btn', function (e) {
         e.preventDefault();
         var redirectURI = jQuery(this).attr('href');
+        var $button = jQuery(this);
+        var originalText = $button.text();
+
+        $button.prop('disabled', true).text('Redirecting...');
+
         jQuery.ajax({
             url: ajaxurl,
             type: 'POST',
@@ -1401,7 +1421,32 @@ jQuery(document).ready(function ($) {
                 FormData: jQuery('#ps-wizard-form').serialize(),
             },
             success: function (response) {
-                window.location.assign(redirectURI);
+                // Then, request a fresh Office One-Click auth URL with a fresh nonce.
+                jQuery.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        action: 'ps_get_office365_auth_url',
+                        nonce: (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.office365_auth_nonce) ? PostSMTPWizard.office365_auth_nonce : ''
+                    },
+                    success: function (response) {
+                        if (response.success && response.data && response.data.auth_url) {
+                            window.location.assign(response.data.auth_url);
+                        } else {
+                            $button.prop('disabled', false).text(originalText);
+                            if (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.office365AuthErrorText) {
+                                alert(PostSMTPWizard.office365AuthErrorText);
+                            }
+                        }
+                    },
+                    error: function () {
+                        $button.prop('disabled', false).text(originalText);
+                        if (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.office365AuthErrorText) {
+                            alert(PostSMTPWizard.office365AuthErrorText);
+                        }
+                    }
+                });
 
             },
 

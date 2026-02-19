@@ -101,6 +101,7 @@ class Post_SMTP_New_Wizard {
         add_action( 'wp_ajax_ps-save-wizard', array( $this, 'save_wizard' ) );
         add_action( 'wp_ajax_update_post_smtp_pro_option', array( $this, 'update_post_smtp_pro_option_callback' ) );
         add_action( 'wp_ajax_update_post_smtp_pro_option_office365', array( $this, 'update_post_smtp_pro_option_office365_callback' ) );
+        add_action( 'wp_ajax_ps_get_office365_auth_url', array( $this, 'ajax_get_office365_auth_url' ) );
         add_action( 'admin_action_zoho_auth_request', array( $this, 'auth_zoho' ) );
         add_action( 'admin_post_remove_oauth_action', array( $this, 'post_smtp_remove_oauth_action' ) );
         add_action( 'admin_init', array( $this, 'handle_gmail_oauth_redirect' ) );
@@ -616,6 +617,9 @@ class Post_SMTP_New_Wizard {
             ),
             // Add the nonce for pro option AJAX
             'pro_option_nonce' => wp_create_nonce('update_post_smtp_pro_option'),
+             // Nonce and messages for Gmail One-Click auth AJAX
+            'office365_auth_nonce' => wp_create_nonce( 'ps_get_office365_auth_url' ),
+            'office365AuthErrorText' => __( 'Failed to start Office 365 authentication. Please reload the page and try again.', 'post-smtp' ),
         );
 
         if( class_exists( 'Post_Smtp_Office365' ) ) {
@@ -1816,7 +1820,7 @@ public function render_gmail_settings() {
                 $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
                 $html .= '<p>' . esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Office 365 API.', 'post-smtp' ) . '</p>';
                 $html .= '<input class="office_365-require" type="hidden" ' . esc_attr( $required ) . ' value="' . ( ( $has_access_token && $has_email ) ? '1' : '' ) . '" data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Office 365 API', 'post-smtp' ) . '" />';
-                $html .= '<a href="' . esc_url( $office365_auth_url ) . '" class="button button-primary ps-office365-btn">';
+                $html .= '<a href="#" class="button button-primary ps-office365-btn">';
                 $html .= esc_html__( 'Sign in with Microsoft', 'post-smtp' );
                 $html .= '</a>';
             }
@@ -2010,6 +2014,43 @@ public function render_gmail_settings() {
 
     }
 
+    /**
+     * AJAX callback to generate a fresh Office 365 One-Click OAuth URL.
+     *
+     * This endpoint is called when the user clicks the "Sign in with Office 365" button
+     * for the Office 365 One-Click setup. It validates the request nonce and current user
+     * capability, then uses the shared helper `post_smtp_get_office365_auth_url()` to
+     * create an auth URL that contains a fresh `office365_oauth_redirect` nonce.
+     *
+     * The URL is returned as JSON and the browser is redirected client-side.
+     *
+     * @since 3.1.0
+     */
+    public function ajax_get_office365_auth_url() {
+
+        // Capability check: Only allow administrators.
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Unauthorized.' ), 403 );
+        }
+
+        // Nonce check for CSRF protection.
+        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_office365_auth_url' ) ) {
+            wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ), 400 );
+        }
+
+        if ( ! function_exists( 'post_smtp_get_office365_auth_url' ) ) {
+            wp_send_json_error( array( 'message' => 'Office 365 One-Click is not available.' ), 500 );
+        }
+
+        $auth_url = post_smtp_get_office365_auth_url();
+
+        if ( empty( $auth_url ) ) {
+            wp_send_json_error( array( 'message' => 'Failed to generate Office 365 auth URL.' ), 500 );
+        }
+
+        wp_send_json_success( array( 'auth_url' => esc_url_raw( $auth_url ) ) );
+    }
+    
     /**
      * Callback function to handle AJAX requests for updating the 'post_smtp_pro' option.
      *
@@ -2231,7 +2272,24 @@ public function render_gmail_settings() {
 	public function handle_office365_oauth_redirect() {
 		// Check if the required OAuth parameters are present in the URL.
 		if ( isset( $_GET['action'] ) && $_GET['action'] === 'office365_oauth_redirect' ) {
-			// Sanitize and retrieve URL parameters
+			                     
+            // Capability check: Only allow administrators to update OAuth tokens
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'post-smtp' ) );
+            }
+            
+            // CSRF protection: Verify nonce (required by security report)
+            if ( ! isset( $_GET['_wpnonce'] ) || empty( $_GET['_wpnonce'] ) ) {
+                wp_die( esc_html__( 'Security check failed. Nonce is missing.', 'post-smtp' ) );
+            }
+            
+            // Verify the nonce
+            $nonce = sanitize_text_field( $_GET['_wpnonce'] );
+            if ( ! wp_verify_nonce( $nonce, 'office365_oauth_redirect' ) ) {
+                wp_die( esc_html__( 'Security check failed. Invalid nonce. Please try again.', 'post-smtp' ) );
+            }
+
+            // Sanitize and retrieve URL parameters
 			$access_token  = sanitize_text_field( $_GET['access_token'] );
 			$refresh_token = isset( $_GET['refresh_token'] ) ? sanitize_text_field( $_GET['refresh_token'] ) : null;
 			$expires_in    = isset( $_GET['expires_in'] ) ? intval( $_GET['expires_in'] ) : 0;
