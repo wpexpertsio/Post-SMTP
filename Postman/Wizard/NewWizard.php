@@ -164,10 +164,15 @@ class Post_SMTP_New_Wizard {
                                     <td class="ps-wizard-text"><?php _e( 'Configure Mailer Settings', 'post-smtp' ) ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="2"></span></td>
                                 </tr>
-                                <tr class="ps-wizard-step-end ps-in-active-nav">
+                                <tr class="ps-wizard-step-between ps-in-active-nav">
                                     <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"><span class="ps-wizard-line"></span></span></td>
                                     <td class="ps-wizard-text"><?php _e( 'Send Test Email', 'post-smtp' ) ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="3"></span></td>
+                                </tr>
+                                <tr class="ps-wizard-step-end ps-in-active-nav">
+                                    <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"><span class="ps-wizard-line"></span></span></td>
+                                    <td class="ps-wizard-text"><?php _e( 'Finish', 'post-smtp' ); ?></td>
+                                    <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="4"></span></td>
                                 </tr>
                             </table>
                         </div>
@@ -524,15 +529,6 @@ class Post_SMTP_New_Wizard {
                     </div>
                     <div class="ps-wizard-footer">
                         <div class="ps-wizard-footer-left">
-                            <div class="ps-wizard-nav">
-                                <table>
-                                    <tr class="ps-in-active-nav">
-                                        <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"><span class="ps-wizard-line"></span></span></td>
-                                        <td class="ps-wizard-text"></td>
-                                        <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="4"></span></td>
-                                    </tr>
-                                </table>
-                            </div>
                         </div>
                         <div class="ps-wizard-footer-right">
                             

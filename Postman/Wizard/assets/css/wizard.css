@@ -1,10 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 .admin_page_postman-configuration_wizard {
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
 }
-.admin_page_postman-configuration_wizard::-webkit-scrollbar { 
-  display: none;  /* Safari and Chrome */
+
+.admin_page_postman-configuration_wizard::-webkit-scrollbar {
+  display: none;
+  /* Safari and Chrome */
 }
 
 .ps-wizard-top {
@@ -25,11 +30,11 @@
   padding: 6px 14px;
   border-radius: 3px;
   border: 1px solid #E2E9FB !important;
-  background: #ffffff  !important;
+  background: #ffffff !important;
   color: #214A72 !important;
   font-size: 12px;
   font-weight: 500;
-  box-shadow: 0px 1px 2px rgba(0,0,0,0.08);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.08);
   display: inline-flex !important;
   align-items: center;
   gap: 6px;
@@ -173,14 +178,13 @@
   background-color: #214A72;
 }
 
-.ps-in-active-nav  .ps-wizard-circle span.ps-tick:before {
+.ps-in-active-nav .ps-wizard-circle span.ps-tick:before {
   /* background-color: #d9d9d9; */
   border: 2px solid #CDCDCD;
 }
 
 .ps-active-nav .ps-wizard-circle span.ps-tick:before,
-.ps-in-active-nav .ps-wizard-circle span.ps-tick:before
- {
+.ps-in-active-nav .ps-wizard-circle span.ps-tick:before {
   content: '';
   height: 35px;
   width: 35px;
@@ -192,8 +196,7 @@
 }
 
 .ps-active-nav .ps-wizard-circle span.ps-tick,
-.ps-in-active-nav .ps-wizard-circle span.ps-tick
- {
+.ps-in-active-nav .ps-wizard-circle span.ps-tick {
   display: inline-table;
   width: 48px;
   height: 48px;
@@ -318,7 +321,7 @@
 }
 
 .office365_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-   height: 1047px !important;
+  height: 1047px !important;
 }
 
 .zohomail_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
@@ -336,21 +339,27 @@
 .sendpulse_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
   height: 650px !important;
 }
+
 .emailit_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-    height: 475px !important;
+  height: 475px !important;
 }
+
 .maileroo_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
   height: 475px !important;
 }
+
 .mailtrap_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-   height: 494px !important;
+  height: 494px !important;
 }
+
 .sweego_api-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
-   height: 494px !important;
+  height: 494px !important;
 }
+
 .gmail-enabled .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
   height: 1021px !important;
 }
+
 .office-enabled .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
   height: 840px !important
 }
@@ -398,7 +407,7 @@
   cursor: pointer;
 }
 
-.ps-wizard-socket-check:checked + label > .ps-wizard-socket-tick-container {
+.ps-wizard-socket-check:checked+label>.ps-wizard-socket-tick-container {
   opacity: 1;
 }
 
@@ -410,21 +419,25 @@
   margin-right: 15px;
   border-radius: 3px;
 }
+
 .ps-wizard-see-more-outer .ps-wizard-socket-radio,
 .ps-wizard-see-more-outer .ps-wizard-socket-radio label {
   cursor: pointer;
 }
-.ps-wizard-see-more-icon{
+
+.ps-wizard-see-more-icon {
   width: 50px;
   height: 32px;
   margin: 8px auto 4px;
   background: url('../images/seemore.png') no-repeat center center;
   background-size: contain;
 }
-.ps-wizard-see-more-text{
+
+.ps-wizard-see-more-text {
   margin-top: 2px;
 }
-.ps-pro-extension-outer{
+
+.ps-pro-extension-outer {
   border-radius: 3px;
   border: 1px solid #EFEFEF;
   background: linear-gradient(113deg, rgba(0, 168, 255, 0.00) 0.45%, rgba(63, 140, 216, 0.20) 46.66%, rgba(142, 210, 245, 0.20) 50.11%, rgba(142, 210, 245, 0.00) 99.55%), #FAFAFA;
@@ -432,11 +445,11 @@
 }
 
 .ps-wizard-socket-radio input {
-  display: none!important;
+  display: none !important;
 }
 
 .ps-wizard-socket-radio label {
-  margin: 0!important;
+  margin: 0 !important;
   /* display: inline-block; */
 }
 
@@ -470,12 +483,13 @@
   margin-bottom: 10px;
 }
 
-.ps-from-address{
+.ps-from-address {
   color: #214A72;
   font-size: 14px;
   font-style: normal;
   font-weight: 700;
-  line-height: 20px; /* 142.857% */
+  line-height: 20px;
+  /* 142.857% */
 }
 
 .ps-from-description {
@@ -511,6 +525,7 @@
   line-height: 40px;
   width: 184px;
 }
+
 .button-primary.ps-blue-btn.ps-disabled {
   background: #cccccc;
   border-color: #999999;
@@ -519,9 +534,9 @@
   opacity: 0.6;
 }
 
-.button-primary.ps-blue-btn.focus, 
-.button-primary.ps-blue-btn.hover, 
-.button-primary.ps-blue-btn:focus, 
+.button-primary.ps-blue-btn.focus,
+.button-primary.ps-blue-btn.hover,
+.button-primary.ps-blue-btn:focus,
 .button-primary.ps-blue-btn:hover {
   background: #214A72;
   border-color: #214A72;
@@ -536,15 +551,15 @@
   color: #000 !important;
 }
 
-.button-primary.ps-yellow-btn.focus, 
-.button-primary.ps-yellow-btn.hover, 
-.button-primary.ps-yellow-btn:focus, 
+.button-primary.ps-yellow-btn.focus,
+.button-primary.ps-yellow-btn.hover,
+.button-primary.ps-yellow-btn:focus,
 .button-primary.ps-yellow-btn:hover {
   background: #ffac31;
   border-color: #000000;
 }
 
-.button-primary.ps-blue-btn .dashicons, 
+.button-primary.ps-blue-btn .dashicons,
 .button-primary.ps-yellow-btn .dashicons {
   vertical-align: middle;
   font-size: 15px;
@@ -559,7 +574,7 @@
 }
 
 .ps-wizard-footer-right .ps-wizard-step-1,
-.ps-wizard-footer-right .ps-wizard-step-2, 
+.ps-wizard-footer-right .ps-wizard-step-2,
 .ps-wizard-footer-right .ps-wizard-step-3,
 .ps-wizard-footer-right .ps-wizard-step-4 {
   padding: 15px 10px;
@@ -576,7 +591,8 @@
 .ps-wizard-error,
 .ps-wizard-success {
   display: block;
-  font-weight: 600;;
+  font-weight: 600;
+  ;
 }
 
 .ps-loading-test-report {
@@ -590,7 +606,7 @@
 
 .ps-wizard-edit .dashicons-edit {
   cursor: pointer;
-  display:none;
+  display: none;
 }
 
 .ps-wizard-socket {
@@ -600,7 +616,7 @@
 .ps-wizard-back {
   font-size: 12px;
   text-decoration: none;
-  color: #375caf!important;
+  color: #375caf !important;
 }
 
 .ps-wizard-back span {
@@ -618,26 +634,28 @@
   color: #214A72;
 }
 
-.ps-form-ui input[type="text"], 
+.ps-form-ui input[type="text"],
 .ps-form-ui select {
-  width: 100%!important;
-  max-width: 100%!important;
+  width: 100% !important;
+  max-width: 100% !important;
   height: 37px;
   margin-top: 5px;
   border-radius: 2px;
   border: 1px solid #DCDFE5 !important;
- background: #FDFDFE !important;
+  background: #FDFDFE !important;
   border-radius: 0;
 }
+
 .ps-switch-1 .slider {
   background-color: #fff !important;
   border-radius: 20px;
-border: 0.5px solid #C2CDD9 !important;
+  border: 0.5px solid #C2CDD9 !important;
 }
-.ps-switch-1 .slider:before{
-    background-color: #C2CDD9 !important;
-    left: 1px !important;
-    bottom: 1px !important;
+
+.ps-switch-1 .slider:before {
+  background-color: #C2CDD9 !important;
+  left: 1px !important;
+  bottom: 1px !important;
 }
 
 .ps-form-control {
@@ -657,11 +675,12 @@ border: 0.5px solid #C2CDD9 !important;
   display: inline-block;
 }
 
-.ps-form-switch-control .ps-switch-1 input:checked + .slider {
+.ps-form-switch-control .ps-switch-1 input:checked+.slider {
   /* background-color: #214A72 !important; */
   border-color: #214A72 !important;
 }
-.ps-form-switch-control .ps-switch-1 input:checked + .slider:before {
+
+.ps-form-switch-control .ps-switch-1 input:checked+.slider:before {
   background-color: #214A72 !important;
 }
 
@@ -678,8 +697,8 @@ border: 0.5px solid #C2CDD9 !important;
 }
 
 .ps-wizard-card {
-    background: whitesmoke;
-    padding: 8px 15px;
+  background: whitesmoke;
+  padding: 8px 15px;
 }
 
 .ps-wizard-card p {
@@ -840,6 +859,7 @@ span.ps-pro-close-popup {
   -webkit-text-fill-color: transparent;
   font-weight: bolder;
 }
+
 #ps-pro-code-copy-notification .dashicons {
   vertical-align: middle;
 }
@@ -867,6 +887,7 @@ span.ps-pro-close-popup {
 .ps-wizard-outer.smtp2go_api-outer .ps-wizard-footer-left .ps-wizard-line::after {
   height: 515px !important;
 }
+
 .ps-wizard-outer.default-outer .ps-wizard-footer-left .ps-wizard-line::after {
   height: 320px !important;
 }
@@ -878,16 +899,18 @@ span.ps-pro-close-popup {
   padding: 0px 8px;
   border-radius: 50px;
 }
+
 .ps-enable-gmail-one-click.disabled {
   pointer-events: all;
   opacity: 0;
   cursor: not-allowed;
 }
+
 .ps-hidden {
   display: none;
 }
 
-.ps-office365-btn{
+.ps-office365-btn {
   background-color: #4285f4 !important;
   border-radius: 0px !important;
   line-height: 40px !important;
@@ -898,6 +921,7 @@ span.ps-pro-close-popup {
   text-decoration: none;
   height: 50px;
 }
+
 .ps-office365-btn::before {
   content: '';
   font-size: 20px;
@@ -910,7 +934,7 @@ span.ps-pro-close-popup {
   background-color: white;
 }
 
-.ps-gmail-btn{
+.ps-gmail-btn {
   background-color: #4285f4 !important;
   border-radius: 0px !important;
   line-height: 40px !important;
@@ -932,36 +956,38 @@ span.ps-pro-close-popup {
   background-color: white;
   padding-top: 5px;
 }
-.ps-remove-gmail-btn{
+
+.ps-remove-gmail-btn {}
+
+.ps-remove-office365-btn {
+  background: none !important;
+  color: red !important;
+  font-size: 10px !important;
+  margin-left: 20px !important;
+  border: none !important;
+  margin-top: 30px !important;
+  text-decoration: underline !important;
 }
 
-.ps-remove-office365-btn{
-    background: none !important;
-    color: red !important;
-    font-size: 10px !important;
-    margin-left: 20px !important;
-    border: none !important;
-    margin-top: 30px !important;
-    text-decoration: underline !important;
+
+.ps-wizard-socket .ps-remove-gmail-btn {
+  margin-top: 20px !important
 }
 
-  
-.ps-wizard-socket .ps-remove-gmail-btn{
-  margin-top:20px !important
-}
-.ps-disable-gmail-setup b{
+.ps-disable-gmail-setup b {
   display: inline-block;
   margin-left: 5px;
   margin-top: 30px !important;
- color: green;
+  color: green;
 }
-.ps-connect-with{
-	margin-left: 20px;
+
+.ps-connect-with {
+  margin-left: 20px;
 }
 
 /* Lets make wiz3rd responsive */
 .ps-dns-results p {
-  margin: 0;  
+  margin: 0;
 }
 
 .ps-dns-heading {
@@ -1034,9 +1060,11 @@ span.ps-pro-close-popup {
   margin: auto;
   font-size: 17px;
 }
-.ps-pro-popup-body .ps-pro-popup-content *:not(.dashicons){
+
+.ps-pro-popup-body .ps-pro-popup-content *:not(.dashicons) {
   font-family: "Poppins", sans-serif;
 }
+
 .ps-pro-popup-content h4 {
   font-weight: 400;
   font-size: 14px;
@@ -1060,6 +1088,7 @@ span.ps-pro-close-popup {
 .ps-pro-popup-body .ps-pro-popup-content strong {
   font-weight: 700;
 }
+
 .ps-pro-coupon span.copy-icon {
   position: absolute;
   width: 25px;
@@ -1072,10 +1101,12 @@ span.ps-pro-close-popup {
   justify-content: center;
   color: #5E7CBF;
 }
+
 .ps-pro-coupon span.copy-icon svg {
   width: 15px;
   height: 15px;
 }
+
 .ps-pro-popup-content a.button {
   font-weight: 600;
   color: #fff !important;
@@ -1083,6 +1114,7 @@ span.ps-pro-close-popup {
   width: auto;
   line-height: normal;
 }
+
 div#ps-pro-code-copy-notification {
   position: absolute;
   color: rgb(179, 213, 182);
@@ -1098,23 +1130,26 @@ div#ps-pro-code-copy-notification {
   background: rgb(225, 253, 228);
   display: none;
 }
+
 /* Lets make wizard responsive */
 
-.wizard-btn-css{
-	background: none !important;
-	color: red !important;
-    font-size: 10px !important;
-    margin-left: 100px; 
+.wizard-btn-css {
+  background: none !important;
+  color: red !important;
+  font-size: 10px !important;
+  margin-left: 100px;
 }
-.wizard-btn{
-	margin-left: 0px !important;
+
+.wizard-btn {
+  margin-left: 0px !important;
 }
+
 .icon-circle {
   width: 24px;
   height: 24px;
   background-color: #28a745;
   border-radius: 50%;
-  display: inline-flex; 
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-top: 4px;
@@ -1129,29 +1164,30 @@ div#ps-pro-code-copy-notification {
   transform: rotate(45deg);
   display: inline-block;
 }
-.ps-wizard-send-test-email:disabled{
- 	background: #cccccc;
-    border: 1px solid #999999;
-    color: #666666;
-    cursor: not-allowed;
-    opacity: 0.6;	
+
+.ps-wizard-send-test-email:disabled {
+  background: #cccccc;
+  border: 1px solid #999999;
+  color: #666666;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
-.ps-disable-office365-setup b{
-    display: inline-block;
-    margin-left: 5px;
-    margin-top: 30px !important;
-    color: green;
+.ps-disable-office365-setup b {
+  display: inline-block;
+  margin-left: 5px;
+  margin-top: 30px !important;
+  color: green;
 }
 
 /* Office 365 Business Plan Upgrade Styles */
 .ps-office365-upgrade-required {
-  
-    cursor: not-allowed;
+
+  cursor: not-allowed;
 }
 
 .ps-office365-upgrade-required input[type="checkbox"] {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 label.ps-office365-upgrade-required:hover:before {
@@ -1161,7 +1197,7 @@ label.ps-office365-upgrade-required:hover:before {
   right: 0;
   width: 400px;
   height: 288px;
-   background: url(images/office-once-click.gif) no-repeat #ffff;
+  background: url(images/office-once-click.gif) no-repeat #ffff;
   box-shadow: 0px 3px 36px -7px #000;
   border-radius: 5px;
   z-index: 2;
@@ -1169,30 +1205,35 @@ label.ps-office365-upgrade-required:hover:before {
   background-size: 100%;
 
 }
-.ps-wizard .ps-wizard-footer .ps-wizard-nav .ps-wizard-line:after{
-	height: 325px;
+
+.ps-wizard .ps-wizard-footer .ps-wizard-nav .ps-wizard-line:after {
+  height: 325px;
 }
-.ps-wizard.ps-see-more-open .ps-wizard-footer .ps-wizard-nav .ps-wizard-line:after{
-	height: 505px;
+
+.ps-wizard.ps-see-more-open .ps-wizard-footer .ps-wizard-nav .ps-wizard-line:after {
+  height: 505px;
 }
-.ps-wizard .ps-wizard-send-email .ps-wizard-footer .ps-wizard-nav .ps-wizard-line:after{
-	height: 345px;
+
+.ps-wizard .ps-wizard-send-email .ps-wizard-footer .ps-wizard-nav .ps-wizard-line:after {
+  height: 345px;
 }
+
 span.ps-wizard-line:after {
-    content: '';
-    position: absolute;
-    width: 1.5px;
-    height: 26px;
-    left: 24px;
-    bottom: 46px;
-    z-index: -3;
+  content: '';
+  position: absolute;
+  width: 1.5px;
+  height: 26px;
+  left: 24px;
+  bottom: 46px;
+  z-index: -3;
 }
 
 /* Lets make wizard responsive */
-.post-smtp_page_postman-configuration_wizard{
+.post-smtp_page_postman-configuration_wizard {
   background-color: #fff;
 }
-.ps-force{
+
+.ps-force {
   /* display: flex; */
   /* width: 500px; */
   padding: 10px;
@@ -1202,9 +1243,10 @@ span.ps-wizard-line:after {
   gap: 8px;
   border-radius: 4px;
   background: #F8F8F8;
-  margin-top:20px;
+  margin-top: 20px;
 }
-.ps-force span{
+
+.ps-force span {
   color: #707070;
   font-size: 10px;
   font-style: normal;
@@ -1261,6 +1303,7 @@ span.ps-wizard-line:after {
   height: 12px;
   margin-right: 4px;
 }
+
 .ps-mobile-check svg {
   display: block;
 }
@@ -1274,14 +1317,29 @@ span.ps-wizard-line:after {
   text-align: center;
   box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 }
-.ps-mobile-notice-content-title{
+
+.ps-mobile-notice-content-title {
   color: #214A72 !important;
   font-family: Poppins;
-  font-size: 13.16px !important;;
+  font-size: 13.16px !important;
+  ;
   font-style: normal;
-  font-weight: 700 !important;;
-  line-height: 150%; /* 19.74px */
+  font-weight: 700 !important;
+  ;
+  line-height: 150%;
+  /* 19.74px */
 }
-.ps-app-download-button a{
+
+.ps-app-download-button a {
   padding-top: 5px;
+}
+
+.ps-wizard-step-end.ps-active-nav .ps-wizard-circle span.ps-tick:before {
+  content: "\f147";
+  background-color: #214A72;
+  color: white;
+  border: none;
+  width: auto;
+  height: auto;
+  margin: 0;
 }

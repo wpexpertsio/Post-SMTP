@@ -543,8 +543,8 @@ jQuery(document).ready(function () {
 
         var nextStep = stepID + 1;
 
-        jQuery(`*[data-step="${stepID}"]`).closest('tr').removeClass();
-        jQuery(`*[data-step="${nextStep}"]`).closest('tr').removeClass();
+        jQuery(`*[data-step="${stepID}"]`).closest('tr').removeClass('ps-active-nav ps-in-active-nav');
+        jQuery(`*[data-step="${nextStep}"]`).closest('tr').removeClass('ps-active-nav ps-in-active-nav');
         jQuery(`*[data-step="${nextStep}"]`).closest('tr').addClass('ps-active-nav');
         refreshWizard();
 
