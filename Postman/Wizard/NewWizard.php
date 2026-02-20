@@ -145,7 +145,7 @@ class Post_SMTP_New_Wizard {
                 <div class="ps-logo">
                     <img src="<?php echo esc_attr( POST_SMTP_ASSETS ) . '/images/logos/post-smtp-logo-large.svg'; ?>" width="250px" />
                 </div>
-                <a href="<?php echo esc_url( admin_url() ); ?>" class="button ps-back-dashboard">
+                <a href="<?php echo esc_url( admin_url( 'admin.php?page=postman' ) ); ?>" class="button ps-back-dashboard">
                     <?php esc_html_e( 'Back to Dashboard', 'post-smtp' ); ?>
                 </a>
             </div>
@@ -300,7 +300,7 @@ class Post_SMTP_New_Wizard {
 
 
                                             }
-
+                                            
                                             ?>
                                             <div class="ps-wizard-socket-radio-outer">
                                                 <div class="ps-wizard-socket-radio <?php echo !empty( $is_pro ) ? esc_attr( $is_pro ) . '-outer' : ''; ?>" <?php echo !empty( $is_pro ) ? 'data-url="' . esc_url( $product_url ) . '"' : ''; ?>>
@@ -1639,7 +1639,6 @@ public function render_gmail_settings() {
                 $required = ( ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) || ( $has_access_token && $has_email ) ) && $client_id_required ? '' : 'required';
             }
 
-        $html .= '<hr />';
 
         if ( post_smtp_has_pro() ) {
             $one_click = true;
@@ -1824,7 +1823,7 @@ public function render_gmail_settings() {
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
 
-            $html = '<p>' . esc_html__( 'It is recommended to study the ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/zoho-mail-pro/" target="_blank">' . esc_html__( 'Zoho Mail integration doc', 'post-smtp' ) . '</a>' . esc_html__( ' at the time of setup.', 'post-smtp' ) . '</p>';
+        $html = '<p>' . esc_html__( 'It is recommended to study the ', 'post-smtp' ) . '<a href="https://postmansmtp.com/docs/mailers/how-to-setup-zoho-with-post-smtp/" target="_blank">' . esc_html__( 'Zoho Mail integration doc', 'post-smtp' ) . '</a>' . esc_html__( ' at the time of setup.', 'post-smtp' ) . '</p>';
 
         $html .= '
         <div class="ps-form-control">
@@ -1862,7 +1861,7 @@ public function render_gmail_settings() {
             <div><label>Redirect URI</label></div>
             <input type="text" class="ps-zoho-redirect-uri" value="'.admin_url( 'admin.php?page=postman/' ).'" readonly>
             <span class="ps-form-control-info">
-            '.__( 'Please copy this URL into the "Redirect URL" field of your Zoho account settings.', 'post-smtp' ).'
+            '.sprintf( __( 'Please copy this URL into the %1$s"Redirect URL"%2$s field of your Zoho account settings.', 'post-smtp' ), '<b>', '</b>' ).'
             </span>
         </div>
         ';

@@ -1453,18 +1453,54 @@ jQuery(document).ready(function ($) {
         });
     });
 
-	jQuery(function ($) {
+    jQuery(function ($) {
         jQuery(".ps-form-ui.ps-wizard-socket.gmail_api h3")
-          .first()
-          .text("Google Workspace (Gmail) API");
-        
+            .first()
+            .text("Google Workspace (Gmail) API");
+
         jQuery(".ps-form-ui.ps-wizard-socket.mandrill_api h3")
-          .first()
-          .text("Mandrill (Mailchimp Transactional) API");
-  
+            .first()
+            .text("Mandrill (Mailchimp Transactional) API");
+
         jQuery(".ps-form-ui.ps-wizard-socket.office365_api h3")
-          .first()
-          .text("Microsoft Office 365 API");
-      });
+            .first()
+            .text("Microsoft Office 365 API");
+
+        jQuery(".ps-form-ui.ps-wizard-socket.aws_ses_api h3")
+            .first()
+            .text("Amazon (AWS) SES API");
+
+        jQuery(".ps-form-ui.ps-wizard-socket.postmark_api h3")
+            .first()
+            .text("PostMark API");
+
+        jQuery(".ps-form-ui.ps-wizard-socket.mailtrap_api h3")
+            .first()
+            .text("Mailtrap API ");
+
+        jQuery(".ps-form-ui.ps-wizard-socket.sweego_api h3")
+            .first()
+            .text("Sweego API");
+
+        jQuery(".ps-form-ui.ps-wizard-socket.elasticemail_api h3")
+            .first()
+            .text("Elastic Email API");
+
+        jQuery(".ps-form-ui.ps-wizard-socket.smtp2go_api h3")
+            .first()
+            .text("SMTP2GO API");
+
+        jQuery(".ps-form-ui.ps-wizard-socket.mailjet_api h3")
+            .first()
+            .text("Mailjet API");
+
+        jQuery(".ps-form-ui.ps-wizard-socket.sparkpost_api h3")
+            .first()
+            .text("SparkPost API");
+
+        jQuery(".ps-form-ui.ps-wizard-socket.sendpulse_api h3")
+            .first()
+            .text("SendPulse API ");
+    });
 
 });
