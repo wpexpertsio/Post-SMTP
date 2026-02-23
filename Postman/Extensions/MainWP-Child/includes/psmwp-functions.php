@@ -16,15 +16,13 @@ if( !function_exists( 'wp_mail' ) ):
  */
 function wp_mail( $to, $subject, $message, $headers = '', $attachments = array() ) {
     
-    $request = new Post_SMTP_MainWP_Child_Request();
+    $request  = new Post_SMTP_MainWP_Child_Request();
     $response = $request->process_email( $to, $subject, $message, $headers, $attachments );
-    
-    if( is_wp_error( $response ) ) {
-        
+
+    if ( is_wp_error( $response ) || ! $response ) {
         return false;
-        
     }
-    
+
     return true;
     
 }

@@ -1965,11 +1965,13 @@ public function render_gmail_settings() {
                     $response = true;
                 } else {
                     $response = update_option( PostmanOptions::POSTMAN_OPTIONS , $options );
+                    do_action( 'post_smtp_wizard_configuration_saved' );
                 }
                 
             }
             
         }
+
         //Prevent redirection
         delete_transient( PostmanSession::ACTION );
 

@@ -46,6 +46,7 @@ class PSMWP_Rest_API {
 		$headers = $request->get_headers();
 		$api_key = empty( $request->get_header( 'api_key' ) ) ? '' : sanitize_text_field( $request->get_header( 'api_key' ) );
 		$action = $request->get_param( 'action' );
+		$parent_configured = $request->get_param( 'parent_configured' );
 
         //Lets Validate :D
 		if( $this->validate( $api_key ) ) {
@@ -53,12 +54,14 @@ class PSMWP_Rest_API {
             if( $action == 'enable_post_smtp' ) {
 				
 				update_option( 'post_smtp_use_from_main_site', '1' );
+				update_option( 'post_smtp_parent_configured', $parent_configured );
 				
 			}
 			
 			if( $action == 'disable_post_smtp' ) {
 				
 				 delete_option( 'post_smtp_use_from_main_site' );
+				 delete_option( 'post_smtp_parent_configured' );
 				
 			}
 			
