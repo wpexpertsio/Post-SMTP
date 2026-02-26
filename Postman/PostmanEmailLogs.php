@@ -455,8 +455,11 @@ class PostmanEmailLogs {
                  */
                 $row = apply_filters( 'ps_email_logs_row', $row );
 
-                //Escape HTML
+                //Escape HTML for safe output.
                 $row->original_subject = esc_html( $row->original_subject );
+                if ( isset( $row->event_type ) ) {
+                    $row->event_type = esc_html( $row->event_type );
+                }
 
             }
 
