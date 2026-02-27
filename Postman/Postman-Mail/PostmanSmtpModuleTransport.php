@@ -540,7 +540,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 				<input type="checkbox" class="' . esc_attr( $class ) . '" name="enable_gmail_oneclick" ' . $is_checked .'>
 				<span class="slider round"></span>
 			</label> 
-			'.esc_html__('Enable the option for a quick and easy way to connect with Google without the need of manually creating an app.', 'post-smtp').'
+			'.esc_html__('Enable the option for a quick, easy way to connect to Google Workspace (Gmail) API without manually creating an app.', 'post-smtp').'
 		</div>';
 	}
 

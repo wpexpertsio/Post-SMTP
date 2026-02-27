@@ -675,6 +675,22 @@
   display: inline-block;
 }
 
+.ps-wizard-toggle-row {
+  margin-top: 10px;
+}
+
+.ps-wizard-toggle-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.ps-wizard-toggle-description {
+  margin: 0;
+  color: #707070;
+}
+
 .ps-form-switch-control .ps-switch-1 input:checked+.slider {
   /* background-color: #214A72 !important; */
   border-color: #214A72 !important;
