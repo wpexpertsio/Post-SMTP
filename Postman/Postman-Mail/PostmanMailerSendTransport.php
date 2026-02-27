@@ -40,7 +40,7 @@ class PostmanMailerSendTransport extends PostmanAbstractModuleTransport implemen
 		return self::SLUG;
 	}
 	public function getName() {
-		return __ ( 'MailerSend API', 'post-smtp' );
+		return __ ( 'MailerSend', 'post-smtp' );
 	}
 	/**
 	 * v0.2.1

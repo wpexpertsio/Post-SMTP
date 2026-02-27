@@ -40,7 +40,7 @@ class PostmanEmailitTransport extends PostmanAbstractModuleTransport implements 
     }
 
     public function getName() {
-        return __('Emailit API', 'post-smtp');
+        return __('Emailit', 'post-smtp');
     }
 
     /**

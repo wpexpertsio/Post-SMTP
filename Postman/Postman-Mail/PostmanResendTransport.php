@@ -46,7 +46,7 @@ class PostmanResendTransport extends PostmanAbstractModuleTransport implements P
     }
 
     public function getName() {
-        return __( 'Resend API', 'post-smtp' );
+        return __( 'Resend', 'post-smtp' );
     }
 
     /**

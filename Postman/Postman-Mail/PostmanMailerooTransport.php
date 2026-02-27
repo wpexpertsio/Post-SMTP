@@ -38,7 +38,7 @@ class PostmanMailerooTransport extends PostmanAbstractModuleTransport implements
         }
 
         public function getName() {
-            return __('Maileroo API', 'post-smtp');
+            return __('Maileroo', 'post-smtp');
         }
 
         public function getHostname() {

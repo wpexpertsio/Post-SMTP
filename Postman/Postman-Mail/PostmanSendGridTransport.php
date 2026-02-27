@@ -40,7 +40,7 @@ class PostmanSendGridTransport extends PostmanAbstractModuleTransport implements
 		return self::SLUG;
 	}
 	public function getName() {
-		return __ ( 'SendGrid API', 'post-smtp' );
+		return __ ( 'SendGrid', 'post-smtp' );
 	}
 	/**
 	 * v0.2.1
