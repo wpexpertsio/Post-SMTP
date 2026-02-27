@@ -1144,7 +1144,7 @@ class Post_SMTP_New_Wizard {
         <div class="ps-form-control">
             <div><label>API Key</label></div>
             <input type="text" class="ps-sendgrid-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SENDGRID_API_KEY ) .']" value="'.$api_key.'" placeholder="">
-            <div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://app.sendgrid.com/settings/api_keys" target="_blank">' . esc_html__( 'the API key above', 'post-smtp' ) . '</a> ' . esc_html__( 'in your SendGrid account.', 'post-smtp' ) . '</div>' .
+            <div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://app.sendgrid.com/settings/api_keys" target="_blank">' . esc_html__( 'the API key', 'post-smtp' ) . '</a> ' . esc_html__( ' above in your SendGrid account.', 'post-smtp' ) . '</div>' .
         '</div>';
 
         // Region dropdown.
@@ -1178,7 +1178,7 @@ class Post_SMTP_New_Wizard {
         <div class="ps-form-control">
             <div><label>API Key</label></div>
             <input type="text" class="ps-mailersend-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILERSEND_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
-         '<div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://app.mailersend.com/api-tokens" target="_blank">' . esc_html__( 'the API key', 'post-smtp' ) . '</a>' . esc_html__( ' in your Mailersend account.', 'post-smtp' ) . '</div>'
+         '<div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://app.mailersend.com/api-tokens" target="_blank">' . esc_html__( 'the API tokens', 'post-smtp' ) . '</a>' . esc_html__( ' in your MailerSend account.', 'post-smtp' ) . '</div>'
             .'
         </div>
         ';
@@ -1207,15 +1207,7 @@ class Post_SMTP_New_Wizard {
         <div class="ps-form-control">
             <div><label>API Key</label></div>
             <input type="text" class="ps-mailgun-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILGUN_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
-            /**
-             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
-             */
-            sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div>',
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://app.mailgun.com/settings/api_security' ),
-                __( 'API Key.', 'post-smtp' )
-            )
+            '<div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://app.mailgun.com/settings/api_security" target="_blank">' . esc_html__( 'the API key', 'post-smtp' ) . '</a>' . esc_html__( ' in your Mailgun account.', 'post-smtp' ) . '</div>'
             .'
         </div>
         ';
@@ -1225,15 +1217,7 @@ class Post_SMTP_New_Wizard {
             <div><label>Domain Name</label></div>
             <input type="text" class="ps-mailgun-domain-name" required data-error="'.__( 'Please Domain Name.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILGUN_DOMAIN_NAME ) .']" value="'.$domain_name.'" placeholder="">
             <span class="ps-form-control-info">'.
-            /**
-             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
-             */
-            sprintf(
-                '%1$s <a href="%2$s" target="_blank">%3$s</a>',
-                __( ' Follow this link to get the Mailgun', 'post-smtp' ),
-                esc_url( 'https://app.mailgun.com/app/sending/domains' ),
-                __( 'Domain Name.', 'post-smtp' )
-            )
+            '<div class="ps-form-control-info">' . esc_html__( 'You can find the ', 'post-smtp' ) . '<a href="https://app.mailgun.com/app/sending/domains" target="_blank">' . esc_html__( 'Domain', 'post-smtp' ) . '</a>' . esc_html__( ' in your Mailgun account.', 'post-smtp' ) . '</div>'
             .'</span>
         </div>
         ';
@@ -1279,7 +1263,7 @@ class Post_SMTP_New_Wizard {
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
-             '<div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://login.brevo.com/?target=https%3A%2F%2Fapp.brevo.com%2Fsettings%2Fkeys%2Fapi" target="_blank">' . esc_html__( 'the API key', 'post-smtp' ) . '</a>' . esc_html__( ' in your Brevo account.', 'post-smtp' ) . '</div>'
+             '<div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://login.brevo.com/?target=https%3A%2F%2Fapp.brevo.com%2Fsettings%2Fkeys%2Fapi" target="_blank">' . esc_html__( 'the API tokens', 'post-smtp' ) . '</a>' . esc_html__( ' in your Brevo account.', 'post-smtp' ) . '</div>'
             .
         '</div>
         ';
@@ -1308,7 +1292,7 @@ class Post_SMTP_New_Wizard {
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
-             '<div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://mailtrap.io/api-tokens" target="_blank">' . esc_html__( 'the API token', 'post-smtp' ) . '</a>' . esc_html__( ' in your Mailtrap account.', 'post-smtp' ) . '</div>'
+             '<div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://mailtrap.io/api-tokens" target="_blank">' . esc_html__( 'the API tokens', 'post-smtp' ) . '</a>' . esc_html__( ' in your Mailtrap API account.', 'post-smtp' ) . '</div>'
             .
         '</div>
         ';
@@ -1334,15 +1318,7 @@ class Post_SMTP_New_Wizard {
         <div class="ps-form-control">
             <div><label>API Key</label></div>
             <input type="text" class="ps-resend-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::RESEND_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
-            /**
-             * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
-             */
-            sprintf(
-                '<div class="ps-form-control-info">%1$s <a href="%2$s" target="_blank">%3$s</a></div>',
-                __( 'If you are already logged in follow this link to get an', 'post-smtp' ),
-                esc_url( 'https://resend.com/api-keys' ),
-                __( 'API Key.', 'post-smtp' )
-            )
+            '<div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://resend.com/api-keys" target="_blank">' . esc_html__( 'the API tokens', 'post-smtp' ) . '</a>' . esc_html__( ' in your Resend account.', 'post-smtp' ) . '</div>'
             .
         '</div>
         ';
