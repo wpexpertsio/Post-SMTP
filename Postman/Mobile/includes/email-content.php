@@ -60,6 +60,7 @@ class Post_SMTP_Email_Content {
 						array(
 							'from_header',
 							'original_to',
+							'reply_to_header',
 							'time',
 							'original_subject',
 							'transport_uri',
@@ -117,6 +118,12 @@ class Post_SMTP_Email_Content {
 											<td><strong>To:</strong></td>
 											<td><?php echo esc_html( $log['original_to'] ); ?></td>
 										</tr>
+										<?php if ( ! empty( $log['reply_to_header'] ) ) : ?>
+										<tr>
+											<td><strong>Reply-To:</strong></td>
+											<td><?php echo esc_html( $log['reply_to_header'] ); ?></td>
+										</tr>
+										<?php endif; ?>
 										<tr>
 											<td><strong>Date:</strong></td>
 											<td><?php echo esc_html( date( "{$date_format} {$time_format}", $log['time'] ) ); ?></td>
