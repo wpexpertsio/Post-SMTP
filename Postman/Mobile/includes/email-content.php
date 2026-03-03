@@ -139,7 +139,46 @@ class Post_SMTP_Email_Content {
 									</tbody>
 								</table>
 								<div class="message-body">
-									<?php echo wp_kses_post( $log['original_message'] ); ?>
+									<?php
+									$message = isset( $log['original_message'] ) ? $log['original_message'] : '';
+
+									// Prefer trimming everything before the real HTML document.
+									$pos_doctype = stripos( $message, '<!DOCTYPE' );
+									$pos_html    = stripos( $message, '<html' );
+									$start       = false;
+
+									if ( $pos_doctype !== false ) {
+										$start = $pos_doctype;
+									} elseif ( $pos_html !== false ) {
+										$start = $pos_html;
+									}
+
+									if ( $start !== false ) {
+										// Drop all MIME preamble / headers above the actual HTML email.
+										$message = substr( $message, $start );
+									} else {
+										// Fallback: strip leading MIME header lines (Content-Type, Content-Transfer-Encoding, etc.).
+										$lines       = preg_split( "/\r\n|\n|\r/", $message );
+										$clean_lines = array();
+										$skipping    = true;
+
+										foreach ( $lines as $line ) {
+											if ( $skipping && preg_match( '/^\s*(Content-Type:|Content-Transfer-Encoding:)/i', $line ) ) {
+												// Skip header-like lines at the top.
+												continue;
+											}
+											$skipping      = false;
+											$clean_lines[] = $line;
+										}
+
+										$message = implode( "\n", $clean_lines );
+									}
+
+									// Remove any stray broken closing tbody tag fragments that can leak as text.
+									$message = preg_replace( '/<\/tbod[^>]*>/i', '', $message );
+
+									echo wp_kses_post( $message );
+									?>
 								</div>
 							</div>
 						</body>
