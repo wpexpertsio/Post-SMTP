@@ -374,20 +374,24 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 * @return string
 		 */
 		private static function flattenEmails( array $addresses ) {
-			$flat = '';
-			$count = 0;
+			/**
+			 * Previously this method limited the output to the first 3 recipients
+			 * and then appended a summary such as ".. +N more". That summary string
+			 * is not a valid email address, so when the value was later passed
+			 * through sanitize_emails() only the first few addresses were actually
+			 * stored in the database.
+			 *
+			 * For accurate logging (and to make all CC/BCC recipients available
+			 * to the UI and REST API), we now return the full list of formatted
+			 * email addresses with no truncation.
+			 */
+			$emails = array();
 			foreach ( $addresses as $address ) {
-				if ( $count >= 3 ) {
-					$flat .= sprintf( __( '.. +%d more', 'post-smtp' ), sizeof( $addresses ) - $count );
-					break;
+				if ( $address instanceof PostmanEmailAddress ) {
+					$emails[] = $address->format();
 				}
-				if ( $count > 0 ) {
-					$flat .= ', ';
-				}
-				$flat .= $address->format();
-				$count ++;
 			}
-			return $flat;
+			return implode( ', ', $emails );
 		}
 	}
 }
