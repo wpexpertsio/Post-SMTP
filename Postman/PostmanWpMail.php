@@ -308,6 +308,10 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$message->addCc( $options->getForcedCcRecipients() );
 			$message->addBcc( $options->getForcedBccRecipients() );
 
+			// Ensure originalTo reflects the final list of all \"To\" recipients,
+			// including any global \"To Recipient(s)\" configured in Settings.
+			$log->originalTo = $this->format_recipients_for_log( $message->getToRecipients() );
+
 			// apply the WordPress filters
 			// may impact the from address, from email, charset and content-type
 			$message->applyFilters();
