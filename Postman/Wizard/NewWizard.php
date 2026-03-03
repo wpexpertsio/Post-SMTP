@@ -970,7 +970,7 @@ class Post_SMTP_New_Wizard {
         $html .= '<div class="ps-disable-one-click-setup ' . ( $gmail_oneclick_enabled ? 'ps-hidden' : '' ) . '">
     
         <h3 class="%1$s" >Manual Setup</h3>
-        <p>' . esc_html__( 'The free Gmail mailer requires you to create an app manually to generate the Client ID and Client Secret. This step-by-step guide will walk you through the whole process.', 'post-smtp' ) . '</p>';
+        <p>' . esc_html__( 'The free Gmail mailer requires you to create an app manually to generate the Client ID and Client Secret. This ', 'post-smtp' ) . ' <a href="' . esc_url( 'https://postmansmtp.com/docs/mailers/how-to-setup-gmail-with-post-smtp/' ) . '" target="_blank">' . esc_html__( 'step-by-step guide', 'post-smtp' ) . '</a> ' . esc_html__( 'will walk you through the whole process.', 'post-smtp' ) . '</p>';
         $html .= '
         <div class="ps-form-control">
             <div><label>' . __( 'Client ID', 'post-smtp' ) . '</label></div>
@@ -1517,7 +1517,7 @@ class Post_SMTP_New_Wizard {
         $region = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] ) ? $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] : '';
 
 
-        $html = '<p>' . esc_html__( 'Due to the technical nature of this SMTP implementation, it is recommended to study this step-by-step guide at the time of setup.', 'post-smtp' ) . '</p>';
+        $html = '<p>' . esc_html__( 'Due to the technical nature of this SMTP implementation, it is recommended to study this ', 'post-smtp' ) . '<a href="' . esc_url( 'https://postmansmtp.com/docs/mailers/new-amazon-ses/' ) . '" target="_blank">' . esc_html__( 'step-by-step guide', 'post-smtp' ) . '</a>' . esc_html__( ' at the time of setup.', 'post-smtp' ) . '</p>';
         $html .= '<p>⚠️ ' . esc_html__( 'You must have a working SSL certificate installed on your WordPress site to use it with Amazon SES.', 'post-smtp' ) . '</p>';
         $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
@@ -1574,9 +1574,7 @@ class Post_SMTP_New_Wizard {
         $office365_oneclick_enabled = in_array( 'microsoft-one-click', $extensions );
         $office365_auth_url = get_option( 'post_smtp_office365_auth_url' );
 
-
-        $html = '<p>' . esc_html__( 'To establish a SMTP connection, you will need to create an app in your Azure account. This step-by-step guide will walk you through the whole process.', 'post-smtp' ) . '</p>';
-
+        $html = '<p>' . esc_html__( 'To establish a SMTP connection, you will need to create an app in your Azure account. This ', 'post-smtp' ) . ' <a href="' . esc_url( 'https://postmansmtp.com/docs/mailers/how-to-setup-office-365-with-post-smtp/' ) . '" target="_blank">' . esc_html__( 'step-by-step guide', 'post-smtp' ) . '</a> ' . esc_html__( 'will walk you through the whole process.', 'post-smtp' ) . '</p>';
         // Setup classes and attributes for form visibility
         $hidden_class = $office365_oneclick_enabled ? 'ps-hidden' : '';
         // Conditional 'required' attribute for the fields - consider access token when one-click is enabled
