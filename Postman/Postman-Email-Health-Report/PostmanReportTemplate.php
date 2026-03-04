@@ -135,7 +135,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
             </tr>
             <!---->';
 
-            if(! post_smtp_has_pro()) {
+            if(post_smtp_has_pro()) {
                 $body .= '<tr>
                 <td>
                     <table style="width: 100%;">
