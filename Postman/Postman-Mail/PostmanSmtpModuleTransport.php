@@ -555,7 +555,18 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		// Action URLs for buttons.
 		$nonce               = wp_create_nonce( 'remove_oauth_action' );
 		$postman_auth_token  = get_option( 'postman_auth_token' );
-		$auth_url = get_option( 'post_smtp_gmail_auth_url' );
+
+		// Try to obtain a fresh Gmail OAuth URL (with a fresh nonce) at runtime.
+		$auth_url = '';
+		if ( function_exists( 'post_smtp_get_gmail_auth_url' ) ) {
+			$auth_url = post_smtp_get_gmail_auth_url();
+		}
+
+		// Fallback to the stored option if the runtime fetch failed.
+		if ( empty( $auth_url ) ) {
+			$auth_url = get_option( 'post_smtp_gmail_auth_url' );
+		}
+
 		$post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
 		$bonus_extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : array();
 		$gmail_oneclick_enabled = in_array( 'gmail-oneclick', $bonus_extensions );

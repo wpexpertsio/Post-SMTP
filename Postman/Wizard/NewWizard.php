@@ -102,6 +102,7 @@ class Post_SMTP_New_Wizard {
         add_action( 'wp_ajax_update_post_smtp_pro_option', array( $this, 'update_post_smtp_pro_option_callback' ) );
         add_action( 'wp_ajax_update_post_smtp_pro_option_office365', array( $this, 'update_post_smtp_pro_option_office365_callback' ) );
         add_action( 'wp_ajax_ps_get_office365_auth_url', array( $this, 'ajax_get_office365_auth_url' ) );
+        add_action( 'wp_ajax_ps_get_gmail_auth_url', array( $this, 'ajax_get_gmail_auth_url' ) );
         add_action( 'admin_action_zoho_auth_request', array( $this, 'auth_zoho' ) );
         add_action( 'admin_post_remove_oauth_action', array( $this, 'post_smtp_remove_oauth_action' ) );
         add_action( 'admin_init', array( $this, 'handle_gmail_oauth_redirect' ) );
@@ -616,6 +617,9 @@ class Post_SMTP_New_Wizard {
              // Nonce and messages for Gmail One-Click auth AJAX
             'office365_auth_nonce' => wp_create_nonce( 'ps_get_office365_auth_url' ),
             'office365AuthErrorText' => __( 'Failed to start Office 365 authentication. Please reload the page and try again.', 'post-smtp' ),
+            // Nonce and messages for Gmail One-Click auth AJAX
+            'gmail_auth_nonce' => wp_create_nonce( 'ps_get_gmail_auth_url' ),
+            'gmailAuthErrorText' => __( 'Failed to start Google authentication. Please reload the page and try again.', 'post-smtp' ),
         );
 
         if( class_exists( 'Post_Smtp_Office365' ) ) {
@@ -1962,6 +1966,12 @@ class Post_SMTP_New_Wizard {
      * for the Office 365 One-Click setup. It validates the request nonce and current user
      * capability, then uses the shared helper `post_smtp_get_office365_auth_url()` to
      * create an auth URL that contains a fresh `office365_oauth_redirect` nonce.
+     * AJAX callback to generate a fresh Gmail One-Click OAuth URL.
+     *
+     * This endpoint is called when the user clicks the "Sign in with Google" button
+     * for the Gmail One-Click setup. It validates the request nonce and current user
+     * capability, then uses the shared helper `post_smtp_get_gmail_auth_url()` to
+     * create an auth URL that contains a fresh `gmail_oauth_redirect` nonce.
      *
      * The URL is returned as JSON and the browser is redirected client-side.
      *
@@ -1991,7 +2001,58 @@ class Post_SMTP_New_Wizard {
 
         wp_send_json_success( array( 'auth_url' => esc_url_raw( $auth_url ) ) );
     }
+
+     /**
+     * AJAX callback to generate a fresh Gmail One-Click OAuth URL.
+     *
+     * This endpoint is called when the user clicks the "Sign in with Google" button
+     * for the Gmail One-Click setup. It validates the request nonce and current user
+     * capability, then uses the shared helper `post_smtp_get_gmail_auth_url()` to
+     * create an auth URL that contains a fresh `gmail_oauth_redirect` nonce.
+     *
+     * The URL is returned as JSON and the browser is redirected client-side.
+     *
+     * @since 3.1.0
+     */
+    public function ajax_get_gmail_auth_url() {
+
+        // Capability check: Only allow administrators.
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Unauthorized.' ), 403 );
+        }
+
+        // Nonce check for CSRF protection.
+        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_office365_auth_url' ) ) {
+            wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ), 400 );
+        }
+
+        if ( ! function_exists( 'post_smtp_get_office365_auth_url' ) ) {
+            wp_send_json_error( array( 'message' => 'Office 365 One-Click is not available.' ), 500 );
+        }
+
+        $auth_url = post_smtp_get_office365_auth_url();
+
+        if ( empty( $auth_url ) ) {
+            wp_send_json_error( array( 'message' => 'Failed to generate Office 365 auth URL.' ), 500 );
+            if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_gmail_auth_url' ) ) {
+                wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ), 400 );
+            }
+
+            if ( ! function_exists( 'post_smtp_get_gmail_auth_url' ) ) {
+                wp_send_json_error( array( 'message' => 'Gmail One-Click is not available.' ), 500 );
+            }
+
+            $auth_url = post_smtp_get_gmail_auth_url();
+
+            if ( empty( $auth_url ) ) {
+                wp_send_json_error( array( 'message' => 'Failed to generate Gmail auth URL.' ), 500 );
+            }
+
+            wp_send_json_success( array( 'auth_url' => esc_url_raw( $auth_url ) ) );
+        }
+    }
     
+
     /**
      * Callback function to handle AJAX requests for updating the 'post_smtp_pro' option.
      *
@@ -2334,9 +2395,6 @@ class Post_SMTP_New_Wizard {
             }
         }
     }
-
-
-
 }
 
 new Post_SMTP_New_Wizard();
