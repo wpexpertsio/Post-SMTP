@@ -158,7 +158,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* @vue/compiler-core v3.5.28
+* @vue/compiler-core v3.5.29
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -6172,7 +6172,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vue_compiler_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vue/compiler-core */ "./node_modules/@vue/compiler-core/dist/compiler-core.esm-bundler.js");
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* @vue/compiler-dom v3.5.28
+* @vue/compiler-dom v3.5.29
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -6927,7 +6927,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* @vue/reactivity v3.5.28
+* @vue/reactivity v3.5.29
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -9067,7 +9067,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vue_reactivity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vue/reactivity */ "./node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js");
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* @vue/runtime-core v3.5.28
+* @vue/runtime-core v3.5.29
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -10596,6 +10596,7 @@ function resolveTransitionHooks(vnode, props, state, instance, postClone) {
       callHook(hook, [el]);
     },
     enter(el) {
+      if (leavingVNodesCache[key] === vnode) return;
       let hook = onEnter;
       let afterHook = onAfterEnter;
       let cancelHook = onEnterCancelled;
@@ -12696,13 +12697,24 @@ function withAsyncContext(getAwaitable) {
   }
   let awaitable = getAwaitable();
   unsetCurrentInstance();
+  const cleanup = () => {
+    if (getCurrentInstance() !== ctx) ctx.scope.off();
+    unsetCurrentInstance();
+  };
   if ((0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.isPromise)(awaitable)) {
     awaitable = awaitable.catch((e) => {
       setCurrentInstance(ctx);
+      Promise.resolve().then(() => Promise.resolve().then(cleanup));
       throw e;
     });
   }
-  return [awaitable, () => setCurrentInstance(ctx)];
+  return [
+    awaitable,
+    () => {
+      setCurrentInstance(ctx);
+      Promise.resolve().then(cleanup);
+    }
+  ];
 }
 
 function createDuplicateChecker() {
@@ -17580,7 +17592,7 @@ function isMemoSame(cached, memo) {
   return true;
 }
 
-const version = "3.5.28";
+const version = "3.5.29";
 const warn =  true ? warn$1 : 0;
 const ErrorTypeStrings = ErrorTypeStrings$1 ;
 const devtools =  true ? devtools$1 : 0;
@@ -17791,7 +17803,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vue_runtime_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @vue/runtime-core */ "./node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js");
 /* harmony import */ var _vue_runtime_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* @vue/runtime-dom v3.5.28
+* @vue/runtime-dom v3.5.29
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -19815,7 +19827,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   toTypeString: () => (/* binding */ toTypeString)
 /* harmony export */ });
 /**
-* @vue/shared v3.5.28
+* @vue/shared v3.5.29
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -20435,6 +20447,10 @@ __webpack_require__.r(__webpack_exports__);
     isLogOnlyMode: {
       type: Boolean,
       default: false
+    },
+    isProfessionalOrBasic: {
+      type: Boolean,
+      default: false
     }
   },
   data: vm => ({
@@ -20483,13 +20499,10 @@ __webpack_require__.r(__webpack_exports__);
     },
     wizard_url() {
       return `${this.admin_url}?page=postman/configuration_wizard`;
-    },
-    bannerText() {
-      if (this.isMainWpConfigured && !this.postSmtpConfigured && this.i18n.mainwpConnected && this.i18n.mainwpConnected.text) {
-        return this.i18n.mainwpConnected.text;
-      }
-      return this.i18n.configured.text;
     }
+  },
+  mounted() {
+    console.log(this.isLogOnlyMode);
   }
 });
 
@@ -21466,6 +21479,10 @@ __webpack_require__.r(__webpack_exports__);
     isDomainSpamScoreConfigured: {
       type: Boolean,
       default: false
+    },
+    isProfessionalOrBasic: {
+      type: Boolean,
+      default: false
     }
   },
   data: vm => ({
@@ -21659,8 +21676,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "post-smtp-pro": $props.postSmtpPro,
     "is-mobile-app-configured": $props.isMobileAppConfigured,
     "is-main-wp-configured": $props.isMainWpConfigured,
-    "is-domain-spam-score-configured": $props.isDomainSpamScoreConfigured
-  }, null, 8 /* PROPS */, ["post-smtp-configured", "post-smtp-pro", "is-mobile-app-configured", "is-main-wp-configured", "is-domain-spam-score-configured"])])])]);
+    "is-domain-spam-score-configured": $props.isDomainSpamScoreConfigured,
+    "is-professional-or-basic": $props.isProfessionalOrBasic
+  }, null, 8 /* PROPS */, ["post-smtp-configured", "post-smtp-pro", "is-mobile-app-configured", "is-main-wp-configured", "is-domain-spam-score-configured", "is-professional-or-basic"])])])]);
 }
 
 /***/ },
@@ -21717,7 +21735,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     key: 0,
     type: "success"
   }, {
-    title: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.bannerText), 1 /* TEXT */)]),
+    title: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.i18n.configured.text), 1 /* TEXT */)]),
     button: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
       href: $options.send_test_email_url,
       class: "post-smtp-button"
@@ -22016,7 +22034,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       "float": "left"
     },
     "post-smtp-configured": $props.postSmtpConfigured
-  }, null, 8 /* PROPS */, ["onDaysSelectorEvent", "post-smtp-configured"]), $props.postSmtpConfigured ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("a", {
+  }, null, 8 /* PROPS */, ["onDaysSelectorEvent", "post-smtp-configured"]), $props.postSmtpConfigured || $props.isMainWpConfigured ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("a", {
     key: 0,
     style: {
       "float": "right"
@@ -22955,20 +22973,28 @@ const _hoisted_2 = {
   href: "https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=dashboard&utm_campaign=gmail_one_click"
 };
 const _hoisted_3 = {
-  class: "troubleshooting-header"
+  class: "img-wrapper"
 };
 const _hoisted_4 = {
-  class: "troubleshooting-content"
+  class: "office-click",
+  target: "_blank",
+  href: "https://postmansmtp.com/pricing/"
 };
 const _hoisted_5 = {
-  class: "troubleshoot"
+  class: "troubleshooting-header"
 };
 const _hoisted_6 = {
+  class: "troubleshooting-content"
+};
+const _hoisted_7 = {
+  class: "troubleshoot"
+};
+const _hoisted_8 = {
   key: 0
 };
-const _hoisted_7 = ["src"];
-const _hoisted_8 = ["target", "href"];
-const _hoisted_9 = {
+const _hoisted_9 = ["src"];
+const _hoisted_10 = ["target", "href"];
+const _hoisted_11 = {
   key: 0,
   style: {
     "color": "#8B8F9A",
@@ -22977,7 +23003,7 @@ const _hoisted_9 = {
   },
   class: "dashicons dashicons-external"
 };
-const _hoisted_10 = {
+const _hoisted_12 = {
   class: "customer-support-content"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -22994,8 +23020,17 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       src: _ctx.plugin_dir_url + 'assets/images/gmail_one_click.gif'
     }, null, 8 /* PROPS */, ["src"])])])]),
     _: 1 /* STABLE */
-  })) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" ✅ Show Ads only if Pro is active and configured "), $props.postSmtpPro && $props.postSmtpConfigured ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_post_smtp_ads, {
+  })) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" ✅ Show Office One Click widget only if Professional or Basic plan is active "), $props.isProfessionalOrBasic ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_post_smtp_widget, {
     key: 1,
+    class: "office-wrapper"
+  }, {
+    default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_post_smtp_img, {
+      class: "office-one-click",
+      src: _ctx.plugin_dir_url + 'assets/images/office_oneclick.gif'
+    }, null, 8 /* PROPS */, ["src"])])])]),
+    _: 1 /* STABLE */
+  })) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" ✅ Show Ads only if Pro is active and configured "), $props.postSmtpPro && $props.postSmtpConfigured ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_post_smtp_ads, {
+    key: 2,
     class: "mb-24",
     "post-smtp-pro": $props.postSmtpPro,
     "is-mobile-app-configured": $props.isMobileAppConfigured,
@@ -23004,8 +23039,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, null, 8 /* PROPS */, ["post-smtp-pro", "is-mobile-app-configured", "is-main-wp-configured", "is-domain-spam-score-configured"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" ✅ Always show Troubleshooting widget "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_post_smtp_widget, {
     class: "troubleshooting"
   }, {
-    default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.i18n.titleTroubleshooting), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.troubleshooting, troubleshoot => {
-      return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_5, [troubleshoot.show ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_6, [!troubleshoot.image ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", {
+    default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.i18n.titleTroubleshooting), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.troubleshooting, troubleshoot => {
+      return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_7, [troubleshoot.show ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_8, [!troubleshoot.image ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", {
         key: 0,
         style: {
           "margin-right": "15px",
@@ -23019,10 +23054,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           "margin-right": "16px"
         },
         src: _ctx.plugin_dir_url + 'assets/images/' + troubleshoot.icon
-      }, null, 8 /* PROPS */, _hoisted_7)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+      }, null, 8 /* PROPS */, _hoisted_9)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
         target: troubleshoot.target,
         href: troubleshoot.url
-      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(troubleshoot.title) + " ", 1 /* TEXT */), troubleshoot.target ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_9)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 8 /* PROPS */, _hoisted_8)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]);
+      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(troubleshoot.title) + " ", 1 /* TEXT */), troubleshoot.target ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_11)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 8 /* PROPS */, _hoisted_10)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]);
     }), 256 /* UNKEYED_FRAGMENT */))])])]),
     _: 1 /* STABLE */
   }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" ✅ Always show Customer Support widget "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_post_smtp_widget, {
@@ -23030,7 +23065,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, {
     default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_post_smtp_img, {
       src: _ctx.plugin_dir_url + 'assets/images/customer-support.png'
-    }, null, 8 /* PROPS */, ["src"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.i18n.appointment.description), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_post_smtp_button, {
+    }, null, 8 /* PROPS */, ["src"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.i18n.appointment.description), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_post_smtp_button, {
       href: "https://postmansmtp.com/configuration-request/?utm_source=plugin&utm_medium=dashboard_side_banner&utm_campaign=plugin",
       type: "secondary"
     }, {
@@ -25248,7 +25283,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vue_compiler_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vue/compiler-dom */ "./node_modules/@vue/compiler-dom/dist/compiler-dom.esm-bundler.js");
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* vue v3.5.28
+* vue v3.5.29
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -25329,7 +25364,7 @@ ${codeFrame}` : message);
 (module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
-/*! Axios v1.13.5 Copyright (c) 2026 Matt Zabriskie and contributors */
+/*! Axios v1.13.6 Copyright (c) 2026 Matt Zabriskie and contributors */
 
 
 /**
@@ -25379,7 +25414,7 @@ const { isArray } = Array;
  *
  * @returns {boolean} True if the value is undefined, otherwise false
  */
-const isUndefined = typeOfTest("undefined");
+const isUndefined = typeOfTest('undefined');
 
 /**
  * Determine if a value is a Buffer
@@ -25406,7 +25441,7 @@ function isBuffer(val) {
  *
  * @returns {boolean} True if value is an ArrayBuffer, otherwise false
  */
-const isArrayBuffer = kindOfTest("ArrayBuffer");
+const isArrayBuffer = kindOfTest('ArrayBuffer');
 
 /**
  * Determine if a value is a view on an ArrayBuffer
@@ -25417,7 +25452,7 @@ const isArrayBuffer = kindOfTest("ArrayBuffer");
  */
 function isArrayBufferView(val) {
   let result;
-  if (typeof ArrayBuffer !== "undefined" && ArrayBuffer.isView) {
+  if (typeof ArrayBuffer !== 'undefined' && ArrayBuffer.isView) {
     result = ArrayBuffer.isView(val);
   } else {
     result = val && val.buffer && isArrayBuffer(val.buffer);
@@ -25432,7 +25467,7 @@ function isArrayBufferView(val) {
  *
  * @returns {boolean} True if value is a String, otherwise false
  */
-const isString = typeOfTest("string");
+const isString = typeOfTest('string');
 
 /**
  * Determine if a value is a Function
@@ -25440,7 +25475,7 @@ const isString = typeOfTest("string");
  * @param {*} val The value to test
  * @returns {boolean} True if value is a Function, otherwise false
  */
-const isFunction$1 = typeOfTest("function");
+const isFunction$1 = typeOfTest('function');
 
 /**
  * Determine if a value is a Number
@@ -25449,7 +25484,7 @@ const isFunction$1 = typeOfTest("function");
  *
  * @returns {boolean} True if value is a Number, otherwise false
  */
-const isNumber = typeOfTest("number");
+const isNumber = typeOfTest('number');
 
 /**
  * Determine if a value is an Object
@@ -25458,7 +25493,7 @@ const isNumber = typeOfTest("number");
  *
  * @returns {boolean} True if value is an Object, otherwise false
  */
-const isObject = (thing) => thing !== null && typeof thing === "object";
+const isObject = (thing) => thing !== null && typeof thing === 'object';
 
 /**
  * Determine if a value is a Boolean
@@ -25476,7 +25511,7 @@ const isBoolean = (thing) => thing === true || thing === false;
  * @returns {boolean} True if value is a plain Object, otherwise false
  */
 const isPlainObject = (val) => {
-  if (kindOf(val) !== "object") {
+  if (kindOf(val) !== 'object') {
     return false;
   }
 
@@ -25504,10 +25539,7 @@ const isEmptyObject = (val) => {
   }
 
   try {
-    return (
-      Object.keys(val).length === 0 &&
-      Object.getPrototypeOf(val) === Object.prototype
-    );
+    return Object.keys(val).length === 0 && Object.getPrototypeOf(val) === Object.prototype;
   } catch (e) {
     // Fallback for any other objects that might cause RangeError with Object.keys()
     return false;
@@ -25521,7 +25553,7 @@ const isEmptyObject = (val) => {
  *
  * @returns {boolean} True if value is a Date, otherwise false
  */
-const isDate = kindOfTest("Date");
+const isDate = kindOfTest('Date');
 
 /**
  * Determine if a value is a File
@@ -25530,7 +25562,32 @@ const isDate = kindOfTest("Date");
  *
  * @returns {boolean} True if value is a File, otherwise false
  */
-const isFile = kindOfTest("File");
+const isFile = kindOfTest('File');
+
+/**
+ * Determine if a value is a React Native Blob
+ * React Native "blob": an object with a `uri` attribute. Optionally, it can
+ * also have a `name` and `type` attribute to specify filename and content type
+ *
+ * @see https://github.com/facebook/react-native/blob/26684cf3adf4094eb6c405d345a75bf8c7c0bf88/Libraries/Network/FormData.js#L68-L71
+ * 
+ * @param {*} value The value to test
+ * 
+ * @returns {boolean} True if value is a React Native Blob, otherwise false
+ */
+const isReactNativeBlob = (value) => {
+  return !!(value && typeof value.uri !== 'undefined');
+};
+
+/**
+ * Determine if environment is React Native
+ * ReactNative `FormData` has a non-standard `getParts()` method
+ * 
+ * @param {*} formData The formData to test
+ * 
+ * @returns {boolean} True if environment is React Native, otherwise false
+ */
+const isReactNative = (formData) => formData && typeof formData.getParts !== 'undefined';
 
 /**
  * Determine if a value is a Blob
@@ -25539,7 +25596,7 @@ const isFile = kindOfTest("File");
  *
  * @returns {boolean} True if value is a Blob, otherwise false
  */
-const isBlob = kindOfTest("Blob");
+const isBlob = kindOfTest('Blob');
 
 /**
  * Determine if a value is a FileList
@@ -25548,7 +25605,7 @@ const isBlob = kindOfTest("Blob");
  *
  * @returns {boolean} True if value is a File, otherwise false
  */
-const isFileList = kindOfTest("FileList");
+const isFileList = kindOfTest('FileList');
 
 /**
  * Determine if a value is a Stream
@@ -25566,17 +25623,27 @@ const isStream = (val) => isObject(val) && isFunction$1(val.pipe);
  *
  * @returns {boolean} True if value is an FormData, otherwise false
  */
+function getGlobal() {
+  if (typeof globalThis !== 'undefined') return globalThis;
+  if (typeof self !== 'undefined') return self;
+  if (typeof window !== 'undefined') return window;
+  if (typeof __webpack_require__.g !== 'undefined') return __webpack_require__.g;
+  return {};
+}
+
+const G = getGlobal();
+const FormDataCtor = typeof G.FormData !== 'undefined' ? G.FormData : undefined;
+
 const isFormData = (thing) => {
   let kind;
-  return (
-    thing &&
-    ((typeof FormData === "function" && thing instanceof FormData) ||
-      (isFunction$1(thing.append) &&
-        ((kind = kindOf(thing)) === "formdata" ||
-          // detect form-data instance
-          (kind === "object" &&
-            isFunction$1(thing.toString) &&
-            thing.toString() === "[object FormData]"))))
+  return thing && (
+    (FormDataCtor && thing instanceof FormDataCtor) || (
+      isFunction$1(thing.append) && (
+        (kind = kindOf(thing)) === 'formdata' ||
+        // detect form-data instance
+        (kind === 'object' && isFunction$1(thing.toString) && thing.toString() === '[object FormData]')
+      )
+    )
   );
 };
 
@@ -25587,13 +25654,13 @@ const isFormData = (thing) => {
  *
  * @returns {boolean} True if value is a URLSearchParams object, otherwise false
  */
-const isURLSearchParams = kindOfTest("URLSearchParams");
+const isURLSearchParams = kindOfTest('URLSearchParams');
 
 const [isReadableStream, isRequest, isResponse, isHeaders] = [
-  "ReadableStream",
-  "Request",
-  "Response",
-  "Headers",
+  'ReadableStream',
+  'Request',
+  'Response',
+  'Headers',
 ].map(kindOfTest);
 
 /**
@@ -25603,9 +25670,9 @@ const [isReadableStream, isRequest, isResponse, isHeaders] = [
  *
  * @returns {String} The String freed of excess whitespace
  */
-const trim = (str) =>
-  str.trim ? str.trim() : str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, "");
-
+const trim = (str) => {
+  return str.trim ? str.trim() : str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+};
 /**
  * Iterate over an Array or an Object invoking a function for each item.
  *
@@ -25624,7 +25691,7 @@ const trim = (str) =>
  */
 function forEach(obj, fn, { allOwnKeys = false } = {}) {
   // Don't bother if no value provided
-  if (obj === null || typeof obj === "undefined") {
+  if (obj === null || typeof obj === 'undefined') {
     return;
   }
 
@@ -25632,7 +25699,7 @@ function forEach(obj, fn, { allOwnKeys = false } = {}) {
   let l;
 
   // Force an array if not already something iterable
-  if (typeof obj !== "object") {
+  if (typeof obj !== 'object') {
     /*eslint no-param-reassign:0*/
     obj = [obj];
   }
@@ -25649,9 +25716,7 @@ function forEach(obj, fn, { allOwnKeys = false } = {}) {
     }
 
     // Iterate over object keys
-    const keys = allOwnKeys
-      ? Object.getOwnPropertyNames(obj)
-      : Object.keys(obj);
+    const keys = allOwnKeys ? Object.getOwnPropertyNames(obj) : Object.keys(obj);
     const len = keys.length;
     let key;
 
@@ -25662,6 +25727,14 @@ function forEach(obj, fn, { allOwnKeys = false } = {}) {
   }
 }
 
+/**
+ * Finds a key in an object, case-insensitive, returning the actual key name.
+ * Returns null if the object is a Buffer or if no match is found.
+ *
+ * @param {Object} obj - The object to search.
+ * @param {string} key - The key to find (case-insensitive).
+ * @returns {?string} The actual key name if found, otherwise null.
+ */
 function findKey(obj, key) {
   if (isBuffer(obj)) {
     return null;
@@ -25682,16 +25755,11 @@ function findKey(obj, key) {
 
 const _global = (() => {
   /*eslint no-undef:0*/
-  if (typeof globalThis !== "undefined") return globalThis;
-  return typeof self !== "undefined"
-    ? self
-    : typeof window !== "undefined"
-      ? window
-      : __webpack_require__.g;
+  if (typeof globalThis !== 'undefined') return globalThis;
+  return typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : __webpack_require__.g;
 })();
 
-const isContextDefined = (context) =>
-  !isUndefined(context) && context !== _global;
+const isContextDefined = (context) => !isUndefined(context) && context !== _global;
 
 /**
  * Accepts varargs expecting each argument to be an object, then
@@ -25716,7 +25784,7 @@ function merge(/* obj1, obj2, obj3, ... */) {
   const result = {};
   const assignValue = (val, key) => {
     // Skip dangerous property names to prevent prototype pollution
-    if (key === "__proto__" || key === "constructor" || key === "prototype") {
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
       return;
     }
 
@@ -25769,7 +25837,7 @@ const extend = (a, b, thisArg, { allOwnKeys } = {}) => {
         });
       }
     },
-    { allOwnKeys },
+    { allOwnKeys }
   );
   return a;
 };
@@ -25798,17 +25866,14 @@ const stripBOM = (content) => {
  * @returns {void}
  */
 const inherits = (constructor, superConstructor, props, descriptors) => {
-  constructor.prototype = Object.create(
-    superConstructor.prototype,
-    descriptors,
-  );
-  Object.defineProperty(constructor.prototype, "constructor", {
+  constructor.prototype = Object.create(superConstructor.prototype, descriptors);
+  Object.defineProperty(constructor.prototype, 'constructor', {
     value: constructor,
     writable: true,
     enumerable: false,
     configurable: true,
   });
-  Object.defineProperty(constructor, "super", {
+  Object.defineProperty(constructor, 'super', {
     value: superConstructor.prototype,
   });
   props && Object.assign(constructor.prototype, props);
@@ -25838,20 +25903,13 @@ const toFlatObject = (sourceObj, destObj, filter, propFilter) => {
     i = props.length;
     while (i-- > 0) {
       prop = props[i];
-      if (
-        (!propFilter || propFilter(prop, sourceObj, destObj)) &&
-        !merged[prop]
-      ) {
+      if ((!propFilter || propFilter(prop, sourceObj, destObj)) && !merged[prop]) {
         destObj[prop] = sourceObj[prop];
         merged[prop] = true;
       }
     }
     sourceObj = filter !== false && getPrototypeOf(sourceObj);
-  } while (
-    sourceObj &&
-    (!filter || filter(sourceObj, destObj)) &&
-    sourceObj !== Object.prototype
-  );
+  } while (sourceObj && (!filter || filter(sourceObj, destObj)) && sourceObj !== Object.prototype);
 
   return destObj;
 };
@@ -25908,7 +25966,7 @@ const isTypedArray = ((TypedArray) => {
   return (thing) => {
     return TypedArray && thing instanceof TypedArray;
   };
-})(typeof Uint8Array !== "undefined" && getPrototypeOf(Uint8Array));
+})(typeof Uint8Array !== 'undefined' && getPrototypeOf(Uint8Array));
 
 /**
  * For each entry in the object, call the function with the key and value.
@@ -25951,14 +26009,12 @@ const matchAll = (regExp, str) => {
 };
 
 /* Checking if the kindOfTest function returns true when passed an HTMLFormElement. */
-const isHTMLForm = kindOfTest("HTMLFormElement");
+const isHTMLForm = kindOfTest('HTMLFormElement');
 
 const toCamelCase = (str) => {
-  return str
-    .toLowerCase()
-    .replace(/[-_\s]([a-z\d])(\w*)/g, function replacer(m, p1, p2) {
-      return p1.toUpperCase() + p2;
-    });
+  return str.toLowerCase().replace(/[-_\s]([a-z\d])(\w*)/g, function replacer(m, p1, p2) {
+    return p1.toUpperCase() + p2;
+  });
 };
 
 /* Creating a function that will check if an object has a property. */
@@ -25975,7 +26031,7 @@ const hasOwnProperty = (
  *
  * @returns {boolean} True if value is a RegExp object, otherwise false
  */
-const isRegExp = kindOfTest("RegExp");
+const isRegExp = kindOfTest('RegExp');
 
 const reduceDescriptors = (obj, reducer) => {
   const descriptors = Object.getOwnPropertyDescriptors(obj);
@@ -25999,10 +26055,7 @@ const reduceDescriptors = (obj, reducer) => {
 const freezeMethods = (obj) => {
   reduceDescriptors(obj, (descriptor, name) => {
     // skip restricted props in strict mode
-    if (
-      isFunction$1(obj) &&
-      ["arguments", "caller", "callee"].indexOf(name) !== -1
-    ) {
+    if (isFunction$1(obj) && ['arguments', 'caller', 'callee'].indexOf(name) !== -1) {
       return false;
     }
 
@@ -26012,7 +26065,7 @@ const freezeMethods = (obj) => {
 
     descriptor.enumerable = false;
 
-    if ("writable" in descriptor) {
+    if ('writable' in descriptor) {
       descriptor.writable = false;
       return;
     }
@@ -26025,6 +26078,14 @@ const freezeMethods = (obj) => {
   });
 };
 
+/**
+ * Converts an array or a delimited string into an object set with values as keys and true as values.
+ * Useful for fast membership checks.
+ *
+ * @param {Array|string} arrayOrString - The array or string to convert.
+ * @param {string} delimiter - The delimiter to use if input is a string.
+ * @returns {Object} An object with keys from the array or string, values set to true.
+ */
 const toObjectSet = (arrayOrString, delimiter) => {
   const obj = {};
 
@@ -26034,9 +26095,7 @@ const toObjectSet = (arrayOrString, delimiter) => {
     });
   };
 
-  isArray(arrayOrString)
-    ? define(arrayOrString)
-    : define(String(arrayOrString).split(delimiter));
+  isArray(arrayOrString) ? define(arrayOrString) : define(String(arrayOrString).split(delimiter));
 
   return obj;
 };
@@ -26044,9 +26103,7 @@ const toObjectSet = (arrayOrString, delimiter) => {
 const noop = () => {};
 
 const toFiniteNumber = (value, defaultValue) => {
-  return value != null && Number.isFinite((value = +value))
-    ? value
-    : defaultValue;
+  return value != null && Number.isFinite((value = +value)) ? value : defaultValue;
 };
 
 /**
@@ -26060,11 +26117,17 @@ function isSpecCompliantForm(thing) {
   return !!(
     thing &&
     isFunction$1(thing.append) &&
-    thing[toStringTag] === "FormData" &&
+    thing[toStringTag] === 'FormData' &&
     thing[iterator]
   );
 }
 
+/**
+ * Recursively converts an object to a JSON-compatible object, handling circular references and Buffers.
+ *
+ * @param {Object} obj - The object to convert.
+ * @returns {Object} The JSON-compatible object.
+ */
 const toJSONObject = (obj) => {
   const stack = new Array(10);
 
@@ -26079,7 +26142,7 @@ const toJSONObject = (obj) => {
         return source;
       }
 
-      if (!("toJSON" in source)) {
+      if (!('toJSON' in source)) {
         stack[i] = source;
         const target = isArray(source) ? [] : {};
 
@@ -26100,8 +26163,20 @@ const toJSONObject = (obj) => {
   return visit(obj, 0);
 };
 
-const isAsyncFn = kindOfTest("AsyncFunction");
+/**
+ * Determines if a value is an async function.
+ *
+ * @param {*} thing - The value to test.
+ * @returns {boolean} True if value is an async function, otherwise false.
+ */
+const isAsyncFn = kindOfTest('AsyncFunction');
 
+/**
+ * Determines if a value is thenable (has then and catch methods).
+ *
+ * @param {*} thing - The value to test.
+ * @returns {boolean} True if value is thenable, otherwise false.
+ */
 const isThenable = (thing) =>
   thing &&
   (isObject(thing) || isFunction$1(thing)) &&
@@ -26111,6 +26186,14 @@ const isThenable = (thing) =>
 // original code
 // https://github.com/DigitalBrainJS/AxiosPromise/blob/16deab13710ec09779922131f3fa5954320f83ab/lib/utils.js#L11-L34
 
+/**
+ * Provides a cross-platform setImmediate implementation.
+ * Uses native setImmediate if available, otherwise falls back to postMessage or setTimeout.
+ *
+ * @param {boolean} setImmediateSupported - Whether setImmediate is supported.
+ * @param {boolean} postMessageSupported - Whether postMessage is supported.
+ * @returns {Function} A function to schedule a callback asynchronously.
+ */
 const _setImmediate = ((setImmediateSupported, postMessageSupported) => {
   if (setImmediateSupported) {
     return setImmediate;
@@ -26119,27 +26202,33 @@ const _setImmediate = ((setImmediateSupported, postMessageSupported) => {
   return postMessageSupported
     ? ((token, callbacks) => {
         _global.addEventListener(
-          "message",
+          'message',
           ({ source, data }) => {
             if (source === _global && data === token) {
               callbacks.length && callbacks.shift()();
             }
           },
-          false,
+          false
         );
 
         return (cb) => {
           callbacks.push(cb);
-          _global.postMessage(token, "*");
+          _global.postMessage(token, '*');
         };
       })(`axios@${Math.random()}`, [])
     : (cb) => setTimeout(cb);
-})(typeof setImmediate === "function", isFunction$1(_global.postMessage));
+})(typeof setImmediate === 'function', isFunction$1(_global.postMessage));
 
+/**
+ * Schedules a microtask or asynchronous callback as soon as possible.
+ * Uses queueMicrotask if available, otherwise falls back to process.nextTick or _setImmediate.
+ *
+ * @type {Function}
+ */
 const asap =
-  typeof queueMicrotask !== "undefined"
+  typeof queueMicrotask !== 'undefined'
     ? queueMicrotask.bind(_global)
-    : (typeof process !== "undefined" && process.nextTick) || _setImmediate;
+    : (typeof process !== 'undefined' && process.nextTick) || _setImmediate;
 
 // *********************
 
@@ -26164,6 +26253,8 @@ var utils$1 = {
   isUndefined,
   isDate,
   isFile,
+  isReactNativeBlob,
+  isReactNative,
   isBlob,
   isRegExp,
   isFunction: isFunction$1,
@@ -26206,13 +26297,19 @@ var utils$1 = {
 };
 
 class AxiosError extends Error {
-    static from(error, code, config, request, response, customProps) {
-        const axiosError = new AxiosError(error.message, code || error.code, config, request, response);
-        axiosError.cause = error;
-        axiosError.name = error.name;
-        customProps && Object.assign(axiosError, customProps);
-        return axiosError;
+  static from(error, code, config, request, response, customProps) {
+    const axiosError = new AxiosError(error.message, code || error.code, config, request, response);
+    axiosError.cause = error;
+    axiosError.name = error.name;
+
+    // Preserve status from the original error if not already set from response
+    if (error.status != null && axiosError.status == null) {
+      axiosError.status = error.status;
     }
+
+    customProps && Object.assign(axiosError, customProps);
+    return axiosError;
+  }
 
     /**
      * Create an Error with the specified message, config, error code, request and response.
@@ -26226,37 +26323,48 @@ class AxiosError extends Error {
      * @returns {Error} The created error.
      */
     constructor(message, code, config, request, response) {
-        super(message);
-        this.name = 'AxiosError';
-        this.isAxiosError = true;
-        code && (this.code = code);
-        config && (this.config = config);
-        request && (this.request = request);
-        if (response) {
-            this.response = response;
-            this.status = response.status;
-        }
+      super(message);
+      
+      // Make message enumerable to maintain backward compatibility
+      // The native Error constructor sets message as non-enumerable,
+      // but axios < v1.13.3 had it as enumerable
+      Object.defineProperty(this, 'message', {
+          value: message,
+          enumerable: true,
+          writable: true,
+          configurable: true
+      });
+      
+      this.name = 'AxiosError';
+      this.isAxiosError = true;
+      code && (this.code = code);
+      config && (this.config = config);
+      request && (this.request = request);
+      if (response) {
+          this.response = response;
+          this.status = response.status;
+      }
     }
 
-    toJSON() {
-        return {
-            // Standard
-            message: this.message,
-            name: this.name,
-            // Microsoft
-            description: this.description,
-            number: this.number,
-            // Mozilla
-            fileName: this.fileName,
-            lineNumber: this.lineNumber,
-            columnNumber: this.columnNumber,
-            stack: this.stack,
-            // Axios
-            config: utils$1.toJSONObject(this.config),
-            code: this.code,
-            status: this.status,
-        };
-    }
+  toJSON() {
+    return {
+      // Standard
+      message: this.message,
+      name: this.name,
+      // Microsoft
+      description: this.description,
+      number: this.number,
+      // Mozilla
+      fileName: this.fileName,
+      lineNumber: this.lineNumber,
+      columnNumber: this.columnNumber,
+      stack: this.stack,
+      // Axios
+      config: utils$1.toJSONObject(this.config),
+      code: this.code,
+      status: this.status,
+    };
+  }
 }
 
 // This can be changed to static properties as soon as the parser options in .eslint.cjs are updated.
@@ -26311,11 +26419,14 @@ function removeBrackets(key) {
  */
 function renderKey(path, key, dots) {
   if (!path) return key;
-  return path.concat(key).map(function each(token, i) {
-    // eslint-disable-next-line no-param-reassign
-    token = removeBrackets(token);
-    return !dots && i ? '[' + token + ']' : token;
-  }).join(dots ? '.' : '');
+  return path
+    .concat(key)
+    .map(function each(token, i) {
+      // eslint-disable-next-line no-param-reassign
+      token = removeBrackets(token);
+      return !dots && i ? '[' + token + ']' : token;
+    })
+    .join(dots ? '.' : '');
 }
 
 /**
@@ -26365,21 +26476,26 @@ function toFormData(obj, formData, options) {
   formData = formData || new (FormData)();
 
   // eslint-disable-next-line no-param-reassign
-  options = utils$1.toFlatObject(options, {
-    metaTokens: true,
-    dots: false,
-    indexes: false
-  }, false, function defined(option, source) {
-    // eslint-disable-next-line no-eq-null,eqeqeq
-    return !utils$1.isUndefined(source[option]);
-  });
+  options = utils$1.toFlatObject(
+    options,
+    {
+      metaTokens: true,
+      dots: false,
+      indexes: false,
+    },
+    false,
+    function defined(option, source) {
+      // eslint-disable-next-line no-eq-null,eqeqeq
+      return !utils$1.isUndefined(source[option]);
+    }
+  );
 
   const metaTokens = options.metaTokens;
   // eslint-disable-next-line no-use-before-define
   const visitor = options.visitor || defaultVisitor;
   const dots = options.dots;
   const indexes = options.indexes;
-  const _Blob = options.Blob || typeof Blob !== 'undefined' && Blob;
+  const _Blob = options.Blob || (typeof Blob !== 'undefined' && Blob);
   const useBlob = _Blob && utils$1.isSpecCompliantForm(formData);
 
   if (!utils$1.isFunction(visitor)) {
@@ -26421,6 +26537,11 @@ function toFormData(obj, formData, options) {
   function defaultVisitor(value, key, path) {
     let arr = value;
 
+    if (utils$1.isReactNative(formData) && utils$1.isReactNativeBlob(value)) {
+      formData.append(renderKey(path, key, dots), convertValue(value));
+      return false;
+    }
+
     if (value && !path && typeof value === 'object') {
       if (utils$1.endsWith(key, '{}')) {
         // eslint-disable-next-line no-param-reassign
@@ -26429,17 +26550,22 @@ function toFormData(obj, formData, options) {
         value = JSON.stringify(value);
       } else if (
         (utils$1.isArray(value) && isFlatArray(value)) ||
-        ((utils$1.isFileList(value) || utils$1.endsWith(key, '[]')) && (arr = utils$1.toArray(value))
-        )) {
+        ((utils$1.isFileList(value) || utils$1.endsWith(key, '[]')) && (arr = utils$1.toArray(value)))
+      ) {
         // eslint-disable-next-line no-param-reassign
         key = removeBrackets(key);
 
         arr.forEach(function each(el, index) {
-          !(utils$1.isUndefined(el) || el === null) && formData.append(
-            // eslint-disable-next-line no-nested-ternary
-            indexes === true ? renderKey([key], index, dots) : (indexes === null ? key : key + '[]'),
-            convertValue(el)
-          );
+          !(utils$1.isUndefined(el) || el === null) &&
+            formData.append(
+              // eslint-disable-next-line no-nested-ternary
+              indexes === true
+                ? renderKey([key], index, dots)
+                : indexes === null
+                  ? key
+                  : key + '[]',
+              convertValue(el)
+            );
         });
         return false;
       }
@@ -26459,7 +26585,7 @@ function toFormData(obj, formData, options) {
   const exposedHelpers = Object.assign(predicates, {
     defaultVisitor,
     convertValue,
-    isVisitable
+    isVisitable,
   });
 
   function build(value, path) {
@@ -26472,9 +26598,9 @@ function toFormData(obj, formData, options) {
     stack.push(value);
 
     utils$1.forEach(value, function each(el, key) {
-      const result = !(utils$1.isUndefined(el) || el === null) && visitor.call(
-        formData, el, utils$1.isString(key) ? key.trim() : key, path, exposedHelpers
-      );
+      const result =
+        !(utils$1.isUndefined(el) || el === null) &&
+        visitor.call(formData, el, utils$1.isString(key) ? key.trim() : key, path, exposedHelpers);
 
       if (result === true) {
         build(el, path ? path.concat(key) : [key]);
@@ -26509,7 +26635,7 @@ function encode$1(str) {
     ')': '%29',
     '~': '%7E',
     '%20': '+',
-    '%00': '\x00'
+    '%00': '\x00',
   };
   return encodeURIComponent(str).replace(/[!'()~]|%20|%00/g, function replacer(match) {
     return charMap[match];
@@ -26537,13 +26663,17 @@ prototype.append = function append(name, value) {
 };
 
 prototype.toString = function toString(encoder) {
-  const _encode = encoder ? function(value) {
-    return encoder.call(this, value, encode$1);
-  } : encode$1;
+  const _encode = encoder
+    ? function (value) {
+        return encoder.call(this, value, encode$1);
+      }
+    : encode$1;
 
-  return this._pairs.map(function each(pair) {
-    return _encode(pair[0]) + '=' + _encode(pair[1]);
-  }, '').join('&');
+  return this._pairs
+    .map(function each(pair) {
+      return _encode(pair[0]) + '=' + _encode(pair[1]);
+    }, '')
+    .join('&');
 };
 
 /**
@@ -26555,11 +26685,11 @@ prototype.toString = function toString(encoder) {
  * @returns {string} The encoded value.
  */
 function encode(val) {
-  return encodeURIComponent(val).
-    replace(/%3A/gi, ':').
-    replace(/%24/g, '$').
-    replace(/%2C/gi, ',').
-    replace(/%20/g, '+');
+  return encodeURIComponent(val)
+    .replace(/%3A/gi, ':')
+    .replace(/%24/g, '$')
+    .replace(/%2C/gi, ',')
+    .replace(/%20/g, '+');
 }
 
 /**
@@ -26576,11 +26706,13 @@ function buildURL(url, params, options) {
     return url;
   }
 
-  const _encode = options && options.encode || encode;
+  const _encode = (options && options.encode) || encode;
 
-  const _options = utils$1.isFunction(options) ? {
-    serialize: options
-  } : options;
+  const _options = utils$1.isFunction(options)
+    ? {
+        serialize: options,
+      }
+    : options;
 
   const serializeFn = _options && _options.serialize;
 
@@ -26589,13 +26721,13 @@ function buildURL(url, params, options) {
   if (serializeFn) {
     serializedParams = serializeFn(params, _options);
   } else {
-    serializedParams = utils$1.isURLSearchParams(params) ?
-      params.toString() :
-      new AxiosURLSearchParams(params, _options).toString(_encode);
+    serializedParams = utils$1.isURLSearchParams(params)
+      ? params.toString()
+      : new AxiosURLSearchParams(params, _options).toString(_encode);
   }
 
   if (serializedParams) {
-    const hashmarkIndex = url.indexOf("#");
+    const hashmarkIndex = url.indexOf('#');
 
     if (hashmarkIndex !== -1) {
       url = url.slice(0, hashmarkIndex);
@@ -26625,7 +26757,7 @@ class InterceptorManager {
       fulfilled,
       rejected,
       synchronous: options ? options.synchronous : false,
-      runWhen: options ? options.runWhen : null
+      runWhen: options ? options.runWhen : null,
     });
     return this.handlers.length - 1;
   }
@@ -26679,7 +26811,7 @@ var transitionalDefaults = {
   silentJSONParsing: true,
   forcedJSONParsing: true,
   clarifyTimeoutError: false,
-  legacyInterceptorReqResOrdering: true
+  legacyInterceptorReqResOrdering: true,
 };
 
 var URLSearchParams$1 = typeof URLSearchParams !== 'undefined' ? URLSearchParams : AxiosURLSearchParams;
@@ -26693,14 +26825,14 @@ var platform$1 = {
   classes: {
     URLSearchParams: URLSearchParams$1,
     FormData: FormData$1,
-    Blob: Blob$1
+    Blob: Blob$1,
   },
-  protocols: ['http', 'https', 'file', 'blob', 'url', 'data']
+  protocols: ['http', 'https', 'file', 'blob', 'url', 'data'],
 };
 
 const hasBrowserEnv = typeof window !== 'undefined' && typeof document !== 'undefined';
 
-const _navigator = typeof navigator === 'object' && navigator || undefined;
+const _navigator = (typeof navigator === 'object' && navigator) || undefined;
 
 /**
  * Determine if we're running in a standard browser environment
@@ -26719,7 +26851,8 @@ const _navigator = typeof navigator === 'object' && navigator || undefined;
  *
  * @returns {boolean}
  */
-const hasStandardBrowserEnv = hasBrowserEnv &&
+const hasStandardBrowserEnv =
+  hasBrowserEnv &&
   (!_navigator || ['ReactNative', 'NativeScript', 'NS'].indexOf(_navigator.product) < 0);
 
 /**
@@ -26740,7 +26873,7 @@ const hasStandardBrowserWebWorkerEnv = (() => {
   );
 })();
 
-const origin = hasBrowserEnv && window.location.href || 'http://localhost';
+const origin = (hasBrowserEnv && window.location.href) || 'http://localhost';
 
 var utils = /*#__PURE__*/Object.freeze({
   __proto__: null,
@@ -26753,12 +26886,12 @@ var utils = /*#__PURE__*/Object.freeze({
 
 var platform = {
   ...utils,
-  ...platform$1
+  ...platform$1,
 };
 
 function toURLEncodedForm(data, options) {
   return toFormData(data, new platform.classes.URLSearchParams(), {
-    visitor: function(value, key, path, helpers) {
+    visitor: function (value, key, path, helpers) {
       if (platform.isNode && utils$1.isBuffer(value)) {
         this.append(key, value.toString('base64'));
         return false;
@@ -26766,7 +26899,7 @@ function toURLEncodedForm(data, options) {
 
       return helpers.defaultVisitor.apply(this, arguments);
     },
-    ...options
+    ...options,
   });
 }
 
@@ -26782,7 +26915,7 @@ function parsePropPath(name) {
   // foo.x.y.z
   // foo-x-y-z
   // foo x y z
-  return utils$1.matchAll(/\w+|\[(\w*)]/g, name).map(match => {
+  return utils$1.matchAll(/\w+|\[(\w*)]/g, name).map((match) => {
     return match[0] === '[]' ? '' : match[1] || match[0];
   });
 }
@@ -26886,96 +27019,107 @@ function stringifySafely(rawValue, parser, encoder) {
 }
 
 const defaults = {
-
   transitional: transitionalDefaults,
 
   adapter: ['xhr', 'http', 'fetch'],
 
-  transformRequest: [function transformRequest(data, headers) {
-    const contentType = headers.getContentType() || '';
-    const hasJSONContentType = contentType.indexOf('application/json') > -1;
-    const isObjectPayload = utils$1.isObject(data);
+  transformRequest: [
+    function transformRequest(data, headers) {
+      const contentType = headers.getContentType() || '';
+      const hasJSONContentType = contentType.indexOf('application/json') > -1;
+      const isObjectPayload = utils$1.isObject(data);
 
-    if (isObjectPayload && utils$1.isHTMLForm(data)) {
-      data = new FormData(data);
-    }
-
-    const isFormData = utils$1.isFormData(data);
-
-    if (isFormData) {
-      return hasJSONContentType ? JSON.stringify(formDataToJSON(data)) : data;
-    }
-
-    if (utils$1.isArrayBuffer(data) ||
-      utils$1.isBuffer(data) ||
-      utils$1.isStream(data) ||
-      utils$1.isFile(data) ||
-      utils$1.isBlob(data) ||
-      utils$1.isReadableStream(data)
-    ) {
-      return data;
-    }
-    if (utils$1.isArrayBufferView(data)) {
-      return data.buffer;
-    }
-    if (utils$1.isURLSearchParams(data)) {
-      headers.setContentType('application/x-www-form-urlencoded;charset=utf-8', false);
-      return data.toString();
-    }
-
-    let isFileList;
-
-    if (isObjectPayload) {
-      if (contentType.indexOf('application/x-www-form-urlencoded') > -1) {
-        return toURLEncodedForm(data, this.formSerializer).toString();
+      if (isObjectPayload && utils$1.isHTMLForm(data)) {
+        data = new FormData(data);
       }
 
-      if ((isFileList = utils$1.isFileList(data)) || contentType.indexOf('multipart/form-data') > -1) {
-        const _FormData = this.env && this.env.FormData;
+      const isFormData = utils$1.isFormData(data);
 
-        return toFormData(
-          isFileList ? {'files[]': data} : data,
-          _FormData && new _FormData(),
-          this.formSerializer
-        );
+      if (isFormData) {
+        return hasJSONContentType ? JSON.stringify(formDataToJSON(data)) : data;
       }
-    }
 
-    if (isObjectPayload || hasJSONContentType ) {
-      headers.setContentType('application/json', false);
-      return stringifySafely(data);
-    }
+      if (
+        utils$1.isArrayBuffer(data) ||
+        utils$1.isBuffer(data) ||
+        utils$1.isStream(data) ||
+        utils$1.isFile(data) ||
+        utils$1.isBlob(data) ||
+        utils$1.isReadableStream(data)
+      ) {
+        return data;
+      }
+      if (utils$1.isArrayBufferView(data)) {
+        return data.buffer;
+      }
+      if (utils$1.isURLSearchParams(data)) {
+        headers.setContentType('application/x-www-form-urlencoded;charset=utf-8', false);
+        return data.toString();
+      }
 
-    return data;
-  }],
+      let isFileList;
 
-  transformResponse: [function transformResponse(data) {
-    const transitional = this.transitional || defaults.transitional;
-    const forcedJSONParsing = transitional && transitional.forcedJSONParsing;
-    const JSONRequested = this.responseType === 'json';
+      if (isObjectPayload) {
+        if (contentType.indexOf('application/x-www-form-urlencoded') > -1) {
+          return toURLEncodedForm(data, this.formSerializer).toString();
+        }
 
-    if (utils$1.isResponse(data) || utils$1.isReadableStream(data)) {
-      return data;
-    }
+        if (
+          (isFileList = utils$1.isFileList(data)) ||
+          contentType.indexOf('multipart/form-data') > -1
+        ) {
+          const _FormData = this.env && this.env.FormData;
 
-    if (data && utils$1.isString(data) && ((forcedJSONParsing && !this.responseType) || JSONRequested)) {
-      const silentJSONParsing = transitional && transitional.silentJSONParsing;
-      const strictJSONParsing = !silentJSONParsing && JSONRequested;
-
-      try {
-        return JSON.parse(data, this.parseReviver);
-      } catch (e) {
-        if (strictJSONParsing) {
-          if (e.name === 'SyntaxError') {
-            throw AxiosError$1.from(e, AxiosError$1.ERR_BAD_RESPONSE, this, null, this.response);
-          }
-          throw e;
+          return toFormData(
+            isFileList ? { 'files[]': data } : data,
+            _FormData && new _FormData(),
+            this.formSerializer
+          );
         }
       }
-    }
 
-    return data;
-  }],
+      if (isObjectPayload || hasJSONContentType) {
+        headers.setContentType('application/json', false);
+        return stringifySafely(data);
+      }
+
+      return data;
+    },
+  ],
+
+  transformResponse: [
+    function transformResponse(data) {
+      const transitional = this.transitional || defaults.transitional;
+      const forcedJSONParsing = transitional && transitional.forcedJSONParsing;
+      const JSONRequested = this.responseType === 'json';
+
+      if (utils$1.isResponse(data) || utils$1.isReadableStream(data)) {
+        return data;
+      }
+
+      if (
+        data &&
+        utils$1.isString(data) &&
+        ((forcedJSONParsing && !this.responseType) || JSONRequested)
+      ) {
+        const silentJSONParsing = transitional && transitional.silentJSONParsing;
+        const strictJSONParsing = !silentJSONParsing && JSONRequested;
+
+        try {
+          return JSON.parse(data, this.parseReviver);
+        } catch (e) {
+          if (strictJSONParsing) {
+            if (e.name === 'SyntaxError') {
+              throw AxiosError$1.from(e, AxiosError$1.ERR_BAD_RESPONSE, this, null, this.response);
+            }
+            throw e;
+          }
+        }
+      }
+
+      return data;
+    },
+  ],
 
   /**
    * A timeout in milliseconds to abort a request. If set to 0 (default) a
@@ -26991,7 +27135,7 @@ const defaults = {
 
   env: {
     FormData: platform.classes.FormData,
-    Blob: platform.classes.Blob
+    Blob: platform.classes.Blob,
   },
 
   validateStatus: function validateStatus(status) {
@@ -27000,10 +27144,10 @@ const defaults = {
 
   headers: {
     common: {
-      'Accept': 'application/json, text/plain, */*',
-      'Content-Type': undefined
-    }
-  }
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined,
+    },
+  },
 };
 
 utils$1.forEach(['delete', 'get', 'head', 'post', 'put', 'patch'], (method) => {
@@ -27015,10 +27159,23 @@ var defaults$1 = defaults;
 // RawAxiosHeaders whose duplicates are ignored by node
 // c.f. https://nodejs.org/api/http.html#http_message_headers
 const ignoreDuplicateOf = utils$1.toObjectSet([
-  'age', 'authorization', 'content-length', 'content-type', 'etag',
-  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
-  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
-  'referer', 'retry-after', 'user-agent'
+  'age',
+  'authorization',
+  'content-length',
+  'content-type',
+  'etag',
+  'expires',
+  'from',
+  'host',
+  'if-modified-since',
+  'if-unmodified-since',
+  'last-modified',
+  'location',
+  'max-forwards',
+  'proxy-authorization',
+  'referer',
+  'retry-after',
+  'user-agent',
 ]);
 
 /**
@@ -27035,31 +27192,32 @@ const ignoreDuplicateOf = utils$1.toObjectSet([
  *
  * @returns {Object} Headers parsed into an object
  */
-var parseHeaders = rawHeaders => {
+var parseHeaders = (rawHeaders) => {
   const parsed = {};
   let key;
   let val;
   let i;
 
-  rawHeaders && rawHeaders.split('\n').forEach(function parser(line) {
-    i = line.indexOf(':');
-    key = line.substring(0, i).trim().toLowerCase();
-    val = line.substring(i + 1).trim();
+  rawHeaders &&
+    rawHeaders.split('\n').forEach(function parser(line) {
+      i = line.indexOf(':');
+      key = line.substring(0, i).trim().toLowerCase();
+      val = line.substring(i + 1).trim();
 
-    if (!key || (parsed[key] && ignoreDuplicateOf[key])) {
-      return;
-    }
-
-    if (key === 'set-cookie') {
-      if (parsed[key]) {
-        parsed[key].push(val);
-      } else {
-        parsed[key] = [val];
+      if (!key || (parsed[key] && ignoreDuplicateOf[key])) {
+        return;
       }
-    } else {
-      parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
-    }
-  });
+
+      if (key === 'set-cookie') {
+        if (parsed[key]) {
+          parsed[key].push(val);
+        } else {
+          parsed[key] = [val];
+        }
+      } else {
+        parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+      }
+    });
 
   return parsed;
 };
@@ -27113,8 +27271,10 @@ function matchHeaderValue(context, value, header, filter, isHeaderNameFilter) {
 }
 
 function formatHeader(header) {
-  return header.trim()
-    .toLowerCase().replace(/([a-z\d])(\w*)/g, (w, char, str) => {
+  return header
+    .trim()
+    .toLowerCase()
+    .replace(/([a-z\d])(\w*)/g, (w, char, str) => {
       return char.toUpperCase() + str;
     });
 }
@@ -27122,12 +27282,12 @@ function formatHeader(header) {
 function buildAccessors(obj, header) {
   const accessorName = utils$1.toCamelCase(' ' + header);
 
-  ['get', 'set', 'has'].forEach(methodName => {
+  ['get', 'set', 'has'].forEach((methodName) => {
     Object.defineProperty(obj, methodName + accessorName, {
-      value: function(arg1, arg2, arg3) {
+      value: function (arg1, arg2, arg3) {
         return this[methodName].call(this, header, arg1, arg2, arg3);
       },
-      configurable: true
+      configurable: true,
     });
   });
 }
@@ -27149,7 +27309,12 @@ class AxiosHeaders {
 
       const key = utils$1.findKey(self, lHeader);
 
-      if(!key || self[key] === undefined || _rewrite === true || (_rewrite === undefined && self[key] !== false)) {
+      if (
+        !key ||
+        self[key] === undefined ||
+        _rewrite === true ||
+        (_rewrite === undefined && self[key] !== false)
+      ) {
         self[key || _header] = normalizeValue(_value);
       }
     }
@@ -27159,17 +27324,22 @@ class AxiosHeaders {
 
     if (utils$1.isPlainObject(header) || header instanceof this.constructor) {
       setHeaders(header, valueOrRewrite);
-    } else if(utils$1.isString(header) && (header = header.trim()) && !isValidHeaderName(header)) {
+    } else if (utils$1.isString(header) && (header = header.trim()) && !isValidHeaderName(header)) {
       setHeaders(parseHeaders(header), valueOrRewrite);
     } else if (utils$1.isObject(header) && utils$1.isIterable(header)) {
-      let obj = {}, dest, key;
+      let obj = {},
+        dest,
+        key;
       for (const entry of header) {
         if (!utils$1.isArray(entry)) {
           throw TypeError('Object iterator must return a key-value pair');
         }
 
-        obj[key = entry[0]] = (dest = obj[key]) ?
-          (utils$1.isArray(dest) ? [...dest, entry[1]] : [dest, entry[1]]) : entry[1];
+        obj[(key = entry[0])] = (dest = obj[key])
+          ? utils$1.isArray(dest)
+            ? [...dest, entry[1]]
+            : [dest, entry[1]]
+          : entry[1];
       }
 
       setHeaders(obj, valueOrRewrite);
@@ -27216,7 +27386,11 @@ class AxiosHeaders {
     if (header) {
       const key = utils$1.findKey(this, header);
 
-      return !!(key && this[key] !== undefined && (!matcher || matchHeaderValue(this, this[key], key, matcher)));
+      return !!(
+        key &&
+        this[key] !== undefined &&
+        (!matcher || matchHeaderValue(this, this[key], key, matcher))
+      );
     }
 
     return false;
@@ -27256,7 +27430,7 @@ class AxiosHeaders {
 
     while (i--) {
       const key = keys[i];
-      if(!matcher || matchHeaderValue(this, this[key], key, matcher, true)) {
+      if (!matcher || matchHeaderValue(this, this[key], key, matcher, true)) {
         delete this[key];
         deleted = true;
       }
@@ -27300,7 +27474,9 @@ class AxiosHeaders {
     const obj = Object.create(null);
 
     utils$1.forEach(this, (value, header) => {
-      value != null && value !== false && (obj[header] = asStrings && utils$1.isArray(value) ? value.join(', ') : value);
+      value != null &&
+        value !== false &&
+        (obj[header] = asStrings && utils$1.isArray(value) ? value.join(', ') : value);
     });
 
     return obj;
@@ -27311,11 +27487,13 @@ class AxiosHeaders {
   }
 
   toString() {
-    return Object.entries(this.toJSON()).map(([header, value]) => header + ': ' + value).join('\n');
+    return Object.entries(this.toJSON())
+      .map(([header, value]) => header + ': ' + value)
+      .join('\n');
   }
 
   getSetCookie() {
-    return this.get("set-cookie") || [];
+    return this.get('set-cookie') || [];
   }
 
   get [Symbol.toStringTag]() {
@@ -27335,9 +27513,12 @@ class AxiosHeaders {
   }
 
   static accessor(header) {
-    const internals = this[$internals] = (this[$internals] = {
-      accessors: {}
-    });
+    const internals =
+      (this[$internals] =
+      this[$internals] =
+        {
+          accessors: {},
+        });
 
     const accessors = internals.accessors;
     const prototype = this.prototype;
@@ -27357,17 +27538,24 @@ class AxiosHeaders {
   }
 }
 
-AxiosHeaders.accessor(['Content-Type', 'Content-Length', 'Accept', 'Accept-Encoding', 'User-Agent', 'Authorization']);
+AxiosHeaders.accessor([
+  'Content-Type',
+  'Content-Length',
+  'Accept',
+  'Accept-Encoding',
+  'User-Agent',
+  'Authorization',
+]);
 
 // reserved names hotfix
-utils$1.reduceDescriptors(AxiosHeaders.prototype, ({value}, key) => {
+utils$1.reduceDescriptors(AxiosHeaders.prototype, ({ value }, key) => {
   let mapped = key[0].toUpperCase() + key.slice(1); // map `set` => `Set`
   return {
     get: () => value,
     set(headerValue) {
       this[mapped] = headerValue;
-    }
-  }
+    },
+  };
 });
 
 utils$1.freezeMethods(AxiosHeaders);
@@ -27434,19 +27622,23 @@ function settle(resolve, reject, response) {
   if (!response.status || !validateStatus || validateStatus(response.status)) {
     resolve(response);
   } else {
-    reject(new AxiosError$1(
-      'Request failed with status code ' + response.status,
-      [AxiosError$1.ERR_BAD_REQUEST, AxiosError$1.ERR_BAD_RESPONSE][Math.floor(response.status / 100) - 4],
-      response.config,
-      response.request,
-      response
-    ));
+    reject(
+      new AxiosError$1(
+        'Request failed with status code ' + response.status,
+        [AxiosError$1.ERR_BAD_REQUEST, AxiosError$1.ERR_BAD_RESPONSE][
+          Math.floor(response.status / 100) - 4
+        ],
+        response.config,
+        response.request,
+        response
+      )
+    );
   }
 }
 
 function parseProtocol(url) {
   const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
-  return match && match[1] || '';
+  return (match && match[1]) || '';
 }
 
 /**
@@ -27497,7 +27689,7 @@ function speedometer(samplesCount, min) {
 
     const passed = startedAt && now - startedAt;
 
-    return passed ? Math.round(bytesCount * 1000 / passed) : undefined;
+    return passed ? Math.round((bytesCount * 1000) / passed) : undefined;
   };
 }
 
@@ -27526,7 +27718,7 @@ function throttle(fn, freq) {
   const throttled = (...args) => {
     const now = Date.now();
     const passed = now - timestamp;
-    if ( passed >= threshold) {
+    if (passed >= threshold) {
       invoke(args, now);
     } else {
       lastArgs = args;
@@ -27548,7 +27740,7 @@ const progressEventReducer = (listener, isDownloadStream, freq = 3) => {
   let bytesNotified = 0;
   const _speedometer = speedometer(50, 250);
 
-  return throttle(e => {
+  return throttle((e) => {
     const loaded = e.loaded;
     const total = e.lengthComputable ? e.total : undefined;
     const progressBytes = loaded - bytesNotified;
@@ -27560,13 +27752,13 @@ const progressEventReducer = (listener, isDownloadStream, freq = 3) => {
     const data = {
       loaded,
       total,
-      progress: total ? (loaded / total) : undefined,
+      progress: total ? loaded / total : undefined,
       bytes: progressBytes,
       rate: rate ? rate : undefined,
       estimated: rate && total && inRange ? (total - loaded) / rate : undefined,
       event: e,
       lengthComputable: total != null,
-      [isDownloadStream ? 'download' : 'upload']: true
+      [isDownloadStream ? 'download' : 'upload']: true,
     };
 
     listener(data);
@@ -27576,77 +27768,82 @@ const progressEventReducer = (listener, isDownloadStream, freq = 3) => {
 const progressEventDecorator = (total, throttled) => {
   const lengthComputable = total != null;
 
-  return [(loaded) => throttled[0]({
-    lengthComputable,
-    total,
-    loaded
-  }), throttled[1]];
+  return [
+    (loaded) =>
+      throttled[0]({
+        lengthComputable,
+        total,
+        loaded,
+      }),
+    throttled[1],
+  ];
 };
 
-const asyncDecorator = (fn) => (...args) => utils$1.asap(() => fn(...args));
+const asyncDecorator =
+  (fn) =>
+  (...args) =>
+    utils$1.asap(() => fn(...args));
 
-var isURLSameOrigin = platform.hasStandardBrowserEnv ? ((origin, isMSIE) => (url) => {
-  url = new URL(url, platform.origin);
+var isURLSameOrigin = platform.hasStandardBrowserEnv
+  ? ((origin, isMSIE) => (url) => {
+      url = new URL(url, platform.origin);
 
-  return (
-    origin.protocol === url.protocol &&
-    origin.host === url.host &&
-    (isMSIE || origin.port === url.port)
-  );
-})(
-  new URL(platform.origin),
-  platform.navigator && /(msie|trident)/i.test(platform.navigator.userAgent)
-) : () => true;
+      return (
+        origin.protocol === url.protocol &&
+        origin.host === url.host &&
+        (isMSIE || origin.port === url.port)
+      );
+    })(
+      new URL(platform.origin),
+      platform.navigator && /(msie|trident)/i.test(platform.navigator.userAgent)
+    )
+  : () => true;
 
-var cookies = platform.hasStandardBrowserEnv ?
+var cookies = platform.hasStandardBrowserEnv
+  ? // Standard browser envs support document.cookie
+    {
+      write(name, value, expires, path, domain, secure, sameSite) {
+        if (typeof document === 'undefined') return;
 
-  // Standard browser envs support document.cookie
-  {
-    write(name, value, expires, path, domain, secure, sameSite) {
-      if (typeof document === 'undefined') return;
+        const cookie = [`${name}=${encodeURIComponent(value)}`];
 
-      const cookie = [`${name}=${encodeURIComponent(value)}`];
+        if (utils$1.isNumber(expires)) {
+          cookie.push(`expires=${new Date(expires).toUTCString()}`);
+        }
+        if (utils$1.isString(path)) {
+          cookie.push(`path=${path}`);
+        }
+        if (utils$1.isString(domain)) {
+          cookie.push(`domain=${domain}`);
+        }
+        if (secure === true) {
+          cookie.push('secure');
+        }
+        if (utils$1.isString(sameSite)) {
+          cookie.push(`SameSite=${sameSite}`);
+        }
 
-      if (utils$1.isNumber(expires)) {
-        cookie.push(`expires=${new Date(expires).toUTCString()}`);
-      }
-      if (utils$1.isString(path)) {
-        cookie.push(`path=${path}`);
-      }
-      if (utils$1.isString(domain)) {
-        cookie.push(`domain=${domain}`);
-      }
-      if (secure === true) {
-        cookie.push('secure');
-      }
-      if (utils$1.isString(sameSite)) {
-        cookie.push(`SameSite=${sameSite}`);
-      }
+        document.cookie = cookie.join('; ');
+      },
 
-      document.cookie = cookie.join('; ');
-    },
+      read(name) {
+        if (typeof document === 'undefined') return null;
+        const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+        return match ? decodeURIComponent(match[1]) : null;
+      },
 
-    read(name) {
-      if (typeof document === 'undefined') return null;
-      const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-      return match ? decodeURIComponent(match[1]) : null;
-    },
-
-    remove(name) {
-      this.write(name, '', Date.now() - 86400000, '/');
+      remove(name) {
+        this.write(name, '', Date.now() - 86400000, '/');
+      },
     }
-  }
-
-  :
-
-  // Non-standard browser env (web workers, react-native) lack needed support.
-  {
-    write() {},
-    read() {
-      return null;
-    },
-    remove() {}
-  };
+  : // Non-standard browser env (web workers, react-native) lack needed support.
+    {
+      write() {},
+      read() {
+        return null;
+      },
+      remove() {},
+    };
 
 /**
  * Determines whether the specified URL is absolute
@@ -27698,8 +27895,7 @@ function buildFullPath(baseURL, requestedURL, allowAbsoluteUrls) {
   return requestedURL;
 }
 
-const headersToObject = (thing) =>
-  thing instanceof AxiosHeaders$1 ? { ...thing } : thing;
+const headersToObject = (thing) => (thing instanceof AxiosHeaders$1 ? { ...thing } : thing);
 
 /**
  * Config-specific merge-function which creates a new config-object
@@ -27792,23 +27988,12 @@ function mergeConfig(config1, config2) {
       mergeDeepProperties(headersToObject(a), headersToObject(b), prop, true),
   };
 
-  utils$1.forEach(
-    Object.keys({ ...config1, ...config2 }),
-    function computeConfigValue(prop) {
-      if (
-        prop === "__proto__" ||
-        prop === "constructor" ||
-        prop === "prototype"
-      )
-        return;
-      const merge = utils$1.hasOwnProp(mergeMap, prop)
-        ? mergeMap[prop]
-        : mergeDeepProperties;
-      const configValue = merge(config1[prop], config2[prop], prop);
-      (utils$1.isUndefined(configValue) && merge !== mergeDirectKeys) ||
-        (config[prop] = configValue);
-    },
-  );
+  utils$1.forEach(Object.keys({ ...config1, ...config2 }), function computeConfigValue(prop) {
+    if (prop === '__proto__' || prop === 'constructor' || prop === 'prototype') return;
+    const merge = utils$1.hasOwnProp(mergeMap, prop) ? mergeMap[prop] : mergeDeepProperties;
+    const configValue = merge(config1[prop], config2[prop], prop);
+    (utils$1.isUndefined(configValue) && merge !== mergeDirectKeys) || (config[prop] = configValue);
+  });
 
   return config;
 }
@@ -27820,12 +28005,22 @@ var resolveConfig = (config) => {
 
   newConfig.headers = headers = AxiosHeaders$1.from(headers);
 
-  newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls), config.params, config.paramsSerializer);
+  newConfig.url = buildURL(
+    buildFullPath(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls),
+    config.params,
+    config.paramsSerializer
+  );
 
   // HTTP basic authentication
   if (auth) {
-    headers.set('Authorization', 'Basic ' +
-      btoa((auth.username || '') + ':' + (auth.password ? unescape(encodeURIComponent(auth.password)) : ''))
+    headers.set(
+      'Authorization',
+      'Basic ' +
+        btoa(
+          (auth.username || '') +
+            ':' +
+            (auth.password ? unescape(encodeURIComponent(auth.password)) : '')
+        )
     );
   }
 
@@ -27843,7 +28038,7 @@ var resolveConfig = (config) => {
         }
       });
     }
-  }  
+  }
 
   // Add xsrf header
   // This is only done if running in a standard browser environment.
@@ -27867,196 +28062,218 @@ var resolveConfig = (config) => {
 
 const isXHRAdapterSupported = typeof XMLHttpRequest !== 'undefined';
 
-var xhrAdapter = isXHRAdapterSupported && function (config) {
-  return new Promise(function dispatchXhrRequest(resolve, reject) {
-    const _config = resolveConfig(config);
-    let requestData = _config.data;
-    const requestHeaders = AxiosHeaders$1.from(_config.headers).normalize();
-    let {responseType, onUploadProgress, onDownloadProgress} = _config;
-    let onCanceled;
-    let uploadThrottled, downloadThrottled;
-    let flushUpload, flushDownload;
+var xhrAdapter = isXHRAdapterSupported &&
+  function (config) {
+    return new Promise(function dispatchXhrRequest(resolve, reject) {
+      const _config = resolveConfig(config);
+      let requestData = _config.data;
+      const requestHeaders = AxiosHeaders$1.from(_config.headers).normalize();
+      let { responseType, onUploadProgress, onDownloadProgress } = _config;
+      let onCanceled;
+      let uploadThrottled, downloadThrottled;
+      let flushUpload, flushDownload;
 
-    function done() {
-      flushUpload && flushUpload(); // flush events
-      flushDownload && flushDownload(); // flush events
+      function done() {
+        flushUpload && flushUpload(); // flush events
+        flushDownload && flushDownload(); // flush events
 
-      _config.cancelToken && _config.cancelToken.unsubscribe(onCanceled);
+        _config.cancelToken && _config.cancelToken.unsubscribe(onCanceled);
 
-      _config.signal && _config.signal.removeEventListener('abort', onCanceled);
-    }
-
-    let request = new XMLHttpRequest();
-
-    request.open(_config.method.toUpperCase(), _config.url, true);
-
-    // Set the request timeout in MS
-    request.timeout = _config.timeout;
-
-    function onloadend() {
-      if (!request) {
-        return;
-      }
-      // Prepare the response
-      const responseHeaders = AxiosHeaders$1.from(
-        'getAllResponseHeaders' in request && request.getAllResponseHeaders()
-      );
-      const responseData = !responseType || responseType === 'text' || responseType === 'json' ?
-        request.responseText : request.response;
-      const response = {
-        data: responseData,
-        status: request.status,
-        statusText: request.statusText,
-        headers: responseHeaders,
-        config,
-        request
-      };
-
-      settle(function _resolve(value) {
-        resolve(value);
-        done();
-      }, function _reject(err) {
-        reject(err);
-        done();
-      }, response);
-
-      // Clean up request
-      request = null;
-    }
-
-    if ('onloadend' in request) {
-      // Use onloadend if available
-      request.onloadend = onloadend;
-    } else {
-      // Listen for ready state to emulate onloadend
-      request.onreadystatechange = function handleLoad() {
-        if (!request || request.readyState !== 4) {
-          return;
-        }
-
-        // The request errored out and we didn't get a response, this will be
-        // handled by onerror instead
-        // With one exception: request that using file: protocol, most browsers
-        // will return status as 0 even though it's a successful request
-        if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
-          return;
-        }
-        // readystate handler is calling before onerror or ontimeout handlers,
-        // so we should call onloadend on the next 'tick'
-        setTimeout(onloadend);
-      };
-    }
-
-    // Handle browser request cancellation (as opposed to a manual cancellation)
-    request.onabort = function handleAbort() {
-      if (!request) {
-        return;
+        _config.signal && _config.signal.removeEventListener('abort', onCanceled);
       }
 
-      reject(new AxiosError$1('Request aborted', AxiosError$1.ECONNABORTED, config, request));
+      let request = new XMLHttpRequest();
 
-      // Clean up request
-      request = null;
-    };
+      request.open(_config.method.toUpperCase(), _config.url, true);
 
-    // Handle low level network errors
-  request.onerror = function handleError(event) {
-       // Browsers deliver a ProgressEvent in XHR onerror
-       // (message may be empty; when present, surface it)
-       // See https://developer.mozilla.org/docs/Web/API/XMLHttpRequest/error_event
-       const msg = event && event.message ? event.message : 'Network Error';
-       const err = new AxiosError$1(msg, AxiosError$1.ERR_NETWORK, config, request);
-       // attach the underlying event for consumers who want details
-       err.event = event || null;
-       reject(err);
-       request = null;
-    };
-    
-    // Handle timeout
-    request.ontimeout = function handleTimeout() {
-      let timeoutErrorMessage = _config.timeout ? 'timeout of ' + _config.timeout + 'ms exceeded' : 'timeout exceeded';
-      const transitional = _config.transitional || transitionalDefaults;
-      if (_config.timeoutErrorMessage) {
-        timeoutErrorMessage = _config.timeoutErrorMessage;
-      }
-      reject(new AxiosError$1(
-        timeoutErrorMessage,
-        transitional.clarifyTimeoutError ? AxiosError$1.ETIMEDOUT : AxiosError$1.ECONNABORTED,
-        config,
-        request));
+      // Set the request timeout in MS
+      request.timeout = _config.timeout;
 
-      // Clean up request
-      request = null;
-    };
-
-    // Remove Content-Type if data is undefined
-    requestData === undefined && requestHeaders.setContentType(null);
-
-    // Add headers to the request
-    if ('setRequestHeader' in request) {
-      utils$1.forEach(requestHeaders.toJSON(), function setRequestHeader(val, key) {
-        request.setRequestHeader(key, val);
-      });
-    }
-
-    // Add withCredentials to request if needed
-    if (!utils$1.isUndefined(_config.withCredentials)) {
-      request.withCredentials = !!_config.withCredentials;
-    }
-
-    // Add responseType to request if needed
-    if (responseType && responseType !== 'json') {
-      request.responseType = _config.responseType;
-    }
-
-    // Handle progress if needed
-    if (onDownloadProgress) {
-      ([downloadThrottled, flushDownload] = progressEventReducer(onDownloadProgress, true));
-      request.addEventListener('progress', downloadThrottled);
-    }
-
-    // Not all browsers support upload events
-    if (onUploadProgress && request.upload) {
-      ([uploadThrottled, flushUpload] = progressEventReducer(onUploadProgress));
-
-      request.upload.addEventListener('progress', uploadThrottled);
-
-      request.upload.addEventListener('loadend', flushUpload);
-    }
-
-    if (_config.cancelToken || _config.signal) {
-      // Handle cancellation
-      // eslint-disable-next-line func-names
-      onCanceled = cancel => {
+      function onloadend() {
         if (!request) {
           return;
         }
-        reject(!cancel || cancel.type ? new CanceledError$1(null, config, request) : cancel);
-        request.abort();
+        // Prepare the response
+        const responseHeaders = AxiosHeaders$1.from(
+          'getAllResponseHeaders' in request && request.getAllResponseHeaders()
+        );
+        const responseData =
+          !responseType || responseType === 'text' || responseType === 'json'
+            ? request.responseText
+            : request.response;
+        const response = {
+          data: responseData,
+          status: request.status,
+          statusText: request.statusText,
+          headers: responseHeaders,
+          config,
+          request,
+        };
+
+        settle(
+          function _resolve(value) {
+            resolve(value);
+            done();
+          },
+          function _reject(err) {
+            reject(err);
+            done();
+          },
+          response
+        );
+
+        // Clean up request
+        request = null;
+      }
+
+      if ('onloadend' in request) {
+        // Use onloadend if available
+        request.onloadend = onloadend;
+      } else {
+        // Listen for ready state to emulate onloadend
+        request.onreadystatechange = function handleLoad() {
+          if (!request || request.readyState !== 4) {
+            return;
+          }
+
+          // The request errored out and we didn't get a response, this will be
+          // handled by onerror instead
+          // With one exception: request that using file: protocol, most browsers
+          // will return status as 0 even though it's a successful request
+          if (
+            request.status === 0 &&
+            !(request.responseURL && request.responseURL.indexOf('file:') === 0)
+          ) {
+            return;
+          }
+          // readystate handler is calling before onerror or ontimeout handlers,
+          // so we should call onloadend on the next 'tick'
+          setTimeout(onloadend);
+        };
+      }
+
+      // Handle browser request cancellation (as opposed to a manual cancellation)
+      request.onabort = function handleAbort() {
+        if (!request) {
+          return;
+        }
+
+        reject(new AxiosError$1('Request aborted', AxiosError$1.ECONNABORTED, config, request));
+
+        // Clean up request
         request = null;
       };
 
-      _config.cancelToken && _config.cancelToken.subscribe(onCanceled);
-      if (_config.signal) {
-        _config.signal.aborted ? onCanceled() : _config.signal.addEventListener('abort', onCanceled);
+      // Handle low level network errors
+      request.onerror = function handleError(event) {
+        // Browsers deliver a ProgressEvent in XHR onerror
+        // (message may be empty; when present, surface it)
+        // See https://developer.mozilla.org/docs/Web/API/XMLHttpRequest/error_event
+        const msg = event && event.message ? event.message : 'Network Error';
+        const err = new AxiosError$1(msg, AxiosError$1.ERR_NETWORK, config, request);
+        // attach the underlying event for consumers who want details
+        err.event = event || null;
+        reject(err);
+        request = null;
+      };
+
+      // Handle timeout
+      request.ontimeout = function handleTimeout() {
+        let timeoutErrorMessage = _config.timeout
+          ? 'timeout of ' + _config.timeout + 'ms exceeded'
+          : 'timeout exceeded';
+        const transitional = _config.transitional || transitionalDefaults;
+        if (_config.timeoutErrorMessage) {
+          timeoutErrorMessage = _config.timeoutErrorMessage;
+        }
+        reject(
+          new AxiosError$1(
+            timeoutErrorMessage,
+            transitional.clarifyTimeoutError ? AxiosError$1.ETIMEDOUT : AxiosError$1.ECONNABORTED,
+            config,
+            request
+          )
+        );
+
+        // Clean up request
+        request = null;
+      };
+
+      // Remove Content-Type if data is undefined
+      requestData === undefined && requestHeaders.setContentType(null);
+
+      // Add headers to the request
+      if ('setRequestHeader' in request) {
+        utils$1.forEach(requestHeaders.toJSON(), function setRequestHeader(val, key) {
+          request.setRequestHeader(key, val);
+        });
       }
-    }
 
-    const protocol = parseProtocol(_config.url);
+      // Add withCredentials to request if needed
+      if (!utils$1.isUndefined(_config.withCredentials)) {
+        request.withCredentials = !!_config.withCredentials;
+      }
 
-    if (protocol && platform.protocols.indexOf(protocol) === -1) {
-      reject(new AxiosError$1('Unsupported protocol ' + protocol + ':', AxiosError$1.ERR_BAD_REQUEST, config));
-      return;
-    }
+      // Add responseType to request if needed
+      if (responseType && responseType !== 'json') {
+        request.responseType = _config.responseType;
+      }
 
+      // Handle progress if needed
+      if (onDownloadProgress) {
+        [downloadThrottled, flushDownload] = progressEventReducer(onDownloadProgress, true);
+        request.addEventListener('progress', downloadThrottled);
+      }
 
-    // Send the request
-    request.send(requestData || null);
-  });
-};
+      // Not all browsers support upload events
+      if (onUploadProgress && request.upload) {
+        [uploadThrottled, flushUpload] = progressEventReducer(onUploadProgress);
+
+        request.upload.addEventListener('progress', uploadThrottled);
+
+        request.upload.addEventListener('loadend', flushUpload);
+      }
+
+      if (_config.cancelToken || _config.signal) {
+        // Handle cancellation
+        // eslint-disable-next-line func-names
+        onCanceled = (cancel) => {
+          if (!request) {
+            return;
+          }
+          reject(!cancel || cancel.type ? new CanceledError$1(null, config, request) : cancel);
+          request.abort();
+          request = null;
+        };
+
+        _config.cancelToken && _config.cancelToken.subscribe(onCanceled);
+        if (_config.signal) {
+          _config.signal.aborted
+            ? onCanceled()
+            : _config.signal.addEventListener('abort', onCanceled);
+        }
+      }
+
+      const protocol = parseProtocol(_config.url);
+
+      if (protocol && platform.protocols.indexOf(protocol) === -1) {
+        reject(
+          new AxiosError$1(
+            'Unsupported protocol ' + protocol + ':',
+            AxiosError$1.ERR_BAD_REQUEST,
+            config
+          )
+        );
+        return;
+      }
+
+      // Send the request
+      request.send(requestData || null);
+    });
+  };
 
 const composeSignals = (signals, timeout) => {
-  const {length} = (signals = signals ? signals.filter(Boolean) : []);
+  const { length } = (signals = signals ? signals.filter(Boolean) : []);
 
   if (timeout || length) {
     let controller = new AbortController();
@@ -28068,21 +28285,29 @@ const composeSignals = (signals, timeout) => {
         aborted = true;
         unsubscribe();
         const err = reason instanceof Error ? reason : this.reason;
-        controller.abort(err instanceof AxiosError$1 ? err : new CanceledError$1(err instanceof Error ? err.message : err));
+        controller.abort(
+          err instanceof AxiosError$1
+            ? err
+            : new CanceledError$1(err instanceof Error ? err.message : err)
+        );
       }
     };
 
-    let timer = timeout && setTimeout(() => {
-      timer = null;
-      onabort(new AxiosError$1(`timeout of ${timeout}ms exceeded`, AxiosError$1.ETIMEDOUT));
-    }, timeout);
+    let timer =
+      timeout &&
+      setTimeout(() => {
+        timer = null;
+        onabort(new AxiosError$1(`timeout of ${timeout}ms exceeded`, AxiosError$1.ETIMEDOUT));
+      }, timeout);
 
     const unsubscribe = () => {
       if (signals) {
         timer && clearTimeout(timer);
         timer = null;
-        signals.forEach(signal => {
-          signal.unsubscribe ? signal.unsubscribe(onabort) : signal.removeEventListener('abort', onabort);
+        signals.forEach((signal) => {
+          signal.unsubscribe
+            ? signal.unsubscribe(onabort)
+            : signal.removeEventListener('abort', onabort);
         });
         signals = null;
       }
@@ -28090,7 +28315,7 @@ const composeSignals = (signals, timeout) => {
 
     signals.forEach((signal) => signal.addEventListener('abort', onabort));
 
-    const {signal} = controller;
+    const { signal } = controller;
 
     signal.unsubscribe = () => utils$1.asap(unsubscribe);
 
@@ -28133,7 +28358,7 @@ const readStream = async function* (stream) {
   const reader = stream.getReader();
   try {
     for (;;) {
-      const {done, value} = await reader.read();
+      const { done, value } = await reader.read();
       if (done) {
         break;
       }
@@ -28156,64 +28381,69 @@ const trackStream = (stream, chunkSize, onProgress, onFinish) => {
     }
   };
 
-  return new ReadableStream({
-    async pull(controller) {
-      try {
-        const {done, value} = await iterator.next();
+  return new ReadableStream(
+    {
+      async pull(controller) {
+        try {
+          const { done, value } = await iterator.next();
 
-        if (done) {
-         _onFinish();
-          controller.close();
-          return;
-        }
+          if (done) {
+            _onFinish();
+            controller.close();
+            return;
+          }
 
-        let len = value.byteLength;
-        if (onProgress) {
-          let loadedBytes = bytes += len;
-          onProgress(loadedBytes);
+          let len = value.byteLength;
+          if (onProgress) {
+            let loadedBytes = (bytes += len);
+            onProgress(loadedBytes);
+          }
+          controller.enqueue(new Uint8Array(value));
+        } catch (err) {
+          _onFinish(err);
+          throw err;
         }
-        controller.enqueue(new Uint8Array(value));
-      } catch (err) {
-        _onFinish(err);
-        throw err;
-      }
+      },
+      cancel(reason) {
+        _onFinish(reason);
+        return iterator.return();
+      },
     },
-    cancel(reason) {
-      _onFinish(reason);
-      return iterator.return();
+    {
+      highWaterMark: 2,
     }
-  }, {
-    highWaterMark: 2
-  })
+  );
 };
 
 const DEFAULT_CHUNK_SIZE = 64 * 1024;
 
-const {isFunction} = utils$1;
+const { isFunction } = utils$1;
 
-const globalFetchAPI = (({Request, Response}) => ({
-  Request, Response
+const globalFetchAPI = (({ Request, Response }) => ({
+  Request,
+  Response,
 }))(utils$1.global);
 
-const {
-  ReadableStream: ReadableStream$1, TextEncoder
-} = utils$1.global;
-
+const { ReadableStream: ReadableStream$1, TextEncoder } = utils$1.global;
 
 const test = (fn, ...args) => {
   try {
     return !!fn(...args);
   } catch (e) {
-    return false
+    return false;
   }
 };
 
 const factory = (env) => {
-  env = utils$1.merge.call({
-    skipUndefined: true
-  }, globalFetchAPI, env);
+  env = utils$1.merge.call(
+    {
+      skipUndefined: true,
+    },
+    globalFetchAPI,
+    env
+  );
 
-  const {fetch: envFetch, Request, Response} = env;
+  const { fetch: envFetch, Request, Response } = env;
   const isFetchSupported = envFetch ? isFunction(envFetch) : typeof fetch === 'function';
   const isRequestSupported = isFunction(Request);
   const isResponseSupported = isFunction(Response);
@@ -28224,46 +28454,61 @@ const factory = (env) => {
 
   const isReadableStreamSupported = isFetchSupported && isFunction(ReadableStream$1);
 
-  const encodeText = isFetchSupported && (typeof TextEncoder === 'function' ?
-      ((encoder) => (str) => encoder.encode(str))(new TextEncoder()) :
-      async (str) => new Uint8Array(await new Request(str).arrayBuffer())
-  );
+  const encodeText =
+    isFetchSupported &&
+    (typeof TextEncoder === 'function'
+      ? (
+          (encoder) => (str) =>
+            encoder.encode(str)
+        )(new TextEncoder())
+      : async (str) => new Uint8Array(await new Request(str).arrayBuffer()));
 
-  const supportsRequestStream = isRequestSupported && isReadableStreamSupported && test(() => {
-    let duplexAccessed = false;
+  const supportsRequestStream =
+    isRequestSupported &&
+    isReadableStreamSupported &&
+    test(() => {
+      let duplexAccessed = false;
 
-    const hasContentType = new Request(platform.origin, {
-      body: new ReadableStream$1(),
-      method: 'POST',
-      get duplex() {
-        duplexAccessed = true;
-        return 'half';
-      },
-    }).headers.has('Content-Type');
+      const hasContentType = new Request(platform.origin, {
+        body: new ReadableStream$1(),
+        method: 'POST',
+        get duplex() {
+          duplexAccessed = true;
+          return 'half';
+        },
+      }).headers.has('Content-Type');
 
-    return duplexAccessed && !hasContentType;
-  });
+      return duplexAccessed && !hasContentType;
+    });
 
-  const supportsResponseStream = isResponseSupported && isReadableStreamSupported &&
+  const supportsResponseStream =
+    isResponseSupported &&
+    isReadableStreamSupported &&
     test(() => utils$1.isReadableStream(new Response('').body));
 
   const resolvers = {
-    stream: supportsResponseStream && ((res) => res.body)
+    stream: supportsResponseStream && ((res) => res.body),
   };
 
-  isFetchSupported && ((() => {
-    ['text', 'arrayBuffer', 'blob', 'formData', 'stream'].forEach(type => {
-      !resolvers[type] && (resolvers[type] = (res, config) => {
-        let method = res && res[type];
+  isFetchSupported &&
+    (() => {
+      ['text', 'arrayBuffer', 'blob', 'formData', 'stream'].forEach((type) => {
+        !resolvers[type] &&
+          (resolvers[type] = (res, config) => {
+            let method = res && res[type];
 
-        if (method) {
-          return method.call(res);
-        }
+            if (method) {
+              return method.call(res);
+            }
 
-        throw new AxiosError$1(`Response type '${type}' is not supported`, AxiosError$1.ERR_NOT_SUPPORT, config);
+            throw new AxiosError$1(
+              `Response type '${type}' is not supported`,
+              AxiosError$1.ERR_NOT_SUPPORT,
+              config
+            );
+          });
       });
-    });
-  })());
+    })();
 
   const getBodyLength = async (body) => {
     if (body == null) {
@@ -28314,32 +28559,41 @@ const factory = (env) => {
       responseType,
       headers,
       withCredentials = 'same-origin',
-      fetchOptions
+      fetchOptions,
     } = resolveConfig(config);
 
     let _fetch = envFetch || fetch;
 
     responseType = responseType ? (responseType + '').toLowerCase() : 'text';
 
-    let composedSignal = composeSignals$1([signal, cancelToken && cancelToken.toAbortSignal()], timeout);
+    let composedSignal = composeSignals$1(
+      [signal, cancelToken && cancelToken.toAbortSignal()],
+      timeout
+    );
 
     let request = null;
 
-    const unsubscribe = composedSignal && composedSignal.unsubscribe && (() => {
-      composedSignal.unsubscribe();
-    });
+    const unsubscribe =
+      composedSignal &&
+      composedSignal.unsubscribe &&
+      (() => {
+        composedSignal.unsubscribe();
+      });
 
     let requestContentLength;
 
     try {
       if (
-        onUploadProgress && supportsRequestStream && method !== 'get' && method !== 'head' &&
+        onUploadProgress &&
+        supportsRequestStream &&
+        method !== 'get' &&
+        method !== 'head' &&
         (requestContentLength = await resolveBodyLength(headers, data)) !== 0
       ) {
         let _request = new Request(url, {
           method: 'POST',
           body: data,
-          duplex: "half"
+          duplex: 'half',
         });
 
         let contentTypeHeader;
@@ -28364,7 +28618,7 @@ const factory = (env) => {
 
       // Cloudflare Workers throws when credentials are defined
       // see https://github.com/cloudflare/workerd/issues/902
-      const isCredentialsSupported = isRequestSupported && "credentials" in Request.prototype;
+      const isCredentialsSupported = isRequestSupported && 'credentials' in Request.prototype;
 
       const resolvedOptions = {
         ...fetchOptions,
@@ -28372,29 +28626,35 @@ const factory = (env) => {
         method: method.toUpperCase(),
         headers: headers.normalize().toJSON(),
         body: data,
-        duplex: "half",
-        credentials: isCredentialsSupported ? withCredentials : undefined
+        duplex: 'half',
+        credentials: isCredentialsSupported ? withCredentials : undefined,
       };
 
       request = isRequestSupported && new Request(url, resolvedOptions);
 
-      let response = await (isRequestSupported ? _fetch(request, fetchOptions) : _fetch(url, resolvedOptions));
+      let response = await (isRequestSupported
+        ? _fetch(request, fetchOptions)
+        : _fetch(url, resolvedOptions));
 
-      const isStreamResponse = supportsResponseStream && (responseType === 'stream' || responseType === 'response');
+      const isStreamResponse =
+        supportsResponseStream && (responseType === 'stream' || responseType === 'response');
 
       if (supportsResponseStream && (onDownloadProgress || (isStreamResponse && unsubscribe))) {
         const options = {};
 
-        ['status', 'statusText', 'headers'].forEach(prop => {
+        ['status', 'statusText', 'headers'].forEach((prop) => {
           options[prop] = response[prop];
         });
 
         const responseContentLength = utils$1.toFiniteNumber(response.headers.get('content-length'));
 
-        const [onProgress, flush] = onDownloadProgress && progressEventDecorator(
-          responseContentLength,
-          progressEventReducer(asyncDecorator(onDownloadProgress), true)
-        ) || [];
+        const [onProgress, flush] =
+          (onDownloadProgress &&
+            progressEventDecorator(
+              responseContentLength,
+              progressEventReducer(asyncDecorator(onDownloadProgress), true)
+            )) ||
+          [];
 
         response = new Response(
           trackStream(response.body, DEFAULT_CHUNK_SIZE, onProgress, () => {
@@ -28407,7 +28667,10 @@ const factory = (env) => {
 
       responseType = responseType || 'text';
 
-      let responseData = await resolvers[utils$1.findKey(resolvers, responseType) || 'text'](response, config);
+      let responseData = await resolvers[utils$1.findKey(resolvers, responseType) || 'text'](
+        response,
+        config
+      );
 
       !isStreamResponse && unsubscribe && unsubscribe();
 
@@ -28418,43 +28681,50 @@ const factory = (env) => {
           status: response.status,
           statusText: response.statusText,
           config,
-          request
+          request,
         });
-      })
+      });
     } catch (err) {
       unsubscribe && unsubscribe();
 
       if (err && err.name === 'TypeError' && /Load failed|fetch/i.test(err.message)) {
         throw Object.assign(
-          new AxiosError$1('Network Error', AxiosError$1.ERR_NETWORK, config, request, err && err.response),
+          new AxiosError$1(
+            'Network Error',
+            AxiosError$1.ERR_NETWORK,
+            config,
+            request,
+            err && err.response
+          ),
           {
-            cause: err.cause || err
+            cause: err.cause || err,
           }
-        )
+        );
       }
 
       throw AxiosError$1.from(err, err && err.code, config, request, err && err.response);
     }
-  }
+  };
 };
 
 const seedCache = new Map();
 
 const getFetch = (config) => {
   let env = (config && config.env) || {};
-  const {fetch, Request, Response} = env;
-  const seeds = [
-    Request, Response, fetch
-  ];
+  const { fetch, Request, Response } = env;
+  const seeds = [Request, Response, fetch];
 
-  let len = seeds.length, i = len,
-    seed, target, map = seedCache;
+  let len = seeds.length,
+    i = len,
+    seed,
+    target,
+    map = seedCache;
 
   while (i--) {
     seed = seeds[i];
     target = map.get(seed);
 
-    target === undefined && map.set(seed, target = (i ? new Map() : factory(env)));
+    target === undefined && map.set(seed, (target = i ? new Map() : factory(env)));
 
     map = target;
   }
@@ -28470,7 +28740,7 @@ getFetch();
  * - `http` for Node.js
  * - `xhr` for browsers
  * - `fetch` for fetch API-based requests
- * 
+ *
  * @type {Object<string, Function|Object>}
  */
 const knownAdapters = {
@@ -28478,7 +28748,7 @@ const knownAdapters = {
   xhr: xhrAdapter,
   fetch: {
     get: getFetch,
-  }
+  },
 };
 
 // Assign adapter names for easier debugging and identification
@@ -28495,7 +28765,7 @@ utils$1.forEach(knownAdapters, (fn, value) => {
 
 /**
  * Render a rejection reason string for unknown or unsupported adapters
- * 
+ *
  * @param {string} reason
  * @returns {string}
  */
@@ -28503,17 +28773,18 @@ const renderReason = (reason) => `- ${reason}`;
 
 /**
  * Check if the adapter is resolved (function, null, or false)
- * 
+ *
  * @param {Function|null|false} adapter
  * @returns {boolean}
  */
-const isResolvedHandle = (adapter) => utils$1.isFunction(adapter) || adapter === null || adapter === false;
+const isResolvedHandle = (adapter) =>
+  utils$1.isFunction(adapter) || adapter === null || adapter === false;
 
 /**
  * Get the first suitable adapter from the provided list.
  * Tries each adapter in order until a supported one is found.
  * Throws an AxiosError if no adapter is suitable.
- * 
+ *
  * @param {Array<string|Function>|string|Function} adapters - Adapter(s) by name or function.
  * @param {Object} config - Axios request configuration
  * @throws {AxiosError} If no suitable adapter is available
@@ -28550,14 +28821,17 @@ function getAdapter(adapters, config) {
   }
 
   if (!adapter) {
-    const reasons = Object.entries(rejectedReasons)
-      .map(([id, state]) => `adapter ${id} ` +
+    const reasons = Object.entries(rejectedReasons).map(
+      ([id, state]) =>
+        `adapter ${id} ` +
         (state === false ? 'is not supported by the environment' : 'is not available in the build')
-      );
+    );
 
-    let s = length ?
-      (reasons.length > 1 ? 'since :\n' + reasons.map(renderReason).join('\n') : ' ' + renderReason(reasons[0])) :
-      'as no adapter specified';
+    let s = length
+      ? reasons.length > 1
+        ? 'since :\n' + reasons.map(renderReason).join('\n')
+        : ' ' + renderReason(reasons[0])
+      : 'as no adapter specified';
 
     throw new AxiosError$1(
       `There is no suitable adapter to dispatch the request ` + s,
@@ -28582,7 +28856,7 @@ var adapters = {
    * Exposes all known adapters
    * @type {Object<string, Function|Object>}
    */
-  adapters: knownAdapters
+  adapters: knownAdapters,
 };
 
 /**
@@ -28615,10 +28889,7 @@ function dispatchRequest(config) {
   config.headers = AxiosHeaders$1.from(config.headers);
 
   // Transform request data
-  config.data = transformData.call(
-    config,
-    config.transformRequest
-  );
+  config.data = transformData.call(config, config.transformRequest);
 
   if (['post', 'put', 'patch'].indexOf(config.method) !== -1) {
     config.headers.setContentType('application/x-www-form-urlencoded', false);
@@ -28626,39 +28897,38 @@ function dispatchRequest(config) {
 
   const adapter = adapters.getAdapter(config.adapter || defaults$1.adapter, config);
 
-  return adapter(config).then(function onAdapterResolution(response) {
-    throwIfCancellationRequested(config);
-
-    // Transform response data
-    response.data = transformData.call(
-      config,
-      config.transformResponse,
-      response
-    );
-
-    response.headers = AxiosHeaders$1.from(response.headers);
-
-    return response;
-  }, function onAdapterRejection(reason) {
-    if (!isCancel(reason)) {
+  return adapter(config).then(
+    function onAdapterResolution(response) {
       throwIfCancellationRequested(config);
 
       // Transform response data
-      if (reason && reason.response) {
-        reason.response.data = transformData.call(
-          config,
-          config.transformResponse,
-          reason.response
-        );
-        reason.response.headers = AxiosHeaders$1.from(reason.response.headers);
-      }
-    }
+      response.data = transformData.call(config, config.transformResponse, response);
 
-    return Promise.reject(reason);
-  });
+      response.headers = AxiosHeaders$1.from(response.headers);
+
+      return response;
+    },
+    function onAdapterRejection(reason) {
+      if (!isCancel(reason)) {
+        throwIfCancellationRequested(config);
+
+        // Transform response data
+        if (reason && reason.response) {
+          reason.response.data = transformData.call(
+            config,
+            config.transformResponse,
+            reason.response
+          );
+          reason.response.headers = AxiosHeaders$1.from(reason.response.headers);
+        }
+      }
+
+      return Promise.reject(reason);
+    }
+  );
 }
 
-const VERSION = "1.13.5";
+const VERSION = "1.13.6";
 
 const validators$1 = {};
 
@@ -28682,7 +28952,15 @@ const deprecatedWarnings = {};
  */
 validators$1.transitional = function transitional(validator, version, message) {
   function formatMessage(opt, desc) {
-    return '[Axios v' + VERSION + '] Transitional option \'' + opt + '\'' + desc + (message ? '. ' + message : '');
+    return (
+      '[Axios v' +
+      VERSION +
+      "] Transitional option '" +
+      opt +
+      "'" +
+      desc +
+      (message ? '. ' + message : '')
+    );
   }
 
   // eslint-disable-next-line func-names
@@ -28714,7 +28992,7 @@ validators$1.spelling = function spelling(correctSpelling) {
     // eslint-disable-next-line no-console
     console.warn(`${opt} is likely a misspelling of ${correctSpelling}`);
     return true;
-  }
+  };
 };
 
 /**
@@ -28740,7 +29018,10 @@ function assertOptions(options, schema, allowUnknown) {
       const value = options[opt];
       const result = value === undefined || validator(value, opt, options);
       if (result !== true) {
-        throw new AxiosError$1('option ' + opt + ' must be ' + result, AxiosError$1.ERR_BAD_OPTION_VALUE);
+        throw new AxiosError$1(
+          'option ' + opt + ' must be ' + result,
+          AxiosError$1.ERR_BAD_OPTION_VALUE
+        );
       }
       continue;
     }
@@ -28752,7 +29033,7 @@ function assertOptions(options, schema, allowUnknown) {
 
 var validator = {
   assertOptions,
-  validators: validators$1
+  validators: validators$1,
 };
 
 const validators = validator.validators;
@@ -28769,7 +29050,7 @@ class Axios {
     this.defaults = instanceConfig || {};
     this.interceptors = {
       request: new InterceptorManager$1(),
-      response: new InterceptorManager$1()
+      response: new InterceptorManager$1(),
     };
   }
 
@@ -28820,27 +29101,35 @@ class Axios {
 
     config = mergeConfig(this.defaults, config);
 
-    const {transitional, paramsSerializer, headers} = config;
+    const { transitional, paramsSerializer, headers } = config;
 
     if (transitional !== undefined) {
-      validator.assertOptions(transitional, {
-        silentJSONParsing: validators.transitional(validators.boolean),
-        forcedJSONParsing: validators.transitional(validators.boolean),
-        clarifyTimeoutError: validators.transitional(validators.boolean),
-        legacyInterceptorReqResOrdering: validators.transitional(validators.boolean)
-      }, false);
+      validator.assertOptions(
+        transitional,
+        {
+          silentJSONParsing: validators.transitional(validators.boolean),
+          forcedJSONParsing: validators.transitional(validators.boolean),
+          clarifyTimeoutError: validators.transitional(validators.boolean),
+          legacyInterceptorReqResOrdering: validators.transitional(validators.boolean),
+        },
+        false
+      );
     }
 
     if (paramsSerializer != null) {
       if (utils$1.isFunction(paramsSerializer)) {
         config.paramsSerializer = {
-          serialize: paramsSerializer
+          serialize: paramsSerializer,
         };
       } else {
-        validator.assertOptions(paramsSerializer, {
-          encode: validators.function,
-          serialize: validators.function
-        }, true);
+        validator.assertOptions(
+          paramsSerializer,
+          {
+            encode: validators.function,
+            serialize: validators.function,
+          },
+          true
+        );
       }
     }
 
@@ -28851,26 +29140,25 @@ class Axios {
       config.allowAbsoluteUrls = true;
     }
 
-    validator.assertOptions(config, {
-      baseUrl: validators.spelling('baseURL'),
-      withXsrfToken: validators.spelling('withXSRFToken')
-    }, true);
+    validator.assertOptions(
+      config,
+      {
+        baseUrl: validators.spelling('baseURL'),
+        withXsrfToken: validators.spelling('withXSRFToken'),
+      },
+      true
+    );
 
     // Set config.method
     config.method = (config.method || this.defaults.method || 'get').toLowerCase();
 
     // Flatten headers
-    let contextHeaders = headers && utils$1.merge(
-      headers.common,
-      headers[config.method]
-    );
+    let contextHeaders = headers && utils$1.merge(headers.common, headers[config.method]);
 
-    headers && utils$1.forEach(
-      ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
-      (method) => {
+    headers &&
+      utils$1.forEach(['delete', 'get', 'head', 'post', 'put', 'patch', 'common'], (method) => {
         delete headers[method];
-      }
-    );
+      });
 
     config.headers = AxiosHeaders$1.concat(contextHeaders, headers);
 
@@ -28885,7 +29173,8 @@ class Axios {
       synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
 
       const transitional = config.transitional || transitionalDefaults;
-      const legacyInterceptorReqResOrdering = transitional && transitional.legacyInterceptorReqResOrdering;
+      const legacyInterceptorReqResOrdering =
+        transitional && transitional.legacyInterceptorReqResOrdering;
 
       if (legacyInterceptorReqResOrdering) {
         requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
@@ -28959,12 +29248,14 @@ class Axios {
 // Provide aliases for supported request methods
 utils$1.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
   /*eslint func-names:0*/
-  Axios.prototype[method] = function(url, config) {
-    return this.request(mergeConfig(config || {}, {
-      method,
-      url,
-      data: (config || {}).data
-    }));
+  Axios.prototype[method] = function (url, config) {
+    return this.request(
+      mergeConfig(config || {}, {
+        method,
+        url,
+        data: (config || {}).data,
+      })
+    );
   };
 });
 
@@ -28973,14 +29264,18 @@ utils$1.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method)
 
   function generateHTTPMethod(isForm) {
     return function httpMethod(url, data, config) {
-      return this.request(mergeConfig(config || {}, {
-        method,
-        headers: isForm ? {
-          'Content-Type': 'multipart/form-data'
-        } : {},
-        url,
-        data
-      }));
+      return this.request(
+        mergeConfig(config || {}, {
+          method,
+          headers: isForm
+            ? {
+                'Content-Type': 'multipart/form-data',
+              }
+            : {},
+          url,
+          data,
+        })
+      );
     };
   }
 
@@ -29013,7 +29308,7 @@ class CancelToken {
     const token = this;
 
     // eslint-disable-next-line func-names
-    this.promise.then(cancel => {
+    this.promise.then((cancel) => {
       if (!token._listeners) return;
 
       let i = token._listeners.length;
@@ -29025,10 +29320,10 @@ class CancelToken {
     });
 
     // eslint-disable-next-line func-names
-    this.promise.then = onfulfilled => {
+    this.promise.then = (onfulfilled) => {
       let _resolve;
       // eslint-disable-next-line func-names
-      const promise = new Promise(resolve => {
+      const promise = new Promise((resolve) => {
         token.subscribe(resolve);
         _resolve = resolve;
       }).then(onfulfilled);
@@ -29116,7 +29411,7 @@ class CancelToken {
     });
     return {
       token,
-      cancel
+      cancel,
     };
   }
 }
@@ -29158,7 +29453,7 @@ function spread(callback) {
  * @returns {boolean} True if the payload is an error thrown by Axios, otherwise false
  */
 function isAxiosError(payload) {
-  return utils$1.isObject(payload) && (payload.isAxiosError === true);
+  return utils$1.isObject(payload) && payload.isAxiosError === true;
 }
 
 const HttpStatusCode = {
@@ -29251,10 +29546,10 @@ function createInstance(defaultConfig) {
   const instance = bind(Axios$1.prototype.request, context);
 
   // Copy axios.prototype to instance
-  utils$1.extend(instance, Axios$1.prototype, context, {allOwnKeys: true});
+  utils$1.extend(instance, Axios$1.prototype, context, { allOwnKeys: true });
 
   // Copy context to instance
-  utils$1.extend(instance, context, null, {allOwnKeys: true});
+  utils$1.extend(instance, context, null, { allOwnKeys: true });
 
   // Factory for creating new instances
   instance.create = function create(instanceConfig) {
@@ -29298,7 +29593,7 @@ axios.mergeConfig = mergeConfig;
 
 axios.AxiosHeaders = AxiosHeaders$1;
 
-axios.formToJSON = thing => formDataToJSON(utils$1.isHTMLForm(thing) ? new FormData(thing) : thing);
+axios.formToJSON = (thing) => formDataToJSON(utils$1.isHTMLForm(thing) ? new FormData(thing) : thing);
 
 axios.getAdapter = adapters.getAdapter;
 
@@ -29324,12 +29619,6 @@ module.exports = axios;
 /******/ 		if (cachedModule !== undefined) {
 /******/ 			return cachedModule.exports;
 /******/ 		}
-/******/ 		// Check if module exists (development only)
-/******/ 		if (__webpack_modules__[moduleId] === undefined) {
-/******/ 			var e = new Error("Cannot find module '" + moduleId + "'");
-/******/ 			e.code = 'MODULE_NOT_FOUND';
-/******/ 			throw e;
-/******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
 /******/ 			// no module.id needed
@@ -29338,6 +29627,12 @@ module.exports = axios;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
+/******/ 		if (!(moduleId in __webpack_modules__)) {
+/******/ 			delete __webpack_module_cache__[moduleId];
+/******/ 			var e = new Error("Cannot find module '" + moduleId + "'");
+/******/ 			e.code = 'MODULE_NOT_FOUND';
+/******/ 			throw e;
+/******/ 		}
 /******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Return the exports of the module
