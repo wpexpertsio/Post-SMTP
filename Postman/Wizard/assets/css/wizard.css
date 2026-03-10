@@ -86,9 +86,9 @@
   border-right: 1px solid #d9d9d9;
 } */
 
-.ps-wizard-pages{
+.ps-wizard-pages {
   border-left: 1px solid #d9d9d9;
-	padding-left:20px;
+  padding-left: 20px;
 }
 
 .ps-wizard-section .ps-wizard-nav {
@@ -379,7 +379,8 @@
 
 .ps-wizard-sockets {
   display: flex;
-  margin: 15px 0 15px 0;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .ps-wizard-divider {
@@ -405,11 +406,9 @@
   transition: .5s ease;
   opacity: 0;
   position: absolute;
-  top: -45%;
-  left: 87%;
-  transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
+  right: 0px;
   cursor: pointer;
+  top: 0;
 }
 
 .ps-wizard-socket-check:checked+label>.ps-wizard-socket-tick-container {
@@ -418,11 +417,23 @@
 
 .ps-wizard-socket-radio {
   background: #FAFAFA;
-  border: 2px solid #EFEFEF;
+  border: 1px solid #EFEFEF;
   width: 115px;
-  height: 66px;
-  margin-right: 15px;
-  border-radius: 3px;
+  padding: 5px;
+  box-sizing: border-box;
+  border-radius: 5px;
+}
+
+.ps-wizard-socket-radio label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.ps-wizard-socket-radio label .ps-wizard-socket-tick svg {
+  width: 18px;
+  height: 18px;
 }
 
 .ps-wizard-see-more-outer .ps-wizard-socket-radio,
@@ -760,8 +771,8 @@
 
 .ps-pro-extension-tag {
   position: absolute;
-  left: 85px;
-  top: 3px;
+  left: auto;
+  top: 4px;
   border-radius: 2px;
   border: 0.5px solid #214A72;
   background: linear-gradient(122deg, #214A72 14.11%, #3F8CD8 109.32%);
@@ -769,7 +780,9 @@
   font-size: 8px;
   font-weight: 700;
   font-family: sans-serif;
-  padding: 0px 3px;
+  padding: 2px 3px;
+  line-height: normal;
+  right: 4px;
 }
 
 .ps-pro-popup-overlay {
@@ -1363,4 +1376,38 @@ span.ps-wizard-line:after {
   width: auto;
   height: auto;
   margin: 0;
+}
+
+#ps-wizard-form .wizrd_footer {
+  display: flex;
+  align-items: center;
+  margin: 20px 0 0;
+  gap: 15px;
+  justify-content: space-between;
+}
+
+#ps-wizard-form .wizrd_footer button {
+  padding: 10px 16px;
+  width: auto;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#ps-wizard-form .wizrd_footer button span.dashicons {
+  height: auto;
+}
+
+#ps-wizard-form .wizrd_footer p.ps-wizard-error {
+  margin: 0;
+}
+
+#ps-wizard-form .wizrd_footer p {
+  margin: 0 0 5px;
+}
+
+#ps-wizard-form .wizrd_footer p a {
+  font-style: normal;
+  font-weight: 700;
 }

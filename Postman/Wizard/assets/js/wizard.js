@@ -76,21 +76,21 @@ jQuery(document).ready(function () {
         const seeMoreLabel = (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.seeMoreLabel) ? PostSMTPWizard.seeMoreLabel : 'See More';
         const seeLessLabel = (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.seeLessLabel) ? PostSMTPWizard.seeLessLabel : 'See Less';
 
-        if ($seeMoreBtn.length === 0) {
-            const seeMoreHtml = `
-                <div class="ps-wizard-socket-radio-outer ps-wizard-see-more-outer">
-                    <div class="ps-wizard-socket-radio ps-wizard-see-more">
-                        <label>
-                            <div class="ps-wizard-see-more-icon"></div>
-                            <h4 class="ps-wizard-see-more-text">${seeMoreLabel}</h4>
-                        </label>
-                    </div>
-                </div>
-            `;
-            $seeMoreBtn = jQuery(seeMoreHtml);
-        } else {
-            $seeMoreBtn.detach();
-        }
+        //if ($seeMoreBtn.length === 0) {
+        //    const seeMoreHtml = `
+        //        <div class="ps-wizard-socket-radio-outer ps-wizard-see-more-outer">
+        //            <div class="ps-wizard-socket-radio ps-wizard-see-more">
+        //                <label>
+        //                    <div class="ps-wizard-see-more-icon"></div>
+        //                    <h4 class="ps-wizard-see-more-text">${seeMoreLabel}</h4>
+        //                </label>
+        //            </div>
+        //        </div>
+        //    `;
+        //    $seeMoreBtn = jQuery(seeMoreHtml);
+        //} else {
+        //    $seeMoreBtn.detach();
+        //}
 
         // Update Button State
         const $text = $seeMoreBtn.find('.ps-wizard-see-more-text');
@@ -104,174 +104,174 @@ jQuery(document).ready(function () {
 
         // Clear all rows
         $rows.each(function () {
-            jQuery(this).empty();
+            // jQuery(this).empty();
         });
 
         // Helper to get or create row
-        const getRow = (index) => {
-            // We need to re-fetch rows every time because we might add new ones
-            let $currentRows = $step1.find('.ps-wizard-sockets').not('.ps-pro-row-container'); // Exclude our special container if we label it? 
-            // Actually, let's just stick to standard class but manage indices carefully.
-
-            // Re-query standard rows
-            // Note: We need to filter out the PRO rows that are NOT part of our grid reflow (the original static pro rows)
-            // But earlier we filtered `$rows` to exclude them. Logic needs to persist.
-            $currentRows = $currentRows.filter(function () {
-                return jQuery(this).find('.ps-pro-extension-outer').length === 0 && !jQuery(this).hasClass('ps-wizard-sockets-bottom');
-            });
-
-            let $row = $currentRows.eq(index);
-
-            if ($row.length === 0) {
-                $row = jQuery('<div class="ps-wizard-sockets"></div>');
-
-                // Append after the last standard row we found, or at end of container
-                let $last = $currentRows.last();
-                if ($last.length) {
-                    $last.after($row);
-                } else {
-                    // Fallback
-                    $step1.find('h4').first().after($row); // Just ensuring it goes somewhere valid
-                }
-
-                return $row;
-            }
-            return $row;
-        };
+        //        const getRow = (index) => {
+        //            // We need to re-fetch rows every time because we might add new ones
+        //            let $currentRows = $step1.find('.ps-wizard-sockets').not('.ps-pro-row-container'); // Exclude our special container if we label it? 
+        //            // Actually, let's just stick to standard class but manage indices carefully.
+        //
+        //            // Re-query standard rows
+        //            // Note: We need to filter out the PRO rows that are NOT part of our grid reflow (the original static pro rows)
+        //            // But earlier we filtered `$rows` to exclude them. Logic needs to persist.
+        //            $currentRows = $currentRows.filter(function () {
+        //                return jQuery(this).find('.ps-pro-extension-outer').length === 0 && !jQuery(this).hasClass('ps-wizard-sockets-bottom');
+        //            });
+        //
+        //            let $row = $currentRows.eq(index);
+        //
+        //            if ($row.length === 0) {
+        //                $row = jQuery('<div class="ps-wizard-sockets"></div>');
+        //
+        //                // Append after the last standard row we found, or at end of container
+        //                let $last = $currentRows.last();
+        //                if ($last.length) {
+        //                    $last.after($row);
+        //                } else {
+        //                    // Fallback
+        //                    $step1.find('h4').first().after($row); // Just ensuring it goes somewhere valid
+        //                }
+        //
+        //                return $row;
+        //            }
+        //            return $row;
+        //        };
 
         let currentRowIdx = 0;
         let cardIdx = 0;
         const cardsArray = $standardCards.toArray();
 
         // 1. Fill Standard Cards
-        while (cardIdx < cardsArray.length) {
-
-            let $currentRow = getRow(currentRowIdx);
-
-            // Determine capacity
-            let capacity = 4;
-            // If Collapsed and row index 1, leave spot for button
-            if (!isExpanded && currentRowIdx === 1) {
-                capacity = 3;
-            }
-
-            let addedCount = 0;
-            while (addedCount < capacity && cardIdx < cardsArray.length) {
-                $currentRow.append(cardsArray[cardIdx]);
-                cardIdx++;
-                addedCount++;
-            }
-
-            // If Collapsed and row 1, add button
-            if (!isExpanded && currentRowIdx === 1) {
-                $currentRow.append($seeMoreBtn);
-            }
-
-            currentRowIdx++;
-        }
+        //        while (cardIdx < cardsArray.length) {
+        //
+        //            let $currentRow = getRow(currentRowIdx);
+        //
+        //            // Determine capacity
+        //            let capacity = 4;
+        //            // If Collapsed and row index 1, leave spot for button
+        //            if (!isExpanded && currentRowIdx === 1) {
+        //                capacity = 3;
+        //            }
+        //
+        //            let addedCount = 0;
+        //            while (addedCount < capacity && cardIdx < cardsArray.length) {
+        //                $currentRow.append(cardsArray[cardIdx]);
+        //                cardIdx++;
+        //                addedCount++;
+        //            }
+        //
+        //            // If Collapsed and row 1, add button
+        //            if (!isExpanded && currentRowIdx === 1) {
+        //                $currentRow.append($seeMoreBtn);
+        //            }
+        //
+        //            currentRowIdx++;
+        //        }
 
         // 2. Place Button if Expanded (at end of standard cards)
-        if (isExpanded) {
-            let lastRowIdx = currentRowIdx > 0 ? currentRowIdx - 1 : 0;
-            let $lastRow = getRow(lastRowIdx);
-
-            if ($lastRow.children().length >= 4) {
-                // New row for button
-                currentRowIdx = lastRowIdx + 1;
-                $lastRow = getRow(currentRowIdx);
-                $lastRow.append($seeMoreBtn);
-            } else {
-                $lastRow.append($seeMoreBtn);
-            }
-            // Ensure we move to next row for potential next content? 
-            // effectively yes, but we are done with standard content.
-        }
+        //        if (isExpanded) {
+        //            let lastRowIdx = currentRowIdx > 0 ? currentRowIdx - 1 : 0;
+        //            let $lastRow = getRow(lastRowIdx);
+        //
+        //            if ($lastRow.children().length >= 4) {
+        //                // New row for button
+        //                currentRowIdx = lastRowIdx + 1;
+        //                $lastRow = getRow(currentRowIdx);
+        //                $lastRow.append($seeMoreBtn);
+        //            } else {
+        //                $lastRow.append($seeMoreBtn);
+        //            }
+        //            // Ensure we move to next row for potential next content? 
+        //            // effectively yes, but we are done with standard content.
+        //        }
 
         // 3. Handle Bottom Cards (Active Pro Mailers)
-        if ($bottomCards.length > 0) {
-            // Find or create the dedicated bottom row
-            // We give it a specific class to identify it
-            let $bottomRow = $step1.find('.ps-wizard-sockets-bottom');
-            if ($bottomRow.length === 0) {
-                $bottomRow = jQuery('<div class="ps-wizard-sockets ps-wizard-sockets-bottom"></div>');
-                // Place it AFTER the last standard row
-                // We re-query rows to find the last one
-                let $allRows = $step1.find('.ps-wizard-sockets').not('.ps-wizard-sockets-bottom');
-                if ($allRows.length > 0) {
-                    $allRows.last().after($bottomRow);
-                } else {
-                    // If no standard rows, append after the first h4 or similar
-                    $step1.find('h4').first().after($bottomRow);
-                }
-            }
-            $bottomRow.empty();
-            $bottomRow.append($bottomCards);
-        } else {
-            // Remove if empty
-            $step1.find('.ps-wizard-sockets-bottom').remove();
-        }
+        //if ($bottomCards.length > 0) {
+        //    // Find or create the dedicated bottom row
+        //    // We give it a specific class to identify it
+        //    let $bottomRow = $step1.find('.ps-wizard-sockets-bottom');
+        //    if ($bottomRow.length === 0) {
+        //        $bottomRow = jQuery('<div class="ps-wizard-sockets ps-wizard-sockets-bottom"></div>');
+        //        // Place it AFTER the last standard row
+        //        // We re-query rows to find the last one
+        //        let $allRows = $step1.find('.ps-wizard-sockets').not('.ps-wizard-sockets-bottom');
+        //        if ($allRows.length > 0) {
+        //            $allRows.last().after($bottomRow);
+        //        } else {
+        //            // If no standard rows, append after the first h4 or similar
+        //            $step1.find('h4').first().after($bottomRow);
+        //        }
+        //    }
+        //    $bottomRow.empty();
+        //    $bottomRow.append($bottomCards);
+        //} else {
+        //    // Remove if empty
+        //    $step1.find('.ps-wizard-sockets-bottom').remove();
+        //}
 
         // 4. Cleanup empty standard rows
-        $step1.find('.ps-wizard-sockets').not('.ps-wizard-sockets-bottom').each(function () {
-            // Only remove if it doesn't have the pro extension outer checks? 
-            // We are inside the reflow logic, safe to assume these are managed by us.
-            if (jQuery(this).children().length === 0 && jQuery(this).find('.ps-pro-extension-outer').length === 0) {
-                jQuery(this).remove();
-            }
-        });
+        //$step1.find('.ps-wizard-sockets').not('.ps-wizard-sockets-bottom').each(function () {
+        //    // Only remove if it doesn't have the pro extension outer checks? 
+        //    // We are inside the reflow logic, safe to assume these are managed by us.
+        //    if (jQuery(this).children().length === 0 && jQuery(this).find('.ps-pro-extension-outer').length === 0) {
+        //        jQuery(this).remove();
+        //    }
+        //});
 
         // 5. Apply Visibility
         // Re-query all sockets rows
         const $finalRows = $step1.find('.ps-wizard-sockets');
 
-        $finalRows.each(function (index) {
-            const $row = jQuery(this);
-            const isBottom = $row.hasClass('ps-wizard-sockets-bottom');
-            const hasProStatic = $row.find('.ps-pro-extension-outer').length > 0;
-
-            // Logic:
-            // Standard Rows 0 and 1: Always Visible.
-            // Bottom Row: Always Visible.
-            // Static Pro Rows: Always Visible.
-            // Other Standard Rows: Hidden if Collapsed.
-
-            // We need to determine the index in terms of "Standard" rows to know if it's > 1
-            // But simpler: if we are expanded, show everything.
-
-            if (isExpanded || isBottom || hasProStatic) {
-                $row.removeClass('ps-hidden ps-wizard-sockets-extra');
-            } else {
-                // Collapsed state
-                // If it's one of the first 2 "Standard" rows, show it.
-                // We iterate and count standard rows.
-            }
-        });
+        //        $finalRows.each(function (index) {
+        //            const $row = jQuery(this);
+        //            const isBottom = $row.hasClass('ps-wizard-sockets-bottom');
+        //            const hasProStatic = $row.find('.ps-pro-extension-outer').length > 0;
+        //
+        //            // Logic:
+        //            // Standard Rows 0 and 1: Always Visible.
+        //            // Bottom Row: Always Visible.
+        //            // Static Pro Rows: Always Visible.
+        //            // Other Standard Rows: Hidden if Collapsed.
+        //
+        //            // We need to determine the index in terms of "Standard" rows to know if it's > 1
+        //            // But simpler: if we are expanded, show everything.
+        //
+        //            if (isExpanded || isBottom || hasProStatic) {
+        //                $row.removeClass('ps-hidden ps-wizard-sockets-extra');
+        //            } else {
+        //                // Collapsed state
+        //                // If it's one of the first 2 "Standard" rows, show it.
+        //                // We iterate and count standard rows.
+        //            }
+        //        });
 
         // Refined Visibility Loop for Collapsed State
-        if (!isExpanded) {
-            let standardRowCount = 0;
-            $finalRows.each(function () {
-                const $row = jQuery(this);
-                const isBottom = $row.hasClass('ps-wizard-sockets-bottom');
-                const hasProStatic = $row.find('.ps-pro-extension-outer').length > 0;
-
-                if (isBottom || hasProStatic) {
-                    $row.removeClass('ps-hidden ps-wizard-sockets-extra');
-                } else {
-                    // Standard Row
-                    if (standardRowCount < 2) {
-                        $row.removeClass('ps-hidden ps-wizard-sockets-extra');
-                    } else {
-                        $row.addClass('ps-hidden ps-wizard-sockets-extra');
-                    }
-                    standardRowCount++;
-                }
-            });
-        }
+        //        if (!isExpanded) {
+        //            let standardRowCount = 0;
+        //            $finalRows.each(function () {
+        //                const $row = jQuery(this);
+        //                const isBottom = $row.hasClass('ps-wizard-sockets-bottom');
+        //                const hasProStatic = $row.find('.ps-pro-extension-outer').length > 0;
+        //
+        //                if (isBottom || hasProStatic) {
+        //                    $row.removeClass('ps-hidden ps-wizard-sockets-extra');
+        //                } else {
+        //                    // Standard Row
+        //                    if (standardRowCount < 2) {
+        //                        $row.removeClass('ps-hidden ps-wizard-sockets-extra');
+        //                    } else {
+        //                        $row.addClass('ps-hidden ps-wizard-sockets-extra');
+        //                    }
+        //                    standardRowCount++;
+        //                }
+        //            });
+        //        }
     };
 
     // Initial Reflow
-    reflowSockets(false);
+    // reflowSockets(false);
 
     // Event Handler for See More
     jQuery(document).on('click', '.ps-wizard-see-more', function (e) {
@@ -1065,61 +1065,61 @@ jQuery(document).ready(function () {
     });
 
     // Gmail One-Click auth
-    jQuery( document ).on( 'click', '.ps-gmail-oneclick-btn', function( e ) {
+    jQuery(document).on('click', '.ps-gmail-oneclick-btn', function (e) {
 
         e.preventDefault();
 
-        var $button = jQuery( this );
+        var $button = jQuery(this);
         var originalText = $button.text();
 
-        $button.prop( 'disabled', true ).text( 'Redirecting...' );
+        $button.prop('disabled', true).text('Redirecting...');
 
         // First, save the current wizard settings (From Name/Email, etc.).
-        jQuery.ajax( {
+        jQuery.ajax({
             url: ajaxurl,
             type: 'POST',
             async: true,
             data: {
                 action: 'ps-save-wizard',
-                FormData: jQuery( '#ps-wizard-form' ).serialize(),
+                FormData: jQuery('#ps-wizard-form').serialize(),
             },
-            success: function() {
+            success: function () {
                 // Then, request a fresh Gmail One-Click auth URL with a fresh nonce.
-                jQuery.ajax( {
+                jQuery.ajax({
                     url: ajaxurl,
                     type: 'POST',
                     dataType: 'json',
                     data: {
                         action: 'ps_get_gmail_auth_url',
-                        nonce: ( typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmail_auth_nonce ) ? PostSMTPWizard.gmail_auth_nonce : ''
+                        nonce: (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmail_auth_nonce) ? PostSMTPWizard.gmail_auth_nonce : ''
                     },
-                    success: function( response ) {
-                        if ( response.success && response.data && response.data.auth_url ) {
-                            window.location.assign( response.data.auth_url );
+                    success: function (response) {
+                        if (response.success && response.data && response.data.auth_url) {
+                            window.location.assign(response.data.auth_url);
                         } else {
-                            $button.prop( 'disabled', false ).text( originalText );
-                            if ( typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmailAuthErrorText ) {
-                                alert( PostSMTPWizard.gmailAuthErrorText );
+                            $button.prop('disabled', false).text(originalText);
+                            if (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmailAuthErrorText) {
+                                alert(PostSMTPWizard.gmailAuthErrorText);
                             }
                         }
                     },
-                    error: function() {
-                        $button.prop( 'disabled', false ).text( originalText );
-                        if ( typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmailAuthErrorText ) {
-                            alert( PostSMTPWizard.gmailAuthErrorText );
+                    error: function () {
+                        $button.prop('disabled', false).text(originalText);
+                        if (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmailAuthErrorText) {
+                            alert(PostSMTPWizard.gmailAuthErrorText);
                         }
                     }
-                } );
+                });
             },
-            error: function() {
-                $button.prop( 'disabled', false ).text( originalText );
-                if ( typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmailAuthErrorText ) {
-                    alert( PostSMTPWizard.gmailAuthErrorText );
+            error: function () {
+                $button.prop('disabled', false).text(originalText);
+                if (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmailAuthErrorText) {
+                    alert(PostSMTPWizard.gmailAuthErrorText);
                 }
             }
-        } );
+        });
 
-    } );
+    });
 
     refreshWizard();
 

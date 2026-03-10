@@ -156,22 +156,22 @@ class Post_SMTP_New_Wizard {
                         <div class="ps-wizard-nav">
                         <table>
                                 <tr class="ps-wizard-step-start <?php echo esc_attr( $in_active ) ?>">
-                                    <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"></span></td>
+                                    <td class="ps-wizard-circle"><span class="ps-tick"></span></td>
                                     <td class="ps-wizard-text"><?php _e( 'Choose your SMTP Mailer', 'post-smtp' ) ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="1"></span></td>
                                 </tr>
                                 <tr class="ps-wizard-step-between <?php echo esc_attr( $is_active ) ?>">
-                                    <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"><span class="ps-wizard-line"></span></span></td>
+                                    <td class="ps-wizard-circle"><span class="ps-tick"><span class="ps-wizard-line"></span></span></td>
                                     <td class="ps-wizard-text"><?php _e( 'Configure Mailer Settings', 'post-smtp' ) ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="2"></span></td>
                                 </tr>
                                 <tr class="ps-wizard-step-between ps-in-active-nav">
-                                    <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"><span class="ps-wizard-line"></span></span></td>
+                                    <td class="ps-wizard-circle"><span class="ps-tick"><span class="ps-wizard-line"></span></span></td>
                                     <td class="ps-wizard-text"><?php _e( 'Send Test Email', 'post-smtp' ) ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="3"></span></td>
                                 </tr>
                                 <tr class="ps-wizard-step-end ps-in-active-nav">
-                                    <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"><span class="ps-wizard-line"></span></span></td>
+                                    <td class="ps-wizard-circle"><span class="ps-tick"><span class="ps-wizard-line"></span></span></td>
                                     <td class="ps-wizard-text"><?php _e( 'Finish', 'post-smtp' ); ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="4"></span></td>
                                 </tr>
@@ -192,7 +192,7 @@ class Post_SMTP_New_Wizard {
                                         $transports = array_merge( array_flip( $this->socket_sequence ), $transports );
                                         
                                         foreach( $transports as $key => $transport ) {
-
+                                            $class = '';
                                             $urls = array(
                                                 'default'           =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.svg',
                                                 'smtp'              =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.svg',
@@ -288,8 +288,7 @@ class Post_SMTP_New_Wizard {
                                                 $in_pro_row = true;
                                                 $row = 0;
                                                 ?>
-                                                </div>
-                                                <div class="ps-wizard-sockets ps-wizard-sockets-pro">
+                                                
                                                 <?php
 
                                             }
@@ -300,8 +299,7 @@ class Post_SMTP_New_Wizard {
                                                 $row = 0;
 
                                                 ?>
-                                                </div>
-                                                <div class="ps-wizard-sockets">
+                                               
                                                 <?php
 
 
@@ -320,7 +318,11 @@ class Post_SMTP_New_Wizard {
                                                         <img src="<?php echo esc_url( $url ); ?>">
                                                         <?php if( empty( $is_pro ) ) : ?>
                                                             <div class="ps-wizard-socket-tick-container">
-                                                                <div class="ps-wizard-socket-tick"><span class="dashicons dashicons-yes"></span></div>
+                                                                <div class="ps-wizard-socket-tick">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                                                    <path d="M6 1C3.245 1 1 3.245 1 6C1 8.755 3.245 11 6 11C8.755 11 11 8.755 11 6C11 3.245 8.755 1 6 1ZM8.39 4.85L5.555 7.685C5.485 7.755 5.39 7.795 5.29 7.795C5.19 7.795 5.095 7.755 5.025 7.685L3.61 6.27C3.465 6.125 3.465 5.885 3.61 5.74C3.755 5.595 3.995 5.595 4.14 5.74L5.29 6.89L7.86 4.32C8.005 4.175 8.245 4.175 8.39 4.32C8.535 4.465 8.535 4.7 8.39 4.85Z" fill="#214A72"/>
+                                                                    </svg>
+                                                                </div>
                                                             </div> 
                                                         <?php endif; ?>
                                                         <h4><?php echo esc_attr( $transport_name ); ?></h4>
@@ -334,17 +336,34 @@ class Post_SMTP_New_Wizard {
                                         }
                                         ?>
                                         </div>
-                                        <p style="width: 70%; margin-bottom: 0px;color: #707070;">
-                                        <?php echo sprintf(
-                                            '%1$s <i><a style="color: #707070;" href="%2$s">%3$s</a></i>',
-                                            __( 'Need help in choosing one? Check out our ', 'post-smtp' ),
-                                            esc_url( admin_url( 'admin.php?page=postman-contact' ) ),
-                                            __( ' Mailer Guide.', 'post-smtp' )
-                                        ); ?>
-                                        </p>
+                                        <div class="wizrd_footer">
+                                            <div class="box">
+                                                <p>
+                                                    <?php echo sprintf(
+                                                        '%1$s <i><a style="color: #707070;" target="_blank" href="%2$s">%3$s</a></i>',
+                                                        __( 'Need help in choosing one? Check out our ', 'post-smtp' ),
+                                                        esc_url( 'https://postmansmtp.com/docs/mailers/a-complete-guide-to-post-smtp-mailers/' ),
+                                                        __( ' Mailer Guide.', 'post-smtp' )
+                                                    ); ?>
+                                                    </p>
 
-                                        <p style="width: 70%; margin-bottom: 30px;color: #707070;">
-                                            <?php echo esc_html__( 'Did we miss out on what you are looking for? Feel free to suggest your Mailer.', 'post-smtp' ); ?>
+                                                    <p>
+                                                        <?php echo sprintf(
+                                                        '%1$s <i><a style="color: #707070;" target="_blank" href="%2$s">%3$s</a></i>',
+                                                        __( 'Did we miss out on what you are looking for? Feel free to ', 'post-smtp' ),
+                                                        esc_url( 'https://postmansmtp.com/roadmap/' ),
+                                                        __( 'Suggest your Mailer.', 'post-smtp' )
+                                                    ); ?>
+                                            </div>
+                                            <div class="box">
+                                                <div class="ps-wizard-step ps-wizard-step-1">
+                                                    <p class="ps-wizard-error"></p>
+                                                    <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="1"><?php _e( 'Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
+                                                    <div style="clear: both"></div>
+                                                </div>         
+                                            </div>
+                                        </div>
+                                        
                                         </p>
                                     </div>
                                     <div class="ps-wizard-step ps-wizard-step-2">
@@ -533,11 +552,7 @@ class Post_SMTP_New_Wizard {
                         </div>
                         <div class="ps-wizard-footer-right">
                             
-                            <div class="ps-wizard-step ps-wizard-step-1">
-                                <p class="ps-wizard-error"></p>
-                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="1"><?php _e( 'Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
-                                <div style="clear: both"></div>
-                            </div>
+                           
                             <div class="ps-wizard-step ps-wizard-step-2">
                                 <p class="ps-wizard-success"><?php echo ( isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
                                 <p class="ps-wizard-error"><?php echo ( !isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
@@ -601,8 +616,8 @@ class Post_SMTP_New_Wizard {
             'Step2E3'           => __( 'Please try again, something went wrong.', 'post-smtp' ),
             'Step3E4'           => __( 'Please enter recipient email address.', 'post-smtp' ),
             'finish'            => __( 'Finish', 'post-smtp' ),
-            'seeMoreLabel'      => __( 'See More', 'post-smtp' ),
-            'seeLessLabel'      => __( 'See Less', 'post-smtp' ),
+           // 'seeMoreLabel'      => __( 'See More', 'post-smtp' ),
+           // 'seeLessLabel'      => __( 'See Less', 'post-smtp' ),
             'adminURL'          => admin_url(),
             'connectivityTestMsg'  => sprintf( 
                 '%1$s %2$s <a href="%3$s" target="_blank">%4$s</a> %5$s',
