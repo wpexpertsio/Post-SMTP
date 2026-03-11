@@ -1039,7 +1039,7 @@ class Post_SMTP_New_Wizard {
                     $html .= '<a href="' . esc_url( $auth_url ) . '" class="button button-primary ps-gmail-btn">';
                     $html .= esc_html__( 'Sign in with Google', 'post-smtp' );
                     $html .= '</a>';
-                    $html .= "<p>By signing in with Google, you can send emails using different 'From' addresses. To do this, disable the 'Force From Email' setting and use your registered aliases as the 'From' address across your WordPress site.</p> <p>Removing the OAuth connection will give you the ability to redo the OAuth connection or link to another Google account.</p>";
+                    $html .= "<p>Before proceeding, you’ll need to authorize this plugin to send emails using the Gmail API. This <a href=\"https://postmansmtp.com/docs/mailers/google-workspace-gmail-one-click-setup/\" target='_blank'>step-by-step guide</a> will walk you through the entire process.</p>";
             }
         }
     
@@ -1767,7 +1767,7 @@ class Post_SMTP_New_Wizard {
                 $html .= '</a>';
             }else {
                 $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
-                $html .= '<p>' . esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Office 365 API.', 'post-smtp' ) . '</p>';
+                $html .= '<p>' . 'Before proceeding, you’ll need to authorize this plugin to send emails using the Office 365 API. This <a href="https://postmansmtp.com/docs/mailers/microsoft-365-one-click-setup/" target="_blank">step-by-step guide</a> will walk you through the entire process.</p>';
                 $html .= '<input class="office_365-require" type="hidden" ' . esc_attr( $required ) . ' value="' . ( ( $has_access_token && $has_email ) ? '1' : '' ) . '" data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Office 365 API', 'post-smtp' ) . '" />';
                 $html .= '<a href="#" class="button button-primary ps-office365-btn">';
                 $html .= esc_html__( 'Sign in with Microsoft', 'post-smtp' );

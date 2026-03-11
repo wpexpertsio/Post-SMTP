@@ -581,7 +581,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		// Determine whether to hide the entire Gmail auth section
 		$hide_style = $gmail_oneclick_enabled ? '' : 'style="display:none;"';
 		
-		$helping_text =  "<p>By signing in with Google, you can send emails using different 'From' addresses. To do this, disable the 'Force From Email' setting and use your registered aliases as the 'From' address across your WordPress site.</p> <p>Removing the OAuth connection will give you the ability to redo the OAuth connection or link to another Google account.</p>";
+		$helping_text =  "<p>Before proceeding, you’ll need to authorize this plugin to send emails using the Gmail API. This <a href=\"https://postmansmtp.com/docs/mailers/google-workspace-gmail-one-click-setup/\" target='_blank'>step-by-step guide</a> will walk you through the entire process.</p>";
 
 		echo '<div id="ps-gmail-auth-buttons" ' . $hide_style . '>';
 
