@@ -83,7 +83,7 @@ class PostmanSweegoTransport extends PostmanAbstractModuleTransport implements P
         add_settings_field('sweego_api_key', __('API Key', 'post-smtp'), array($this, 'sweego_api_key_callback'), self::SWEEGO_AUTH_OPTIONS, self::SWEEGO_AUTH_SECTION);
     }
     public function printSweegoAuthSectionInfo() {
-        printf('<p id="wizard_sweego_auth_help">%s</p>', sprintf(__('Enter your Sweego API key and endpoint below.', 'post-smtp')));
+        printf('<p id="wizard_sweego_auth_help">%s</p>', sprintf(__('Enter your Sweego <a href="https://app.sweego.io/login" target="_blank">API key</a> and endpoint below.', 'post-smtp')));
     }
     public function sweego_api_key_callback() {
         printf('<input type="password" autocomplete="off" id="sweego_api_key" name="postman_options[sweego_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getSweegoApiKey() ? esc_attr(PostmanUtils::obfuscatePassword($this->options->getSweegoApiKey())) : '', __('Required', 'post-smtp'));

@@ -189,16 +189,7 @@
 }
 
 .ps-active-nav .ps-wizard-circle span.ps-tick:before,
-.ps-in-active-nav .ps-wizard-circle span.ps-tick:before {
-  content: '';
-  height: 35px;
-  width: 35px;
-  border-radius: 40px;
-  display: inline-block;
-  vertical-align: top;
-  line-height: 1;
-  margin: 4.4px 4.6px;
-}
+.ps-in-active-nav .ps-wizard-circle span.ps-tick:before {}
 
 .ps-active-nav .ps-wizard-circle span.ps-tick,
 .ps-in-active-nav .ps-wizard-circle span.ps-tick {
@@ -770,20 +761,38 @@
 }
 
 .ps-pro-extension-tag {
-  position: absolute;
+  color: transparent;
+  background: url(../images/probadge.svg) no-repeat center;
   left: auto;
-  top: 4px;
-  border-radius: 2px;
-  border: 0.5px solid #214A72;
-  background: linear-gradient(122deg, #214A72 14.11%, #3F8CD8 109.32%);
-  color: #ffffff;
-  font-size: 8px;
-  font-weight: 700;
-  font-family: sans-serif;
-  padding: 2px 3px;
-  line-height: normal;
   right: 4px;
+  background-size: 100%;
+  width: 30px;
+  height: 15px;
+  top: 5px;
 }
+
+.ps-wizard-nav tr.finished {}
+
+.ps-wizard-nav tr.finished span.ps-tick:before {
+  background: url(../images/finished.svg) no-repeat center;
+  background-size: 20px;
+}
+
+.ps-wizard-nav tr:not(.ps-active-nav, .ps-in-active-nav) span.ps-tick.dashicons-yes-alt:before {
+  background: url(../images/check.svg) #214A72 no-repeat center;
+  background-size: 30px;
+}
+
+.ps-wizard-nav span.ps-tick:before {
+  content: "";
+  width: 40px;
+  height: 40px;
+  display: block;
+  border: 1px solid #CDCDCD;
+  border-radius: 100%;
+}
+
+.ps-wizard-nav span.ps-tick:before {}
 
 .ps-pro-popup-overlay {
   display: none;
@@ -1368,20 +1377,12 @@ span.ps-wizard-line:after {
   padding-top: 5px;
 }
 
-.ps-wizard-step-end.ps-active-nav .ps-wizard-circle span.ps-tick:before {
-  content: "\f147";
-  background-color: #214A72;
-  color: white;
-  border: none;
-  width: auto;
-  height: auto;
-  margin: 0;
-}
+.ps-wizard-step-end.ps-active-nav .ps-wizard-circle span.ps-tick:before {}
 
 #ps-wizard-form .wizrd_footer {
   display: flex;
   align-items: center;
-  margin: 20px 0 0;
+  margin: 40px 0 0;
   gap: 15px;
   justify-content: space-between;
 }

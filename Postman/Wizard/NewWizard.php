@@ -170,7 +170,7 @@ class Post_SMTP_New_Wizard {
                                     <td class="ps-wizard-text"><?php _e( 'Send Test Email', 'post-smtp' ) ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="3"></span></td>
                                 </tr>
-                                <tr class="ps-wizard-step-end ps-in-active-nav">
+                                <tr class="ps-wizard-step-end ps-in-active-nav finished">
                                     <td class="ps-wizard-circle"><span class="ps-tick dashicons dashicons-yes-alt"><span class="ps-wizard-line"></span></span></td>
                                     <td class="ps-wizard-text"><?php _e( 'Finish', 'post-smtp' ); ?></td>
                                     <td class="ps-wizard-edit"><span class="dashicons dashicons-edit" data-step="4"></span></td>
@@ -720,15 +720,10 @@ class Post_SMTP_New_Wizard {
                     </div>
                     <span>'.
                     sprintf( 
-                        '%1$s <b>%2$s</b> %3$s <b>%4$s</b> %5$s <b>%6$s</b>',
-                        __( 'Enable this to prevent changes on the', 'post-smtp' ),
-                        __( 'From Email', 'post-smtp' ),
-                        __( 'field by other', 'post-smtp' ),
-                        __( 'Plugins', 'post-smtp' ),
-                        __( 'and', 'post-smtp' ),
-                        __( 'Themes', 'post-smtp' )
-                    ).
-                    '</span>
+                        '%1$s <b>%2$s</b>',
+                        __( 'Enable this option to prevent other plugins or themes from modifying the', 'post-smtp' ),
+                        __( 'From Email', 'post-smtp' )
+                    ).'.</span>
                 </div> 
             </div>
             <div class="ps-form-control">
@@ -744,13 +739,9 @@ class Post_SMTP_New_Wizard {
                     </div>
                     <span>'.
                     sprintf( 
-                        '%1$s <b>%2$s</b> %3$s <b>%4$s</b> %5$s <b>%6$s</b>',
-                        __( 'Enable this to prevent changes on the', 'post-smtp' ),
-                        __( 'From Name', 'post-smtp' ),
-                        __( 'field by other', 'post-smtp' ),
-                        __( 'Plugins', 'post-smtp' ),
-                        __( 'and', 'post-smtp' ),
-                        __( 'Themes', 'post-smtp' )
+                        '%1$s <b>%2$s</b>',
+                        __( 'Enable this option to prevent other plugins or themes from modifying the', 'post-smtp' ),
+                        __( 'From Name', 'post-smtp' )
                     ).
                     '</span>
                 </div>
