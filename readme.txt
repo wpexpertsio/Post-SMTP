@@ -298,6 +298,17 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
+= 3.8.1 – Mar 12, 2026 =
+
+* TWEAK – Updated the Setup Wizard UI for Mailers and improved related content.
+* FIX – Resolved REST error: rest_cookie_invalid_nonce (Cookie check failed – 403).
+* FIX – Added support for the pre_wp_mail function for custom implementations via functions.php.
+* FIX – Corrected an issue where submitted notification URLs were passed through esc_url, which escaped HTML entities (such as &) intended only for display.
+* FIX – Resolved an issue where the Post SMTP email logger did not display all recipients.
+* FIX – Fixed missing line breaks in the mail log content.
+* FIX – Resolved the Initial Setup Wizard issue that allowed incorrect email acceptance on the wizard screen.
+* FIX – Addressed missing authorization for Authenticated (Subscriber+) Office 365 OAuth configuration overwrite.
+
 = 3.8.0 – Jan 19, 2026 =
 * NEW – Added [Sweego](https://www.sweego.io/) as an email service provider.
 * NEW – Introduced the "Send Test Notification" feature for Post SMTP failure alerts.
