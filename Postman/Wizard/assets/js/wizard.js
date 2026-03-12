@@ -1145,7 +1145,7 @@ jQuery(document).ready(function () {
             placeholder = 'Zoho Mailer?';
         }
         if (placeholder == "Microsoft 365") {
-            placeholder = 'Microsoft 365 One-Click / Manual Setup?';
+            placeholder = 'Microsoft 365 Mailer?';
         }
 
         jQuery('.ps-pro-for-img').attr('src', imgSrc);

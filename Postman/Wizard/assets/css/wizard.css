@@ -13,7 +13,8 @@
 }
 
 .ps-wizard-top {
-  width: 1400px;
+  width: 95%;
+  max-width: 1400px;
   margin: 30px auto 100px;
   display: flex;
   align-items: center;
@@ -59,7 +60,8 @@
 .ps-wizard-outer {
   border: 2px solid #375CAF;
   border-radius: 7px;
-  width: 875px;
+  width: 95%;
+  max-width: 875px;
   margin: 0 auto;
 }
 
@@ -729,7 +731,8 @@
 }
 
 .ps-wizard-page-footer {
-  width: 875px;
+  width: 95%;
+  max-width: 875px;
   text-align: center;
   margin: 45px auto;
 }
@@ -771,9 +774,13 @@
   top: 5px;
 }
 
-.ps-wizard-nav tr.finished {}
+/* Finished + currently active step */
+.ps-wizard-nav tr.finished.ps-active-nav span.ps-tick:before {
+  background: url(../images/finished-white.svg) #214A72 no-repeat center !important;
+  border-color: #214A72;
+}
 
-.ps-wizard-nav tr.finished span.ps-tick:before {
+.ps-wizard-nav tr.finished:not(.ps-active-nav) span.ps-tick:before {
   background: url(../images/finished.svg) no-repeat center;
   background-size: 20px;
 }
