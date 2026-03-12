@@ -1863,8 +1863,14 @@ public function render_gmail_settings() {
                 $sanitized['ses_access_key_id'] = isset( $sanitized['ses_access_key_id'] ) ? $sanitized['ses_access_key_id'] : '';
                 $sanitized['ses_secret_access_key'] = isset( $sanitized['ses_secret_access_key'] ) ? $sanitized['ses_secret_access_key'] : '';
                 $sanitized['ses_region'] = isset( $sanitized['ses_region'] ) ? $sanitized['ses_region'] : '';
-                $sanitized['enc_type'] = 'tls';
-                $sanitized['auth_type'] = 'login';
+                // Preserve encryption from form when set; for port 465 default to SSL (SMTPS), otherwise TLS
+                if ( empty( $sanitized['enc_type'] ) || ! in_array( $sanitized['enc_type'], array( 'none', 'ssl', 'tls' ), true ) ) {
+                    $port = isset( $sanitized['port'] ) ? absint( $sanitized['port'] ) : 0;
+                    $sanitized['enc_type'] = ( $port === 465 ) ? PostmanOptions::SECURITY_TYPE_SMTPS : PostmanOptions::SECURITY_TYPE_STARTTLS;
+                }
+                if ( empty( $sanitized['auth_type'] ) ) {
+                    $sanitized['auth_type'] = 'login';
+                }
                 $sanitized['slack_token'] = base64_decode( isset( $options['slack_token'] ) ? $options['slack_token'] : '' );
                 $sanitized['pushover_user'] = base64_decode( isset( $options['pushover_user'] ) ? $options['pushover_user'] : '' );
                 $sanitized['pushover_token'] = base64_decode( isset( $options['pushover_token'] ) ? $options['pushover_token'] : '' );

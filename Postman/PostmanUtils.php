@@ -368,14 +368,36 @@ class PostmanUtils {
 			PostmanUtils::$emailValidator = new Postman_Zend_Validate_EmailAddress();
 		}
 		if ( strpos( $email, ',' ) !== false ) {
-		    $emails = explode(',', $email);
-		    $result = [];
-		    foreach ( $emails as $email ) {
-		        $result[] = PostmanUtils::$emailValidator->isValid( $email );
-            }
+			$emails = explode( ',', $email );
+			$result = array();
+			foreach ( $emails as $e ) {
+				$result[] = PostmanUtils::validateEmailOne( trim( $e ) );
+			}
+			return ! in_array( false, $result );
+		}
+		return PostmanUtils::validateEmailOne( trim( $email ) );
+	}
 
-		    return ! in_array(false, $result );
-        }
+	/**
+	 * Validates a single e-mail address. Accepts IDN (punycode) domains that the
+	 * Zend validator rejects (e.g. noreply@xn--m1acit.xn--p1ai) using a basic
+	 * format check so valid international addresses are not rejected.
+	 *
+	 * @param string $email Single email address (no commas).
+	 * @return bool
+	 */
+	private static function validateEmailOne( $email ) {
+		$at = strrpos( $email, '@' );
+		if ( $at !== false ) {
+			$domain = substr( $email, $at + 1 );
+			if ( strpos( $domain, 'xn--' ) !== false ) {
+				$local = substr( $email, 0, $at );
+				if ( $local !== '' && $domain !== '' && strpos( $domain, '.' ) !== false
+					&& preg_match( '/^[a-z0-9.\x2d]+$/i', $domain ) && strlen( $domain ) <= 253 ) {
+					return true;
+				}
+			}
+		}
 		return PostmanUtils::$emailValidator->isValid( $email );
 	}
 
