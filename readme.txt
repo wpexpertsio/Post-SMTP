@@ -222,7 +222,29 @@ In short, our Expert Assistance is your one-stop destination for all your WordPr
 
 .. and every other plugin that uses the WordPress API wp_mail to send mail!
 
-== Requirements == 
+== Try Our Other Awesome WordPress Plugins ==
+
+* **[Gutena Forms](https://wordpress.org/plugins/gutena-forms/)** – Create modern, responsive contact forms directly in the Gutenberg block editor. Add advanced fields, protect against spam with reCAPTCHA and Cloudflare Turnstile, manage form entries, and more.
+
+* **[Password Protected](https://wordpress.org/plugins/password-protected/)** – Secure your WordPress site, posts, pages, and categories with simple password protection.
+
+* **[WP EasyPay](https://wordpress.org/plugins/wp-easypay/)** – Accept Square payments and donations easily on your WordPress site.
+
+* **[WC Shop Sync](https://wordpress.org/plugins/wc-shop-sync/)** – Add Square payments and sync WooCommerce products, customers, and orders with your Square POS.
+
+* **[Advanced File Manager](https://wordpress.org/plugins/file-manager-advanced/)** – Easily manage and organize your WordPress files directly from the dashboard.
+
+* **[CF7 Apps](https://wordpress.org/plugins/cf7-apps/)** – Add honeypot, hCaptcha, and database entries to Contact Form 7. New extensions are continuously added.
+
+* **[myCred](https://wordpress.org/plugins/mycred/)** – Add gamification, rewards, ranks, badges, and points management systems to your WordPress website.
+
+* **[New User Approve](https://wordpress.org/plugins/new-user-approve/)** – Control user registrations by manually approving or denying new signups.
+
+* **[Bookify](https://wordpress.org/plugins/bookify/)** – Your go-to online bookings and appointment scheduling plugin for WordPress.
+
+* **[All In One Login](https://wordpress.org/plugins/all-in-one-login/)** – Secure your WordPress login page, change the wp-login.php URL, and add social logins like Google, Facebook, Microsoft, LINE, and more.
+
+* **[WPExperts WooCommerce Store](https://store.wpexperts.io/woocommerce/)** – Explore premium WooCommerce plugins and professional solutions by WPExperts.== Requirements == 
 * WordPress v6.2 and above is recommended
 * PHP v7.6 and above is recommended.
 * Memory should be at least 800KiB per processing at idle.
@@ -302,7 +324,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
-= 3.9.0 – Mar 12, 2026 =
+= 3.9.0 – Mar 17, 2026 =
 
 * TWEAK – Updated the Setup Wizard UI for Mailers and improved related content.
 * FIX – Resolved REST error: rest_cookie_invalid_nonce (Cookie check failed – 403).
@@ -313,7 +335,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 * FIX – Resolved the Initial Setup Wizard issue that allowed incorrect email acceptance on the wizard screen.
 * FIX – Addressed missing authorization for Authenticated (Subscriber+) Office 365 OAuth configuration overwrite.
 
-= 3.8.0 – Jan 19, 2026 =
+= 3.8.0 – Jan 20, 2026 =
 * NEW – Added [Sweego](https://www.sweego.io/) as an email service provider.
 * NEW – Introduced the "Send Test Notification" feature for Post SMTP failure alerts.
 * TWEAK – Added a hide option for wp_mail conflict notice.
