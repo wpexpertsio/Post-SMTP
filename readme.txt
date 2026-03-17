@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: smtp, gmail smtp, email,  email logs, office 365
 Requires at least: 5.6.0
 Tested up to: 6.9
-Stable tag: 3.8.1
+Stable tag: 3.9.0
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -94,11 +94,13 @@ Preview Any Email: You can preview your emails and see how it looks.
 == SMTP Mailer Options for Post SMTP ==
 With Post SMTP, you get many SMTP mailer options, such as:
 
+* [Sweego SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-sweego-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) - **Newly Added**
+
 * [Mailtrap SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-mailtrap-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) - **Newly Added**
 
-* [Emailit SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-emailit-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) - **Newly Added**
+* [Emailit SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-emailit-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) 
 
-* [Resend SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-resend-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) - **Newly Added**
+* [Resend SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-resend-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) 
 
 * [MailerSend SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mailersend-with-post-smtp/?utm_source=wp_org&utm_medium=read_me)
 
@@ -150,6 +152,8 @@ Connect your Zoho mail personal or business account with WordPress via Post SMTP
 
 == ⚡ Added Benefits of Getting Post SMTP Pro ==
 The Post SMTP Pro gives you an edge that makes your WordPress email management and performance reporting a breeze! With Post SMTP Pro, you get the following additional perks:
+
+✅ **Microsoft 365 One-Click:** Upgrade to unlock a smooth and effortless Microsoft email setup. Just enable Microsoft 365 One-Click Setup. With a single toggle, Post SMTP automatically configures everything needed for secure and reliable Outlook / Office 365 email delivery no manual settings required, no technical steps to worry about.
 
 ✅ **Google (Gmail) SMTP One-Click:** Upgrade now for a worry-free Gmail SMTP integration. Activate Gmail One-Click Setup and let Post SMTP Setup Wizard handle all the API-related technicalities.
 
@@ -298,7 +302,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
-= 3.8.1 – Mar 12, 2026 =
+= 3.9.0 – Mar 12, 2026 =
 
 * TWEAK – Updated the Setup Wizard UI for Mailers and improved related content.
 * FIX – Resolved REST error: rest_cookie_invalid_nonce (Cookie check failed – 403).
