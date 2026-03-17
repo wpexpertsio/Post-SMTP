@@ -26,9 +26,9 @@ Over **400,000** website owners use **Post SMTP** daily to send WordPress emails
 
 Post SMTP is a free, next-generation WordPress SMTP plugin that improves email deliverability for your WordPress site.
 
-The best part is that the Post SMTP plugin helps you configure any SMTP mailer, including Gmail one-click setup and Microsoft Office 365 (formerly Office 365), to prevent spam marking and ensure high email deliverability.
+The best part is that to ensure high email deliverability the Post SMTP plugin offers 15+ SMTP mailer options, including Gmail, Brevo, Microsoft 365 SMTP (formerly Office 365), Amazon SES, Zoho Mail, Postmark, Mailgun, SendGrid, etc.
 
-With the ✨[Post SMTP Pro version](https://postmansmtp.com/pricing/?utm_source=wp_org&utm_medium=read_me)✨, you can unlock even more advanced features, such as detailed email logs, email delivery stats and reporting, Microsoft 365 (formerly Office 365), Amazon SES, Zoho Mail SMTP integration, multiple options for email alerts (i.e., Teams, Webhook, Twilio, and Slack), and much more.
+With the ✨[Post SMTP Pro version](https://postmansmtp.com/pricing/?utm_source=wp_org&utm_medium=read_me)✨, you can unlock even more advanced features, such as detailed email logs, email delivery stats and reporting, email open-tracking, premium SMTP integration (Microsoft 365, Amazon SES, and Zoho Mail SMTP), multiple options for email alerts (i.e., Teams, Webhook, Twilio, and Slack), and much more.
 
 
 == What is SMTP, and Why Do You Need It? ==
