@@ -92,7 +92,7 @@ class PostmanSuggestProSocket {
 
         $pluginData = apply_filters( 'postman_get_plugin_metadata', null );
 
-        wp_register_script( 'postman-suggest-pro-sockets', POST_SMTP_ASSETS . 'js/postman-admin.js', array( 'jquery' ),  '1.2.5' , true );
+        wp_register_script( 'postman-suggest-pro-sockets', POST_SMTP_ASSETS . 'js/postman-admin.js', array( 'jquery' ),  $pluginData['version'] , true );
 
         wp_enqueue_script( 'postman-suggest-pro-sockets' );
 	    
@@ -313,13 +313,41 @@ class PostmanSuggestProSocket {
                 'description' => esc_html__( 'Set up and receive all your WordPress email failure alerts through webhook URL of your MS Teams.', 'post-smtp' ),
             ),
         );
-        $features         = array(
-            esc_attr__( 'Office365, Amazon SES, and Zoho SMTP', 'post-smtp' ),
-	        esc_attr__( 'Resend failed emails in bulk', 'post-smtp' ),
-	        esc_attr__( 'Auto-resend failed emails', 'post-smtp' ),
-	        esc_attr__( 'Open emails tracking', 'post-smtp' ),
-	        esc_attr__( 'Google / Microsoft One-Click Setup', 'post-smtp' ),
-	        esc_attr__( 'Post SMTP Mobile App Pro', 'post-smtp' ),
+        $popup_columns = array(
+            array(
+                array(
+                    'text' => __( 'All Pro Mailers', 'post-smtp' ),
+                    'icons' => array( 
+                        $images_url . 'logos/office365.png', 
+                        $images_url . 'logos/wizard-google.png', 
+                        $images_url . 'logos/amazonses.png', 
+                        $images_url . 'logos/zoho.png'
+                    )
+                ),
+                array(
+                    'text' => __( 'Email Failure Alerts', 'post-smtp' ),
+                    'icons' => array( 
+                        $images_url . 'logos/microsoft-teams.png', 
+                        POST_SMTP_ASSETS . 'images/icons/slack.png', 
+                        $images_url . 'logos/twilio-sms-notification.png',
+                        POST_SMTP_ASSETS . 'images/logos/chrome-24x24.png'
+                    )
+                ),
+                array(
+                    'text' => __( 'Google & Microsoft one-click setup.', 'post-smtp' )
+                )
+            ),
+            array(
+                array(
+                    'text' => __( 'Email Reports and Tracking', 'post-smtp' )
+                ),
+                array(
+                    'text' => __( 'Email Attachment Support', 'post-smtp' )
+                ),
+                array(
+                    'text' => __( 'Mobile App Pro Features', 'post-smtp' )
+                )
+                ),
         );
 
         ob_start();
@@ -453,31 +481,41 @@ class PostmanSuggestProSocket {
                 <span class="post-smtp-close-button">&times;</span>
                 
                 <div class="post-smtp-logo post-smtp-container" style="padding-bottom: 10px;">
-                    <img style="width: 180px;" src="<?php echo esc_attr( POST_SMTP_ASSETS ) . 'images/reporting/post_logo_p.png'; ?>" alt="Post SMTP Logo" />
+                    <img style="width: 180px;" src="<?php echo esc_attr( POST_SMTP_ASSETS ) . 'images/reporting/post_logo.png'; ?>" alt="Post SMTP Logo" />
                 </div>
                 
                 <div class="post-smtp-container" style="padding-top:0;padding-bottom: 0;">
                     
                     <h2 class="post-smtp-h2">
-                        <?php esc_html_e( 'Enhance Your Email Deliverability With Premium Features.', 'post-smtp' ); ?>
+                        <?php echo wp_kses_post( __( 'Enhance your email deliverability with<br>powerful premium features.', 'post-smtp' ) ); ?>
                     </h2>
                     
-                    <ul class="post-smtp-unorderlist">
-                        <?php foreach ( $features as $feature ) : ?>
-                            <li>
-                                <img style="margin-bottom: -4px;" src="<?php echo esc_attr( $images_url ); ?>check.png" alt="Check" />
-                                <?php echo esc_html( $feature ); ?>
-                            </li>
+                    <div class="post-smtp-popup-grid">
+                        <?php foreach ( $popup_columns as $column ) : ?>
+                        <div class="post-smtp-popup-col">
+                            <?php foreach ( $column as $feature ) : ?>
+                            <div class="post-smtp-popup-feature">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#4B68B8"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <span><?php echo esc_html( $feature['text'] ); ?></span>
+                                <?php if ( ! empty( $feature['icons'] ) ) : ?>
+                                <div class="post-smtp-popup-feature-icons">
+                                    <?php foreach ( $feature['icons'] as $icon ) : ?>
+                                    <img src="<?php echo esc_attr( $icon ); ?>" alt="Pro Icon" />
+                                    <?php endforeach; ?>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
                         <?php endforeach; ?>
-                    </ul>
+                    </div>
                     
                 </div>
                 
-                <div class="post-smtp-text-center" style="margin-top: 25px;">
+                <div class="post-smtp-popup-footer" style="margin-top: 15px;">
                     <a href="https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=extension_screen_pop_up&utm_campaign=plugin" class="post-smtp-cta">
-                        <!-- <img style="margin: 0 4px -6px 0;" alt="diamond" src="<?//php echo esc_attr( $images_url ); ?>diamond.png" /> -->
                         <?php esc_html_e( 'Upgrade Now', 'post-smtp' ); ?>
-                        <img style="margin: 0 0 -2px 4px;" alt="arrow" src="<?php echo esc_attr( $images_url ); ?>arrow_1.png" />
+                        <svg style="margin-left: 5px;" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </a>
                 </div>
             </div>
