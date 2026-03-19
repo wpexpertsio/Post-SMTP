@@ -4,7 +4,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require 'Postman-Email-Log/PostmanEmailQueryLog.php';
-require POST_SMTP_PATH . '/includes/libs/HTMLPurifier/HTMLPurifier.auto.php';
+$purifier = dirname(__DIR__) . '/includes/libs/HTMLPurifier/HTMLPurifier.auto.php';
+if ( file_exists( $purifier ) ) {
+    require_once $purifier;
+}
 
 class PostmanEmailLogs {
 
@@ -92,6 +95,17 @@ class PostmanEmailLogs {
      * 
      */
 	public function purify_html( $html_content ) {
+		// Ensure HTMLPurifier is loaded safely
+		if ( ! class_exists( 'HTMLPurifier_Config', false ) ) {
+			$purifier = dirname(__DIR__) . '/includes/libs/HTMLPurifier/HTMLPurifier.auto.php';
+			if ( file_exists( $purifier ) ) {
+				require_once $purifier;
+			}
+		}
+		// Hard fallback: never fatal wp-admin
+		if ( ! class_exists( 'HTMLPurifier_Config', false ) ) {
+			return wp_kses_post( $html_content );
+		}
 		// Configure HTMLPurifier.
 		$config = HTMLPurifier_Config::createDefault();
 		$config->set('Core.Encoding', 'UTF-8');
