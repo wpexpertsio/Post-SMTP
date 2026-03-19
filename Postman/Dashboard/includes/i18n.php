@@ -234,6 +234,8 @@ return array(
 		'title'       => __( 'Pro Features', 'post-smtp' ),
 		'description' => __( 'Supercharge your Email', 'post-smtp' ),
 		'button'      => __( 'Get Post SMTP Pro', 'post-smtp' ),
+		'expandBanner'  => __( 'Expand Pro features banner', 'post-smtp' ),
+		'collapseBanner' => __( 'Collapse Pro features banner', 'post-smtp' ),
 		'list'        => array(
 			__( "Email Scheduling \r\n Quota Management", 'post-smtp' ),
 			__( "Email Report \r\n and Tracking", 'post-smtp' ),
@@ -243,6 +245,42 @@ return array(
 			__( "Microsoft 365 / \r\n Office 365", 'post-smtp' ),
 			__( "Amazon SES \r\n Support", 'post-smtp' ),
 			__( "Zoho Mail \r\n Support", 'post-smtp' ),
+		),
+		'integrationList' => array(
+			array(
+				'img'   => 'office-pro-feature.svg',
+				'label' => __( 'Microsoft 365', 'post-smtp' ),
+			),
+			array(
+				'img'   => 'aws-pro-feature.svg',
+				'label' => __( 'Amazon SES', 'post-smtp' ),
+			),
+			array(
+				'img'   => 'gmail-pro-feature.svg',
+				'label' => __( 'Gmail', 'post-smtp' ),
+			),
+			array(
+				'img'   => 'zoho-pro-feature.svg',
+				'label' => __( 'Zoho Mail', 'post-smtp' ),
+			),
+		),
+		'highlightList'   => array(
+			array(
+				'title' => __( 'Email Quota Management', 'post-smtp' ),
+				'img'   => 'pro-schedule-icon.svg',
+			),
+			array(
+				'title' => __( 'Failed Email Alerts', 'post-smtp' ),
+				'img'   => 'pro-sms-icon.svg',
+			),
+			array(
+				'title' => __( 'Email Log Attachments', 'post-smtp' ),
+				'img'   => 'pro-log-icon.svg',
+			),
+			array(
+				'title' => __( 'Email Reports', 'post-smtp' ),
+				'img'   => 'pro-reporting-icon.svg',
+			),
 		),
 	),
 	'settings'      => array(
