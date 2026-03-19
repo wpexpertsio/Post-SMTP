@@ -103,7 +103,7 @@ class PostmanMailerooMailEngine implements PostmanMailEngine {
         $options  = PostmanOptions::getInstance();
         $maileroo = new PostmanMaileroo( $this->api_key );
 
-        $recipients = [];
+        $to_recipients = [];
         $duplicates = [];
 
         $sender      = $message->getFromAddress();
@@ -113,11 +113,32 @@ class PostmanMailerooMailEngine implements PostmanMailEngine {
 
         foreach ( (array) $message->getToRecipients() as $recipient ) {
             if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
-                $item = array( 'address' => $recipient->getEmail() );
-                if ( $recipient->getName() !== '' && $recipient->getName() !== null ) {
-                    $item['display_name'] = $recipient->getName();
-                }
-                $recipients[] = $item;
+                $to_recipients[] = [
+                    'address'      => $recipient->getEmail(),
+                    'display_name' => $recipient->getName() ?: '',
+                ];
+                $duplicates[] = $recipient->getEmail();
+            }
+        }
+
+        $cc_recipients  = [];
+        foreach ( (array) $message->getCcRecipients() as $recipient ) {
+            if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
+                $cc_recipients[] = [
+                    'address'      => $recipient->getEmail(),
+                    'display_name' => $recipient->getName() ?: '',
+                ];
+                $duplicates[] = $recipient->getEmail();
+            }
+        }
+
+        $bcc_recipients = [];
+        foreach ( (array) $message->getBccRecipients() as $recipient ) {
+            if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
+                $bcc_recipients[] = [
+                    'address'      => $recipient->getEmail(),
+                    'display_name' => $recipient->getName() ?: '',
+                ];
                 $duplicates[] = $recipient->getEmail();
             }
         }
@@ -186,6 +207,33 @@ class PostmanMailerooMailEngine implements PostmanMailEngine {
         }
 
         $custom_headers = $this->get_custom_headers_only( $message );
+        if ( ! empty( $custom_headers ) ) {
+            $content['headers'] = $custom_headers;
+        }
+
+        if ( ! empty( $cc_recipients ) ) {
+            $content['cc'] = $cc_recipients;
+        }
+        if ( ! empty( $bcc_recipients ) ) {
+            $content['bcc'] = $bcc_recipients;
+        }
+
+        $replyTo = $message->getReplyTo();
+        if ( ! empty( $replyTo ) && $replyTo->getEmail() ) {
+            $content['reply_to'] = [
+                'address'      => $replyTo->getEmail(),
+                'display_name' => $replyTo->getName() ?: '',
+            ];
+        }
+
+        // Forward additional/custom mail headers (e.g. from Contact Form 7) to Maileroo API.
+        $custom_headers = [];
+        foreach ( (array) $message->getHeaders() as $header ) {
+            if ( ! empty( $header['name'] ) && isset( $header['content'] ) ) {
+                $custom_headers[ $header['name'] ] = $header['content'];
+                $this->logger->debug( sprintf( 'Adding custom header: %s', $header['name'] ) );
+            }
+        }
         if ( ! empty( $custom_headers ) ) {
             $content['headers'] = $custom_headers;
         }
