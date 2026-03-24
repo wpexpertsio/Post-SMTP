@@ -152,10 +152,30 @@
     width: 680px;
     padding: 30px;
     border-radius: 20px;
-    background: linear-gradient(135deg, #CFE8F8 0%, #E3F2FC 100%);
+    background: linear-gradient(135deg, #CEEBFA 0%, #BAE3F8 100%);
     position: relative;
+    overflow: hidden;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
     box-sizing: border-box;
+}
+
+.post-smtp-popup::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 420px;
+    height: 300px;
+    background: url("../images/popup-background.png") no-repeat top right;
+    background-size: contain;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.post-smtp-popup > * {
+    position: relative;
+    z-index: 1;
 }
 
 .post-smtp-close-button {
