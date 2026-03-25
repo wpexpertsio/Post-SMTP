@@ -747,7 +747,7 @@ jQuery(document).ready(function () {
                     jQuery('.ps-wizard-error').html('');
                     jQuery('.ps-wizard-health-report').html(
                         `<div class="ps-loading-test-report">
-                        <span class="spinner is-active" style="margin-left: 0;"></span>
+                       
                         <p>Please wait, we are checking your email health.</p>
                     </div>`
                     );
@@ -911,14 +911,14 @@ jQuery(document).ready(function () {
                 if (response.success === false) {
                     $btn.prop('disabled', false);
                     var selectedSocket = jQuery('.ps-wizard-socket-check:checked').val();
-                    jQuery('.ps-wizard-error').html(`<span class="dashicons dashicons-warning"></span> ${response.data.message} <br><br>`);
-                    jQuery('.ps-wizard-error').append(`<span class="dashicons dashicons-warning"></span> Test email failed. Please check and correct your SMTP configuration. The Email Health Checker cannot proceed until a test email is successfully sent.`);
+                    // jQuery('.ps-wizard-error').html(`<span class="dashicons dashicons-warning"></span> ${response.data.message} <br><br>`);
+                    // jQuery('.ps-wizard-error').append(`<span class="dashicons dashicons-warning"></span> Test email failed. Please check and correct your SMTP configuration. The Email Health Checker cannot proceed until a test email is successfully sent.`);
 
-                    if (selectedSocket === 'smtp') {
+                    // if (selectedSocket === 'smtp') {
 
-                        jQuery('.ps-wizard-error').after(`<div class="ps-wizard-connectivity-information">${PostSMTPWizard.connectivityTestMsg}</div>`);
+                    //     jQuery('.ps-wizard-error').after(`<div class="ps-wizard-connectivity-information">${PostSMTPWizard.connectivityTestMsg}</div>`);
 
-                    }
+                    // }
 
                 }
 
