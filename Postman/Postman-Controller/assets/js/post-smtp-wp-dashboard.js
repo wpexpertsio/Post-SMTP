@@ -1,76 +1,78 @@
 window.chartInstances = window.chartInstances || {};
-jQuery(document).ready(function($) {
-	
-	var el = { 
-		canvas                       : jQuery('#post-smtp-dash-widget-chart'), 
-		settingsBtn                  : jQuery('#post-smtp-dash-widget-settings-button'),
-		dismissBtn                   : jQuery('.post-smtp-dash-widget-dismiss-chart-upgrade'),
-		summaryReportEmailBlock      : jQuery('.post-smtp-dash-widget-summary-report-email-block'),
-		summaryReportEmailDismissBtn : jQuery('.post-smtp-dash-widget-summary-report-email-dismiss'),
-		summaryReportEmailEnableInput: jQuery('#post-smtp-dash-widget-summary-report-email-enable'),
-		emailAlertsDismissBtn        : jQuery('#post-smtp-dash-widget-dismiss-email-alert-block')
+jQuery( document ).ready( function( $ ) {
+
+	var el = {
+		canvas: jQuery( '#post-smtp-dash-widget-chart' ),
+		settingsBtn: jQuery( '#post-smtp-dash-widget-settings-button' ),
+		dismissBtn: jQuery( '.post-smtp-dash-widget-dismiss-chart-upgrade' ),
+		summaryReportEmailBlock: jQuery( '.post-smtp-dash-widget-summary-report-email-block' ),
+		summaryReportEmailDismissBtn: jQuery( '.post-smtp-dash-widget-summary-report-email-dismiss' ),
+		summaryReportEmailEnableInput: jQuery( '#post-smtp-dash-widget-summary-report-email-enable' ),
+		emailAlertsDismissBtn: jQuery( '#post-smtp-dash-widget-dismiss-email-alert-block' )
 	};
-    // Initialize Chart
-    var ctx = el.canvas[0].getContext('2d');
-	
-    var transactionChart = new Chart(ctx, {
-        type: 'line',
-        data: {
+
+	// Initialize Chart
+	var ctx = el.canvas[ 0 ].getContext( '2d' );
+
+	var transactionChart = new Chart( ctx, {
+		type: 'line',
+		data: {
 			labels: [],
 			datasets: [
 				{
 					label: '',
 					data: [],
-					backgroundColor: 'rgba(34, 113, 177, 0.15)',
-					borderColor: 'rgba(34, 113, 177, 1)',
+					backgroundColor: 'rgba( 34, 113, 177, 0.15 )',
+					borderColor: 'rgba( 34, 113, 177, 1 )',
 					borderWidth: 2,
 					pointRadius: 4,
 					pointBorderWidth: 1,
-					pointBackgroundColor: 'rgba(255, 255, 255, 1)'
+					pointBackgroundColor: 'rgba( 255, 255, 255, 1 )'
 				}
 			]
 		},
-        options: { 
+		options: {
 			// responsive: true,
 			maintainAspectRatio: false, // Maintain aspect ratio
-            scales: {
+			scales: {
 				y: {
 					beginAtZero: true,
 					ticks: {
-						stepSize: 1,
-					},
+						stepSize: 1
+					}
 				},
 				x: {
 					grid: {
 						display: true
 					}
 				}
-            },
+			},
 			elements: {
 				line: {
-					tension: 0.4,
-				},
+					tension: 0.4
+				}
 			},
 			animation: {
 				duration: 1000, // Animation duration in milliseconds
-				easing: 'easeInOutQuart', // Easing function to make it smooth
+				easing: 'easeInOutQuart' // Easing function to make it smooth
 			},
 			hover: {
-				animationDuration: 0,
+				animationDuration: 0
 			},
 			legend: {
-				display: true,
+				display: true
 			},
 			tooltip: {
 				mode: 'index',
 				intersect: false
 			},
-			responsiveAnimationDuration: 0,
-        },
-    });
-	window.chartInstances['myChart'] = transactionChart;
-	updateWithDummyData(transactionChart);
-	
+			responsiveAnimationDuration: 0
+		}
+	} );
+
+	window.chartInstances.myChart = transactionChart;
+	updateWithDummyData( transactionChart );
+
 	el.settingsBtn.on( 'click', function( e ) {
 		$( this ).toggleClass( 'open' );
 		$( this ).siblings( '.post-smtp-dash-widget-settings-menu' ).fadeToggle( 200 );
@@ -104,7 +106,7 @@ jQuery(document).ready(function($) {
 
 		var data = {
 			_wpnonce: post_smtp_dashboard_widget.nonce,
-			action  : 'post_smtp_' + post_smtp_dashboard_widget.slug + '_enable_summary_report_email'
+			action: 'post_smtp_' + post_smtp_dashboard_widget.slug + '_enable_summary_report_email'
 		};
 
 		$.post( post_smtp_dashboard_widget.ajax_url, data )
@@ -129,59 +131,59 @@ jQuery(document).ready(function($) {
 	} );
 
 	// chart.init();
-	
-});
 
-function updateWithDummyData(chart) {
-    var end = moment().startOf('day'),
-        days = 7,  // Number of days to go back
-        data = [55, 45, 34, 45, 32, 55, 65],  // The dummy data points
-        date,
-        i;
+} );
 
-    // Clear the previous data in the chart
-    chart.data.labels = [];
-    chart.data.datasets[0].data = [];
+function updateWithDummyData( chart ) {
+	var end = moment().startOf( 'day' ),
+		days = 7, // Number of days to go back
+		data = [ 55, 45, 34, 45, 32, 55, 65 ], // The dummy data points
+		date,
+		i;
 
-    // Loop to create dummy data for each day in the range
-    for (i = 0; i < days; i++) {
-        // Clone the 'end' date to avoid modifying the original 'end' date
-        date = end.clone().subtract(i, 'days');
+	// Clear the previous data in the chart
+	chart.data.labels = [];
+	chart.data.datasets[ 0 ].data = [];
 
-        // Push formatted date to labels (e.g., 'Apr 27', 'Apr 26', etc.)
-        chart.data.labels.push(date.format('MMM DD'));  // Format the date as string (e.g., 'Apr 27')
+	// Loop to create dummy data for each day in the range
+	for ( i = 0; i < days; i++ ) {
+		// Clone the 'end' date to avoid modifying the original 'end' date
+		date = end.clone().subtract( i, 'days' );
 
-        // Push the data for this day to the dataset
-        chart.data.datasets[0].data.push({
-            t: date.valueOf(),  // Convert the Moment object to Unix timestamp (milliseconds)
-            y: data[i],         // Corresponding y value
-        });
-    }
+		// Push formatted date to labels (e.g., 'Apr 27', 'Apr 26', etc.)
+		chart.data.labels.push( date.format( 'MMM DD' ) ); // Format the date as string (e.g., 'Apr 27')
 
-    console.log('chart data updated: ', chart.data);  // Log the chart data for debugging
+		// Push the data for this day to the dataset
+		chart.data.datasets[ 0 ].data.push( {
+			t: date.valueOf(), // Convert the Moment object to Unix timestamp (milliseconds)
+			y: data[ i ] // Corresponding y value
+		} );
+	}
 
-    // Update the chart with the new data
-    chart.update();
-	removeOverlay( jQuery('#post-smtp-dash-widget-chart') );
+	console.log( 'chart data updated: ', chart.data ); // Log the chart data for debugging
+
+	// Update the chart with the new data
+	chart.update();
+	removeOverlay( jQuery( '#post-smtp-dash-widget-chart' ) );
 }
 
-function removeOverlay( $el ) {  
+function removeOverlay( $el ) {
 	$el.siblings( '.post-smtp-dash-widget-overlay' ).hide();
 }
 
-function showOverlay( $el ) {  
+function showOverlay( $el ) {
 	$el.siblings( '.post-smtp-dash-widget-overlay' ).show();
 }
-function saveWidgetMeta( meta, value ) {
 
+function saveWidgetMeta( meta, value ) {
 	var data = {
 		_wpnonce: post_smtp_dashboard_widget.nonce,
-		action  : 'post_smtp_' + post_smtp_dashboard_widget.slug + '_save_widget_meta',
-		meta    : meta,
-		value   : value,
+		action: 'post_smtp_' + post_smtp_dashboard_widget.slug + '_save_widget_meta',
+		meta: meta,
+		value: value
 	};
 
-	jQuery.post( post_smtp_dashboard_widget.ajax_url, data ); 
-	
+	jQuery.post( post_smtp_dashboard_widget.ajax_url, data );
+
 	jQuery( '.post-smtp-dash-widget-settings-menu' ).fadeToggle( 200 );
 }
