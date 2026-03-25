@@ -508,29 +508,33 @@ class PostmanSMTPConflictManager {
     private function display_conflict_notice( $plugin, $notice_id ) {
         $plugin_name = esc_html( $plugin['name'] );
         $plugin_slug = isset( $plugin['slug'] ) ? $plugin['slug'] : '';
-        
+
         // Build deactivate link if plugin slug is available
         $deactivate_link = '';
         if ( ! empty( $plugin_slug ) ) {
-            $deactivate_url = wp_nonce_url( 
-                admin_url( 'plugins.php?action=deactivate&plugin=' . urlencode( $plugin_slug ) . '&plugin_status=all&paged=1&s=' ), 
-                'deactivate-plugin_' . $plugin_slug 
+            $deactivate_url = wp_nonce_url(
+                admin_url( 'plugins.php?action=deactivate&plugin=' . urlencode( $plugin_slug ) . '&plugin_status=all&paged=1&s=' ),
+                'deactivate-plugin_' . $plugin_slug
             );
-            $deactivate_link = '<a href="' . esc_url( $deactivate_url ) . '">' . esc_html__( 'Deactivate', 'post-smtp' ) . ' ' . $plugin_name . '</a>';
+
+            $deactivate_link = '<a href="' . esc_url( $deactivate_url ) . '">' . sprintf(
+                esc_html__( 'Deactivate %s', 'post-smtp' ),
+                $plugin_name
+            ) . '</a>';
         }
-             
-        echo '<div class="notice notice-error is-dismissible postman-smtp-conflict-notice" data-notice-id="' . esc_attr( $notice_id ) . '">';
+
+        echo '<div class="notice notice-warning is-dismissible postman-smtp-conflict-notice" data-notice-id="' . esc_attr( $notice_id ) . '">';
         echo '<p><strong>' . esc_html__( 'Post SMTP Notice:', 'post-smtp' ) . '</strong></p>';
         echo '<p>';
-        printf( 
-            /* translators: %1$s: conflicting plugin name */
-            esc_html__( 'wp_mail() is being overridden by another plugin (%1$s). Please deactivate it to use Post SMTP.', 'post-smtp' ),
-            '<strong>' . $plugin_name . '</strong>'
+
+        printf(
+            /* translators: %1$s: conflicting plugin name, %2$s: deactivate link */
+            esc_html__( '%1$s is currently overriding the wp_mail() function used for sending emails. To use Post SMTP without conflicts, please %2$s.', 'post-smtp' ),
+            '<strong>' . $plugin_name . '</strong>',
+            $deactivate_link
         );
+
         echo '</p>';
-        if ( ! empty( $deactivate_link ) ) {
-            echo '<p>' . $deactivate_link . '</p>';
-        }
         echo '</div>';
     }
 
