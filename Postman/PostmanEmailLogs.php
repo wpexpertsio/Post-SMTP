@@ -76,8 +76,14 @@ class PostmanEmailLogs {
             $log = $email_query_log->get_log( $id, '' );
             $header = $log['original_headers'];
             $msg = $log['original_message'];
- 			$msg = $this->purify_html( $msg );
-        	echo ( isset ( $header ) && strpos( $header, "text/html" ) ) ? $msg : '<pre>' . $msg . '</pre>' ;
+            $is_html_message = ( isset( $header ) && false !== stripos( $header, 'text/html' ) ) || false !== stripos( $msg, 'Content-Type: text/html' );
+
+            if ( $is_html_message ) {
+                $msg = $this->extract_html_message_body( $msg );
+			    $msg = $this->purify_html( $msg );
+            }
+
+        	echo $is_html_message ? $msg : '<pre>' . esc_html( $msg ) . '</pre>';
             die;
 
         }
@@ -95,17 +101,6 @@ class PostmanEmailLogs {
      * 
      */
 	public function purify_html( $html_content ) {
-		// Ensure HTMLPurifier is loaded safely
-		if ( ! class_exists( 'HTMLPurifier_Config', false ) ) {
-			$purifier = dirname(__DIR__) . '/includes/libs/HTMLPurifier/HTMLPurifier.auto.php';
-			if ( file_exists( $purifier ) ) {
-				require_once $purifier;
-			}
-		}
-		// Hard fallback: never fatal wp-admin
-		if ( ! class_exists( 'HTMLPurifier_Config', false ) ) {
-			return wp_kses_post( $html_content );
-		}
 		// Configure HTMLPurifier.
 		$config = HTMLPurifier_Config::createDefault();
 		$config->set('Core.Encoding', 'UTF-8');
@@ -144,6 +139,49 @@ class PostmanEmailLogs {
 		// Purify the dirty HTML.
 		return $purifier->purify( $html_content );
 	}
+
+    /**
+     * Extract the HTML body from a multipart/raw MIME message.
+     *
+     * @param string $message Raw message body from logs.
+     * @return string Renderable HTML body when detected, otherwise original message.
+     */
+    private function extract_html_message_body( $message ) {
+        if ( ! is_string( $message ) || '' === $message ) {
+            return $message;
+        }
+
+        $normalized = str_replace( array( "\r\n", "\r" ), "\n", $message );
+
+        // Try to isolate the HTML MIME part.
+        if ( preg_match( '/Content-Type:\s*text\/html\b(.*?)(?:\n--[^\n]*|\z)/is', $normalized, $match ) ) {
+            $html_part = trim( $match[1] );
+
+            // Split MIME headers from body.
+            $segments = preg_split( "/\n\n/", $html_part, 2 );
+            $part_headers = $segments[0];
+            $part_body    = isset( $segments[1] ) ? $segments[1] : $html_part;
+
+            if ( false !== stripos( $part_headers, 'quoted-printable' ) && function_exists( 'quoted_printable_decode' ) ) {
+                $part_body = quoted_printable_decode( $part_body );
+            } elseif ( false !== stripos( $part_headers, 'base64' ) ) {
+                $decoded = base64_decode( trim( $part_body ), true );
+                if ( false !== $decoded ) {
+                    $part_body = $decoded;
+                }
+            }
+
+            // Remove any leftover boundary marker lines.
+            $part_body = preg_replace( '/^\s*--[^\n]*\s*$/m', '', $part_body );
+            $part_body = trim( $part_body );
+
+            if ( '' !== $part_body ) {
+                return $part_body;
+            }
+        }
+
+        return $message;
+    }
 
     /**
      * Installs the Table | Creates the Table
