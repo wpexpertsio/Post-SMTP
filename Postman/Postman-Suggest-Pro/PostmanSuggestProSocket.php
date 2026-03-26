@@ -318,19 +318,19 @@ class PostmanSuggestProSocket {
                 array(
                     'text' => __( 'All Pro Mailers', 'post-smtp' ),
                     'icons' => array( 
-                        $images_url . 'logos/office365.png', 
-                        $images_url . 'logos/wizard-google.png', 
-                        $images_url . 'logos/amazonses.png', 
-                        $images_url . 'logos/zoho.png'
+                        $images_url . 'office-sp.svg',
+                        $images_url . 'gmail-sp.svg',
+                        $images_url . 'aws-sp.svg',
+                        $images_url . 'zoho-sp.svg',
                     )
                 ),
                 array(
                     'text' => __( 'Email Failure Alerts', 'post-smtp' ),
                     'icons' => array( 
-                        $images_url . 'logos/microsoft-teams.png', 
-                        POST_SMTP_ASSETS . 'images/icons/slack.png', 
-                        $images_url . 'logos/twilio-sms-notification.png',
-                        POST_SMTP_ASSETS . 'images/logos/chrome-24x24.png'
+                        $images_url . 'teams-sp.svg',
+                        $images_url . 'slack-sp.svg',
+                        $images_url . 'twilio-sp.svg',
+                        $images_url . 'chrome-sp.svg',
                     )
                 ),
                 array(
@@ -481,7 +481,7 @@ class PostmanSuggestProSocket {
                 <span class="post-smtp-close-button">&times;</span>
                 
                 <div class="post-smtp-logo post-smtp-container" style="padding-bottom: 10px;">
-                    <img style="width: 180px;" src="<?php echo esc_attr( POST_SMTP_ASSETS ) . 'images/reporting/post_logo.png'; ?>" alt="Post SMTP Logo" />
+                    <img class="post-smtp-extension-logo" src="<?php echo esc_url( $images_url . 'post-smtp-extension-logo.svg' ); ?>" width="160" height="36" alt="<?php esc_attr_e( 'Post SMTP', 'post-smtp' ); ?>" />
                 </div>
                 
                 <div class="post-smtp-container" style="padding-top:0;padding-bottom: 0;">
@@ -500,7 +500,7 @@ class PostmanSuggestProSocket {
                                 <?php if ( ! empty( $feature['icons'] ) ) : ?>
                                 <div class="post-smtp-popup-feature-icons">
                                     <?php foreach ( $feature['icons'] as $icon ) : ?>
-                                    <img src="<?php echo esc_attr( $icon ); ?>" alt="Pro Icon" />
+                                    <img src="<?php echo esc_url( $icon ); ?>" alt="" width="16" height="16" class="post-smtp-popup-feature-icon" />
                                     <?php endforeach; ?>
                                 </div>
                                 <?php endif; ?>
