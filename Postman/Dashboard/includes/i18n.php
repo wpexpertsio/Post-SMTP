@@ -267,19 +267,19 @@ return array(
 		'highlightList'   => array(
 			array(
 				'title' => __( 'Email Quota Management', 'post-smtp' ),
-				'img'   => 'pro-schedule-icon.svg',
+				'img'   => 'email-quota.svg',
 			),
 			array(
 				'title' => __( 'Failed Email Alerts', 'post-smtp' ),
-				'img'   => 'pro-sms-icon.svg',
+				'img'   => 'failed-alert.svg',
 			),
 			array(
 				'title' => __( 'Email Log Attachments', 'post-smtp' ),
-				'img'   => 'pro-log-icon.svg',
+				'img'   => 'email-log-attachment.svg',
 			),
 			array(
 				'title' => __( 'Email Reports', 'post-smtp' ),
-				'img'   => 'pro-reporting-icon.svg',
+				'img'   => 'email-report.svg',
 			),
 		),
 	),
