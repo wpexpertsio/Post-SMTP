@@ -24,59 +24,26 @@ class PostmanMailerooMailEngine implements PostmanMailEngine {
     }
 
     /**
-     * System-reserved headers managed by Maileroo. Must not be sent in the API "headers" field.
+     * Maileroo reserved headers that must never be sent in payload headers.
      *
      * @return string[]
      */
-    private function get_system_reserved_headers() {
+    private function getReservedHeaders() {
         return array(
             'mime-version',
-            'content-type',
-            'content-transfer-encoding',
-            'message-id',
-            'date',
-            'to',
-            'from',
-            'subject',
-            'reply-to',
-            'cc',
-            'bcc',
-            'received',
-            'dkim-signature',
-            'sender',
-            'return-path',
-            'list-unsubscribe',
-            'list-id',
-            'precedence',
-            'auto-submitted',
-            'x-priority',
         );
     }
 
     /**
-     * Build only custom headers for Maileroo API. System-reserved headers (MIME-Version,
-     * Content-Type, Message-ID, Date, etc.) are excluded; Maileroo generates those.
+     * Normalize header name for reliable reserved-header checks.
      *
-     * @param PostmanMessage $message
-     * @return array<string, string> Header name => value
+     * @param string $name
+     * @return string
      */
-    private function get_custom_headers_only( PostmanMessage $message ) {
-        $reserved = $this->get_system_reserved_headers();
-        $custom   = array();
-        foreach ( (array) $message->getHeaders() as $header ) {
-            $name = isset( $header['name'] ) ? trim( $header['name'] ) : '';
-            if ( $name === '' ) {
-                continue;
-            }
-            $name_lower = strtolower( $name );
-            if ( in_array( $name_lower, $reserved, true ) ) {
-                $this->logger->debug( sprintf( 'Skipping system-reserved header for Maileroo: %s', $name ) );
-                continue;
-            }
-            $content = isset( $header['content'] ) ? trim( $header['content'] ) : '';
-            $custom[ $name ] = $content;
-        }
-        return $custom;
+    private function normalizeHeaderName( $name ) {
+        $name = strtolower( trim( (string) $name ) );
+        $name = rtrim( $name, ':' );
+        return preg_replace( '/\s+/', '-', $name );
     }
 
     private function addAttachmentsToMail( PostmanMessage $message ) {
@@ -88,18 +55,19 @@ class PostmanMailerooMailEngine implements PostmanMailEngine {
                 $this->logger->debug( 'Adding attachment: ' . $file );
                 $fileName = basename( $file );
                 $fileType = wp_check_filetype( $file );
-                $result[] = array(
+                $result[] = [
                     'file_name'    => $fileName,
-                    'content_type' => $fileType['type'],
+                    'content_type' => $fileType['type'] ?: 'application/octet-stream',
                     'content'      => base64_encode( file_get_contents( $file ) ),
                     'inline'       => false,
-                );
+                ];
             }
         }
         return $result;
     }
 
     public function send( PostmanMessage $message ) {
+
         $options  = PostmanOptions::getInstance();
         $maileroo = new PostmanMaileroo( $this->api_key );
 
@@ -120,7 +88,7 @@ class PostmanMailerooMailEngine implements PostmanMailEngine {
                 $duplicates[] = $recipient->getEmail();
             }
         }
-
+    
         $cc_recipients  = [];
         foreach ( (array) $message->getCcRecipients() as $recipient ) {
             if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
@@ -152,64 +120,16 @@ class PostmanMailerooMailEngine implements PostmanMailEngine {
         }
 
         $plainContent = wp_strip_all_tags( $textPart ?: $htmlPart );
-
-        $content = array(
-            'from'    => array(
+        $content = [
+            'from'    => [
                 'address'      => $senderEmail,
                 'display_name' => $senderName,
-            ),
-            'to'      => $recipients,
+            ],
+            'to'      => $to_recipients,
             'subject' => $subject,
             'html'    => $htmlContent,
             'plain'   => $plainContent,
-        );
-
-        $reply_to = $message->getReplyTo();
-        if ( ! empty( $reply_to ) ) {
-            $reply_list = is_array( $reply_to ) ? $reply_to : array( $reply_to );
-            $first      = reset( $reply_list );
-            if ( $first instanceof PostmanEmailAddress && $first->getEmail() ) {
-                $content['reply_to'] = array( 'address' => $first->getEmail() );
-                if ( $first->getName() !== '' && $first->getName() !== null ) {
-                    $content['reply_to']['display_name'] = $first->getName();
-                }
-            }
-        }
-
-        $cc_recipients = array();
-        foreach ( (array) $message->getCcRecipients() as $recipient ) {
-            if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
-                $item = array( 'address' => $recipient->getEmail() );
-                if ( $recipient->getName() !== '' && $recipient->getName() !== null ) {
-                    $item['display_name'] = $recipient->getName();
-                }
-                $cc_recipients[] = $item;
-                $duplicates[] = $recipient->getEmail();
-            }
-        }
-        if ( ! empty( $cc_recipients ) ) {
-            $content['cc'] = count( $cc_recipients ) === 1 ? $cc_recipients[0] : $cc_recipients;
-        }
-
-        $bcc_recipients = array();
-        foreach ( (array) $message->getBccRecipients() as $recipient ) {
-            if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
-                $item = array( 'address' => $recipient->getEmail() );
-                if ( $recipient->getName() !== '' && $recipient->getName() !== null ) {
-                    $item['display_name'] = $recipient->getName();
-                }
-                $bcc_recipients[] = $item;
-                $duplicates[] = $recipient->getEmail();
-            }
-        }
-        if ( ! empty( $bcc_recipients ) ) {
-            $content['bcc'] = $bcc_recipients;
-        }
-
-        $custom_headers = $this->get_custom_headers_only( $message );
-        if ( ! empty( $custom_headers ) ) {
-            $content['headers'] = $custom_headers;
-        }
+        ];
 
         if ( ! empty( $cc_recipients ) ) {
             $content['cc'] = $cc_recipients;
@@ -226,13 +146,23 @@ class PostmanMailerooMailEngine implements PostmanMailEngine {
             ];
         }
 
-        // Forward additional/custom mail headers (e.g. from Contact Form 7) to Maileroo API.
+        // Forward only custom headers (excluding Maileroo system-reserved headers).
         $custom_headers = [];
+        $reserved       = $this->getReservedHeaders();
         foreach ( (array) $message->getHeaders() as $header ) {
-            if ( ! empty( $header['name'] ) && isset( $header['content'] ) ) {
-                $custom_headers[ $header['name'] ] = $header['content'];
-                $this->logger->debug( sprintf( 'Adding custom header: %s', $header['name'] ) );
+            if ( empty( $header['name'] ) || ! isset( $header['content'] ) ) {
+                continue;
             }
+
+            $raw_name   = trim( (string) $header['name'] );
+            $check_name = $this->normalizeHeaderName( $raw_name );
+            if ( in_array( $check_name, $reserved, true ) ) {
+                $this->logger->debug( sprintf( 'Skipping Maileroo reserved header: %s', $raw_name ) );
+                continue;
+            }
+
+            $custom_headers[ $raw_name ] = (string) $header['content'];
+            $this->logger->debug( sprintf( 'Adding custom header: %s', $raw_name ) );
         }
         if ( ! empty( $custom_headers ) ) {
             $content['headers'] = $custom_headers;
