@@ -74,9 +74,9 @@ class PostmanEmailLogs {
             $id = sanitize_text_field( $_GET['log_id'] );
             $email_query_log = new PostmanEmailQueryLog();
             $log = $email_query_log->get_log( $id, '' );
-            $header = $log['original_headers'];
-            $msg = $log['original_message'];
-            $is_html_message = ( isset( $header ) && false !== stripos( $header, 'text/html' ) ) || false !== stripos( $msg, 'Content-Type: text/html' );
+            $header = isset( $log['original_headers'] ) ? $log['original_headers'] : '';
+            $msg    = isset( $log['original_message'] ) ? $log['original_message'] : '';
+            $is_html_message = $this->log_message_is_html( $msg, is_string( $header ) ? $header : '' );
 
             if ( $is_html_message ) {
                 $msg = $this->extract_html_message_body( $msg );
@@ -139,6 +139,50 @@ class PostmanEmailLogs {
 		// Purify the dirty HTML.
 		return $purifier->purify( $html_content );
 	}
+
+    /**
+     * Detect whether a logged message should render as HTML in the email log iframe.
+     *
+     * With SMTP, {@see PostsmtpMailer} stores the raw wp_mail() body and headers; Content-Type
+     * is often set only inside PHPMailer, so headers may omit text/html while the body is a full
+     * HTML document (DOCTYPE/html or meta Content-Type), which the old check missed.
+     *
+     * @param string $message     Logged message body.
+     * @param string $headers_raw Headers from DB (may be serialized PHP).
+     * @return bool
+     */
+    private function log_message_is_html( $message, $headers_raw ) {
+        if ( ! is_string( $message ) || '' === trim( $message ) ) {
+            return false;
+        }
+
+        if ( is_string( $headers_raw ) && '' !== $headers_raw && false !== stripos( $headers_raw, 'text/html' ) ) {
+            return true;
+        }
+
+        if ( false !== stripos( $message, 'Content-Type: text/html' ) ) {
+            return true;
+        }
+
+        if ( preg_match( '/^\s*Content-Type:\s*text\/html\b/im', $message ) ) {
+            return true;
+        }
+
+        $trim = ltrim( $message, "\xEF\xBB\xBF\0\t\n\r " );
+        if ( preg_match( '/^(<!DOCTYPE\s+html|<html[\s>])/i', $trim ) ) {
+            return true;
+        }
+
+        if ( preg_match( '/<meta\b[^>]*http-equiv\s*=\s*["\']?\s*Content-Type\b[^>]*content\s*=\s*["\'][^"\']*text\/html/im', $message ) ) {
+            return true;
+        }
+
+        if ( preg_match( '/<meta\b[^>]*content\s*=\s*["\'][^"\']*text\/html[^"\']*["\'][^>]*http-equiv\s*=\s*["\']?\s*Content-Type/im', $message ) ) {
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * Extract the HTML body from a multipart/raw MIME message.
