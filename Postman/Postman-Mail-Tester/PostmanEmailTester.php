@@ -5,7 +5,7 @@ class Postman_Email_Tester {
 
     private static $instance;
 
-    private $x_mt_token_wp = 'WP_*#$KXMs29)&34KMa@#_-2*^%02?>":}0"!@`~\=#@#';
+    private $x_mt_token_wp = 'wp_9f3a7c2e8b1d4a6f5c8e9b2d1a3f7c6e';
 
     //TODO: Replace URL with Production URL
     private $base_url = 'https://smtper.postmansmtp.com/wp-json/mail-tester/v1';
