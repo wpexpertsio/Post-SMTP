@@ -429,7 +429,7 @@ class Postman {
 			}
 			$msg = PostmanTransportRegistry::getInstance()->getReadyMessage();
 			$message = sprintf( $msg['message'] );
-			$goToSettings = sprintf( '<a href="%s">%s</a>', PostmanUtils::getSettingsPageUrl(), __( 'Settings', 'post-smtp' ) );
+			$goToSettings = sprintf( '<a href="%s">%s</a>', PostmanUtils::getConfigurationPageUrl(), __( 'Settings', 'post-smtp' ) );
 			$goToEmailLog = sprintf( '%s', _x( 'Email Log', 'The log of Emails that have been delivered', 'post-smtp' ) );
 			if ( PostmanOptions::getInstance()->isMailLoggingEnabled() ) {
 				$goToEmailLog = sprintf( '<a href="%s">%s</a>', PostmanUtils::getEmailLogPageUrl(), $goToEmailLog );
