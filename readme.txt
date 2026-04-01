@@ -323,24 +323,16 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 Important: If you are using version 2.8.7 or lower of our plugin, please update to the latest version as soon as possible. This update contains an urgent security fix that prevents potential vulnerabilities and attacks. We apologize for any inconvenience this may cause you and we appreciate your cooperation. Thank you for using our plugin.
 
 == Changelog ==
-
 = 3.9.1 – April 01, 2026 =
 
-* TWEAK – Updated Emailit API to v2
-* FIX – Resolved Maileroo API error (Code: 400 – Bad Request) caused by restricted header usage  
-  Response: {"data":null,"message":"Header 'MIME-Version' is system reserved and cannot be used.","success":false}
-* FIX – Fixed issue where Post SMTP did not forward CF7 additional mail headers to the Maileroo API
-* FIX – Resolved fatal error: Cannot declare class 'qrstr' because the name is already in use
-* FIX – Fixed conflict caused by including /includes/functions.php file
-* FIX – Corrected Emailit API status handling (status code 201 was incorrectly marked as failed instead of pending/successful)
-* FIX – Resolved fatal error: Class "HTMLPurifier_Config" not found
-* FIX – Fixed issue where SMTP2GO returned a 200 response but contained an error in the response body within the test email tool
-* FIX – Updated Mail Tester server configuration to resolve API blocking issue
-* TWEAK – Removed Mail Tester API connection error message from the Send Test Email section
-* TWEAK – Improved dashboard and extension screen banners for better visibility and feature clarity
+* TWEAK – Updated Emailit API to v2.
+* FIX – Added Header support in Maileroo.
+* FIX – Resolved qrstr class conflict.
+* FIX – Emailit API status handling (status code 201 was incorrectly marked as failed instead of pending/successful).
+* FIX – Resolved fatal error: Class "HTMLPurifier_Config" not found.
+* FIX – Fixed SMTP2GO false positive response.
 
 = 3.9.0 – Mar 17, 2026 =
-
 * TWEAK – Updated the Setup Wizard UI for Mailers and improved related content.
 * FIX – Resolved REST error: rest_cookie_invalid_nonce (Cookie check failed – 403).
 * FIX – Added support for the pre_wp_mail function for custom implementations via functions.php.
