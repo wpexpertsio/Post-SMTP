@@ -14,6 +14,7 @@ class PostmanUtils {
 	private static $emailValidator;
 
 	const POSTMAN_SETTINGS_PAGE_STUB = 'postman';
+	const POSTMAN_CONFIGURATION_PAGE_STUB = 'postman/configuration';
 	const REQUEST_OAUTH2_GRANT_SLUG = 'postman/requestOauthGrant';
 	const POSTMAN_EMAIL_LOG_PAGE_STUB = 'postman_email_log';
 
@@ -61,10 +62,17 @@ class PostmanUtils {
 	}
 
 	/**
-	 * Returns an escaped URL
+	 * Returns an escaped URL for Postman settings (legacy top-level menu)
 	 */
 	public static function getSettingsPageUrl() {
 		return menu_page_url( self::POSTMAN_SETTINGS_PAGE_STUB, self::NO_ECHO );
+	}
+
+	/**
+	 * Returns an escaped URL for Postman configuration panel
+	 */
+	public static function getConfigurationPageUrl() {
+		return menu_page_url( self::POSTMAN_CONFIGURATION_PAGE_STUB, self::NO_ECHO );
 	}
 
 	public static function isCurrentPagePostmanAdmin( $page = 'postman' ) {
