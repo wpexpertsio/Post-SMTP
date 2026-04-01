@@ -785,7 +785,7 @@ class PostmanConfigurationController {
 					<img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/logos/chrome-24x24.png' ) ?>" />
 					<?php esc_html_e( 'Download Chrome extension', 'post-smtp' ); ?>
 				</a>
-				<a href="https://postmansmtp.com/post-smtp-1-9-6-new-chrome-extension/" target="_blank"><?php _e( 'Detailed Documentation.', 'post-smtp' ) ?></a>
+				<a href="https://postmansmtp.com/docs/alerts/chrome-extension/" target="_blank"><?php _e( 'Detailed Documentation.', 'post-smtp' ) ?></a>
 				<div>
 					<table>
 						<tr>

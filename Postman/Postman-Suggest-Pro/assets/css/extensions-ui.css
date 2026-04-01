@@ -276,7 +276,7 @@
 .post-smtp-popup-feature {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
     font-family: 'Inter', sans-serif;
     font-size: 14.5px;
     font-weight: 500;
