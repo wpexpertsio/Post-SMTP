@@ -29,65 +29,61 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class MontgomeryPrivate
-{
-    /**
-     * Is invisible flag
-     *
-     */
-    const IS_INVISIBLE = \true;
-    /**
-     * Break a public or private key down into its constituent components
-     *
-     * @param string $key
-     * @param string $password optional
-     * @return array
-     */
-    public static function load($key, $password = '')
-    {
-        switch (\strlen($key)) {
-            case 32:
-                $curve = new \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Curve25519();
-                break;
-            case 56:
-                $curve = new \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Curve448();
-                break;
-            default:
-                throw new \LengthException('The only supported lengths are 32 and 56');
-        }
-        $components = ['curve' => $curve];
-        $components['dA'] = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($key, 256);
-        $curve->rangeCheck($components['dA']);
-        // note that EC::getEncodedCoordinates does some additional "magic" (it does strrev on the result)
-        $components['QA'] = $components['curve']->multiplyPoint($components['curve']->getBasePoint(), $components['dA']);
-        return $components;
-    }
-    /**
-     * Convert an EC public key to the appropriate format
-     *
-     * @param \phpseclib3\Crypt\EC\BaseCurves\Montgomery $curve
-     * @param \phpseclib3\Math\Common\FiniteField\Integer[] $publicKey
-     * @return string
-     */
-    public static function savePublicKey(\PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgomery $curve, array $publicKey)
-    {
-        return \strrev($publicKey[0]->toBytes());
-    }
-    /**
-     * Convert a private key to the appropriate format.
-     *
-     * @param \phpseclib3\Math\BigInteger $privateKey
-     * @param \phpseclib3\Crypt\EC\BaseCurves\Montgomery $curve
-     * @param \phpseclib3\Math\Common\FiniteField\Integer[] $publicKey
-     * @param string $secret optional
-     * @param string $password optional
-     * @return string
-     */
-    public static function savePrivateKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $privateKey, \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgomery $curve, array $publicKey, $secret = null, $password = '')
-    {
-        if (!empty($password) && \is_string($password)) {
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedFormatException('MontgomeryPrivate private keys do not support encryption');
-        }
-        return $privateKey->toBytes();
-    }
+abstract class MontgomeryPrivate {
+
+	/**
+	 * Is invisible flag
+	 */
+	const IS_INVISIBLE = \true;
+	/**
+	 * Break a public or private key down into its constituent components
+	 *
+	 * @param string $key
+	 * @param string $password optional
+	 * @return array
+	 */
+	public static function load( $key, $password = '' ) {
+		switch ( \strlen( $key ) ) {
+			case 32:
+				$curve = new \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Curve25519();
+				break;
+			case 56:
+				$curve = new \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Curve448();
+				break;
+			default:
+				throw new \LengthException( 'The only supported lengths are 32 and 56' );
+		}
+		$components       = array( 'curve' => $curve );
+		$components['dA'] = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger( $key, 256 );
+		$curve->rangeCheck( $components['dA'] );
+		// note that EC::getEncodedCoordinates does some additional "magic" (it does strrev on the result)
+		$components['QA'] = $components['curve']->multiplyPoint( $components['curve']->getBasePoint(), $components['dA'] );
+		return $components;
+	}
+	/**
+	 * Convert an EC public key to the appropriate format
+	 *
+	 * @param \phpseclib3\Crypt\EC\BaseCurves\Montgomery    $curve
+	 * @param \phpseclib3\Math\Common\FiniteField\Integer[] $publicKey
+	 * @return string
+	 */
+	public static function savePublicKey( \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgomery $curve, array $publicKey ) {
+		return \strrev( $publicKey[0]->toBytes() );
+	}
+	/**
+	 * Convert a private key to the appropriate format.
+	 *
+	 * @param \phpseclib3\Math\BigInteger                   $privateKey
+	 * @param \phpseclib3\Crypt\EC\BaseCurves\Montgomery    $curve
+	 * @param \phpseclib3\Math\Common\FiniteField\Integer[] $publicKey
+	 * @param string                                        $secret optional
+	 * @param string                                        $password optional
+	 * @return string
+	 */
+	public static function savePrivateKey( \PostSMTP\Vendor\phpseclib3\Math\BigInteger $privateKey, \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgomery $curve, array $publicKey, $secret = null, $password = '' ) {
+		if ( ! empty( $password ) && \is_string( $password ) ) {
+			throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedFormatException( 'MontgomeryPrivate private keys do not support encryption' );
+		}
+		return $privateKey->toBytes();
+	}
 }

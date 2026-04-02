@@ -124,19 +124,19 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const INCOMPATIBLE_PHP_VERSION = 'incompatible_php_version';
 
 		// Fallback
-		const FALLBACK_SMTP_ENABLED = 'fallback_smtp_enabled';
-		const FALLBACK_SMTP_HOSTNAME = 'fallback_smtp_hostname';
-		const FALLBACK_SMTP_PORT = 'fallback_smtp_port';
-		const FALLBACK_SMTP_SECURITY = 'fallback_smtp_security';
-		const FALLBACK_FROM_EMAIL = 'fallback_from_email';
-		const FALLBACK_SMTP_USE_AUTH = 'fallback_smtp_use_auth';
-		const FALLBACK_SMTP_USERNAME = 'fallback_smtp_username';
-		const FALLBACK_SMTP_PASSWORD = 'fallback_smtp_password';
-
+        const FALLBACK_SMTP_ENABLED = 'fallback_smtp_enabled';
+        const FALLBACK_SMTP_HOSTNAME = 'fallback_smtp_hostname';
+        const FALLBACK_SMTP_PORT	 = 'fallback_smtp_port';
+        const FALLBACK_SMTP_SECURITY = 'fallback_smtp_security';
+		const FALLBACK_FROM_EMAIL    = 'fallback_from_email';
+        const FALLBACK_SMTP_USE_AUTH = 'fallback_smtp_use_auth';
+        const FALLBACK_SMTP_USERNAME = 'fallback_smtp_username';
+        const FALLBACK_SMTP_PASSWORD = 'fallback_smtp_password';
+		const FALLBACK_SELECTED      = 'selected_fallback';
+		const PRIMARY_CONNECTION     = 'primary_connection';
 		// Emailit integration
 		const EMAILIT_API_KEY = 'emailit_api_key';
 		const MAILEROO_API_KEY = 'maileroo_api_key';
-
 		const SWEEGO_API_KEY  = 'sweego_api_key';
 
 		// defaults
@@ -164,6 +164,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 		// options data
 		private $options;
+
+		private $existing_db_version = '';
 
 		// singleton instance
 		public static function getInstance() {
@@ -248,23 +250,31 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 			if ( isset( $this->options [ self::RUN_MODE ] ) ) {
 				return $this->options [ self::RUN_MODE ];
-			} else { 				return self::DEFAULT_RUN_MODE; }
+			} else { 
+				return self::DEFAULT_RUN_MODE; 
+			}
 		}
 		public function getMailLoggingMaxEntries() {
 			if ( isset( $this->options [ PostmanOptions::MAIL_LOG_MAX_ENTRIES ] ) ) {
 				return $this->options [ PostmanOptions::MAIL_LOG_MAX_ENTRIES ];
-			} else { 				return self::DEFAULT_MAIL_LOG_ENTRIES; }
+			} else { 
+				return self::DEFAULT_MAIL_LOG_ENTRIES; 
+			}
 		}
 		public function getTranscriptSize() {
 			if ( isset( $this->options [ PostmanOptions::TRANSCRIPT_SIZE ] ) ) {
 				return $this->options [ PostmanOptions::TRANSCRIPT_SIZE ];
-			} else { 				return self::DEFAULT_TRANSCRIPT_SIZE; }
+			} else { 				
+				return self::DEFAULT_TRANSCRIPT_SIZE; 
+			}
 		}
 
 		public function getLogLevel() {
 			if ( isset( $this->options [ PostmanOptions::LOG_LEVEL ] ) ) {
 				return $this->options [ PostmanOptions::LOG_LEVEL ];
-			} else { 				return self::DEFAULT_LOG_LEVEL; }
+			} else { 				
+				return self::DEFAULT_LOG_LEVEL; 
+			}
 		}
 
 
@@ -282,7 +292,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		}
 		public function getAdditionalHeaders() {
 			if ( isset( $this->options [ self::ADDITIONAL_HEADERS ] ) ) {
-				return $this->options [ self::ADDITIONAL_HEADERS ]; }
+				return $this->options [ self::ADDITIONAL_HEADERS ]; 
+			}
 		}
 		public function getHostname() {
 
@@ -291,7 +302,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options [ PostmanOptions::HOSTNAME ] ) ) {
-				return $this->options [ PostmanOptions::HOSTNAME ]; }
+				return $this->options [ PostmanOptions::HOSTNAME ]; 
+			}
 		}
 
 		public function getPort() {
@@ -301,7 +313,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options [ PostmanOptions::PORT ] ) ) {
-				return $this->options [ PostmanOptions::PORT ]; }
+				return $this->options [ PostmanOptions::PORT ]; 
+			}
 		}
 
 		public function getEnvelopeSender() {
@@ -311,7 +324,8 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options [ PostmanOptions::ENVELOPE_SENDER ] ) ) {
-				return $this->options [ PostmanOptions::ENVELOPE_SENDER ]; }
+				return $this->options [ PostmanOptions::ENVELOPE_SENDER ]; 
+			}
 		}
 
 		public function getMessageSenderEmail() {
@@ -351,13 +365,16 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			
 			}
 		}
+
 		public function getClientId() {
-			if ( isset( $this->options [ PostmanOptions::CLIENT_ID ] ) ) {
-				return $this->options [ PostmanOptions::CLIENT_ID ]; }
+			if ( isset( $this->options[ PostmanOptions::CLIENT_ID ] ) ) {
+					return $this->options [ PostmanOptions::CLIENT_ID ]; 
+			}
 		}
 		public function getClientSecret() {
 			if ( isset( $this->options [ PostmanOptions::CLIENT_SECRET ] ) ) {
-				return $this->options [ PostmanOptions::CLIENT_SECRET ]; }
+				return $this->options [ PostmanOptions::CLIENT_SECRET ]; 
+			}
 		}
 
 		public function getTransportType() {
@@ -448,11 +465,63 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 		}
 
-		public function getFallbackAuth() {
-			if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_USE_AUTH ] ) ) {
-				return $this->options [ PostmanOptions::FALLBACK_SMTP_USE_AUTH ];
+		public function getSelectedFallback() {
+            if ( isset( $this->options [ PostmanOptions::FALLBACK_SELECTED ] ) ) {
+                return $this->options [ PostmanOptions::FALLBACK_SELECTED ];
+            }
+        }
+
+		public function getSelectedPrimary() {
+			// ✅ 1. Check if we are editing a fallback (transient exists)
+			$fallback_edit = get_transient( 'post_smtp_fallback_edit' );
+			if ( $fallback_edit !== false ) {
+				return $fallback_edit; // return the ID set in transient
 			}
+			
+			// ✅ 2. Use last connection if transient says force fallback
+			$force_primary = get_transient( 'post_smtp_force_primary_connection' );
+			if ( $force_primary !== false && (int) $force_primary === 0 ) {
+				$connections = get_option( 'postman_connections', array() );
+				return array_key_last( $connections );
+			}
+
+			// ✅ 3. Use saved primary connection from options
+			if ( isset( $this->options[ PostmanOptions::PRIMARY_CONNECTION ] ) ) {
+				return $this->options[ PostmanOptions::PRIMARY_CONNECTION ];
+			}
+        }
+
+		public function getSelectedPrimaryName() {
+			$connections = get_option( 'postman_connections', array() );
+
+			$primary_connection_index = $this->getSelectedPrimary();
+
+			if ( isset( $connections[ $primary_connection_index ] ) ) {
+				return isset( $connections[ $primary_connection_index] [ 'provider' ] ) ? 
+					$connections[ $primary_connection_index ][ 'provider' ] : null;
+			}
+
+			return null;
 		}
+
+		public function getSelectedFallbackName() {
+			$connections = get_option( 'postman_connections', array() );
+
+			$fallback_connection_index = $this->getSelectedFallback();
+
+			if ( isset( $connections[ $fallback_connection_index ] ) ) {
+				return isset( $connections[ $fallback_connection_index] [ 'provider' ] ) ? 
+					$connections[ $fallback_connection_index ][ 'provider' ] : null;
+			}
+
+			return null;
+		}
+
+        public function getFallbackAuth() {
+            if ( isset( $this->options [ PostmanOptions::FALLBACK_SMTP_USE_AUTH ] ) ) {
+                return $this->options [ PostmanOptions::FALLBACK_SMTP_USE_AUTH ];
+            }
+        }
 
 		public function getFallbackUsername() {
 			if ( defined( 'POST_SMTP_FALLBACK_AUTH_USERNAME' ) ) {
@@ -988,6 +1057,111 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			if ( isset( $this->options[ PostmanOptions::SMTP2GO_API_KEY ] ) ) {
 				return base64_decode( $this->options [ PostmanOptions::SMTP2GO_API_KEY ] );
 			}
+		}
+
+		/**
+		 * Get the last Zoho credentials from connections
+		 * Intelligently finds Zoho-specific connections first, then falls back to any connection
+		 * 
+		 * @since 2.7.0
+		 * @version 1.0.0
+		 * @param array $mail_connections Array of mail connections
+		 * @return array Array with 'client_id' and 'client_secret' keys, empty strings if not found
+		 */
+		public static function get_last_zoho_credentials( $mail_connections ) {
+			if ( empty( $mail_connections ) || !is_array( $mail_connections ) ) {
+				return array( 'client_id' => '', 'client_secret' => '' );
+			}
+			
+			// Reverse loop through connections to find the last one with Zoho credentials
+			$reversed_connections = array_reverse( $mail_connections, true );
+
+			foreach ( $reversed_connections as $connection ) {
+				if ( isset( $connection['provider'] ) && $connection['provider'] === 'zohomail_api' &&
+					( ! empty( $connection['zohomail_client_id'] ) || ! empty( $connection['zohomail_client_secret'] ) ) ) {
+					return array(
+						'client_id'     => $connection['zohomail_client_id'] ?? '',
+						'client_secret' => $connection['zohomail_client_secret'] ?? ''
+					);
+				}
+			}
+			
+			// If no Zoho connection found, return the last connection's Zoho fields (even if empty)
+			$last_connection = end( $mail_connections );
+			return array(
+				'client_id'     => $last_connection['zohomail_client_id'] ?? '',
+				'client_secret' => $last_connection['zohomail_client_secret'] ?? ''
+			);
+		}
+
+		/**
+		 * Get the last Office 365 credentials from connections
+		 * Intelligently finds Office 365-specific connections first, then falls back to any connection
+		 * 
+		 * @since 2.7.0
+		 * @version 1.0.0
+		 * @param array $mail_connections Array of mail connections
+		 * @return array Array with 'app_client_id' and 'app_client_secret' keys, empty strings if not found
+		 */
+		public static function get_last_office365_credentials( $mail_connections ) {
+			if ( empty( $mail_connections ) || !is_array( $mail_connections ) ) {
+				return array( 'office365_app_id' => '', 'office365_app_password' => '' );
+			}
+			
+			// Reverse loop through connections to find the last one with Office 365 credentials
+			$reversed_connections = array_reverse( $mail_connections, true );
+
+			foreach ( $reversed_connections as $connection ) {
+				if ( isset( $connection['provider'] ) && $connection['provider'] === 'office365_api' &&
+					( ! empty( $connection['office365_app_id'] ) || ! empty( $connection['office365_app_password'] ) ) ) {
+					return array(
+						'office365_app_id'       => $connection['office365_app_id'] ?? '',
+						'office365_app_password' => $connection['office365_app_password'] ?? ''
+					);
+				}
+			}
+			
+			// If no Office 365 connection found, return the last connection's Office 365 fields (even if empty)
+			$last_connection = end( $mail_connections );
+			return array(
+				'office365_app_id'       => $last_connection['office365_app_id'] ?? '',
+				'office365_app_password' => $last_connection['office365_app_password'] ?? ''
+			);
+		}
+
+		/**
+		 * Get the last Gmail credentials from connections
+		 * Intelligently finds Gmail-specific connections first, then falls back to any connection
+		 * 
+		 * @since 2.7.0
+		 * @version 1.0.0
+		 * @param array $mail_connections Array of mail connections
+		 * @return array Array with 'client_id' and 'client_secret' keys, empty strings if not found
+		 */
+		public static function get_last_gmail_credentials( $mail_connections ) {
+			if ( empty( $mail_connections ) || !is_array( $mail_connections ) ) {
+				return array( 'client_id' => '', 'client_secret' => '' );
+			}
+			
+			// Reverse loop through connections to find the last one with Gmail credentials
+			$reversed_connections = array_reverse( $mail_connections, true );
+
+			foreach ( $reversed_connections as $connection ) {
+				if ( isset( $connection['provider'] ) && $connection['provider'] === 'gmail_api' &&
+					( ! empty( $connection['oauth_client_id'] ) || ! empty( $connection['oauth_client_secret'] ) ) ) {
+					return array(
+						'client_id'     => $connection['oauth_client_id'] ?? '',
+						'client_secret' => $connection['oauth_client_secret'] ?? ''
+					);
+				}
+			}
+			
+			// If no Gmail connection found, return the last connection's OAuth fields (even if empty)
+			$last_connection = end( $mail_connections );
+			return array(
+				'client_id'     => $last_connection['oauth_client_id'] ?? '',
+				'client_secret' => $last_connection['oauth_client_secret'] ?? ''
+			);
 		}
 	}
 }

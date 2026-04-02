@@ -17,44 +17,40 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class CseIdentity extends \PostSMTP\Vendor\Google\Model
-{
-    /**
-     * @var string
-     */
-    public $emailAddress;
-    /**
-     * @var string
-     */
-    public $primaryKeyPairId;
-    /**
-     * @param string
-     */
-    public function setEmailAddress($emailAddress)
-    {
-        $this->emailAddress = $emailAddress;
-    }
-    /**
-     * @return string
-     */
-    public function getEmailAddress()
-    {
-        return $this->emailAddress;
-    }
-    /**
-     * @param string
-     */
-    public function setPrimaryKeyPairId($primaryKeyPairId)
-    {
-        $this->primaryKeyPairId = $primaryKeyPairId;
-    }
-    /**
-     * @return string
-     */
-    public function getPrimaryKeyPairId()
-    {
-        return $this->primaryKeyPairId;
-    }
+class CseIdentity extends \PostSMTP\Vendor\Google\Model {
+
+	/**
+	 * @var string
+	 */
+	public $emailAddress;
+	/**
+	 * @var string
+	 */
+	public $primaryKeyPairId;
+	/**
+	 * @param string
+	 */
+	public function setEmailAddress( $emailAddress ) {
+		$this->emailAddress = $emailAddress;
+	}
+	/**
+	 * @return string
+	 */
+	public function getEmailAddress() {
+		return $this->emailAddress;
+	}
+	/**
+	 * @param string
+	 */
+	public function setPrimaryKeyPairId( $primaryKeyPairId ) {
+		$this->primaryKeyPairId = $primaryKeyPairId;
+	}
+	/**
+	 * @return string
+	 */
+	public function getPrimaryKeyPairId() {
+		return $this->primaryKeyPairId;
+	}
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\CseIdentity::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_CseIdentity');
+\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\CseIdentity::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_CseIdentity' );

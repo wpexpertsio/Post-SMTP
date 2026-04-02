@@ -9,8 +9,9 @@ class PostmanPushoverNotify implements Postman_Notify {
         $options = PostmanNotifyOptions::getInstance();
 
         $api_url = "https://api.pushover.net/1/messages.json";
-        $app_token = $options->getPushoverToken();
-        $user_key = $options->getPushoverUser();
+        $existing_db_version = get_option( 'postman_db_version' );
+            $app_token = $options->getPushoverToken();
+            $user_key = $options->getPushoverUser();
 
         $args = array(
             'body' => array(

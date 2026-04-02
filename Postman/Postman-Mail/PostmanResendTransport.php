@@ -104,13 +104,47 @@ class PostmanResendTransport extends PostmanAbstractModuleTransport implements P
      * @version 1.0
      */
     public function createMailEngine() {
+        $existing_db_version = get_option( 'postman_db_version' );
+        $connection_details  = get_option( 'postman_connections' );
+        $route_key = get_transient( 'post_smtp_smart_routing_route' );
 
-        $api_key = $this->options->getResendApiKey();
+        if ( $route_key != null ) {
+            $api_key = $this->getApiKeyForRoute( $route_key, $connection_details );
+        } else {
+            $api_key = $this->getApiKeyForDefaultConnection( $existing_db_version, $connection_details );
+        }
+
         require_once 'PostmanResendMailEngine.php';
         $engine = new PostmanResendMailEngine( $api_key );
-
         return $engine;
+    }
 
+    public function createMailEngineFallback() {
+        $connection_details = get_option( 'postman_connections' );
+        $fallback           = $this->options->getSelectedFallback();
+        $api_key            = isset( $connection_details[ $fallback ]['resend_api_key'] ) ? $connection_details[ $fallback ]['resend_api_key'] : '';
+        $api_credentials    = array(
+            'api_key'     => $api_key,
+            'is_fallback' => 1,
+        );
+        require_once 'PostmanResendMailEngine.php';
+        $engine = new PostmanResendMailEngine( $api_credentials );
+        return $engine;
+    }
+
+    private function getApiKeyForRoute( $route_key, $connection_details ) {
+        if ( isset( $connection_details[ $route_key ] ) ) {
+            return $connection_details[ $route_key ]['resend_api_key'];
+        }
+        return '';
+    }
+
+    private function getApiKeyForDefaultConnection( $existing_db_version, $connection_details ) {
+        if ( $existing_db_version !== POST_SMTP_DB_VERSION ) {
+            return $this->options->getResendApiKey();
+        }
+        $primary = $this->options->getSelectedPrimary();
+        return isset( $connection_details[ $primary ] ) ? $connection_details[ $primary ]['resend_api_key'] : '';
     }
 
     /**

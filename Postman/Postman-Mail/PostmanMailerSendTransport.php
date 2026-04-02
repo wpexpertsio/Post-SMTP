@@ -73,11 +73,48 @@ class PostmanMailerSendTransport extends PostmanAbstractModuleTransport implemen
 	 * @see PostmanModuleTransport::createMailEngine()
 	 */
 	public function createMailEngine() {
-		$apiKey = $this->options->getMailerSendApiKey ();
+		$existing_db_version = get_option( 'postman_db_version' );
+		$connection_details  = get_option( 'postman_connections' );
+		// Check if a transient for smart routing is set
+		$route_key = null;
+		$route_key = get_transient( 'post_smtp_smart_routing_route' );
+		
+		if( $route_key != null ){
+			// Smart routing is enabled, use the connection associated with the route_key.
+			$apiKey         = $connection_details[ $route_key ]['mailersend_api_key'];
+		}else{ 
+			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+				$apiKey     = $this->options->getMailerSendApiKey();
+			} else {
+				$primary    = $this->options->getSelectedPrimary();
+				$apiKey     = $connection_details[ $primary ]['mailersend_api_key'];
+			}
+		}
+
 		require_once 'PostmanMailerSendMailEngine.php';
 		$engine = new PostmanMailerSendMailEngine ( $apiKey );
 		return $engine;
 	}
+
+	/**
+	 * @since 3.5.0
+	 * @version 1.0
+	 */
+	public function createMailEngineFallback() {
+
+		$connection_details = get_option( 'postman_connections' );
+		$fallback           = $this->options->getSelectedFallback();
+		$api_key            = $connection_details[ $fallback ]['mailersend_api_key'];
+			// Wrap the API key with additional data in an array
+		$api_credentials = array(
+			'api_key'     => $api_key,
+			'is_fallback' => 1,
+		);
+		require_once 'PostmanMailerSendMailEngine.php';
+		$engine = new PostmanMailerSendMailEngine ( $api_credentials );
+		return $engine;
+	}
+
 	public function getDeliveryDetails() {
 		/* translators: where (1) is the secure icon and (2) is the transport name */
 		return sprintf ( __ ( 'Postman will send mail via the <b>%1$s %2$s</b>.', 'post-smtp' ), '🔐', $this->getName () );

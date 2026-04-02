@@ -1,10 +1,10 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
-use \PostSMTP\Vendor\Google\Service\Gmail\Message;
-use \PostSMTP\Vendor\Google\Http\MediaFileUpload;
+use PostSMTP\Vendor\Google\Service\Gmail\Message;
+use PostSMTP\Vendor\Google\Http\MediaFileUpload;
 
 /**
  * Zend Framework
@@ -56,9 +56,9 @@ use \PostSMTP\Vendor\Google\Http\MediaFileUpload;
  * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license http://framework.zend.com/license/new-bsd New BSD License
  */
-if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
+if ( ! class_exists( 'PostmanGmailApiModuleZendMailTransport' ) ) {
 	class PostmanGmailApiModuleZendMailTransport extends Postman_Zend_Mail_Transport_Abstract {
-		const SERVICE_OPTION = 'service';
+		const SERVICE_OPTION              = 'service';
 		const MESSAGE_SENDER_EMAIL_OPTION = 'sender_email';
 		private $logger;
 		private $message;
@@ -73,73 +73,73 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 		 * @access public
 		 */
 		public $EOL = "\n";
-		
+
 		/**
 		 * Remote smtp hostname or i.p.
 		 *
 		 * @var string
 		 */
 		protected $_host;
-		
+
 		/**
 		 * Port number
 		 *
 		 * @var integer|null
 		 */
 		protected $_port;
-		
+
 		/**
 		 * Local client hostname or i.p.
 		 *
 		 * @var string
 		 */
 		protected $_name = 'localhost';
-		
+
 		/**
 		 * Authentication type OPTIONAL
 		 *
 		 * @var string
 		 */
 		protected $_auth;
-		
+
 		/**
 		 * Config options for authentication
 		 *
 		 * @var array
 		 */
 		protected $_config;
-		
+
 		/**
 		 * Instance of Postman_Zend_Mail_Protocol_Smtp
 		 *
 		 * @var Postman_Zend_Mail_Protocol_Smtp
 		 */
 		protected $_connection;
-		
+
 		/**
 		 * Constructor.
 		 *
 		 * @param string $host
-		 *        	OPTIONAL (Default: 127.0.0.1)
-		 * @param array $config
-		 *        	OPTIONAL (Default: null)
+		 *          OPTIONAL (Default: 127.0.0.1)
+		 * @param array  $config
+		 *          OPTIONAL (Default: null)
 		 * @return void
 		 *
 		 * @todo Someone please make this compatible
 		 *       with the SendMail transport class.
 		 */
-		public function __construct($host = '127.0.0.1', Array $config = array()) {
-			if (isset ( $config ['name'] )) {
+		public function __construct( $host = '127.0.0.1', array $config = array() ) {
+			if ( isset( $config ['name'] ) ) {
 				$this->_name = $config ['name'];
 			}
-			if (isset ( $config ['port'] )) {
+			if ( isset( $config ['port'] ) ) {
 				$this->_port = $config ['port'];
 			}
-			if (isset ( $config ['auth'] )) {
+			if ( isset( $config ['auth'] ) ) {
 				$this->_auth = $config ['auth'];
 			}
-			
-			$this->_host = $host;
+
+			$this->_host   = $host;
 			$this->_config = $config;
 			$this->logger = new PostmanLogger ( get_class ( $this ) );
 			// Define API base URL for middleware.
@@ -153,34 +153,34 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 				true
 			);
 		}
-		
+
 		/**
 		 * Class destructor to ensure all open connections are closed
 		 *
 		 * @return void
 		 */
 		public function __destruct() {
-			if ($this->_connection instanceof Postman_Zend_Mail_Protocol_Smtp) {
+			if ( $this->_connection instanceof Postman_Zend_Mail_Protocol_Smtp ) {
 				try {
-					$this->_connection->quit ();
+					$this->_connection->quit();
 				} catch ( Postman_Zend_Mail_Protocol_Exception $e ) {
 					// ignore
 				}
-				$this->_connection->disconnect ();
+				$this->_connection->disconnect();
 			}
 		}
-		
+
 		/**
 		 * Sets the connection protocol instance
 		 *
-		 * @param Postman_Zend_Mail_Protocol_Abstract $client        	
+		 * @param Postman_Zend_Mail_Protocol_Abstract $client
 		 *
 		 * @return void
 		 */
-		public function setConnection(Postman_Zend_Mail_Protocol_Abstract $connection) {
+		public function setConnection( Postman_Zend_Mail_Protocol_Abstract $connection ) {
 			$this->_connection = $connection;
 		}
-		
+
 		/**
 		 * Gets the connection protocol instance
 		 *
@@ -189,17 +189,16 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 		public function getConnection() {
 			return $this->_connection;
 		}
-		
+
 		/**
 		 * Send an email via the Gmail API
 		 *
 		 * Uses URI https://www.googleapis.com
 		 *
-		 *
 		 * @return void
 		 * @todo Rename this to sendMail, it's a public method...
 		 */
-		public function _sendMail() {
+			public function _sendMail() {
 
 			// Prepare the message in message/rfc822
 			$message = $this->header . Postman_Zend_Mime::LINEEND . $this->body;
@@ -307,32 +306,32 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 		public function getTranscript() {
 			return $this->transcript;
 		}
-		
+
 		/**
 		 * Format and fix headers
 		 *
 		 * Some SMTP servers do not strip BCC headers. Most clients do it themselves as do we.
 		 *
 		 * @access protected
-		 * @param array $headers        	
+		 * @param array $headers
 		 * @return void
 		 * @throws Postman_Zend_Transport_Exception
 		 */
-		protected function _prepareHeaders($headers) {
-			if (! $this->_mail) {
+		protected function _prepareHeaders( $headers ) {
+			if ( ! $this->_mail ) {
 				/**
 				 *
 				 * @see Postman_Zend_Mail_Transport_Exception
 				 */
 				// require_once 'Zend/Mail/Transport/Exception.php';
-				throw new Postman_Zend_Mail_Transport_Exception ( '_prepareHeaders requires a registered Postman_Zend_Mail object' );
+				throw new Postman_Zend_Mail_Transport_Exception( '_prepareHeaders requires a registered Postman_Zend_Mail object' );
 			}
-			
+
 			// google will unset the Bcc header for us.
 			// unset ( $headers ['Bcc'] );
-			
+
 			// Prepare headers
-			parent::_prepareHeaders ( $headers );
+			parent::_prepareHeaders( $headers );
 		}
 	}
 }

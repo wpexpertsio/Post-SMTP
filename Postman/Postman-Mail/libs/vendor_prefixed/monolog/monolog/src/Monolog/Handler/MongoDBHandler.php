@@ -23,30 +23,27 @@ use PostSMTP\Vendor\Monolog\Formatter\NormalizerFormatter;
  *
  * @author Thomas Tourlourat <thomas@tourlourat.com>
  */
-class MongoDBHandler extends \PostSMTP\Vendor\Monolog\Handler\AbstractProcessingHandler
-{
-    protected $mongoCollection;
-    public function __construct($mongo, $database, $collection, $level = \PostSMTP\Vendor\Monolog\Logger::DEBUG, $bubble = \true)
-    {
-        if (!($mongo instanceof \MongoClient || $mongo instanceof \Mongo || $mongo instanceof \PostSMTP\Vendor\MongoDB\Client)) {
-            throw new \InvalidArgumentException('MongoClient, Mongo or MongoDB\\Client instance required');
-        }
-        $this->mongoCollection = $mongo->selectCollection($database, $collection);
-        parent::__construct($level, $bubble);
-    }
-    protected function write(array $record)
-    {
-        if ($this->mongoCollection instanceof \PostSMTP\Vendor\MongoDB\Collection) {
-            $this->mongoCollection->insertOne($record["formatted"]);
-        } else {
-            $this->mongoCollection->save($record["formatted"]);
-        }
-    }
-    /**
-     * {@inheritDoc}
-     */
-    protected function getDefaultFormatter()
-    {
-        return new \PostSMTP\Vendor\Monolog\Formatter\NormalizerFormatter();
-    }
+class MongoDBHandler extends \PostSMTP\Vendor\Monolog\Handler\AbstractProcessingHandler {
+
+	protected $mongoCollection;
+	public function __construct( $mongo, $database, $collection, $level = \PostSMTP\Vendor\Monolog\Logger::DEBUG, $bubble = \true ) {
+		if ( ! ( $mongo instanceof \MongoClient || $mongo instanceof \Mongo || $mongo instanceof \PostSMTP\Vendor\MongoDB\Client ) ) {
+			throw new \InvalidArgumentException( 'MongoClient, Mongo or MongoDB\\Client instance required' );
+		}
+		$this->mongoCollection = $mongo->selectCollection( $database, $collection );
+		parent::__construct( $level, $bubble );
+	}
+	protected function write( array $record ) {
+		if ( $this->mongoCollection instanceof \PostSMTP\Vendor\MongoDB\Collection ) {
+			$this->mongoCollection->insertOne( $record['formatted'] );
+		} else {
+			$this->mongoCollection->save( $record['formatted'] );
+		}
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function getDefaultFormatter() {
+		return new \PostSMTP\Vendor\Monolog\Formatter\NormalizerFormatter();
+	}
 }

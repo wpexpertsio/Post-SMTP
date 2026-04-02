@@ -17,42 +17,38 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class CsePrivateKeyMetadata extends \PostSMTP\Vendor\Google\Model
-{
-    protected $kaclsKeyMetadataType = \PostSMTP\Vendor\Google\Service\Gmail\KaclsKeyMetadata::class;
-    protected $kaclsKeyMetadataDataType = '';
-    /**
-     * @var string
-     */
-    public $privateKeyMetadataId;
-    /**
-     * @param KaclsKeyMetadata
-     */
-    public function setKaclsKeyMetadata(\PostSMTP\Vendor\Google\Service\Gmail\KaclsKeyMetadata $kaclsKeyMetadata)
-    {
-        $this->kaclsKeyMetadata = $kaclsKeyMetadata;
-    }
-    /**
-     * @return KaclsKeyMetadata
-     */
-    public function getKaclsKeyMetadata()
-    {
-        return $this->kaclsKeyMetadata;
-    }
-    /**
-     * @param string
-     */
-    public function setPrivateKeyMetadataId($privateKeyMetadataId)
-    {
-        $this->privateKeyMetadataId = $privateKeyMetadataId;
-    }
-    /**
-     * @return string
-     */
-    public function getPrivateKeyMetadataId()
-    {
-        return $this->privateKeyMetadataId;
-    }
+class CsePrivateKeyMetadata extends \PostSMTP\Vendor\Google\Model {
+
+	protected $kaclsKeyMetadataType     = \PostSMTP\Vendor\Google\Service\Gmail\KaclsKeyMetadata::class;
+	protected $kaclsKeyMetadataDataType = '';
+	/**
+	 * @var string
+	 */
+	public $privateKeyMetadataId;
+	/**
+	 * @param KaclsKeyMetadata
+	 */
+	public function setKaclsKeyMetadata( \PostSMTP\Vendor\Google\Service\Gmail\KaclsKeyMetadata $kaclsKeyMetadata ) {
+		$this->kaclsKeyMetadata = $kaclsKeyMetadata;
+	}
+	/**
+	 * @return KaclsKeyMetadata
+	 */
+	public function getKaclsKeyMetadata() {
+		return $this->kaclsKeyMetadata;
+	}
+	/**
+	 * @param string
+	 */
+	public function setPrivateKeyMetadataId( $privateKeyMetadataId ) {
+		$this->privateKeyMetadataId = $privateKeyMetadataId;
+	}
+	/**
+	 * @return string
+	 */
+	public function getPrivateKeyMetadataId() {
+		return $this->privateKeyMetadataId;
+	}
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\CsePrivateKeyMetadata::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_CsePrivateKeyMetadata');
+\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\CsePrivateKeyMetadata::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_CsePrivateKeyMetadata' );

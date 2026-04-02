@@ -24,42 +24,47 @@ use PostSMTP\Vendor\GuzzleHttp\Psr7;
 use PostSMTP\Vendor\GuzzleHttp\Psr7\Request;
 /**
  * Wrapper around Google Access Tokens which provides convenience functions
- *
  */
-class Revoke
-{
-    /**
-     * @var ClientInterface The http client
-     */
-    private $http;
-    /**
-     * Instantiates the class, but does not initiate the login flow, leaving it
-     * to the discretion of the caller.
-     */
-    public function __construct(\PostSMTP\Vendor\GuzzleHttp\ClientInterface $http = null)
-    {
-        $this->http = $http;
-    }
-    /**
-     * Revoke an OAuth2 access token or refresh token. This method will revoke the current access
-     * token, if a token isn't provided.
-     *
-     * @param string|array $token The token (access token or a refresh token) that should be revoked.
-     * @return boolean Returns True if the revocation was successful, otherwise False.
-     */
-    public function revokeToken($token)
-    {
-        if (\is_array($token)) {
-            if (isset($token['refresh_token'])) {
-                $token = $token['refresh_token'];
-            } else {
-                $token = $token['access_token'];
-            }
-        }
-        $body = \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::streamFor(\http_build_query(['token' => $token]));
-        $request = new \PostSMTP\Vendor\GuzzleHttp\Psr7\Request('POST', \PostSMTP\Vendor\Google\Client::OAUTH2_REVOKE_URI, ['Cache-Control' => 'no-store', 'Content-Type' => 'application/x-www-form-urlencoded'], $body);
-        $httpHandler = \PostSMTP\Vendor\Google\Auth\HttpHandler\HttpHandlerFactory::build($this->http);
-        $response = $httpHandler($request);
-        return $response->getStatusCode() == 200;
-    }
+class Revoke {
+
+	/**
+	 * @var ClientInterface The http client
+	 */
+	private $http;
+	/**
+	 * Instantiates the class, but does not initiate the login flow, leaving it
+	 * to the discretion of the caller.
+	 */
+	public function __construct( \PostSMTP\Vendor\GuzzleHttp\ClientInterface $http = null ) {
+		$this->http = $http;
+	}
+	/**
+	 * Revoke an OAuth2 access token or refresh token. This method will revoke the current access
+	 * token, if a token isn't provided.
+	 *
+	 * @param string|array $token The token (access token or a refresh token) that should be revoked.
+	 * @return boolean Returns True if the revocation was successful, otherwise False.
+	 */
+	public function revokeToken( $token ) {
+		if ( \is_array( $token ) ) {
+			if ( isset( $token['refresh_token'] ) ) {
+				$token = $token['refresh_token'];
+			} else {
+				$token = $token['access_token'];
+			}
+		}
+		$body        = \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::streamFor( \http_build_query( array( 'token' => $token ) ) );
+		$request     = new \PostSMTP\Vendor\GuzzleHttp\Psr7\Request(
+			'POST',
+			\PostSMTP\Vendor\Google\Client::OAUTH2_REVOKE_URI,
+			array(
+				'Cache-Control' => 'no-store',
+				'Content-Type'  => 'application/x-www-form-urlencoded',
+			),
+			$body
+		);
+		$httpHandler = \PostSMTP\Vendor\Google\Auth\HttpHandler\HttpHandlerFactory::build( $this->http );
+		$response    = $httpHandler( $request );
+		return $response->getStatusCode() == 200;
+	}
 }

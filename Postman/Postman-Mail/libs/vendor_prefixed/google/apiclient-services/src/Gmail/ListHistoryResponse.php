@@ -17,61 +17,55 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class ListHistoryResponse extends \PostSMTP\Vendor\Google\Collection
-{
-    protected $collection_key = 'history';
-    protected $historyType = \PostSMTP\Vendor\Google\Service\Gmail\History::class;
-    protected $historyDataType = 'array';
-    /**
-     * @var string
-     */
-    public $historyId;
-    /**
-     * @var string
-     */
-    public $nextPageToken;
-    /**
-     * @param History[]
-     */
-    public function setHistory($history)
-    {
-        $this->history = $history;
-    }
-    /**
-     * @return History[]
-     */
-    public function getHistory()
-    {
-        return $this->history;
-    }
-    /**
-     * @param string
-     */
-    public function setHistoryId($historyId)
-    {
-        $this->historyId = $historyId;
-    }
-    /**
-     * @return string
-     */
-    public function getHistoryId()
-    {
-        return $this->historyId;
-    }
-    /**
-     * @param string
-     */
-    public function setNextPageToken($nextPageToken)
-    {
-        $this->nextPageToken = $nextPageToken;
-    }
-    /**
-     * @return string
-     */
-    public function getNextPageToken()
-    {
-        return $this->nextPageToken;
-    }
+class ListHistoryResponse extends \PostSMTP\Vendor\Google\Collection {
+
+	protected $collection_key  = 'history';
+	protected $historyType     = \PostSMTP\Vendor\Google\Service\Gmail\History::class;
+	protected $historyDataType = 'array';
+	/**
+	 * @var string
+	 */
+	public $historyId;
+	/**
+	 * @var string
+	 */
+	public $nextPageToken;
+	/**
+	 * @param History[]
+	 */
+	public function setHistory( $history ) {
+		$this->history = $history;
+	}
+	/**
+	 * @return History[]
+	 */
+	public function getHistory() {
+		return $this->history;
+	}
+	/**
+	 * @param string
+	 */
+	public function setHistoryId( $historyId ) {
+		$this->historyId = $historyId;
+	}
+	/**
+	 * @return string
+	 */
+	public function getHistoryId() {
+		return $this->historyId;
+	}
+	/**
+	 * @param string
+	 */
+	public function setNextPageToken( $nextPageToken ) {
+		$this->nextPageToken = $nextPageToken;
+	}
+	/**
+	 * @return string
+	 */
+	public function getNextPageToken() {
+		return $this->nextPageToken;
+	}
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\ListHistoryResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListHistoryResponse');
+\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\ListHistoryResponse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ListHistoryResponse' );

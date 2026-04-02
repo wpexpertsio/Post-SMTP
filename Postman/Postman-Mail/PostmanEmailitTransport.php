@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+    exit;
 }
 
 require_once 'PostmanModuleTransport.php';
@@ -61,69 +61,99 @@ class PostmanEmailitTransport extends PostmanAbstractModuleTransport implements 
         return self::PORT;
     }
 
-    /**
-     * v1.7.0
-     *
-     * @return string
-     */
-    public function getTransportType() {
-        return 'Emailit_api';
+    public function getSlug() {
+        return self::SLUG;
     }
-    /**
-     * @since 3.2.0
-     * @version 1.0
-     */
-    public function createMailEngine() {
-        $apiKey = $this->options->getEmailitApiKey();
-        require_once 'PostmanEmailitMailEngine.php';
-        $engine = new PostmanEmailitMailEngine($apiKey);
-        return $engine;
+
+    public function getProtocol() {
+        return 'https';
     }
-    /**
-     * @since 3.2.0
-     * @version 1.0
-     */
-    public function getDeliveryDetails() {
-        /* translators: where (1) is the secure icon and (2) is the transport name */
-        return sprintf(__('Postman will send mail via the <b>%1$s %2$s</b>.', 'post-smtp'), '🔐', $this->getName());
+
+    public function getHostname() {
+        return self::HOST;
     }
-    protected function validateTransportConfiguration() {
-        $messages = parent::validateTransportConfiguration();
-        $apiKey = $this->options->getEmailitApiKey();
-        if (empty($apiKey)) {
-            array_push($messages, __('API Key can not be empty', 'post-smtp') . '.');
-            $this->setNotConfiguredAndReady();
-        }
-        if (!$this->isSenderConfigured()) {
-            array_push($messages, __('Message From Address can not be empty', 'post-smtp') . '.');
-            $this->setNotConfiguredAndReady();
-        }
-        return $messages;
-    }
-    /**
-     * @since 3.2.0
-     * @version 1.0
-     */
-    public function getConfigurationBid(PostmanWizardSocket $hostData, $userAuthOverride, $originalSmtpServer) {
+
+    public function getConfigurationBid( PostmanWizardSocket $hostData, $userAuthOverride, $originalSmtpServer ) {
         $recommendation = array();
-        $recommendation['priority'] = 0;
+        $recommendation['priority']  = 0;
         $recommendation['transport'] = self::SLUG;
-        $recommendation['hostname'] = null; // scribe looks this
-        $recommendation['label'] = $this->getName();
-        $recommendation['logo_url'] = $this->getLogoURL();
-        if ($hostData->hostname == self::HOST && $hostData->port == self::PORT) {
+        $recommendation['hostname']  = null;
+        $recommendation['label']     = $this->getName();
+        $recommendation['logo_url']  = $this->getLogoURL();
+
+        if ( $hostData->hostname == self::HOST && $hostData->port == self::PORT ) {
             $recommendation['priority'] = self::PRIORITY;
-            /* translators: where variables are (1) transport name (2) host and (3) port */
-            $recommendation['message'] = sprintf(__('Postman recommends the %1$s to host %2$s on port %3$d.'), $this->getName(), self::HOST, self::PORT);
+            $recommendation['message'] = sprintf( __( 'Postman recommends the %1$s to host %2$s on port %3$d.' ), $this->getName(), self::HOST, self::PORT );
         }
         return $recommendation;
     }
-    /**
-     * @since 3.2.0
-     * @version 1.0
-     */
+
+    public function createMailEngine() {
+        $existing_db_version = get_option( 'postman_db_version' );
+        $connection_details  = get_option( 'postman_connections' );
+        $route_key = get_transient( 'post_smtp_smart_routing_route' );
+
+        if ( $route_key != null ) {
+            $api_key = $this->getApiKeyForRoute( $route_key, $connection_details );
+        } else {
+            $api_key = $this->getApiKeyForDefaultConnection( $existing_db_version, $connection_details );
+        }
+
+        require_once 'PostmanEmailitMailEngine.php';
+        $engine = new PostmanEmailItMailEngine( $api_key );
+        return $engine;
+    }
+
+    public function createMailEngineFallback() {
+        $connection_details = get_option( 'postman_connections' );
+        $fallback           = $this->options->getSelectedFallback();
+        $api_key            = isset( $connection_details[ $fallback ]['emailit_api_key'] ) ? $connection_details[ $fallback ]['emailit_api_key'] : '';
+        $api_credentials    = array(
+            'api_key'     => $api_key,
+            'is_fallback' => 1,
+        );
+        require_once 'PostmanEmailItMailEngine.php';
+        $engine = new PostmanEmailItMailEngine( $api_credentials );
+        return $engine;
+    }
+
+    private function getApiKeyForRoute( $route_key, $connection_details ) {
+        if ( isset( $connection_details[ $route_key ] ) ) {
+            return $connection_details[ $route_key ]['emailit_api_key'];
+        }
+        return '';
+    }
+
+    private function getApiKeyForDefaultConnection( $existing_db_version, $connection_details ) {
+        if ( $existing_db_version !== POST_SMTP_DB_VERSION ) {
+            return $this->options->getEmailItApiKey();
+        }
+        $primary = $this->options->getSelectedPrimary();
+        return isset( $connection_details[ $primary ] ) ? $connection_details[ $primary ]['emailit_api_key'] : '';
+    }
+
+    public function getName() {
+        return __( 'EmailIt', 'post-smtp' );
+    }
+
+    public function getDeliveryDetails() {
+        return sprintf( __( 'Postman will send mail via the <b>%1$s %2$s</b>.', 'post-smtp' ), '🔐', $this->getName() );
+    }
+
+    public function createOverrideMenu( PostmanWizardSocket $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride ) {
+        $overrideItem = parent::createOverrideMenu( $socket, $winningRecommendation, $userSocketOverride, $userAuthOverride );
+        $overrideItem['auth_items'] = array(
+            array(
+                'selected' => true,
+                'name'     => __( 'API Key', 'post-smtp' ),
+                'value'    => 'api_key',
+            ),
+        );
+        return $overrideItem;
+    }
+
     public function on_admin_init() {
-        if (PostmanUtils::isAdmin()) {
+        if ( PostmanUtils::isAdmin() ) {
             $this->addSettings();
             $this->registerStylesAndScripts();
         }
@@ -159,8 +189,12 @@ class PostmanEmailitTransport extends PostmanAbstractModuleTransport implements 
      * @version 1.0
      */
     public function emailit_api_key_callback() {
-        printf('<input type="password" autocomplete="off" id="emailit_api_key" name="postman_options[emailit_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>', null !== $this->options->getEmailitApiKey() ? esc_attr(PostmanUtils::obfuscatePassword($this->options->getEmailitApiKey())) : '', __('Required', 'post-smtp'));
-        print ' <input type="button" id="toggleEmailitApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
+        printf(
+            '<input type="password" autocomplete="off" id="emailit_api_key" name="postman_options[emailit_api_key]" value="%s" size="60" class="required ps-input ps-w-75" placeholder="%s"/>',
+            null !== $this->options->getEmailItApiKey() ? esc_attr( PostmanUtils::obfuscatePassword( $this->options->getEmailItApiKey() ) ) : '',
+            __( 'Required', 'post-smtp' )
+        );
+        print ' <input type="button" id="toggleEmailItApiKey" value="Show Password" class="button button-secondary" style="visibility:hidden" />';
     }
 
      /**
@@ -200,8 +234,8 @@ class PostmanEmailitTransport extends PostmanAbstractModuleTransport implements 
      */
     public function printWizardAuthenticationStep() {
         print '<section class="wizard_emailit">';
-        $this->printEmailitAuthSectionInfo();
-        printf('<label for="api_key">%s</label>', __('API Key', 'post-smtp'));
+        $this->printEmailItAuthSectionInfo();
+        printf( '<label for="api_key">%s</label>', __( 'API Key', 'post-smtp' ) );
         print '<br />';
         $this->emailit_api_key_callback();
         print '</section>';
@@ -214,7 +248,7 @@ class PostmanEmailitTransport extends PostmanAbstractModuleTransport implements 
      * @version 1.0
      */
     public function getLogoURL() {
-        return POST_SMTP_ASSETS . "images/logos/emailit.png";
+        return POST_SMTP_ASSETS . 'images/logos/emailit.png';
     }
 
     /**
@@ -223,6 +257,29 @@ class PostmanEmailitTransport extends PostmanAbstractModuleTransport implements 
      */
     public function has_granted() {
         return true;
+    }
+
+    protected function validateTransportConfiguration() {
+        $postman_db_version = get_option( 'postman_db_version' );
+        if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+            $messages = parent::validateTransportConfiguration();
+            $apiKey   = $this->options->getEmailItApiKey();
+            if ( empty( $apiKey ) ) {
+                array_push( $messages, __( 'API Key can not be empty', 'post-smtp' ) . '.' );
+                $this->setNotConfiguredAndReady();
+            }
+            if ( ! $this->isSenderConfigured() ) {
+                array_push( $messages, __( 'Message From Address can not be empty', 'post-smtp' ) . '.' );
+                $this->setNotConfiguredAndReady();
+            }
+            return $messages;
+        }
+    }
+
+    public function prepareOptionsForExport( $data ) {
+        $data = parent::prepareOptionsForExport( $data );
+        $data['emailit_api_key'] = PostmanOptions::getInstance()->getEmailItApiKey();
+        return $data;
     }
 }
 endif;

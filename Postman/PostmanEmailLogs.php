@@ -284,8 +284,12 @@ class PostmanEmailLogs {
         }
 
         if( !$this->db->last_error ) {
-
-            update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
+            $existing_options = get_option( PostmanOptions::POSTMAN_OPTIONS );
+            if ( !empty( $existing_options ) ) {
+                update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
+            } else {
+                update_option( 'postman_db_version', '1.0.2' );
+            }
 
         }
 
@@ -327,7 +331,7 @@ class PostmanEmailLogs {
 
         if( !$this->db->last_error ) {
 
-            update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
+            update_option( 'postman_db_version', '1.0.1' );
 
         }
 
@@ -498,6 +502,11 @@ class PostmanEmailLogs {
             }
 
             $data = $logs_query->get_logs( $query );
+
+            usort( $data, function ( $a, $b ) {
+				return intval( $b->id ) <=> intval( $a->id );
+			});
+
             //WordPress Date, Time Format
             $date_format = get_option( 'date_format' );
 		    $time_format = get_option( 'time_format' );
@@ -519,7 +528,7 @@ class PostmanEmailLogs {
 
                 $row->time = date( "{$date_format} {$time_format}", $row->time );
 
-                if( $row->success == 1 ) {
+                if( $row->success == 1 || $row->success === 'Sent ( ** Fallback ** )' ) { 
 
                     $row->success = '<span title="Success">Success</span>';
 

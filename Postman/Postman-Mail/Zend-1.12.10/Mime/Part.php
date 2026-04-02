@@ -32,302 +32,295 @@
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Mime_Part
-{
+class Postman_Zend_Mime_Part {
 
-    /**
-     * Type
-     *
-     * @var string
-     */
-    public $type = Postman_Zend_Mime::TYPE_OCTETSTREAM;
 
-    /**
-     * Encoding
-     *
-     * @var string
-     */
-    public $encoding = Postman_Zend_Mime::ENCODING_8BIT;
+	/**
+	 * Type
+	 *
+	 * @var string
+	 */
+	public $type = Postman_Zend_Mime::TYPE_OCTETSTREAM;
 
-    /**
-     * ID
-     *
-     * @var string
-     */
-    public $id;
+	/**
+	 * Encoding
+	 *
+	 * @var string
+	 */
+	public $encoding = Postman_Zend_Mime::ENCODING_8BIT;
 
-    /**
-     * Disposition
-     *
-     * @var string
-     */
-    public $disposition;
+	/**
+	 * ID
+	 *
+	 * @var string
+	 */
+	public $id;
 
-    /**
-     * Filename
-     *
-     * @var string
-     */
-    public $filename;
+	/**
+	 * Disposition
+	 *
+	 * @var string
+	 */
+	public $disposition;
 
-    /**
-     * Description
-     *
-     * @var string
-     */
-    public $description;
+	/**
+	 * Filename
+	 *
+	 * @var string
+	 */
+	public $filename;
 
-    /**
-     * Character set
-     *
-     * @var string
-     */
-    public $charset;
+	/**
+	 * Description
+	 *
+	 * @var string
+	 */
+	public $description;
 
-    /**
-     * Boundary
-     *
-     * @var string
-     */
-    public $boundary;
+	/**
+	 * Character set
+	 *
+	 * @var string
+	 */
+	public $charset;
 
-    /**
-     * Location
-     *
-     * @var string
-     */
-    public $location;
+	/**
+	 * Boundary
+	 *
+	 * @var string
+	 */
+	public $boundary;
 
-    /**
-     * Language
-     *
-     * @var string
-     */
-    public $language;
+	/**
+	 * Location
+	 *
+	 * @var string
+	 */
+	public $location;
 
-    /**
-     * Content
-     *
-     * @var mixed
-     */
-    protected $_content;
+	/**
+	 * Language
+	 *
+	 * @var string
+	 */
+	public $language;
 
-    /**
-     * @var bool
-     */
-    protected $_isStream = false;
+	/**
+	 * Content
+	 *
+	 * @var mixed
+	 */
+	protected $_content;
 
-    /**
-     * create a new Mime Part.
-     * The (unencoded) content of the Part as passed
-     * as a string or stream
-     *
-     * @param mixed $content String or Stream containing the content
-     */
-    public function __construct($content)
-    {
-        $this->_content = $content;
-        if (is_resource($content)) {
-            $this->_isStream = true;
-        }
-    }
+	/**
+	 * @var bool
+	 */
+	protected $_isStream = false;
 
-    /**
-     * @todo setters/getters
-     * @todo error checking for setting $type
-     * @todo error checking for setting $encoding
-     */
+	/**
+	 * create a new Mime Part.
+	 * The (unencoded) content of the Part as passed
+	 * as a string or stream
+	 *
+	 * @param mixed $content String or Stream containing the content
+	 */
+	public function __construct( $content ) {
+		$this->_content = $content;
+		if ( is_resource( $content ) ) {
+			$this->_isStream = true;
+		}
+	}
 
-    /**
-     * check if this part can be read as a stream.
-     * if true, getEncodedStream can be called, otherwise
-     * only getContent can be used to fetch the encoded
-     * content of the part
-     *
-     * @return bool
-     */
-    public function isStream()
-    {
-        return $this->_isStream;
-    }
+	/**
+	 * @todo setters/getters
+	 * @todo error checking for setting $type
+	 * @todo error checking for setting $encoding
+	 */
 
-    /**
-     * if this was created with a stream, return a filtered stream for
-     * reading the content. very useful for large file attachments.
-     *
-     * @return mixed Stream
-     * @throws Postman_Zend_Mime_Exception if not a stream or unable to append filter
-     */
-    public function getEncodedStream()
-    {
-        if (!$this->_isStream) {
-            require_once 'Zend/Mime/Exception.php';
-            throw new Postman_Zend_Mime_Exception(
-                'Attempt to get a stream from a string part'
-            );
-        }
+	/**
+	 * check if this part can be read as a stream.
+	 * if true, getEncodedStream can be called, otherwise
+	 * only getContent can be used to fetch the encoded
+	 * content of the part
+	 *
+	 * @return bool
+	 */
+	public function isStream() {
+		return $this->_isStream;
+	}
 
-        //stream_filter_remove(); // ??? is that right?
-        switch ($this->encoding) {
-            case Postman_Zend_Mime::ENCODING_QUOTEDPRINTABLE:
-                $filter = stream_filter_append(
-                    $this->_content,
-                    'convert.quoted-printable-encode',
-                    STREAM_FILTER_READ,
-                    array(
-                        'line-length'      => 76,
-                        'line-break-chars' => Postman_Zend_Mime::LINEEND
-                    )
-                );
-                if (!is_resource($filter)) {
-                    require_once 'Zend/Mime/Exception.php';
-                    throw new Postman_Zend_Mime_Exception(
-                        'Failed to append quoted-printable filter'
-                    );
-                }
-                break;
+	/**
+	 * if this was created with a stream, return a filtered stream for
+	 * reading the content. very useful for large file attachments.
+	 *
+	 * @return mixed Stream
+	 * @throws Postman_Zend_Mime_Exception if not a stream or unable to append filter
+	 */
+	public function getEncodedStream() {
+		if ( ! $this->_isStream ) {
+			require_once 'Zend/Mime/Exception.php';
+			throw new Postman_Zend_Mime_Exception(
+				'Attempt to get a stream from a string part'
+			);
+		}
 
-            case Postman_Zend_Mime::ENCODING_BASE64:
-                $filter = stream_filter_append(
-                    $this->_content,
-                    'convert.base64-encode',
-                    STREAM_FILTER_READ,
-                    array(
-                        'line-length'      => 76,
-                        'line-break-chars' => Postman_Zend_Mime::LINEEND
-                    )
-                );
-                if (!is_resource($filter)) {
-                    require_once 'Zend/Mime/Exception.php';
-                    throw new Postman_Zend_Mime_Exception(
-                        'Failed to append base64 filter'
-                    );
-                }
-                break;
+		// stream_filter_remove(); // ??? is that right?
+		switch ( $this->encoding ) {
+			case Postman_Zend_Mime::ENCODING_QUOTEDPRINTABLE:
+				$filter = stream_filter_append(
+					$this->_content,
+					'convert.quoted-printable-encode',
+					STREAM_FILTER_READ,
+					array(
+						'line-length'      => 76,
+						'line-break-chars' => Postman_Zend_Mime::LINEEND,
+					)
+				);
+				if ( ! is_resource( $filter ) ) {
+					require_once 'Zend/Mime/Exception.php';
+					throw new Postman_Zend_Mime_Exception(
+						'Failed to append quoted-printable filter'
+					);
+				}
+				break;
 
-            default:
-        }
+			case Postman_Zend_Mime::ENCODING_BASE64:
+				$filter = stream_filter_append(
+					$this->_content,
+					'convert.base64-encode',
+					STREAM_FILTER_READ,
+					array(
+						'line-length'      => 76,
+						'line-break-chars' => Postman_Zend_Mime::LINEEND,
+					)
+				);
+				if ( ! is_resource( $filter ) ) {
+					require_once 'Zend/Mime/Exception.php';
+					throw new Postman_Zend_Mime_Exception(
+						'Failed to append base64 filter'
+					);
+				}
+				break;
 
-        return $this->_content;
-    }
+			default:
+		}
 
-    /**
-     * Get the Content of the current Mime Part in the given encoding.
-     *
-     * @param  string $EOL Line end; defaults to {@link Postman_Zend_Mime::LINEEND}
-     * @throws Postman_Zend_Mime_Exception
-     * @return string
-     */
-    public function getContent($EOL = Postman_Zend_Mime::LINEEND)
-    {
-        if ($this->_isStream) {
-            return stream_get_contents($this->getEncodedStream());
-        } else {
-            return Postman_Zend_Mime::encode($this->_content, $this->encoding, $EOL);
-        }
-    }
+		return $this->_content;
+	}
 
-    /**
-     * Get the RAW unencoded content from this part
-     *
-     * @return string
-     */
-    public function getRawContent()
-    {
-        if ($this->_isStream) {
-            return stream_get_contents($this->_content);
-        } else {
-            return $this->_content;
-        }
-    }
+	/**
+	 * Get the Content of the current Mime Part in the given encoding.
+	 *
+	 * @param  string $EOL Line end; defaults to {@link Postman_Zend_Mime::LINEEND}
+	 * @throws Postman_Zend_Mime_Exception
+	 * @return string
+	 */
+	public function getContent( $EOL = Postman_Zend_Mime::LINEEND ) {
+		if ( $this->_isStream ) {
+			return stream_get_contents( $this->getEncodedStream() );
+		} else {
+			return Postman_Zend_Mime::encode( $this->_content, $this->encoding, $EOL );
+		}
+	}
 
-    /**
-     * Create and return the array of headers for this MIME part
-     *
-     * @param  string $EOL Line end; defaults to {@link Postman_Zend_Mime::LINEEND}
-     * @return array
-     */
-    public function getHeadersArray($EOL = Postman_Zend_Mime::LINEEND)
-    {
-        $headers = array();
+	/**
+	 * Get the RAW unencoded content from this part
+	 *
+	 * @return string
+	 */
+	public function getRawContent() {
+		if ( $this->_isStream ) {
+			return stream_get_contents( $this->_content );
+		} else {
+			return $this->_content;
+		}
+	}
 
-        $contentType = $this->type;
-        if ($this->charset) {
-            $contentType .= '; charset=' . $this->charset;
-        }
+	/**
+	 * Create and return the array of headers for this MIME part
+	 *
+	 * @param  string $EOL Line end; defaults to {@link Postman_Zend_Mime::LINEEND}
+	 * @return array
+	 */
+	public function getHeadersArray( $EOL = Postman_Zend_Mime::LINEEND ) {
+		$headers = array();
 
-        if ($this->boundary) {
-            $contentType .= ';' . $EOL
-                            . " boundary=\"" . $this->boundary . '"';
-        }
+		$contentType = $this->type;
+		if ( $this->charset ) {
+			$contentType .= '; charset=' . $this->charset;
+		}
 
-        $headers[] = array(
-            'Content-Type',
-            $contentType
-        );
+		if ( $this->boundary ) {
+			$contentType .= ';' . $EOL
+							. ' boundary="' . $this->boundary . '"';
+		}
 
-        if ($this->encoding) {
-            $headers[] = array(
-                'Content-Transfer-Encoding',
-                $this->encoding
-            );
-        }
+		$headers[] = array(
+			'Content-Type',
+			$contentType,
+		);
 
-        if ($this->id) {
-            $headers[] = array(
-                'Content-ID',
-                '<' . $this->id . '>'
-            );
-        }
+		if ( $this->encoding ) {
+			$headers[] = array(
+				'Content-Transfer-Encoding',
+				$this->encoding,
+			);
+		}
 
-        if ($this->disposition) {
-            $disposition = $this->disposition;
-            if ($this->filename) {
-                $disposition .= '; filename="' . $this->filename . '"';
-            }
-            $headers[] = array(
-                'Content-Disposition',
-                $disposition
-            );
-        }
+		if ( $this->id ) {
+			$headers[] = array(
+				'Content-ID',
+				'<' . $this->id . '>',
+			);
+		}
 
-        if ($this->description) {
-            $headers[] = array(
-                'Content-Description',
-                $this->description
-            );
-        }
+		if ( $this->disposition ) {
+			$disposition = $this->disposition;
+			if ( $this->filename ) {
+				$disposition .= '; filename="' . $this->filename . '"';
+			}
+			$headers[] = array(
+				'Content-Disposition',
+				$disposition,
+			);
+		}
 
-        if ($this->location) {
-            $headers[] = array(
-                'Content-Location',
-                $this->location
-            );
-        }
+		if ( $this->description ) {
+			$headers[] = array(
+				'Content-Description',
+				$this->description,
+			);
+		}
 
-        if ($this->language) {
-            $headers[] = array(
-                'Content-Language',
-                $this->language
-            );
-        }
+		if ( $this->location ) {
+			$headers[] = array(
+				'Content-Location',
+				$this->location,
+			);
+		}
 
-        return $headers;
-    }
+		if ( $this->language ) {
+			$headers[] = array(
+				'Content-Language',
+				$this->language,
+			);
+		}
 
-    /**
-     * Return the headers for this part as a string
-     *
-     * @param  string $EOL Line end; defaults to {@link Postman_Zend_Mime::LINEEND}
-     * @return string
-     */
-    public function getHeaders($EOL = Postman_Zend_Mime::LINEEND)
-    {
-        $res = '';
-        foreach ($this->getHeadersArray($EOL) as $header) {
-            $res .= $header[0] . ': ' . $header[1] . $EOL;
-        }
+		return $headers;
+	}
 
-        return $res;
-    }
+	/**
+	 * Return the headers for this part as a string
+	 *
+	 * @param  string $EOL Line end; defaults to {@link Postman_Zend_Mime::LINEEND}
+	 * @return string
+	 */
+	public function getHeaders( $EOL = Postman_Zend_Mime::LINEEND ) {
+		$res = '';
+		foreach ( $this->getHeadersArray( $EOL ) as $header ) {
+			$res .= $header[0] . ': ' . $header[1] . $EOL;
+		}
+
+		return $res;
+	}
 }

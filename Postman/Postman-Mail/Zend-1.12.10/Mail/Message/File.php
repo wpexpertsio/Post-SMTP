@@ -36,61 +36,58 @@ require_once 'Zend/Mail/Message/Interface.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Mail_Message_File extends Postman_Zend_Mail_Part_File implements Postman_Zend_Mail_Message_Interface
-{
-    /**
-     * flags for this message
-     * @var array
-     */
-    protected $_flags = array();
+class Postman_Zend_Mail_Message_File extends Postman_Zend_Mail_Part_File implements Postman_Zend_Mail_Message_Interface {
 
-    /**
-     * Public constructor
-     *
-     * In addition to the parameters of Postman_Zend_Mail_Part::__construct() this constructor supports:
-     * - flags array with flags for message, keys are ignored, use constants defined in Postman_Zend_Mail_Storage
-     *
-     * @param  string $rawMessage  full message with or without headers
-     * @throws Postman_Zend_Mail_Exception
-     */
-    public function __construct(array $params)
-    {
-        if (!empty($params['flags'])) {
-            // set key and value to the same value for easy lookup
-            $this->_flags = array_combine($params['flags'], $params['flags']);
-        }
+	/**
+	 * flags for this message
+	 *
+	 * @var array
+	 */
+	protected $_flags = array();
 
-        parent::__construct($params);
-    }
+	/**
+	 * Public constructor
+	 *
+	 * In addition to the parameters of Postman_Zend_Mail_Part::__construct() this constructor supports:
+	 * - flags array with flags for message, keys are ignored, use constants defined in Postman_Zend_Mail_Storage
+	 *
+	 * @param  string $rawMessage  full message with or without headers
+	 * @throws Postman_Zend_Mail_Exception
+	 */
+	public function __construct( array $params ) {
+		if ( ! empty( $params['flags'] ) ) {
+			// set key and value to the same value for easy lookup
+			$this->_flags = array_combine( $params['flags'], $params['flags'] );
+		}
 
-    /**
-     * return toplines as found after headers
-     *
-     * @return string toplines
-     */
-    public function getTopLines()
-    {
-        return $this->_topLines;
-    }
+		parent::__construct( $params );
+	}
 
-    /**
-     * check if flag is set
-     *
-     * @param mixed $flag a flag name, use constants defined in Postman_Zend_Mail_Storage
-     * @return bool true if set, otherwise false
-     */
-    public function hasFlag($flag)
-    {
-        return isset($this->_flags[$flag]);
-    }
+	/**
+	 * return toplines as found after headers
+	 *
+	 * @return string toplines
+	 */
+	public function getTopLines() {
+		return $this->_topLines;
+	}
 
-    /**
-     * get all set flags
-     *
-     * @return array array with flags, key and value are the same for easy lookup
-     */
-    public function getFlags()
-    {
-        return $this->_flags;
-    }
+	/**
+	 * check if flag is set
+	 *
+	 * @param mixed $flag a flag name, use constants defined in Postman_Zend_Mail_Storage
+	 * @return bool true if set, otherwise false
+	 */
+	public function hasFlag( $flag ) {
+		return isset( $this->_flags[ $flag ] );
+	}
+
+	/**
+	 * get all set flags
+	 *
+	 * @return array array with flags, key and value are the same for easy lookup
+	 */
+	public function getFlags() {
+		return $this->_flags;
+	}
 }

@@ -35,193 +35,187 @@ require_once 'Zend/Loader.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Validate_Barcode extends Postman_Zend_Validate_Abstract
-{
-    const INVALID        = 'barcodeInvalid';
-    const FAILED         = 'barcodeFailed';
-    const INVALID_CHARS  = 'barcodeInvalidChars';
-    const INVALID_LENGTH = 'barcodeInvalidLength';
+class Postman_Zend_Validate_Barcode extends Postman_Zend_Validate_Abstract {
 
-    protected $_messageTemplates = array(
-        self::FAILED         => "'%value%' failed checksum validation",
-        self::INVALID_CHARS  => "'%value%' contains invalid characters",
-        self::INVALID_LENGTH => "'%value%' should have a length of %length% characters",
-        self::INVALID        => "Invalid type given. String expected",
-    );
+	const INVALID        = 'barcodeInvalid';
+	const FAILED         = 'barcodeFailed';
+	const INVALID_CHARS  = 'barcodeInvalidChars';
+	const INVALID_LENGTH = 'barcodeInvalidLength';
 
-    /**
-     * Additional variables available for validation failure messages
-     *
-     * @var array
-     */
-    protected $_messageVariables = array(
-        'length' => '_length'
-    );
+	protected $_messageTemplates = array(
+		self::FAILED         => "'%value%' failed checksum validation",
+		self::INVALID_CHARS  => "'%value%' contains invalid characters",
+		self::INVALID_LENGTH => "'%value%' should have a length of %length% characters",
+		self::INVALID        => 'Invalid type given. String expected',
+	);
 
-    /**
-     * Length for the set subtype
-     *
-     * @var integer
-     */
-    protected $_length;
+	/**
+	 * Additional variables available for validation failure messages
+	 *
+	 * @var array
+	 */
+	protected $_messageVariables = array(
+		'length' => '_length',
+	);
 
-    /**
-     * Barcode adapter
-     *
-     * @var Postman_Zend_Validate_Barcode_BarcodeAdapter
-     */
-    protected $_adapter;
+	/**
+	 * Length for the set subtype
+	 *
+	 * @var integer
+	 */
+	protected $_length;
 
-    /**
-     * Generates the standard validator object
-     *
-     * @param  string|Postman_Zend_Config|
-     *         Postman_Zend_Validate_Barcode_BarcodeAdapter $adapter Barcode adapter to use
-     * @throws Postman_Zend_Validate_Exception
-     */
-    public function __construct($adapter)
-    {
-        if ($adapter instanceof Postman_Zend_Config) {
-            $adapter = $adapter->toArray();
-        }
+	/**
+	 * Barcode adapter
+	 *
+	 * @var Postman_Zend_Validate_Barcode_BarcodeAdapter
+	 */
+	protected $_adapter;
 
-        $options  = null;
-        $checksum = null;
-        if (is_array($adapter)) {
-            if (array_key_exists('options', $adapter)) {
-                $options = $adapter['options'];
-            }
+	/**
+	 * Generates the standard validator object
+	 *
+	 * @param  string|Postman_Zend_Config|
+	 *         Postman_Zend_Validate_Barcode_BarcodeAdapter $adapter Barcode adapter to use
+	 * @throws Postman_Zend_Validate_Exception
+	 */
+	public function __construct( $adapter ) {
+		if ( $adapter instanceof Postman_Zend_Config ) {
+			$adapter = $adapter->toArray();
+		}
 
-            if (array_key_exists('checksum', $adapter)) {
-                $checksum = $adapter['checksum'];
-            }
+		$options  = null;
+		$checksum = null;
+		if ( is_array( $adapter ) ) {
+			if ( array_key_exists( 'options', $adapter ) ) {
+				$options = $adapter['options'];
+			}
 
-            if (array_key_exists('adapter', $adapter)) {
-                $adapter = $adapter['adapter'];
-            } else {
-                require_once 'Zend/Validate/Exception.php';
-                throw new Postman_Zend_Validate_Exception("Missing option 'adapter'");
-            }
-        }
+			if ( array_key_exists( 'checksum', $adapter ) ) {
+				$checksum = $adapter['checksum'];
+			}
 
-        $this->setAdapter($adapter, $options);
-        if ($checksum !== null) {
-            $this->setChecksum($checksum);
-        }
-    }
+			if ( array_key_exists( 'adapter', $adapter ) ) {
+				$adapter = $adapter['adapter'];
+			} else {
+				require_once 'Zend/Validate/Exception.php';
+				throw new Postman_Zend_Validate_Exception( "Missing option 'adapter'" );
+			}
+		}
 
-    /**
-     * Returns the set adapter
-     *
-     * @return Postman_Zend_Validate_Barcode_BarcodeAdapter
-     */
-    public function getAdapter()
-    {
-        return $this->_adapter;
-    }
+		$this->setAdapter( $adapter, $options );
+		if ( $checksum !== null ) {
+			$this->setChecksum( $checksum );
+		}
+	}
 
-    /**
-     * Sets a new barcode adapter
-     *
-     * @param  string|Postman_Zend_Validate_Barcode $adapter Barcode adapter to use
-     * @param  array  $options Options for this adapter
-     * @return $this
-     * @throws Postman_Zend_Validate_Exception
-     */
-    public function setAdapter($adapter, $options = null)
-    {
-        $adapter = ucfirst(strtolower($adapter));
-        require_once 'Zend/Loader.php';
-        if (Postman_Zend_Loader::isReadable('Zend/Validate/Barcode/' . $adapter. '.php')) {
-            $adapter = 'Postman_Zend_Validate_Barcode_' . $adapter;
-        }
+	/**
+	 * Returns the set adapter
+	 *
+	 * @return Postman_Zend_Validate_Barcode_BarcodeAdapter
+	 */
+	public function getAdapter() {
+		return $this->_adapter;
+	}
 
-        if (!class_exists($adapter)) {
-            Postman_Zend_Loader::loadClass($adapter);
-        }
+	/**
+	 * Sets a new barcode adapter
+	 *
+	 * @param  string|Postman_Zend_Validate_Barcode $adapter Barcode adapter to use
+	 * @param  array                                $options Options for this adapter
+	 * @return $this
+	 * @throws Postman_Zend_Validate_Exception
+	 */
+	public function setAdapter( $adapter, $options = null ) {
+		$adapter = ucfirst( strtolower( $adapter ) );
+		require_once 'Zend/Loader.php';
+		if ( Postman_Zend_Loader::isReadable( 'Zend/Validate/Barcode/' . $adapter . '.php' ) ) {
+			$adapter = 'Postman_Zend_Validate_Barcode_' . $adapter;
+		}
 
-        $this->_adapter = new $adapter($options);
-        if (!$this->_adapter instanceof Postman_Zend_Validate_Barcode_AdapterInterface) {
-            require_once 'Zend/Validate/Exception.php';
-            throw new Postman_Zend_Validate_Exception(
-                "Adapter " . $adapter . " does not implement Postman_Zend_Validate_Barcode_AdapterInterface"
-            );
-        }
+		if ( ! class_exists( $adapter ) ) {
+			Postman_Zend_Loader::loadClass( $adapter );
+		}
 
-        return $this;
-    }
+		$this->_adapter = new $adapter( $options );
+		if ( ! $this->_adapter instanceof Postman_Zend_Validate_Barcode_AdapterInterface ) {
+			require_once 'Zend/Validate/Exception.php';
+			throw new Postman_Zend_Validate_Exception(
+				'Adapter ' . $adapter . ' does not implement Postman_Zend_Validate_Barcode_AdapterInterface'
+			);
+		}
 
-    /**
-     * Returns the checksum option
-     *
-     * @return boolean
-     */
-    public function getChecksum()
-    {
-        return $this->getAdapter()->getCheck();
-    }
+		return $this;
+	}
 
-    /**
-     * Sets the checksum option
-     *
-     * @param  boolean $checksum
-     * @return Postman_Zend_Validate_Barcode
-     */
-    public function setChecksum($checksum)
-    {
-        $this->getAdapter()->setCheck($checksum);
-        return $this;
-    }
+	/**
+	 * Returns the checksum option
+	 *
+	 * @return boolean
+	 */
+	public function getChecksum() {
+		return $this->getAdapter()->getCheck();
+	}
 
-    /**
-     * Defined by Postman_Zend_Validate_Interface
-     *
-     * Returns true if and only if $value contains a valid barcode
-     *
-     * @param  string $value
-     * @return boolean
-     */
-    public function isValid($value)
-    {
-        if (!is_string($value)) {
-            $this->_error(self::INVALID);
-            return false;
-        }
+	/**
+	 * Sets the checksum option
+	 *
+	 * @param  boolean $checksum
+	 * @return Postman_Zend_Validate_Barcode
+	 */
+	public function setChecksum( $checksum ) {
+		$this->getAdapter()->setCheck( $checksum );
+		return $this;
+	}
 
-        $this->_setValue($value);
-        $adapter       = $this->getAdapter();
-        $this->_length = $adapter->getLength();
-        $result        = $adapter->checkLength($value);
-        if (!$result) {
-            if (is_array($this->_length)) {
-                $temp = $this->_length;
-                $this->_length = "";
-                foreach($temp as $length) {
-                    $this->_length .= "/";
-                    $this->_length .= $length;
-                }
+	/**
+	 * Defined by Postman_Zend_Validate_Interface
+	 *
+	 * Returns true if and only if $value contains a valid barcode
+	 *
+	 * @param  string $value
+	 * @return boolean
+	 */
+	public function isValid( $value ) {
+		if ( ! is_string( $value ) ) {
+			$this->_error( self::INVALID );
+			return false;
+		}
 
-                $this->_length = substr($this->_length, 1);
-            }
+		$this->_setValue( $value );
+		$adapter       = $this->getAdapter();
+		$this->_length = $adapter->getLength();
+		$result        = $adapter->checkLength( $value );
+		if ( ! $result ) {
+			if ( is_array( $this->_length ) ) {
+				$temp          = $this->_length;
+				$this->_length = '';
+				foreach ( $temp as $length ) {
+					$this->_length .= '/';
+					$this->_length .= $length;
+				}
 
-            $this->_error(self::INVALID_LENGTH);
-            return false;
-        }
+				$this->_length = substr( $this->_length, 1 );
+			}
 
-        $result = $adapter->checkChars($value);
-        if (!$result) {
-            $this->_error(self::INVALID_CHARS);
-            return false;
-        }
+			$this->_error( self::INVALID_LENGTH );
+			return false;
+		}
 
-        if ($this->getChecksum()) {
-            $result = $adapter->checksum($value);
-            if (!$result) {
-                $this->_error(self::FAILED);
-                return false;
-            }
-        }
+		$result = $adapter->checkChars( $value );
+		if ( ! $result ) {
+			$this->_error( self::INVALID_CHARS );
+			return false;
+		}
 
-        return true;
-    }
+		if ( $this->getChecksum() ) {
+			$result = $adapter->checksum( $value );
+			if ( ! $result ) {
+				$this->_error( self::FAILED );
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

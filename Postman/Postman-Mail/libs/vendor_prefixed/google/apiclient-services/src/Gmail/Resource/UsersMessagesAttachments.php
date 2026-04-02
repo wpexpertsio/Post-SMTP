@@ -26,24 +26,27 @@ use PostSMTP\Vendor\Google\Service\Gmail\MessagePartBody;
  *   $attachments = $gmailService->users_messages_attachments;
  *  </code>
  */
-class UsersMessagesAttachments extends \PostSMTP\Vendor\Google\Service\Resource
-{
-    /**
-     * Gets the specified message attachment. (attachments.get)
-     *
-     * @param string $userId The user's email address. The special value `me` can be
-     * used to indicate the authenticated user.
-     * @param string $messageId The ID of the message containing the attachment.
-     * @param string $id The ID of the attachment.
-     * @param array $optParams Optional parameters.
-     * @return MessagePartBody
-     */
-    public function get($userId, $messageId, $id, $optParams = [])
-    {
-        $params = ['userId' => $userId, 'messageId' => $messageId, 'id' => $id];
-        $params = \array_merge($params, $optParams);
-        return $this->call('get', [$params], \PostSMTP\Vendor\Google\Service\Gmail\MessagePartBody::class);
-    }
+class UsersMessagesAttachments extends \PostSMTP\Vendor\Google\Service\Resource {
+
+	/**
+	 * Gets the specified message attachment. (attachments.get)
+	 *
+	 * @param string $userId The user's email address. The special value `me` can be
+	 * used to indicate the authenticated user.
+	 * @param string $messageId The ID of the message containing the attachment.
+	 * @param string $id The ID of the attachment.
+	 * @param array  $optParams Optional parameters.
+	 * @return MessagePartBody
+	 */
+	public function get( $userId, $messageId, $id, $optParams = array() ) {
+		$params = array(
+			'userId'    => $userId,
+			'messageId' => $messageId,
+			'id'        => $id,
+		);
+		$params = \array_merge( $params, $optParams );
+		return $this->call( 'get', array( $params ), \PostSMTP\Vendor\Google\Service\Gmail\MessagePartBody::class );
+	}
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\Resource\UsersMessagesAttachments::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_Resource_UsersMessagesAttachments');
+\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\Resource\UsersMessagesAttachments::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_Resource_UsersMessagesAttachments' );

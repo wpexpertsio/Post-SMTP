@@ -30,93 +30,88 @@ require_once 'Zend/Validate/Abstract.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Validate_LessThan extends Postman_Zend_Validate_Abstract
-{
-    const NOT_LESS = 'notLessThan';
+class Postman_Zend_Validate_LessThan extends Postman_Zend_Validate_Abstract {
 
-    /**
-     * @var array
-     */
-    protected $_messageTemplates = array(
-        self::NOT_LESS => "'%value%' is not less than '%max%'"
-    );
+	const NOT_LESS = 'notLessThan';
 
-    /**
-     * @var array
-     */
-    protected $_messageVariables = array(
-        'max' => '_max'
-    );
+	/**
+	 * @var array
+	 */
+	protected $_messageTemplates = array(
+		self::NOT_LESS => "'%value%' is not less than '%max%'",
+	);
 
-    /**
-     * Maximum value
-     *
-     * @var mixed
-     */
-    protected $_max;
+	/**
+	 * @var array
+	 */
+	protected $_messageVariables = array(
+		'max' => '_max',
+	);
 
-    /**
-     * Sets validator options
-     *
-     * @param  mixed|Postman_Zend_Config $max
-     * @throws Postman_Zend_Validate_Exception
-     */
-    public function __construct($max)
-    {
-        if ($max instanceof Postman_Zend_Config) {
-            $max = $max->toArray();
-        }
+	/**
+	 * Maximum value
+	 *
+	 * @var mixed
+	 */
+	protected $_max;
 
-        if (is_array($max)) {
-            if (array_key_exists('max', $max)) {
-                $max = $max['max'];
-            } else {
-                require_once 'Zend/Validate/Exception.php';
-                throw new Postman_Zend_Validate_Exception("Missing option 'max'");
-            }
-        }
+	/**
+	 * Sets validator options
+	 *
+	 * @param  mixed|Postman_Zend_Config $max
+	 * @throws Postman_Zend_Validate_Exception
+	 */
+	public function __construct( $max ) {
+		if ( $max instanceof Postman_Zend_Config ) {
+			$max = $max->toArray();
+		}
 
-        $this->setMax($max);
-    }
+		if ( is_array( $max ) ) {
+			if ( array_key_exists( 'max', $max ) ) {
+				$max = $max['max'];
+			} else {
+				require_once 'Zend/Validate/Exception.php';
+				throw new Postman_Zend_Validate_Exception( "Missing option 'max'" );
+			}
+		}
 
-    /**
-     * Returns the max option
-     *
-     * @return mixed
-     */
-    public function getMax()
-    {
-        return $this->_max;
-    }
+		$this->setMax( $max );
+	}
 
-    /**
-     * Sets the max option
-     *
-     * @param  mixed $max
-     * @return Postman_Zend_Validate_LessThan Provides a fluent interface
-     */
-    public function setMax($max)
-    {
-        $this->_max = $max;
-        return $this;
-    }
+	/**
+	 * Returns the max option
+	 *
+	 * @return mixed
+	 */
+	public function getMax() {
+		return $this->_max;
+	}
 
-    /**
-     * Defined by Postman_Zend_Validate_Interface
-     *
-     * Returns true if and only if $value is less than max option
-     *
-     * @param  mixed $value
-     * @return boolean
-     */
-    public function isValid($value)
-    {
-        $this->_setValue($value);
-        if ($this->_max <= $value) {
-            $this->_error(self::NOT_LESS);
-            return false;
-        }
-        return true;
-    }
+	/**
+	 * Sets the max option
+	 *
+	 * @param  mixed $max
+	 * @return Postman_Zend_Validate_LessThan Provides a fluent interface
+	 */
+	public function setMax( $max ) {
+		$this->_max = $max;
+		return $this;
+	}
 
+	/**
+	 * Defined by Postman_Zend_Validate_Interface
+	 *
+	 * Returns true if and only if $value is less than max option
+	 *
+	 * @param  mixed $value
+	 * @return boolean
+	 */
+	public function isValid( $value ) {
+		$this->_setValue( $value );
+		if ( $this->_max <= $value ) {
+			$this->_error( self::NOT_LESS );
+			return false;
+		}
+		return true;
+	}
 }

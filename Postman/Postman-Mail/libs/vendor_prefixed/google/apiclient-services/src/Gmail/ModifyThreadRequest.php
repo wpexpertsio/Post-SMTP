@@ -17,45 +17,41 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class ModifyThreadRequest extends \PostSMTP\Vendor\Google\Collection
-{
-    protected $collection_key = 'removeLabelIds';
-    /**
-     * @var string[]
-     */
-    public $addLabelIds;
-    /**
-     * @var string[]
-     */
-    public $removeLabelIds;
-    /**
-     * @param string[]
-     */
-    public function setAddLabelIds($addLabelIds)
-    {
-        $this->addLabelIds = $addLabelIds;
-    }
-    /**
-     * @return string[]
-     */
-    public function getAddLabelIds()
-    {
-        return $this->addLabelIds;
-    }
-    /**
-     * @param string[]
-     */
-    public function setRemoveLabelIds($removeLabelIds)
-    {
-        $this->removeLabelIds = $removeLabelIds;
-    }
-    /**
-     * @return string[]
-     */
-    public function getRemoveLabelIds()
-    {
-        return $this->removeLabelIds;
-    }
+class ModifyThreadRequest extends \PostSMTP\Vendor\Google\Collection {
+
+	protected $collection_key = 'removeLabelIds';
+	/**
+	 * @var string[]
+	 */
+	public $addLabelIds;
+	/**
+	 * @var string[]
+	 */
+	public $removeLabelIds;
+	/**
+	 * @param string[]
+	 */
+	public function setAddLabelIds( $addLabelIds ) {
+		$this->addLabelIds = $addLabelIds;
+	}
+	/**
+	 * @return string[]
+	 */
+	public function getAddLabelIds() {
+		return $this->addLabelIds;
+	}
+	/**
+	 * @param string[]
+	 */
+	public function setRemoveLabelIds( $removeLabelIds ) {
+		$this->removeLabelIds = $removeLabelIds;
+	}
+	/**
+	 * @return string[]
+	 */
+	public function getRemoveLabelIds() {
+		return $this->removeLabelIds;
+	}
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\ModifyThreadRequest::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ModifyThreadRequest');
+\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\ModifyThreadRequest::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_ModifyThreadRequest' );

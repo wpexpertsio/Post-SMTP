@@ -17,33 +17,31 @@ use PostSMTP\Vendor\Psr\Log\LoggerInterface;
  *
  * @author Michael Moussa <michael.moussa@gmail.com>
  */
-class PsrHandler extends \PostSMTP\Vendor\Monolog\Handler\AbstractHandler
-{
-    /**
-     * PSR-3 compliant logger
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
-    /**
-     * @param LoggerInterface $logger The underlying PSR-3 compliant logger to which messages will be proxied
-     * @param int             $level  The minimum logging level at which this handler will be triggered
-     * @param bool            $bubble Whether the messages that are handled can bubble up the stack or not
-     */
-    public function __construct(\PostSMTP\Vendor\Psr\Log\LoggerInterface $logger, $level = \PostSMTP\Vendor\Monolog\Logger::DEBUG, $bubble = \true)
-    {
-        parent::__construct($level, $bubble);
-        $this->logger = $logger;
-    }
-    /**
-     * {@inheritDoc}
-     */
-    public function handle(array $record)
-    {
-        if (!$this->isHandling($record)) {
-            return \false;
-        }
-        $this->logger->log(\strtolower($record['level_name']), $record['message'], $record['context']);
-        return \false === $this->bubble;
-    }
+class PsrHandler extends \PostSMTP\Vendor\Monolog\Handler\AbstractHandler {
+
+	/**
+	 * PSR-3 compliant logger
+	 *
+	 * @var LoggerInterface
+	 */
+	protected $logger;
+	/**
+	 * @param LoggerInterface $logger The underlying PSR-3 compliant logger to which messages will be proxied
+	 * @param int             $level  The minimum logging level at which this handler will be triggered
+	 * @param bool            $bubble Whether the messages that are handled can bubble up the stack or not
+	 */
+	public function __construct( \PostSMTP\Vendor\Psr\Log\LoggerInterface $logger, $level = \PostSMTP\Vendor\Monolog\Logger::DEBUG, $bubble = \true ) {
+		parent::__construct( $level, $bubble );
+		$this->logger = $logger;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	public function handle( array $record ) {
+		if ( ! $this->isHandling( $record ) ) {
+			return \false;
+		}
+		$this->logger->log( \strtolower( $record['level_name'] ), $record['message'], $record['context'] );
+		return \false === $this->bubble;
+	}
 }

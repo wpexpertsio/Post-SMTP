@@ -6,4 +6,4 @@ require_once 'lib/error_polyfill.php';
 require_once 'other/ide_stubs/libsodium.php';
 require_once 'lib/random.php';
 
-$int = random_int(0, 65536);
+$int = random_int( 0, 65536 );

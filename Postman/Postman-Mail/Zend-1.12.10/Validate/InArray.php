@@ -30,175 +30,165 @@ require_once 'Zend/Validate/Abstract.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Validate_InArray extends Postman_Zend_Validate_Abstract
-{
-    const NOT_IN_ARRAY = 'notInArray';
+class Postman_Zend_Validate_InArray extends Postman_Zend_Validate_Abstract {
 
-    /**
-     * @var array
-     */
-    protected $_messageTemplates = array(
-        self::NOT_IN_ARRAY => "'%value%' was not found in the haystack",
-    );
+	const NOT_IN_ARRAY = 'notInArray';
 
-    /**
-     * Haystack of possible values
-     *
-     * @var array
-     */
-    protected $_haystack;
+	/**
+	 * @var array
+	 */
+	protected $_messageTemplates = array(
+		self::NOT_IN_ARRAY => "'%value%' was not found in the haystack",
+	);
 
-    /**
-     * Whether a strict in_array() invocation is used
-     *
-     * @var boolean
-     */
-    protected $_strict = false;
+	/**
+	 * Haystack of possible values
+	 *
+	 * @var array
+	 */
+	protected $_haystack;
 
-    /**
-     * Whether a recursive search should be done
-     *
-     * @var boolean
-     */
-    protected $_recursive = false;
+	/**
+	 * Whether a strict in_array() invocation is used
+	 *
+	 * @var boolean
+	 */
+	protected $_strict = false;
 
-    /**
-     * Sets validator options
-     *
-     * @param array|Postman_Zend_Config $options Validator options
-     * @throws Postman_Zend_Validate_Exception
-     */
-    public function __construct($options)
-    {
-        if ($options instanceof Postman_Zend_Config) {
-            $options = $options->toArray();
-        } else if (!is_array($options)) {
-            require_once 'Zend/Validate/Exception.php';
-            throw new Postman_Zend_Validate_Exception('Array expected as parameter');
-        } else {
-            $count = func_num_args();
-            $temp  = array();
-            if ($count > 1) {
-                $temp['haystack'] = func_get_arg(0);
-                $temp['strict']   = func_get_arg(1);
-                $options = $temp;
-            } else {
-                $temp = func_get_arg(0);
-                if (!array_key_exists('haystack', $options)) {
-                    $options = array();
-                    $options['haystack'] = $temp;
-                } else {
-                    $options = $temp;
-                }
-            }
-        }
+	/**
+	 * Whether a recursive search should be done
+	 *
+	 * @var boolean
+	 */
+	protected $_recursive = false;
 
-        $this->setHaystack($options['haystack']);
-        if (array_key_exists('strict', $options)) {
-            $this->setStrict($options['strict']);
-        }
+	/**
+	 * Sets validator options
+	 *
+	 * @param array|Postman_Zend_Config $options Validator options
+	 * @throws Postman_Zend_Validate_Exception
+	 */
+	public function __construct( $options ) {
+		if ( $options instanceof Postman_Zend_Config ) {
+			$options = $options->toArray();
+		} elseif ( ! is_array( $options ) ) {
+			require_once 'Zend/Validate/Exception.php';
+			throw new Postman_Zend_Validate_Exception( 'Array expected as parameter' );
+		} else {
+			$count = func_num_args();
+			$temp  = array();
+			if ( $count > 1 ) {
+				$temp['haystack'] = func_get_arg( 0 );
+				$temp['strict']   = func_get_arg( 1 );
+				$options          = $temp;
+			} else {
+				$temp = func_get_arg( 0 );
+				if ( ! array_key_exists( 'haystack', $options ) ) {
+					$options             = array();
+					$options['haystack'] = $temp;
+				} else {
+					$options = $temp;
+				}
+			}
+		}
 
-        if (array_key_exists('recursive', $options)) {
-            $this->setRecursive($options['recursive']);
-        }
-    }
+		$this->setHaystack( $options['haystack'] );
+		if ( array_key_exists( 'strict', $options ) ) {
+			$this->setStrict( $options['strict'] );
+		}
 
-    /**
-     * Returns the haystack option
-     *
-     * @return mixed
-     */
-    public function getHaystack()
-    {
-        return $this->_haystack;
-    }
+		if ( array_key_exists( 'recursive', $options ) ) {
+			$this->setRecursive( $options['recursive'] );
+		}
+	}
 
-    /**
-     * Sets the haystack option
-     *
-     * @param  mixed $haystack
-     * @return Postman_Zend_Validate_InArray Provides a fluent interface
-     */
-    public function setHaystack(array $haystack)
-    {
-        $this->_haystack = $haystack;
-        return $this;
-    }
+	/**
+	 * Returns the haystack option
+	 *
+	 * @return mixed
+	 */
+	public function getHaystack() {
+		return $this->_haystack;
+	}
 
-    /**
-     * Returns the strict option
-     *
-     * @return boolean
-     */
-    public function getStrict()
-    {
-        return $this->_strict;
-    }
+	/**
+	 * Sets the haystack option
+	 *
+	 * @param  mixed $haystack
+	 * @return Postman_Zend_Validate_InArray Provides a fluent interface
+	 */
+	public function setHaystack( array $haystack ) {
+		$this->_haystack = $haystack;
+		return $this;
+	}
 
-    /**
-     * Sets the strict option
-     *
-     * @param  boolean $strict
-     * @return Postman_Zend_Validate_InArray Provides a fluent interface
-     */
-    public function setStrict($strict)
-    {
-        $this->_strict = (boolean) $strict;
-        return $this;
-    }
+	/**
+	 * Returns the strict option
+	 *
+	 * @return boolean
+	 */
+	public function getStrict() {
+		return $this->_strict;
+	}
 
-    /**
-     * Returns the recursive option
-     *
-     * @return boolean
-     */
-    public function getRecursive()
-    {
-        return $this->_recursive;
-    }
+	/**
+	 * Sets the strict option
+	 *
+	 * @param  boolean $strict
+	 * @return Postman_Zend_Validate_InArray Provides a fluent interface
+	 */
+	public function setStrict( $strict ) {
+		$this->_strict = (bool) $strict;
+		return $this;
+	}
 
-    /**
-     * Sets the recursive option
-     *
-     * @param  boolean $recursive
-     * @return Postman_Zend_Validate_InArray Provides a fluent interface
-     */
-    public function setRecursive($recursive)
-    {
-        $this->_recursive = (boolean) $recursive;
-        return $this;
-    }
+	/**
+	 * Returns the recursive option
+	 *
+	 * @return boolean
+	 */
+	public function getRecursive() {
+		return $this->_recursive;
+	}
 
-    /**
-     * Defined by Postman_Zend_Validate_Interface
-     *
-     * Returns true if and only if $value is contained in the haystack option. If the strict
-     * option is true, then the type of $value is also checked.
-     *
-     * @param  mixed $value
-     * @return boolean
-     */
-    public function isValid($value)
-    {
-        $this->_setValue($value);
-        if ($this->getRecursive()) {
-            $iterator = new RecursiveIteratorIterator(new RecursiveArrayIterator($this->_haystack));
-            foreach($iterator as $element) {
-                if ($this->_strict) {
-                    if ($element === $value) {
-                        return true;
-                    }
-                } else if ($element == $value) {
-                    return true;
-                }
-            }
-        } else {
-            if (in_array($value, $this->_haystack, $this->_strict)) {
-                return true;
-            }
-        }
+	/**
+	 * Sets the recursive option
+	 *
+	 * @param  boolean $recursive
+	 * @return Postman_Zend_Validate_InArray Provides a fluent interface
+	 */
+	public function setRecursive( $recursive ) {
+		$this->_recursive = (bool) $recursive;
+		return $this;
+	}
 
-        $this->_error(self::NOT_IN_ARRAY);
-        return false;
-    }
+	/**
+	 * Defined by Postman_Zend_Validate_Interface
+	 *
+	 * Returns true if and only if $value is contained in the haystack option. If the strict
+	 * option is true, then the type of $value is also checked.
+	 *
+	 * @param  mixed $value
+	 * @return boolean
+	 */
+	public function isValid( $value ) {
+		$this->_setValue( $value );
+		if ( $this->getRecursive() ) {
+			$iterator = new RecursiveIteratorIterator( new RecursiveArrayIterator( $this->_haystack ) );
+			foreach ( $iterator as $element ) {
+				if ( $this->_strict ) {
+					if ( $element === $value ) {
+						return true;
+					}
+				} elseif ( $element == $value ) {
+					return true;
+				}
+			}
+		} elseif ( in_array( $value, $this->_haystack, $this->_strict ) ) {
+				return true;
+		}
+
+		$this->_error( self::NOT_IN_ARRAY );
+		return false;
+	}
 }

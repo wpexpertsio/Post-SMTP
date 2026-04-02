@@ -30,229 +30,227 @@ require_once 'Zend/Validate/Abstract.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Validate_Date extends Postman_Zend_Validate_Abstract
-{
-    const INVALID        = 'dateInvalid';
-    const INVALID_DATE   = 'dateInvalidDate';
-    const FALSEFORMAT    = 'dateFalseFormat';
+class Postman_Zend_Validate_Date extends Postman_Zend_Validate_Abstract {
 
-    /**
-     * Validation failure message template definitions
-     *
-     * @var array
-     */
-    protected $_messageTemplates = array(
-        self::INVALID        => "Invalid type given. String, integer, array or Postman_Zend_Date expected",
-        self::INVALID_DATE   => "'%value%' does not appear to be a valid date",
-        self::FALSEFORMAT    => "'%value%' does not fit the date format '%format%'",
-    );
+	const INVALID      = 'dateInvalid';
+	const INVALID_DATE = 'dateInvalidDate';
+	const FALSEFORMAT  = 'dateFalseFormat';
 
-    /**
-     * @var array
-     */
-    protected $_messageVariables = array(
-        'format'  => '_format'
-    );
+	/**
+	 * Validation failure message template definitions
+	 *
+	 * @var array
+	 */
+	protected $_messageTemplates = array(
+		self::INVALID      => 'Invalid type given. String, integer, array or Postman_Zend_Date expected',
+		self::INVALID_DATE => "'%value%' does not appear to be a valid date",
+		self::FALSEFORMAT  => "'%value%' does not fit the date format '%format%'",
+	);
 
-    /**
-     * Optional format
-     *
-     * @var string|null
-     */
-    protected $_format;
+	/**
+	 * @var array
+	 */
+	protected $_messageVariables = array(
+		'format' => '_format',
+	);
 
-    /**
-     * Optional locale
-     *
-     * @var string|Postman_Zend_Locale|null
-     */
-    protected $_locale;
+	/**
+	 * Optional format
+	 *
+	 * @var string|null
+	 */
+	protected $_format;
 
-    /**
-     * Sets validator options
-     *
-     * @param string|array|Postman_Zend_Config $options OPTIONAL
-     */
-    public function __construct($options = array())
-    {
-        if ($options instanceof Postman_Zend_Config) {
-            $options = $options->toArray();
-        } else if (!is_array($options)) {
-            $options = func_get_args();
-            $temp['format'] = array_shift($options);
-            if (!empty($options)) {
-                $temp['locale'] = array_shift($options);
-            }
+	/**
+	 * Optional locale
+	 *
+	 * @var string|Postman_Zend_Locale|null
+	 */
+	protected $_locale;
 
-            $options = $temp;
-        }
+	/**
+	 * Sets validator options
+	 *
+	 * @param string|array|Postman_Zend_Config $options OPTIONAL
+	 */
+	public function __construct( $options = array() ) {
+		if ( $options instanceof Postman_Zend_Config ) {
+			$options = $options->toArray();
+		} elseif ( ! is_array( $options ) ) {
+			$options        = func_get_args();
+			$temp['format'] = array_shift( $options );
+			if ( ! empty( $options ) ) {
+				$temp['locale'] = array_shift( $options );
+			}
 
-        if (array_key_exists('format', $options)) {
-            $this->setFormat($options['format']);
-        }
+			$options = $temp;
+		}
 
-        if (!array_key_exists('locale', $options)) {
-            require_once 'Zend/Registry.php';
-            if (Postman_Zend_Registry::isRegistered('Postman_Zend_Locale')) {
-                $options['locale'] = Postman_Zend_Registry::get('Postman_Zend_Locale');
-            }
-        }
+		if ( array_key_exists( 'format', $options ) ) {
+			$this->setFormat( $options['format'] );
+		}
 
-        if (array_key_exists('locale', $options)) {
-            $this->setLocale($options['locale']);
-        }
-    }
+		if ( ! array_key_exists( 'locale', $options ) ) {
+			require_once 'Zend/Registry.php';
+			if ( Postman_Zend_Registry::isRegistered( 'Postman_Zend_Locale' ) ) {
+				$options['locale'] = Postman_Zend_Registry::get( 'Postman_Zend_Locale' );
+			}
+		}
 
-    /**
-     * Returns the locale option
-     *
-     * @return string|Postman_Zend_Locale|null
-     */
-    public function getLocale()
-    {
-        return $this->_locale;
-    }
+		if ( array_key_exists( 'locale', $options ) ) {
+			$this->setLocale( $options['locale'] );
+		}
+	}
 
-    /**
-     * Sets the locale option
-     *
-     * @param  string|Postman_Zend_Locale $locale
-     * @return Postman_Zend_Validate_Date provides a fluent interface
-     */
-    public function setLocale($locale = null)
-    {
-        require_once 'Zend/Locale.php';
-        $this->_locale = Postman_Zend_Locale::findLocale($locale);
-        return $this;
-    }
+	/**
+	 * Returns the locale option
+	 *
+	 * @return string|Postman_Zend_Locale|null
+	 */
+	public function getLocale() {
+		return $this->_locale;
+	}
 
-    /**
-     * Returns the locale option
-     *
-     * @return string|null
-     */
-    public function getFormat()
-    {
-        return $this->_format;
-    }
+	/**
+	 * Sets the locale option
+	 *
+	 * @param  string|Postman_Zend_Locale $locale
+	 * @return Postman_Zend_Validate_Date provides a fluent interface
+	 */
+	public function setLocale( $locale = null ) {
+		require_once 'Zend/Locale.php';
+		$this->_locale = Postman_Zend_Locale::findLocale( $locale );
+		return $this;
+	}
 
-    /**
-     * Sets the format option
-     *
-     * @param  string $format
-     * @return Postman_Zend_Validate_Date provides a fluent interface
-     */
-    public function setFormat($format = null)
-    {
-        $this->_format = $format;
-        return $this;
-    }
+	/**
+	 * Returns the locale option
+	 *
+	 * @return string|null
+	 */
+	public function getFormat() {
+		return $this->_format;
+	}
 
-    /**
-     * Defined by Postman_Zend_Validate_Interface
-     *
-     * Returns true if $value is a valid date of the format YYYY-MM-DD
-     * If optional $format or $locale is set the date format is checked
-     * according to Postman_Zend_Date, see Postman_Zend_Date::isDate()
-     *
-     * @param  string|array|Postman_Zend_Date $value
-     * @return boolean
-     */
-    public function isValid($value)
-    {
-        if (!is_string($value) && !is_int($value) && !is_float($value) &&
-            !is_array($value) && !($value instanceof Postman_Zend_Date)) {
-            $this->_error(self::INVALID);
-            return false;
-        }
+	/**
+	 * Sets the format option
+	 *
+	 * @param  string $format
+	 * @return Postman_Zend_Validate_Date provides a fluent interface
+	 */
+	public function setFormat( $format = null ) {
+		$this->_format = $format;
+		return $this;
+	}
 
-        $this->_setValue($value);
+	/**
+	 * Defined by Postman_Zend_Validate_Interface
+	 *
+	 * Returns true if $value is a valid date of the format YYYY-MM-DD
+	 * If optional $format or $locale is set the date format is checked
+	 * according to Postman_Zend_Date, see Postman_Zend_Date::isDate()
+	 *
+	 * @param  string|array|Postman_Zend_Date $value
+	 * @return boolean
+	 */
+	public function isValid( $value ) {
+		if ( ! is_string( $value ) && ! is_int( $value ) && ! is_float( $value ) &&
+			! is_array( $value ) && ! ( $value instanceof Postman_Zend_Date ) ) {
+			$this->_error( self::INVALID );
+			return false;
+		}
 
-        if (($this->_format !== null) || ($this->_locale !== null) || is_array($value) ||
-             $value instanceof Postman_Zend_Date) {
-            require_once 'Zend/Date.php';
-            if (!Postman_Zend_Date::isDate($value, $this->_format, $this->_locale)) {
-                if ($this->_checkFormat($value) === false) {
-                    $this->_error(self::FALSEFORMAT);
-                } else {
-                    $this->_error(self::INVALID_DATE);
-                }
-                return false;
-            }
-        } else {
-            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
-                $this->_format = 'yyyy-MM-dd';
-                $this->_error(self::FALSEFORMAT);
-                $this->_format = null;
-                return false;
-            }
+		$this->_setValue( $value );
 
-            list($year, $month, $day) = sscanf($value, '%d-%d-%d');
+		if ( ( $this->_format !== null ) || ( $this->_locale !== null ) || is_array( $value ) ||
+			$value instanceof Postman_Zend_Date ) {
+			require_once 'Zend/Date.php';
+			if ( ! Postman_Zend_Date::isDate( $value, $this->_format, $this->_locale ) ) {
+				if ( $this->_checkFormat( $value ) === false ) {
+					$this->_error( self::FALSEFORMAT );
+				} else {
+					$this->_error( self::INVALID_DATE );
+				}
+				return false;
+			}
+		} else {
+			if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $value ) ) {
+				$this->_format = 'yyyy-MM-dd';
+				$this->_error( self::FALSEFORMAT );
+				$this->_format = null;
+				return false;
+			}
 
-            if (!checkdate($month, $day, $year)) {
-                $this->_error(self::INVALID_DATE);
-                return false;
-            }
-        }
+			list($year, $month, $day) = sscanf( $value, '%d-%d-%d' );
 
-        return true;
-    }
+			if ( ! checkdate( $month, $day, $year ) ) {
+				$this->_error( self::INVALID_DATE );
+				return false;
+			}
+		}
 
-    /**
-     * Check if the given date fits the given format
-     *
-     * @param  string $value  Date to check
-     * @return boolean False when date does not fit the format
-     */
-    private function _checkFormat($value)
-    {
-        try {
-            require_once 'Zend/Locale/Format.php';
-            $parsed = Postman_Zend_Locale_Format::getDate($value, array(
-                                                  'date_format' => $this->_format, 'format_type' => 'iso',
-                                                  'fix_date' => false));
-            if (isset($parsed['year']) and ((strpos(strtoupper($this->_format), 'YY') !== false) and
-                (strpos(strtoupper($this->_format), 'YYYY') === false))) {
-                $parsed['year'] = Postman_Zend_Date::getFullYear($parsed['year']);
-            }
-        } catch (Exception $e) {
-            // Date can not be parsed
-            return false;
-        }
+		return true;
+	}
 
-        if (((strpos($this->_format, 'Y') !== false) or (strpos($this->_format, 'y') !== false)) and
-            (!isset($parsed['year']))) {
-            // Year expected but not found
-            return false;
-        }
+	/**
+	 * Check if the given date fits the given format
+	 *
+	 * @param  string $value  Date to check
+	 * @return boolean False when date does not fit the format
+	 */
+	private function _checkFormat( $value ) {
+		try {
+			require_once 'Zend/Locale/Format.php';
+			$parsed = Postman_Zend_Locale_Format::getDate(
+				$value,
+				array(
+					'date_format' => $this->_format,
+					'format_type' => 'iso',
+					'fix_date'    => false,
+				)
+			);
+			if ( isset( $parsed['year'] ) and ( ( strpos( strtoupper( $this->_format ), 'YY' ) !== false ) and
+				( strpos( strtoupper( $this->_format ), 'YYYY' ) === false ) ) ) {
+				$parsed['year'] = Postman_Zend_Date::getFullYear( $parsed['year'] );
+			}
+		} catch ( Exception $e ) {
+			// Date can not be parsed
+			return false;
+		}
 
-        if ((strpos($this->_format, 'M') !== false) and (!isset($parsed['month']))) {
-            // Month expected but not found
-            return false;
-        }
+		if ( ( ( strpos( $this->_format, 'Y' ) !== false ) or ( strpos( $this->_format, 'y' ) !== false ) ) and
+			( ! isset( $parsed['year'] ) ) ) {
+			// Year expected but not found
+			return false;
+		}
 
-        if ((strpos($this->_format, 'd') !== false) and (!isset($parsed['day']))) {
-            // Day expected but not found
-            return false;
-        }
+		if ( ( strpos( $this->_format, 'M' ) !== false ) and ( ! isset( $parsed['month'] ) ) ) {
+			// Month expected but not found
+			return false;
+		}
 
-        if (((strpos($this->_format, 'H') !== false) or (strpos($this->_format, 'h') !== false)) and
-            (!isset($parsed['hour']))) {
-            // Hour expected but not found
-            return false;
-        }
+		if ( ( strpos( $this->_format, 'd' ) !== false ) and ( ! isset( $parsed['day'] ) ) ) {
+			// Day expected but not found
+			return false;
+		}
 
-        if ((strpos($this->_format, 'm') !== false) and (!isset($parsed['minute']))) {
-            // Minute expected but not found
-            return false;
-        }
+		if ( ( ( strpos( $this->_format, 'H' ) !== false ) or ( strpos( $this->_format, 'h' ) !== false ) ) and
+			( ! isset( $parsed['hour'] ) ) ) {
+			// Hour expected but not found
+			return false;
+		}
 
-        if ((strpos($this->_format, 's') !== false) and (!isset($parsed['second']))) {
-            // Second expected  but not found
-            return false;
-        }
+		if ( ( strpos( $this->_format, 'm' ) !== false ) and ( ! isset( $parsed['minute'] ) ) ) {
+			// Minute expected but not found
+			return false;
+		}
 
-        // Date fits the format
-        return true;
-    }
+		if ( ( strpos( $this->_format, 's' ) !== false ) and ( ! isset( $parsed['second'] ) ) ) {
+			// Second expected  but not found
+			return false;
+		}
+
+		// Date fits the format
+		return true;
+	}
 }

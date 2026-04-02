@@ -29,79 +29,92 @@ use PostSMTP\Vendor\Monolog\Logger;
  *
  * @author Paul Statezny <paulstatezny@gmail.com>
  */
-class RollbarHandler extends \PostSMTP\Vendor\Monolog\Handler\AbstractProcessingHandler
-{
-    /**
-     * Rollbar notifier
-     *
-     * @var RollbarNotifier
-     */
-    protected $rollbarNotifier;
-    protected $levelMap = array(\PostSMTP\Vendor\Monolog\Logger::DEBUG => 'debug', \PostSMTP\Vendor\Monolog\Logger::INFO => 'info', \PostSMTP\Vendor\Monolog\Logger::NOTICE => 'info', \PostSMTP\Vendor\Monolog\Logger::WARNING => 'warning', \PostSMTP\Vendor\Monolog\Logger::ERROR => 'error', \PostSMTP\Vendor\Monolog\Logger::CRITICAL => 'critical', \PostSMTP\Vendor\Monolog\Logger::ALERT => 'critical', \PostSMTP\Vendor\Monolog\Logger::EMERGENCY => 'critical');
-    /**
-     * Records whether any log records have been added since the last flush of the rollbar notifier
-     *
-     * @var bool
-     */
-    private $hasRecords = \false;
-    protected $initialized = \false;
-    /**
-     * @param RollbarNotifier $rollbarNotifier RollbarNotifier object constructed with valid token
-     * @param int             $level           The minimum logging level at which this handler will be triggered
-     * @param bool            $bubble          Whether the messages that are handled can bubble up the stack or not
-     */
-    public function __construct(\PostSMTP\Vendor\RollbarNotifier $rollbarNotifier, $level = \PostSMTP\Vendor\Monolog\Logger::ERROR, $bubble = \true)
-    {
-        $this->rollbarNotifier = $rollbarNotifier;
-        parent::__construct($level, $bubble);
-    }
-    /**
-     * {@inheritdoc}
-     */
-    protected function write(array $record)
-    {
-        if (!$this->initialized) {
-            // __destructor() doesn't get called on Fatal errors
-            \register_shutdown_function(array($this, 'close'));
-            $this->initialized = \true;
-        }
-        $context = $record['context'];
-        $payload = array();
-        if (isset($context['payload'])) {
-            $payload = $context['payload'];
-            unset($context['payload']);
-        }
-        $context = \array_merge($context, $record['extra'], array('level' => $this->levelMap[$record['level']], 'monolog_level' => $record['level_name'], 'channel' => $record['channel'], 'datetime' => $record['datetime']->format('U')));
-        if (isset($context['exception']) && $context['exception'] instanceof \Exception) {
-            $payload['level'] = $context['level'];
-            $exception = $context['exception'];
-            unset($context['exception']);
-            $this->rollbarNotifier->report_exception($exception, $context, $payload);
-        } else {
-            $this->rollbarNotifier->report_message($record['message'], $context['level'], $context, $payload);
-        }
-        $this->hasRecords = \true;
-    }
-    public function flush()
-    {
-        if ($this->hasRecords) {
-            $this->rollbarNotifier->flush();
-            $this->hasRecords = \false;
-        }
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function close()
-    {
-        $this->flush();
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function reset()
-    {
-        $this->flush();
-        parent::reset();
-    }
+class RollbarHandler extends \PostSMTP\Vendor\Monolog\Handler\AbstractProcessingHandler {
+
+	/**
+	 * Rollbar notifier
+	 *
+	 * @var RollbarNotifier
+	 */
+	protected $rollbarNotifier;
+	protected $levelMap = array(
+		\PostSMTP\Vendor\Monolog\Logger::DEBUG     => 'debug',
+		\PostSMTP\Vendor\Monolog\Logger::INFO      => 'info',
+		\PostSMTP\Vendor\Monolog\Logger::NOTICE    => 'info',
+		\PostSMTP\Vendor\Monolog\Logger::WARNING   => 'warning',
+		\PostSMTP\Vendor\Monolog\Logger::ERROR     => 'error',
+		\PostSMTP\Vendor\Monolog\Logger::CRITICAL  => 'critical',
+		\PostSMTP\Vendor\Monolog\Logger::ALERT     => 'critical',
+		\PostSMTP\Vendor\Monolog\Logger::EMERGENCY => 'critical',
+	);
+	/**
+	 * Records whether any log records have been added since the last flush of the rollbar notifier
+	 *
+	 * @var bool
+	 */
+	private $hasRecords    = \false;
+	protected $initialized = \false;
+	/**
+	 * @param RollbarNotifier $rollbarNotifier RollbarNotifier object constructed with valid token
+	 * @param int             $level           The minimum logging level at which this handler will be triggered
+	 * @param bool            $bubble          Whether the messages that are handled can bubble up the stack or not
+	 */
+	public function __construct( \PostSMTP\Vendor\RollbarNotifier $rollbarNotifier, $level = \PostSMTP\Vendor\Monolog\Logger::ERROR, $bubble = \true ) {
+		$this->rollbarNotifier = $rollbarNotifier;
+		parent::__construct( $level, $bubble );
+	}
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function write( array $record ) {
+		if ( ! $this->initialized ) {
+			// __destructor() doesn't get called on Fatal errors
+			\register_shutdown_function( array( $this, 'close' ) );
+			$this->initialized = \true;
+		}
+		$context = $record['context'];
+		$payload = array();
+		if ( isset( $context['payload'] ) ) {
+			$payload = $context['payload'];
+			unset( $context['payload'] );
+		}
+		$context = \array_merge(
+			$context,
+			$record['extra'],
+			array(
+				'level'         => $this->levelMap[ $record['level'] ],
+				'monolog_level' => $record['level_name'],
+				'channel'       => $record['channel'],
+				'datetime'      => $record['datetime']->format( 'U' ),
+			)
+		);
+		if ( isset( $context['exception'] ) && $context['exception'] instanceof \Exception ) {
+			$payload['level'] = $context['level'];
+			$exception        = $context['exception'];
+			unset( $context['exception'] );
+			$this->rollbarNotifier->report_exception( $exception, $context, $payload );
+		} else {
+			$this->rollbarNotifier->report_message( $record['message'], $context['level'], $context, $payload );
+		}
+		$this->hasRecords = \true;
+	}
+	public function flush() {
+		if ( $this->hasRecords ) {
+			$this->rollbarNotifier->flush();
+			$this->hasRecords = \false;
+		}
+	}
+	/**
+	 * {@inheritdoc}
+	 */
+	public function close() {
+		$this->flush();
+	}
+	/**
+	 * {@inheritdoc}
+	 */
+	public function reset() {
+		$this->flush();
+		parent::reset();
+	}
 }

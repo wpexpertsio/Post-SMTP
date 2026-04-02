@@ -301,9 +301,13 @@ jQuery(document).ready(function () {
             //If everything is good to go, lets save settings.
             if (validated === true) {
 
-                var button = jQuery('.ps-wizard-step-2').find('.ps-wizard-next-btn');
-                var buttonHTML = jQuery(button).html();
-                jQuery(button).html('Saving...');
+                var button = jQuery( '.ps-wizard-step-2' ).find( '.ps-wizard-next-btn' );
+                var buttonHTML = jQuery( button ).html();
+                jQuery( button ).html( 'Saving...' );
+                
+                setTimeout(function () {
+                    jQuery(button).html(buttonHTML);
+                }, 2000);
 
                 // Step 1: Get selected socket from step 1
                 var $step1 = jQuery('.ps-wizard-step-1');
@@ -337,6 +341,28 @@ jQuery(document).ready(function () {
                         nextStep(stepID);
                         var _element = jQuery('.ps-wizard-outer').removeClass();
                         jQuery(_element).addClass('ps-wizard-outer ps-wizard-send-email');
+
+                        const wizardStep = jQuery('.ps-wizard-step-2');
+                        const connectionIndex = response.data.index; // Adjust key name based on actual response structure.
+                    
+                        // Debugging: Log the extracted index to see if it has a value.
+                        console.log('Connection Index:', connectionIndex);
+                    
+                        // Use a more reliable check to handle 0 or null values.
+                        if (connectionIndex !== undefined && connectionIndex !== null) {
+                            if (wizardStep.find('.postman_fallback_edit').length) {
+                                wizardStep.find('.postman_fallback_edit').val(connectionIndex);
+                            } else {
+                                jQuery('<input>', {
+                                    type: 'hidden',
+                                    class: 'postman_fallback_edit',
+                                    name: 'postman_fallback_edit',
+                                    value: connectionIndex
+                                }).appendTo(wizardStep);
+                            }
+                        } else {
+                            console.error('Connection index is undefined or null!');
+                        }
 
                     },
                     error: function (response) {
@@ -547,16 +573,18 @@ jQuery(document).ready(function () {
 
         e.preventDefault();
         jQuery('#ps-dns-results__el_id').empty();
-        var sendTo = jQuery('.ps-test-to').val();
-        var security = jQuery('#security').val();
-        var socket = jQuery('.ps-wizard-step-1').attr('data-socket');
-        var apikey = jQuery('.ps-wizard-step-1').attr('data-apikey');
-        var fromEmail = jQuery('.ps-wizard-step-2').attr('data-from-email');
-        var $btn = jQuery(this);
-        $btn.prop('disabled', true);
+        var sendTo = jQuery( '.ps-test-to' ).val();
+        var security = jQuery( '#security' ).val();
+        const id = new URLSearchParams( window.location.search ).get('id');
 
-        if (sendTo == '') {
-            jQuery('.ps-wizard-error').html(`<span class="dashicons dashicons-warning"></span> ${PostSMTPWizard.Step3E4}`);
+        var socket = jQuery( '.ps-wizard-step-1' ).attr( 'data-socket' );
+		var apikey = jQuery( '.ps-wizard-step-1' ).attr( 'data-apikey' );
+        var fromEmail = jQuery('.ps-wizard-step-2').attr('data-from-email');
+        var $btn = jQuery( this );
+        $btn.prop( 'disabled', true );
+        
+        if( sendTo == '' ) {
+            jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${PostSMTPWizard.Step3E4}` );
             return;
 
         }
@@ -569,6 +597,8 @@ jQuery(document).ready(function () {
                 action: 'postman_send_test_email',
                 email: sendTo,
                 security: security,
+                primary  : '0',
+                edit : id,
             },
             success: function (response) {
 
@@ -586,18 +616,19 @@ jQuery(document).ready(function () {
                         <p>Please wait, we are checking your email health.</p>
                     </div>`
                     );
-                    jQuery.ajax({
-                        url: ajaxurl,
-                        type: 'POST',
-                        data: {
-                            action: 'ps-mail-test',
-                            email: sendTo,
-                            security: security,
-                            socket: socket,
-                            apikey: apikey,
-                            from: fromEmail
-                        },
-                        success: function (response) {
+                        jQuery.ajax( {
+                            url: ajaxurl,
+                            type: 'POST',
+                            data: {
+                                action: 'ps-mail-test',
+                                email: sendTo,  
+                                security: security,
+                                socket: socket,
+                                apikey: apikey,
+                                from: fromEmail,
+                                edit: id
+                            },
+                            success: function( response ) {
 
                             jQuery('.ps-loading-test-report').remove();
                             $btn.prop('disabled', false)
@@ -1070,6 +1101,81 @@ jQuery(document).ready(function () {
         }, 2000);
 
     });
+	let activeEditButton;
+    jQuery('.postman-delete-connection-btn').click(function(e) {
+        e.preventDefault();
+        var connectionId = jQuery(this).data('id');
+        
+        if (!confirm('Are you sure you want to delete this connection?')) {
+            return;
+        }
+
+        jQuery.post(ajaxurl, {
+            action: 'postman_delete_connection',
+            connection_id: connectionId,
+            _wpnonce: PostSMTPWizard.delete_connection_nonce
+        }, function(response) {
+            if (response.success) {
+                alert('Connection deleted successfully.');
+                location.reload();
+            } else {
+                alert('Failed to delete connection.');
+            }
+        });
+    });
+	
+    function openModal(wizardValue) {
+        jQuery('#editModal').css('display', 'flex');
+        jQuery('body').addClass('post-smtp-modal-open');
+		jQuery('#titleInput').val('');
+		jQuery('#wizardValue').val('');
+
+        jQuery('#wizardValue').val(wizardValue);
+    }
+
+    function closeModal(event) {
+        if (event) event.preventDefault();
+        jQuery('#editModal').hide();
+        jQuery('body').removeClass('post-smtp-modal-open');
+    }
+
+    // Open modal with wizard value
+    jQuery('.post-smtp-modal-trigger-btn').on('click', function() {
+		 activeEditButton = jQuery(this);
+        const wizardValue = jQuery(this).data('wizard');
+        openModal(wizardValue);
+    });
+
+    // Save title
+    jQuery('.post-smtp-modal-save-btn').on('click', saveTitle);
+
+    // Close modal
+    jQuery('.post-smtp-modal-close-btn').on('click', closeModal);
+	
+	function saveTitle() {
+		const title = jQuery('#titleInput').val();
+		const wizardIndex = jQuery('#wizardValue').val();
+
+		jQuery.ajax({
+			url: ajaxurl,
+			method: 'POST',
+			data: {
+				action: 'save_connection_title',
+				title: title,
+				index: wizardIndex,
+				_wpnonce: PostSMTPWizard.save_title_nonce
+			},
+			success: function(response) {
+				  activeEditButton.closest('tr').find('td:first strong').text(title);  
+				closeModal();
+			},
+			error: function(error) {
+				alert('Failed To Save Title');
+			}
+		});
+	}
+
+	
 
     const gmail_icon = PostSMTPWizard.gmail_icon;
     const office365_icon = PostSMTPWizard.office365_icon;
@@ -1244,7 +1350,33 @@ jQuery(document).ready(function ($) {
 
     // Listen for changes on the checkbox
     jQuery('.ps-enable-gmail-one-click').on('change', toggleFields);
+    
+    // Place this in your admin JS file or enqueue it for the wizard page
+	jQuery(document).on('click', '.ps-finish-wizard', function(e) {
+		jQuery.post( ajaxurl, { action: 'ps_expire_client_transients' });
+	});
 
+    		
+	jQuery( document ).on( 'click', '.ps-gmail-btn', function( e ) {
+        e.preventDefault();
+		var redirectURI = jQuery( this ).attr( 'href' );
+        jQuery.ajax( {
+            url: ajaxurl,
+            type: 'POST',
+            async: true,
+            data: {
+                action: 'ps-save-wizard',
+                FormData: jQuery( '#ps-wizard-form' ).serialize(),
+            },
+            success: function( response ) {
+                window.location.assign( redirectURI );
+
+            },
+
+        } );
+
+    } );
+    
 });
 
 jQuery(document).ready(function ($) {

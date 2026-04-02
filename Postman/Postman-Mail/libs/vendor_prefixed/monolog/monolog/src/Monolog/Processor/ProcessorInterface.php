@@ -15,10 +15,10 @@ namespace PostSMTP\Vendor\Monolog\Processor;
  *
  * @author Nicolas Grekas <p@tchwork.com>
  */
-interface ProcessorInterface
-{
-    /**
-     * @return array The processed records
-     */
-    public function __invoke(array $records);
+interface ProcessorInterface {
+
+	/**
+	 * @return array The processed records
+	 */
+	public function __invoke( array $records );
 }

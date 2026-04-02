@@ -5,6 +5,6 @@ namespace PostSMTP\Vendor\GuzzleHttp\Exception;
 /**
  * Exception when a server error is encountered (5xx codes)
  */
-class ServerException extends \PostSMTP\Vendor\GuzzleHttp\Exception\BadResponseException
-{
+class ServerException extends \PostSMTP\Vendor\GuzzleHttp\Exception\BadResponseException {
+
 }

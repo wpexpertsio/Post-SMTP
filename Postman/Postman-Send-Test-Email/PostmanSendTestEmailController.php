@@ -110,7 +110,7 @@ class PostmanSendTestEmailController {
 	 */
 	public function addEmailTestSubmenu() {
 		$page = add_submenu_page(
-			' ',
+			'',
 			sprintf( '%s', esc_html__( 'Postman SMTP Setup', 'post-smtp' ) ),
 			esc_html__( 'Postman SMTP', 'post-smtp' ),
 			Postman::MANAGE_POSTMAN_CAPABILITY_NAME, PostmanSendTestEmailController::EMAIL_TEST_SLUG, array(
@@ -185,7 +185,7 @@ class PostmanSendTestEmailController {
 
 						<form action="' . esc_attr( $page_url ) . '" method="post" id="postman_test_email_wizard">
 
-							<div style="overflow-y: scroll;max-height: 469px;" class="ps-screens-container">
+							<div class="ps-screens-container">
 								<div class="ps-step">
 
 									<p>
@@ -265,12 +265,8 @@ class PostmanSendTestEmailController {
 					
 					<div class="ps-footer-content float-right">
 						<div class="ps-step">
-						
-						<div class="ps-ste-clearfix">
-							<div class="ps-right">
-								<a href="' . esc_attr( add_query_arg( array( 'page' => 'postman' ), admin_url( 'admin.php' ) ) ) . '" class="button button-primary ps-blue-button show-when-email-sent" style="display: none;">Finish</a>
-							</div>
-						</div>
+
+
 
 						</div>
 					</div>
@@ -330,6 +326,18 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		
 		// get the email address of the recipient from the HTTP Request
 		$email = $this->getRequestParameter( 'email' );
+		
+		$primary = $this->getRequestParameter( 'primary' );
+
+		$edit = $this->getRequestParameter( 'edit' );
+		
+		if ( false === get_transient( 'post_smtp_force_primary_connection' ) ) {
+			set_transient( 'post_smtp_force_primary_connection', $primary, 0 );
+		}
+
+		if ( $edit !== null && $edit !== '' && false === get_transient( 'post_smtp_fallback_edit' ) ) {
+           set_transient( 'post_smtp_fallback_edit', $edit, 0 );
+		}
 		
 		// get the name of the server from the HTTP Request
 		$serverName = PostmanUtils::postmanGetServerName();

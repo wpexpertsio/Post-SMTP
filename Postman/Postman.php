@@ -50,8 +50,9 @@ class Postman {
 		assert( ! empty( $version ) );
 		$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;
 		self::$rootPlugin = $rootPluginFilenameAndPath;
-		
+
 		require_once POST_SMTP_PATH . '/Postman/Postman-Suggest-Pro/PostmanPromotionManager.php';
+		
 		//Load helper functions file :D
 		require_once POST_SMTP_PATH . '/includes/postman-functions.php';
 
@@ -89,6 +90,9 @@ class Postman {
 		require_once 'Postman-Mail/PostmanContactForm7.php';
 		require_once 'Phpmailer/PostsmtpMailer.php';
 		//require_once 'Postman-Mail/PostmanWooCommerce.php';
+		require_once 'Postman-Fallback-Migration/PostmanFallbackMigration.php';
+
+		//Fallback Migration
 		require_once 'Postman-Mail/Services/PostmanServiceRequest.php';
 
 		//New Wizard
@@ -112,8 +116,8 @@ class Postman {
 
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
-				'name' => 'Post SMTP',
-				'version' => $version,
+			'name' => 'Post SMTP',
+			'version' => $version,
 		);
 
 		// register the plugin metadata filter (part of the Postman API)
@@ -354,6 +358,10 @@ class Postman {
 	public function check_for_configuration_errors() {
 		$options = PostmanOptions::getInstance();
 		$authToken = PostmanOAuthToken::getInstance();
+		$postman_db_version = get_option( 'postman_db_version' );
+		$primary_connection = $options->getSelectedPrimary();
+		$connections          = get_option( 'postman_connections', array() );
+
 
 		$transport = PostmanTransportRegistry::getInstance()->getCurrentTransport();
 		$scribe = $transport->getScribe();

@@ -2,6 +2,6 @@
 
 namespace PostSMTP\Vendor\GuzzleHttp\Exception;
 
-class TooManyRedirectsException extends \PostSMTP\Vendor\GuzzleHttp\Exception\RequestException
-{
+class TooManyRedirectsException extends \PostSMTP\Vendor\GuzzleHttp\Exception\RequestException {
+
 }
