@@ -570,7 +570,7 @@
 
 .button-primary.ps-blue-btn .dashicons,
 .button-primary.ps-yellow-btn .dashicons {
-  vertical-align: middle;
+  vertical-align: sub !important;
   font-size: 15px;
 }
 
