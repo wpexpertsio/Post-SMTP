@@ -7,11 +7,11 @@
 
 	defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'PostmanSmtp2GoHandler' ) ) {
-	class PostmanSmtp2GoHandler extends PostmanServiceRequest {
-		private $email_sent_code = 200;
-		private $api_key         = '';
-		private $base_url        = 'https://api.smtp2go.com/v3/email';
+	if ( ! class_exists( 'PostmanSmtp2GoHandler' ) ) {
+		class PostmanSmtp2GoHandler extends PostmanServiceRequest {
+			private $email_sent_code = 200;
+			private $api_key = '';
+			private $base_url = 'https://api.smtp2go.com/v3/email';
 
 		public function __construct( $api_key ) {
 			$this->api_key = $api_key;
@@ -21,17 +21,15 @@ if ( ! class_exists( 'PostmanSmtp2GoHandler' ) ) {
 			// Set 30-second timeout for SMTP2GO requests
 			$this->set_additional_args( array( 'timeout' => 30 ) );
 		}			
-		
 		private function get_headers() {
-				return array(
-					'Content-Type'  =>  'application/json',
-					'X-Smtp2go-Api-Key' => $this->api_key,
-					'accept' => 'application/json',
-				);
-			}
-
+			return array(
+				'Content-Type'  =>  'application/json',
+				'X-Smtp2go-Api-Key' => $this->api_key,
+				'accept' => 'application/json',
+			);
+		}
 		public function send( $content ) {
-			$content = json_encode( $content );
+				$content = json_encode( $content );
 
 				$response = $this->request(
 					'POST',
@@ -65,4 +63,3 @@ if ( ! class_exists( 'PostmanSmtp2GoHandler' ) ) {
 			}
 		}
 	}
-}
