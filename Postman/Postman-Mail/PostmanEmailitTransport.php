@@ -61,17 +61,7 @@ class PostmanEmailitTransport extends PostmanAbstractModuleTransport implements 
         return self::PORT;
     }
 
-    public function getSlug() {
-        return self::SLUG;
-    }
 
-    public function getProtocol() {
-        return 'https';
-    }
-
-    public function getHostname() {
-        return self::HOST;
-    }
 
     public function getConfigurationBid( PostmanWizardSocket $hostData, $userAuthOverride, $originalSmtpServer ) {
         $recommendation = array();
@@ -132,9 +122,6 @@ class PostmanEmailitTransport extends PostmanAbstractModuleTransport implements 
         return isset( $connection_details[ $primary ] ) ? $connection_details[ $primary ]['emailit_api_key'] : '';
     }
 
-    public function getName() {
-        return __( 'EmailIt', 'post-smtp' );
-    }
 
     public function getDeliveryDetails() {
         return sprintf( __( 'Postman will send mail via the <b>%1$s %2$s</b>.', 'post-smtp' ), '🔐', $this->getName() );
