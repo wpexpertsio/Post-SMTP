@@ -1013,213 +1013,62 @@ class Post_SMTP_New_Wizard {
      * @since 2.7.0
      * @version 1.0.0
      */
-    public function render_gmail_settings() {
+       public function render_gmail_settings() {
         
-        $mail_connections = get_option( 'postman_connections' );
-        $client_id = '';
-        $client_secret = '';
-        // Retrieve options for premium features and extensions
-        $post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
-        $postman_auth_token = get_option( 'postman_auth_token' );
-        $bonus_extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : [];
-        $gmail_oneclick_enabled = in_array( 'gmail-oneclick', $bonus_extensions );
-        $auth_url = get_option( 'post_smtp_gmail_auth_url' );
+            $mail_connections = get_option( 'postman_connections' );
+            $client_id = '';
+            $client_secret = '';
+            // Retrieve options for premium features and extensions
+            $post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
+            $postman_auth_token = get_option( 'postman_auth_token' );
+            $bonus_extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : [];
+            $gmail_oneclick_enabled = in_array( 'gmail-oneclick', $bonus_extensions );
+            $auth_url = get_option( 'post_smtp_gmail_auth_url' );
 
-        if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
-            $id = $_GET['id'] ?? null;
-            $action = isset($_GET['action']) ? $_GET['action'] : '';
-            
-            if ( isset( $mail_connections[ $id ] ) ) {
-                // Use the selected connection for editing
-                $client_id     = $mail_connections[ $id ]['oauth_client_id'] ?? '';
-                $client_secret = $mail_connections[ $id ]['oauth_client_secret'] ?? '';
-            } elseif ( $action === 'add' ) {
-                $client_id     = '';
-                $client_secret = '';
-            } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) && empty( $gmail_oneclick_enabled ) ) {
-                // No ID? Use the last Gmail connection or get last credentials
-                $gmail_credentials = PostmanOptions::get_last_gmail_credentials( $mail_connections );
-                $client_id     = $gmail_credentials['client_id'] ?? '';
-                $client_secret = $gmail_credentials['client_secret'] ?? '';
-            } else {
-                $client_id     = '';
-                $client_secret = '';
-            }
-        }else{
-            $client_id = null !== $this->options->getClientId() ? esc_attr ( $this->options->getClientId() ) : '';
-            $client_secret = null !== $this->options->getClientSecret() ? esc_attr ( $this->options->getClientSecret() ) : '';
-        }
-        $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
-
-
-        // Setup classes and attributes for form visibility
-        $hidden_class = $gmail_oneclick_enabled ? 'ps-hidden' : '';
-        $client_id_required = $gmail_oneclick_enabled ? '' : 'required';
-        $client_secret_required = $gmail_oneclick_enabled ? '' : 'required';
-        $one_click_class = 'ps-enable-gmail-one-click';
-        $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/wizard-google.png';
-        $transport_name = __( '<strong>1-Click</strong> Google Mailer Setup?', 'post-smtp' );
-        $product_url = postman_is_bfcm() ? 
-            'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 
-            'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_gmail_one_click&utm_campaign=plugin';
-
-
-    if ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) {
-        $client_id_required     = '';
-        $client_secret_required = '';
-    }
-
-    // Prepare data for JSON encoding
-    $data = [
-        'url' => $url,
-        'transport_name' => $transport_name,
-        'product_url' => $product_url
-    ];
-    $json_data = htmlspecialchars( json_encode( $data ), ENT_QUOTES, 'UTF-8' );
-
-    // Begin HTML output
-    $html = '<p>' . sprintf(
-        /* translators: %1$s: Google link, %2$s: Gmail mailer name, %3$s: Description */
-        __( 'Our %1$s<a href="%2$s" target="_blank">%3$s</a> %4$s', 'post-smtp' ),
-        __( '', 'post-smtp' ),
-        esc_url( 'https://www.google.com/gmail/about/' ),
-        __( 'Gmail mailer', 'post-smtp' ),
-        __( 'works with any Gmail or Google Workspace account via the Google API. You can send WordPress emails from your main email address and it\'s more secure than directly connecting to Gmail using SMTP credentials.', 'post-smtp' )
-    ) . '</p>';
-
-    $html .= __( 'The configuration steps are more technical than other options, so our detailed guide will walk you through the whole process.', 'post-smtp' );
-    $html .= '<hr />';
-    if ( post_smtp_has_pro() ) {
-        $one_click = true;
-        $html .= sprintf( '<h3>%1$s</h3>', __( 'One-Click Setup', 'post-smtp' ) );
-    } else {
-        $html .= sprintf(
-            '<h3 class="%1$s" >%1$s <span class="ps-wizard-pro-tag">%2$s</span></h3>',
-            __( 'One-Click Setup', 'post-smtp' ),
-            __( 'PRO', 'post-smtp' )
-        );
-        $one_click = 'disabled';
-        $one_click_class .= ' disabled';
-    }
-
-    $html .= __( '<p>Enable the option for a quick and easy way to connect with Google without the need of manually creating an app. <p>', 'post-smtp' );
-
-    // One-click switch control
-    $html .= "<div>
-        <div class='ps-form-switch-control'>
-            <label class='ps-switch-1 ".(!post_smtp_has_pro() ? 'ps-gmail-one-click' : '')." '>
-               
-                <input type='hidden' id='ps-one-click-data' value='" . esc_attr( $json_data ) . "'>
-                <input type='checkbox' class='$one_click_class' " . ( $gmail_oneclick_enabled ? 'checked' : '' ) . ">
-                <span class='slider round'></span>
-            </label> 
-        </div>
-    </div>";
-    // Client ID and Secret inputs
-    $html .= '<div class="ps-disable-one-click-setup ' . ( $gmail_oneclick_enabled ? 'ps-hidden' : '' ) . '">
-        <p>' . sprintf(
-            /* translators: %1$s: Link to Gmail setup documentation */
-            __( 'Read our %1$s <a href="%2$s" target="_blank">%3$s</a> %4$s', 'post-smtp' ),
-            __( '', 'post-smtp' ),
-            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/gmail/' ),
-            __( 'Gmail setup documentation', 'post-smtp' ),
-            __( 'to learn how to create an app manually to generate the Client ID and Client Secret', 'post-smtp' )
-        ) . '</p>';
-
-    $html .= '
-    <div class="ps-form-control">
-        <div><label>' . __( 'Client ID', 'post-smtp' ) . '</label></div>
-        <input type="text" class="ps-gmail-api-client-id" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please enter Client ID.', 'post-smtp' ) ) . '" name="postman_options[' . esc_attr( PostmanOptions::CLIENT_ID ) . ']" value="' . $client_id . '" placeholder="Client ID">
-    </div>';
-
-    $html .= '
-    <div class="ps-form-control">
-        <div><label>' . __( 'Client Secret', 'post-smtp' ) . '</label></div>
-        <input type="text" class="ps-gmail-client-secret" ' . esc_attr( $client_secret_required ) . ' data-error="' . esc_attr( __( 'Please enter Client Secret.', 'post-smtp' ) ) . '" name="postman_options[' . esc_attr( PostmanOptions::CLIENT_SECRET ) . ']" value="' . $client_secret . '" placeholder="Client Secret">
-    </div>';
-
-    $html .= '
-    <div class="ps-form-control">
-        <div><label>' . __( 'Authorized JavaScript origins', 'post-smtp' ) . '</label></div>
-        <input type="text" class="ps-gmail-js-origin" value="' . esc_url( site_url() ) . '" readonly>
-    </div>';
-
-    $html .= '
-    <div class="ps-form-control">
-        <div><label>' . __( 'Authorized redirect URI', 'post-smtp' ) . '</label></div>
-        <input type="text" class="ps-gmail-redirect-uri" value="' . esc_url( admin_url( 'options-general.php?page=postman' ) ) . '" readonly>
-        <span class="ps-form-control-info">
-        ' . __( 'Please copy this URL into the "Authorized redirect URL" field of your Gmail account settings.', 'post-smtp' ) . '
-        </span>
-    </div>';
-
-    $html .= '
-    <h3>' . __( 'Authorization (Required)', 'post-smtp' ) . '</h3>
-    <p>' . __( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ) . '</p>
-<input type="hidden"  class="ps-gmail-warning" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) ) . '" />
-    <a href="' . esc_url( admin_url( 'admin-post.php?action=postman/requestOauthGrant' ) ) . '" class="button button-primary ps-blue-btn" id="ps-wizard-connect-gmail">' . __( 'Connect to Gmail API', 'post-smtp' ) . '</a>';
-
-    // Remove OAuth action button
-    $html .= '</div>';
-    $html .= '<div class="ps-disable-gmail-setup ' . ( $gmail_oneclick_enabled ? '' : 'ps-hidden' ) . '">';
-    if ( post_smtp_has_pro() ) {
-        // Check if we have OAuth token based on database version and connection context
-        $has_oauth_token = false;
-        $oauth_email = '';
-        
-        if( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
-            // New connection system - check specific connection or last connection
-            $id = $_GET['id'] ?? null;
-            $action = isset($_GET['action']) ? $_GET['action'] : '';
-            
-            if ( isset( $mail_connections[ $id ] ) && isset( $mail_connections[ $id ]['access_token'] ) ) {
-                // Use the selected connection for editing
-                $has_oauth_token = !empty( $mail_connections[ $id ]['access_token'] );
-                $oauth_email = $mail_connections[ $id ]['sender_email'] ?? '';
-            } elseif ( $action !== 'add' && ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
-                // No ID and not adding? Use the last Gmail connection
-                $last_gmail_connection = null;
-                foreach( array_reverse( $mail_connections, true ) as $conn_id => $connection ) {
-                    if ( isset( $connection['provider'] ) && $connection['provider'] === 'gmail_api' ) {
-                        $last_gmail_connection = $connection;
-                        break;
-                    }
+            if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
+                $id = $_GET['id'] ?? null;
+                $action = isset($_GET['action']) ? $_GET['action'] : '';
+                
+                if ( isset( $mail_connections[ $id ] ) ) {
+                    // Use the selected connection for editing
+                    $client_id     = $mail_connections[ $id ]['oauth_client_id'] ?? '';
+                    $client_secret = $mail_connections[ $id ]['oauth_client_secret'] ?? '';
+                } elseif ( $action === 'add' ) {
+                    $client_id     = '';
+                    $client_secret = '';
+                } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) && empty( $gmail_oneclick_enabled ) ) {
+                    // No ID? Use the last Gmail connection or get last credentials
+                    $gmail_credentials = PostmanOptions::get_last_gmail_credentials( $mail_connections );
+                    $client_id     = $gmail_credentials['client_id'] ?? '';
+                    $client_secret = $gmail_credentials['client_secret'] ?? '';
+                } else {
+                    $client_id     = '';
+                    $client_secret = '';
                 }
-                if ( $last_gmail_connection ) {
-                    $has_oauth_token = !empty( $last_gmail_connection['access_token'] );
-                    $oauth_email = $last_gmail_connection['sender_email'] ?? '';
-                }
+            }else{
+                $client_id = null !== $this->options->getClientId() ? esc_attr ( $this->options->getClientId() ) : '';
+                $client_secret = null !== $this->options->getClientSecret() ? esc_attr ( $this->options->getClientSecret() ) : '';
             }
-        } else {
-            // Legacy system - use global token
-            $has_oauth_token = $postman_auth_token && isset( $postman_auth_token['user_email'] );
-            $oauth_email = $has_oauth_token ? $postman_auth_token['user_email'] : '';
+            $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
+
+
+            // Setup classes and attributes for form visibility
+            $hidden_class = $gmail_oneclick_enabled ? 'ps-hidden' : '';
+            $client_id_required = $gmail_oneclick_enabled ? '' : 'required';
+            $client_secret_required = $gmail_oneclick_enabled ? '' : 'required';
+            $one_click_class = 'ps-enable-gmail-one-click';
+            $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/wizard-google.png';
+            $transport_name = __( '<strong>1-Click</strong> Google Mailer Setup?', 'post-smtp' );
+            $product_url = postman_is_bfcm() ? 
+                'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 
+                'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_gmail_one_click&utm_campaign=plugin';
+
+
+        if ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) {
+            $client_id_required     = '';
+            $client_secret_required = '';
         }
 
-        if ( $has_oauth_token || !empty( $oauth_email ) ) {
-            $nonce = wp_create_nonce( 'remove_oauth_action' );
-            $action_url = esc_url( add_query_arg(
-                [
-                    '_wpnonce' => $nonce,
-                    'action' => 'remove_oauth_action',
-                    'id' => $id,
-                ],
-                admin_url( 'admin-post.php' )
-            ) );
-            $html .= ' <span class="icon-circle"><span class="icon-check"></span> </span> <b class= "ps-wizard-success">' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $oauth_email ) ) . '</b>';
-            $html .= '<a href="' . $action_url . '" class="ps-remove-gmail-btn ps-disable-gmail-setup wizard-btn-css">';
-            $html .= esc_html__( 'Remove Authorization', 'post-smtp' );
-            $html .= '</a>';
-        } else {
-            $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
-            $html .= '<p>' . esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ) . '</p>';
-            $html .= '<input type="hidden" ' . esc_attr( $required ) . ' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) . '" />';
-            $html .= '<a href="' . esc_url( $auth_url ) . '" class="button button-primary ps-gmail-btn">';
-            $html .= esc_html__( 'Sign in with Google', 'post-smtp' );
-            $html .= '</a>';
-            $html .= "<p>By signing in with Google, you can send emails using different 'From' addresses. To do this, disable the 'Force From Email' setting and use your registered aliases as the 'From' address across your WordPress site.</p> <p>Removing the OAuth connection will give you the ability to redo the OAuth connection or link to another Google account.</p>";
-        }
-    
         // Prepare data for JSON encoding
         $data = [
             'url' => $url,
@@ -1227,15 +1076,24 @@ class Post_SMTP_New_Wizard {
             'product_url' => $product_url
         ];
         $json_data = htmlspecialchars( json_encode( $data ), ENT_QUOTES, 'UTF-8' );
-    
+
         // Begin HTML output
-        $html  = '<p>' . esc_html__( 'Post SMTP offers two ways to connect Gmail API with WordPress: One-Click Setup (fastest) and Manual (free).', 'post-smtp' ) . '</p>';
-        $html .= '<div class="ps-force ps-wizard-toggle-row">';
+        $html = '<p>' . sprintf(
+            /* translators: %1$s: Google link, %2$s: Gmail mailer name, %3$s: Description */
+            __( 'Our %1$s<a href="%2$s" target="_blank">%3$s</a> %4$s', 'post-smtp' ),
+            __( '', 'post-smtp' ),
+            esc_url( 'https://www.google.com/gmail/about/' ),
+            __( 'Gmail mailer', 'post-smtp' ),
+            __( 'works with any Gmail or Google Workspace account via the Google API. You can send WordPress emails from your main email address and it\'s more secure than directly connecting to Gmail using SMTP credentials.', 'post-smtp' )
+        ) . '</p>';
+
+        $html .= __( 'The configuration steps are more technical than other options, so our detailed guide will walk you through the whole process.', 'post-smtp' );
+        $html .= '<hr />';
         if ( post_smtp_has_pro() ) {
             $one_click = true;
-            $title_html = sprintf( '<h3>%1$s</h3>', __( 'One-Click Setup', 'post-smtp' ) );
+            $html .= sprintf( '<h3>%1$s</h3>', __( 'One-Click Setup', 'post-smtp' ) );
         } else {
-            $title_html = sprintf(
+            $html .= sprintf(
                 '<h3 class="%1$s" >%1$s <span class="ps-wizard-pro-tag">%2$s</span></h3>',
                 __( 'One-Click Setup', 'post-smtp' ),
                 __( 'PRO', 'post-smtp' )
@@ -1244,91 +1102,130 @@ class Post_SMTP_New_Wizard {
             $one_click_class .= ' disabled';
         }
 
-        // Row with toggle + description aligned horizontally
-        $html .= $title_html;
-        $html .= "<div class='ps-wizard-toggle-inner'>";
-        $html .= "
+        $html .= __( '<p>Enable the option for a quick and easy way to connect with Google without the need of manually creating an app. <p>', 'post-smtp' );
+
+        // One-click switch control
+        $html .= "<div>
             <div class='ps-form-switch-control'>
                 <label class='ps-switch-1 ".(!post_smtp_has_pro() ? 'ps-gmail-one-click' : '')." '>
+                
                     <input type='hidden' id='ps-one-click-data' value='" . esc_attr( $json_data ) . "'>
                     <input type='checkbox' class='$one_click_class' " . ( $gmail_oneclick_enabled ? 'checked' : '' ) . ">
                     <span class='slider round'></span>
-                </label>
-            </div>";
-        $html .= '<p class="ps-wizard-toggle-description">' . esc_html__( 'Enable the option for a quick, easy way to connect to Google Workspace (Gmail) API without manually creating an app.', 'post-smtp' ) . '</p>';
-        $html .= '</div>'; // .ps-wizard-toggle-inner
-        $html .= '</div>'; // .ps-force.ps-wizard-toggle-row
+                </label> 
+            </div>
+        </div>";
         // Client ID and Secret inputs
         $html .= '<div class="ps-disable-one-click-setup ' . ( $gmail_oneclick_enabled ? 'ps-hidden' : '' ) . '">
-    
-        <h3 class="%1$s" >Manual Setup</h3>
-        <p>' . esc_html__( 'The free Gmail mailer requires you to create an app manually to generate the Client ID and Client Secret. This ', 'post-smtp' ) . ' <a href="' . esc_url( 'https://postmansmtp.com/docs/mailers/how-to-setup-gmail-with-post-smtp/' ) . '" target="_blank">' . esc_html__( 'step-by-step guide', 'post-smtp' ) . '</a> ' . esc_html__( 'will walk you through the whole process.', 'post-smtp' ) . '</p>';
+            <p>' . sprintf(
+                /* translators: %1$s: Link to Gmail setup documentation */
+                __( 'Read our %1$s <a href="%2$s" target="_blank">%3$s</a> %4$s', 'post-smtp' ),
+                __( '', 'post-smtp' ),
+                esc_url( 'https://postmansmtp.com/documentation/sockets-addons/gmail/' ),
+                __( 'Gmail setup documentation', 'post-smtp' ),
+                __( 'to learn how to create an app manually to generate the Client ID and Client Secret', 'post-smtp' )
+            ) . '</p>';
+
         $html .= '
         <div class="ps-form-control">
             <div><label>' . __( 'Client ID', 'post-smtp' ) . '</label></div>
-            <input type="text" class="ps-gmail-api-client-id" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please enter Client ID.', 'post-smtp' ) ) . '" name="postman_options[' . esc_attr( PostmanOptions::CLIENT_ID ) . ']" value="' . $client_id . '" placeholder="">
+            <input type="text" class="ps-gmail-api-client-id" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please enter Client ID.', 'post-smtp' ) ) . '" name="postman_options[' . esc_attr( PostmanOptions::CLIENT_ID ) . ']" value="' . $client_id . '" placeholder="Client ID">
         </div>';
-    
+
         $html .= '
         <div class="ps-form-control">
             <div><label>' . __( 'Client Secret', 'post-smtp' ) . '</label></div>
-            <input type="text" class="ps-gmail-client-secret" ' . esc_attr( $client_secret_required ) . ' data-error="' . esc_attr( __( 'Please enter Client Secret.', 'post-smtp' ) ) . '" name="postman_options[' . esc_attr( PostmanOptions::CLIENT_SECRET ) . ']" value="' . $client_secret . '" placeholder="">
+            <input type="text" class="ps-gmail-client-secret" ' . esc_attr( $client_secret_required ) . ' data-error="' . esc_attr( __( 'Please enter Client Secret.', 'post-smtp' ) ) . '" name="postman_options[' . esc_attr( PostmanOptions::CLIENT_SECRET ) . ']" value="' . $client_secret . '" placeholder="Client Secret">
         </div>';
-    
+
         $html .= '
         <div class="ps-form-control">
             <div><label>' . __( 'Authorized JavaScript origins', 'post-smtp' ) . '</label></div>
             <input type="text" class="ps-gmail-js-origin" value="' . esc_url( site_url() ) . '" readonly>
         </div>';
-    
+
         $html .= '
         <div class="ps-form-control">
             <div><label>' . __( 'Authorized redirect URI', 'post-smtp' ) . '</label></div>
             <input type="text" class="ps-gmail-redirect-uri" value="' . esc_url( admin_url( 'options-general.php?page=postman' ) ) . '" readonly>
-            <span class="ps-form-control-info">'. esc_html__( 'Please copy this URL into the Authorized Redirect URI field of your Gmail account settings.', 'post-smtp' ) .'</span>
+            <span class="ps-form-control-info">
+            ' . __( 'Please copy this URL into the "Authorized redirect URL" field of your Gmail account settings.', 'post-smtp' ) . '
+            </span>
         </div>';
-    
+
         $html .= '
-         <h3>Authorization (Required)</h3>
-        <p>Before continuing, you will need to allow this plugin to send emails using Gmail API.</p>
-        
-        <input type="hidden"  class="ps-gmail-warning" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) ) . '" />
+        <h3>' . __( 'Authorization (Required)', 'post-smtp' ) . '</h3>
+        <p>' . __( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ) . '</p>
+    <input type="hidden"  class="ps-gmail-warning" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) ) . '" />
         <a href="' . esc_url( admin_url( 'admin-post.php?action=postman/requestOauthGrant' ) ) . '" class="button button-primary ps-blue-btn" id="ps-wizard-connect-gmail">' . __( 'Connect to Gmail API', 'post-smtp' ) . '</a>';
-    
+
         // Remove OAuth action button
         $html .= '</div>';
         $html .= '<div class="ps-disable-gmail-setup ' . ( $gmail_oneclick_enabled ? '' : 'ps-hidden' ) . '">';
         if ( post_smtp_has_pro() ) {
-            if ( $postman_auth_token && isset( $postman_auth_token['user_email'] ) ) {
+            // Check if we have OAuth token based on database version and connection context
+            $has_oauth_token = false;
+            $oauth_email = '';
+            
+            if( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
+                // New connection system - check specific connection or last connection
+                $id = $_GET['id'] ?? null;
+                $action = isset($_GET['action']) ? $_GET['action'] : '';
+                
+                if ( isset( $mail_connections[ $id ] ) && isset( $mail_connections[ $id ]['access_token'] ) ) {
+                    // Use the selected connection for editing
+                    $has_oauth_token = !empty( $mail_connections[ $id ]['access_token'] );
+                    $oauth_email = $mail_connections[ $id ]['sender_email'] ?? '';
+                } elseif ( $action !== 'add' && ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
+                    // No ID and not adding? Use the last Gmail connection
+                    $last_gmail_connection = null;
+                    foreach( array_reverse( $mail_connections, true ) as $conn_id => $connection ) {
+                        if ( isset( $connection['provider'] ) && $connection['provider'] === 'gmail_api' ) {
+                            $last_gmail_connection = $connection;
+                            break;
+                        }
+                    }
+                    if ( $last_gmail_connection ) {
+                        $has_oauth_token = !empty( $last_gmail_connection['access_token'] );
+                        $oauth_email = $last_gmail_connection['sender_email'] ?? '';
+                    }
+                }
+            } else {
+                // Legacy system - use global token
+                $has_oauth_token = $postman_auth_token && isset( $postman_auth_token['user_email'] );
+                $oauth_email = $has_oauth_token ? $postman_auth_token['user_email'] : '';
+            }
+
+            if ( $has_oauth_token || !empty( $oauth_email ) ) {
                 $nonce = wp_create_nonce( 'remove_oauth_action' );
                 $action_url = esc_url( add_query_arg(
                     [
                         '_wpnonce' => $nonce,
                         'action' => 'remove_oauth_action',
+                        'id' => $id,
                     ],
                     admin_url( 'admin-post.php' )
                 ) );
-                if ( isset( $postman_auth_token['user_email'] ) ) {
-                    $html .= ' <span class="icon-circle"><span class="icon-check"></span> </span> <b class= "ps-wizard-success">' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_auth_token['user_email'] ) ) . '</b>';
-                }
+                $html .= ' <span class="icon-circle"><span class="icon-check"></span> </span> <b class= "ps-wizard-success">' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $oauth_email ) ) . '</b>';
                 $html .= '<a href="' . $action_url . '" class="ps-remove-gmail-btn ps-disable-gmail-setup wizard-btn-css">';
                 $html .= esc_html__( 'Remove Authorization', 'post-smtp' );
                 $html .= '</a>';
-            }else {
-                    $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
-                    $html .= "<p>Before proceeding, you’ll need to authorize this plugin to send emails using the Gmail API. This <a href=\"https://postmansmtp.com/docs/mailers/google-workspace-gmail-one-click-setup/\" target='_blank'>step-by-step guide</a> will walk you through the entire process.</p>";
-                    $html .= '<input type="hidden" ' . esc_attr( $required ) . ' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) . '" />';
-                    $html .= '<a href="' . esc_url( $auth_url ) . '" class="button button-primary ps-gmail-btn">';
-                    $html .= esc_html__( 'Sign in with Google', 'post-smtp' );
-                    $html .= '</a>';
-
+            } else {
+                $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
+                $html .= '<p>' . esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ) . '</p>';
+                $html .= '<input type="hidden" ' . esc_attr( $required ) . ' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) . '" />';
+                $html .= '<a href="' . esc_url( $auth_url ) . '" class="button button-primary ps-gmail-btn">';
+                $html .= esc_html__( 'Sign in with Google', 'post-smtp' );
+                $html .= '</a>';
+                $html .= "<p>By signing in with Google, you can send emails using different 'From' addresses. To do this, disable the 'Force From Email' setting and use your registered aliases as the 'From' address across your WordPress site.</p> <p>Removing the OAuth connection will give you the ability to redo the OAuth connection or link to another Google account.</p>";
             }
         }
-    
+
         $html .= '</div>';
-    
+
         return $html;
     }
+
 
     /**
      * Render Emailit Settings
