@@ -167,8 +167,11 @@ class PostmanEmailQueryLog {
 		if( isset( $args['site_id'] ) && $args['site_id'] != -1 ) {
 
             $clause_for_site = ( empty( $args['search'] ) && strpos( $this->query, 'WHERE' ) === false ) ? " WHERE" : " AND";
-			
-            $this->query .= " {$clause_for_site} lm.meta_value = '{$args['site_id']}'";
+			$site_id = sanitize_text_field( (string) $args['site_id'] );
+            $this->query .= $this->db->prepare(
+                " {$clause_for_site} lm.meta_value = %s",
+                $site_id
+            );
 
         }
 
