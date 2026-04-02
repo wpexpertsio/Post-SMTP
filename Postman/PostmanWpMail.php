@@ -84,7 +84,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
                 $hostName = php_uname('n');
             }
 
-            return $id . '@' . str_replace('www.', '', $hostName);
+            return apply_filters( 'post_smtp_message_id', $id . '@' . str_replace('www.', '', $hostName) );
 
         }
 
