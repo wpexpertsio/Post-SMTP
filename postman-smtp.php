@@ -241,3 +241,18 @@ function ps_fs_submenu_addon_visibility_handler( $is_visible, $id ) {
     return $is_visible;
 }
 ps_fs()->add_filter( 'is_submenu_visible', 'ps_fs_submenu_addon_visibility_handler', 10, 2 );
+
+/**
+ * Skip Freemius post-activation redirect to the wizard when the user cannot access Post SMTP admin.
+ *
+ * @param bool $do_redirect Whether Freemius should redirect after activation.
+ * @return bool
+ */
+function ps_fs_redirect_on_activation_if_capable( $do_redirect ) {
+	if ( ! $do_redirect || ! class_exists( 'Postman' ) ) {
+		return $do_redirect;
+	}
+
+	return current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
+}
+ps_fs()->add_filter( 'redirect_on_activation', 'ps_fs_redirect_on_activation_if_capable', 10, 1 );
