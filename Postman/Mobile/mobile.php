@@ -145,9 +145,6 @@ class Post_SMTP_Mobile {
                 return $class_name;
             }
         }
-        if ( class_exists( 'QRcode', false ) ) {
-            return null;
-        }
         if ( defined( 'QR_MODE_NUL' ) || class_exists( 'qrstr' ) ) {
             return null;
         }
