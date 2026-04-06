@@ -2364,6 +2364,11 @@ class Post_SMTP_New_Wizard {
         // Check if the required OAuth parameters are present in the URL.
         if ( isset( $_GET['action'] ) && $_GET['action'] === 'gmail_oauth_redirect' ) {
             
+        // Ignore unrelated callbacks that accidentally reuse the same action parameter.
+        if ( ! isset( $_GET['access_token'] ) && ! isset( $_GET['error'] ) ) {
+            return;
+        }
+            
         // Capability check: Only allow administrators to update OAuth tokens
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'post-smtp' ) );
