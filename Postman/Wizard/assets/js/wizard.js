@@ -135,7 +135,7 @@ jQuery(document).ready(function () {
         $step1ContinueBtn.addClass('ps-disabled').prop('disabled', true);
     }
 
-    // Enable/disable Step 1 button when a mailer is (de)selected
+    // Enable/disable Step 1 button when a mailer is (de)selected.
     jQuery(document).on('change', '.ps-wizard-socket-check', function () {
 
         const hasSelection = jQuery('.ps-wizard-socket-check').is(':checked');
@@ -144,6 +144,15 @@ jQuery(document).ready(function () {
             $step1ContinueBtn.removeClass('ps-disabled').prop('disabled', false);
         } else {
             $step1ContinueBtn.addClass('ps-disabled').prop('disabled', true);
+        }
+
+        if (hasSelection) {
+            var activeStep = jQuery('.ps-wizard-nav table tr.ps-active-nav').find('.dashicons-edit').data('step');
+            if (activeStep === 1) {
+                window.setTimeout(function () {
+                    $step1ContinueBtn.trigger('click');
+                }, 0);
+            }
         }
 
     });
