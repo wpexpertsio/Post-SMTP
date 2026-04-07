@@ -242,7 +242,7 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 			// add the messageId
 			$messageId = $message->getMessageId();
 			if ( ! empty( $messageId ) ) {
-				$this->addHeader( 'message-id', $messageId );
+				$this->addHeader( 'message-id', PostmanMessage::formatMessageIdHeaderValue( $messageId ) );
 			}
 
 			// add the subject

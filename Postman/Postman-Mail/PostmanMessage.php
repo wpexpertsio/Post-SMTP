@@ -547,8 +547,36 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			}
 		}
 		function setMessageId( $messageId ) {
+			if ( null === $messageId || '' === $messageId ) {
+				$this->messageId = $messageId;
+				return;
+			}
+			$messageId = trim( (string) $messageId );
+			if ( '' === $messageId ) {
+				$this->messageId = '';
+				return;
+			}
+			$len = strlen( $messageId );
+			if ( $len >= 2 && '<' === $messageId[0] && '>' === substr( $messageId, -1 ) ) {
+				$messageId = substr( $messageId, 1, -1 );
+			}
 			$this->messageId = $messageId;
 		}
+
+		/**
+		 * RFC 5322 Message-ID header field body (angle-addr).
+		 *
+		 * @param string $addr_spec Unbracketed id@domain portion.
+		 * @return string
+		 */
+		public static function formatMessageIdHeaderValue( $addr_spec ) {
+			$addr_spec = trim( (string) $addr_spec );
+			if ( '' === $addr_spec ) {
+				return '';
+			}
+			return '<' . $addr_spec . '>';
+		}
+		
 		function setDate( $date ) {
 			$this->date = $date;
 		}

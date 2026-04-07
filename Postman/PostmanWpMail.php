@@ -166,8 +166,21 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
          * @return PostmanMessage
          */
 		private function apply_default_headers( $message ) {
-			$headers[] = 'Message-ID: ' . $this->createMessageId();
-			$message->addHeaders($headers);
+			/**
+			 * Filter the Message-ID addr-spec (unbracketed id@domain) before the RFC 5322 header is built.
+			 *
+			 * @since 3.9.2
+			 *
+			 * @param string $addr_spec Message-ID without angle brackets.
+			 */
+			$addr_spec = apply_filters( 'post_smtp_message_id', $this->createMessageId() );
+			$addr_spec = trim( (string) $addr_spec );
+			$len       = strlen( $addr_spec );
+			if ( $len >= 2 && '<' === $addr_spec[0] && '>' === substr( $addr_spec, -1 ) ) {
+				$addr_spec = substr( $addr_spec, 1, -1 );
+			}
+			$headers[] = 'Message-ID: <' . $addr_spec . '>';
+			$message->addHeaders( $headers );
 		}
 
 		/**

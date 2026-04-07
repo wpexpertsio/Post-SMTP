@@ -165,7 +165,7 @@ class PostmanPostmarkMailEngine implements PostmanMailEngine {
             // add the messageId
             $messageId = $message->getMessageId();
             if ( ! empty( $messageId ) ) {
-                $headers['message-id'] = $messageId;
+                $headers['message-id'] = PostmanMessage::formatMessageIdHeaderValue( $messageId );
             }
 
             // if the caller set a Content-Type header, use it

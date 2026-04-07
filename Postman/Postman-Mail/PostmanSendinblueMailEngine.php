@@ -163,7 +163,7 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
         // add the messageId
         $messageId = $message->getMessageId();
         if ( ! empty( $messageId ) ) {
-            $headers['message-id'] = $messageId;
+            $headers['message-id'] = PostmanMessage::formatMessageIdHeaderValue( $messageId );
         }
 
         $sendSmtpEmail['headers'] = $headers;
