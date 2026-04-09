@@ -150,7 +150,7 @@ class PostmanResendMailEngine implements PostmanMailEngine {
         // add the messageId
         $messageId = $message->getMessageId();
         if ( ! empty( $messageId ) ) {
-            $headers['message-id'] = PostmanMessage::formatMessageIdHeaderValue( $messageId );
+            $headers['message-id'] = $messageId;
         }
 
         if( !empty( $headers ) ) {

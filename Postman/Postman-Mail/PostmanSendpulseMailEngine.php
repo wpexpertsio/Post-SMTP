@@ -182,7 +182,7 @@ if ( ! class_exists( "PostmanSendpulseMailEngine" ) ) :
 			// add the messageId.
 			$messageId = $message->getMessageId();
 			if ( ! empty( $messageId ) ) {
-				$headers['message-id'] = PostmanMessage::formatMessageIdHeaderValue( $messageId );
+				$headers['message-id'] = $messageId;
 			}
 
 			$sendSmtpEmail['headers'] = $headers;

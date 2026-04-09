@@ -202,7 +202,7 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 				// add the messageId
 				$messageId = $message->getMessageId();
 				if ( ! empty( $messageId ) ) {
-					$this->addHeader( 'message-id', PostmanMessage::formatMessageIdHeaderValue( $messageId ) );
+					$this->addHeader( 'message-id', $messageId );
 				}
 
 				// if the caller set a Content-Type header, use it
