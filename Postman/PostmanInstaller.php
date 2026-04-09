@@ -155,12 +155,20 @@ class PostmanInstaller {
 		if ( $this->logger->isDebug() ) {
 			$this->logger->debug( 'Adding admin capability' );
 		}
-		// ref: https://codex.wordpress.org/Function_Reference/add_cap
-		// NB: This setting is saved to the database, so it might be better to run this on theme/plugin activation
-		// add the custom capability to the administrator role
-		$role = get_role( Postman::ADMINISTRATOR_ROLE_NAME );
-		$role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
-		$role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
+		// Grant to every role that can activate plugins — same bar as activating this plugin.
+		// Only adding to `administrator` breaks users (and automated tests) that use a custom
+		// role with activate_plugins, causing a 403 on the post-activation wizard redirect.
+		$wp_roles = wp_roles();
+		if ( ! $wp_roles ) {
+			return;
+		}
+		foreach ( array_keys( $wp_roles->roles ) as $role_name ) {
+			$role = get_role( $role_name );
+			if ( $role && $role->has_cap( 'activate_plugins' ) ) {
+				$role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
+				$role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
+			}
+		}
 	}
 
 	/**
@@ -170,12 +178,17 @@ class PostmanInstaller {
 		if ( $this->logger->isDebug() ) {
 			$this->logger->debug( 'Removing admin capability' );
 		}
-		// ref: https://codex.wordpress.org/Function_Reference/add_cap
-		// NB: This setting is saved to the database, so it might be better to run this on theme/plugin activation
-		// remove the custom capability from the administrator role
-		$role = get_role( Postman::ADMINISTRATOR_ROLE_NAME );
-		$role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
-        $role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
+		$wp_roles = wp_roles();
+		if ( ! $wp_roles ) {
+			return;
+		}
+		foreach ( array_keys( $wp_roles->roles ) as $role_name ) {
+			$role = get_role( $role_name );
+			if ( $role && $role->has_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
+				$role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
+				$role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
+			}
+		}
 	}
 
 	/**

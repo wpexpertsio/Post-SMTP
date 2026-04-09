@@ -257,8 +257,10 @@ class Postman {
 
 		if ( get_option( 'post_smtp_activation_redirect' ) ) {
 			delete_option( 'post_smtp_activation_redirect' );
-			wp_safe_redirect( admin_url( 'admin.php?page=postman/configuration_wizard' ) );
-			exit;
+			if ( current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
+				wp_safe_redirect( admin_url( 'admin.php?page=postman/configuration_wizard' ) );
+				exit;
+			}
 		}
 		
 	}

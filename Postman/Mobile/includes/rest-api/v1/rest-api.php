@@ -63,10 +63,10 @@ class Post_SMTP_Mobile_Rest_API {
 	public function connect_app( WP_REST_Request $request ) {
 		
 		$nonce = get_transient( 'post_smtp_auth_nonce' );
-		$auth_key = $request->get_header( 'auth_key' );
-		$fcm_token = $request->get_header( 'fcm_token' );
-		$device = $request->get_header( 'device' );
-		$server_url = $request->get_header( 'server_url' );
+		$auth_key = sanitize_text_field( (string) $request->get_header( 'auth_key' ) );
+		$fcm_token = sanitize_text_field( (string) $request->get_header( 'fcm_token' ) );
+		$device = sanitize_text_field( (string) $request->get_header( 'device' ) );
+		$server_url = esc_url_raw( (string) $request->get_header( 'server_url' ) );
 		
 		if( $auth_key === $nonce ) {
 			
@@ -183,7 +183,14 @@ class Post_SMTP_Mobile_Rest_API {
 		
 		if( post_smtp_mobile_validate( $fcm_token ) ) {
 			
-			$url = admin_url( "admin.php?access_token={$fcm_token}&type={$type}&log_id={$id}" );
+			$url = add_query_arg(
+				array(
+					'access_token' => sanitize_text_field( (string) $fcm_token ),
+					'type' => sanitize_text_field( (string) $type ),
+					'log_id' => absint( $id ),
+				),
+				admin_url( 'admin.php' )
+			);
 			
 			wp_send_json_success(
 			 	$url,

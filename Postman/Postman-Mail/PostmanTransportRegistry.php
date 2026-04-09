@@ -80,8 +80,8 @@ class PostmanTransportRegistry {
 	 * @see getActiveTransport()
 	 */
 	public function getCurrentTransport() {
-		$selectedTransport = PostmanOptions::getInstance()->getTransportType();
-		$transports        = $this->getTransports();
+		$selectedTransport = PostmanOptions::getInstance()->getTransportType() ?? '';
+		$transports = $this->getTransports();
 		if ( ! isset( $transports [ $selectedTransport ] ) ) {
 			return $transports ['default'];
 		} else {
@@ -107,7 +107,7 @@ class PostmanTransportRegistry {
 	        }
 	    }
 	    
-		$selectedTransport = PostmanOptions::getInstance()->getTransportType();
+		$selectedTransport = PostmanOptions::getInstance()->getTransportType() ?? '';
 		
 		$transports = $this->getTransports();
 		if ( isset( $transports [ $selectedTransport ] ) ) {
@@ -192,8 +192,8 @@ class PostmanTransportRegistry {
 	 * @return PostmanModuleTransport
 	 */
 	public function getSelectedTransport() {
-		$selectedTransport = PostmanOptions::getInstance()->getTransportType();
-		$transports        = $this->getTransports();
+		$selectedTransport = PostmanOptions::getInstance()->getTransportType() ?? '';
+		$transports = $this->getTransports();
 		if ( isset( $transports [ $selectedTransport ] ) ) {
 			return $transports [ $selectedTransport ];
 		} else {
