@@ -14,6 +14,8 @@ class PostmanMailtrapMailEngine implements PostmanMailEngine {
     private $transcript;
 
     private $api_key;
+    private $is_fallback = false;
+    private $route_key = null;
 
 
     /**
@@ -21,9 +23,14 @@ class PostmanMailtrapMailEngine implements PostmanMailEngine {
      * @version 1.0
      */
     public function __construct( $api_key ) {
-        
-        assert( !empty( $api_key ) );
-        $this->api_key = $api_key;
+        if ( is_array( $api_key ) ) {
+            $this->api_key     = isset( $api_key['api_key'] ) ? $api_key['api_key'] : '';
+            $this->is_fallback = ! empty( $api_key['is_fallback'] );
+            $this->route_key   = isset( $api_key['route_key'] ) ? $api_key['route_key'] : null;
+        } else {
+            $this->api_key = $api_key;
+        }
+        assert( !empty( $this->api_key ) );
 
         // create the logger
         $this->logger = new PostmanLogger( get_class( $this ) );
@@ -75,6 +82,8 @@ class PostmanMailtrapMailEngine implements PostmanMailEngine {
     public function send( PostmanMessage $message ) { 
 
         $options = PostmanOptions::getInstance();
+        $connection_details = get_option( 'postman_connections', array() );
+        $postman_db_version = get_option( 'postman_db_version' );
         
         if ( empty( $this->api_key ) ) {
             throw new Exception( 'Mailtrap API Key is not configured' );
@@ -86,8 +95,9 @@ class PostmanMailtrapMailEngine implements PostmanMailEngine {
 
         $mailtrap = new PostmanMailtrap( $this->api_key);
         $sender = $message->getFromAddress();
-        $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-        $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
+        $sender_data = $this->resolve_sender_identity( $sender, $options, $connection_details, $postman_db_version );
+        $senderEmail = $sender_data['email'];
+        $senderName = $sender_data['name'];
         $headers = array();
         
         $sender->log( $this->logger, 'From' );
@@ -271,6 +281,46 @@ class PostmanMailtrapMailEngine implements PostmanMailEngine {
     
         }
 
+    }
+
+    /**
+     * Resolve sender details for primary/fallback/routing modes.
+     *
+     * @param PostmanEmailAddress $sender
+     * @param PostmanOptions      $options
+     * @param array               $connection_details
+     * @param string              $postman_db_version
+     * @return array{email:string,name:string}
+     */
+    private function resolve_sender_identity( $sender, $options, $connection_details, $postman_db_version ) {
+        $sender_email = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+        $sender_name  = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
+
+        if ( $postman_db_version != POST_SMTP_DB_VERSION || ! is_array( $connection_details ) ) {
+            return array(
+                'email' => $sender_email,
+                'name'  => $sender_name,
+            );
+        }
+
+        $connection_id = null;
+        if ( $this->is_fallback ) {
+            $connection_id = $options->getSelectedFallback();
+        } else {
+            $route_key = $this->route_key ? $this->route_key : get_transient( 'post_smtp_smart_routing_route' );
+            $connection_id = ( $route_key && isset( $connection_details[ $route_key ] ) ) ? $route_key : $options->getSelectedPrimary();
+        }
+
+        if ( $connection_id !== null && isset( $connection_details[ $connection_id ] ) ) {
+            $connection = $connection_details[ $connection_id ];
+            $sender_email = ! empty( $connection['sender_email'] ) ? $connection['sender_email'] : $sender_email;
+            $sender_name  = isset( $connection['sender_name'] ) && $connection['sender_name'] !== '' ? $connection['sender_name'] : $sender_name;
+        }
+
+        return array(
+            'email' => $sender_email,
+            'name'  => $sender_name,
+        );
     }
 
 }
