@@ -1544,8 +1544,14 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function render_mailtrap_settings() {
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
 
-        $api_key = null !== $this->options->getMailtrapApiKey() ? esc_attr ( $this->options->getMailtrapApiKey() ) : '';
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[ $id ]['mailtrap_api_key'] ) ) {
+            $api_key = $mail_connections[ $id ]['mailtrap_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getMailtrapApiKey() ?? '' );
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Mailtrap mailer to your WordPress website. We recommend you to check the ', 'post-smtp' ) . '<a href="https://postmansmtp.com/docs/mailers/how-to-setup-mailtrap-with-post-smtp" target="_blank">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
@@ -2996,6 +3002,9 @@ class Post_SMTP_New_Wizard {
                 'mailgun_domain_name', 
             ),
             'elasticemail_api' => array( 'elasticemail_api_key' ),
+            'mailtrap_api'   => array( 'mailtrap_api_key' ),
+            'maileroo_api'   => array( 'maileroo_api_key' ),
+            'sweego_api'     => array( 'sweego_api_key' ),
             'smtp2go_api'    => array( 'smtp2go_api_key' ),
             'aws_ses_api'  => array( 'ses_access_key_id', 'ses_secret_access_key', 'ses_region' ),
             'mailersend_api' => array( 'mailersend_api_key' ),
