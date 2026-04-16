@@ -911,13 +911,13 @@ class Post_SMTP_New_Wizard {
             case 'elasticemail_api':
                 echo wp_kses( $this->render_elasticemail_settings(), $this->allowed_tags );
             break;
-            case 'aws_ses_api';
+            case 'aws_ses_api':
                 echo wp_kses( $this->render_amazonses_settings(), $this->allowed_tags );
             break;
-            case 'office365_api';
+            case 'office365_api':
                 echo wp_kses( $this->render_office365_settings(), $this->allowed_tags );
             break;
-            case 'zohomail_api';
+            case 'zohomail_api':
                 echo wp_kses( $this->render_zoho_settings(), $this->allowed_tags );
             break;
             case 'smtp2go_api':
@@ -2460,9 +2460,9 @@ class Post_SMTP_New_Wizard {
         $sanitized['prevent_sender_email_override'] = isset( $sanitized['prevent_sender_email_override'] ) ? 1 : '';
         $sanitized['prevent_sender_name_override'] = isset( $sanitized['prevent_sender_name_override'] ) ? 1 : '';
         $sanitized['envelope_sender'] = isset( $sanitized['sender_email'] ) ? $sanitized['sender_email'] : '';
-        $sanitized['slack_token'] = base64_decode( $options['slack_token'] );
-        $sanitized['pushover_user'] = base64_decode( $options['pushover_user'] );
-        $sanitized['pushover_token'] = base64_decode( $options['pushover_token'] );
+        $sanitized['slack_token'] = base64_decode( $options['slack_token'] ?? '' ) ?: '';
+        $sanitized['pushover_user'] = base64_decode( $options['pushover_user'] ?? '' ) ?: '';
+        $sanitized['pushover_token'] = base64_decode( $options['pushover_token'] ?? '' ) ?: '';
 
         // Map of keys to preserve
         $keys = array(
@@ -2545,9 +2545,9 @@ class Post_SMTP_New_Wizard {
 			$postman_options, array(
 				'sender_email'   => $new_connection['sender_email'],
 				'sender_name'    => $new_connection['sender_name'],
-				'slack_token'    => base64_decode( $postman_options['slack_token'] ),
-				'pushover_user'  => base64_decode( $postman_options['pushover_user'] ),
-				'pushover_token' => base64_decode( $postman_options['pushover_token'] ),
+				'slack_token'    => base64_decode( $postman_options['slack_token'] ?? '' ) ?: '',
+				'pushover_user'  => base64_decode( $postman_options['pushover_user'] ?? '' ) ?: '',
+				'pushover_token' => base64_decode( $postman_options['pushover_token'] ?? '' ) ?: '',
         	)
 		);
 

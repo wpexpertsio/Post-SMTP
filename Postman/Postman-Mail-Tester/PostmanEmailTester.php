@@ -53,7 +53,7 @@ class Postman_Email_Tester {
 
         $email  = sanitize_email( $_POST['email'] );
         $socket = sanitize_text_field( $_POST['socket'] );
-        $apikey = sanitize_text_field( $_POST['apikey'] );
+        $apikey = sanitize_text_field( $_POST['apikey'] ?? '' );
         $from_email = sanitize_email( $_POST['from'] ?? '' );
         $edit   = isset( $_POST['edit'] ) ? sanitize_text_field( $_POST['edit'] ) : '';
         $args = array(

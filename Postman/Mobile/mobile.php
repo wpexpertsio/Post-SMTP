@@ -221,6 +221,7 @@ class Post_SMTP_Mobile {
                 <div class="mobile-app-internal-box ps-qr-box" style="line-height: 30px;">
                     <?php 
                     if( !$this->app_connected ) {
+                        $nonce = wp_create_nonce( 'ps-regenerate-qrcode' );
                         if ( $this->qr_code !== null ) {
                             echo '<img src="data:image/png;base64,' . esc_attr( $this->qr_code ) . '" width="300"/>';
                             ?>
@@ -412,6 +413,9 @@ class Post_SMTP_Mobile {
     public function regenerate_qrcode() {
 
         if( isset( $_GET['action'] ) && $_GET['action'] === 'regenerate-qrcode' ) {
+            if ( ! isset( $_GET['_psnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_psnonce'] ) ), 'ps-regenerate-qrcode' ) ) {
+                wp_die( 'Security check' );
+            }
 
             delete_transient( 'post_smtp_auth_nonce' );
 

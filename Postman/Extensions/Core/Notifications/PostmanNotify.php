@@ -89,17 +89,13 @@ class PostmanNotify {
 
         //Webhook Alerts
         $webhook_urls = array();
+		$postman_options = ( isset( $_POST['postman_options'] ) && is_array( $_POST['postman_options'] ) ) ? $_POST['postman_options'] : array();
+		$webhook_input   = ( isset( $postman_options['webhook_alerts_urls'] ) && is_array( $postman_options['webhook_alerts_urls'] ) ) ? $postman_options['webhook_alerts_urls'] : array();
 
-        if( isset( $_POST['postman_options']['webhook_alerts_urls'] ) ) {
-            
-            foreach ( $_POST['postman_options']['webhook_alerts_urls'] as $key => $url ) {
-
-                if( ! empty( $url ) ) {
-                    $webhook_urls[] = esc_url_raw( $url );
-                }
-    
-            }
-
+		foreach ( $webhook_input as $url ) {
+			if ( ! empty( $url ) ) {
+				$webhook_urls[] = esc_url_raw( $url );
+			}
 		}
 
 		update_option( PostmanWebhookAlertsNotify::WEBHOOK_OPTION, $webhook_urls );
