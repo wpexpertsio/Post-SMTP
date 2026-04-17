@@ -957,7 +957,8 @@ jQuery(document).ready(function () {
                     dataType: 'json',
                     data: {
                         action: 'ps_get_gmail_auth_url',
-                        nonce: (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmail_auth_nonce) ? PostSMTPWizard.gmail_auth_nonce : ''
+                        nonce: (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmail_auth_nonce) ? PostSMTPWizard.gmail_auth_nonce : '',
+                        sender_email: (jQuery('.ps-from-email').val() || '').trim()
                     },
                     success: function (response) {
                         if (response.success && response.data && response.data.auth_url) {

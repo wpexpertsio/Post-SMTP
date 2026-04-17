@@ -50,18 +50,59 @@ if (! class_exists ( "PostmanAuthenticationManagerFactory" )) {
 			$authenticationType = $options->getAuthenticationType ();
 			$hostname = $options->getHostname ();
 			if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
-				if ( false === get_transient( 'client_id' ) && isset( $_GET['client_id'] ) && isset( $_GET['client_secret'] ) ) {
-					set_transient( 'client_id', esc_attr( $_GET['client_id'] ), 0 );
-					set_transient( 'client_secret', esc_attr( $_GET['client_secret'] ), 0 );
+				if ( false === get_transient( 'client_id' ) && isset( $_GET['client_id'], $_GET['client_secret'] ) ) {
+					set_transient(
+						'client_id',
+						sanitize_text_field( wp_unslash( $_GET['client_id'] ) ),
+						15 * MINUTE_IN_SECONDS
+					);
+					set_transient(
+						'client_secret',
+						sanitize_text_field( wp_unslash( $_GET['client_secret'] ) ),
+						15 * MINUTE_IN_SECONDS
+					);
 				}
-				$clientId     = get_transient( 'client_id' ) ?? '';
-				$clientSecret = get_transient( 'client_secret' ) ?? '';
+				$clientId     = get_transient( 'client_id' );
+				$clientSecret = get_transient( 'client_secret' );
+				$clientId     = is_string( $clientId ) ? trim( $clientId ) : '';
+				$clientSecret = is_string( $clientSecret ) ? trim( $clientSecret ) : '';
+
+				// Wizard saves OAuth credentials on the connection; admin-post OAuth grant has no form context.
+				if ( ( '' === $clientId || '' === $clientSecret ) && 'gmail_api' === $transport->getSlug() ) {
+					$connections = get_option( 'postman_connections', array() );
+					$index       = $options->getSelectedPrimary();
+					if ( isset( $_GET['id'] ) && is_array( $connections ) && array_key_exists( (string) $_GET['id'], $connections ) ) {
+						$index = (string) sanitize_text_field( wp_unslash( $_GET['id'] ) );
+					}
+					if ( is_array( $connections ) && '' !== (string) $index && isset( $connections[ $index ] ) ) {
+						$row = $connections[ $index ];
+						if ( '' === $clientId && ! empty( $row['oauth_client_id'] ) ) {
+							$clientId = trim( (string) $row['oauth_client_id'] );
+						}
+						if ( '' === $clientSecret && ! empty( $row['oauth_client_secret'] ) ) {
+							$clientSecret = trim( (string) $row['oauth_client_secret'] );
+						}
+					}
+				}
 
 			}else{
 				$clientId = $options->getClientId ();
 				$clientSecret = $options->getClientSecret();	
 			}
 			$senderEmail = $options->getMessageSenderEmail();
+			if ( $this->existing_db_version == POST_SMTP_DB_VERSION && 'gmail_api' === $transport->getSlug() ) {
+				$connections = get_option( 'postman_connections', array() );
+				$index       = $options->getSelectedPrimary();
+				if ( isset( $_GET['id'] ) && is_array( $connections ) && array_key_exists( (string) $_GET['id'], $connections ) ) {
+					$index = (string) sanitize_text_field( wp_unslash( $_GET['id'] ) );
+				}
+				if ( is_array( $connections ) && '' !== (string) $index && isset( $connections[ $index ]['sender_email'] ) ) {
+					$hint = trim( (string) $connections[ $index ]['sender_email'] );
+					if ( '' !== $hint && is_email( $hint ) ) {
+						$senderEmail = $hint;
+					}
+				}
+			}
 			$scribe = $transport->getScribe();;
 			$redirectUrl = $scribe->getCallbackUrl ();
 			if ($transport->isOAuthUsed ( $options->getAuthenticationType () )) {

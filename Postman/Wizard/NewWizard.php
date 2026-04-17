@@ -2364,34 +2364,32 @@ class Post_SMTP_New_Wizard {
         }
 
         // Nonce check for CSRF protection.
-        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_office365_auth_url' ) ) {
+        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'ps_get_gmail_auth_url' ) ) {
             wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ), 400 );
         }
 
-        if ( ! function_exists( 'post_smtp_get_office365_auth_url' ) ) {
-            wp_send_json_error( array( 'message' => 'Office 365 One-Click is not available.' ), 500 );
+        if ( ! function_exists( 'post_smtp_get_gmail_auth_url' ) ) {
+            wp_send_json_error( array( 'message' => 'Gmail One-Click is not available.' ), 500 );
         }
 
-        $auth_url = post_smtp_get_office365_auth_url();
+        $auth_url = post_smtp_get_gmail_auth_url();
 
         if ( empty( $auth_url ) ) {
-            wp_send_json_error( array( 'message' => 'Failed to generate Office 365 auth URL.' ), 500 );
-            if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_gmail_auth_url' ) ) {
-                wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ), 400 );
-            }
-
-            if ( ! function_exists( 'post_smtp_get_gmail_auth_url' ) ) {
-                wp_send_json_error( array( 'message' => 'Gmail One-Click is not available.' ), 500 );
-            }
-
-            $auth_url = post_smtp_get_gmail_auth_url();
-
-            if ( empty( $auth_url ) ) {
-                wp_send_json_error( array( 'message' => 'Failed to generate Gmail auth URL.' ), 500 );
-            }
-
-            wp_send_json_success( array( 'auth_url' => esc_url_raw( $auth_url ) ) );
+            wp_send_json_error( array( 'message' => 'Failed to generate Gmail auth URL.' ), 500 );
         }
+
+        $sender_email = '';
+        if ( isset( $_POST['sender_email'] ) ) {
+            $sender_email = sanitize_email( wp_unslash( $_POST['sender_email'] ) );
+        }
+        if ( empty( $sender_email ) ) {
+            $sender_email = sanitize_email( PostmanOptions::getInstance()->getMessageSenderEmail() );
+        }
+        if ( ! empty( $sender_email ) ) {
+            $auth_url = add_query_arg( array( 'login_hint' => $sender_email ), $auth_url );
+        }
+
+        wp_send_json_success( array( 'auth_url' => esc_url_raw( $auth_url ) ) );
     }
     
 
@@ -2558,7 +2556,17 @@ class Post_SMTP_New_Wizard {
 		);
 
         update_option( 'postman_options', $postman_options );
-            
+
+		// OAuth grant (admin-post) reads client_id/client_secret transients; wizard only saves to connections.
+		if ( 'gmail_api' === $transport_type ) {
+			$cid  = isset( $new_connection['oauth_client_id'] ) ? trim( (string) $new_connection['oauth_client_id'] ) : '';
+			$csec = isset( $new_connection['oauth_client_secret'] ) ? trim( (string) $new_connection['oauth_client_secret'] ) : '';
+			if ( '' !== $cid && '' !== $csec ) {
+				set_transient( 'client_id', $cid, 15 * MINUTE_IN_SECONDS );
+				set_transient( 'client_secret', $csec, 15 * MINUTE_IN_SECONDS );
+			}
+		}
+
         return array(
             'index'  => $id,
             'status' => $saved ? 'updated' : 'not_updated',
