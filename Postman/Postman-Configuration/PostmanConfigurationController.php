@@ -891,6 +891,14 @@ class PostmanConfigurationController {
 				'sender_name',
 				'sender_email',
 			),
+			'mailtrap_api'     => array(
+				'provider'    => 'mailtrap_api',
+				'title'       => __( 'Authentication', 'post-smtp' ),
+				'description' => __( 'Create an account at <a href="https://mailtrap.io/" target="_blank">mailtrap.io</a> and enter <a href="https://mailtrap.io/api-tokens" target="_blank">an API token</a> below.', 'post-smtp' ),
+				'mailtrap_api_key',
+				'sender_name',
+				'sender_email',
+			),
 			'elasticemail_api' => array(
 				'provider'    => 'elasticemail_api',
 				'title'       => __( 'Authentication', 'post-smtp' ),

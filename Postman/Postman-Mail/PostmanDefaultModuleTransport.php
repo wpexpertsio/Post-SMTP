@@ -143,7 +143,11 @@ if ( ! class_exists( 'PostmanSmtpModuleTransport' ) ) {
 			return PostmanUtils::endsWith( $hostname, 'live.com' );
 		}
 		public function isServiceProviderYahoo( $hostname ) {
-			return strpos( $hostname, 'yahoo' );
+			if ( ! is_string( $hostname ) || $hostname === '' ) {
+				return false;
+			}
+
+			return false !== strpos( $hostname, 'yahoo' );
 		}
 		public function isOAuthUsed( $authType ) {
 			return false;

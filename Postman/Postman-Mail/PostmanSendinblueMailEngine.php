@@ -13,9 +13,7 @@ if ( ! class_exists( 'PostmanSendinblueMailEngine' ) ) :
 		protected $logger;
 
 		private $transcript;
-
 		private $api_key;
-
 		private $is_fallback;
 
 

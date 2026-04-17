@@ -323,6 +323,9 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		
 			// create the Mail Engine
 			$engine = $transport->createMailEngine();
+			if ( ! is_object( $engine ) || ! method_exists( $engine, 'send' ) ) {
+				throw new Exception( __( 'Unable to initialize mail engine for the selected transport.', 'post-smtp' ) );
+			}
 
 			// add plugin-specific attributes to PostmanMessage
 			$message->addHeaders( $options->getAdditionalHeaders() );
@@ -547,6 +550,9 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		
 			// create the Mail Engine
 			$engine = $transport->createMailEngineFallback();
+			if ( ! is_object( $engine ) || ! method_exists( $engine, 'send' ) ) {
+				throw new Exception( __( 'Unable to initialize fallback mail engine for the selected transport.', 'post-smtp' ) );
+			}
 			// add plugin-specific attributes to PostmanMessage
 			$message->addHeaders( $options->getAdditionalHeaders() );
 			$message->addTo( $options->getForcedToRecipients() );
