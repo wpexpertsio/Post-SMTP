@@ -613,6 +613,7 @@ class PostmanSettingsRegistry {
 			$sender_email   = esc_html( $connection['sender_email'] ?? '' );
 			$provider_label = ucfirst( str_replace( '_', ' ', __( str_replace( 'api', 'API', $connection['provider'] ), 'post-smtp' ) ) );
 			$raw_label = isset( $connection['provider_name'] ) && ! empty( $connection['provider_name'] ) ? $connection['provider_name'] : $connection['provider'];
+			$is_configured = $this->is_connection_properly_configured( $connection );
 
 			// Special handling for Gmail API - check if it's one-click setup
 			if ( $connection['provider'] === 'gmail_api' ) {
@@ -633,9 +634,13 @@ class PostmanSettingsRegistry {
 			$is_valid_fallback = $is_fallback_enabled && isset( $connections[ $primary_fallback ] ) && $primary_fallback != $primary_connection && $key == $primary_fallback;
 
 			$status = $is_primary ? 'Primary' : ( $is_valid_fallback ? 'Fallback' : 'None' );
-			echo '<tr><td>';
+			$row_style = $is_configured ? '' : ' style="background: #fff1f1; border-left: 4px solid #d63638;"';
+			echo '<tr' . $row_style . '><td>';
 			echo '<strong>' . esc_html( $provider_label ) . '</strong><br>';
 			echo '<small>' . esc_html__( 'Selected as:', 'post-smtp' ) . ' ' . esc_html( $status ) . '</small>';
+			if ( ! $is_configured ) {
+				echo '<br><small style="color:#d63638; font-weight:600;">' . esc_html__( 'Needs Configuration', 'post-smtp' ) . '</small>';
+			}
 			echo '</td>';
 
 			echo '<td>' . $sender_email . '</td><td>';
@@ -682,6 +687,35 @@ class PostmanSettingsRegistry {
 			</div>';
 
 		echo '</div>';
+	}
+
+	/**
+	 * Determine whether a saved connection is properly configured.
+	 *
+	 * @param array $connection Connection data.
+	 * @return bool
+	 */
+	private function is_connection_properly_configured( $connection ) {
+		if ( ! is_array( $connection ) ) {
+			return false;
+		}
+
+		$provider = isset( $connection['provider'] ) ? (string) $connection['provider'] : '';
+		if ( '' === $provider ) {
+			return false;
+		}
+
+		switch ( $provider ) {
+			case 'gmail_api':
+			case 'office365_api':
+			case 'zohomail_api':
+			case 'gmail_one_click':
+				return ! empty( $connection['access_token'] );
+
+			default:
+				// Only these OAuth providers should be flagged.
+				return true;
+		}
 	}
 
 
