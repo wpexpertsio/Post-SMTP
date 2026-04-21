@@ -2778,25 +2778,8 @@ class Post_SMTP_New_Wizard {
             'state' => $state,
         ) );
 
-        $this->post_smtp_safe_redirect( $redirect_url );
+        wp_redirect( $redirect_url );
 
-    }
-
-    /**
-     * Redirect with fallback for restrictive hosts/environments (e.g., InstaWP).
-     *
-     * @param string $url Redirect destination.
-     * @return void
-     */
-    private function post_smtp_safe_redirect( $url ) {
-        $fallback_url = admin_url( 'admin.php?page=postman/configuration_wizard' );
-        $target_url   = wp_validate_redirect( (string) $url, $fallback_url );
-
-        // Try strict safe redirect first; gracefully fall back when host rules are restrictive.
-        if ( ! wp_safe_redirect( $target_url ) ) {
-            wp_redirect( $target_url );
-        }
-        exit;
     }
 	
     /**
@@ -2932,7 +2915,8 @@ class Post_SMTP_New_Wizard {
         }
 
         // Redirect the user back with success
-        $this->post_smtp_safe_redirect( $redirect_url );
+        wp_redirect( $redirect_url );
+        exit;
     }
 
 
