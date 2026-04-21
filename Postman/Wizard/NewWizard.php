@@ -2887,31 +2887,26 @@ class Post_SMTP_New_Wizard {
             wp_die( esc_html__( 'Nonce verification failed. Please try again.', 'post-smtp' ) );
         }
 
-        $redirect_url = admin_url( "admin.php?page=postman/configuration_wizard" );
+        $redirect_url = admin_url( "admin.php?page=postman/configuration_wizard&socket=gmail_api&step=2&action=add" );
 
         if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
-            $id = isset( $_GET['id'] ) ? absint( $_GET['id'] ) : 0;
-            if ( $id ) {
-                $mail_connections = get_option( 'postman_connections', array() );
+            // Remove legacy/global auth first so UI does not show stale "Connected with".
+            delete_option( 'postman_auth_token' );
 
-                if ( isset( $mail_connections[ $id ] ) && isset( $mail_connections[ $id ]['provider'] ) && $mail_connections[ $id ]['provider'] === 'gmail_api' ) {
-                  // Reset sensitive tokens to empty values
-                    $mail_connections[ $id ]['access_token']        = '';
-                    $mail_connections[ $id ]['refresh_token']       = '';
-                    $mail_connections[ $id ]['token_expires']       = '';
-                    $mail_connections[ $id ]['auth_token_expires']  = '';
-					$mail_connections[ $id ]['sender_email']  = '';
-					$mail_connections[ $id ]['sender_name']  = '';
-                 
-                    update_option( 'postman_connections', $mail_connections );
+            $id = isset( $_GET['id'] ) ? absint( $_GET['id'] ) : null;
+            $mail_connections = get_option( 'postman_connections', array() );
 
-                    // Redirect back to the same Gmail mailer ID wizard
-                    $redirect_url = admin_url( "admin.php?socket=gmail_api&id={$id}&step=2&page=postman/configuration_wizard" );
-                }
+            if ( null !== $id && isset( $mail_connections[ $id ] ) && isset( $mail_connections[ $id ]['provider'] ) && $mail_connections[ $id ]['provider'] === 'gmail_api' ) {
+                // Remove complete Gmail connection entry from connections list.
+                unset( $mail_connections[ $id ] );
+                update_option( 'postman_connections', $mail_connections );
             }
+
+            // Go back to wizard without removed id.
+            $redirect_url = admin_url( "admin.php?socket=gmail_api&step=2&page=postman/configuration_wizard&action=add" );
         } else {
             delete_option( 'postman_auth_token' );
-            $redirect_url = admin_url( "admin.php?socket=gmail_api&step=2&page=postman/configuration_wizard" );
+            $redirect_url = admin_url( "admin.php?socket=gmail_api&step=2&page=postman/configuration_wizard&action=add" );
         }
 
         // Redirect the user back with success
