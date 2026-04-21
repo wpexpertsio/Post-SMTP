@@ -407,6 +407,16 @@ class Post_SMTP_New_Wizard {
                                         </p>
                                     </div>
                                     <div class="ps-wizard-step ps-wizard-step-2">
+                                    <?php
+                                    $office365_wizard_tokens = get_transient( 'post_smtp_office365_wizard_tokens' );
+                                    if ( ! is_array( $office365_wizard_tokens ) ) {
+                                        $office365_wizard_tokens = array();
+                                    }
+
+                                    $office365_access_token  = $office365_wizard_tokens['access_token'] ?? ( $_GET['o_access_token'] ?? '' );
+                                    $office365_refresh_token = $office365_wizard_tokens['refresh_token'] ?? ( $_GET['o_refresh_token'] ?? '' );
+                                    $office365_expires_in    = $office365_wizard_tokens['expires_in'] ?? ( $_GET['o_expires_in'] ?? '' );
+                                    ?>
                                     <?php if( isset( $_GET['id'] ) ){ ?>
                                       <input type="hidden" class="postman_fallback_edit" name="postman_fallback_edit" value="<?php echo esc_attr(  $_GET['id'] ); ?>" >
                                     <?php } ?>
@@ -415,10 +425,11 @@ class Post_SMTP_New_Wizard {
                                       <input type="hidden" name="refresh_token" value="<?php echo esc_attr( $_GET['refresh_token'] ?? '' ); ?>" >
                                       <input type="hidden" name="token_expires" value="<?php echo esc_attr( $_GET['expires_in'] ?? '' ); ?>" >
                                     <?php } ?>
-                                    <?php if( isset( $_GET['o_access_token'] ) || isset( $_GET['o_refresh_token'] ) ){ ?>
-                                      <input type="hidden" name="access_token" value="<?php echo esc_attr( $_GET['o_access_token'] ?? '' ); ?>" >
-                                      <input type="hidden" name="refresh_token" value="<?php echo esc_attr( $_GET['o_refresh_token'] ?? '' ); ?>" >
-                                      <input type="hidden" name="token_expires" value="<?php echo esc_attr( $_GET['o_expires_in'] ?? '' ); ?>" >
+                                    <?php if( ! empty( $office365_access_token ) || ! empty( $office365_refresh_token ) ){ ?>
+                                      <input type="hidden" name="access_token" value="<?php echo esc_attr( $office365_access_token ); ?>" >
+                                      <input type="hidden" name="refresh_token" value="<?php echo esc_attr( $office365_refresh_token ); ?>" >
+                                      <input type="hidden" name="token_expires" value="<?php echo esc_attr( $office365_expires_in ); ?>" >
+                                      <?php delete_transient( 'post_smtp_office365_wizard_tokens' ); ?>
                                     <?php } ?>
                                     <?php if( isset( $_GET['g_access_token'] ) || isset( $_GET['g_refresh_token'] ) ){ ?>
                                       <input type="hidden" name="access_token" value="<?php echo esc_attr( $_GET['g_access_token'] ?? '' ); ?>" >
@@ -2767,8 +2778,25 @@ class Post_SMTP_New_Wizard {
             'state' => $state,
         ) );
 
-        wp_redirect( $redirect_url );
+        $this->post_smtp_safe_redirect( $redirect_url );
 
+    }
+
+    /**
+     * Redirect with fallback for restrictive hosts/environments (e.g., InstaWP).
+     *
+     * @param string $url Redirect destination.
+     * @return void
+     */
+    private function post_smtp_safe_redirect( $url ) {
+        $fallback_url = admin_url( 'admin.php?page=postman/configuration_wizard' );
+        $target_url   = wp_validate_redirect( (string) $url, $fallback_url );
+
+        // Try strict safe redirect first; gracefully fall back when host rules are restrictive.
+        if ( ! wp_safe_redirect( $target_url ) ) {
+            wp_redirect( $target_url );
+        }
+        exit;
     }
 	
     /**
@@ -2800,8 +2828,7 @@ class Post_SMTP_New_Wizard {
         }
 
         // Redirect back to configuration wizard page
-        wp_redirect( admin_url( "admin.php?socket=office365_api&step=2&page=postman/configuration_wizard" ) );
-        exit;
+        $this->post_smtp_safe_redirect( admin_url( "admin.php?socket=office365_api&step=2&page=postman/configuration_wizard" ) );
     }
 
 	/**
@@ -2905,8 +2932,7 @@ class Post_SMTP_New_Wizard {
         }
 
         // Redirect the user back with success
-        wp_redirect( $redirect_url );
-        exit;
+        $this->post_smtp_safe_redirect( $redirect_url );
     }
 
 
