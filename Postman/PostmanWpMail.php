@@ -263,7 +263,13 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$message = new PostmanMessage();
 			$options = PostmanOptions::getInstance();
 			// the From is set now so that it can be overridden
-			$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
+			$transport_registry = PostmanTransportRegistry::getInstance();
+			$existing_db_version = get_option( 'postman_db_version' );
+			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+				$transport = $transport_registry->getActiveTransport();
+			} else {
+				$transport = $options->is_fallback ? $transport_registry->getFallbackConnection() : $transport_registry->getPrimaryConnection();
+			}
 			if ( $transport !== null ) {
 				$fromEmail = $transport->getFromEmailAddress();
 				$fromName = $transport->getFromName();

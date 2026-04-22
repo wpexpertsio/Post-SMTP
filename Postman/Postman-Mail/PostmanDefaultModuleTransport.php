@@ -78,8 +78,11 @@ if ( ! class_exists( 'PostmanSmtpModuleTransport' ) ) {
 		 * @see PostmanModuleTransport::createMailEngine()
 		 */
 		public function createMailEngine() {
+			$fallback_flag = array(
+				'is_fallback' => null,
+			);
 			require_once 'PostmanZendMailEngine.php';
-			return new PostmanZendMailEngine( $this );
+			return new PostmanZendMailEngine( $this, $fallback_flag );
 		}
 
 		/**

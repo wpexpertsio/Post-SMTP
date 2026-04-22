@@ -207,19 +207,23 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				}else{
    					$selected = $is_fallback ? $options->getSelectedFallback() : $options->getSelectedPrimary();
     				$details  = isset( $connection_details[ $selected ] ) ? $connection_details[ $selected ] : array();
-					$site_url = parse_url( get_option( 'siteurl' ), PHP_URL_HOST );
-					$from_name = get_bloginfo( 'name' );
-					$from_email = 'wordpress@' . $site_url;			
+					$from = $log->sender;
 
-					// Respect prevent override flags
-					if ( ! empty( $details['prevent_sender_name_override'] ) ) {
-						$from_name = $details['sender_name'];
-					}
-					if ( ! empty( $details['prevent_sender_email_override'] ) ) {
-						$from_email = $details['sender_email'];
-					}
+					// Enforce selected mailer sender details only when override toggles are enabled.
+					if ( ! empty( $details['prevent_sender_name_override'] ) || ! empty( $details['prevent_sender_email_override'] ) ) {
+						$site_url = parse_url( get_option( 'siteurl' ), PHP_URL_HOST );
+						$from_name = get_bloginfo( 'name' );
+						$from_email = 'wordpress@' . $site_url;
 
-					$from = $from_name . ' <' . $from_email . '>';
+						if ( ! empty( $details['prevent_sender_name_override'] ) && ! empty( $details['sender_name'] ) ) {
+							$from_name = $details['sender_name'];
+						}
+						if ( ! empty( $details['prevent_sender_email_override'] ) && ! empty( $details['sender_email'] ) ) {
+							$from_email = $details['sender_email'];
+						}
+
+						$from = $from_name . ' <' . $from_email . '>';
+					}
 				}
 				
 				$data = array();
