@@ -424,6 +424,8 @@ class Post_SMTP_New_Wizard {
                                       <input type="hidden" name="access_token" value="<?php echo esc_attr( $_GET['access_token'] ?? '' ); ?>" >
                                       <input type="hidden" name="refresh_token" value="<?php echo esc_attr( $_GET['refresh_token'] ?? '' ); ?>" >
                                       <input type="hidden" name="token_expires" value="<?php echo esc_attr( $_GET['expires_in'] ?? '' ); ?>" >
+                                      <input type="hidden" name="user_email" value="<?php echo esc_attr( $_GET['user_email'] ?? '' ); ?>" >
+                                      <input type="hidden" name="account_key" value="<?php echo esc_attr( $_GET['account_key'] ?? '' ); ?>" >
                                     <?php } ?>
                                     <?php if( ! empty( $office365_access_token ) || ! empty( $office365_refresh_token ) ){ ?>
                                       <input type="hidden" name="access_token" value="<?php echo esc_attr( $office365_access_token ); ?>" >
@@ -435,6 +437,8 @@ class Post_SMTP_New_Wizard {
                                       <input type="hidden" name="access_token" value="<?php echo esc_attr( $_GET['g_access_token'] ?? '' ); ?>" >
                                       <input type="hidden" name="refresh_token" value="<?php echo esc_attr( $_GET['g_refresh_token'] ?? '' ); ?>" >
                                       <input type="hidden" name="token_expires" value="<?php echo esc_attr( $_GET['g_expires_in'] ?? '' ); ?>" >
+                                      <input type="hidden" name="user_email" value="<?php echo esc_attr( $_GET['user_email'] ?? '' ); ?>" >
+                                      <input type="hidden" name="account_key" value="<?php echo esc_attr( $_GET['account_key'] ?? '' ); ?>" >
                                     <?php } ?>
                                         <a href="" data-step="1" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span>Back</a>
                                         <?php
@@ -2538,19 +2542,79 @@ class Post_SMTP_New_Wizard {
         } else {
 
           	if ( isset( $form_data['access_token'] ) && ! empty( $form_data['access_token'] ) ) {
-              // ✅ Update token values for the last connection (assumes wizard OAuth success redirect)
-				$id = array_key_last( $mail_connections );
-				$mail_connections[ $id ] = array_merge( $mail_connections[ $id ], $new_connection );
+				$id = null;
+				// For Gmail one-click, prefer exact account matching to avoid overwriting latest connection.
+				if ( $transport_type === 'gmail_api' && ! empty( $new_connection['account_key'] ) ) {
+					foreach ( $mail_connections as $index => $connection ) {
+						if (
+							isset( $connection['provider'], $connection['account_key'] ) &&
+							$connection['provider'] === 'gmail_api' &&
+							$connection['account_key'] === $new_connection['account_key']
+						) {
+							$id = $index;
+							break;
+						}
+					}
+				}
+
+				if ( null === $id && $transport_type === 'gmail_api' && ! empty( $new_connection['user_email'] ) ) {
+					foreach ( $mail_connections as $index => $connection ) {
+						if (
+							isset( $connection['provider'], $connection['user_email'] ) &&
+							$connection['provider'] === 'gmail_api' &&
+							$connection['user_email'] === $new_connection['user_email']
+						) {
+							$id = $index;
+							break;
+						}
+					}
+				}
+
+				if ( null === $id && ! empty( $mail_connections ) ) {
+					$id = array_key_last( $mail_connections );
+				}
+
+				if ( null !== $id && isset( $mail_connections[ $id ] ) ) {
+					$mail_connections[ $id ] = array_merge( $mail_connections[ $id ], $new_connection );
+				} else {
+					$mail_connections[] = $new_connection;
+					$id = array_key_last( $mail_connections );
+				}
+
 				update_option( 'postman_connections', $mail_connections );
-				
+
 				return array(
 					'index'  => $id,
 					'status' => 'updated_token_only',
 				);
-				
-            }else{					
-	            $mail_connections[] = $new_connection;
-    	        $id = array_key_last( $mail_connections );
+
+            } else {
+				// Gmail one-click: when account_key exists, update matching account;
+				// otherwise append a brand-new connection to avoid overwriting last one.
+				if ( $transport_type === 'gmail_api' && ! empty( $new_connection['account_key'] ) ) {
+					$matched_index = null;
+					foreach ( $mail_connections as $index => $connection ) {
+						if (
+							isset( $connection['provider'], $connection['account_key'] ) &&
+							$connection['provider'] === 'gmail_api' &&
+							$connection['account_key'] === $new_connection['account_key']
+						) {
+							$matched_index = $index;
+							break;
+						}
+					}
+
+					if ( null !== $matched_index ) {
+						$mail_connections[ $matched_index ] = array_merge( $mail_connections[ $matched_index ], $new_connection );
+						$id = $matched_index;
+					} else {
+						$mail_connections[] = $new_connection;
+						$id = array_key_last( $mail_connections );
+					}
+				} else {
+					$mail_connections[] = $new_connection;
+					$id = array_key_last( $mail_connections );
+				}
 			}
         }
         
@@ -2618,6 +2682,8 @@ class Post_SMTP_New_Wizard {
                     'oauth_client_secret' => $sanitized['oauth_client_secret'] ?? '',
                     'auth_token_expires'  => $form_data['token_expires'] ?? '',
                     'timestamp'           => time() + 3600,
+                    'user_email'          => isset( $form_data['user_email'] ) ? sanitize_email( $form_data['user_email'] ) : ( $connection['user_email'] ?? '' ),
+                    'account_key'         => isset( $form_data['account_key'] ) ? sanitize_text_field( $form_data['account_key'] ) : ( $connection['account_key'] ?? '' ),
                 ) );
                 break;
         }
@@ -2957,6 +3023,7 @@ class Post_SMTP_New_Wizard {
             $expires_in    = isset( $_GET['expires_in'] ) ? intval( $_GET['expires_in'] ) : 0;
             $msg           = isset( $_GET['msg'] ) ? sanitize_text_field( $_GET['msg'] ) : '';
             $user_email    = isset( $_GET['user_email'] ) ? sanitize_email( $_GET['user_email'] ) : '';
+            $account_key   = isset( $_GET['account_key'] ) ? sanitize_text_field( $_GET['account_key'] ) : '';
             $auth_token_expires = time() + $expires_in;
 
             if ( $access_token ) {
@@ -2966,6 +3033,7 @@ class Post_SMTP_New_Wizard {
                     'auth_token_expires'=> $auth_token_expires,
                     'vendor_name'       => 'google',
                     'user_email'        => $user_email,
+                    'account_key'       => $account_key,
                 );
                 // Save the OAuth parameters to the WordPress options table.
                 update_option( 'postman_auth_token', $oauth_data );

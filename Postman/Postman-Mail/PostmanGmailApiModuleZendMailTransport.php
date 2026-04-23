@@ -217,6 +217,8 @@ if ( ! class_exists( 'PostmanGmailApiModuleZendMailTransport' ) ) {
 						'message' => $encodedMessage,
 						'headers' => $this->header,
 						'site_url'  => get_site_url(),
+						'account_key' => isset( $this->_config['account_key'] ) ? $this->_config['account_key'] : '',
+						'gmail_email' => isset( $this->_config['gmail_email'] ) ? $this->_config['gmail_email'] : '',
 					);
 					
 					$response = wp_remote_post(

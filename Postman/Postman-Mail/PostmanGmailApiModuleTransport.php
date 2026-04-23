@@ -91,6 +91,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		$authToken = PostmanOAuthToken::getInstance();
 		
 		$options = PostmanOptions::getInstance();
+		$selected_connection = array();
 		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
 			$client_id = $this->options->getClientId();
 			$client_secret = $this->options->getClientSecret();
@@ -104,12 +105,14 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 				$route_key = get_transient( 'post_smtp_smart_routing_route' );
 				if( $route_key != null  ){
 					// Smart routing is enabled, use the connection associated with the route_key.
+					$selected_connection = $connection_details[ $route_key ] ?? array();
 					$client_id   = $connection_details[ $route_key ]['oauth_client_id'];
 					$client_secret   = $connection_details[ $route_key ]['oauth_client_secret'];
 					$access_token =  $connection_details[ $route_key ]['access_token'];
 					$refresh_token =  $connection_details[ $route_key ]['refresh_token'];
 				}else{ 
 					$primary = $options->getSelectedPrimary();
+					$selected_connection = $connection_details[ $primary ] ?? array();
 					$client_id   = $connection_details[ $primary ]['oauth_client_id'];
 					$client_secret   = $connection_details[ $primary ]['oauth_client_secret'];
 					$access_token =  $connection_details[ $primary ]['access_token'];
@@ -117,6 +120,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 				}
 			} else {
 				$fallback = $options->getSelectedFallback();
+				$selected_connection = $connection_details[ $fallback ] ?? array();
 				$client_id   = $connection_details[ $fallback ]['oauth_client_id'];
 				$client_secret   = $connection_details[ $fallback ]['oauth_client_secret'];
 				$access_token =  $connection_details[ $fallback ]['access_token'];
@@ -149,7 +153,10 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
         $client->setRedirectUri( $this->getScribe()->getCallbackUrl() );
         
         if ( $this->gmail_oneclick_enabled ) {
-			$config = [];
+			$config = array(
+				'account_key' => isset( $selected_connection['account_key'] ) ? $selected_connection['account_key'] : '',
+				'gmail_email' => isset( $selected_connection['user_email'] ) ? $selected_connection['user_email'] : '',
+			);
 			return new PostmanGmailApiModuleZendMailTransport ( self::HOST, $config );
 		}
 		try {
