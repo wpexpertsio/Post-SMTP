@@ -539,7 +539,7 @@ class PostmanSettingsRegistry {
 				}
 				
 				// Format label.
-				$label = ucfirst( str_replace( '_', ' ', __( str_replace( 'api', 'API', $raw_label ), 'post-smtp' ) ) );
+				$label = ucwords( str_replace( '_', ' ', __( str_replace( 'api', 'API', $raw_label ), 'post-smtp' ) ) );
 				$label_with_email = sprintf( '%s (%s)', $label, $email );
 
 				printf(
@@ -626,7 +626,7 @@ class PostmanSettingsRegistry {
 				}
 			}
 
-			$provider_label = ucfirst( str_replace( '_', ' ', __( str_replace( 'api', 'API', $raw_label ), 'post-smtp' ) ) );
+			$provider_label = ucwords( str_replace( '_', ' ', __( str_replace( 'api', 'API', $raw_label ), 'post-smtp' ) ) );
 			
 			//$status         = ( $key == $primary_connection ) ? 'Primary' : ( ( $key == $primary_fallback ) ? 'Fallback' : 'None' );
 			$is_primary = ( $key == $primary_connection );

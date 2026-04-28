@@ -581,7 +581,7 @@ class PostmanConfigurationController {
 						}
 
 						// Format display label.
-						$label = ucfirst( str_replace( '_', ' ', __( str_replace( 'api', 'API', $raw_label ), 'post-smtp' ) ) );
+						$label = ucwords( str_replace( '_', ' ', __( str_replace( 'api', 'API', $raw_label ), 'post-smtp' ) ) );
 
 						// Sender email fallback.
 						$email = isset( $connection['sender_email'] ) ? $connection['sender_email'] : __( 'N/A', 'post-smtp' );
