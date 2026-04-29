@@ -135,11 +135,18 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				$this->logger->debug( 'Looking for grant code' );
 				$transactionId = $session->getOauthInProgress();
 				$incomingState = isset( $_GET['state'] ) ? sanitize_text_field( $_GET['state'] ) : '';
+				$oauthError    = isset( $_GET['error'] ) ? sanitize_text_field( $_GET['error'] ) : '';
 				if ( isset( $_GET ['code'] ) && ! empty( $incomingState ) && $incomingState === $transactionId ) {
 					$this->logger->debug( 'Found authorization grant code' );
 
 					// queue the function that processes the incoming grant code
 					$this->registerInitFunction( 'handleAuthorizationGrant' );
+					return;
+				}
+				if ( ! empty( $oauthError ) && ! empty( $incomingState ) && $incomingState === $transactionId ) {
+					$this->logger->debug( sprintf( 'Found OAuth error response: %s', $oauthError ) );
+					// queue the function that handles denied/cancelled OAuth flows
+					$this->registerInitFunction( 'handleAuthorizationDenied' );
 					return;
 				}
 			}
@@ -508,6 +515,27 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			$transactionId = $authenticationManager->generateRequestTransactionId();
 			PostmanSession::getInstance()->setOauthInProgress( $transactionId );
 			$authenticationManager->requestVerificationCode( $transactionId );
+		}
+
+		/**
+		 * Handle OAuth cancel/denied callback and redirect user to proper Gmail configuration screen.
+		 */
+		public function handleAuthorizationDenied() {
+			$message = __( 'Google authentication was cancelled. Please try again.', 'post-smtp' );
+			$this->messageHandler->addError( $message );
+
+			// Clean up pending OAuth request.
+			PostmanSession::getInstance()->unsetOauthInProgress();
+
+			if ( ! apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+				$wizard_redirect = admin_url( 'admin.php?page=postman/configuration_wizard&socket=gmail_api&step=2' );
+				wp_redirect( add_query_arg( 'msg', rawurlencode( $message ), $wizard_redirect ) );
+				exit();
+			}
+
+			// Legacy/manual Gmail setup should return to the configuration screen (not dashboard).
+			wp_safe_redirect( admin_url( 'admin.php?page=postman/configuration' ) );
+			exit();
 		}
 	}
 }
