@@ -106,9 +106,11 @@ class Post_SMTP_New_Wizard {
         add_action( 'wp_ajax_ps_get_office365_auth_url', array( $this, 'ajax_get_office365_auth_url' ) );
         add_action( 'wp_ajax_ps_get_gmail_auth_url', array( $this, 'ajax_get_gmail_auth_url' ) );
         add_action( 'admin_action_zoho_auth_request', array( $this, 'auth_zoho' ) );
+        add_action( 'admin_post_zoho_auth_request', array( $this, 'auth_zoho' ) );
         add_action( 'admin_post_remove_oauth_action', array( $this, 'post_smtp_remove_oauth_action' ) );
         add_action( 'admin_init', array( $this, 'handle_gmail_oauth_redirect' ) );
 		add_action( 'admin_init', array( $this, 'handle_office365_oauth_redirect' ) );
+		add_action( 'admin_init', array( $this, 'capture_edit_connection_context' ) );
 		add_action( 'admin_post_remove_365_oauth_action', array( $this, 'post_smtp_remove_365_oauth_action' ) );
 		add_action( 'wp_ajax_postman_delete_connection', array( $this, 'postman_handle_delete_connection' ) );
 		add_action( 'wp_ajax_nopriv_postman_delete_connection', array( $this, 'postman_handle_delete_connection' ) );
@@ -141,6 +143,75 @@ class Post_SMTP_New_Wizard {
 	    delete_transient('client_id');
 		delete_transient('client_secret');
 		wp_send_json_success();
+	}
+
+	/**
+	 * Persist current edit context so OAuth callbacks can still update the same connection.
+	 *
+	 * @return void
+	 */
+	public function capture_edit_connection_context() {
+		if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		if ( ! isset( $_GET['page'] ) || 'postman/configuration_wizard' !== sanitize_text_field( wp_unslash( $_GET['page'] ) ) ) {
+			return;
+		}
+		if ( ! isset( $_GET['id'] ) || '' === trim( (string) $_GET['id'] ) ) {
+			return;
+		}
+
+		$connection_id = sanitize_text_field( wp_unslash( $_GET['id'] ) );
+		$connections   = get_option( 'postman_connections', array() );
+		if ( ! is_array( $connections ) || ! isset( $connections[ $connection_id ] ) ) {
+			return;
+		}
+
+		$provider = isset( $connections[ $connection_id ]['provider'] ) ? sanitize_text_field( $connections[ $connection_id ]['provider'] ) : '';
+		$this->set_edit_connection_context(
+			array(
+				'id'       => $connection_id,
+				'provider' => $provider,
+			)
+		);
+	}
+
+	/**
+	 * User-scoped transient key for edit context.
+	 *
+	 * @return string
+	 */
+	private function get_edit_connection_context_key() {
+		return 'post_smtp_edit_connection_context_' . get_current_user_id();
+	}
+
+	/**
+	 * Store edit context.
+	 *
+	 * @param array $context
+	 * @return void
+	 */
+	private function set_edit_connection_context( $context ) {
+		set_transient( $this->get_edit_connection_context_key(), $context, 30 * MINUTE_IN_SECONDS );
+	}
+
+	/**
+	 * Read edit context.
+	 *
+	 * @return array
+	 */
+	private function get_edit_connection_context() {
+		$context = get_transient( $this->get_edit_connection_context_key() );
+		return is_array( $context ) ? $context : array();
+	}
+
+	/**
+	 * Clear edit context.
+	 *
+	 * @return void
+	 */
+	private function clear_edit_connection_context() {
+		delete_transient( $this->get_edit_connection_context_key() );
 	}
 
     /**
@@ -1168,11 +1239,16 @@ class Post_SMTP_New_Wizard {
             </span>
         </div>';
 
+        $gmail_connect_url = admin_url( 'admin-post.php?action=postman/requestOauthGrant' );
+        if ( isset( $_GET['id'] ) && '' !== trim( (string) $_GET['id'] ) ) {
+            $gmail_connect_url = add_query_arg( 'id', sanitize_text_field( wp_unslash( $_GET['id'] ) ), $gmail_connect_url );
+        }
+
         $html .= '
         <h3>' . __( 'Authorization (Required)', 'post-smtp' ) . '</h3>
         <p>' . __( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ) . '</p>
     <input type="hidden"  class="ps-gmail-warning" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) ) . '" />
-        <a href="' . esc_url( admin_url( 'admin-post.php?action=postman/requestOauthGrant' ) ) . '" class="button button-primary ps-blue-btn" id="ps-wizard-connect-gmail">' . __( 'Connect to Gmail API', 'post-smtp' ) . '</a>';
+        <a href="' . esc_url( $gmail_connect_url ) . '" class="button button-primary ps-blue-btn" id="ps-wizard-connect-gmail">' . __( 'Connect to Gmail API', 'post-smtp' ) . '</a>';
 
         // Remove OAuth action button
         $html .= '</div>';
@@ -2249,11 +2325,19 @@ class Post_SMTP_New_Wizard {
         </div>
         ';
         
+        $zoho_auth_url_args = array(
+            'action' => 'zoho_auth_request',
+        );
+        if ( isset( $_GET['id'] ) && '' !== trim( (string) $_GET['id'] ) ) {
+            $zoho_auth_url_args['id'] = sanitize_text_field( wp_unslash( $_GET['id'] ) );
+        }
+        $zoho_auth_url = add_query_arg( $zoho_auth_url_args, admin_url( 'admin-post.php' ) );
+
         $html .= '
         <h3>'.__( 'Authorization (Required)', 'post-smtp' ).'</h3>
         <p>'.__( 'Before continuing, you\'ll need to allow this plugin to send emails using Zoho.', 'post-smtp' ).'</p>
         <input type="hidden" '.$required.' data-error="Please authenticate by clicking Connect to Zoho" />
-        <a href="'.admin_url( 'admin.php?postman/configuration_wizard&action=zoho_auth_request' ).'" class="button button-primary ps-blue-btn" id="ps-wizard-connect-zoho">Connect to Zoho</a>';
+        <a href="'.esc_url( $zoho_auth_url ).'" class="button button-primary ps-blue-btn" id="ps-wizard-connect-zoho">Connect to Zoho</a>';
 
         return $html;
 
@@ -2543,8 +2627,18 @@ class Post_SMTP_New_Wizard {
 
           	if ( isset( $form_data['access_token'] ) && ! empty( $form_data['access_token'] ) ) {
 				$id = null;
+
+				$edit_context = $this->get_edit_connection_context();
+				if (
+					isset( $edit_context['id'], $edit_context['provider'] ) &&
+					$edit_context['provider'] === $transport_type &&
+					isset( $mail_connections[ $edit_context['id'] ] )
+				) {
+					$id = $edit_context['id'];
+				}
+
 				// For Gmail one-click, prefer exact account matching to avoid overwriting latest connection.
-				if ( $transport_type === 'gmail_api' && ! empty( $new_connection['account_key'] ) ) {
+				if ( null === $id && $transport_type === 'gmail_api' && ! empty( $new_connection['account_key'] ) ) {
 					foreach ( $mail_connections as $index => $connection ) {
 						if (
 							isset( $connection['provider'], $connection['account_key'] ) &&
@@ -2582,6 +2676,7 @@ class Post_SMTP_New_Wizard {
 				}
 
 				update_option( 'postman_connections', $mail_connections );
+				$this->clear_edit_connection_context();
 
 				return array(
 					'index'  => $id,
@@ -2619,6 +2714,7 @@ class Post_SMTP_New_Wizard {
         }
         
         $saved = update_option( 'postman_connections', $mail_connections );
+		$this->clear_edit_connection_context();
 
           $postman_options = array_merge( 
 			$postman_options, array(
@@ -2825,6 +2921,24 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function auth_zoho() {
+        // Persist edit context explicitly for Zoho callback flow.
+        if ( isset( $_GET['id'] ) && '' !== trim( (string) $_GET['id'] ) ) {
+            $connection_id = sanitize_text_field( wp_unslash( $_GET['id'] ) );
+            $connections   = get_option( 'postman_connections', array() );
+            if (
+                is_array( $connections ) &&
+                isset( $connections[ $connection_id ] ) &&
+                isset( $connections[ $connection_id ]['provider'] ) &&
+                'zohomail_api' === $connections[ $connection_id ]['provider']
+            ) {
+                $this->set_edit_connection_context(
+                    array(
+                        'id'       => $connection_id,
+                        'provider' => 'zohomail_api',
+                    )
+                );
+            }
+        }
 
         $zoho_mailer = new PostSMTP_ZohoMail();
         $oauthClient = $zoho_mailer->zohomail_configuration();
@@ -2845,6 +2959,7 @@ class Post_SMTP_New_Wizard {
         ) );
 
         wp_redirect( $redirect_url );
+        exit;
 
     }
 	
