@@ -68,7 +68,11 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
                 }
             }else{
                 $connections    = get_option( 'postman_connections', array() );
-                $configured = ( ! empty( $primary_connection ) && isset( $connections[ $primary_connection ] ) ) ? 'true' : 'false';
+                $configured = (
+                    $primary_connection !== null &&
+                    $primary_connection !== '' &&
+                    isset( $connections[ $primary_connection ] )
+                ) ? 'true' : 'false';
                 if ( $main_wp_configured == 'true' ) {
                     $configured = $post_smtp_parent_configured ? 'true' : 'false';
                 }
