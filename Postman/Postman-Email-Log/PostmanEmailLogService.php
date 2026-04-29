@@ -207,7 +207,9 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				}else{
    					$selected = $is_fallback ? $options->getSelectedFallback() : $options->getSelectedPrimary();
     				$details  = isset( $connection_details[ $selected ] ) ? $connection_details[ $selected ] : array();
-					$from = $log->sender;
+					$from_name = $details['sender_name'];
+					$from_email = $details['sender_email'];	
+					$from = $from_name . ' <' . $from_email . '>';
 
 					// Enforce selected mailer sender details only when override toggles are enabled.
 					if ( ! empty( $details['prevent_sender_name_override'] ) || ! empty( $details['prevent_sender_email_override'] ) ) {
