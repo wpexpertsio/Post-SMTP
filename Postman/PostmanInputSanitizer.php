@@ -94,6 +94,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 				$this->sanitizeString( 'Temporary Directory', PostmanOptions::TEMPORARY_DIRECTORY, $input, $new_input );
 				$this->sanitizeString( 'Selected Fallback', PostmanOptions::FALLBACK_SELECTED, $input, $new_input );
 				$this->sanitizeString( 'Primary Connection', PostmanOptions::PRIMARY_CONNECTION, $input, $new_input );
+				$this->syncSenderWithPrimaryConnection( $new_input );
 
 				// Fallback
 				$this->sanitizeString( 'Use fallback', PostmanOptions::FALLBACK_SMTP_ENABLED, $input, $new_input );
@@ -235,6 +236,39 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 		}
 		private function logSanitize( $desc, $value ) {
 			$this->logger->trace( 'Sanitize ' . $desc . ' ' . $value );
+		}
+
+		/**
+		 * Keep global sender fields in sync with selected primary connection.
+		 *
+		 * @param array $new_input
+		 * @return void
+		 */
+		private function syncSenderWithPrimaryConnection( &$new_input ) {
+			if ( ! isset( $new_input[ PostmanOptions::PRIMARY_CONNECTION ] ) ) {
+				return;
+			}
+
+			$primary_connection = (string) $new_input[ PostmanOptions::PRIMARY_CONNECTION ];
+			if ( '' === $primary_connection ) {
+				return;
+			}
+
+			$connections = get_option( 'postman_connections', array() );
+			if ( ! is_array( $connections ) || ! isset( $connections[ $primary_connection ] ) || ! is_array( $connections[ $primary_connection ] ) ) {
+				return;
+			}
+
+			$selected_connection = $connections[ $primary_connection ];
+
+			if ( ! empty( $selected_connection['sender_email'] ) ) {
+				$new_input[ PostmanOptions::MESSAGE_SENDER_EMAIL ] = sanitize_email( $selected_connection['sender_email'] );
+				$new_input[ PostmanOptions::ENVELOPE_SENDER ]      = $new_input[ PostmanOptions::MESSAGE_SENDER_EMAIL ];
+			}
+
+			if ( isset( $selected_connection['sender_name'] ) && '' !== $selected_connection['sender_name'] ) {
+				$new_input[ PostmanOptions::MESSAGE_SENDER_NAME ] = sanitize_text_field( $selected_connection['sender_name'] );
+			}
 		}
 	}
 }
