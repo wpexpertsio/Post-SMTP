@@ -73,6 +73,7 @@ class Post_SMTP_New_Wizard {
             'emailit_api',
             'sweego_api',
             'resend_api',
+            'cloudflare_api',
             'elasticemail_api',
             'mailgun_api',
             'smtp2go_api',
@@ -213,6 +214,7 @@ class Post_SMTP_New_Wizard {
                                                 'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
                                                 'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png',
                                                 'resend_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/resend.png',
+                                                'cloudflare_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/cloudflare.svg',
                                                 'emailit_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/emailit.png',
                                                 'maileroo_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/maileroo.png',
                                                 'sweego_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sweego.png'
@@ -804,6 +806,9 @@ class Post_SMTP_New_Wizard {
             case 'resend_api':
                 echo wp_kses( $this->render_resend_settings(), $this->allowed_tags );
             break;
+            case 'cloudflare_api':
+                echo wp_kses( $this->render_cloudflare_settings(), $this->allowed_tags );
+            break;
             case 'postmark_api':
                 echo wp_kses( $this->render_postmark_settings(), $this->allowed_tags );
             break;
@@ -1335,6 +1340,37 @@ class Post_SMTP_New_Wizard {
 
         return $html;
 
+    }
+
+    /**
+     * Render Cloudflare Settings
+     *
+     * @since 3.2.0
+     * @version 1.0.0
+     */
+    public function render_cloudflare_settings() {
+
+        $api_token  = null !== $this->options->getCloudflareApiToken() ? esc_attr( $this->options->getCloudflareApiToken() ) : '';
+        $account_id = null !== $this->options->getCloudflareAccountId() ? esc_attr( $this->options->getCloudflareAccountId() ) : '';
+
+        $html = '<p>' . esc_html__( 'It is easy to integrate Cloudflare mailer to your WordPress website. We recommend you to check the ', 'post-smtp' ) . '<a href="https://developers.cloudflare.com/email-routing/email-workers/send-email-workers/" target="_blank">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
+        $html .= '<div class="ps-wizard-divider"></div>';
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>API Token</label></div>
+            <input type="text" class="ps-cloudflare-api-token" required data-error="'.__( 'Please enter API Token.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::CLOUDFLARE_API_TOKEN ) .']" value="'.$api_token.'" placeholder="">'.
+            '<div class="ps-form-control-info">' . esc_html__( 'Create a token in Cloudflare that can send email using Email Routing.', 'post-smtp' ) . '</div>'
+            .
+        '</div>
+        <div class="ps-form-control">
+            <div><label>Account ID</label></div>
+            <input type="text" class="ps-cloudflare-account-id" required data-error="'.__( 'Please enter Account ID.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::CLOUDFLARE_ACCOUNT_ID ) .']" value="'.$account_id.'" placeholder="">'.
+            '<div class="ps-form-control-info">' . esc_html__( 'You can find the Account ID in your Cloudflare dashboard URL and account settings.', 'post-smtp' ) . '</div>'
+            .
+        '</div>
+        ';
+
+        return $html;
     }
 
 
@@ -1926,6 +1962,8 @@ class Post_SMTP_New_Wizard {
                 $sanitized[PostmanOptions::SENDGRID_API_KEY] = isset( $sanitized[PostmanOptions::SENDGRID_API_KEY] ) ? $sanitized[PostmanOptions::SENDGRID_API_KEY] : '';
                 $sanitized['sendgrid_region']  = isset( $sanitized['sendgrid_region'] ) ? $sanitized['sendgrid_region'] : '';
                 $sanitized['resend_api_key']  = isset( $sanitized['resend_api_key'] ) ? $sanitized['resend_api_key'] : '';
+                $sanitized[PostmanOptions::CLOUDFLARE_API_TOKEN] = isset( $sanitized[PostmanOptions::CLOUDFLARE_API_TOKEN] ) ? $sanitized[PostmanOptions::CLOUDFLARE_API_TOKEN] : '';
+                $sanitized[PostmanOptions::CLOUDFLARE_ACCOUNT_ID] = isset( $sanitized[PostmanOptions::CLOUDFLARE_ACCOUNT_ID] ) ? $sanitized[PostmanOptions::CLOUDFLARE_ACCOUNT_ID] : '';
                 $sanitized[PostmanOptions::EMAILIT_API_KEY]  = isset( $sanitized[PostmanOptions::EMAILIT_API_KEY] ) ? $sanitized[PostmanOptions::EMAILIT_API_KEY] : '';
                 $sanitized[PostmanOptions::MAILEROO_API_KEY]  = isset( $sanitized[PostmanOptions::MAILEROO_API_KEY] ) ? $sanitized[PostmanOptions::MAILEROO_API_KEY] : '';
                 $sanitized[PostmanOptions::SWEEGO_API_KEY]  = isset( $sanitized[PostmanOptions::SWEEGO_API_KEY] ) ? $sanitized[PostmanOptions::SWEEGO_API_KEY] : '';

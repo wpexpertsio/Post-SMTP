@@ -59,6 +59,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizePassword( 'Mandrill API Key', PostmanOptions::MANDRILL_API_KEY, $input, $new_input, $this->options->getMandrillApiKey() );
 			$this->sanitizePassword( 'SendGrid API Key', PostmanOptions::SENDGRID_API_KEY, $input, $new_input, $this->options->getSendGridApiKey() );
 			$this->sanitizePassword( 'Resend API Key', PostmanOptions::RESEND_API_KEY, $input, $new_input, $this->options->getResendApiKey() );
+			$this->sanitizePassword( 'Cloudflare API Token', PostmanOptions::CLOUDFLARE_API_TOKEN, $input, $new_input, $this->options->getCloudflareApiToken() );
 			$this->sanitizePassword( 'Emailit API Key', PostmanOptions::EMAILIT_API_KEY, $input, $new_input, $this->options->getEmailitApiKey() );
 			$this->sanitizePassword( 'Maileroo API Key', PostmanOptions::MAILEROO_API_KEY, $input, $new_input, $this->options->getMailerooApiKey() );
 			$this->sanitizePassword( 'Mailtrap API Key', PostmanOptions::MAILTRAP_API_KEY, $input, $new_input, $this->options->getMailtrapApiKey() );
@@ -75,6 +76,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 			$this->sanitizePassword( 'ElasticEmail API Key', PostmanOptions::ELASTICEMAIL_API_KEY, $input, $new_input, $this->options->getElasticEmailApiKey() );
 			$this->sanitizePassword( 'Smtp2go Api Key', PostmanOptions::SMTP2GO_API_KEY, $input, $new_input, $this->options->getSmtp2goApiKey() );
 			$this->sanitizeString( 'Mailgun Domain Name', PostmanOptions::MAILGUN_DOMAIN_NAME, $input, $new_input );
+			$this->sanitizeString( 'Cloudflare Account ID', PostmanOptions::CLOUDFLARE_ACCOUNT_ID, $input, $new_input );
 			$this->sanitizeString( 'Reply-To', PostmanOptions::REPLY_TO, $input, $new_input );
 			$this->sanitizeString( 'From Name Override', PostmanOptions::PREVENT_MESSAGE_SENDER_NAME_OVERRIDE, $input, $new_input );
 			$this->sanitizeString( 'From Email Override', PostmanOptions::PREVENT_MESSAGE_SENDER_EMAIL_OVERRIDE, $input, $new_input );
