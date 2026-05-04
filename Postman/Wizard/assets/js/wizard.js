@@ -1431,11 +1431,19 @@ jQuery(document).ready(function ($) {
 
     jQuery(document).on('click', '.ps-office365-btn', function (e) {
         e.preventDefault();
-        var redirectURI = jQuery(this).attr('href');
         var $button = jQuery(this);
-        var originalText = $button.text();
 
-        $button.prop('disabled', true).text('Redirecting...');
+        // <a> elements ignore .prop('disabled'); guard + class block repeat clicks.
+        if ($button.hasClass('ps-office365-btn--busy')) {
+            return false;
+        }
+
+        var originalText = $button.text();
+        $button.addClass('ps-office365-btn--busy').attr({ 'aria-busy': 'true', 'aria-disabled': 'true' }).text('Redirecting...');
+
+        var resetButton = function () {
+            $button.removeClass('ps-office365-btn--busy').removeAttr('aria-busy').removeAttr('aria-disabled').text(originalText);
+        };
 
         jQuery.ajax({
             url: ajaxurl,
@@ -1459,22 +1467,23 @@ jQuery(document).ready(function ($) {
                         if (response.success && response.data && response.data.auth_url) {
                             window.location.assign(response.data.auth_url);
                         } else {
-                            $button.prop('disabled', false).text(originalText);
+                            resetButton();
                             if (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.office365AuthErrorText) {
                                 alert(PostSMTPWizard.office365AuthErrorText);
                             }
                         }
                     },
                     error: function () {
-                        $button.prop('disabled', false).text(originalText);
+                        resetButton();
                         if (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.office365AuthErrorText) {
                             alert(PostSMTPWizard.office365AuthErrorText);
                         }
                     }
                 });
-
             },
-
+            error: function () {
+                resetButton();
+            }
         });
     });
 

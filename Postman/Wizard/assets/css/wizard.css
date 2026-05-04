@@ -970,6 +970,7 @@ span.ps-pro-close-popup {
   align-items: center;
   text-decoration: none;
   height: 50px;
+  transition: opacity 0.15s ease, background-color 0.15s ease, filter 0.15s ease;
 }
 
 .ps-office365-btn::before {
@@ -982,6 +983,21 @@ span.ps-pro-close-popup {
   height: 34px;
   margin-right: 10px;
   background-color: white;
+}
+
+.ps-office365-btn.ps-office365-btn--busy {
+  pointer-events: none;
+  cursor: not-allowed !important;
+  opacity: 0.55;
+  filter: grayscale(0.35);
+  background-color: #8b9dc0 !important;
+  border-color: #8b9dc0 !important;
+  box-shadow: none !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.ps-office365-btn.ps-office365-btn--busy::before {
+  opacity: 0.7;
 }
 
 .ps-gmail-btn {

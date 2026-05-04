@@ -214,6 +214,75 @@ class Post_SMTP_New_Wizard {
 		delete_transient( $this->get_edit_connection_context_key() );
 	}
 
+	/**
+	 * Writes Office 365 OAuth tokens into `postman_connections` so multiple Microsoft mailboxes can coexist (mirrors Gmail multi-account storage).
+	 *
+	 * @param array $oauth_data Same shape as `postman_office365_oauth` option after redirect.
+	 * @return void
+	 */
+	private function merge_office365_oauth_into_connections( array $oauth_data ) {
+		if ( get_option( 'postman_db_version' ) !== POST_SMTP_DB_VERSION ) {
+			return;
+		}
+
+		$connections = get_option( 'postman_connections', array() );
+		if ( ! is_array( $connections ) ) {
+			return;
+		}
+
+		$user_email = isset( $oauth_data['user_email'] ) ? sanitize_email( $oauth_data['user_email'] ) : '';
+		$token_row  = array(
+			'access_token'  => isset( $oauth_data['access_token'] ) ? sanitize_text_field( $oauth_data['access_token'] ) : '',
+			'refresh_token' => isset( $oauth_data['refresh_token'] ) ? sanitize_text_field( $oauth_data['refresh_token'] ) : '',
+			'token_expires' => isset( $oauth_data['token_expires'] ) ? absint( $oauth_data['token_expires'] ) : 0,
+			'user_email'    => $user_email,
+		);
+
+		$ctx       = $this->get_edit_connection_context();
+		$target_id = null;
+
+		if ( ! empty( $ctx['id'] ) && isset( $ctx['provider'] ) && 'office365_api' === $ctx['provider'] && isset( $connections[ $ctx['id'] ] ) ) {
+			$target_id = $ctx['id'];
+		}
+
+		if ( null === $target_id && $user_email ) {
+			foreach ( $connections as $idx => $row ) {
+				if ( ! isset( $row['provider'] ) || 'office365_api' !== $row['provider'] ) {
+					continue;
+				}
+				$se = isset( $row['sender_email'] ) ? sanitize_email( $row['sender_email'] ) : '';
+				$ue = isset( $row['user_email'] ) ? sanitize_email( $row['user_email'] ) : '';
+				if ( $user_email && ( $user_email === $se || $user_email === $ue ) ) {
+					$target_id = $idx;
+					break;
+				}
+			}
+		}
+
+		if ( null !== $target_id ) {
+			$connections[ $target_id ] = array_merge( $connections[ $target_id ], $token_row );
+			if ( $user_email ) {
+				$connections[ $target_id ]['sender_email'] = $user_email;
+			}
+			update_option( 'postman_connections', $connections );
+			$this->clear_edit_connection_context();
+			return;
+		}
+
+		$connections[] = array_merge(
+			array(
+				'provider'                      => 'office365_api',
+				'sender_email'                  => $user_email,
+				'sender_name'                   => '',
+				'prevent_sender_email_override' => 0,
+				'prevent_sender_name_override'  => 0,
+			),
+			$token_row
+		);
+		update_option( 'postman_connections', $connections );
+		$this->clear_edit_connection_context();
+	}
+
     /**
      * Load the wizard | Action Callback
      * 
@@ -1988,6 +2057,12 @@ class Post_SMTP_New_Wizard {
 
         $mail_connections  = get_option( 'postman_connections' );
         $options = get_option( PostmanOptions::POSTMAN_OPTIONS, array() );
+
+        $post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
+        $extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : [];
+        $office365_oneclick_enabled = in_array( 'microsoft-one-click', $extensions );
+
+        $id                = null;
         if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
             $id = $_GET['id'] ?? null;
             $action = isset($_GET['action']) ? $_GET['action'] : '';
@@ -2000,13 +2075,13 @@ class Post_SMTP_New_Wizard {
             } elseif ( $action === 'add' ) {
                 $app_client_id     = '';
                 $app_client_secret = '';
-            } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
-                // No ID? Use last Office 365 connection, or any connection as fallback
+            } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) && ! $office365_oneclick_enabled ) {
+                // Manual setup only: reuse last Office 365 app credentials (matches Gmail wizard behavior).
                 $last_connection   = PostmanOptions::get_last_office365_credentials( $mail_connections );
                 $app_client_id     = $last_connection['office365_app_id'] ?? '';
                 $app_client_secret = $last_connection['office365_app_password'] ?? '';
             } else {
-                // No connections → empty values
+                // One-click enabled without a selected connection: blank fields (do not inherit another account).
                 $app_client_id     = '';
                 $app_client_secret = '';
             }
@@ -2019,15 +2094,18 @@ class Post_SMTP_New_Wizard {
 
         $redirect_uri = admin_url();
         
-        // Check if access token exists for Office 365
+        // Check if access token exists for Office 365 (global option, used by One-Click + legacy send path).
         $office365_oauth = get_option( 'postman_office365_oauth' );
+        $postman_office365_auth_token = $office365_oauth;
         $has_access_token = $office365_oauth && isset( $office365_oauth['access_token'] ) && ! empty( $office365_oauth['access_token'] );
-        
-        // Retrieve options for premium features and extensions
-        $post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
-        $postman_office365_auth_token = get_option( 'postman_office365_oauth' );
-        $extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : [];
-        $office365_oneclick_enabled = in_array( 'microsoft-one-click', $extensions );
+
+        $wizard_action = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
+        $is_add_office365_connection = ( $this->existing_db_version == POST_SMTP_DB_VERSION && 'add' === $wizard_action );
+        if ( $is_add_office365_connection ) {
+            // Adding another Microsoft account: ignore stored global tokens for validation + One-Click UI (same idea as Gmail `action=add`).
+            $has_access_token = false;
+        }
+
         $office365_auth_url = get_option( 'post_smtp_office365_auth_url' );
 
         $html = '<p>' . esc_html__( 'To establish a SMTP connection, you will need to create an app in your Azure account. This ', 'post-smtp' ) . ' <a href="' . esc_url( 'https://postmansmtp.com/docs/mailers/how-to-setup-office-365-with-post-smtp/' ) . '" target="_blank">' . esc_html__( 'step-by-step guide', 'post-smtp' ) . '</a> ' . esc_html__( 'will walk you through the whole process.', 'post-smtp' ) . '</p>';
@@ -2054,7 +2132,7 @@ class Post_SMTP_New_Wizard {
             // Determine whether we have both token and email stored for Office365
             // Only treat stored user_email as valid when one-click is enabled.
             $has_email = false;
-            if ( $office365_oneclick_enabled && $office365_oauth && isset( $office365_oauth['user_email'] ) && ! empty( $office365_oauth['user_email'] ) ) {
+            if ( ! $is_add_office365_connection && $office365_oneclick_enabled && $office365_oauth && isset( $office365_oauth['user_email'] ) && ! empty( $office365_oauth['user_email'] ) ) {
                 $has_email = true;
             }
 
@@ -2193,25 +2271,68 @@ class Post_SMTP_New_Wizard {
         <a class="button button-primary ps-blue-btn" id="ps-wizard-connect-office365">Connect to Office 365</a>';
 	
         $html .= '</div>';
-            
+
+        // One-click authorization UI — align with Gmail: `action=add` always shows Sign in so another mailbox can be linked.
+        $moc_show_connected   = false;
+        $moc_connected_email  = '';
+        $glob_oauth_has_token = $office365_oauth && isset( $office365_oauth['access_token'] ) && ! empty( $office365_oauth['access_token'] );
+        $glob_user_email      = isset( $office365_oauth['user_email'] ) ? sanitize_email( $office365_oauth['user_email'] ) : '';
+
+        if ( $office365_oneclick_enabled && post_smtp_has_pro() ) {
+            if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
+                $wiz_act = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
+                if ( 'add' === $wiz_act ) {
+                    $moc_show_connected = false;
+                } elseif ( isset( $mail_connections[ $id ] ) && isset( $mail_connections[ $id ]['provider'] ) && 'office365_api' === $mail_connections[ $id ]['provider'] ) {
+                    $row        = $mail_connections[ $id ];
+                    $conn_email = isset( $row['sender_email'] ) ? sanitize_email( $row['sender_email'] ) : ( isset( $row['user_email'] ) ? sanitize_email( $row['user_email'] ) : '' );
+                    $has_row_t  = ! empty( $row['access_token'] );
+                    $glob_match = $glob_oauth_has_token && $glob_user_email && $conn_email && strtolower( $glob_user_email ) === strtolower( $conn_email );
+                    if ( $has_row_t || $glob_match ) {
+                        $moc_show_connected  = true;
+                        $moc_connected_email = $conn_email ? $conn_email : $glob_user_email;
+                    }
+                } elseif ( 'add' !== $wiz_act && ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
+                    $last_o = null;
+                    foreach ( array_reverse( $mail_connections, true ) as $connection ) {
+                        if ( isset( $connection['provider'] ) && 'office365_api' === $connection['provider'] ) {
+                            $last_o = $connection;
+                            break;
+                        }
+                    }
+                    if ( $last_o ) {
+                        $conn_email = isset( $last_o['sender_email'] ) ? sanitize_email( $last_o['sender_email'] ) : ( isset( $last_o['user_email'] ) ? sanitize_email( $last_o['user_email'] ) : '' );
+                        $has_row_t  = ! empty( $last_o['access_token'] );
+                        $glob_match = $glob_oauth_has_token && $glob_user_email && $conn_email && strtolower( $glob_user_email ) === strtolower( $conn_email );
+                        if ( $has_row_t || $glob_match ) {
+                            $moc_show_connected  = true;
+                            $moc_connected_email = $conn_email ? $conn_email : $glob_user_email;
+                        }
+                    }
+                }
+            } elseif ( $postman_office365_auth_token && isset( $postman_office365_auth_token['user_email'] ) ) {
+                $moc_show_connected  = true;
+                $moc_connected_email = $postman_office365_auth_token['user_email'];
+            }
+        }
+
         $html .= '<div class="ps-disable-office365-setup ' . ( $office365_oneclick_enabled ? '' : 'ps-hidden' ) . '">';
         if ( post_smtp_has_pro() ) {
-            if ( $postman_office365_auth_token  && isset( $postman_office365_auth_token['user_email'] ) ) {
+            if ( $moc_show_connected && '' !== $moc_connected_email ) {
                 $nonce = wp_create_nonce( 'remove_365_oauth_action' );
-                $action_url = esc_url( add_query_arg(
-                    [
-                        '_wpnonce' => $nonce,
-                        'action' => 'remove_365_oauth_action',
-                    ],
-                    admin_url( 'admin-post.php' )
-                ) );
-                if ( isset( $postman_office365_auth_token['user_email'] ) ) {
-                $html .= '<span class="icon-circle"><span class="icon-check"></span> </span> <b>' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_office365_auth_token['user_email'] ) ) . '</b>';
+                $remove_args = array(
+                    '_wpnonce' => $nonce,
+                    'action'   => 'remove_365_oauth_action',
+                );
+                if ( $this->existing_db_version == POST_SMTP_DB_VERSION && null !== $id && '' !== $id ) {
+                    $remove_args['id'] = $id;
                 }
+                $action_url = esc_url( add_query_arg( $remove_args, admin_url( 'admin-post.php' ) ) );
+                $html .= '<span class="icon-circle"><span class="icon-check"></span> </span> <b>' . sprintf( esc_html__( 'Connected with: %s', 'post-smtp' ), esc_html( $moc_connected_email ) ) . '</b>';
                 $html .= '<a href="' . $action_url . '" class="button button-secondary ps-remove-office365-btn">';
                 $html .= esc_html__( 'Remove Authorization', 'post-smtp' );
                 $html .= '</a>';
-            }else {
+            } else {
                 $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
                 $html .= '<p>' . 'Before proceeding, you’ll need to authorize this plugin to send emails using the Office 365 API. This <a href="https://postmansmtp.com/docs/mailers/microsoft-365-one-click-setup/" target="_blank">step-by-step guide</a> will walk you through the entire process.</p>';
                 $html .= '<input class="office_365-require" type="hidden" ' . esc_attr( $required ) . ' value="' . ( ( $has_access_token && $has_email ) ? '1' : '' ) . '" data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Office 365 API', 'post-smtp' ) . '" />';
@@ -2664,6 +2785,19 @@ class Post_SMTP_New_Wizard {
 					}
 				}
 
+				if ( null === $id && $transport_type === 'office365_api' && ! empty( $new_connection['user_email'] ) ) {
+					foreach ( $mail_connections as $index => $connection ) {
+						if (
+							isset( $connection['provider'], $connection['user_email'] ) &&
+							$connection['provider'] === 'office365_api' &&
+							$connection['user_email'] === $new_connection['user_email']
+						) {
+							$id = $index;
+							break;
+						}
+					}
+				}
+
 				if ( null === $id && ! empty( $mail_connections ) ) {
 					$id = array_key_last( $mail_connections );
 				}
@@ -2693,6 +2827,29 @@ class Post_SMTP_New_Wizard {
 							isset( $connection['provider'], $connection['account_key'] ) &&
 							$connection['provider'] === 'gmail_api' &&
 							$connection['account_key'] === $new_connection['account_key']
+						) {
+							$matched_index = $index;
+							break;
+						}
+					}
+
+					if ( null !== $matched_index ) {
+						$mail_connections[ $matched_index ] = array_merge( $mail_connections[ $matched_index ], $new_connection );
+						$id = $matched_index;
+					} else {
+						$mail_connections[] = $new_connection;
+						$id = array_key_last( $mail_connections );
+					}
+				} elseif ( $transport_type === 'office365_api' && ! empty( $new_connection['user_email'] ) ) {
+					$matched_index = null;
+					foreach ( $mail_connections as $index => $connection ) {
+						if (
+							isset( $connection['provider'] ) &&
+							$connection['provider'] === 'office365_api' &&
+							(
+								( isset( $connection['user_email'] ) && $connection['user_email'] === $new_connection['user_email'] ) ||
+								( isset( $connection['sender_email'] ) && $connection['sender_email'] === $new_connection['user_email'] )
+							)
 						) {
 							$matched_index = $index;
 							break;
@@ -2768,6 +2925,7 @@ class Post_SMTP_New_Wizard {
                 $connection = array_merge( $connection, array(
                     'office365_app_id'       => $sanitized['office365_app_id'] ?? '',
                     'office365_app_password' => $sanitized['office365_app_password'] ?? '',
+                    'user_email'             => isset( $form_data['user_email'] ) ? sanitize_email( $form_data['user_email'] ) : ( $connection['user_email'] ?? '' ),
                     'timestamp'              => time() + 3600,
                 ) );
                 break;
@@ -2968,12 +3126,16 @@ class Post_SMTP_New_Wizard {
      *
      * This function removes only the sensitive fields (tokens, email, and expiration)
      * from the stored Office 365 OAuth option instead of deleting the entire record.
+     * When using multi-connection storage (see POST_SMTP_DB_VERSION), it also removes
+     * the matching `office365_api` entry from `postman_connections`, mirroring Gmail OAuth removal.
      */
     public function post_smtp_remove_365_oauth_action() {
         // Verify nonce for security
         if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'remove_365_oauth_action' ) ) {
             wp_die( esc_html__( 'Nonce verification failed. Please try again.', 'post-smtp' ) );
         }
+
+        $redirect_url = admin_url( 'admin.php?page=postman/configuration_wizard&socket=office365_api&step=2&action=add' );
 
         // Get the saved Office 365 OAuth data
         $oauth_data = get_option( 'postman_office365_oauth', [] );
@@ -2991,8 +3153,26 @@ class Post_SMTP_New_Wizard {
             update_option( 'postman_office365_oauth', $oauth_data );
         }
 
-        // Redirect back to configuration wizard page
-        $this->post_smtp_safe_redirect( admin_url( "admin.php?socket=office365_api&step=2&page=postman/configuration_wizard" ) );
+        if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
+            // Remove legacy/global auth first so UI does not show stale "Connected with".
+            delete_option( 'postman_auth_token' );
+
+            $id = isset( $_GET['id'] ) ? absint( $_GET['id'] ) : null;
+            $mail_connections = get_option( 'postman_connections', array() );
+
+            if ( null !== $id && isset( $mail_connections[ $id ] ) && isset( $mail_connections[ $id ]['provider'] ) && $mail_connections[ $id ]['provider'] === 'office365_api' ) {
+                unset( $mail_connections[ $id ] );
+                update_option( 'postman_connections', $mail_connections );
+            }
+
+            $redirect_url = admin_url( 'admin.php?socket=office365_api&step=2&page=postman/configuration_wizard&action=add' );
+        } else {
+            delete_option( 'postman_auth_token' );
+            $redirect_url = admin_url( 'admin.php?socket=office365_api&step=2&page=postman/configuration_wizard&action=add' );
+        }
+
+        wp_redirect( $redirect_url );
+        exit;
     }
 
 	/**
@@ -3049,6 +3229,8 @@ class Post_SMTP_New_Wizard {
 
 			// Save the OAuth parameters to the WordPress options table.
 			update_option( 'postman_office365_oauth', $oauth_data );
+
+			$this->merge_office365_oauth_into_connections( $oauth_data );
 		}
 	}
 
