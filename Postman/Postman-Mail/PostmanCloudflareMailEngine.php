@@ -49,6 +49,47 @@ class PostmanCloudflareMailEngine implements PostmanMailEngine {
 		return $result;
 	}
 
+	/**
+	 * Cloudflare Email Service (REST) allows only a whitelist of custom headers plus X-* headers.
+	 * Platform-controlled headers (Message-ID, Date, Content-Type, …) and first-class fields
+	 * (From, To, …) must not be set via `headers` — see Cloudflare email headers reference.
+	 *
+	 * @param string $name Header name.
+	 * @return bool
+	 */
+	private function isHeaderAllowedByCloudflare( $name ) {
+		$n = strtolower( trim( (string) $name ) );
+		if ( '' === $n ) {
+			return false;
+		}
+		if ( 0 === strncmp( $n, 'x-', 2 ) ) {
+			return (bool) preg_match( '/^x-[a-z0-9\-_]+$/', $n );
+		}
+		$allowed = array(
+			'in-reply-to',
+			'references',
+			'list-unsubscribe',
+			'list-unsubscribe-post',
+			'list-id',
+			'list-archive',
+			'list-help',
+			'list-owner',
+			'list-post',
+			'list-subscribe',
+			'precedence',
+			'auto-submitted',
+			'content-language',
+			'keywords',
+			'comments',
+			'importance',
+			'sensitivity',
+			'organization',
+			'require-recipient-valid-since',
+			'archived-at',
+		);
+		return in_array( $n, $allowed, true );
+	}
+
 	public function send( PostmanMessage $message ) {
 		$options     = PostmanOptions::getInstance();
 		$cloudflare  = new PostmanCloudflare( $this->api_token, $this->account_id );
@@ -130,12 +171,14 @@ class PostmanCloudflareMailEngine implements PostmanMailEngine {
 			if ( empty( $header['name'] ) || ! isset( $header['content'] ) ) {
 				continue;
 			}
-			$metaHeaders[ $header['name'] ] = (string) $header['content'];
-		}
-
-		$messageId = $message->getMessageId();
-		if ( ! empty( $messageId ) ) {
-			$metaHeaders['message-id'] = $messageId;
+			if ( ! $this->isHeaderAllowedByCloudflare( $header['name'] ) ) {
+				continue;
+			}
+			$value = (string) $header['content'];
+			if ( '' === $value ) {
+				continue;
+			}
+			$metaHeaders[ $header['name'] ] = $value;
 		}
 
 		if ( ! empty( $metaHeaders ) ) {
