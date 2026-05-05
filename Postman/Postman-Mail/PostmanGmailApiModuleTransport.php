@@ -154,8 +154,10 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
         
         if ( $this->gmail_oneclick_enabled ) {
 			$config = array(
-				'account_key' => isset( $selected_connection['account_key'] ) ? $selected_connection['account_key'] : '',
-				'gmail_email' => isset( $selected_connection['user_email'] ) ? $selected_connection['user_email'] : '',
+				'account_key'   => isset( $selected_connection['account_key'] ) ? $selected_connection['account_key'] : '',
+				'gmail_email'   => isset( $selected_connection['user_email'] ) ? $selected_connection['user_email'] : '',
+				// Must match Manage Connections / wizard "configured" checks so mail cannot send while status is Needs Configuration.
+				'access_token'  => isset( $selected_connection['access_token'] ) ? $selected_connection['access_token'] : '',
 			);
 			return new PostmanGmailApiModuleZendMailTransport ( self::HOST, $config );
 		}

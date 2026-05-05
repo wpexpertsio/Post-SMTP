@@ -768,8 +768,21 @@ class Post_SMTP_New_Wizard {
                             
                            
                             <div class="ps-wizard-step ps-wizard-step-2">
-                                <p class="ps-wizard-success"><?php echo ( isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
-                                <p class="ps-wizard-error"><?php echo ( !isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
+                                <?php
+                                $wizard_notice_msg = isset( $_GET['msg'] ) ? sanitize_text_field( wp_unslash( $_GET['msg'] ) ) : '';
+                                $wizard_success_q  = isset( $_GET['success'] ) && '1' === (string) $_GET['success'];
+                                // OAuth cancel/deny messages must use error styling even if the redirect incorrectly includes success=1.
+                                $wizard_msg_is_oauth_denied = ( '' !== $wizard_notice_msg ) && (
+                                    false !== stripos( $wizard_notice_msg, 'canceled' ) ||
+                                    false !== stripos( $wizard_notice_msg, 'cancelled' ) ||
+                                    false !== stripos( $wizard_notice_msg, 'denied' ) ||
+                                    false !== stripos( $wizard_notice_msg, 'authentication was cancelled' )
+                                );
+                                $wizard_show_success = ( '' !== $wizard_notice_msg ) && $wizard_success_q && ! $wizard_msg_is_oauth_denied;
+                                $wizard_show_error   = ( '' !== $wizard_notice_msg ) && ( ! $wizard_success_q || $wizard_msg_is_oauth_denied );
+                                ?>
+                                <p class="ps-wizard-success"><?php echo $wizard_show_success ? esc_html( $wizard_notice_msg ) : ''; ?></p>
+                                <p class="ps-wizard-error"><?php echo $wizard_show_error ? esc_html( $wizard_notice_msg ) : ''; ?></p>
                                 <a href="" data-step="1" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span><?php _e( 'Back', 'post-smtp' ); ?></a>
                                 <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="2"></span><?php _e( 'Save and Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                                 <div style="clear: both"></div>

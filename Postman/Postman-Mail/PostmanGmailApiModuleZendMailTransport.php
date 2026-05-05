@@ -212,6 +212,15 @@ if ( ! class_exists( 'PostmanGmailApiModuleZendMailTransport' ) ) {
 			$result = array ();
 			try {
 				if ( $this->gmail_oneclick_enabled ) {
+					$stored_access = isset( $this->_config['access_token'] ) ? trim( (string) $this->_config['access_token'] ) : '';
+					if ( '' === $stored_access ) {
+						throw new Exception(
+							__(
+								'Gmail One-Click setup is not finished. Open the Setup Wizard, sign in with Google, then click Save and Continue so your authorization is stored before sending mail.',
+								'post-smtp'
+							)
+						);
+					}
 				  // Prepare payload.
 					$payload = array(
 						'message' => $encodedMessage,

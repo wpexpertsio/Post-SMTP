@@ -1356,27 +1356,6 @@ jQuery(document).ready(function ($) {
 	jQuery(document).on('click', '.ps-finish-wizard', function(e) {
 		jQuery.post( ajaxurl, { action: 'ps_expire_client_transients' });
 	});
-
-    		
-	jQuery( document ).on( 'click', '.ps-gmail-btn', function( e ) {
-        e.preventDefault();
-		var redirectURI = jQuery( this ).attr( 'href' );
-        jQuery.ajax( {
-            url: ajaxurl,
-            type: 'POST',
-            async: true,
-            data: {
-                action: 'ps-save-wizard',
-                FormData: jQuery( '#ps-wizard-form' ).serialize(),
-            },
-            success: function( response ) {
-                window.location.assign( redirectURI );
-
-            },
-
-        } );
-
-    } );
     
 });
 
@@ -1412,7 +1391,20 @@ jQuery(document).ready(function ($) {
     });
     jQuery(document).on('click', '.ps-gmail-btn', function (e) {
         e.preventDefault();
-        var redirectURI = jQuery(this).attr('href');
+        var $button = jQuery(this);
+
+        if ($button.hasClass('ps-gmail-btn--busy')) {
+            return false;
+        }
+
+        var redirectURI = $button.attr('href');
+        var originalText = $button.text();
+        $button.addClass('ps-gmail-btn--busy').attr({ 'aria-busy': 'true', 'aria-disabled': 'true' }).text('Redirecting...');
+
+        var resetButton = function () {
+            $button.removeClass('ps-gmail-btn--busy').removeAttr('aria-busy').removeAttr('aria-disabled').text(originalText);
+        };
+
         jQuery.ajax({
             url: ajaxurl,
             type: 'POST',
@@ -1423,9 +1415,10 @@ jQuery(document).ready(function ($) {
             },
             success: function (response) {
                 window.location.assign(redirectURI);
-
             },
-
+            error: function () {
+                resetButton();
+            }
         });
     });
 

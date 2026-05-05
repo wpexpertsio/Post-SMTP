@@ -1009,6 +1009,22 @@ span.ps-pro-close-popup {
   display: inline-flex !important;
   align-items: center;
   text-decoration: none;
+  transition: opacity 0.15s ease, background-color 0.15s ease, filter 0.15s ease;
+}
+
+.ps-gmail-btn.ps-gmail-btn--busy {
+  pointer-events: none;
+  cursor: not-allowed !important;
+  opacity: 0.55;
+  filter: grayscale(0.35);
+  background-color: #8b9dc0 !important;
+  border-color: #8b9dc0 !important;
+  box-shadow: none !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.ps-gmail-btn.ps-gmail-btn--busy::before {
+  opacity: 0.7;
 }
 
 .ps-gmail-btn::before {
