@@ -537,6 +537,16 @@ class PostmanSettingsRegistry {
 						$raw_label = ! empty( $connection['provider_name'] ) ? $connection['provider_name'] : 'gmail_one_click';
 					}
 				}
+				// Special handling for Office 365 API - check if it's one-click setup
+				if ( $connection['provider'] === 'office365_api' ) {
+					$office365_app_id = $connection['office365_app_id'] ?? '';
+					$office365_app_password = $connection['office365_app_password'] ?? '';
+
+					// If both app credentials are empty, it's Office One-Click setup
+					if ( empty( $office365_app_id ) && empty( $office365_app_password ) ) {
+						$raw_label = ! empty( $connection['provider_name'] ) ? $connection['provider_name'] : 'office_one_click';
+					}
+				}
 				
 				// Format label.
 				$label = ucwords( str_replace( '_', ' ', __( str_replace( 'api', 'API', $raw_label ), 'post-smtp' ) ) );
@@ -623,6 +633,16 @@ class PostmanSettingsRegistry {
 				// If both OAuth credentials are empty, it's Gmail One-Click setup
 				if ( empty( $oauth_client_id ) && empty( $oauth_client_secret ) ) {
 					$raw_label = isset( $connection['provider_name'] ) && ! empty( $connection['provider_name'] ) ? $connection['provider_name'] : 'gmail_one_click';
+				}
+			}
+			// Special handling for Office 365 API - check if it's one-click setup
+			if ( $connection['provider'] === 'office365_api' ) {
+				$office365_app_id = $connection['office365_app_id'] ?? '';
+				$office365_app_password = $connection['office365_app_password'] ?? '';
+
+				// If both app credentials are empty, it's Office One-Click setup
+				if ( empty( $office365_app_id ) && empty( $office365_app_password ) ) {
+					$raw_label = isset( $connection['provider_name'] ) && ! empty( $connection['provider_name'] ) ? $connection['provider_name'] : 'office_one_click';
 				}
 			}
 
