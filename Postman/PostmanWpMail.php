@@ -496,7 +496,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		}
 
 		private function fallback( $log, $postMessage,$options ) {
-			if ( ! $options->is_fallback && $options->getFallbackIsEnabled() && $options->getFallbackIsEnabled() == 'yes' && $options->getSelectedFallback() != "" ) {
+			if ( ! $options->is_fallback && $this->may_attempt_fallback( $options ) ) {
 
                 $options->is_fallback = true;
 				if ( Postman_Connection_Resolver::is_legacy_mode() ) {
@@ -513,6 +513,44 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			}
 
 			return false;
+		}
+
+		/**
+		 * Whether fallback delivery may run after a primary failure.
+		 *
+		 * Legacy mode only needs fallback SMTP enabled plus a hostname (`selected_fallback`
+		 * did not exist on old installs). New mode needs a real index into `postman_connections`.
+		 *
+		 * Important: never use loose `!= ''` on the fallback index — in PHP, `0 == ''` is
+		 * true, so `0 != ''` is false and incorrectly skipped fallback when the index is 0.
+		 *
+		 * @param PostmanOptions $options Plugin options.
+		 * @return bool
+		 */
+		private function may_attempt_fallback( PostmanOptions $options ) {
+			if ( 'yes' !== $options->getFallbackIsEnabled() ) {
+				return false;
+			}
+
+			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
+				$hostname = $options->getFallbackHostname();
+				if ( is_string( $hostname ) ) {
+					return '' !== trim( $hostname );
+				}
+				return ! empty( $hostname );
+			}
+
+			$index = $options->getSelectedFallback();
+			if ( null === $index || false === $index || '' === $index ) {
+				return false;
+			}
+
+			$connections = get_option( 'postman_connections', array() );
+			if ( ! is_array( $connections ) ) {
+				return false;
+			}
+
+			return array_key_exists( $index, $connections );
 		}
 
 		/**

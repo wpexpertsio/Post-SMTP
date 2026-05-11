@@ -1186,10 +1186,11 @@ class Post_SMTP_New_Wizard {
             $client_id = '';
             $client_secret = '';
             // Retrieve options for premium features and extensions
-            $post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
             $postman_auth_token = get_option( 'postman_auth_token' );
-            $bonus_extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : [];
-            $gmail_oneclick_enabled = in_array( 'gmail-oneclick', $bonus_extensions );
+            // Wizard reflects the user's intent (extension toggle) regardless
+            // of migration state, because completing this wizard is precisely
+            // what advances the site to the new schema.
+            $gmail_oneclick_enabled = Postman_Connection_Resolver::is_gmail_oneclick_extension_enabled();
             $auth_url = get_option( 'post_smtp_gmail_auth_url' );
 
             if( ! Postman_Connection_Resolver::is_legacy_mode() ){

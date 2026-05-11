@@ -144,14 +144,12 @@ if ( ! class_exists( 'PostmanGmailApiModuleZendMailTransport' ) ) {
 			$this->logger = new PostmanLogger ( get_class ( $this ) );
 			// Define API base URL for middleware.
 			$this->api_base_url = 'https://connect.postmansmtp.com/wp-json/gmail-oauth/v1/send-email';
-			// Check if Gmail One Click is enabled.
-			$this->gmail_oneclick_enabled = in_array(
-				'gmail-oneclick',
-				isset( get_option( 'post_smtp_pro', array() )['extensions'] )
-					? get_option( 'post_smtp_pro', array() )['extensions']
-					: array(),
-				true
-			);
+			// One-Click depends on per-connection OAuth fields that only
+			// exist in the new schema; gate the feature on migration
+			// completion as well, otherwise legacy installs would hit the
+			// One-Click branch with an empty access token and throw a
+			// misleading "setup is not finished" error.
+			$this->gmail_oneclick_enabled = Postman_Connection_Resolver::is_gmail_oneclick_enabled();
 		}
 
 		/**

@@ -463,7 +463,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$transport     = $this;
 		$this->options = $this->options;
 		$oauthScribe = $transport->getScribe();
-		$gmail_oneclick_enabled = in_array( 'gmail-oneclick', get_option( 'post_smtp_pro', [] )['extensions'] ?? [] );
+		$gmail_oneclick_enabled = Postman_Connection_Resolver::is_gmail_oneclick_extension_enabled();
 		// Sanitize
 		add_settings_section(
 			PostmanAdminController::SMTP_SECTION,
@@ -737,9 +737,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 			'product_url'    => 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_gmail_one_click&utm_campaign=plugin',
 		);
 		$json_data   = htmlspecialchars( json_encode( $data ), ENT_QUOTES, 'UTF-8' );
-		$post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
-		$bonus_extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : array();
-    	$gmail_oneclick_enabled = in_array( 'gmail-oneclick', $bonus_extensions );
+		$gmail_oneclick_enabled = Postman_Connection_Resolver::is_gmail_oneclick_extension_enabled();
 		$is_checked  = $gmail_oneclick_enabled ? 'checked' : '';
 		$is_disabled = ! post_smtp_has_pro() ? 'disabled' : '';
 		$class       = 'ps-enable-gmail-one-click ' . ( ! post_smtp_has_pro() ? ' disabled' : '' );
@@ -780,9 +778,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 			$auth_url = get_option( 'post_smtp_gmail_auth_url' );
 		}
 
-		$post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
-		$bonus_extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : array();
-		$gmail_oneclick_enabled = in_array( 'gmail-oneclick', $bonus_extensions );
+		$gmail_oneclick_enabled = Postman_Connection_Resolver::is_gmail_oneclick_extension_enabled();
 		$remove_auth_url     = esc_url( add_query_arg(
 			array(
 				'_wpnonce' => $nonce,

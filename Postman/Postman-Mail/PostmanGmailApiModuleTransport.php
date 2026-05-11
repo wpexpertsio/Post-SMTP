@@ -24,7 +24,9 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
     private $gmail_oneclick_enabled = false;
 	public function __construct($rootPluginFilenameAndPath) {
 		parent::__construct ( $rootPluginFilenameAndPath );
-		$this->gmail_oneclick_enabled = in_array( 'gmail-oneclick', get_option( 'post_smtp_pro', [] )['extensions'] ?? [] );
+		// One-Click depends on per-connection OAuth fields that only exist
+		// in the new schema; gate the feature on migration completion too.
+		$this->gmail_oneclick_enabled = Postman_Connection_Resolver::is_gmail_oneclick_enabled();
 		// add a hook on the plugins_loaded event
 		add_action ( 'admin_init', array (
 				$this,
@@ -89,41 +91,55 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		$authToken = PostmanOAuthToken::getInstance();
 		
 		$options = PostmanOptions::getInstance();
+
+		/*
+		 * Resolve the active connection ID. PostmanZendMailEngine::send()
+		 * passes an empty array() as $fakeConfig for the legacy-mode and
+		 * primary-send paths, null for new-mode primary, and the integer
+		 * 1 for new-mode fallback — so a non-truthy $fakeConfig means
+		 * primary (with optional smart-routing override), and a truthy
+		 * $fakeConfig means fallback.
+		 */
+		$connection_details = get_option( 'postman_connections', array() );
+		if ( ! is_array( $connection_details ) ) {
+			$connection_details = array();
+		}
+
+		$is_fallback = (bool) $fakeConfig;
+		$id          = null;
+		if ( $is_fallback ) {
+			$id = $options->getSelectedFallback();
+		} else {
+			$route_key = get_transient( 'post_smtp_smart_routing_route' );
+			$id        = ( $route_key !== false && $route_key !== null && $route_key !== '' )
+				? $route_key
+				: $options->getSelectedPrimary();
+		}
+
 		$selected_connection = array();
-		if ( Postman_Connection_Resolver::is_legacy_mode() ) {
-			$client_id = $this->options->getClientId();
+		if ( $id !== null && $id !== '' && isset( $connection_details[ $id ] ) && is_array( $connection_details[ $id ] ) ) {
+			$selected_connection = $connection_details[ $id ];
+		}
+
+		/*
+		 * Prefer the new-schema connection row when one exists. The wizard's
+		 * One-Click OAuth flow writes access_token / refresh_token /
+		 * account_key / user_email straight into postman_connections without
+		 * bumping postman_db_version, so this branch fires correctly even
+		 * before the fallback migration has run. Pure-legacy installs (no
+		 * postman_connections row yet) keep working through the legacy
+		 * postman_options + PostmanOAuthToken path below.
+		 */
+		if ( ! empty( $selected_connection ) ) {
+			$client_id     = isset( $selected_connection['oauth_client_id'] ) ? $selected_connection['oauth_client_id'] : '';
+			$client_secret = isset( $selected_connection['oauth_client_secret'] ) ? $selected_connection['oauth_client_secret'] : '';
+			$access_token  = isset( $selected_connection['access_token'] ) ? $selected_connection['access_token'] : '';
+			$refresh_token = isset( $selected_connection['refresh_token'] ) ? $selected_connection['refresh_token'] : '';
+		} else {
+			$client_id     = $this->options->getClientId();
 			$client_secret = $this->options->getClientSecret();
-			$access_token = $authToken->getAccessToken();
+			$access_token  = $authToken->getAccessToken();
 			$refresh_token = $authToken->getRefreshToken();
-		}else{
-			$connection_details = get_option( 'postman_connections' );
-			if ( $fakeConfig == null ) {
-				// Check if a transient for smart routing is set
-				$route_key = null; 
-				$route_key = get_transient( 'post_smtp_smart_routing_route' );
-				if( $route_key != null  ){
-					// Smart routing is enabled, use the connection associated with the route_key.
-					$selected_connection = $connection_details[ $route_key ] ?? array();
-					$client_id   = $connection_details[ $route_key ]['oauth_client_id'];
-					$client_secret   = $connection_details[ $route_key ]['oauth_client_secret'];
-					$access_token =  $connection_details[ $route_key ]['access_token'];
-					$refresh_token =  $connection_details[ $route_key ]['refresh_token'];
-				}else{ 
-					$primary = $options->getSelectedPrimary();
-					$selected_connection = $connection_details[ $primary ] ?? array();
-					$client_id   = $connection_details[ $primary ]['oauth_client_id'];
-					$client_secret   = $connection_details[ $primary ]['oauth_client_secret'];
-					$access_token =  $connection_details[ $primary ]['access_token'];
-					$refresh_token =  $connection_details[ $primary ]['refresh_token'];
-				}
-			} else {
-				$fallback = $options->getSelectedFallback();
-				$selected_connection = $connection_details[ $fallback ] ?? array();
-				$client_id   = $connection_details[ $fallback ]['oauth_client_id'];
-				$client_secret   = $connection_details[ $fallback ]['oauth_client_secret'];
-				$access_token =  $connection_details[ $fallback ]['access_token'];
-				$refresh_token =  $connection_details[ $fallback ]['refresh_token'];
-			}
 		}
 		// Google's autoloader will try and load this so we list it first
 		require_once 'PostmanGmailApiModuleZendMailTransport.php';
@@ -154,7 +170,6 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 			$config = array(
 				'account_key'   => isset( $selected_connection['account_key'] ) ? $selected_connection['account_key'] : '',
 				'gmail_email'   => isset( $selected_connection['user_email'] ) ? $selected_connection['user_email'] : '',
-				// Must match Manage Connections / wizard "configured" checks so mail cannot send while status is Needs Configuration.
 				'access_token'  => isset( $selected_connection['access_token'] ) ? $selected_connection['access_token'] : '',
 			);
 			return new PostmanGmailApiModuleZendMailTransport ( self::HOST, $config );

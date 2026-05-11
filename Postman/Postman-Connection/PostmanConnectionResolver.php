@@ -201,6 +201,47 @@ if ( ! class_exists( 'Postman_Connection_Resolver' ) ) :
 		}
 
 		/**
+		 * True when the "gmail-oneclick" Pro extension is toggled on.
+		 *
+		 * The One-Click feature is driven by per-connection OAuth fields
+		 * (access_token, account_key, user_email) that the wizard writes
+		 * directly into postman_connections — separately from any
+		 * postman_db_version bump. The presence of those fields is
+		 * verified at send time inside PostmanGmailApiModuleZendMailTransport::_sendMail()
+		 * which surfaces a "setup is not finished" message when they are
+		 * missing. So the runtime gate here only needs to mirror the
+		 * user's intent (the extension toggle); we deliberately do NOT
+		 * also require is_legacy_mode() to be false, because doing so
+		 * would strand sites in an in-between state where the wizard
+		 * stored a valid token but the migration version hasn't been
+		 * bumped yet (legacy SDK then runs with empty PostmanOAuthToken
+		 * and Gmail returns 401 UNAUTHENTICATED).
+		 *
+		 * @return bool
+		 */
+		public static function is_gmail_oneclick_enabled() {
+			$pro_options = get_option( 'post_smtp_pro', array() );
+			$extensions  = isset( $pro_options['extensions'] ) && is_array( $pro_options['extensions'] )
+				? $pro_options['extensions']
+				: array();
+
+			return in_array( 'gmail-oneclick', $extensions, true );
+		}
+
+		/**
+		 * Alias of is_gmail_oneclick_enabled() preserved for the admin UI
+		 * call sites that used to distinguish "user intent" from "runtime
+		 * readiness". After dropping the migration-state gate the two
+		 * predicates are equivalent, but the alias keeps the existing
+		 * call sites readable at the point of use.
+		 *
+		 * @return bool
+		 */
+		public static function is_gmail_oneclick_extension_enabled() {
+			return self::is_gmail_oneclick_enabled();
+		}
+
+		/**
 		 * Canonical list of sensitive credential keys handled by the
 		 * fallback migration. Add a new provider's secret here and every
 		 * migration step picks it up automatically.
@@ -227,6 +268,11 @@ if ( ! class_exists( 'Postman_Connection_Resolver' ) ) :
 				'sweego_api_key',
 				'resend_api_key',
 				'mailtrap_api_key',
+				'mailgun_api_key',
+				'oauth_client_secret',
+				'office365_app_password',
+				'zohomail_client_secret',
+				'ses_secret_access_key',
 			);
 		}
 	}
