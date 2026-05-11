@@ -99,28 +99,18 @@ class PostmanMailtrapTransport extends PostmanAbstractModuleTransport implements
      * @version 1.0
      */
     public function createMailEngine() {
-        $existing_db_version = get_option( 'postman_db_version' );
-        $connection_details  = get_option( 'postman_connections', array() );
-        $route_key           = get_transient( 'post_smtp_smart_routing_route' );
+        $api_key   = Postman_Connection_Resolver::get_primary_field(
+            'mailtrap_api_key',
+            array( $this->options, 'getMailtrapApiKey' )
+        );
+        $route_key = Postman_Connection_Resolver::get_route_key();
 
-        if ( null != $route_key ) {
-            $api_key = $this->getApiKeyForRoute( $route_key, $connection_details );
-            $api_credentials = array(
-                'api_key'   => $api_key,
-                'route_key' => $route_key,
-            );
-        } else {
-            $api_key = $this->getApiKeyForDefaultConnection( $existing_db_version, $connection_details );
-            $api_credentials = array(
-                'api_key' => $api_key,
-            );
-        }
+        $api_credentials = ( $route_key !== null )
+            ? array( 'api_key' => $api_key, 'route_key' => $route_key )
+            : array( 'api_key' => $api_key );
 
         require_once 'PostmanMailtrapMailEngine.php';
-		$engine = new PostmanMailtrapMailEngine( $api_credentials );
-
-		return $engine;
-
+        return new PostmanMailtrapMailEngine( $api_credentials );
     }
 
     /**
@@ -130,53 +120,13 @@ class PostmanMailtrapTransport extends PostmanAbstractModuleTransport implements
      * @version 1.0
      */
     public function createMailEngineFallback() {
-        $connection_details = get_option( 'postman_connections', array() );
-        $fallback           = $this->options->getSelectedFallback();
-        $api_key            = isset( $connection_details[ $fallback ] ) ? ( $connection_details[ $fallback ]['mailtrap_api_key'] ?? '' ) : '';
-        $api_credentials    = array(
-            'api_key'     => $api_key,
+        $api_credentials = array(
+            'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'mailtrap_api_key' ),
             'is_fallback' => 1,
         );
 
         require_once 'PostmanMailtrapMailEngine.php';
-        $engine = new PostmanMailtrapMailEngine( $api_credentials );
-        return $engine;
-    }
-
-    /**
-     * Retrieves API key for a specific smart-routing connection.
-     *
-     * @param string $route_key
-     * @param array  $connection_details
-     * @return string
-     */
-    private function getApiKeyForRoute( $route_key, $connection_details ) {
-        if ( isset( $connection_details[ $route_key ] ) ) {
-            return $connection_details[ $route_key ]['mailtrap_api_key'] ?? '';
-        }
-
-        return '';
-    }
-
-    /**
-     * Retrieves API key for default (primary/legacy) connection selection.
-     *
-     * @param string $existing_db_version
-     * @param array  $connection_details
-     * @return string
-     */
-    private function getApiKeyForDefaultConnection( $existing_db_version, $connection_details ) {
-		
-        if ( $existing_db_version !== POST_SMTP_DB_VERSION ) {
-            return $this->options->getMailtrapApiKey();
-        }
-		
-        $primary = $this->options->getSelectedPrimary();
-        if ( isset( $connection_details[ $primary ] ) && ! empty( $connection_details[ $primary ]['mailtrap_api_key'] ) ) {
-            return $connection_details[ $primary ]['mailtrap_api_key'];
-        }
-
-        return '';
+        return new PostmanMailtrapMailEngine( $api_credentials );
     }
 
     /**

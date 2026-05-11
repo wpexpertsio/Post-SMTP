@@ -78,44 +78,26 @@ class PostmanResendMailEngine implements PostmanMailEngine {
      * @since 3.2.0
      * @version 1.0
      */
-    public function send( PostmanMessage $message ) { 
+    public function send( PostmanMessage $message ) {
 
         $options = PostmanOptions::getInstance();
-        $postman_db_version = get_option( 'postman_db_version' );
-	
-		// Sender logic (primary, fallback, routing)
-		$sender      = $message->getFromAddress();
-		$senderEmail = '';
-		$senderName  = '';
+
+        $sender = $message->getFromAddress();
         $resend = new PostmanResend( $this->api_key );
         //Resend preparation
         if ( $this->logger->isDebug() ) {
             $this->logger->debug( 'Creating Resend service with apiKey=' . $this->api_key );
         }
-        if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
-			$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-			$senderName  = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
-	    }else{
-	        $connection_details = get_option( 'postman_connections' );
-			if ( $this->is_fallback == null ) {
-				$route_key = get_transient( 'post_smtp_smart_routing_route' );
-				if( $route_key != null && isset($connection_details[ $route_key ]) ){
-					$senderEmail = $connection_details[ $route_key ]['sender_email'];
-					$senderName  = isset($connection_details[ $route_key ]['sender_name']) ? $connection_details[ $route_key ]['sender_name'] : $options->getMessageSenderName();
-				}else{
-					$primary     = $options->getSelectedPrimary();
-					$senderEmail = isset($connection_details[ $primary ]['sender_email']) ? $connection_details[ $primary ]['sender_email'] : $options->getMessageSenderEmail();
-					$senderName  = isset($connection_details[ $primary ]['sender_name']) ? $connection_details[ $primary ]['sender_name'] : $options->getMessageSenderName();
-				}
-			} else {
-				$fallback    = $options->getSelectedFallback();
-				$senderEmail = isset($connection_details[ $fallback ]['sender_email']) ? $connection_details[ $fallback ]['sender_email'] : $options->getMessageSenderEmail();
-				$senderName  = isset($connection_details[ $fallback ]['sender_name']) ? $connection_details[ $fallback ]['sender_name'] : $options->getMessageSenderName();
-			}
-		}
+        $resolved    = Postman_Connection_Resolver::resolve_sender(
+            $sender,
+            (bool) $this->is_fallback,
+            $this->route_key
+        );
+        $senderEmail = $resolved['email'];
+        $senderName  = $resolved['name'];
 
         $headers = array();
-        
+
         $sender->log( $this->logger, 'From' );
 
         $sendEmail['from'] = $senderName . ' <' . $senderEmail . '>';

@@ -264,7 +264,6 @@ class PostmanConfigurationController {
 
 		PostmanViewController::outputChildPageHeader( __( 'Settings', 'post-smtp' ), 'advanced_config' );
 
-		$postman_db_version = get_option( 'postman_db_version' );
 		$provider_fields    = $this->get_provider_fields();
 
 		$config_tabs = apply_filters(
@@ -279,8 +278,8 @@ class PostmanConfigurationController {
 		);
 		$wizard_uri  = admin_url( 'admin.php?page=postman/configuration_wizard' );
 		// Check if the database version matches the defined constant.
-		$settings_class       = ( $postman_db_version == POST_SMTP_DB_VERSION ) ? 'settings-hide' : '';
-		$section_hide         = ( $postman_db_version == POST_SMTP_DB_VERSION ) ? 'style=display:none' : '';
+		$settings_class       = ( ! Postman_Connection_Resolver::is_legacy_mode() ) ? 'settings-hide' : '';
+		$section_hide         = ( ! Postman_Connection_Resolver::is_legacy_mode() ) ? 'style=display:none' : '';
 		$selected_fallback_id = $this->options->getSelectedFallback();
 		$wizard_uri_with_id   = add_query_arg( 'id', $selected_fallback_id, $wizard_uri ); // Append the ID to the URL
 
@@ -314,7 +313,7 @@ class PostmanConfigurationController {
 		}
 		print '</div>';
 		
-		if ( $postman_db_version == POST_SMTP_DB_VERSION ) {
+		if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
 			print '<div class="setting-form">';
 			do_settings_sections( 'manage_connections' );
 			print '</div>';
@@ -330,7 +329,7 @@ class PostmanConfigurationController {
 
 		<!-- Fallback Start -->
 		<section id="fallback">
-		<?php if ( $postman_db_version == POST_SMTP_DB_VERSION ) { ?>
+		<?php if ( ! Postman_Connection_Resolver::is_legacy_mode() ) { ?>
 			<a style="display:none" href="<?php echo esc_url( $wizard_uri ); ?>" class="button button-primary">Add Fallback</a>
 			<a style="display:none" href="<?php echo esc_url( $wizard_uri_with_id ); ?>"  id="editFallbackLink" class="button button-primary">Edit Fallback</a>
 		<?php } ?>
@@ -356,7 +355,7 @@ class PostmanConfigurationController {
 				</tr>
 
 		<?php
-		if ( $postman_db_version == POST_SMTP_DB_VERSION ) {
+		if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
 			$provider_fields    = $this->get_provider_fields();
 			$mail_connections   = get_option( 'postman_connections', array() );
 			$primary_connection = $this->options->getSelectedPrimary();
@@ -540,7 +539,6 @@ class PostmanConfigurationController {
 						'office365_api'  => 'microsoft-365',
 						'aws_ses_api'    => 'amazon-ses',
 						'zohomail_api'   => 'zoho-mail',
-						// 'gmail_api'      => 'gmail-oneclick',
 					);
 
 					// Active extensions.

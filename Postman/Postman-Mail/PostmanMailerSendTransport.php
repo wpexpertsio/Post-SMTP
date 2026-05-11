@@ -73,27 +73,13 @@ class PostmanMailerSendTransport extends PostmanAbstractModuleTransport implemen
 	 * @see PostmanModuleTransport::createMailEngine()
 	 */
 	public function createMailEngine() {
-		$existing_db_version = get_option( 'postman_db_version' );
-		$connection_details  = get_option( 'postman_connections' );
-		// Check if a transient for smart routing is set
-		$route_key = null;
-		$route_key = get_transient( 'post_smtp_smart_routing_route' );
-		
-		if( $route_key != null ){
-			// Smart routing is enabled, use the connection associated with the route_key.
-			$apiKey         = $connection_details[ $route_key ]['mailersend_api_key'];
-		}else{ 
-			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-				$apiKey     = $this->options->getMailerSendApiKey();
-			} else {
-				$primary    = $this->options->getSelectedPrimary();
-				$apiKey     = $connection_details[ $primary ]['mailersend_api_key'];
-			}
-		}
+		$apiKey = Postman_Connection_Resolver::get_primary_field(
+			'mailersend_api_key',
+			array( $this->options, 'getMailerSendApiKey' )
+		);
 
 		require_once 'PostmanMailerSendMailEngine.php';
-		$engine = new PostmanMailerSendMailEngine ( $apiKey );
-		return $engine;
+		return new PostmanMailerSendMailEngine( $apiKey );
 	}
 
 	/**
@@ -101,18 +87,12 @@ class PostmanMailerSendTransport extends PostmanAbstractModuleTransport implemen
 	 * @version 1.0
 	 */
 	public function createMailEngineFallback() {
-
-		$connection_details = get_option( 'postman_connections' );
-		$fallback           = $this->options->getSelectedFallback();
-		$api_key            = $connection_details[ $fallback ]['mailersend_api_key'];
-			// Wrap the API key with additional data in an array
 		$api_credentials = array(
-			'api_key'     => $api_key,
+			'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'mailersend_api_key' ),
 			'is_fallback' => 1,
 		);
 		require_once 'PostmanMailerSendMailEngine.php';
-		$engine = new PostmanMailerSendMailEngine ( $api_credentials );
-		return $engine;
+		return new PostmanMailerSendMailEngine( $api_credentials );
 	}
 
 	public function getDeliveryDetails() {

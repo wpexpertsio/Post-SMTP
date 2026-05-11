@@ -99,32 +99,17 @@ if ( ! class_exists( 'PostmanMailjetTransport' ) ) :
 		 * @version 1.0
 		 */
 		public function createMailEngine() {
-
-			$existing_db_version = get_option( 'postman_db_version' );
-			$connection_details  = get_option( 'postman_connections' );
-			// Check if a transient for smart routing is set
-			$route_key = null;
-			$route_key = get_transient( 'post_smtp_smart_routing_route' );
-			
-			if( $route_key != null ){
-				// Smart routing is enabled, use the connection associated with the route_key.
-				$api_key        = $connection_details[ $route_key ]['mailjet_api_key'];
-				$secret_key     = $connection_details[ $route_key ]['mailjet_secret_key'];
-			}else{
-				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-					$api_key    = $this->options->getMailjetApiKey();
-					$secret_key = $this->options->getMailjetSecretKey();
-				} else {
-					$primary    = $this->options->getSelectedPrimary();
-					$api_key    = $connection_details[ $primary ]['mailjet_api_key'];
-					$secret_key = $connection_details[ $primary ]['mailjet_secret_key'];
-				}
-			}
+			$api_key    = Postman_Connection_Resolver::get_primary_field(
+				'mailjet_api_key',
+				array( $this->options, 'getMailjetApiKey' )
+			);
+			$secret_key = Postman_Connection_Resolver::get_primary_field(
+				'mailjet_secret_key',
+				array( $this->options, 'getMailjetSecretKey' )
+			);
 
 			require_once 'PostmanMailjetMailEngine.php';
-			$engine = new PostmanMailjetMailEngine( $api_key, $secret_key );
-
-			return $engine;
+			return new PostmanMailjetMailEngine( $api_key, $secret_key );
 		}
 
 		/**
@@ -132,19 +117,14 @@ if ( ! class_exists( 'PostmanMailjetTransport' ) ) :
 		 * @version 1.0
 		 */
 		public function createMailEngineFallback() {
-
-			$connection_details = get_option( 'postman_connections' );
-			$fallback           = $this->options->getSelectedFallback();
-			$api_key            = $connection_details[ $fallback ]['mailjet_api_key'];
-			$secret_key         = $connection_details[ $fallback ]['mailjet_secret_key'];
-			$api_credentials    = array(
-				'api_key'     => $api_key,
+			$api_credentials = array(
+				'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'mailjet_api_key' ),
 				'is_fallback' => 1,
 			);
-			require_once 'PostmanMailjetMailEngine.php';
-			$engine = new PostmanMailjetMailEngine( $api_credentials, $secret_key );
+			$secret_key      = Postman_Connection_Resolver::get_fallback_field( 'mailjet_secret_key' );
 
-			return $engine;
+			require_once 'PostmanMailjetMailEngine.php';
+			return new PostmanMailjetMailEngine( $api_credentials, $secret_key );
 		}
 
 		/**
@@ -344,8 +324,7 @@ if ( ! class_exists( 'PostmanMailjetTransport' ) ) :
 		 * @version 1.0
 		 */
 		protected function validateTransportConfiguration() {
-			$postman_db_version = get_option( 'postman_db_version' );
-			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 				$messages = parent::validateTransportConfiguration();
 				$apiKey   = $this->options->getMailjetApiKey();
 				if ( empty( $apiKey ) ) {

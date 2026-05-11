@@ -172,23 +172,13 @@ class PostmanMailerooTransport extends PostmanAbstractModuleTransport implements
          * @version 1.1
          */
         public function createMailEngine() {
-            $existing_db_version = get_option( 'postman_db_version' );
-            $connection_details  = get_option( 'postman_connections' );
-
-            // Check if a transient for smart routing is set
-            $route_key = get_transient( 'post_smtp_smart_routing_route' );
-
-            if ( $route_key != null ) {
-                // Smart routing: use the connection associated with the route_key
-                $api_key = $this->getApiKeyForRoute( $route_key, $connection_details );
-            } else {
-                // Default selection: primary or legacy option
-                $api_key = $this->getApiKeyForDefaultConnection( $existing_db_version, $connection_details );
-            }
+            $api_key = Postman_Connection_Resolver::get_primary_field(
+                'maileroo_api_key',
+                array( $this->options, 'getMailerooApiKey' )
+            );
 
             require_once 'PostmanMailerooMailEngine.php';
-            $engine = new PostmanMailerooMailEngine( $api_key );
-            return $engine;
+            return new PostmanMailerooMailEngine( $api_key );
         }
 
         /**
@@ -198,51 +188,13 @@ class PostmanMailerooTransport extends PostmanAbstractModuleTransport implements
          * @version 1.0
          */
         public function createMailEngineFallback() {
-            $connection_details = get_option( 'postman_connections' );
-            $fallback           = $this->options->getSelectedFallback();
-            $api_key            = isset( $connection_details[ $fallback ] ) ? ( $connection_details[ $fallback ]['maileroo_api_key'] ?? '' ) : '';
-            $api_credentials    = array(
-                'api_key'     => $api_key,
+            $api_credentials = array(
+                'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'maileroo_api_key' ),
                 'is_fallback' => 1,
             );
 
             require_once 'PostmanMailerooMailEngine.php';
-            $engine = new PostmanMailerooMailEngine( $api_credentials );
-            return $engine;
-        }
-
-        /**
-         * Retrieves the API key for a specific route (smart routing).
-         * @since 3.0.1
-         * @version 1.0
-         * @param string $route_key
-         * @param array  $connection_details
-         * @return string
-         */
-        private function getApiKeyForRoute( $route_key, $connection_details ) {
-            if ( isset( $connection_details[ $route_key ] ) ) {
-                return $connection_details[ $route_key ]['maileroo_api_key'] ?? '';
-            }
-            return '';
-        }
-
-        /**
-         * Retrieves the API key for default connection selection.
-         * Uses legacy option when DB is legacy, otherwise primary connection.
-         * @since 3.0.1
-         * @version 1.0
-         * @param string $existing_db_version
-         * @param array  $connection_details
-         * @return string
-         */
-        private function getApiKeyForDefaultConnection( $existing_db_version, $connection_details ) {
-            if ( $existing_db_version !== POST_SMTP_DB_VERSION ) {
-                // Legacy storage
-                return $this->options->getMailerooApiKey();
-            }
-            // New connection system - use primary connection
-            $primary = $this->options->getSelectedPrimary();
-            return isset( $connection_details[ $primary ] ) ? ( $connection_details[ $primary ]['maileroo_api_key'] ?? '' ) : '';
+            return new PostmanMailerooMailEngine( $api_credentials );
         }
 }
 endif;

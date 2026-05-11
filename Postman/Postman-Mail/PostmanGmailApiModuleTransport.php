@@ -22,11 +22,9 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	const ENCRYPTION_TYPE = 'ssl';
 	const PRIORITY = 49000;
     private $gmail_oneclick_enabled = false;
-	private $existing_db_version = '';
 	public function __construct($rootPluginFilenameAndPath) {
 		parent::__construct ( $rootPluginFilenameAndPath );
 		$this->gmail_oneclick_enabled = in_array( 'gmail-oneclick', get_option( 'post_smtp_pro', [] )['extensions'] ?? [] );
-		$this->existing_db_version = get_option( 'postman_db_version' );
 		// add a hook on the plugins_loaded event
 		add_action ( 'admin_init', array (
 				$this,
@@ -92,7 +90,7 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		
 		$options = PostmanOptions::getInstance();
 		$selected_connection = array();
-		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+		if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 			$client_id = $this->options->getClientId();
 			$client_secret = $this->options->getClientSecret();
 			$access_token = $authToken->getAccessToken();

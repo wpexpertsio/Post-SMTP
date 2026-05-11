@@ -11,7 +11,6 @@ require_once 'PostmanModuleTransport.php';
  */
 class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport implements PostmanZendModuleTransport {
 	const SLUG = 'smtp';
-	protected $existing_db_version = '';
 	protected $connection_details = '';
 	protected $fallback;
 	public function __construct( $rootPluginFilenameAndPath ) {
@@ -25,8 +24,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 				'on_admin_init',
 			)
 		);
-		$this->existing_db_version = get_option( 'postman_db_version' );
-		$this->connection_details  = get_option( 'postman_connections' );
+		$this->connection_details = get_option( 'postman_connections' );
 	}
 
 	/**
@@ -92,7 +90,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	public function getHostname() {
 		$route_key = get_transient('post_smtp_smart_routing_route');
 
-		if ($this->existing_db_version != POST_SMTP_DB_VERSION) {
+		if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 			return $this->options->getHostname();
 		} else {
 			if ( $this->fallback === null ) {
@@ -132,7 +130,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 	public function getPort() {
 		$route_key = null;
     	$route_key = get_transient( 'post_smtp_smart_routing_route' );
-		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+		if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 			$this->options = $this->options;
 			return $this->options->getPort();
 		}else{
@@ -161,7 +159,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$route_key = null;
     	$route_key = get_transient( 'post_smtp_smart_routing_route' );
 		$this->options = $this->options;
-		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+		if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 			if ( $this->options->isAuthTypeOAuth2() ) {
 				return $this->options->getClientId();
 			} else {
@@ -193,7 +191,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$route_key = null;
     	$route_key = get_transient( 'post_smtp_smart_routing_route' );
 		$this->options = $this->options;
-		if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+		if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 			if ( $this->options->isAuthTypeOAuth2() ) {
 				return $this->options->getClientSecret();
 			} else {

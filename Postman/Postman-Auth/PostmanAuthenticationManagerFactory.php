@@ -12,17 +12,6 @@ if (! class_exists ( "PostmanAuthenticationManagerFactory" )) {
 	class PostmanAuthenticationManagerFactory {
 		private $logger;
 
-		/**
-		 * Holds the existing database version.
-		 *
-		 * This property stores the current database version from the WordPress 
-		 * options table, allowing version checks to manage upgrades or compatibility 
-		 * checks within the plugin.
-		 *
-		 * @var string Database version.
-		 */
-		private $existing_db_version = '';
-		
 		// singleton instance
 		public static function getInstance() {
 			static $inst = null;
@@ -33,10 +22,9 @@ if (! class_exists ( "PostmanAuthenticationManagerFactory" )) {
 		}
 		private function __construct() {
 			$this->logger = new PostmanLogger ( get_class ( $this ) );
-			$this->existing_db_version = get_option( 'postman_db_version' );
 		}
 		public function createAuthenticationManager() {
-			if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
+			if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
 				$transport = PostmanTransportRegistry::getInstance()->getTransports();
 				return $this->createManager( $transport['gmail_api'] );
 			}else{
@@ -49,7 +37,7 @@ if (! class_exists ( "PostmanAuthenticationManagerFactory" )) {
 			$authorizationToken = PostmanOAuthToken::getInstance();
 			$authenticationType = $options->getAuthenticationType ();
 			$hostname = $options->getHostname ();
-			if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
+			if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
 				if ( false === get_transient( 'client_id' ) && isset( $_GET['client_id'], $_GET['client_secret'] ) ) {
 					set_transient(
 						'client_id',
@@ -90,7 +78,7 @@ if (! class_exists ( "PostmanAuthenticationManagerFactory" )) {
 				$clientSecret = $options->getClientSecret();	
 			}
 			$senderEmail = $options->getMessageSenderEmail();
-			if ( $this->existing_db_version == POST_SMTP_DB_VERSION && 'gmail_api' === $transport->getSlug() ) {
+			if ( ! Postman_Connection_Resolver::is_legacy_mode() && 'gmail_api' === $transport->getSlug() ) {
 				$connections = get_option( 'postman_connections', array() );
 				$index       = $options->getSelectedPrimary();
 				if ( isset( $_GET['id'] ) && is_array( $connections ) && array_key_exists( (string) $_GET['id'], $connections ) ) {

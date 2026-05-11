@@ -264,8 +264,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$options = PostmanOptions::getInstance();
 			// the From is set now so that it can be overridden
 			$transport_registry = PostmanTransportRegistry::getInstance();
-			$existing_db_version = get_option( 'postman_db_version' );
-			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 				$transport = $transport_registry->getActiveTransport();
 			} else {
 				$transport = $options->is_fallback ? $transport_registry->getFallbackConnection() : $transport_registry->getPrimaryConnection();
@@ -301,12 +300,11 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// get the Options and AuthToken
 			$options = PostmanOptions::getInstance();
 			$authorizationToken = PostmanOAuthToken::getInstance();
-			$existing_db_version = get_option( 'postman_db_version' );
 			$pro_options = get_option( 'post_smtp_pro', [] );
 			$bonus_extensions = isset( $pro_options['bonus_extensions'] ) ? $pro_options['bonus_extensions'] : [];
 			$is_fallback = false;
 
-			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 				// get the transport and create the transportConfig and engine.
 				$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
 			}else{
@@ -498,12 +496,10 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		}
 
 		private function fallback( $log, $postMessage,$options ) {
-			$existing_db_version = get_option( 'postman_db_version' );
-
 			if ( ! $options->is_fallback && $options->getFallbackIsEnabled() && $options->getFallbackIsEnabled() == 'yes' && $options->getSelectedFallback() != "" ) {
 
                 $options->is_fallback = true;
-				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+				if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 	                $status = $this->sendMessage( $postMessage, $log );
 				}else{
 					$status = $this->sendMessageFallback( $postMessage, $log );
@@ -535,7 +531,6 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// get the Options and AuthToken
 			$options = PostmanOptions::getInstance();
 			$authorizationToken = PostmanOAuthToken::getInstance();
-			$existing_db_version = get_option( 'postman_db_version' );
 			$is_fallback = true;
 
 			$transport_registry = PostmanTransportRegistry::getInstance();
@@ -585,7 +580,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 			try {
 				// prepare the message
-				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
+				if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 					$message->validate( $transport );
 				}
 

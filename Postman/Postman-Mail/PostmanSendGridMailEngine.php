@@ -53,8 +53,7 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 		 * @see PostmanSmtpEngine::send()
 		 */
 		public function send( PostmanMessage $message ) {
-			$options            = PostmanOptions::getInstance();
-			$postman_db_version = get_option( 'postman_db_version' );
+			$options = PostmanOptions::getInstance();
 
 			$sendgrid   = new PostmanSendGrid( $this->apiKey );
 			$content    = array();
@@ -62,23 +61,10 @@ if ( ! class_exists( 'PostmanSendGridMailEngine' ) ) {
 			$headers    = array();
 
 			// add the From Header
-			$sender = $message->getFromAddress();
-
-			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
-				$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-				$senderName = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
-			} else {
-				$connection_details = get_option( 'postman_connections' );
-				if ( $this->is_fallback == null ) {
-					$primary     = $options->getSelectedPrimary();
-					$senderEmail = $connection_details[ $primary ]['sender_email'];
-					$senderName  = $connection_details[ $primary ]['sender_name'];
-				} else {
-					$fallback    = $options->getSelectedFallback();
-					$senderEmail = $connection_details[ $fallback ]['sender_email'];
-					$senderName  = $connection_details[ $fallback ]['sender_name'];
-				}
-			}
+			$sender      = $message->getFromAddress();
+			$resolved    = Postman_Connection_Resolver::resolve_sender( $sender, (bool) $this->is_fallback );
+			$senderEmail = $resolved['email'];
+			$senderName  = $resolved['name'];
 
 			$content['from'] = array(
 				'email' => $senderEmail,

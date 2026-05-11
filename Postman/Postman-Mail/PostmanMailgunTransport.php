@@ -76,30 +76,17 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	 * @see PostmanModuleTransport::createMailEngine()
 	 */
 	public function createMailEngine() {
-		$existing_db_version = get_option( 'postman_db_version' );
-		$connection_details  = get_option( 'postman_connections' );
-		// Check if a transient for smart routing is set
-		$route_key = null;
-		$route_key = get_transient( 'post_smtp_smart_routing_route' );
-		
-		if( $route_key != null ){
-			// Smart routing is enabled, use the connection associated with the route_key.
-			$apiKey         = $connection_details[ $route_key ]['mailgun_api_key'];
-			$domainName     = $connection_details[ $route_key ]['mailgun_domain_name'];
-		}else{ 
-			if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-				$apiKey     = $this->options->getMailgunApiKey();
-				$domainName = $this->options->getMailgunDomainName();
-			} else {
-				$primary    = $this->options->getSelectedPrimary();
-				$apiKey     = $connection_details[ $primary ]['mailgun_api_key'];
-				$domainName = $connection_details[ $primary ]['mailgun_domain_name'];
-			}
-		}
+		$apiKey     = Postman_Connection_Resolver::get_primary_field(
+			'mailgun_api_key',
+			array( $this->options, 'getMailgunApiKey' )
+		);
+		$domainName = Postman_Connection_Resolver::get_primary_field(
+			'mailgun_domain_name',
+			array( $this->options, 'getMailgunDomainName' )
+		);
 
 		require_once 'PostmanMailgunMailEngine.php';
-		$engine = new PostmanMailgunMailEngine( $apiKey, $domainName );
-		return $engine;
+		return new PostmanMailgunMailEngine( $apiKey, $domainName );
 	}
 
 	/**
@@ -107,20 +94,14 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	 * @version 1.0
 	 */
 	public function createMailEngineFallback() {
-
-		$connection_details = get_option( 'postman_connections' );
-		$fallback           = $this->options->getSelectedFallback();
-		$api_key            = $connection_details[ $fallback ]['mailgun_api_key'];
-		$domainName         = $connection_details[ $fallback ]['mailgun_domain_name'];
-			// Wrap the API key with additional data in an array
 		$api_credentials = array(
-			'api_key'     => $api_key,
+			'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'mailgun_api_key' ),
 			'is_fallback' => 1,
 		);
-		require_once 'PostmanMailgunMailEngine.php';
-		$engine = new PostmanMailgunMailEngine( $api_credentials, $domainName );
+		$domainName      = Postman_Connection_Resolver::get_fallback_field( 'mailgun_domain_name' );
 
-		return $engine;
+		require_once 'PostmanMailgunMailEngine.php';
+		return new PostmanMailgunMailEngine( $api_credentials, $domainName );
 	}
 
 	public function getDeliveryDetails() {
@@ -144,8 +125,7 @@ class PostmanMailgunTransport extends PostmanAbstractModuleTransport implements 
 	 * @see PostmanTransport::getMisconfigurationMessage()
 	 */
 	protected function validateTransportConfiguration() {
-		$postman_db_version = get_option( 'postman_db_version' );
-		if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+		if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 			$messages   = parent::validateTransportConfiguration();
 			$apiKey     = $this->options->getMailgunApiKey();
 			$domainName = $this->options->getMailgunDomainName();

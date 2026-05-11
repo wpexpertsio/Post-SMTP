@@ -61,6 +61,7 @@ class Postman {
 		require_once 'PostmanState.php';
 		require_once 'PostmanLogger.php';
 		require_once 'PostmanUtils.php';
+		require_once 'Postman-Connection/PostmanConnectionResolver.php';
 		require_once 'Postman-Mail/PostmanTransportRegistry.php';
 		require_once 'Postman-Mail/PostmanDefaultModuleTransport.php';
 		require_once 'Postman-Mail/PostmanSmtpModuleTransport.php';

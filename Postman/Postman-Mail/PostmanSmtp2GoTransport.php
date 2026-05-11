@@ -48,41 +48,21 @@ if ( ! class_exists( 'PostmanSmtp2GoTransport' ) ) {
 		}
 
 		public function createMailEngine() {
-			$existing_db_version = get_option( 'postman_db_version' );
-			$connection_details  = get_option( 'postman_connections' );
-			// Check if a transient for smart routing is set
-			$route_key = null;
-    		$route_key = get_transient( 'post_smtp_smart_routing_route' );
-
-			if ( $route_key != null ) {
-					$api_key   = $connection_details[ $route_key ]['smtp2go_api_key'];
-			}else{
-				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-					$api_key = $this->options->getSmtp2GoApiKey();
-				} else {
-					$primary = $this->options->getSelectedPrimary();
-					$api_key   = $connection_details[ $primary ]['smtp2go_api_key'];
-				}
-			}
+			$api_key = Postman_Connection_Resolver::get_primary_field(
+				'smtp2go_api_key',
+				array( $this->options, 'getSmtp2GoApiKey' )
+			);
 			require_once 'PostmanSmtp2GoEngine.php';
-			$engine = new PostmanSmtp2GoEngine( $api_key );
-
-			return $engine;
+			return new PostmanSmtp2GoEngine( $api_key );
 		}
 
 		public function createMailEngineFallback() {
-
-			$connection_details = get_option( 'postman_connections' );
-			$fallback           = $this->options->getSelectedFallback();
-			$api_key            = $connection_details[ $fallback ]['smtp2go_api_key'];
-			$api_credentials    = array(
-				'api_key'     => $api_key,
+			$api_credentials = array(
+				'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'smtp2go_api_key' ),
 				'is_fallback' => 1,
 			);
 			require_once 'PostmanSmtp2GoEngine.php';
-			$engine = new PostmanSmtp2GoEngine( $api_credentials );
-
-			return $engine;
+			return new PostmanSmtp2GoEngine( $api_credentials );
 		}
 
 		public function getDeliveryDetails() {
@@ -100,8 +80,7 @@ if ( ! class_exists( 'PostmanSmtp2GoTransport' ) ) {
 		}
 
 		protected function validateTransportConfiguration() {
-			$postman_db_version = get_option( 'postman_db_version' );
-			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 				$messages = parent::validateTransportConfiguration();
 				$apiKey   = $this->options->getSmtp2GoApiKey();
 

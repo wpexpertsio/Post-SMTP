@@ -106,33 +106,17 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		 * @version 1.0
 		 */
 		public function createMailEngine() {
+			$api_key    = Postman_Connection_Resolver::get_primary_field(
+				'sendpulse_api_key',
+				array( $this->options, 'getSendpulseApiKey' )
+			);
+			$secret_key = Postman_Connection_Resolver::get_primary_field(
+				'sendpulse_secret_key',
+				array( $this->options, 'getSendpulseSecretKey' )
+			);
 
-			$existing_db_version = get_option( 'postman_db_version' );
-			$connection_details  = get_option( 'postman_connections' );
-			// Check if a transient for smart routing is set
-			$route_key = null;
-    		$route_key = get_transient( 'post_smtp_smart_routing_route' );
-
-			if ( $route_key != null ) {
-				// Smart routing is enabled, use the connection associated with the route_key.
-				$api_key     = $connection_details[ $route_key ]['sendpulse_api_key'];
-				$secret_key  = $connection_details[ $route_key ]['sendpulse_secret_key'];
-			}else{
-				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-					$api_key    = $this->options->getSendpulseApiKey();
-					$secret_key = $this->options->getSendpulseSecretKey();
-				} else {
-					$primary    = $this->options->getSelectedPrimary();
-					$api_key     = $connection_details[ $primary ]['sendpulse_api_key'];
-					$secret_key = $connection_details[ $primary ]['sendpulse_secret_key'];
-				}
-			}
-		
-			
 			require_once 'PostmanSendpulseMailEngine.php';
-			$engine = new PostmanSendpulseMailEngine( $api_key, $secret_key );
-
-			return $engine;
+			return new PostmanSendpulseMailEngine( $api_key, $secret_key );
 		}
 
 		/**
@@ -140,19 +124,14 @@ if ( ! class_exists( 'PostmanSendpulseTransport' ) ) :
 		 * @version 1.0
 		 */
 		public function createMailEngineFallback() {
-
-			$connection_details = get_option( 'postman_connections' );
-			$fallback           = $this->options->getSelectedFallback();
-			$api_key            = $connection_details[ $fallback ]['sendpulse_api_key'];
-			$secret_key         = $connection_details[ $fallback ]['sendpulse_secret_key'];
-			$api_credentials    = array(
-				'api_key'     => $api_key,
+			$api_credentials = array(
+				'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'sendpulse_api_key' ),
 				'is_fallback' => 1,
 			);
-			require_once 'PostmanSendpulseMailEngine.php';
-			$engine = new PostmanSendpulseMailEngine( $api_credentials, $secret_key );
+			$secret_key      = Postman_Connection_Resolver::get_fallback_field( 'sendpulse_secret_key' );
 
-			return $engine;
+			require_once 'PostmanSendpulseMailEngine.php';
+			return new PostmanSendpulseMailEngine( $api_credentials, $secret_key );
 		}
 
 		/**

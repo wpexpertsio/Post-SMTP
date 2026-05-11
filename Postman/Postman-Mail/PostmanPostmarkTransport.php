@@ -95,29 +95,13 @@ if ( ! class_exists( 'PostmanPostmarkTransport' ) ) :
 		}
 
 		public function createMailEngine() {
-
-			$existing_db_version = get_option( 'postman_db_version' );
-			$connection_details  = get_option( 'postman_connections' );
-			
-			// Check if a transient for smart routing is set
-			$route_key = null;
-			$route_key = get_transient( 'post_smtp_smart_routing_route' );	
-			if( $route_key != null  ){
-				// Smart routing is enabled, use the connection associated with the route_key.
-				$api_key        = $connection_details[ $route_key ]['postmark_api_key'];
-			}else{
-				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-					$api_key = $this->options->getPostmarkApiKey();
-				} else {
-					$primary   = $this->options->getSelectedPrimary();
-					$api_key    = $connection_details[ $primary ]['postmark_api_key'];
-				}
-			}
+			$api_key = Postman_Connection_Resolver::get_primary_field(
+				'postmark_api_key',
+				array( $this->options, 'getPostmarkApiKey' )
+			);
 
 			require_once 'PostmanPostmarkMailEngine.php';
-			$engine = new PostmanPostmarkMailEngine( $api_key );
-
-			return $engine;
+			return new PostmanPostmarkMailEngine( $api_key );
 		}
 
 		/**
@@ -125,18 +109,12 @@ if ( ! class_exists( 'PostmanPostmarkTransport' ) ) :
 		 * @version 1.0
 		 */
 		public function createMailEngineFallback() {
-
-			$connection_details = get_option( 'postman_connections' );
-			$fallback           = $this->options->getSelectedFallback();
-			$api_key            = $connection_details[ $fallback ]['postmark_api_key'];
-			$api_credentials    = array(
-				'api_key'     => $api_key,
+			$api_credentials = array(
+				'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'postmark_api_key' ),
 				'is_fallback' => 1,
 			);
 			require_once 'PostmanPostmarkMailEngine.php';
-			$engine = new PostmanPostmarkMailEngine( $api_credentials );
-
-			return $engine;
+			return new PostmanPostmarkMailEngine( $api_credentials );
 		}
 
 		/**
@@ -280,8 +258,7 @@ if ( ! class_exists( 'PostmanPostmarkTransport' ) ) :
 		 * @version 1.0
 		 */
 		protected function validateTransportConfiguration() {
-			$postman_db_version = get_option( 'postman_db_version' );
-			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 				$messages = parent::validateTransportConfiguration();
 				$apiKey   = $this->options->getPostmarkApiKey();
 				if ( empty( $apiKey ) ) {

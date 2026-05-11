@@ -41,35 +41,17 @@ if ( ! class_exists( 'PostmanEmailItMailEngine' ) ) {
 		 * @throws Exception On error.
 		 */
 		public function send( PostmanMessage $message ) {
-			$options            = PostmanOptions::getInstance();
-			$postman_db_version = get_option( 'postman_db_version' );
-			$emailit  = new PostmanEmailIt( $this->apiKey );
+			$options = PostmanOptions::getInstance();
+			$emailit = new PostmanEmailIt( $this->apiKey );
 
-			// Sender logic (primary, fallback, routing)
-			$sender      = $message->getFromAddress();
-			$senderEmail = '';
-			$senderName  = '';
-			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
-				$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-				$senderName  = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
-			} else {
-				$connection_details = get_option( 'postman_connections' );
-				if ( $this->is_fallback == null ) {
-					$route_key = get_transient( 'post_smtp_smart_routing_route' );
-					if( $route_key != null && isset($connection_details[ $route_key ]) ){
-						$senderEmail = $connection_details[ $route_key ]['sender_email'];
-						$senderName  = isset($connection_details[ $route_key ]['sender_name']) ? $connection_details[ $route_key ]['sender_name'] : $options->getMessageSenderName();
-					}else{
-						$primary     = $options->getSelectedPrimary();
-						$senderEmail = isset($connection_details[ $primary ]['sender_email']) ? $connection_details[ $primary ]['sender_email'] : $options->getMessageSenderEmail();
-						$senderName  = isset($connection_details[ $primary ]['sender_name']) ? $connection_details[ $primary ]['sender_name'] : $options->getMessageSenderName();
-					}
-				} else {
-					$fallback    = $options->getSelectedFallback();
-					$senderEmail = isset($connection_details[ $fallback ]['sender_email']) ? $connection_details[ $fallback ]['sender_email'] : $options->getMessageSenderEmail();
-					$senderName  = isset($connection_details[ $fallback ]['sender_name']) ? $connection_details[ $fallback ]['sender_name'] : $options->getMessageSenderName();
-				}
-			}
+			$sender   = $message->getFromAddress();
+			$resolved = Postman_Connection_Resolver::resolve_sender(
+				$sender,
+				(bool) $this->is_fallback,
+				$this->route_key
+			);
+			$senderEmail = $resolved['email'];
+			$senderName  = $resolved['name'];
 			$sender->log( $this->logger, 'From' );
 
 			// Recipients

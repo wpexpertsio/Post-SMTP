@@ -54,7 +54,6 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		private $logger;
 		private $inst;
 		public $new_logging = false;
-		private $existing_db_version = '';
 
 		/**
 		 * Constructor
@@ -201,8 +200,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 	
 				$options = PostmanOptions::getInstance();
 				$connection_details = get_option( 'postman_connections' );
-				$this->existing_db_version = get_option( 'postman_db_version' );
-				if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+				if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 					$from = $log->sender;
 				}else{
    					$selected = $is_fallback ? $options->getSelectedFallback() : $options->getSelectedPrimary();

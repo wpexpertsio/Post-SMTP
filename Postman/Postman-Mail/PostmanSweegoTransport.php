@@ -38,20 +38,13 @@ class PostmanSweegoTransport extends PostmanAbstractModuleTransport implements P
         return 'Sweego_api';
     }
     public function createMailEngine() {
-        $existing_db_version = get_option( 'postman_db_version' );
-        $connection_details  = get_option( 'postman_connections' );
-
-        // Smart routing support
-        $route_key = get_transient( 'post_smtp_smart_routing_route' );
-        if ( $route_key != null ) {
-            $apiKey = $this->getApiKeyForRoute( $route_key, $connection_details );
-        } else {
-            $apiKey = $this->getApiKeyForDefaultConnection( $existing_db_version, $connection_details );
-        }
+        $apiKey = Postman_Connection_Resolver::get_primary_field(
+            'sweego_api_key',
+            array( $this->options, 'getSweegoApiKey' )
+        );
 
         require_once 'PostmanSweegoMailEngine.php';
-        $engine = new PostmanSweegoMailEngine( $apiKey );
-        return $engine;
+        return new PostmanSweegoMailEngine( $apiKey );
     }
     public function getDeliveryDetails() {
         return sprintf(__('Postman will send mail via the <b>%1$s %2$s</b>.', 'post-smtp'), '🔐', $this->getName());
@@ -137,31 +130,12 @@ class PostmanSweegoTransport extends PostmanAbstractModuleTransport implements P
      * @version 1.0
      */
     public function createMailEngineFallback() {
-        $connection_details = get_option( 'postman_connections' );
-        $fallback           = $this->options->getSelectedFallback();
-        $api_key            = isset( $connection_details[ $fallback ] ) ? ( $connection_details[ $fallback ]['sweego_api_key'] ?? '' ) : '';
-        $api_credentials    = array(
-            'api_key'     => $api_key,
+        $api_credentials = array(
+            'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'sweego_api_key' ),
             'is_fallback' => 1,
         );
 
         require_once 'PostmanSweegoMailEngine.php';
-        $engine = new PostmanSweegoMailEngine( $api_credentials );
-        return $engine;
-    }
-
-    private function getApiKeyForRoute( $route_key, $connection_details ) {
-        if ( isset( $connection_details[ $route_key ] ) ) {
-            return $connection_details[ $route_key ]['sweego_api_key'] ?? '';
-        }
-        return '';
-    }
-
-    private function getApiKeyForDefaultConnection( $existing_db_version, $connection_details ) {
-        if ( $existing_db_version !== POST_SMTP_DB_VERSION ) {
-            return $this->options->getSweegoApiKey();
-        }
-        $primary = $this->options->getSelectedPrimary();
-        return isset( $connection_details[ $primary ] ) ? ( $connection_details[ $primary ]['sweego_api_key'] ?? '' ) : '';
+        return new PostmanSweegoMailEngine( $api_credentials );
     }
 }

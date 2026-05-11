@@ -53,7 +53,6 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
             $transport          = PostmanTransportRegistry::getInstance()->getActiveTransport();
 			$postman_options    = get_option( 'postman_options', array() );
 			$postman            = PostmanOptions::getInstance();
-            $postman_db_version = get_option( 'postman_db_version' );
             $app_connected      = get_option( 'post_smtp_mobile_app_connection' );
 	        $main_wp_configured = get_option( 'post_smtp_use_from_main_site' );
             $post_smtp_parent_configured = get_option( 'post_smtp_parent_configured' );
@@ -61,7 +60,7 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
             $app_connected      = empty( $app_connected ) ? 'false' : 'true';
 	        $main_wp_configured = empty( $main_wp_configured ) ? 'false' : 'true';
 			$primary_connection = $postman->getSelectedPrimary();
-			 if( $postman_db_version != POST_SMTP_DB_VERSION ){
+			 if( Postman_Connection_Resolver::is_legacy_mode() ){
                 $configured         = $transport->isConfiguredAndReady() ? 'true' : 'false';
                 if ( $main_wp_configured == 'true' ) {
                     $configured = $post_smtp_parent_configured ? 'true' : 'false';

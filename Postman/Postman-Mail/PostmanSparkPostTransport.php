@@ -95,26 +95,13 @@ if ( ! class_exists( 'PostmanSparkPostTransport' ) ) :
 		}
 
 		public function createMailEngine() {
-			$existing_db_version = get_option( 'postman_db_version' );
-			$connection_details  = get_option( 'postman_connections' );
-				// Check if a transient for smart routing is set
-			$route_key = null;
-    		$route_key = get_transient( 'post_smtp_smart_routing_route' );
+			$api_key = Postman_Connection_Resolver::get_primary_field(
+				'sparkpost_api_key',
+				array( $this->options, 'getSparkPostApiKey' )
+			);
 
-			if ( $route_key != null ) {
-				$api_key     = $connection_details[ $route_key ]['sparkpost_api_key'];
-			}else{
-				if ( $existing_db_version != POST_SMTP_DB_VERSION ) {
-					$api_key = $this->options->getSparkPostApiKey();
-				} else {
-					$primary = $this->options->getSelectedPrimary();
-					$api_key = $connection_details[ $primary ]['sparkpost_api_key'];
-				}
-			}
 			require_once 'PostmanSparkPostMailEngine.php';
-			$engine = new PostmanSparkPostMailEngine( $api_key );
-
-			return $engine;
+			return new PostmanSparkPostMailEngine( $api_key );
 		}
 
 		/**
@@ -123,17 +110,12 @@ if ( ! class_exists( 'PostmanSparkPostTransport' ) ) :
 		 */
 		public function createMailEngineFallback() {
 
-			$connection_details = get_option( 'postman_connections' );
-			$fallback           = $this->options->getSelectedFallback();
-			$api_key            = $connection_details[ $fallback ]['sparkpost_api_key'];
-			$api_credentials    = array(
-				'api_key'     => $api_key,
+			$api_credentials = array(
+				'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'sparkpost_api_key' ),
 				'is_fallback' => 1,
 			);
 			require_once 'PostmanSparkPostMailEngine.php';
-			$engine = new PostmanSparkPostMailEngine( $api_credentials );
-
-			return $engine;
+			return new PostmanSparkPostMailEngine( $api_credentials );
 		}
 
 		/**
@@ -299,8 +281,7 @@ if ( ! class_exists( 'PostmanSparkPostTransport' ) ) :
 		 * @version 1.0
 		 */
 		protected function validateTransportConfiguration() {
-			$postman_db_version = get_option( 'postman_db_version' );
-			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 				$messages = parent::validateTransportConfiguration();
 				$apiKey   = $this->options->getSparkPostApiKey();
 				if ( empty( $apiKey ) ) {

@@ -221,7 +221,7 @@ class Post_SMTP_New_Wizard {
 	 * @return void
 	 */
 	private function merge_office365_oauth_into_connections( array $oauth_data ) {
-		if ( get_option( 'postman_db_version' ) !== POST_SMTP_DB_VERSION ) {
+		if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 			return;
 		}
 
@@ -303,7 +303,6 @@ class Post_SMTP_New_Wizard {
         $id = isset($_GET['id']) ? $_GET['id'] : null;
         $selected_connection = 0;
         $postman_connections = get_option( 'postman_connections' );
-        $db_version = get_option( 'postman_db_version' );
         // Add popup trigger file
         require_once POST_SMTP_PATH. '/Postman/Popup/popup.php';
         ?>
@@ -404,7 +403,7 @@ class Post_SMTP_New_Wizard {
                                                 }
                                                 elseif( $transport->getSlug() == $this->options->getTransportType() && !is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' ) ) {
 
-                                                    if( $db_version == POST_SMTP_DB_VERSION ){
+                                                    if( ! Postman_Connection_Resolver::is_legacy_mode() ){
                                                         if ( isset( $id ) ) {
                                                              $selected_connection = $postman_connections[$id]['provider'];
                                                              if( $key == $selected_connection ){
@@ -420,7 +419,7 @@ class Post_SMTP_New_Wizard {
                                                 $slug = $transport->getSlug();
                                                 $transport_name = $transport->getName();
 
-                                                if( $db_version == POST_SMTP_DB_VERSION ){
+                                                if( ! Postman_Connection_Resolver::is_legacy_mode() ){
                                                    if ( isset( $id ) ) {
                                                         $selected_connection = $postman_connections[$id]['provider'];
                                                         if( $key == $selected_connection ){
@@ -923,7 +922,7 @@ class Post_SMTP_New_Wizard {
         if ( ! is_array( $postman_connections ) ) {
             $postman_connections = array();
         }
-        if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
+        if( ! Postman_Connection_Resolver::is_legacy_mode() ){
             if ( isset( $_GET['id'] ) && isset( $postman_connections[ $_GET['id'] ] ) ) {
                 // Use specific connection (edit case)
                 $from_email = $postman_connections[ $_GET['id'] ]['sender_email'] ?? '';
@@ -1122,7 +1121,7 @@ class Post_SMTP_New_Wizard {
         $port = '';
         $username = '';
         $password = '';
-        if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
+        if( ! Postman_Connection_Resolver::is_legacy_mode() ){
             $mail_connections = get_option('postman_connections');
             $id = $_GET['id'] ?? null;
             if ( isset( $mail_connections[$id] ) ) {
@@ -1193,7 +1192,7 @@ class Post_SMTP_New_Wizard {
             $gmail_oneclick_enabled = in_array( 'gmail-oneclick', $bonus_extensions );
             $auth_url = get_option( 'post_smtp_gmail_auth_url' );
 
-            if( $this->existing_db_version == POST_SMTP_DB_VERSION ){
+            if( ! Postman_Connection_Resolver::is_legacy_mode() ){
                 $id = $_GET['id'] ?? null;
                 $action = isset($_GET['action']) ? $_GET['action'] : '';
                 
@@ -1340,7 +1339,7 @@ class Post_SMTP_New_Wizard {
             $has_oauth_token = false;
             $oauth_email = '';
             
-            if( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
+            if( ! Postman_Connection_Resolver::is_legacy_mode() ) {
                 // New connection system - check specific connection or last connection
                 $id = $_GET['id'] ?? null;
                 $action = isset($_GET['action']) ? $_GET['action'] : '';
@@ -2076,7 +2075,7 @@ class Post_SMTP_New_Wizard {
         $office365_oneclick_enabled = in_array( 'microsoft-one-click', $extensions );
 
         $id                = null;
-        if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
+        if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
             $id = $_GET['id'] ?? null;
             $action = isset($_GET['action']) ? $_GET['action'] : '';
             $app_client_id = '';
@@ -2113,7 +2112,7 @@ class Post_SMTP_New_Wizard {
         $has_access_token = $office365_oauth && isset( $office365_oauth['access_token'] ) && ! empty( $office365_oauth['access_token'] );
 
         $wizard_action = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
-        $is_add_office365_connection = ( $this->existing_db_version == POST_SMTP_DB_VERSION && 'add' === $wizard_action );
+        $is_add_office365_connection = ( ! Postman_Connection_Resolver::is_legacy_mode() && 'add' === $wizard_action );
         if ( $is_add_office365_connection ) {
             // Adding another Microsoft account: ignore stored global tokens for validation + One-Click UI (same idea as Gmail `action=add`).
             $has_access_token = false;
@@ -2292,7 +2291,7 @@ class Post_SMTP_New_Wizard {
         $glob_user_email      = isset( $office365_oauth['user_email'] ) ? sanitize_email( $office365_oauth['user_email'] ) : '';
 
         if ( $office365_oneclick_enabled && post_smtp_has_pro() ) {
-            if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
+            if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
                 $wiz_act = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
                 if ( 'add' === $wiz_act ) {
                     $moc_show_connected = false;
@@ -2337,7 +2336,7 @@ class Post_SMTP_New_Wizard {
                     '_wpnonce' => $nonce,
                     'action'   => 'remove_365_oauth_action',
                 );
-                if ( $this->existing_db_version == POST_SMTP_DB_VERSION && null !== $id && '' !== $id ) {
+                if ( ! Postman_Connection_Resolver::is_legacy_mode() && null !== $id && '' !== $id ) {
                     $remove_args['id'] = $id;
                 }
                 $action_url = esc_url( add_query_arg( $remove_args, admin_url( 'admin-post.php' ) ) );
@@ -2380,7 +2379,7 @@ class Post_SMTP_New_Wizard {
         );
         $selected_region = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ]: '';
 
-        if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
+        if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
             $mail_connections = get_option( 'postman_connections' );
             $id = $_GET['id'] ?? null;
             $action = isset($_GET['action']) ? $_GET['action'] : '';
@@ -3166,7 +3165,7 @@ class Post_SMTP_New_Wizard {
             update_option( 'postman_office365_oauth', $oauth_data );
         }
 
-        if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
+        if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
             // Remove legacy/global auth first so UI does not show stale "Connected with".
             delete_option( 'postman_auth_token' );
 
@@ -3265,7 +3264,7 @@ class Post_SMTP_New_Wizard {
 
         $redirect_url = admin_url( "admin.php?page=postman/configuration_wizard&socket=gmail_api&step=2&action=add" );
 
-        if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
+        if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
             // Remove legacy/global auth first so UI does not show stale "Connected with".
             delete_option( 'postman_auth_token' );
 

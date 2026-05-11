@@ -56,13 +56,6 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 		private $logging_file_url = '';
 
 		/**
-		 * Existing database version.
-		 *
-		 * @var string
-		 */
-		private $existing_db_version = '';
-
-		/**
 		 * Time (in seconds) for which deleted settings can be recovered.
 		 *
 		 * @var int
@@ -89,14 +82,12 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 
 			}
 
-			$this->existing_db_version = get_option( 'postman_db_version' );
-			
 			// Custom option-based transient replacement.
 			$hide_notice               = $this->get_expiring_option( 'ps_dismiss_fallback_update_notice' );
 			$deleted_email_settings    = $this->get_expiring_option( 'deleted_email_settings' );
 			
 			// Show DB Update Notice.
-			if ( $this->has_migrated() && ( POST_SMTP_DB_VERSION !== $this->existing_db_version || false !== $deleted_email_settings ) ) {
+			if ( $this->has_migrated() && ( Postman_Connection_Resolver::is_legacy_mode() || false !== $deleted_email_settings ) ) {
 				add_action( 'admin_notices', array( $this, 'notice' ) );
 			}
 
@@ -133,7 +124,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 		<div class="notice ps-db-update-notice <?php echo esc_attr( $dismissible ); ?>" style="border: 1px solid #2271b1; border-left-width: 4px;">
 			<input type="hidden" value="<?php echo esc_attr( $security ); ?>" class="ps-security">
 			<p><b><?php _e( 'Post SMTP database update required', 'post-smtp' ); ?></b></p>
-			<?php if ( $this->existing_db_version != POST_SMTP_DB_VERSION && $deleted_email_settings === false ) : ?>
+			<?php if ( Postman_Connection_Resolver::is_legacy_mode() && $deleted_email_settings === false ) : ?>
 				<p><?php echo _e( 'Additional Socket support will be now available in our fallback module.', 'post-smtp' ); ?></p>
 				<?php 
 				// Check if Pro version meets requirements
@@ -273,29 +264,11 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			);
 
 			// All API providers data
-			$api_keys = $this->get_api_keys( $postman_options );	
-			
-				// Sensitive keys to decode before saving
-			$sensitive_keys = array(
-				'basic_auth_password',
-				'mandrill_api_key',
-				'sendgrid_api_key',
-				'sendinblue_api_key',
-				'postmark_api_key',
-				'sendpulse_api_key',
-				'sendpulse_secret_key',
-				'sparkpost_api_key',
-				'elasticemail_api_key',
-				'smtp2go_api_key',
-				'mailersend_api_key',
-				'mailjet_api_key',
-				'mailjet_secret_key',
-				'emailit_api_key',
-				'maileroo_api_key',
-				'sweego_api_key',
-				'resend_api_key',
-			);
-			
+			$api_keys = $this->get_api_keys( $postman_options );
+
+			// Sensitive keys to decode before saving — single canonical list.
+			$sensitive_keys = Postman_Connection_Resolver::get_sensitive_keys();
+
 			// Decode sensitive keys if present
 			foreach ( $api_keys as $provider => &$connection ) {
 				foreach ( $sensitive_keys as $key ) {
@@ -326,6 +299,18 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			
 			// Check if fallback SMTP is enabled.
 			if ( $fallback_enabled === 'yes' && ! empty( $fallback_hostname ) ) {
+				/*
+				 * Fallback SMTP credentials live single-base64-encoded in
+				 * `postman_options` (some historical installs are even double-
+				 * encoded, which is why PostmanOptions::getFallbackPassword()
+				 * carries a smart double-decode rescue). The new schema in
+				 * `postman_connections` expects plaintext credentials, so we
+				 * resolve them through the legacy getters here instead of
+				 * copying the raw option value through unchanged.
+				 */
+				$legacy_options       = PostmanOptions::getInstance();
+				$fallback_username    = $legacy_options->getFallbackUsername();
+				$fallback_password    = $legacy_options->getFallbackPassword();
 				// Gather all fallback-related settings except 'fallback_smtp_enabled'.
 				$mail_connections[ $connection_index ] = array(
 					'enc_type'            => sanitize_text_field( $postman_options['fallback_smtp_security'] ?? '' ),
@@ -335,8 +320,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					'sender_name'         => sanitize_text_field( $postman_options['sender_name'] ?? '' ),
 					'sender_email'        => sanitize_email( $postman_options['fallback_from_email'] ?? '' ),
 					'envelope_sender'     => sanitize_text_field( $postman_options['fallback_from_email'] ?? '' ),
-					'basic_auth_username' => sanitize_text_field( $postman_options['fallback_smtp_username'] ?? '' ),
-					'basic_auth_password' => sanitize_text_field( $postman_options['fallback_smtp_password'] ?? '' ),
+					'basic_auth_username' => sanitize_text_field( $fallback_username ?? '' ),
+					'basic_auth_password' => sanitize_text_field( $fallback_password ?? '' ),
 					'provider'            => 'smtp',
 					'title'               => 'SMTP',
 				);
@@ -469,37 +454,18 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			// Get the 'postman_options' array from the database.
 			$postman_options = get_option( 'postman_options', array() );
 
-			// Define the sensitive keys that need to be decoded.
-			$sensitive_keys = array(
-				'basic_auth_password',
-				'mandrill_api_key',
-				'sendgrid_api_key',
-				'sendinblue_api_key',
-				'postmark_api_key',
-				'sendpulse_api_key',
-				'sendpulse_secret_key',
-				'sparkpost_api_key',
-				'elasticemail_api_key',
-				'smtp2go_api_key',
-				'mailersend_api_key',
-				'mailjet_api_key',
-				'mailjet_secret_key',
-				'emailit_api_key',
-				'resend_api_key',
-				// Maileroo and Sweego
-				'maileroo_api_key',
-				'sweego_api_key',
-			);
-
-			// Decrypt only the sensitive keys before storing in the transient.
-			foreach ( $sensitive_keys as $key ) {
-				if ( isset( $postman_options[ $key ] ) ) {
-					$postman_options[ $key ] = $this->decrypt( $postman_options[ $key ] );
-				}
-			}
-
+			/*
+			 * Back up postman_options EXACTLY as it sits in the database
+			 * (still single-base64 for sensitive fields). Restore writes
+			 * these bytes back verbatim so PostmanOptions::get*ApiKey() —
+			 * which decodes once — keeps producing the original secret.
+			 *
+			 * The previous implementation ran a double base64_decode on
+			 * each sensitive value before storing it here, which corrupted
+			 * the backup and silently broke every API key after a restore.
+			 */
 			$this->set_expiring_option( 'deleted_email_settings', $postman_options, $this->recover_settings );
-			
+
 			// Get the 'postman_connections' array and retrieve the primary connection.
 			$mail_connections   = get_option( 'postman_connections', array() );
 			$primary_connection = isset( $mail_connections[0] ) ? $mail_connections[0] : array();
@@ -553,26 +519,6 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( $_POST['security'], 'ps-migrate-fallback-db' ) ) {
 				wp_die( 'Security check failed.' );
 			}
-			$sensitive_keys = array(
-				'basic_auth_password',
-				'mandrill_api_key',
-				'sendgrid_api_key',
-				'sendinblue_api_key',
-				'postmark_api_key',
-				'sendpulse_api_key',
-				'sendpulse_secret_key',
-				'sparkpost_api_key',
-				'elasticemail_api_key',
-				'smtp2go_api_key',
-				'mailersend_api_key',
-				'mailjet_api_key',
-				'mailjet_secret_key',
-				'emailit_api_key',
-				'resend_api_key',
-				// Maileroo and Sweego
-				'maileroo_api_key',
-				'sweego_api_key',
-			);
 
 			$deleted_email_settings = $this->get_expiring_option( 'deleted_email_settings' );
 
@@ -591,12 +537,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			}
 
 		}
-		
-		private function decrypt( $value ) {
-			$decode = base64_decode( $value );
-			return base64_decode( $decode );
-		}
-		
+
 		/**
 		 * Format provider name to title case, removing underscores and 'api'.
 		 *

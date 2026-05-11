@@ -75,17 +75,6 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		private $wpMailBinder;
 
 		/**
-		 * Holds the existing database version.
-		 *
-		 * This property stores the current database version from the WordPress 
-		 * options table, allowing version checks to manage upgrades or compatibility 
-		 * checks within the plugin.
-		 *
-		 * @var string Database version.
-		 */
-		private $existing_db_version = '';
-
-		/**
 		 * Constructor
 		 *
 		 * @param mixed               $rootPluginFilenameAndPath
@@ -109,7 +98,6 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			$this->messageHandler = $messageHandler;
 			$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;
 			$this->wpMailBinder = $binder;
-			$this->existing_db_version = get_option( 'postman_db_version' );
 
 			// check if the user saved data, and if validation was successful
 			$session = PostmanSession::getInstance();
@@ -438,7 +426,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 
 					$message = __( 'The OAuth 2.0 authorization was successful. Ready to send e-mail.', 'post-smtp' );
 					$this->messageHandler->addMessage( $message );
-						if ( $this->existing_db_version == POST_SMTP_DB_VERSION ) {
+						if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
 							$token_details = PostmanOAuthToken::getInstance();
 							$accessToken = $token_details->getAccessToken();
 							$refreshToken = $token_details->getRefreshToken();

@@ -79,47 +79,22 @@ class PostmanEmailitTransport extends PostmanAbstractModuleTransport implements 
     }
 
     public function createMailEngine() {
-        $existing_db_version = get_option( 'postman_db_version' );
-        $connection_details  = get_option( 'postman_connections' );
-        $route_key = get_transient( 'post_smtp_smart_routing_route' );
-
-        if ( $route_key != null ) {
-            $api_key = $this->getApiKeyForRoute( $route_key, $connection_details );
-        } else {
-            $api_key = $this->getApiKeyForDefaultConnection( $existing_db_version, $connection_details );
-        }
+        $api_key = Postman_Connection_Resolver::get_primary_field(
+            'emailit_api_key',
+            array( $this->options, 'getEmailItApiKey' )
+        );
 
         require_once 'PostmanEmailitMailEngine.php';
-        $engine = new PostmanEmailItMailEngine( $api_key );
-        return $engine;
+        return new PostmanEmailItMailEngine( $api_key );
     }
 
     public function createMailEngineFallback() {
-        $connection_details = get_option( 'postman_connections' );
-        $fallback           = $this->options->getSelectedFallback();
-        $api_key            = isset( $connection_details[ $fallback ]['emailit_api_key'] ) ? $connection_details[ $fallback ]['emailit_api_key'] : '';
-        $api_credentials    = array(
-            'api_key'     => $api_key,
+        $api_credentials = array(
+            'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'emailit_api_key' ),
             'is_fallback' => 1,
         );
-        require_once 'PostmanEmailItMailEngine.php';
-        $engine = new PostmanEmailItMailEngine( $api_credentials );
-        return $engine;
-    }
-
-    private function getApiKeyForRoute( $route_key, $connection_details ) {
-        if ( isset( $connection_details[ $route_key ] ) ) {
-            return $connection_details[ $route_key ]['emailit_api_key'];
-        }
-        return '';
-    }
-
-    private function getApiKeyForDefaultConnection( $existing_db_version, $connection_details ) {
-        if ( $existing_db_version !== POST_SMTP_DB_VERSION ) {
-            return $this->options->getEmailItApiKey();
-        }
-        $primary = $this->options->getSelectedPrimary();
-        return isset( $connection_details[ $primary ] ) ? $connection_details[ $primary ]['emailit_api_key'] : '';
+        require_once 'PostmanEmailitMailEngine.php';
+        return new PostmanEmailItMailEngine( $api_credentials );
     }
 
 
@@ -247,8 +222,7 @@ class PostmanEmailitTransport extends PostmanAbstractModuleTransport implements 
     }
 
     protected function validateTransportConfiguration() {
-        $postman_db_version = get_option( 'postman_db_version' );
-        if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+        if ( Postman_Connection_Resolver::is_legacy_mode() ) {
             $messages = parent::validateTransportConfiguration();
             $apiKey   = $this->options->getEmailItApiKey();
             if ( empty( $apiKey ) ) {

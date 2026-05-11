@@ -110,31 +110,11 @@ if ( ! class_exists( 'PostmanPostmarkMailEngine' ) ) :
 		}
 
 		private function get_email_body( $message ) {
-			$postman_db_version = get_option( 'postman_db_version' );
 			if ( is_a( $message, 'PostmanMessage' ) ) {
 
-				$options = PostmanOptions::getInstance();
-
-				$sender = $message->getFromAddress();
-				if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
-					$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-				} else {
-					$connection_details = get_option( 'postman_connections' );
-					if ( $this->is_fallback == null ) {
-						$route_key = null;
-						$route_key = get_transient( 'post_smtp_smart_routing_route' );
-						if( $route_key != null ){
-							// Smart routing is enabled, use the connection associated with the route_key.
-							$senderEmail     = $connection_details[ $route_key ]['sender_email'];
-						}else{
-							$primary     = $options->getSelectedPrimary();
-							$senderEmail = $connection_details[ $primary ]['sender_email'];
-						}
-					} else {
-						$fallback    = $options->getSelectedFallback();
-						$senderEmail = $connection_details[ $fallback ]['sender_email'];
-					}
-				}
+				$sender      = $message->getFromAddress();
+				$resolved    = Postman_Connection_Resolver::resolve_sender( $sender, (bool) $this->is_fallback );
+				$senderEmail = $resolved['email'];
 
 				$sender->log( $this->logger, 'From' );
 

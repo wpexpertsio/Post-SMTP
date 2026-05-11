@@ -575,12 +575,10 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 						__( 'Postman is in <em>non-Production</em> mode and is dumping all emails.', 'post-smtp' )
 					);
 				} else {
-					// Configuration check logic
-					$postman_db_version = get_option( 'postman_db_version' );
 					$primary_connection = $this->options->getSelectedPrimary();
 					$transport          = PostmanTransportRegistry::getInstance()->getSelectedTransport();
 					$is_configured = false;
-					if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+					if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 						// Legacy check
 						$is_configured = $transport->isConfiguredAndReady();
 					} else {
@@ -608,7 +606,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 						);
 					}
 				}
-			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 				// Print delivery details (e.g. SMTP or API summary)
 				$currentTransport = PostmanTransportRegistry::getInstance()->getActiveTransport();
 

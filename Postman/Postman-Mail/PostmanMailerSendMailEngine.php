@@ -56,42 +56,21 @@ if ( ! class_exists( 'PostmanMailerSendMailEngine' ) ) {
 		 * @see PostmanSmtpEngine::send()
 		 */
 		public function send( PostmanMessage $message ) {
-			$options = PostmanOptions::getInstance();
-			$connection_details = get_option( 'postman_connections' );
-			$postman_db_version = get_option( 'postman_db_version' );
             $mailersend = new PostmanMailerSend( $this->apiKey );
 			$content = array();
 			$recipients = array();
 			$headers = array();
 
             // add the From Header
-			$sender = $message->getFromAddress();
+			$sender      = $message->getFromAddress();
+			$resolved    = Postman_Connection_Resolver::resolve_sender( $sender, (bool) $this->is_fallback );
+			$senderEmail = $resolved['email'];
+			$senderName  = $resolved['name'];
 
-			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
-				// Legacy fallback
-				$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-				$senderName  = ! empty( $sender->getName() )  ? $sender->getName()  : $options->getMessageSenderName();
-			} else {
-				if ( $this->is_fallback === null ) {
-					$route_key = get_transient( 'post_smtp_smart_routing_route' );
-					if ( $route_key && isset( $connection_details[ $route_key ] ) ) {
-						$senderEmail = $connection_details[ $route_key ]['sender_email'];
-						$senderName  = $connection_details[ $route_key ]['sender_name'];
-					} else {
-						$primary     = $options->getSelectedPrimary();
-						$senderEmail = $connection_details[ $primary ]['sender_email'];
-						$senderName  = $connection_details[ $primary ]['sender_name'];
-					}
-				} else {
-					$fallback    = $options->getSelectedFallback();
-					$senderEmail = $connection_details[ $fallback ]['sender_email'];
-					$senderName  = $connection_details[ $fallback ]['sender_name'];
-				}
-			}
 			$content['from'] = array(
 				'email'	=>	$senderEmail,
 				'name'	=>	$senderName
-			); 
+			);
 
             // now log it
 			$sender->log( $this->logger, 'From' );

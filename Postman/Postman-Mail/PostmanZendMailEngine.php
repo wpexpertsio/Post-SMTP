@@ -51,8 +51,6 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 
 		private $fallback_flag;
 
-		private $existing_db_version = '';
-
 		/**
 		 *
 		 * @param mixed $senderEmail
@@ -65,7 +63,6 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			// create the logger
 			$this->logger = new PostmanLogger( get_class( $this ) );
 
-			$this->existing_db_version = get_option( 'postman_db_version' );
 			if ( $fallback_flag ) {
 				$this->fallback_flag = $fallback_flag['is_fallback'] ?? null;
 			} else {
@@ -80,10 +77,9 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 		 */
 		public function send( PostmanMessage $message ) {
 			$this->logger->debug( 'Prepping Zend' );
-			$options            = PostmanOptions::getInstance();
-			$postman_db_version = get_option( 'postman_db_version' );
+			$options = PostmanOptions::getInstance();
 
-			if ( $postman_db_version != POST_SMTP_DB_VERSION ) {
+			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 				$sender = $this->transport->getFromEmailAddress();
 			} else {
 				$connection_details = get_option( 'postman_connections' );
@@ -220,7 +216,7 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 
 			// create the SMTP transport
 			$this->logger->debug( 'Create the Zend_Mail transport' );
-			if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 				$zendTransport = $this->transport->createZendMailTransport( $this->transport->getHostname(), array() );
 			}else{
 				$zendTransport = $this->transport->createZendMailTransport( $this->transport->getHostname(), $this->fallback_flag );
@@ -282,7 +278,7 @@ if ( ! class_exists( 'PostmanZendMailEngine' ) ) {
 			$sender = $message->getFromAddress();
 			$options = PostmanOptions::getInstance();
 			// now log it and push it into the message
-			if ( $this->existing_db_version != POST_SMTP_DB_VERSION ) {
+			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 				$senderEmail = $sender->getEmail();
 				$senderName = $sender->getName();
 			}else{

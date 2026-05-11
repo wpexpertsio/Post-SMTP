@@ -79,26 +79,28 @@ class PostmanMailtrapMailEngine implements PostmanMailEngine {
      * @since 2.9.0
      * @version 1.0
      */
-    public function send( PostmanMessage $message ) { 
+    public function send( PostmanMessage $message ) {
 
         $options = PostmanOptions::getInstance();
-        $connection_details = get_option( 'postman_connections', array() );
-        $postman_db_version = get_option( 'postman_db_version' );
-        
+
         if ( empty( $this->api_key ) ) {
             throw new Exception( 'Mailtrap API Key is not configured' );
         }
-        
+
         if ( $this->logger->isDebug() ) {
             $this->logger->debug( 'Creating Mailtrap service with apiKey=' . substr( $this->api_key, 0, 10 ) . '...' );
         }
 
-        $mailtrap = new PostmanMailtrap( $this->api_key);
-        $sender = $message->getFromAddress();
-        $sender_data = $this->resolve_sender_identity( $sender, $options, $connection_details, $postman_db_version );
+        $mailtrap    = new PostmanMailtrap( $this->api_key );
+        $sender      = $message->getFromAddress();
+        $sender_data = Postman_Connection_Resolver::resolve_sender(
+            $sender,
+            (bool) $this->is_fallback,
+            $this->route_key
+        );
         $senderEmail = $sender_data['email'];
-        $senderName = $sender_data['name'];
-        $headers = array();
+        $senderName  = $sender_data['name'];
+        $headers     = array();
         
         $sender->log( $this->logger, 'From' );
 
@@ -281,46 +283,6 @@ class PostmanMailtrapMailEngine implements PostmanMailEngine {
     
         }
 
-    }
-
-    /**
-     * Resolve sender details for primary/fallback/routing modes.
-     *
-     * @param PostmanEmailAddress $sender
-     * @param PostmanOptions      $options
-     * @param array               $connection_details
-     * @param string              $postman_db_version
-     * @return array{email:string,name:string}
-     */
-    private function resolve_sender_identity( $sender, $options, $connection_details, $postman_db_version ) {
-        $sender_email = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-        $sender_name  = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
-
-        if ( $postman_db_version != POST_SMTP_DB_VERSION || ! is_array( $connection_details ) ) {
-            return array(
-                'email' => $sender_email,
-                'name'  => $sender_name,
-            );
-        }
-
-        $connection_id = null;
-        if ( $this->is_fallback ) {
-            $connection_id = $options->getSelectedFallback();
-        } else {
-            $route_key = $this->route_key ? $this->route_key : get_transient( 'post_smtp_smart_routing_route' );
-            $connection_id = ( $route_key && isset( $connection_details[ $route_key ] ) ) ? $route_key : $options->getSelectedPrimary();
-        }
-
-        if ( $connection_id !== null && isset( $connection_details[ $connection_id ] ) ) {
-            $connection = $connection_details[ $connection_id ];
-            $sender_email = ! empty( $connection['sender_email'] ) ? $connection['sender_email'] : $sender_email;
-            $sender_name  = isset( $connection['sender_name'] ) && $connection['sender_name'] !== '' ? $connection['sender_name'] : $sender_name;
-        }
-
-        return array(
-            'email' => $sender_email,
-            'name'  => $sender_name,
-        );
     }
 
 }
