@@ -144,11 +144,7 @@ if ( ! class_exists( 'PostmanGmailApiModuleZendMailTransport' ) ) {
 			$this->logger = new PostmanLogger ( get_class ( $this ) );
 			// Define API base URL for middleware.
 			$this->api_base_url = 'https://connect.postmansmtp.com/wp-json/gmail-oauth/v1/send-email';
-			// One-Click depends on per-connection OAuth fields that only
-			// exist in the new schema; gate the feature on migration
-			// completion as well, otherwise legacy installs would hit the
-			// One-Click branch with an empty access token and throw a
-			// misleading "setup is not finished" error.
+
 			$this->gmail_oneclick_enabled = Postman_Connection_Resolver::is_gmail_oneclick_enabled();
 		}
 
@@ -211,7 +207,7 @@ if ( ! class_exists( 'PostmanGmailApiModuleZendMailTransport' ) ) {
 			try {
 				if ( $this->gmail_oneclick_enabled ) {
 					$stored_access = isset( $this->_config['access_token'] ) ? trim( (string) $this->_config['access_token'] ) : '';
-					if ( '' === $stored_access ) {
+					if ( '' === $stored_access && ! Postman_Connection_Resolver::is_legacy_mode() ) {
 						throw new Exception(
 							__(
 								'Gmail One-Click setup is not finished. Open the Setup Wizard, sign in with Google, then click Save and Continue so your authorization is stored before sending mail.',
