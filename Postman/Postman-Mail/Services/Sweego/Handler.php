@@ -2,11 +2,6 @@
 
 class PostmanSweego extends PostmanServiceRequest {
     /**
-     * Success Code
-     */
-    private $email_sent_code = 200;
-
-    /**
      * API Key
      */
     private $api_key = '';
@@ -50,12 +45,12 @@ class PostmanSweego extends PostmanServiceRequest {
      */
     public function send( $content ) {
         $content = json_encode( $content );
-        return $this->request(
-            'POST',
-            '/send',
-            $this->get_headers(),
-            $content,
-            $this->email_sent_code
-        );
+		return $this->request(
+			'POST',
+			'/send',
+			$this->get_headers(),
+			$content,
+			array( 200, 202 )
+		);
     }
 }

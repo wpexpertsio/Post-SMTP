@@ -330,13 +330,16 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 		$primary = $this->getRequestParameter( 'primary' );
 
 		$edit = $this->getRequestParameter( 'edit' );
-		
-		if ( false === get_transient( 'post_smtp_force_primary_connection' ) ) {
-			set_transient( 'post_smtp_force_primary_connection', $primary, 0 );
-		}
 
-		if ( $edit !== null && $edit !== '' && false === get_transient( 'post_smtp_fallback_edit' ) ) {
-           set_transient( 'post_smtp_fallback_edit', $edit, 0 );
+		// Primary/fallback test transients only apply after DB fallback migration (non-legacy connections schema).
+		if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
+			if ( false === get_transient( 'post_smtp_force_primary_connection' ) ) {
+				set_transient( 'post_smtp_force_primary_connection', $primary, 0 );
+			}
+
+			if ( $edit !== null && $edit !== '' && false === get_transient( 'post_smtp_fallback_edit' ) ) {
+				set_transient( 'post_smtp_fallback_edit', $edit, 0 );
+			}
 		}
 		
 		// get the name of the server from the HTTP Request

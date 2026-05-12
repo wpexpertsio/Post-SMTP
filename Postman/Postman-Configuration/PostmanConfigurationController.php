@@ -810,6 +810,31 @@ class PostmanConfigurationController {
 		// Call the settings for MailerSend API authentication from PostmanMailerSendTransport.
 		do_settings_sections( PostmanMailerSendTransport::MAILERSEND_AUTH_OPTIONS );
 		print '</div>';
+
+		// Render the Mailtrap API settings.
+		print '<div id="mailtrap_settings" class="authentication_setting non-basic non-oauth2">';
+		do_settings_sections( PostmanMailtrapTransport::MAILTRAP_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the Resend API settings.
+		print '<div id="resend_settings" class="authentication_setting non-basic non-oauth2">';
+		do_settings_sections( PostmanResendTransport::RESEND_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the Emailit API settings.
+		print '<div id="emailit_settings" class="authentication_setting non-basic non-oauth2">';
+		do_settings_sections( PostmanEmailitTransport::EMAILIT_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the Maileroo API settings.
+		print '<div id="maileroo_settings" class="authentication_setting non-basic non-oauth2">';
+		do_settings_sections( PostmanMailerooTransport::MAILEROO_AUTH_OPTIONS );
+		print '</div>';
+
+		// Render the Sweego API settings.
+		print '<div id="sweego_settings" class="authentication_setting non-basic non-oauth2">';
+		do_settings_sections( PostmanSweegoTransport::SWEEGO_AUTH_OPTIONS );
+		print '</div>';
 	}
 
 	/**

@@ -307,6 +307,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
 				// get the transport and create the transportConfig and engine.
 				$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
+
 			}else{
 				// get primaryconnection and Config and engine.
 				$transport_registry = PostmanTransportRegistry::getInstance();
@@ -462,11 +463,18 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				 */
 				delete_transient( 'post_smtp_fallback_edit' );
 				
-				if ( $force_primary !== false && (int) $force_primary == 1 && $testMode ) {
-					// Fallback
-					if ( $this->fallback( $log, $message, $options ) ) {
-						return true;
-					}
+				$is_legacy = Postman_Connection_Resolver::is_legacy_mode();
+
+				$should_fallback =
+					$is_legacy ||
+					(
+						$force_primary !== false &&
+						(int) $force_primary === 1 &&
+						$testMode
+					);
+
+				if ( $should_fallback && $this->fallback( $log, $message, $options ) ) {
+					return true;
 				}
 				
 				if( ! $testMode ){

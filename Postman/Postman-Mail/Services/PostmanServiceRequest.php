@@ -83,9 +83,13 @@ class PostmanServiceRequest {
 			$args
 		);
 
-		$response_code = $this->get_response_code();
+		$response_code = (int) $this->get_response_code();
 
-		if ( $response_code == $success_code ) {
+		$ok = is_array( $success_code )
+			? in_array( $response_code, array_map( 'intval', $success_code ), true )
+			: ( $response_code === (int) $success_code );
+
+		if ( $ok ) {
 
 			return $this->response;
 
