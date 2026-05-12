@@ -248,21 +248,64 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 		 * placing the current transport type options at index 0 and fallback settings at index 1 if enabled.
 		 *
 		 * The active `transport_type` always becomes connection `0` and `primary_connection`.
-		 * Any other provider keys still present in `postman_options` are appended next, then
-		 * any additional wizard rows from the pre-migration `postman_connections` snapshot
-		 * (other Pro mailers / multi-account) are merged in when they are not duplicates.
+		 * Other providers still present in `postman_options` (not the active transport) are
+		 * appended next. Finally, every remaining wizard row in the pre-migration
+		 * `postman_connections` snapshot that has usable credentials and a distinct
+		 * fingerprint is appended — including inactive OAuth accounts and extra API mailers.
 		 *
 		 * @since 3.0.1
 		 * @version 1.0.0
 		 */
 		private function save_mail_connections() {
 			$postman_options = get_option( 'postman_options', array() );
-			$current_transport_type = $postman_options['transport_type'] ?? 'default';
+			$current_transport_type = isset( $postman_options['transport_type'] ) && '' !== (string) $postman_options['transport_type']
+				? (string) $postman_options['transport_type']
+				: 'default';
 
 			// Snapshot before this run replaces the option (multi-connection / Pro wizard data).
 			$legacy_connections_snapshot = get_option( 'postman_connections', array() );
 			if ( ! is_array( $legacy_connections_snapshot ) ) {
 				$legacy_connections_snapshot = array();
+			}
+
+			/*
+			 * Wizard often leaves `transport_type` as `default` while the real mailer exists
+			 * only on `postman_connections` (see NewWizard::handle_new_version_save). Infer
+			 * `gmail_api` / `office365_api` / `zohomail_api` / usable `smtp` from the snapshot
+			 * so hydration and connection `0` still build correctly.
+			 */
+			if ( 'default' === $current_transport_type ) {
+				$oauth_slugs = array( 'gmail_api', 'office365_api', 'zohomail_api' );
+				$primary_idx = isset( $postman_options['primary_connection'] ) ? $postman_options['primary_connection'] : 0;
+				if ( null === $primary_idx || '' === (string) $primary_idx ) {
+					$primary_idx = 0;
+				}
+				$inferred = null;
+				if ( isset( $legacy_connections_snapshot[ $primary_idx ] ) && is_array( $legacy_connections_snapshot[ $primary_idx ] ) ) {
+					$cand   = $legacy_connections_snapshot[ $primary_idx ];
+					$cand_p = isset( $cand['provider'] ) ? (string) $cand['provider'] : '';
+					if ( 'smtp' === $cand_p && ! empty( $cand['hostname'] ) ) {
+						$inferred = 'smtp';
+					} elseif ( in_array( $cand_p, $oauth_slugs, true ) ) {
+						$inferred = $cand_p;
+					}
+				}
+				if ( null === $inferred ) {
+					foreach ( $legacy_connections_snapshot as $cand ) {
+						if ( ! is_array( $cand ) ) {
+							continue;
+						}
+						$cand_p = isset( $cand['provider'] ) ? (string) $cand['provider'] : '';
+						if ( in_array( $cand_p, $oauth_slugs, true ) ) {
+							$inferred = $cand_p;
+							break;
+						}
+					}
+				}
+				if ( null !== $inferred ) {
+					$postman_options['transport_type'] = $inferred;
+					$current_transport_type            = $inferred;
+				}
 			}
 
 			$mail_connections = array();
@@ -276,6 +319,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 
 			// All API providers data
 			$api_keys = $this->get_api_keys( $postman_options );
+			$this->ensure_oauth_connections_exist( $api_keys );
 			$this->ensure_primary_transport_api_keys( $api_keys, $current_transport_type, $postman_options );
 
 			// Sensitive keys to decode before saving — single canonical list.
@@ -297,7 +341,12 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			 * `postman_office365_oauth` is empty. Merge those plaintext fields *after*
 			 * the base64 pass so we never double-decode secrets that already live on a row.
 			 */
-			$this->hydrate_api_keys_from_saved_connections( $api_keys, $current_transport_type, $postman_options );
+			$this->hydrate_api_keys_from_saved_connections(
+				$api_keys,
+				$current_transport_type,
+				$postman_options,
+				$legacy_connections_snapshot
+			);
 
 			if ( isset( $api_keys[ $current_transport_type ] ) ) {
 				$postman_options['primary_connection'] = 0;
@@ -378,7 +427,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			$signatures = array();
 			foreach ( $mail_connections as $row ) {
 				if ( is_array( $row ) ) {
-					$sig = $this->connection_migration_signature( $row );
+					$sig = $this->migration_row_fingerprint( $row );
 					if ( '' !== $sig ) {
 						$signatures[ $sig ] = true;
 					}
@@ -392,12 +441,18 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				if ( ! $this->saved_connection_row_has_credentials( $row ) ) {
 					continue;
 				}
-				$sig = $this->connection_migration_signature( $row );
+				$normalized = $row;
+				foreach ( Postman_Connection_Resolver::get_sensitive_keys() as $key ) {
+					if ( isset( $normalized[ $key ] ) && '' !== (string) $normalized[ $key ] ) {
+						$normalized[ $key ] = base64_decode( (string) $normalized[ $key ] );
+					}
+				}
+				$sig = $this->migration_row_fingerprint( $normalized );
 				if ( '' === $sig || isset( $signatures[ $sig ] ) ) {
 					continue;
 				}
 
-				$merged = $row;
+				$merged = $normalized;
 				foreach ( array_filter( $sender_details ) as $key => $value ) {
 					if ( ! isset( $merged[ $key ] ) || '' === (string) $merged[ $key ] ) {
 						$merged[ $key ] = $value;
@@ -423,12 +478,14 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 
 			switch ( $provider ) {
 				case 'gmail_api':
-					return ! empty( $row['access_token'] ) || ! empty( $row['refresh_token'] ) || ! empty( $row['oauth_client_id'] );
+					return ! empty( $row['access_token'] ) || ! empty( $row['refresh_token'] )
+						|| ! empty( $row['oauth_client_id'] ) || ! empty( $row['oauth_client_secret'] );
 				case 'office365_api':
 					return ! empty( $row['access_token'] ) || ! empty( $row['refresh_token'] )
 						|| ! empty( $row['office365_app_id'] ) || ! empty( $row['office365_app_password'] );
 				case 'zohomail_api':
-					return ! empty( $row['access_token'] ) || ! empty( $row['refresh_token'] ) || ! empty( $row['zohomail_client_id'] );
+					return ! empty( $row['access_token'] ) || ! empty( $row['refresh_token'] )
+						|| ! empty( $row['zohomail_client_id'] ) || ! empty( $row['zohomail_client_secret'] );
 				case 'smtp':
 					return ! empty( $row['hostname'] );
 				default:
@@ -458,18 +515,21 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 		}
 
 		/**
-		 * Stable fingerprint for de-duplicating the same logical connection across
-		 * `postman_options`-built rows and legacy `postman_connections` snapshots.
+		 * Fingerprint for one saved connection: used when appending legacy rows so we skip
+		 * only true duplicates. OAuth rows without tokens used to share the same short key;
+		 * in that case a hash of credential-like fields is appended so inactive accounts
+		 * are not dropped.
 		 *
-		 * @param array $row Connection row.
-		 * @return string Empty when not fingerprintable.
+		 * @param array $row Connection row (same shape as stored in `postman_connections`).
+		 * @return string Empty when the row cannot be fingerprinted.
 		 */
-		private function connection_migration_signature( array $row ) {
+		private function migration_row_fingerprint( array $row ) {
 			if ( empty( $row['provider'] ) ) {
 				return '';
 			}
 
 			$provider = (string) $row['provider'];
+			$base     = '';
 
 			switch ( $provider ) {
 				case 'gmail_api':
@@ -478,7 +538,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					$tok      = ! empty( $row['refresh_token'] )
 						? md5( (string) $row['refresh_token'] )
 						: ( ! empty( $row['access_token'] ) ? md5( (string) $row['access_token'] ) : '' );
-					return $provider . "\x1e" . $identity . "\x1e" . $app . "\x1e" . $tok;
+					$base     = $provider . "\x1e" . $identity . "\x1e" . $app . "\x1e" . $tok;
+					break;
 
 				case 'office365_api':
 					$identity = (string) ( $row['user_email'] ?? '' );
@@ -486,17 +547,24 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					$tok      = ! empty( $row['refresh_token'] )
 						? md5( (string) $row['refresh_token'] )
 						: ( ! empty( $row['access_token'] ) ? md5( (string) $row['access_token'] ) : '' );
-					return $provider . "\x1e" . $identity . "\x1e" . $app . "\x1e" . $tok;
+					$base     = $provider . "\x1e" . $identity . "\x1e" . $app . "\x1e" . $tok;
+					break;
 
 				case 'zohomail_api':
-					return $provider . "\x1e" . (string) ( $row['zohomail_client_id'] ?? '' ) . "\x1e" . (string) ( $row['user_email'] ?? '' );
+					$tok  = ! empty( $row['refresh_token'] )
+						? md5( (string) $row['refresh_token'] )
+						: ( ! empty( $row['access_token'] ) ? md5( (string) $row['access_token'] ) : '' );
+					$base = $provider . "\x1e" . (string) ( $row['zohomail_client_id'] ?? '' ) . "\x1e" . (string) ( $row['user_email'] ?? '' ) . "\x1e" . $tok;
+					break;
 
 				case 'smtp':
-					return $provider . "\x1e" . (string) ( $row['hostname'] ?? '' ) . "\x1e" . (string) ( $row['port'] ?? '' )
+					$base = $provider . "\x1e" . (string) ( $row['hostname'] ?? '' ) . "\x1e" . (string) ( $row['port'] ?? '' )
 						. "\x1e" . (string) ( $row['basic_auth_username'] ?? '' ) . "\x1e" . md5( (string) ( $row['basic_auth_password'] ?? '' ) );
+					break;
 
 				case 'aws_ses_api':
-					return $provider . "\x1e" . (string) ( $row['ses_access_key_id'] ?? '' ) . "\x1e" . (string) ( $row['ses_region'] ?? '' );
+					$base = $provider . "\x1e" . (string) ( $row['ses_access_key_id'] ?? '' ) . "\x1e" . (string) ( $row['ses_region'] ?? '' );
+					break;
 
 				default:
 					$credential_keys = array(
@@ -513,10 +581,40 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 						}
 					}
 					if ( count( $parts ) === 1 ) {
-						return $provider . "\x1e" . md5( wp_json_encode( $row ) );
+						$base = $provider . "\x1e" . md5( wp_json_encode( $row ) );
+					} else {
+						$base = implode( "\x1e", $parts );
 					}
-					return implode( "\x1e", $parts );
+					break;
 			}
+
+			if ( '' === $base ) {
+				return '';
+			}
+
+			if ( in_array( $provider, array( 'gmail_api', 'office365_api', 'zohomail_api' ), true )
+				&& empty( $row['refresh_token'] ) && empty( $row['access_token'] ) ) {
+				$skip_material = array(
+					'title',
+					'provider_name',
+					'prevent_sender_name_override',
+					'prevent_sender_email_override',
+					'timestamp',
+				);
+				$material = array();
+				foreach ( $row as $k => $v ) {
+					if ( 'provider' === $k || in_array( $k, $skip_material, true ) ) {
+						continue;
+					}
+					if ( is_scalar( $v ) && '' !== (string) $v ) {
+						$material[ (string) $k ] = (string) $v;
+					}
+				}
+				ksort( $material );
+				$base .= "\x1e" . md5( (string) wp_json_encode( $material ) );
+			}
+
+			return $base;
 		}
 
 		/**
@@ -621,12 +719,72 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 		}
 
 		/**
-		 * Ensures the active transport exists in the gathered API map.
+		 * Pulls OAuth token data from global options into `api_keys` for every provider that
+		 * has tokens stored outside `postman_options`, even when that mailer is not the active
+		 * `transport_type` (so inactive Gmail / Microsoft / Zoho accounts still migrate).
 		 *
-		 * Gmail one-click and Office 365 one-click often leave `oauth_client_*` or app
-		 * credentials empty in `postman_options` while tokens live in dedicated options.
-		 * Without this row, `primary_connection` is never set and the dashboard/settings
-		 * treat the site as unconfigured after fallback migration.
+		 * @param array $api_keys Map keyed by provider slug (by reference).
+		 */
+		private function ensure_oauth_connections_exist( array &$api_keys ) {
+			$gmail_tokens = get_option( 'postman_auth_token', array() );
+			if ( is_array( $gmail_tokens ) && (
+				! empty( $gmail_tokens['access_token'] ) || ! empty( $gmail_tokens['refresh_token'] )
+			) ) {
+				if ( ! isset( $api_keys['gmail_api'] ) ) {
+					$api_keys['gmail_api'] = array(
+						'provider' => 'gmail_api',
+						'title'    => $this->format_provider_title( 'gmail_api' ),
+					);
+				}
+				foreach ( $gmail_tokens as $token_key => $token_value ) {
+					if ( null !== $token_value && '' !== (string) $token_value ) {
+						$api_keys['gmail_api'][ $token_key ] = $token_value;
+					}
+				}
+			}
+
+			$office365 = get_option( 'postman_office365_oauth', array() );
+			if ( is_array( $office365 ) && (
+				! empty( $office365['access_token'] ) || ! empty( $office365['refresh_token'] )
+			) ) {
+				if ( ! isset( $api_keys['office365_api'] ) ) {
+					$api_keys['office365_api'] = array(
+						'provider' => 'office365_api',
+						'title'    => $this->format_provider_title( 'office365_api' ),
+					);
+				}
+				$office_merge_keys = array( 'access_token', 'refresh_token', 'token_expires', 'user_email' );
+				foreach ( $office_merge_keys as $field ) {
+					if ( isset( $office365[ $field ] ) && '' !== (string) $office365[ $field ] ) {
+						$api_keys['office365_api'][ $field ] = $office365[ $field ];
+					}
+				}
+			}
+
+			// Pro Zoho extension (`PostSMTP_ZohoMail::OAUTH_OPTIONS`).
+			$zoho = get_option( 'postman_zohomail_oauth', array() );
+			if ( is_array( $zoho ) && (
+				! empty( $zoho['access_token'] ) || ! empty( $zoho['refresh_token'] )
+			) ) {
+				if ( ! isset( $api_keys['zohomail_api'] ) ) {
+					$api_keys['zohomail_api'] = array(
+						'provider' => 'zohomail_api',
+						'title'    => $this->format_provider_title( 'zohomail_api' ),
+					);
+				}
+				foreach ( $zoho as $key => $value ) {
+					if ( null === $value || ! is_scalar( $value ) || '' === (string) $value ) {
+						continue;
+					}
+					$api_keys['zohomail_api'][ $key ] = $value;
+				}
+			}
+		}
+
+		/**
+		 * Ensures the active transport exists in the gathered API map when credentials live
+		 * only in `postman_options` (OAuth app id/secret or Microsoft app password). Global
+		 * OAuth tokens are merged separately in `ensure_oauth_connections_exist()`.
 		 *
 		 * @param array  $api_keys               API map keyed by provider (by reference).
 		 * @param string $current_transport_type Active transport slug from options.
@@ -635,24 +793,13 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 		private function ensure_primary_transport_api_keys( array &$api_keys, $current_transport_type, array $postman_options ) {
 
 			if ( 'gmail_api' === $current_transport_type ) {
-				$auth_tokens = get_option( 'postman_auth_token', array() );
-				$has_tokens  = is_array( $auth_tokens ) && (
-					! empty( $auth_tokens['access_token'] ) || ! empty( $auth_tokens['refresh_token'] )
-				);
+				$has_oauth_app = ! empty( $postman_options['oauth_client_id'] ) || ! empty( $postman_options['oauth_client_secret'] );
 
-				if ( ! isset( $api_keys['gmail_api'] ) && $has_tokens ) {
+				if ( ! isset( $api_keys['gmail_api'] ) && $has_oauth_app ) {
 					$api_keys['gmail_api'] = array(
 						'provider' => 'gmail_api',
 						'title'    => $this->format_provider_title( 'gmail_api' ),
 					);
-				}
-
-				if ( isset( $api_keys['gmail_api'] ) && is_array( $auth_tokens ) ) {
-					foreach ( $auth_tokens as $token_key => $token_value ) {
-						if ( null !== $token_value && '' !== (string) $token_value ) {
-							$api_keys['gmail_api'][ $token_key ] = $token_value;
-						}
-					}
 				}
 			}
 
@@ -669,15 +816,6 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 						'title'    => $this->format_provider_title( 'office365_api' ),
 					);
 				}
-
-				if ( isset( $api_keys['office365_api'] ) && is_array( $oauth ) ) {
-					$merge_keys = array( 'access_token', 'refresh_token', 'token_expires', 'user_email' );
-					foreach ( $merge_keys as $field ) {
-						if ( isset( $oauth[ $field ] ) && '' !== (string) $oauth[ $field ] ) {
-							$api_keys['office365_api'][ $field ] = $oauth[ $field ];
-						}
-					}
-				}
 			}
 		}
 
@@ -688,15 +826,18 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 		 * @param array  $api_keys               API map keyed by provider (by reference).
 		 * @param string $current_transport_type Active transport slug.
 		 * @param array  $postman_options        Options before this migration run (may include `primary_connection`).
+		 * @param array  $existing_connections   Pre-migration `postman_connections` snapshot (same source as append step).
 		 */
-		private function hydrate_api_keys_from_saved_connections( array &$api_keys, $current_transport_type, array $postman_options ) {
+		private function hydrate_api_keys_from_saved_connections( array &$api_keys, $current_transport_type, array $postman_options, array $existing_connections = null ) {
 			$fields = $this->get_connection_hydration_fields( $current_transport_type );
 			if ( empty( $fields ) ) {
 				return;
 			}
 
-			$existing = get_option( 'postman_connections', array() );
-			if ( ! is_array( $existing ) ) {
+			$existing = null !== $existing_connections && is_array( $existing_connections )
+				? $existing_connections
+				: (array) get_option( 'postman_connections', array() );
+			if ( ! is_array( $existing ) || array() === $existing ) {
 				return;
 			}
 
