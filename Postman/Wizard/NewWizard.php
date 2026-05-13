@@ -217,14 +217,13 @@ class Post_SMTP_New_Wizard {
 	/**
 	 * After a wizard save, either restore the edit OAuth context or clear it.
 	 *
-	 * The Office 365 (and Pro) OAuth return URL uses `get_office365_edit_connection_id()`, which
-	 * reads this transient. `ps-save-wizard` runs before redirecting to Microsoft; if we always
-	 * cleared the transient there, the callback would lose `id` and the next save could merge tokens
-	 * into the wrong connection (e.g. last in the list).
+	 * Office 365 (Pro) and Zoho Mail (Pro) OAuth return URLs resolve the edited row via this transient
+	 * (and optional `?id=`). `ps-save-wizard` runs before redirecting to the provider; clearing the
+	 * transient there made callbacks drop `id`, so the next save could merge into the wrong
+	 * connection (e.g. last in the list).
 	 *
-	 * When the form still carries `postman_fallback_edit` (wizard opened with ?id=), keep the
-	 * transient in sync so OAuth can append `id` to the return URL and subsequent saves target
-	 * the same row.
+	 * When the form still carries `postman_fallback_edit` (wizard opened with `?id=`), keep the
+	 * transient so OAuth can append `id` to the return URL and saves keep targeting the same row.
 	 *
 	 * @param array $form_data Parsed wizard POST body.
 	 * @param array $mail_connections Connections array after this save.
@@ -2854,6 +2853,38 @@ class Post_SMTP_New_Wizard {
 					}
 				}
 
+				if ( null === $id && $transport_type === 'zohomail_api' ) {
+					$nc_cid = isset( $new_connection['zohomail_client_id'] ) ? (string) $new_connection['zohomail_client_id'] : '';
+					$se     = isset( $new_connection['sender_email'] ) ? sanitize_email( $new_connection['sender_email'] ) : '';
+					if ( '' !== $nc_cid && '' !== $se ) {
+						foreach ( $mail_connections as $index => $connection ) {
+							if ( ! isset( $connection['provider'] ) || 'zohomail_api' !== $connection['provider'] ) {
+								continue;
+							}
+							$cc_cid = isset( $connection['zohomail_client_id'] ) ? (string) $connection['zohomail_client_id'] : '';
+							$c_se   = isset( $connection['sender_email'] ) ? sanitize_email( $connection['sender_email'] ) : '';
+							$c_ue   = isset( $connection['user_email'] ) ? sanitize_email( $connection['user_email'] ) : '';
+							if ( $cc_cid === $nc_cid && ( $c_se === $se || $c_ue === $se ) ) {
+								$id = $index;
+								break;
+							}
+						}
+					}
+				}
+
+				if ( null === $id && $transport_type === 'zohomail_api' && ! empty( $new_connection['user_email'] ) ) {
+					foreach ( $mail_connections as $index => $connection ) {
+						if (
+							isset( $connection['provider'], $connection['user_email'] ) &&
+							$connection['provider'] === 'zohomail_api' &&
+							$connection['user_email'] === $new_connection['user_email']
+						) {
+							$id = $index;
+							break;
+						}
+					}
+				}
+
 				if ( null === $id && ! empty( $mail_connections ) ) {
 					$id = array_key_last( $mail_connections );
 				}
@@ -2919,6 +2950,55 @@ class Post_SMTP_New_Wizard {
 						$mail_connections[] = $new_connection;
 						$id = array_key_last( $mail_connections );
 					}
+				} elseif ( $transport_type === 'zohomail_api' && ! empty( $new_connection['user_email'] ) ) {
+					$matched_index = null;
+					foreach ( $mail_connections as $index => $connection ) {
+						if (
+							isset( $connection['provider'] ) &&
+							$connection['provider'] === 'zohomail_api' &&
+							(
+								( isset( $connection['user_email'] ) && $connection['user_email'] === $new_connection['user_email'] ) ||
+								( isset( $connection['sender_email'] ) && $connection['sender_email'] === $new_connection['user_email'] )
+							)
+						) {
+							$matched_index = $index;
+							break;
+						}
+					}
+
+					if ( null !== $matched_index ) {
+						$mail_connections[ $matched_index ] = array_merge( $mail_connections[ $matched_index ], $new_connection );
+						$id = $matched_index;
+					} else {
+						$mail_connections[] = $new_connection;
+						$id = array_key_last( $mail_connections );
+					}
+				} elseif ( $transport_type === 'zohomail_api' ) {
+					$matched_index = null;
+					$nc_cid        = isset( $new_connection['zohomail_client_id'] ) ? (string) $new_connection['zohomail_client_id'] : '';
+					$se            = isset( $new_connection['sender_email'] ) ? sanitize_email( $new_connection['sender_email'] ) : '';
+					if ( '' !== $nc_cid && '' !== $se ) {
+						foreach ( $mail_connections as $index => $connection ) {
+							if ( ! isset( $connection['provider'] ) || 'zohomail_api' !== $connection['provider'] ) {
+								continue;
+							}
+							$cc_cid = isset( $connection['zohomail_client_id'] ) ? (string) $connection['zohomail_client_id'] : '';
+							$c_se   = isset( $connection['sender_email'] ) ? sanitize_email( $connection['sender_email'] ) : '';
+							$c_ue   = isset( $connection['user_email'] ) ? sanitize_email( $connection['user_email'] ) : '';
+							if ( $cc_cid === $nc_cid && ( $c_se === $se || $c_ue === $se ) ) {
+								$matched_index = $index;
+								break;
+							}
+						}
+					}
+
+					if ( null !== $matched_index ) {
+						$mail_connections[ $matched_index ] = array_merge( $mail_connections[ $matched_index ], $new_connection );
+						$id = $matched_index;
+					} else {
+						$mail_connections[] = $new_connection;
+						$id = array_key_last( $mail_connections );
+					}
 				} else {
 					$mail_connections[] = $new_connection;
 					$id = array_key_last( $mail_connections );
@@ -2973,6 +3053,7 @@ class Post_SMTP_New_Wizard {
                 $connection = array_merge( $connection, array(
                     'zohomail_client_id'     => $sanitized['zohomail_client_id'] ?? '',
                     'zohomail_client_secret' => $sanitized['zohomail_client_secret'] ?? '',
+                    'user_email'             => isset( $form_data['user_email'] ) ? sanitize_email( $form_data['user_email'] ) : ( $connection['user_email'] ?? '' ),
                     'timestamp'              => time() + 3600,
                 ) );
                 break;
@@ -3135,12 +3216,15 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function auth_zoho() {
-        // Persist edit context explicitly for Zoho callback flow.
+        // Persist edit context explicitly for Zoho callback flow (same transient as Office 365 / wizard capture).
+        $connections = get_option( 'postman_connections', array() );
+        if ( ! is_array( $connections ) ) {
+            $connections = array();
+        }
+
         if ( isset( $_GET['id'] ) && '' !== trim( (string) $_GET['id'] ) ) {
             $connection_id = sanitize_text_field( wp_unslash( $_GET['id'] ) );
-            $connections   = get_option( 'postman_connections', array() );
             if (
-                is_array( $connections ) &&
                 isset( $connections[ $connection_id ] ) &&
                 isset( $connections[ $connection_id ]['provider'] ) &&
                 'zohomail_api' === $connections[ $connection_id ]['provider']
@@ -3148,6 +3232,22 @@ class Post_SMTP_New_Wizard {
                 $this->set_edit_connection_context(
                     array(
                         'id'       => $connection_id,
+                        'provider' => 'zohomail_api',
+                    )
+                );
+            }
+        } else {
+            $ctx = $this->get_edit_connection_context();
+            if (
+                isset( $ctx['id'], $ctx['provider'] ) &&
+                'zohomail_api' === $ctx['provider'] &&
+                isset( $connections[ $ctx['id'] ] ) &&
+                isset( $connections[ $ctx['id'] ]['provider'] ) &&
+                'zohomail_api' === $connections[ $ctx['id'] ]['provider']
+            ) {
+                $this->set_edit_connection_context(
+                    array(
+                        'id'       => $ctx['id'],
                         'provider' => 'zohomail_api',
                     )
                 );
