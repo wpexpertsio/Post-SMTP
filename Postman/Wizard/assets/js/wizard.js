@@ -1,3 +1,41 @@
+/**
+ * Require From Name and From Email before Office 365 / Gmail OAuth or connect actions.
+ *
+ * @returns {boolean}
+ */
+function psWizardValidateFromSenderFields() {
+    var $wrap = jQuery('.ps-name-email-settings');
+    var $name = $wrap.find('.ps-from-name').first();
+    var $email = $wrap.find('.ps-from-email').first();
+    if (!$name.length) {
+        $name = jQuery('.ps-from-name').first();
+    }
+    if (!$email.length) {
+        $email = jQuery('.ps-from-email').first();
+    }
+
+    var fromName = ($name.val() || '').trim();
+    var fromEmail = ($email.val() || '').trim();
+
+    var showErr = function ($input, fallbackMsg) {
+        var msg = $input.attr('data-error') || fallbackMsg;
+        jQuery('.ps-wizard-error').html('<span class="dashicons dashicons-warning"></span> ' + msg);
+        $input.focus();
+    };
+
+    if (!fromName) {
+        showErr($name, 'Please enter From Name.');
+        return false;
+    }
+    if (!fromEmail) {
+        showErr($email, 'Please enter From Email.');
+        return false;
+    }
+
+    jQuery('.ps-wizard-error').html('');
+    return true;
+}
+
 jQuery(document).ready(function () {
     let finalStepConfettiShown = false;
     jQuery('.ps-wizard-socket-check:checked').siblings('.ps-wizard-socket-tick-container').css({ 'opacity': 1 });
@@ -800,6 +838,10 @@ jQuery(document).ready(function () {
 
         e.preventDefault();
 
+        if (!psWizardValidateFromSenderFields()) {
+            return;
+        }
+
         var office365_app_id = jQuery('.ps-office365-client-id').val();
         var office365_app_password = jQuery('.ps-office365-client-secret').val();
         var _button = jQuery(this).html();
@@ -846,6 +888,10 @@ jQuery(document).ready(function () {
     jQuery(document).on('click', '#ps-wizard-connect-gmail', function (e) {
 
         e.preventDefault();
+
+        if (!psWizardValidateFromSenderFields()) {
+            return;
+        }
 
         var clientID = jQuery('.ps-gmail-api-client-id').val();
         var clientSecret = jQuery('.ps-gmail-client-secret').val();
@@ -934,6 +980,10 @@ jQuery(document).ready(function () {
     jQuery(document).on('click', '.ps-gmail-oneclick-btn', function (e) {
 
         e.preventDefault();
+
+        if (!psWizardValidateFromSenderFields()) {
+            return;
+        }
 
         var $button = jQuery(this);
         var originalText = $button.text();
@@ -1397,6 +1447,10 @@ jQuery(document).ready(function ($) {
             return false;
         }
 
+        if (!psWizardValidateFromSenderFields()) {
+            return false;
+        }
+
         var redirectURI = $button.attr('href');
         var originalText = $button.text();
         $button.addClass('ps-gmail-btn--busy').attr({ 'aria-busy': 'true', 'aria-disabled': 'true' }).text('Redirecting...');
@@ -1428,6 +1482,10 @@ jQuery(document).ready(function ($) {
 
         // <a> elements ignore .prop('disabled'); guard + class block repeat clicks.
         if ($button.hasClass('ps-office365-btn--busy')) {
+            return false;
+        }
+
+        if (!psWizardValidateFromSenderFields()) {
             return false;
         }
 
