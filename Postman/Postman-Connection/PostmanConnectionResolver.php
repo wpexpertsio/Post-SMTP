@@ -8,8 +8,10 @@
  * lists.
  *
  * Storage contract assumed by this helper:
- *  - `postman_options` holds sensitive fields as single-base64 strings; the
- *    PostmanOptions::get*ApiKey() getters decode them once on read.
+ *  - `postman_options` holds sensitive fields as base64-encoded strings; the
+ *    canonical on-disk form is a single base64 layer. {@see self::decode_stored_option_secret()}
+ *    unwraps accidental multi-layer encoding on read; {@see self::repair_postman_options_secret_encoding()}
+ *    normalizes values on migrate/restore.
  *  - `postman_connections` holds the same fields as plaintext (set by
  *    PostmanFallbackMigration::save_mail_connections() which decodes once
  *    while building the connection rows).
@@ -274,6 +276,93 @@ if ( ! class_exists( 'Postman_Connection_Resolver' ) ) :
 				'zohomail_client_secret',
 				'ses_secret_access_key',
 			);
+		}
+
+		/**
+		 * Keys in `postman_options` that are stored as base64-encoded secrets (not `oauth_client_secret`,
+		 * which is read plain by {@see PostmanOptions::getClientSecret()}).
+		 *
+		 * @return string[]
+		 */
+		public static function get_postman_options_base64_secret_keys() {
+			return array(
+				'basic_auth_password',
+				'fallback_smtp_password',
+				'mandrill_api_key',
+				'sendgrid_api_key',
+				'sendinblue_api_key',
+				'postmark_api_key',
+				'sendpulse_api_key',
+				'sendpulse_secret_key',
+				'sparkpost_api_key',
+				'elasticemail_api_key',
+				'smtp2go_api_key',
+				'mailersend_api_key',
+				'mailjet_api_key',
+				'mailjet_secret_key',
+				'emailit_api_key',
+				'maileroo_api_key',
+				'sweego_api_key',
+				'resend_api_key',
+				'mailtrap_api_key',
+				'mailgun_api_key',
+				'office365_app_password',
+				'zohomail_client_secret',
+				'ses_secret_access_key',
+			);
+		}
+
+		/**
+		 * Decode a secret read from `postman_options`: unwraps any number of accidental base64 layers
+		 * until the value is no longer a strict round-tripping base64 armoring of its decoded bytes.
+		 *
+		 * @param mixed $stored Raw DB value.
+		 * @return string Plaintext secret for SMTP/API use.
+		 */
+		public static function decode_stored_option_secret( $stored ) {
+			$current = (string) $stored;
+			if ( '' === $current ) {
+				return '';
+			}
+			while ( true ) {
+				$decoded = base64_decode( $current, true );
+				if ( false === $decoded || '' === $decoded ) {
+					break;
+				}
+				if ( base64_encode( $decoded ) !== $current ) {
+					break;
+				}
+				$current = $decoded;
+			}
+
+			return $current;
+		}
+
+		/**
+		 * Normalize a secret to exactly one base64 layer for persistence in `postman_options`.
+		 *
+		 * @param mixed $stored Plaintext or multiply-wrapped base64.
+		 * @return string Single base64-encoded value, or empty string.
+		 */
+		public static function normalize_stored_option_secret_to_single_base64( $stored ) {
+			$plain = self::decode_stored_option_secret( $stored );
+
+			return '' === $plain ? '' : base64_encode( $plain );
+		}
+
+		/**
+		 * Rewrite known secret keys in a `postman_options` array to a single base64 layer (migrate/restore).
+		 *
+		 * @param array $postman_options Options array (modified by reference).
+		 * @return void
+		 */
+		public static function repair_postman_options_secret_encoding( array &$postman_options ) {
+			foreach ( self::get_postman_options_base64_secret_keys() as $key ) {
+				if ( ! isset( $postman_options[ $key ] ) || '' === (string) $postman_options[ $key ] ) {
+					continue;
+				}
+				$postman_options[ $key ] = self::normalize_stored_option_secret_to_single_base64( $postman_options[ $key ] );
+			}
 		}
 	}
 

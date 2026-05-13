@@ -424,6 +424,24 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 		}
 
+		/**
+		 * Decode a secret read from postman_options (unwraps accidental multi-layer base64).
+		 *
+		 * @param mixed $stored Raw option value.
+		 * @return string
+		 */
+		private function decode_option_secret_for_read( $stored ) {
+			if ( null === $stored || '' === $stored ) {
+				return '';
+			}
+			if ( class_exists( 'Postman_Connection_Resolver', false ) ) {
+				return Postman_Connection_Resolver::decode_stored_option_secret( $stored );
+			}
+			$decoded = base64_decode( (string) $stored, true );
+
+			return ( false !== $decoded ) ? $decoded : (string) $stored;
+		}
+
 		public function getPassword() {
 
 			if ( $this->is_fallback ) {
@@ -435,7 +453,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options [ PostmanOptions::BASIC_AUTH_PASSWORD ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::BASIC_AUTH_PASSWORD ] );
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::BASIC_AUTH_PASSWORD ] );
 			}
 		}
 
@@ -540,25 +558,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options[ PostmanOptions::FALLBACK_SMTP_PASSWORD ] ) ) {
-				$value = $this->options[ PostmanOptions::FALLBACK_SMTP_PASSWORD ];
-
-				// First decode
-				$decoded = base64_decode( $value, true );
-
-				// If decoding fails, return as is
-				if ( $decoded === false ) {
-					return $value;
-				}
-
-				// Check if it looks like another base64 string (only base64 chars and length multiple of 4)
-				if ( preg_match( '/^[A-Za-z0-9\/\r\n+]*={0,2}$/', $decoded ) && strlen( $decoded ) % 4 === 0 ) {
-					$double_decoded = base64_decode( $decoded, true );
-					if ( $double_decoded !== false ) {
-						return $double_decoded;
-					}
-				}
-
-				return $decoded;
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::FALLBACK_SMTP_PASSWORD ] );
 			}
 
 			return null;
@@ -573,7 +573,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options [ PostmanOptions::MANDRILL_API_KEY ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::MANDRILL_API_KEY ] ); }
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::MANDRILL_API_KEY ] ); }
 		}
 		public function getSendGridApiKey() {
 			if ( defined( 'POST_SMTP_API_KEY' ) ) {
@@ -581,14 +581,14 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options [ PostmanOptions::SENDGRID_API_KEY ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::SENDGRID_API_KEY ] ); }
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::SENDGRID_API_KEY ] ); }
 		}
 		public function getMailerSendApiKey() {
 			if ( defined( 'POST_SMTP_API_KEY' ) ) {
 				return POST_SMTP_API_KEY;
 			}
 			if ( isset( $this->options [ PostmanOptions::MAILERSEND_API_KEY ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::MAILERSEND_API_KEY ] );
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::MAILERSEND_API_KEY ] );
 			}
 		}
 
@@ -620,7 +620,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options [ PostmanOptions::MAILGUN_API_KEY ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::MAILGUN_API_KEY ] ); }
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::MAILGUN_API_KEY ] ); }
 		}
 		public function getMailgunDomainName() {
 			if ( isset( $this->options [ PostmanOptions::MAILGUN_DOMAIN_NAME ] ) ) {
@@ -680,7 +680,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		}
 
 		if ( isset( $this->options[PostmanOptions::SENDINBLUE_API_KEY] ) ) {
-			return base64_decode( $this->options[PostmanOptions::SENDINBLUE_API_KEY] );
+			return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::SENDINBLUE_API_KEY ] );
 		}
 
 	}
@@ -698,7 +698,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		}
 
 		if ( isset( $this->options[PostmanOptions::MAILTRAP_API_KEY] ) ) {
-			return base64_decode( $this->options[PostmanOptions::MAILTRAP_API_KEY] );
+			return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::MAILTRAP_API_KEY ] );
 		}
 
 	}
@@ -712,7 +712,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
 
 			if ( isset( $this->options[ PostmanOptions::EMAILIT_API_KEY ] ) ) {
-				return base64_decode( $this->options[ PostmanOptions::EMAILIT_API_KEY ] );
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::EMAILIT_API_KEY ] );
 			}
 			return null;
 		}
@@ -728,7 +728,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options[ PostmanOptions::MAILEROO_API_KEY ] ) ) {
-				return base64_decode( $this->options[ PostmanOptions::MAILEROO_API_KEY ] );
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::MAILEROO_API_KEY ] );
 			}
 			return null;
 		}
@@ -746,7 +746,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options[ PostmanOptions::SWEEGO_API_KEY ] ) ) {
-				return base64_decode( $this->options[ PostmanOptions::SWEEGO_API_KEY ] );
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::SWEEGO_API_KEY ] );
 			}
 			return null;
 		}
@@ -764,7 +764,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
 
             if ( isset( $this->options[PostmanOptions::RESEND_API_KEY] ) ) {
-                return base64_decode( $this->options[PostmanOptions::RESEND_API_KEY] );
+                return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::RESEND_API_KEY ] );
             }
 
         }
@@ -783,7 +783,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options[PostmanOptions::MAILJET_API_KEY] ) ) {
-				return base64_decode( $this->options[PostmanOptions::MAILJET_API_KEY] );
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::MAILJET_API_KEY ] );
 			}
 
 		}
@@ -801,7 +801,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options[PostmanOptions::SENDPULSE_API_KEY] ) ) {
-				return base64_decode( $this->options[PostmanOptions::SENDPULSE_API_KEY] );
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::SENDPULSE_API_KEY ] );
 			}
 
 		}
@@ -819,7 +819,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options[PostmanOptions::MAILJET_SECRET_KEY] ) ) {
-				return base64_decode( $this->options[PostmanOptions::MAILJET_SECRET_KEY] );
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::MAILJET_SECRET_KEY ] );
 			}
 
 		}
@@ -837,7 +837,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options[PostmanOptions::SENDPULSE_SECRET_KEY] ) ) {
-				return base64_decode( $this->options[PostmanOptions::SENDPULSE_SECRET_KEY] );
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::SENDPULSE_SECRET_KEY ] );
 			}
 
 		}
@@ -855,7 +855,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 		
 			if ( isset( $this->options[PostmanOptions::SPARKPOST_API_KEY] ) ) {
-				return base64_decode( $this->options[PostmanOptions::SPARKPOST_API_KEY] );
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::SPARKPOST_API_KEY ] );
 			}
 		
 		}
@@ -872,7 +872,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options[PostmanOptions::ELASTICEMAIL_API_KEY] ) ) {
-				return base64_decode( $this->options[PostmanOptions::ELASTICEMAIL_API_KEY] );
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::ELASTICEMAIL_API_KEY ] );
 			}
 
 		}
@@ -1022,7 +1022,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options[PostmanOptions::POSTMARK_API_KEY] ) ) {
-				return base64_decode( $this->options[PostmanOptions::POSTMARK_API_KEY] );
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::POSTMARK_API_KEY ] );
 			}
 
 		}
@@ -1055,7 +1055,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options[ PostmanOptions::SMTP2GO_API_KEY ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::SMTP2GO_API_KEY ] );
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::SMTP2GO_API_KEY ] );
 			}
 		}
 

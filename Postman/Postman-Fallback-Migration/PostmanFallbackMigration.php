@@ -677,7 +677,6 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'mailersend_api'   => array( 'mailersend_api_key'),
 				'emailit_api'      => array( 'emailit_api_key'),
 				'resend_api'       => array( 'resend_api_key'),	
-				/* Added Maileroo and Sweego (custom providers) */
 				'maileroo_api'     => array( 'maileroo_api_key' ),
 				'sweego_api'       => array( 'sweego_api_key' ),
 			);
@@ -970,13 +969,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 
 			/*
 			 * Back up postman_options EXACTLY as it sits in the database
-			 * (still single-base64 for sensitive fields). Restore writes
-			 * these bytes back verbatim so PostmanOptions::get*ApiKey() —
-			 * which decodes once — keeps producing the original secret.
-			 *
-			 * The previous implementation ran a double base64_decode on
-			 * each sensitive value before storing it here, which corrupted
-			 * the backup and silently broke every API key after a restore.
+			 * before merge. After merge, {@see Postman_Connection_Resolver::repair_postman_options_secret_encoding()}
+			 * normalizes secrets to a single base64 layer so getters and restore stay consistent.
 			 */
 			$this->set_expiring_option( 'deleted_email_settings', $postman_options, $this->recover_settings );
 
@@ -997,13 +991,10 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'postmark_api_key', 'sparkpost_api_key', 'mailgun_api_key',
 				'mailgun_domain_name', 'elasticemail_api_key', 'smtp2go_api_key',
 				'oauth_client_id', 'oauth_client_secret','emailit_api_key',
-				'resend_api_key',
+				'resend_api_key','maileroo_api_key', 'sweego_api_key',
 				'office365_app_id', 'office365_app_password',
 				'zohomail_client_id', 'zohomail_client_secret', 'zohomail_region',
 				'ses_access_key_id', 'ses_secret_access_key', 'ses_region',
-				// Maileroo and Sweego keys
-				'maileroo_api_key',
-				'sweego_api_key',
 			);
 
 			// Loop through the defined email keys.
@@ -1020,6 +1011,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					$postman_options[ $key ] = $value;
 				}
 			}
+
+			Postman_Connection_Resolver::repair_postman_options_secret_encoding( $postman_options );
 
 			// Update the postman_options in the database.
 			update_option( 'postman_options', $postman_options );
@@ -1040,6 +1033,9 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			$deleted_email_settings = $this->get_expiring_option( 'deleted_email_settings' );
 
 			if ( false !== $deleted_email_settings ) {
+				if ( is_array( $deleted_email_settings ) ) {
+					Postman_Connection_Resolver::repair_postman_options_secret_encoding( $deleted_email_settings );
+				}
 				// Save the restored settings
 				update_option( 'postman_options', $deleted_email_settings );
 
