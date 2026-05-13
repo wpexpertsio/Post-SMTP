@@ -215,6 +215,49 @@ class Post_SMTP_New_Wizard {
 	}
 
 	/**
+	 * After a wizard save, either restore the edit OAuth context or clear it.
+	 *
+	 * The Office 365 (and Pro) OAuth return URL uses `get_office365_edit_connection_id()`, which
+	 * reads this transient. `ps-save-wizard` runs before redirecting to Microsoft; if we always
+	 * cleared the transient there, the callback would lose `id` and the next save could merge tokens
+	 * into the wrong connection (e.g. last in the list).
+	 *
+	 * When the form still carries `postman_fallback_edit` (wizard opened with ?id=), keep the
+	 * transient in sync so OAuth can append `id` to the return URL and subsequent saves target
+	 * the same row.
+	 *
+	 * @param array $form_data Parsed wizard POST body.
+	 * @param array $mail_connections Connections array after this save.
+	 * @return void
+	 */
+	private function persist_edit_connection_context_after_save( $form_data, $mail_connections ) {
+		if ( ! is_array( $mail_connections ) ) {
+			$this->clear_edit_connection_context();
+			return;
+		}
+
+		if ( isset( $form_data['postman_fallback_edit'] ) ) {
+			$edit_id = sanitize_text_field( (string) $form_data['postman_fallback_edit'] );
+			if ( '' !== $edit_id && isset( $mail_connections[ $edit_id ] ) ) {
+				$provider = isset( $mail_connections[ $edit_id ]['provider'] )
+					? sanitize_text_field( (string) $mail_connections[ $edit_id ]['provider'] )
+					: '';
+				if ( '' !== $provider ) {
+					$this->set_edit_connection_context(
+						array(
+							'id'       => $edit_id,
+							'provider' => $provider,
+						)
+					);
+					return;
+				}
+			}
+		}
+
+		$this->clear_edit_connection_context();
+	}
+
+	/**
 	 * Writes Office 365 OAuth tokens into `postman_connections` so multiple Microsoft mailboxes can coexist (mirrors Gmail multi-account storage).
 	 *
 	 * @param array $oauth_data Same shape as `postman_office365_oauth` option after redirect.
@@ -2884,7 +2927,7 @@ class Post_SMTP_New_Wizard {
         }
         
         $saved = update_option( 'postman_connections', $mail_connections );
-		$this->clear_edit_connection_context();
+		$this->persist_edit_connection_context_after_save( $form_data, $mail_connections );
 
           $postman_options = array_merge( 
 			$postman_options, array(
