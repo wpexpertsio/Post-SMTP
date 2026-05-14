@@ -77,8 +77,6 @@ if ( ! class_exists( 'PostmanPostmarkMailEngine' ) ) :
 
 		public function send( PostmanMessage $message ) {
 
-			$options = PostmanOptions::getInstance();
-
 			if ( $this->logger->isDebug() ) {
 				$this->logger->debug( 'Creating PostMark service with api_Key=' . $this->api_key );
 			}
@@ -112,13 +110,15 @@ if ( ! class_exists( 'PostmanPostmarkMailEngine' ) ) :
 		private function get_email_body( $message ) {
 			if ( is_a( $message, 'PostmanMessage' ) ) {
 
+				$options = PostmanOptions::getInstance();
+
 				$sender      = $message->getFromAddress();
 				$resolved    = Postman_Connection_Resolver::resolve_sender( $sender, (bool) $this->is_fallback );
 				$senderEmail = $resolved['email'];
 
 				$sender->log( $this->logger, 'From' );
 
-				$body         = $tos = $headers = $duplicates = $cc = $bcc = $email_attachments = array();
+				$body         = $tos = $duplicates = $cc = $bcc = $email_attachments = array();
 				$body['From'] = $senderEmail;
 
 				// add the to recipients
@@ -157,22 +157,38 @@ if ( ! class_exists( 'PostmanPostmarkMailEngine' ) ) :
 					$body['ReplyTo'] = '';
 				}
 
-				// add the Postman signature - append it to whatever the user may have set
+				// Postmark expects Headers as an array of { Name, Value } objects (not a single hash).
+				$header_rows = array();
+
 				if ( ! $options->isStealthModeEnabled() ) {
-					$pluginData          = apply_filters( 'postman_get_plugin_metadata', null );
-					$headers['X-Mailer'] = sprintf( 'Postman SMTP %s for WordPress (%s)', $pluginData ['version'], 'https://wordpress.org/plugins/post-smtp/' );
+					$pluginData    = apply_filters( 'postman_get_plugin_metadata', null );
+					$header_rows[] = array(
+						'Name'  => 'X-Mailer',
+						'Value' => sprintf( 'Postman SMTP %s for WordPress (%s)', $pluginData['version'] ?? '', 'https://wordpress.org/plugins/post-smtp/' ),
+					);
 				}
 
 				foreach ( (array) $message->getHeaders() as $header ) {
-					$this->logger->debug( sprintf( 'Adding user header %s=%s', $header ['name'], $header ['content'] ) );
-					$headers[ $header['name'] ] = $header ['content'];
+					if ( empty( $header['name'] ) ) {
+						continue;
+					}
+					$this->logger->debug( sprintf( 'Adding user header %s=%s', $header['name'], $header['content'] ) );
+					$header_rows[] = array(
+						'Name'  => $header['name'],
+						'Value' => isset( $header['content'] ) ? (string) $header['content'] : '',
+					);
 				}
 
-				$body['Headers'][] = $headers;
-				// add the messageId
 				$messageId = $message->getMessageId();
 				if ( ! empty( $messageId ) ) {
-					$headers['message-id'] = $messageId;
+					$header_rows[] = array(
+						'Name'  => 'Message-ID',
+						'Value' => $messageId,
+					);
+				}
+
+				if ( ! empty( $header_rows ) ) {
+					$body['Headers'] = $header_rows;
 				}
 
 				// if the caller set a Content-Type header, use it
