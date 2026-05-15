@@ -678,6 +678,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'emailit_api'      => array( 'emailit_api_key'),
 				'resend_api'       => array( 'resend_api_key'),	
 				'maileroo_api'     => array( 'maileroo_api_key' ),
+				'mailtrap_api'     => array( 'mailtrap_api_key' ),
 				'sweego_api'       => array( 'sweego_api_key' ),
 			);
 
@@ -936,6 +937,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 						'provider_name',
 						'timestamp',
 					);
+				case 'mailtrap_api':
+					return array( 'mailtrap_api_key' );
 				default:
 					return array();
 			}
@@ -991,7 +994,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'postmark_api_key', 'sparkpost_api_key', 'mailgun_api_key',
 				'mailgun_domain_name', 'elasticemail_api_key', 'smtp2go_api_key',
 				'oauth_client_id', 'oauth_client_secret','emailit_api_key',
-				'resend_api_key','maileroo_api_key', 'sweego_api_key',
+				'resend_api_key','maileroo_api_key', 'mailtrap_api_key', 'sweego_api_key',
 				'office365_app_id', 'office365_app_password',
 				'zohomail_client_id', 'zohomail_client_secret', 'zohomail_region',
 				'ses_access_key_id', 'ses_secret_access_key', 'ses_region',

@@ -69,6 +69,7 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 				$this->sanitizePassword( 'SparkPost API Key', PostmanOptions::SPARKPOST_API_KEY, $input, $new_input, $this->options->getSparkPostApiKey() );
 				$this->sanitizePassword( 'Mailgun API Key', PostmanOptions::MAILGUN_API_KEY, $input, $new_input, $this->options->getMailgunApiKey() );
 				$this->sanitizePassword( 'ElasticEmail API Key', PostmanOptions::ELASTICEMAIL_API_KEY, $input, $new_input, $this->options->getElasticEmailApiKey() );
+				$this->sanitizePassword( 'Mailtrap API Token', PostmanOptions::MAILTRAP_API_KEY, $input, $new_input, $this->options->getMailtrapApiKey() );
 				$this->sanitizePassword( 'Smtp2go Api Key', PostmanOptions::SMTP2GO_API_KEY, $input, $new_input, $this->options->getSmtp2goApiKey() );
 				$this->sanitizePassword( 'Maileroo API Key', PostmanOptions::MAILEROO_API_KEY, $input, $new_input, $this->options->getMailerooApiKey() );
 				$this->sanitizePassword( 'Sweego API Key', PostmanOptions::SWEEGO_API_KEY, $input, $new_input, $this->options->getSweegoApiKey() );
