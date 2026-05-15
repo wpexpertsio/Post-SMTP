@@ -2142,9 +2142,13 @@ class Post_SMTP_New_Wizard {
             }
 
         } else {
-            // Old DB version → use base64 decoded stored values
-            $app_client_id     = isset( $options['office365_app_id'] ) ? base64_decode( $options['office365_app_id'] ) : '';
-            $app_client_secret = isset( $options['office365_app_password'] ) ? base64_decode( $options['office365_app_password'] ) : '';
+            // Legacy options: plaintext or accidental multi-base64 (see Postman_Connection_Resolver).
+            $app_client_id     = isset( $options['office365_app_id'] )
+                ? Postman_Connection_Resolver::decode_stored_option_secret( $options['office365_app_id'] )
+                : '';
+            $app_client_secret = isset( $options['office365_app_password'] )
+                ? Postman_Connection_Resolver::decode_stored_option_secret( $options['office365_app_password'] )
+                : '';
         }
 
         $redirect_uri = admin_url();

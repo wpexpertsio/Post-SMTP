@@ -1142,11 +1142,12 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			}
 
 			/*
-			 * Back up postman_options EXACTLY as it sits in the database
-			 * before merge. After merge, {@see Postman_Connection_Resolver::repair_postman_options_secret_encoding()}
-			 * normalizes secrets to a single base64 layer so getters and restore stay consistent.
+			 * Back up legacy options for restore. Office 365 app id/secret are stored plaintext in
+			 * legacy `postman_options`; unwrap any accidental multi-base64 layers in the snapshot.
 			 */
-			$this->set_expiring_option( 'deleted_email_settings', $postman_options, $this->recover_settings );
+			$legacy_restore_snapshot = $postman_options;
+			Postman_Connection_Resolver::prepare_postman_options_for_legacy_restore( $legacy_restore_snapshot );
+			$this->set_expiring_option( 'deleted_email_settings', $legacy_restore_snapshot, $this->recover_settings );
 
 			// Define all keys to be deleted from postman_options.
 			$email_keys = array(
@@ -1204,7 +1205,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 
 			if ( false !== $deleted_email_settings ) {
 				if ( is_array( $deleted_email_settings ) ) {
-					Postman_Connection_Resolver::repair_postman_options_secret_encoding( $deleted_email_settings );
+					Postman_Connection_Resolver::prepare_postman_options_for_legacy_restore( $deleted_email_settings );
 				}
 				// Save the restored settings
 				update_option( 'postman_options', $deleted_email_settings );

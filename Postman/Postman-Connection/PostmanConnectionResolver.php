@@ -272,6 +272,7 @@ if ( ! class_exists( 'Postman_Connection_Resolver' ) ) :
 				'mailtrap_api_key',
 				'mailgun_api_key',
 				'oauth_client_secret',
+				'office365_app_id',
 				'office365_app_password',
 				'zohomail_client_secret',
 				'ses_secret_access_key',
@@ -306,10 +307,36 @@ if ( ! class_exists( 'Postman_Connection_Resolver' ) ) :
 				'resend_api_key',
 				'mailtrap_api_key',
 				'mailgun_api_key',
-				'office365_app_password',
 				'zohomail_client_secret',
 				'ses_secret_access_key',
 			);
+		}
+
+		/**
+		 * Legacy `postman_options` keys stored as plaintext (wizard save), not base64-wrapped.
+		 *
+		 * @return string[]
+		 */
+		public static function get_postman_options_plaintext_credential_keys() {
+			return array(
+				'office365_app_id',
+				'office365_app_password',
+			);
+		}
+
+		/**
+		 * Unwrap any accidental base64 layers so legacy Office 365 fields restore as plaintext.
+		 *
+		 * @param array $postman_options Options array (modified by reference).
+		 * @return void
+		 */
+		public static function decode_postman_options_plaintext_credentials( array &$postman_options ) {
+			foreach ( self::get_postman_options_plaintext_credential_keys() as $key ) {
+				if ( ! isset( $postman_options[ $key ] ) || '' === (string) $postman_options[ $key ] ) {
+					continue;
+				}
+				$postman_options[ $key ] = self::decode_stored_option_secret( $postman_options[ $key ] );
+			}
 		}
 
 		/**
@@ -357,6 +384,23 @@ if ( ! class_exists( 'Postman_Connection_Resolver' ) ) :
 		 * @return void
 		 */
 		public static function repair_postman_options_secret_encoding( array &$postman_options ) {
+			foreach ( self::get_postman_options_base64_secret_keys() as $key ) {
+				if ( ! isset( $postman_options[ $key ] ) || '' === (string) $postman_options[ $key ] ) {
+					continue;
+				}
+				$postman_options[ $key ] = self::normalize_stored_option_secret_to_single_base64( $postman_options[ $key ] );
+			}
+		}
+
+		/**
+		 * Prepare a legacy-restore snapshot: Office 365 plaintext, other secrets single base64.
+		 *
+		 * @param array $postman_options Options array (modified by reference).
+		 * @return void
+		 */
+		public static function prepare_postman_options_for_legacy_restore( array &$postman_options ) {
+			self::decode_postman_options_plaintext_credentials( $postman_options );
+
 			foreach ( self::get_postman_options_base64_secret_keys() as $key ) {
 				if ( ! isset( $postman_options[ $key ] ) || '' === (string) $postman_options[ $key ] ) {
 					continue;
