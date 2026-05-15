@@ -325,11 +325,11 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			// Sensitive keys to decode before saving — single canonical list.
 			$sensitive_keys = Postman_Connection_Resolver::get_sensitive_keys();
 
-			// Decode sensitive keys if present
+			// Decode sensitive keys if present (unwrap multi-layer base64 from legacy postman_options).
 			foreach ( $api_keys as $provider => &$connection ) {
 				foreach ( $sensitive_keys as $key ) {
-					if ( isset( $connection[ $key ] ) && ! empty( $connection[ $key ] ) ) {
-						$connection[ $key ] = base64_decode( $connection[ $key ] );
+					if ( isset( $connection[ $key ] ) && '' !== (string) $connection[ $key ] ) {
+						$connection[ $key ] = Postman_Connection_Resolver::decode_stored_option_secret( $connection[ $key ] );
 					}
 				}
 			}
@@ -348,14 +348,14 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				$legacy_connections_snapshot
 			);
 
-			if ( isset( $api_keys[ $current_transport_type ] ) ) {
-				$postman_options['primary_connection'] = 0;
-				$mail_connections[0] = array_merge(
-					$api_keys[ $current_transport_type ],
-					array_filter( $sender_details )
-				);
-			}
-			
+			$this->assign_primary_mail_connection(
+				$mail_connections,
+				$postman_options,
+				$api_keys,
+				$current_transport_type,
+				$sender_details
+			);
+
 			$connection_index = 1;
 				// Optional fallback SMTP
 			$fallback_enabled = $postman_options['fallback_smtp_enabled'] ?? 'no';
@@ -409,6 +409,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			}
 
 			$this->append_additional_saved_connections( $mail_connections, $legacy_connections_snapshot, $sender_details );
+
+			$this->ensure_connection_zero_is_primary( $mail_connections, $current_transport_type );
 
 			// Save the new mail connections to the 'postman_connections' option.
 			update_option( 'postman_connections', $mail_connections );
@@ -707,6 +709,26 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					}
 				}
 
+				// Gmail manual / One-Click may keep empty oauth app fields on the active transport.
+				if ( 'gmail_api' === $key ) {
+					$include = (bool) array_filter( $values );
+					if ( ! $include && isset( $postman_options['transport_type'] ) && 'gmail_api' === $postman_options['transport_type'] ) {
+						$include = true;
+					}
+					foreach ( $fields as $field ) {
+						if ( array_key_exists( $field, $postman_options ) ) {
+							$include = true;
+							break;
+						}
+					}
+					if ( $include ) {
+						$api_keys[ $key ]             = array_combine( $fields, $values );
+						$api_keys[ $key ]['provider'] = $key;
+						$api_keys[ $key ]['title']    = $this->format_provider_title( $key );
+					}
+					continue;
+				}
+
 				// Check if any values are non-empty before adding to the api_keys array.
 				if ( array_filter( $values ) ) {
 					$api_keys[ $key ]             = array_filter( array_combine( $fields, $values ) );
@@ -793,13 +815,30 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 		private function ensure_primary_transport_api_keys( array &$api_keys, $current_transport_type, array $postman_options ) {
 
 			if ( 'gmail_api' === $current_transport_type ) {
-				$has_oauth_app = ! empty( $postman_options['oauth_client_id'] ) || ! empty( $postman_options['oauth_client_secret'] );
+				$gmail_tokens = get_option( 'postman_auth_token', array() );
+				$has_tokens   = is_array( $gmail_tokens ) && (
+					! empty( $gmail_tokens['access_token'] ) || ! empty( $gmail_tokens['refresh_token'] )
+				);
+				$has_oauth_app = ! empty( $postman_options['oauth_client_id'] ) || ! empty( $postman_options['oauth_client_secret'] )
+					|| array_key_exists( 'oauth_client_id', $postman_options )
+					|| array_key_exists( 'oauth_client_secret', $postman_options );
 
-				if ( ! isset( $api_keys['gmail_api'] ) && $has_oauth_app ) {
+				if ( ! isset( $api_keys['gmail_api'] ) && ( $has_oauth_app || $has_tokens ) ) {
 					$api_keys['gmail_api'] = array(
 						'provider' => 'gmail_api',
 						'title'    => $this->format_provider_title( 'gmail_api' ),
 					);
+				}
+
+				if ( isset( $api_keys['gmail_api'] ) ) {
+					if ( array_key_exists( 'oauth_client_id', $postman_options ) && ! array_key_exists( 'oauth_client_id', $api_keys['gmail_api'] ) ) {
+						$api_keys['gmail_api']['oauth_client_id'] = sanitize_text_field( (string) $postman_options['oauth_client_id'] );
+					}
+					if ( array_key_exists( 'oauth_client_secret', $postman_options ) && ! array_key_exists( 'oauth_client_secret', $api_keys['gmail_api'] ) ) {
+						$api_keys['gmail_api']['oauth_client_secret'] = Postman_Connection_Resolver::decode_stored_option_secret(
+							$postman_options['oauth_client_secret']
+						);
+					}
 				}
 			}
 
@@ -817,6 +856,91 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					);
 				}
 			}
+		}
+
+		/**
+		 * Builds `postman_connections[0]` from the active transport entry in `$api_keys`.
+		 *
+		 * @param array  $mail_connections     Built connections (by reference).
+		 * @param array  $postman_options      Options snapshot (by reference).
+		 * @param array  $api_keys             Provider map from migration gather step.
+		 * @param string $transport_type       Active transport slug.
+		 * @param array  $sender_details       Sender fields for the primary row.
+		 */
+		private function assign_primary_mail_connection( array &$mail_connections, array &$postman_options, array $api_keys, $transport_type, array $sender_details ) {
+			if ( ! isset( $api_keys[ $transport_type ] ) || ! is_array( $api_keys[ $transport_type ] ) ) {
+				return;
+			}
+
+			$row             = $api_keys[ $transport_type ];
+			$credential_row  = $row;
+			$credential_row['provider'] = $transport_type;
+
+			if ( ! $this->saved_connection_row_has_credentials( $credential_row ) ) {
+				return;
+			}
+
+			$postman_options['primary_connection'] = 0;
+			$mail_connections[0]                   = array_merge(
+				$row,
+				array_filter( $sender_details )
+			);
+		}
+
+		/**
+		 * Moves the active transport row to index 0 when it was appended at a higher index.
+		 *
+		 * @param array  $mail_connections Built connections (by reference).
+		 * @param string $transport_type   Active transport slug.
+		 */
+		private function ensure_connection_zero_is_primary( array &$mail_connections, $transport_type ) {
+			if ( '' === (string) $transport_type || 'default' === $transport_type ) {
+				return;
+			}
+
+			if ( isset( $mail_connections[0] ) && is_array( $mail_connections[0] ) && ( $mail_connections[0]['provider'] ?? '' ) === $transport_type ) {
+				return;
+			}
+
+			$primary = null;
+			$others  = array();
+
+			foreach ( $mail_connections as $row ) {
+				if ( ! is_array( $row ) ) {
+					continue;
+				}
+				if ( ( $row['provider'] ?? '' ) === $transport_type ) {
+					if ( null === $primary ) {
+						$primary = $row;
+						continue;
+					}
+				}
+				$others[] = $row;
+			}
+
+			if ( null !== $primary ) {
+				$mail_connections = array_merge( array( $primary ), $others );
+			}
+		}
+
+		/**
+		 * Whether `store_email_settings()` may strip flat credentials from `postman_options`.
+		 *
+		 * @param array  $primary_connection Connection row at index 0.
+		 * @param string $transport_type     Active transport slug from options.
+		 * @return bool
+		 */
+		private function migration_primary_connection_is_usable( array $primary_connection, $transport_type ) {
+			if ( array() === $primary_connection ) {
+				return false;
+			}
+
+			$check = $primary_connection;
+			if ( '' !== (string) $transport_type && 'default' !== $transport_type && empty( $check['provider'] ) ) {
+				$check['provider'] = $transport_type;
+			}
+
+			return $this->saved_connection_row_has_credentials( $check );
 		}
 
 		/**
@@ -970,6 +1094,16 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			// Get the 'postman_options' array from the database.
 			$postman_options = get_option( 'postman_options', array() );
 
+			// Get the 'postman_connections' array and retrieve the primary connection.
+			$mail_connections   = get_option( 'postman_connections', array() );
+			$primary_connection = isset( $mail_connections[0] ) && is_array( $mail_connections[0] ) ? $mail_connections[0] : array();
+			$transport_type     = isset( $postman_options['transport_type'] ) ? (string) $postman_options['transport_type'] : '';
+
+			// Never strip flat credentials when migration failed to build a usable primary row.
+			if ( ! $this->migration_primary_connection_is_usable( $primary_connection, $transport_type ) ) {
+				return;
+			}
+
 			/*
 			 * Back up postman_options EXACTLY as it sits in the database
 			 * before merge. After merge, {@see Postman_Connection_Resolver::repair_postman_options_secret_encoding()}
@@ -977,10 +1111,6 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			 */
 			$this->set_expiring_option( 'deleted_email_settings', $postman_options, $this->recover_settings );
 
-			// Get the 'postman_connections' array and retrieve the primary connection.
-			$mail_connections   = get_option( 'postman_connections', array() );
-			$primary_connection = isset( $mail_connections[0] ) ? $mail_connections[0] : array();
-			
 			// Define all keys to be deleted from postman_options.
 			$email_keys = array(
 				'enc_type', 'hostname', 'port', 'envelope_sender',
