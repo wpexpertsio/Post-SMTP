@@ -95,16 +95,72 @@ if ( ! class_exists( 'PostmanMailjetTransport' ) ) :
 		}
 
 		/**
+		 * Mailjet API key / secret must be printable ASCII (reject binary from over-decoded options).
+		 *
+		 * @param mixed $value
+		 * @return bool
+		 */
+		private static function is_mailjet_http_credential_plausible( $value ) {
+			$k = trim( (string) $value );
+			if ( strlen( $k ) < 4 ) {
+				return false;
+			}
+
+			return (bool) preg_match( '/\A[\x20-\x7E]+\z/', $k );
+		}
+
+		/**
+		 * Prefer resolver value; if missing or corrupted, fall back to legacy postman_options read.
+		 *
+		 * @param mixed    $from_resolver Value from {@see Postman_Connection_Resolver::get_primary_field()}.
+		 * @param callable $legacy_getter  Returns string from {@see PostmanOptions}.
+		 * @return string
+		 */
+		private function resolve_mailjet_http_field_for_primary_send( $from_resolver, $legacy_getter ) {
+			if ( self::is_mailjet_http_credential_plausible( $from_resolver ) ) {
+				return trim( (string) $from_resolver );
+			}
+			$legacy = trim( (string) call_user_func( $legacy_getter ) );
+			if ( self::is_mailjet_http_credential_plausible( $legacy ) ) {
+				return $legacy;
+			}
+
+			return trim( (string) $from_resolver );
+		}
+
+		/**
+		 * @param string $key Raw value from fallback connection field.
+		 * @return string
+		 */
+		private function coalesce_mailjet_fallback_credential( $key ) {
+			$key = trim( (string) $key );
+			if ( ! self::is_mailjet_http_credential_plausible( $key ) ) {
+				$try = base64_decode( $key, true );
+				if ( false !== $try && self::is_mailjet_http_credential_plausible( $try ) ) {
+					return trim( (string) $try );
+				}
+			}
+
+			return $key;
+		}
+
+		/**
 		 * @since 2.7
 		 * @version 1.0
 		 */
 		public function createMailEngine() {
-			$api_key    = Postman_Connection_Resolver::get_primary_field(
-				'mailjet_api_key',
+			$api_key = $this->resolve_mailjet_http_field_for_primary_send(
+				Postman_Connection_Resolver::get_primary_field(
+					'mailjet_api_key',
+					array( $this->options, 'getMailjetApiKey' )
+				),
 				array( $this->options, 'getMailjetApiKey' )
 			);
-			$secret_key = Postman_Connection_Resolver::get_primary_field(
-				'mailjet_secret_key',
+			$secret_key = $this->resolve_mailjet_http_field_for_primary_send(
+				Postman_Connection_Resolver::get_primary_field(
+					'mailjet_secret_key',
+					array( $this->options, 'getMailjetSecretKey' )
+				),
 				array( $this->options, 'getMailjetSecretKey' )
 			);
 
@@ -118,10 +174,14 @@ if ( ! class_exists( 'PostmanMailjetTransport' ) ) :
 		 */
 		public function createMailEngineFallback() {
 			$api_credentials = array(
-				'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'mailjet_api_key' ),
+				'api_key'     => $this->coalesce_mailjet_fallback_credential(
+					Postman_Connection_Resolver::get_fallback_field( 'mailjet_api_key' )
+				),
 				'is_fallback' => 1,
 			);
-			$secret_key      = Postman_Connection_Resolver::get_fallback_field( 'mailjet_secret_key' );
+			$secret_key = $this->coalesce_mailjet_fallback_credential(
+				Postman_Connection_Resolver::get_fallback_field( 'mailjet_secret_key' )
+			);
 
 			require_once 'PostmanMailjetMailEngine.php';
 			return new PostmanMailjetMailEngine( $api_credentials, $secret_key );

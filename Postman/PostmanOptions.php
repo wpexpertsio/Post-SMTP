@@ -442,6 +442,53 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			return ( false !== $decoded ) ? $decoded : (string) $stored;
 		}
 
+		/**
+		 * HTTP API keys must be printable ASCII. {@see Postman_Connection_Resolver::decode_stored_option_secret()}
+		 * can unwrap one layer too many when the plaintext token is still valid base64-shaped, yielding binary garbage.
+		 *
+		 * @param mixed $candidate Candidate secret after decode.
+		 * @return bool
+		 */
+		private function decoded_secret_looks_like_http_api_key( $candidate ) {
+			if ( null === $candidate ) {
+				return false;
+			}
+			$s = trim( (string) $candidate );
+			if ( strlen( $s ) < 4 ) {
+				return false;
+			}
+
+			return (bool) preg_match( '/\A[\x20-\x7E]+\z/', $s );
+		}
+
+		/**
+		 * Read a base64-stored API secret from postman_options without over-unwrapping
+		 * (decode_stored_option_secret can strip one layer too many when the plaintext is still base64-shaped).
+		 *
+		 * @param string $option_key {@see PostmanOptions} constant, e.g. MAILTRAP_API_KEY.
+		 * @return string|null
+		 */
+		private function get_http_api_secret_from_option( $option_key ) {
+			if ( ! isset( $this->options[ $option_key ] ) ) {
+				return null;
+			}
+			$raw        = $this->options[ $option_key ];
+			$from_chain = $this->decode_option_secret_for_read( $raw );
+			if ( $this->decoded_secret_looks_like_http_api_key( $from_chain ) ) {
+				return trim( (string) $from_chain );
+			}
+			$once = base64_decode( (string) $raw, true );
+			if ( false !== $once && $this->decoded_secret_looks_like_http_api_key( $once ) ) {
+				return trim( (string) $once );
+			}
+			$plain = trim( (string) $raw );
+			if ( $this->decoded_secret_looks_like_http_api_key( $plain ) ) {
+				return $plain;
+			}
+
+			return trim( (string) $from_chain );
+		}
+
 		public function getPassword() {
 
 			if ( $this->is_fallback ) {
@@ -697,10 +744,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			return POST_SMTP_API_KEY;
 		}
 
-		if ( isset( $this->options[PostmanOptions::MAILTRAP_API_KEY] ) ) {
-			return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::MAILTRAP_API_KEY ] );
-		}
-
+		return $this->get_http_api_secret_from_option( PostmanOptions::MAILTRAP_API_KEY );
 	}
 
 	/**
@@ -722,15 +766,12 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		 * @return string|null
 		 */
 		public function getMailerooApiKey() {
-            
+
 			if ( defined( 'POST_SMTP_API_KEY' ) ) {
 				return POST_SMTP_API_KEY;
 			}
 
-			if ( isset( $this->options[ PostmanOptions::MAILEROO_API_KEY ] ) ) {
-				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::MAILEROO_API_KEY ] );
-			}
-			return null;
+			return $this->get_http_api_secret_from_option( PostmanOptions::MAILEROO_API_KEY );
 		}
 		
 
@@ -782,10 +823,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				return POST_SMTP_API_KEY;
 			}
 
-			if ( isset( $this->options[PostmanOptions::MAILJET_API_KEY] ) ) {
-				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::MAILJET_API_KEY ] );
-			}
-
+			return $this->get_http_api_secret_from_option( PostmanOptions::MAILJET_API_KEY );
 		}
 
 		/**
@@ -818,10 +856,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				return POST_SMTP_API_KEY;
 			}
 
-			if ( isset( $this->options[PostmanOptions::MAILJET_SECRET_KEY] ) ) {
-				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::MAILJET_SECRET_KEY ] );
-			}
-
+			return $this->get_http_api_secret_from_option( PostmanOptions::MAILJET_SECRET_KEY );
 		}
 
 		/**
@@ -871,10 +906,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				return POST_SMTP_API_KEY;
 			}
 
-			if ( isset( $this->options[PostmanOptions::ELASTICEMAIL_API_KEY] ) ) {
-				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::ELASTICEMAIL_API_KEY ] );
-			}
-
+			return $this->get_http_api_secret_from_option( PostmanOptions::ELASTICEMAIL_API_KEY );
 		}
 
 		/**

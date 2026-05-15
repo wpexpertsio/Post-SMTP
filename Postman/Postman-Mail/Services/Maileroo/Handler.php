@@ -17,28 +17,25 @@ class PostmanMaileroo extends PostmanServiceRequest {
     private $base_url = 'https://smtp.maileroo.com/';
 
     /**
-     * Options instance
-     * @var PostmanOptions
-     */
-    private $options;
-
-    /**
      * constructor PostmanMaileroo
-     * @param $api_key
-     * @param $endpoint
+     *
+     * @param string $api_key Plaintext API key.
      */
     public function __construct( $api_key ) {
-        $this->api_key = $api_key;
+        $this->api_key = trim( (string) $api_key );
         parent::__construct( $this->base_url );
     }
 
     /**
      * Prepares Header for Request
+     *
+     * Maileroo v2 requires X-API-Key (Bearer is rejected with 401).
      */
     private function get_headers() {
         return array(
-            'Content-Type'  =>  'application/json',
-            'Authorization' =>  'Bearer ' . $this->api_key
+            'X-API-Key'    => $this->api_key,
+            'Content-Type' => 'application/json',
+            'Accept'       => 'application/json',
         );
     }
 
