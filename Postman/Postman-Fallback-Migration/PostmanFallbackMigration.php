@@ -348,6 +348,10 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				$legacy_connections_snapshot
 			);
 
+			if ( isset( $api_keys['office365_api'] ) && is_array( $api_keys['office365_api'] ) ) {
+				$this->finalize_office365_api_connection_row( $api_keys['office365_api'], $postman_options );
+			}
+
 			$this->assign_primary_mail_connection(
 				$mail_connections,
 				$postman_options,
@@ -415,6 +419,12 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			$this->append_additional_saved_connections( $mail_connections, $legacy_connections_snapshot, $sender_details );
 
 			$this->ensure_connection_zero_is_primary( $mail_connections, $current_transport_type );
+
+			foreach ( $mail_connections as $idx => $row ) {
+				if ( is_array( $row ) && ( $row['provider'] ?? '' ) === 'office365_api' ) {
+					$this->finalize_office365_api_connection_row( $mail_connections[ $idx ], $postman_options );
+				}
+			}
 
 			// Save the new mail connections to the 'postman_connections' option.
 			update_option( 'postman_connections', $mail_connections );
@@ -501,7 +511,13 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				case 'gmail_api':
 					return ! empty( $postman_options['oauth_client_id'] ) || ! empty( $postman_options['oauth_client_secret'] );
 				case 'office365_api':
-					return ! empty( $postman_options['office365_app_id'] ) || ! empty( $postman_options['office365_app_password'] );
+					if ( ! empty( $postman_options['office365_app_id'] ) || ! empty( $postman_options['office365_app_password'] ) ) {
+						return true;
+					}
+					$office_oauth = get_option( 'postman_office365_oauth', array() );
+					return is_array( $office_oauth ) && (
+						! empty( $office_oauth['access_token'] ) || ! empty( $office_oauth['refresh_token'] )
+					);
 				case 'zohomail_api':
 					return ! empty( $postman_options['zohomail_client_id'] ) || ! empty( $postman_options['zohomail_client_secret'] );
 				default:
@@ -746,10 +762,10 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					}
 				}
 
-				// Gmail manual / One-Click may keep empty oauth app fields only when Gmail is the active transport.
-				if ( 'gmail_api' === $key ) {
+				// Gmail / Office 365 manual or One-Click may keep empty app fields when that transport is active.
+				if ( 'gmail_api' === $key || 'office365_api' === $key ) {
 					$include = (bool) array_filter( $values );
-					if ( ! $include && isset( $postman_options['transport_type'] ) && 'gmail_api' === $postman_options['transport_type'] ) {
+					if ( ! $include && isset( $postman_options['transport_type'] ) && $key === $postman_options['transport_type'] ) {
 						$include = true;
 					}
 					if ( $include ) {
@@ -812,11 +828,11 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 						'title'    => $this->format_provider_title( 'office365_api' ),
 					);
 				}
-				$office_merge_keys = array( 'access_token', 'refresh_token', 'token_expires', 'user_email' );
-				foreach ( $office_merge_keys as $field ) {
-					if ( isset( $office365[ $field ] ) && '' !== (string) $office365[ $field ] ) {
-						$api_keys['office365_api'][ $field ] = $office365[ $field ];
+				foreach ( $office365 as $key => $value ) {
+					if ( null === $value || ! is_scalar( $value ) || '' === (string) $value ) {
+						continue;
 					}
+					$api_keys['office365_api'][ (string) $key ] = $value;
 				}
 			}
 
@@ -891,6 +907,54 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 						'provider' => 'office365_api',
 						'title'    => $this->format_provider_title( 'office365_api' ),
 					);
+				}
+			}
+		}
+
+		/**
+		 * Office 365 One-Click expects `timestamp` on the connection row (wizard sets it on save).
+		 * Legacy OAuth lived in `postman_office365_oauth` with `token_expires` only — copy both after migration.
+		 *
+		 * @param array $connection    Connection row (by reference).
+		 * @param array $postman_options Legacy flat options snapshot.
+		 */
+		private function finalize_office365_api_connection_row( array &$connection, array $postman_options = array() ) {
+			if ( empty( $connection['provider'] ) ) {
+				$connection['provider'] = 'office365_api';
+			} elseif ( 'office365_api' !== $connection['provider'] ) {
+				return;
+			}
+
+			$oauth = get_option( 'postman_office365_oauth', array() );
+			if ( is_array( $oauth ) ) {
+				foreach ( $oauth as $key => $value ) {
+					if ( null === $value || ! is_scalar( $value ) || '' === (string) $value ) {
+						continue;
+					}
+					$field = (string) $key;
+					if ( ! isset( $connection[ $field ] ) || '' === (string) $connection[ $field ] ) {
+						$connection[ $field ] = $value;
+					}
+				}
+			}
+
+			$expires = isset( $connection['token_expires'] ) ? absint( $connection['token_expires'] ) : 0;
+			if ( $expires > 0 ) {
+				$connection['timestamp'] = $expires;
+			}
+
+			if ( empty( $connection['sender_email'] ) && ! empty( $connection['user_email'] ) ) {
+				$connection['sender_email'] = sanitize_email( (string) $connection['user_email'] );
+			}
+
+			$has_manual_app = ! empty( $connection['office365_app_id'] ) || ! empty( $connection['office365_app_password'] );
+			if ( ! $has_manual_app ) {
+				$pro_options = get_option( 'post_smtp_pro', array() );
+				$extensions  = isset( $pro_options['extensions'] ) && is_array( $pro_options['extensions'] )
+					? $pro_options['extensions']
+					: array();
+				if ( in_array( 'microsoft-one-click', $extensions, true ) && empty( $connection['provider_name'] ) ) {
+					$connection['provider_name'] = 'office_one_click';
 				}
 			}
 		}

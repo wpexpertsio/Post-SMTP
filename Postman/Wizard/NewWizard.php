@@ -273,12 +273,16 @@ class Post_SMTP_New_Wizard {
 		}
 
 		$user_email = isset( $oauth_data['user_email'] ) ? sanitize_email( $oauth_data['user_email'] ) : '';
-		$token_row  = array(
+		$token_expires = isset( $oauth_data['token_expires'] ) ? absint( $oauth_data['token_expires'] ) : 0;
+		$token_row     = array(
 			'access_token'  => isset( $oauth_data['access_token'] ) ? sanitize_text_field( $oauth_data['access_token'] ) : '',
 			'refresh_token' => isset( $oauth_data['refresh_token'] ) ? sanitize_text_field( $oauth_data['refresh_token'] ) : '',
-			'token_expires' => isset( $oauth_data['token_expires'] ) ? absint( $oauth_data['token_expires'] ) : 0,
+			'token_expires' => $token_expires,
 			'user_email'    => $user_email,
 		);
+		if ( $token_expires > 0 ) {
+			$token_row['timestamp'] = $token_expires;
+		}
 
 		$ctx       = $this->get_edit_connection_context();
 		$target_id = null;
@@ -3063,11 +3067,12 @@ class Post_SMTP_New_Wizard {
                 break;
 
             case 'office365_api':
+                $office_expires = isset( $form_data['token_expires'] ) ? absint( $form_data['token_expires'] ) : 0;
                 $connection = array_merge( $connection, array(
                     'office365_app_id'       => $sanitized['office365_app_id'] ?? '',
                     'office365_app_password' => $sanitized['office365_app_password'] ?? '',
                     'user_email'             => isset( $form_data['user_email'] ) ? sanitize_email( $form_data['user_email'] ) : ( $connection['user_email'] ?? '' ),
-                    'timestamp'              => time() + 3600,
+                    'timestamp'              => $office_expires > 0 ? $office_expires : time() + 3600,
                 ) );
                 break;
 
@@ -3089,6 +3094,9 @@ class Post_SMTP_New_Wizard {
                 if ( isset( $form_data[ $field ] ) ) {
                     $connection[ $field ] = sanitize_text_field( $form_data[ $field ] );
                 }
+            }
+            if ( 'office365_api' === $type && ! empty( $connection['token_expires'] ) ) {
+                $connection['timestamp'] = absint( $connection['token_expires'] );
             }
         }
     }
