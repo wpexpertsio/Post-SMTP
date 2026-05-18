@@ -93,12 +93,10 @@ class PostmanInstaller {
 
             $options['post_smtp_allow_overwrite'] = '1';
             update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, $options );
-			
-			// handle network activation
-			// from https://wordpress.org/support/topic/new-function-wp_get_sites?replies=11
-			// run the activation function for each blog id
+		}
+
+		if ( is_multisite() && is_plugin_active_for_network( plugin_basename( POST_SMTP_BASE ) ) ) {
 			$old_blog = get_current_blog_id();
-			// Get all blog ids
 			$subsites = get_sites();
 			foreach ( $subsites as $subsite ) {
 				$this->logger->trace( 'multisite: switching to blog ' . $subsite->blog_id );
@@ -108,7 +106,6 @@ class PostmanInstaller {
 			}
 			switch_to_blog( $old_blog );
 		} else {
-			// handle single-site activation
 			$this->handleOptionUpdates();
 			$this->addCapability();
 		}
@@ -120,12 +117,8 @@ class PostmanInstaller {
 	 * Handle deactivation of the plugin
 	 */
 	public function deactivatePostman() {
-		if ( function_exists( 'is_multisite' ) && is_multisite() ) {
-			// handle network deactivation
-			// from https://wordpress.org/support/topic/new-function-wp_get_sites?replies=11
-			// run the deactivation function for each blog id
+		if ( is_multisite() && is_plugin_active_for_network( plugin_basename( POST_SMTP_BASE ) ) ) {
 			$old_blog = get_current_blog_id();
-			// Get all blog ids
 			$subsites = get_sites();
 			foreach ( $subsites as $subsite ) {
 				$this->logger->trace( 'multisite: switching to blog ' . $subsite->blog_id );
@@ -134,7 +127,6 @@ class PostmanInstaller {
 			}
 			switch_to_blog( $old_blog );
 		} else {
-			// handle single-site deactivation
 			$this->removeCapability();
 		}
 	}
