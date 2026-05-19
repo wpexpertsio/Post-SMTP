@@ -46,7 +46,7 @@ class REST
      */
     public static function execute(\PostSMTP\Vendor\GuzzleHttp\ClientInterface $client, \PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, $expectedClass = null, $config = [], $retryMap = null)
     {
-        $runner = new \PostSMTP\Vendor\Google\Task\Runner($config, \sprintf('%s %s', $request->getMethod(), (string) $request->getUri()), [\get_class(), 'doExecute'], [$client, $request, $expectedClass]);
+        $runner = new \PostSMTP\Vendor\Google\Task\Runner($config, \sprintf('%s %s', $request->getMethod(), (string) $request->getUri()), [self::class, 'doExecute'], [$client, $request, $expectedClass]);
         if (null !== $retryMap) {
             $runner->setRetryMap($retryMap);
         }
