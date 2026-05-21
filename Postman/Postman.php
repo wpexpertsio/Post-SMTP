@@ -247,7 +247,7 @@ class Postman {
 
 		// register the setup_admin function on plugins_loaded because we need to call
 		// current_user_can to verify the capability of the current user
-		if ( PostmanUtils::isAdmin() && is_admin() ) {
+		if ( PostmanUtils::isAdmin() && is_admin() && !( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 			$this->setup_admin();
 		}
 
