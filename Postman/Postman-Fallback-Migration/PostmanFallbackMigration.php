@@ -270,42 +270,12 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 
 			/*
 			 * Wizard often leaves `transport_type` as `default` while the real mailer exists
-			 * only on `postman_connections` (see NewWizard::handle_new_version_save). Infer
-			 * `gmail_api` / `office365_api` / `zohomail_api` / usable `smtp` from the snapshot
-			 * so hydration and connection `0` still build correctly.
+			 * only on `postman_connections` or flat API key fields (Maileroo, Mailtrap, etc.).
 			 */
-			if ( 'default' === $current_transport_type ) {
-				$oauth_slugs = array( 'gmail_api', 'office365_api', 'zohomail_api' );
-				$primary_idx = isset( $postman_options['primary_connection'] ) ? $postman_options['primary_connection'] : 0;
-				if ( null === $primary_idx || '' === (string) $primary_idx ) {
-					$primary_idx = 0;
-				}
-				$inferred = null;
-				if ( isset( $legacy_connections_snapshot[ $primary_idx ] ) && is_array( $legacy_connections_snapshot[ $primary_idx ] ) ) {
-					$cand   = $legacy_connections_snapshot[ $primary_idx ];
-					$cand_p = isset( $cand['provider'] ) ? (string) $cand['provider'] : '';
-					if ( 'smtp' === $cand_p && ! empty( $cand['hostname'] ) ) {
-						$inferred = 'smtp';
-					} elseif ( in_array( $cand_p, $oauth_slugs, true ) ) {
-						$inferred = $cand_p;
-					}
-				}
-				if ( null === $inferred ) {
-					foreach ( $legacy_connections_snapshot as $cand ) {
-						if ( ! is_array( $cand ) ) {
-							continue;
-						}
-						$cand_p = isset( $cand['provider'] ) ? (string) $cand['provider'] : '';
-						if ( in_array( $cand_p, $oauth_slugs, true ) ) {
-							$inferred = $cand_p;
-							break;
-						}
-					}
-				}
-				if ( null !== $inferred ) {
-					$postman_options['transport_type'] = $inferred;
-					$current_transport_type            = $inferred;
-				}
+			$inferred_transport = $this->infer_current_transport_type( $postman_options, $legacy_connections_snapshot, $current_transport_type );
+			if ( $inferred_transport !== $current_transport_type ) {
+				$postman_options['transport_type'] = $inferred_transport;
+				$current_transport_type            = $inferred_transport;
 			}
 
 			$mail_connections = array();
@@ -334,6 +304,9 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				}
 			}
 			unset( $connection );
+
+			// HTTP API mailers (Maileroo, Mailtrap, …) must use PostmanOptions getters so keys are not over-decoded.
+			$this->supplement_api_keys_from_legacy_getters( $api_keys, $current_transport_type );
 
 			/*
 			 * Gmail / Microsoft / Zoho one-click often persist OAuth tokens only on
@@ -909,6 +882,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					);
 				}
 			}
+
+			$this->supplement_api_keys_from_legacy_getters( $api_keys, $current_transport_type );
 		}
 
 		/**
@@ -1164,9 +1139,276 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					);
 				case 'mailtrap_api':
 					return array( 'mailtrap_api_key' );
+				case 'maileroo_api':
+					return array( 'maileroo_api_key' );
+				case 'resend_api':
+					return array( 'resend_api_key' );
+				case 'sweego_api':
+					return array( 'sweego_api_key' );
+				case 'mailersend_api':
+					return array( 'mailersend_api_key' );
+				case 'emailit_api':
+					return array( 'emailit_api_key' );
+				case 'mandrill':
+					return array( 'mandrill_api_key' );
+				case 'sendgrid_api':
+					return array( 'sendgrid_api_key' );
+				case 'sendinblue_api':
+					return array( 'sendinblue_api_key' );
+				case 'postmark_api':
+					return array( 'postmark_api_key' );
+				case 'sparkpost_api':
+					return array( 'sparkpost_api_key' );
+				case 'elasticemail_api':
+					return array( 'elasticemail_api_key' );
+				case 'smtp2go_api':
+					return array( 'smtp2go_api_key' );
+				case 'mailjet_api':
+					return array( 'mailjet_api_key', 'mailjet_secret_key' );
+				case 'sendpulse_api':
+					return array( 'sendpulse_api_key', 'sendpulse_secret_key' );
+				case 'mailgun_api':
+					return array( 'mailgun_api_key', 'mailgun_domain_name' );
 				default:
+					$map = $this->get_http_api_legacy_credential_map();
+					if ( isset( $map[ $transport_type ]['fields'] ) ) {
+						$fields = array();
+						foreach ( $map[ $transport_type ]['fields'] as $pair ) {
+							$fields[] = $pair[0];
+						}
+						return $fields;
+					}
 					return array();
 			}
+		}
+
+		/**
+		 * Provider slug => credential fields resolved via {@see PostmanOptions} getters (legacy read path).
+		 *
+		 * @return array<string, array{fields: array<int, array{0: string, 1: string}>}>
+		 */
+		private function get_http_api_legacy_credential_map() {
+			return array(
+				'mandrill'         => array(
+					'fields' => array(
+						array( 'mandrill_api_key', 'getMandrillApiKey' ),
+					),
+				),
+				'sendgrid_api'     => array(
+					'fields' => array(
+						array( 'sendgrid_api_key', 'getSendGridApiKey' ),
+					),
+				),
+				'sendinblue_api'   => array(
+					'fields' => array(
+						array( 'sendinblue_api_key', 'getSendinblueApiKey' ),
+					),
+				),
+				'mailjet_api'      => array(
+					'fields' => array(
+						array( 'mailjet_api_key', 'getMailjetApiKey' ),
+						array( 'mailjet_secret_key', 'getMailjetSecretKey' ),
+					),
+				),
+				'sendpulse_api'    => array(
+					'fields' => array(
+						array( 'sendpulse_api_key', 'getSendpulseApiKey' ),
+						array( 'sendpulse_secret_key', 'getSendpulseSecretKey' ),
+					),
+				),
+				'postmark_api'     => array(
+					'fields' => array(
+						array( 'postmark_api_key', 'getPostmarkApiKey' ),
+					),
+				),
+				'sparkpost_api'    => array(
+					'fields' => array(
+						array( 'sparkpost_api_key', 'getSparkPostApiKey' ),
+					),
+				),
+				'mailgun_api'      => array(
+					'fields' => array(
+						array( 'mailgun_api_key', 'getMailgunApiKey' ),
+						array( 'mailgun_domain_name', 'getMailgunDomainName' ),
+					),
+				),
+				'elasticemail_api' => array(
+					'fields' => array(
+						array( 'elasticemail_api_key', 'getElasticEmailApiKey' ),
+					),
+				),
+				'smtp2go_api'      => array(
+					'fields' => array(
+						array( 'smtp2go_api_key', 'getSmtp2GoApiKey' ),
+					),
+				),
+				'mailersend_api'   => array(
+					'fields' => array(
+						array( 'mailersend_api_key', 'getMailerSendApiKey' ),
+					),
+				),
+				'emailit_api'      => array(
+					'fields' => array(
+						array( 'emailit_api_key', 'getEmailitApiKey' ),
+					),
+				),
+				'resend_api'       => array(
+					'fields' => array(
+						array( 'resend_api_key', 'getResendApiKey' ),
+					),
+				),
+				'maileroo_api'     => array(
+					'fields' => array(
+						array( 'maileroo_api_key', 'getMailerooApiKey' ),
+					),
+				),
+				'mailtrap_api'     => array(
+					'fields' => array(
+						array( 'mailtrap_api_key', 'getMailtrapApiKey' ),
+					),
+				),
+				'sweego_api'       => array(
+					'fields' => array(
+						array( 'sweego_api_key', 'getSweegoApiKey' ),
+					),
+				),
+			);
+		}
+
+		/**
+		 * Overlays plaintext API secrets from legacy getters (avoids corrupting Maileroo-style keys during base64 unwrap).
+		 *
+		 * @param array  $api_keys            Provider map (by reference).
+		 * @param string $preferred_transport Active transport slug; when set, that provider is always attempted first.
+		 */
+		private function supplement_api_keys_from_legacy_getters( array &$api_keys, $preferred_transport = '' ) {
+			if ( ! class_exists( 'PostmanOptions' ) ) {
+				return;
+			}
+
+			$options_instance = PostmanOptions::getInstance();
+			$map              = $this->get_http_api_legacy_credential_map();
+			$order            = array_keys( $map );
+
+			if ( '' !== (string) $preferred_transport && isset( $map[ $preferred_transport ] ) ) {
+				$order = array_merge(
+					array( $preferred_transport ),
+					array_diff( $order, array( $preferred_transport ) )
+				);
+			}
+
+			foreach ( $order as $provider ) {
+				if ( ! isset( $map[ $provider ] ) ) {
+					continue;
+				}
+
+				$resolved = array();
+				foreach ( $map[ $provider ]['fields'] as $pair ) {
+					$field  = $pair[0];
+					$getter = $pair[1];
+					if ( ! method_exists( $options_instance, $getter ) ) {
+						continue;
+					}
+					$value = $options_instance->$getter();
+					if ( null !== $value && '' !== trim( (string) $value ) ) {
+						$resolved[ $field ] = trim( (string) $value );
+					}
+				}
+
+				if ( array() === $resolved ) {
+					continue;
+				}
+
+				if ( ! isset( $api_keys[ $provider ] ) ) {
+					$api_keys[ $provider ] = array(
+						'provider' => $provider,
+						'title'    => $this->format_provider_title( $provider ),
+					);
+				}
+
+				foreach ( $resolved as $field => $value ) {
+					$api_keys[ $provider ][ $field ] = $value;
+				}
+			}
+		}
+
+		/**
+		 * Resolves the active transport when legacy installs still have `default` or an empty slug.
+		 *
+		 * @param array  $postman_options           Legacy flat options.
+		 * @param array  $legacy_connections_snapshot Pre-migration connections option.
+		 * @param string $stored_transport_type     Value from `postman_options['transport_type']`.
+		 * @return string
+		 */
+		private function infer_current_transport_type( array $postman_options, array $legacy_connections_snapshot, $stored_transport_type ) {
+			$stored = (string) $stored_transport_type;
+			if ( '' !== $stored && 'default' !== $stored ) {
+				return $stored;
+			}
+
+			$oauth_slugs = array( 'gmail_api', 'office365_api', 'zohomail_api' );
+			$primary_idx = isset( $postman_options['primary_connection'] ) ? $postman_options['primary_connection'] : 0;
+			if ( null === $primary_idx || '' === (string) $primary_idx ) {
+				$primary_idx = 0;
+			}
+
+			if ( isset( $legacy_connections_snapshot[ $primary_idx ] ) && is_array( $legacy_connections_snapshot[ $primary_idx ] ) ) {
+				$cand = $legacy_connections_snapshot[ $primary_idx ];
+				if ( $this->saved_connection_row_has_credentials( $cand ) && ! empty( $cand['provider'] ) ) {
+					return (string) $cand['provider'];
+				}
+			}
+
+			foreach ( $legacy_connections_snapshot as $cand ) {
+				if ( ! is_array( $cand ) || empty( $cand['provider'] ) ) {
+					continue;
+				}
+				if ( $this->saved_connection_row_has_credentials( $cand ) ) {
+					return (string) $cand['provider'];
+				}
+			}
+
+			if ( class_exists( 'PostmanOptions' ) ) {
+				$options_instance = PostmanOptions::getInstance();
+				foreach ( $this->get_http_api_legacy_credential_map() as $provider => $config ) {
+					foreach ( $config['fields'] as $pair ) {
+						$getter = $pair[1];
+						if ( ! method_exists( $options_instance, $getter ) ) {
+							continue;
+						}
+						$value = $options_instance->$getter();
+						if ( null !== $value && '' !== trim( (string) $value ) ) {
+							return $provider;
+						}
+					}
+				}
+			}
+
+			$flat_key_map = array(
+				'maileroo_api_key'     => 'maileroo_api',
+				'mailtrap_api_key'     => 'mailtrap_api',
+				'mandrill_api_key'     => 'mandrill',
+				'sendgrid_api_key'     => 'sendgrid_api',
+				'sendinblue_api_key'   => 'sendinblue_api',
+				'mailjet_api_key'      => 'mailjet_api',
+				'postmark_api_key'     => 'postmark_api',
+				'resend_api_key'       => 'resend_api',
+				'sweego_api_key'       => 'sweego_api',
+				'mailersend_api_key'   => 'mailersend_api',
+				'emailit_api_key'      => 'emailit_api',
+				'elasticemail_api_key' => 'elasticemail_api',
+				'smtp2go_api_key'      => 'smtp2go_api',
+				'sparkpost_api_key'    => 'sparkpost_api',
+				'mailgun_api_key'      => 'mailgun_api',
+				'hostname'             => 'smtp',
+			);
+			foreach ( $flat_key_map as $option_key => $provider ) {
+				if ( ! empty( $postman_options[ $option_key ] ) ) {
+					return $provider;
+				}
+			}
+
+			return 'default' === $stored || '' === $stored ? 'default' : $stored;
 		}
 
 		/**
