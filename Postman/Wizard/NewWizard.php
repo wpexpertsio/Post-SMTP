@@ -1036,9 +1036,11 @@ class Post_SMTP_New_Wizard {
                     $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
                     $html .= "<p>Before proceeding, you’ll need to authorize this plugin to send emails using the Gmail API. This <a href=\"https://postmansmtp.com/docs/mailers/google-workspace-gmail-one-click-setup/\" target='_blank'>step-by-step guide</a> will walk you through the entire process.</p>";
                     $html .= '<input type="hidden" ' . esc_attr( $required ) . ' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) . '" />';
-                    $html .= '<a href="' . esc_url( $auth_url ) . '" class="button button-primary ps-gmail-btn">';
+                    // One-Click Gmail auth button: URL will be obtained via AJAX to ensure a fresh nonce.
+                    $html .= '<a href="#" class="button button-primary ps-gmail-btn ps-gmail-oneclick-btn">';
                     $html .= esc_html__( 'Sign in with Google', 'post-smtp' );
                     $html .= '</a>';
+                    $html .= "<p>By signing in with Google, you can send emails using different 'From' addresses. To do this, disable the 'Force From Email' setting and use your registered aliases as the 'From' address across your WordPress site.</p> <p>Removing the OAuth connection will give you the ability to redo the OAuth connection or link to another Google account.</p>";
 
             }
         }
@@ -1972,12 +1974,6 @@ class Post_SMTP_New_Wizard {
      * for the Office 365 One-Click setup. It validates the request nonce and current user
      * capability, then uses the shared helper `post_smtp_get_office365_auth_url()` to
      * create an auth URL that contains a fresh `office365_oauth_redirect` nonce.
-     * AJAX callback to generate a fresh Gmail One-Click OAuth URL.
-     *
-     * This endpoint is called when the user clicks the "Sign in with Google" button
-     * for the Gmail One-Click setup. It validates the request nonce and current user
-     * capability, then uses the shared helper `post_smtp_get_gmail_auth_url()` to
-     * create an auth URL that contains a fresh `gmail_oauth_redirect` nonce.
      *
      * The URL is returned as JSON and the browser is redirected client-side.
      *
@@ -2008,7 +2004,7 @@ class Post_SMTP_New_Wizard {
         wp_send_json_success( array( 'auth_url' => esc_url_raw( $auth_url ) ) );
     }
 
-     /**
+    /**
      * AJAX callback to generate a fresh Gmail One-Click OAuth URL.
      *
      * This endpoint is called when the user clicks the "Sign in with Google" button
@@ -2028,34 +2024,21 @@ class Post_SMTP_New_Wizard {
         }
 
         // Nonce check for CSRF protection.
-        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_office365_auth_url' ) ) {
+        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_gmail_auth_url' ) ) {
             wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ), 400 );
         }
 
-        if ( ! function_exists( 'post_smtp_get_office365_auth_url' ) ) {
-            wp_send_json_error( array( 'message' => 'Office 365 One-Click is not available.' ), 500 );
+        if ( ! function_exists( 'post_smtp_get_gmail_auth_url' ) ) {
+            wp_send_json_error( array( 'message' => 'Gmail One-Click is not available.' ), 500 );
         }
 
-        $auth_url = post_smtp_get_office365_auth_url();
+        $auth_url = post_smtp_get_gmail_auth_url();
 
         if ( empty( $auth_url ) ) {
-            wp_send_json_error( array( 'message' => 'Failed to generate Office 365 auth URL.' ), 500 );
-            if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_gmail_auth_url' ) ) {
-                wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ), 400 );
-            }
-
-            if ( ! function_exists( 'post_smtp_get_gmail_auth_url' ) ) {
-                wp_send_json_error( array( 'message' => 'Gmail One-Click is not available.' ), 500 );
-            }
-
-            $auth_url = post_smtp_get_gmail_auth_url();
-
-            if ( empty( $auth_url ) ) {
-                wp_send_json_error( array( 'message' => 'Failed to generate Gmail auth URL.' ), 500 );
-            }
-
-            wp_send_json_success( array( 'auth_url' => esc_url_raw( $auth_url ) ) );
+            wp_send_json_error( array( 'message' => 'Failed to generate Gmail auth URL.' ), 500 );
         }
+
+        wp_send_json_success( array( 'auth_url' => esc_url_raw( $auth_url ) ) );
     }
     
 
