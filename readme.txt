@@ -324,11 +324,16 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
-= 3.9.2 – April 09, 2026 =
+= 3.9.2 – May 22, 2026 =
 
 * FIX – Resolved failed builds reported by Plugintests.com
 * FIX – Addressed PHP deprecation notice related to using null as an array offset
 * FIX – Fixed compatibility issue with the Google Site Kit plugin
+* FIX – Resolved Elastic Email API issue causing `Code: 400, Message: Bad Request` with missing required parameter errors
+* FIX – Addressed PHP 8 deprecation warnings for improved compatibility
+* FIX – Resolved fatal error occurring when accessing `Post SMTP → Settings`
+* FIX – Fixed missing angle brackets in Message-ID headers causing Google Workspace email bounces
+* FIX – Optimized performance by preventing unnecessary `wp_posts` queries during AJAX requests
 
 = 3.9.1 – April 01, 2026 =
 
