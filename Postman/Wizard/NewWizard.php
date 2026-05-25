@@ -819,13 +819,13 @@ class Post_SMTP_New_Wizard {
             case 'elasticemail_api':
                 echo wp_kses( $this->render_elasticemail_settings(), $this->allowed_tags );
             break;
-            case 'aws_ses_api';
+            case 'aws_ses_api':
                 echo wp_kses( $this->render_amazonses_settings(), $this->allowed_tags );
             break;
-            case 'office365_api';
+            case 'office365_api':
                 echo wp_kses( $this->render_office365_settings(), $this->allowed_tags );
             break;
-            case 'zohomail_api';
+            case 'zohomail_api':
                 echo wp_kses( $this->render_zoho_settings(), $this->allowed_tags );
             break;
             case 'smtp2go_api':
@@ -1887,7 +1887,9 @@ class Post_SMTP_New_Wizard {
     public function save_wizard() {
 
         $form_data = array();
-        parse_str( $_POST['FormData'], $form_data );
+        if ( isset( $_POST['FormData'] ) ) {
+            parse_str( wp_unslash( $_POST['FormData'] ), $form_data );
+        }
         $response = false;
 
         if( 
@@ -1958,8 +1960,12 @@ class Post_SMTP_New_Wizard {
             
         }
 
-        //Prevent redirection
-        delete_transient( PostmanSession::ACTION );
+        // Prevent redirection after a normal settings save (see PostmanSession::ACTION).
+        if ( class_exists( 'PostmanSession' ) ) {
+            PostmanSession::getInstance()->unsetAction();
+        } else {
+            delete_transient( 'action' );
+        }
 
         wp_send_json( array(), 200 );
 
