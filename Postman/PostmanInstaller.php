@@ -150,8 +150,10 @@ class PostmanInstaller {
 		// NB: This setting is saved to the database, so it might be better to run this on theme/plugin activation
 		// add the custom capability to the administrator role
 		$role = get_role( Postman::ADMINISTRATOR_ROLE_NAME );
-		$role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
-		$role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
+		if ( $role ) {
+			$role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
+			$role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
+		}
 	}
 
 	/**
@@ -165,8 +167,12 @@ class PostmanInstaller {
 		// NB: This setting is saved to the database, so it might be better to run this on theme/plugin activation
 		// remove the custom capability from the administrator role
 		$role = get_role( Postman::ADMINISTRATOR_ROLE_NAME );
-		$role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
-        $role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
+		if ( $role ) {
+			$role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
+			$role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
+		}
+
+		delete_option( 'postman_log_access_roles' );
 	}
 
 	/**

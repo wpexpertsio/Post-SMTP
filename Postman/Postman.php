@@ -247,13 +247,21 @@ class Postman {
 
 		// register the setup_admin function on plugins_loaded because we need to call
 		// current_user_can to verify the capability of the current user
-		if ( PostmanUtils::isAdmin() && is_admin() ) {
-			$this->setup_admin();
+		if ( is_admin() ) {
+			if ( PostmanUtils::isAdmin() ) {
+				$this->setup_admin();
+			} elseif ( PostmanUtils::canManagePostmanLogs() ) {
+				$this->bootstrap_email_log_admin();
+			}
 		}
 
 		if ( get_option( 'post_smtp_activation_redirect' ) ) {
 			delete_option( 'post_smtp_activation_redirect' );
-			wp_safe_redirect( admin_url( 'admin.php?page=postman/configuration_wizard' ) );
+			if ( PostmanUtils::isAdmin() ) {
+				wp_safe_redirect( admin_url( 'admin.php?page=postman/configuration_wizard' ) );
+			} elseif ( PostmanUtils::canManagePostmanLogs() ) {
+				wp_safe_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+			}
 			exit;
 		}
 		
@@ -346,6 +354,39 @@ class Postman {
 					'print_signature',
 			) );
 		}
+	}
+
+	/**
+	 * Load email-log admin for users with manage_postman_logs only (Role Editor, etc.).
+	 */
+	public function bootstrap_email_log_admin() {
+		$this->logger->debug( 'Email log admin start-up sequence' );
+
+		require_once 'PostmanViewController.php';
+		require_once 'Postman-Email-Log/PostmanEmailLogController.php';
+		new PostmanEmailLogController( $this->rootPluginFilenameAndPath );
+
+		add_action( 'admin_init', array( $this, 'register_log_admin_assets' ), 0 );
+
+		if ( PostmanUtils::isCurrentPagePostmanAdmin( PostmanUtils::POSTMAN_EMAIL_LOG_PAGE_STUB ) ) {
+			add_action( 'in_admin_footer', array(
+				$this,
+				'print_signature',
+			) );
+		}
+	}
+
+	/**
+	 * Register styles/scripts required by the email log screen for log-only users.
+	 */
+	public function register_log_admin_assets() {
+		if ( ! PostmanUtils::canManagePostmanLogs() ) {
+			return;
+		}
+
+		$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
+		wp_register_style( 'postman_style', plugins_url( 'style/postman.css', $this->rootPluginFilenameAndPath ), null, $pluginData['version'] );
+		wp_register_script( 'postman_script', plugins_url( 'script/postman.js', $this->rootPluginFilenameAndPath ), array( 'jquery' ), $pluginData['version'] );
 	}
 
 	/**
