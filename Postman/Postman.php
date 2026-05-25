@@ -36,6 +36,7 @@ class Postman {
 	private $wpMailBinder;
 	private $pluginData;
 	private $rootPluginFilenameAndPath;
+	private $adminBootstrapped = false;
 
 	public static $rootPlugin;
 
@@ -245,14 +246,9 @@ class Postman {
 		$this->registerTransports( $this->rootPluginFilenameAndPath );
 
 
-		// register the setup_admin function on plugins_loaded because we need to call
-		// current_user_can to verify the capability of the current user
+		// Bootstrap admin after the current user and their caps are loaded (Role Editor, etc.)
 		if ( is_admin() ) {
-			if ( PostmanUtils::isAdmin() ) {
-				$this->setup_admin();
-			} elseif ( PostmanUtils::canManagePostmanLogs() ) {
-				$this->bootstrap_email_log_admin();
-			}
+			add_action( 'admin_init', array( $this, 'maybe_bootstrap_admin' ), 0 );
 		}
 
 		if ( get_option( 'post_smtp_activation_redirect' ) ) {
@@ -306,6 +302,23 @@ class Postman {
 		require_once 'PostmanInstaller.php';
 		$upgrader = new PostmanInstaller();
 		$upgrader->deactivatePostman();
+	}
+
+	/**
+	 * Bootstrap Post SMTP admin once per request when the user has the right capability.
+	 */
+	public function maybe_bootstrap_admin() {
+		if ( $this->adminBootstrapped ) {
+			return;
+		}
+
+		if ( PostmanUtils::isAdmin() ) {
+			$this->adminBootstrapped = true;
+			$this->setup_admin();
+		} elseif ( PostmanUtils::canManagePostmanLogs() ) {
+			$this->adminBootstrapped = true;
+			$this->bootstrap_email_log_admin();
+		}
 	}
 
 	/**
