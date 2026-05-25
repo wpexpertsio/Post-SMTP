@@ -156,7 +156,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					<button type="submit" class="button button-primary">Restore Settings</button>
 				</form>
 			<?php endif; ?>
-			<a href="https://postmansmtp.com/new-and-better-email-log-post-smtp-feature-update/" target="__blank" class="button button-secondary">Learn about migration</a>
+			<a href="<?php echo esc_url( 'https://postmansmtp.com/docs/advance-functionality/fallback-extension/' ); ?>" target="_blank" rel="noopener noreferrer" class="button button-secondary"><?php esc_html_e( 'Learn about migration', 'post-smtp' ); ?></a>
 			<div style="float: right"></div>
 			<div style="clear: both;"></div>
 			<div style="margin: 10px 0;"></div>

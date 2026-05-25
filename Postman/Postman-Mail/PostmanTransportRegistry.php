@@ -314,7 +314,27 @@ class PostmanTransportRegistry {
 
 		$message = array();
 
-		if ( $this->getCurrentTransport()->isConfiguredAndReady() ) {
+		if ( Postman_Connection_Resolver::is_legacy_mode() ) {
+			$is_configured = $this->getActiveTransport()->isConfiguredAndReady();
+		} else {
+			$options     = PostmanOptions::getInstance();
+			$connections = get_option( 'postman_connections', array() );
+			if ( ! is_array( $connections ) ) {
+				$connections = array();
+			}
+			$primary = $options->getSelectedPrimary();
+			if ( null === $primary || '' === (string) $primary ) {
+				$primary = empty( $connections ) ? null : array_key_first( $connections );
+			}
+			$is_configured = (
+				null !== $primary
+				&& '' !== (string) $primary
+				&& isset( $connections[ $primary ] )
+				&& is_array( $connections[ $primary ] )
+			);
+		}
+
+		if ( $is_configured ) {
 			if ( PostmanOptions::getInstance()->getRunMode() != PostmanOptions::RUN_MODE_PRODUCTION ) {
 				$message = array(
 					'error'   => true,
