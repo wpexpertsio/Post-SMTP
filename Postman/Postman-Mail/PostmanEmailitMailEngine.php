@@ -68,10 +68,6 @@ if ( ! class_exists( 'PostmanEmailItMailEngine' ) ) {
 				'subject' => $subject,
 				'html'    => $htmlContent,
 				'text'    => wp_strip_all_tags( $textPart ?: $htmlPart ),
-				'tracking' => [
-					'loads'  => true,
-					'clicks' => true,
-				],
 			];
 
 			// CC.
