@@ -207,6 +207,13 @@ class PostmanSparkPostMailEngine implements PostmanMailEngine {
 
         $body['headers'] = $headers;
 
+        $body['options'] = array(
+            'open_tracking'  => (bool) apply_filters( 'postman_sparkpost_open_tracking', false, $message ),
+            'click_tracking' => (bool) apply_filters( 'postman_sparkpost_click_tracking', false, $message ),
+        );
+
+        $body = apply_filters( 'postman_sparkpost_transmission_body', $body, $message );
+
         // if the caller set a Content-Type header, use it
         $contentType = $message->getContentType();
         if ( ! empty( $contentType ) ) {
