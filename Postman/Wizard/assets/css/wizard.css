@@ -535,6 +535,10 @@
   width: 184px;
 }
 
+.ps-blue-btn span{
+    line-height: 1.4 !important;
+}
+
 .button-primary.ps-blue-btn.ps-disabled {
   background: #cccccc;
   border-color: #999999;

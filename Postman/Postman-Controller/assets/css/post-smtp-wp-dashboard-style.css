@@ -738,3 +738,6 @@ div#post-smtp-dash-widget-upgrade-footer p {
 #post_smtp_reports_widget_lite .post-smtp-dash-widget-upgrade-footer--hide {
     display: none
 }
+.post_smtp_pro_btn span{
+	line-height: 1.1 !important;
+}
