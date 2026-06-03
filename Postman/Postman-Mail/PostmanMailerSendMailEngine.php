@@ -22,6 +22,9 @@ if ( ! class_exists( 'PostmanMailerSendMailEngine' ) ) {
 		private $transcript;
 
 		private $apiKey;
+		
+		private $existing_db_version = '';
+		private $is_fallback;
 
 		/**
 		 *
@@ -30,7 +33,18 @@ if ( ! class_exists( 'PostmanMailerSendMailEngine' ) ) {
 		 */
 		function __construct( $apiKey ) {
 			assert( ! empty( $apiKey ) );
-			$this->apiKey = $apiKey;
+			
+			if ( is_array( $apiKey ) ) {
+				// When passed as an array with additional data.
+				assert( ! empty( $apiKey['api_key'] ) );
+				$this->apiKey      = $apiKey['api_key'];
+				$this->is_fallback = $apiKey['is_fallback'] ?? null;
+			} else {
+				// When passed as a string (just the API key).
+				assert( ! empty( $apiKey ) );
+				$this->apiKey      = $apiKey;
+				$this->is_fallback = null;
+			}
 
 			// create the logger
 			$this->logger = new PostmanLogger( get_class( $this ) );
@@ -42,23 +56,21 @@ if ( ! class_exists( 'PostmanMailerSendMailEngine' ) ) {
 		 * @see PostmanSmtpEngine::send()
 		 */
 		public function send( PostmanMessage $message ) {
-			$options = PostmanOptions::getInstance();
-
             $mailersend = new PostmanMailerSend( $this->apiKey );
 			$content = array();
 			$recipients = array();
 			$headers = array();
 
             // add the From Header
-			$sender = $message->getFromAddress();
-
-			$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-			$senderName = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
+			$sender      = $message->getFromAddress();
+			$resolved    = Postman_Connection_Resolver::resolve_sender( $sender, (bool) $this->is_fallback );
+			$senderEmail = $resolved['email'];
+			$senderName  = $resolved['name'];
 
 			$content['from'] = array(
 				'email'	=>	$senderEmail,
 				'name'	=>	$senderName
-			); 
+			);
 
             // now log it
 			$sender->log( $this->logger, 'From' );

@@ -4,7 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'PostmanAdminController' ) ) {
-
 	require_once 'PostmanOptions.php';
 	require_once 'PostmanState.php';
 	require_once 'PostmanState.php';
@@ -124,11 +123,18 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				$this->logger->debug( 'Looking for grant code' );
 				$transactionId = $session->getOauthInProgress();
 				$incomingState = isset( $_GET['state'] ) ? sanitize_text_field( $_GET['state'] ) : '';
+				$oauthError    = isset( $_GET['error'] ) ? sanitize_text_field( $_GET['error'] ) : '';
 				if ( isset( $_GET ['code'] ) && ! empty( $incomingState ) && $incomingState === $transactionId ) {
 					$this->logger->debug( 'Found authorization grant code' );
 
 					// queue the function that processes the incoming grant code
 					$this->registerInitFunction( 'handleAuthorizationGrant' );
+					return;
+				}
+				if ( ! empty( $oauthError ) && ! empty( $incomingState ) && $incomingState === $transactionId ) {
+					$this->logger->debug( sprintf( 'Found OAuth error response: %s', $oauthError ) );
+					// queue the function that handles denied/cancelled OAuth flows
+					$this->registerInitFunction( 'handleAuthorizationDenied' );
 					return;
 				}
 			}
@@ -158,6 +164,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			) );
 
 			require_once( 'PostmanPluginFeedback.php' );
+
 		}
 
 
@@ -231,7 +238,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		public function on_init() {
 			// only administrators should be able to trigger this
 			if ( PostmanUtils::isAdmin() ) {
-								$transport = PostmanTransportRegistry::getInstance()->getCurrentTransport();
+				$transport = PostmanTransportRegistry::getInstance()->getCurrentTransport();
 				$this->oauthScribe = $transport->getScribe();
 
 				// register content handlers
@@ -342,6 +349,8 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		 * This function handle the request to purge plugin data
 		 */
 		public function handlePurgeDataAction() {
+			$postman_options = [];
+            $postman_options['primary_connection'] = 0;
 			$this->logger->debug( 'is wpnonce purge-data?' );
 			if ( wp_verify_nonce( $_REQUEST ['_wpnonce'], PostmanAdminController::PURGE_DATA_SLUG ) ) {
 				
@@ -353,9 +362,13 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				do_action( 'post_smtp_before_reset_plugin' );
 				
 				$this->logger->debug( 'Purging stored data' );
+				delete_option( 'postman_connections' );
+				delete_option( 'ps_smart_routing' );
+				delete_option( 'ps_smart_routing_enable' );
 				delete_option( PostmanOptions::POSTMAN_OPTIONS );
 				delete_option( PostmanOAuthToken::OPTIONS_NAME );
 				delete_option( PostmanAdminController::TEST_OPTIONS );
+                update_option( 'postman_options' , $postman_options );
 
 				//delete logs as well
 				if( !isset( $_REQUEST['ps_preserve_email_logs'] ) ) {
@@ -390,30 +403,47 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			$logger = $this->logger;
 			$options = $this->options;
 			$authorizationToken = $this->authorizationToken;
+		
 			$logger->debug( 'Authorization in progress' );
 			$transactionId = PostmanSession::getInstance()->getOauthInProgress();
 			$message = '';
         	$redirect_uri = admin_url( "admin.php?page=postman/configuration_wizard&socket=gmail_api&step=2" );
-
+			$edit_connection_id = $this->getOauthEditConnectionId();
+			if ( '' !== $edit_connection_id ) {
+				$redirect_uri = add_query_arg( 'id', $edit_connection_id, $redirect_uri );
+			}
+	
 			// begin transaction
 			PostmanUtils::lock();
 
 			$authenticationManager = PostmanAuthenticationManagerFactory::getInstance()->createAuthenticationManager();
+
 			try {
 				if ( $authenticationManager->processAuthorizationGrantCode( $transactionId ) ) {
 					$logger->debug( 'Authorization successful' );
 					// save to database
 					$authorizationToken->save();
+
 					$message = __( 'The OAuth 2.0 authorization was successful. Ready to send e-mail.', 'post-smtp' );
 					$this->messageHandler->addMessage( $message );
-
-					//Let's redirect to New Wizard
-					if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
-						
-						wp_redirect( "{$redirect_uri}&msg={$message}&success=1" );
+						if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
+							$token_details = PostmanOAuthToken::getInstance();
+							$accessToken = $token_details->getAccessToken();
+							$refreshToken = $token_details->getRefreshToken();
+							$expires_in = $token_details->getExpiryTime();
+							if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+							  PostmanSession::getInstance()->unsetOauthInProgress();
+							  $this->clearOauthEditConnectionId();
+							  wp_redirect( "{$redirect_uri}&msg={$message}&g_access_token={$accessToken}&g_refresh_token={$refreshToken}&g_expires_in={$expires_in}&success=1" );
+							}
+						}else{
+							if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+							  PostmanSession::getInstance()->unsetOauthInProgress();
+							  $this->clearOauthEditConnectionId();
+							  wp_redirect( "{$redirect_uri}&msg={$message}&success=1" );
+							}
+						}
 						exit();
-
-					}
 
 				} else {
 
@@ -423,7 +453,8 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 
 					//Let's redirect to New Wizard
 					if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
-						
+						PostmanSession::getInstance()->unsetOauthInProgress();
+						$this->clearOauthEditConnectionId();
 						wp_redirect( "{$redirect_uri}&msg={$message}" );
 						exit();
 
@@ -438,7 +469,8 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 
 				//Let's redirect to New Wizard
                 if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
-                    
+                    PostmanSession::getInstance()->unsetOauthInProgress();
+                    $this->clearOauthEditConnectionId();
                     wp_redirect( "{$redirect_uri}&msg={$message}" );
                     exit();
 
@@ -454,7 +486,8 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 
 				//Let's redirect to New Wizard
                 if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
-                    
+                    PostmanSession::getInstance()->unsetOauthInProgress();
+                    $this->clearOauthEditConnectionId();
                     wp_redirect( "{$redirect_uri}&msg={$message}" );
                     exit();
 
@@ -465,6 +498,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			// clean-up
 			PostmanUtils::unlock();
 			PostmanSession::getInstance()->unsetOauthInProgress();
+			$this->clearOauthEditConnectionId();
 
 			// redirect home
 			PostmanUtils::redirect( PostmanUtils::POSTMAN_HOME_PAGE_RELATIVE_URL );
@@ -477,10 +511,78 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		 */
 		public function handleOAuthPermissionRequestAction() {
 			$this->logger->debug( 'handling OAuth Permission request' );
-			$authenticationManager = PostmanAuthenticationManagerFactory::getInstance()->createAuthenticationManager();
+			if ( isset( $_GET['id'] ) && '' !== trim( (string) $_GET['id'] ) ) {
+				$this->setOauthEditConnectionId( sanitize_text_field( wp_unslash( $_GET['id'] ) ) );
+			}
+			$authenticationManager = PostmanAuthenticationManagerFactory::getInstance()->createAuthenticationManager();		
 			$transactionId = $authenticationManager->generateRequestTransactionId();
 			PostmanSession::getInstance()->setOauthInProgress( $transactionId );
 			$authenticationManager->requestVerificationCode( $transactionId );
+		}
+
+		/**
+		 * Handle OAuth cancel/denied callback and redirect user to proper Gmail configuration screen.
+		 */
+		public function handleAuthorizationDenied() {
+			$message = __( 'Google authentication was cancelled. Please try again.', 'post-smtp' );
+			$this->messageHandler->addError( $message );
+
+			// Clean up pending OAuth request.
+			PostmanSession::getInstance()->unsetOauthInProgress();
+
+			if ( ! apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+				$wizard_redirect = admin_url( 'admin.php?page=postman/configuration_wizard&socket=gmail_api&step=2' );
+				$edit_connection_id = $this->getOauthEditConnectionId();
+				if ( '' !== $edit_connection_id ) {
+					$wizard_redirect = add_query_arg( 'id', $edit_connection_id, $wizard_redirect );
+				}
+				$this->clearOauthEditConnectionId();
+				wp_redirect( add_query_arg( 'msg', rawurlencode( $message ), $wizard_redirect ) );
+				exit();
+			}
+			$this->clearOauthEditConnectionId();
+
+			// Legacy/manual Gmail setup should return to the configuration screen (not dashboard).
+			wp_safe_redirect( admin_url( 'admin.php?page=postman/configuration' ) );
+			exit();
+		}
+
+		/**
+		 * User-scoped transient key that stores the connection id currently being edited during OAuth.
+		 *
+		 * @return string
+		 */
+		private function getOauthEditConnectionKey() {
+			return 'post_smtp_oauth_edit_connection_' . get_current_user_id();
+		}
+
+		/**
+		 * Persist edit connection id through OAuth roundtrip.
+		 *
+		 * @param string $id
+		 * @return void
+		 */
+		private function setOauthEditConnectionId( $id ) {
+			set_transient( $this->getOauthEditConnectionKey(), $id, 15 * MINUTE_IN_SECONDS );
+		}
+
+		/**
+		 * Read edit connection id.
+		 *
+		 * @return string
+		 */
+		private function getOauthEditConnectionId() {
+			$id = get_transient( $this->getOauthEditConnectionKey() );
+			return is_string( $id ) ? trim( $id ) : '';
+		}
+
+		/**
+		 * Clear edit connection id transient.
+		 *
+		 * @return void
+		 */
+		private function clearOauthEditConnectionId() {
+			delete_transient( $this->getOauthEditConnectionKey() );
 		}
 	}
 }

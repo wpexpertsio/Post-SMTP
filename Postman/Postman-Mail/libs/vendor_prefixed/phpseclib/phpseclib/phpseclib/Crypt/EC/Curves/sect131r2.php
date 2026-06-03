@@ -14,13 +14,12 @@ namespace PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves;
 
 use PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Binary;
 use PostSMTP\Vendor\phpseclib3\Math\BigInteger;
-class sect131r2 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Binary
-{
-    public function __construct()
-    {
-        $this->setModulo(131, 8, 3, 2, 0);
-        $this->setCoefficients('03E5A88919D7CAFCBF415F07C2176573B2', '04B8266A46C55657AC734CE38F018F2192');
-        $this->setBasePoint('0356DCD8F2F95031AD652D23951BB366A8', '0648F06D867940A5366D9E265DE9EB240F');
-        $this->setOrder(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('0400000000000000016954A233049BA98F', 16));
-    }
+class sect131r2 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Binary {
+
+	public function __construct() {
+		$this->setModulo( 131, 8, 3, 2, 0 );
+		$this->setCoefficients( '03E5A88919D7CAFCBF415F07C2176573B2', '04B8266A46C55657AC734CE38F018F2192' );
+		$this->setBasePoint( '0356DCD8F2F95031AD652D23951BB366A8', '0648F06D867940A5366D9E265DE9EB240F' );
+		$this->setOrder( new \PostSMTP\Vendor\phpseclib3\Math\BigInteger( '0400000000000000016954A233049BA98F', 16 ) );
+	}
 }

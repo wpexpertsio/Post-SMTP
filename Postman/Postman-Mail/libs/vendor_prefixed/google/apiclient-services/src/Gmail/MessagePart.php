@@ -17,111 +17,99 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class MessagePart extends \PostSMTP\Vendor\Google\Collection
-{
-    protected $collection_key = 'parts';
-    protected $bodyType = \PostSMTP\Vendor\Google\Service\Gmail\MessagePartBody::class;
-    protected $bodyDataType = '';
-    /**
-     * @var string
-     */
-    public $filename;
-    protected $headersType = \PostSMTP\Vendor\Google\Service\Gmail\MessagePartHeader::class;
-    protected $headersDataType = 'array';
-    /**
-     * @var string
-     */
-    public $mimeType;
-    /**
-     * @var string
-     */
-    public $partId;
-    protected $partsType = \PostSMTP\Vendor\Google\Service\Gmail\MessagePart::class;
-    protected $partsDataType = 'array';
-    /**
-     * @param MessagePartBody
-     */
-    public function setBody(\PostSMTP\Vendor\Google\Service\Gmail\MessagePartBody $body)
-    {
-        $this->body = $body;
-    }
-    /**
-     * @return MessagePartBody
-     */
-    public function getBody()
-    {
-        return $this->body;
-    }
-    /**
-     * @param string
-     */
-    public function setFilename($filename)
-    {
-        $this->filename = $filename;
-    }
-    /**
-     * @return string
-     */
-    public function getFilename()
-    {
-        return $this->filename;
-    }
-    /**
-     * @param MessagePartHeader[]
-     */
-    public function setHeaders($headers)
-    {
-        $this->headers = $headers;
-    }
-    /**
-     * @return MessagePartHeader[]
-     */
-    public function getHeaders()
-    {
-        return $this->headers;
-    }
-    /**
-     * @param string
-     */
-    public function setMimeType($mimeType)
-    {
-        $this->mimeType = $mimeType;
-    }
-    /**
-     * @return string
-     */
-    public function getMimeType()
-    {
-        return $this->mimeType;
-    }
-    /**
-     * @param string
-     */
-    public function setPartId($partId)
-    {
-        $this->partId = $partId;
-    }
-    /**
-     * @return string
-     */
-    public function getPartId()
-    {
-        return $this->partId;
-    }
-    /**
-     * @param MessagePart[]
-     */
-    public function setParts($parts)
-    {
-        $this->parts = $parts;
-    }
-    /**
-     * @return MessagePart[]
-     */
-    public function getParts()
-    {
-        return $this->parts;
-    }
+class MessagePart extends \PostSMTP\Vendor\Google\Collection {
+
+	protected $collection_key = 'parts';
+	protected $bodyType       = \PostSMTP\Vendor\Google\Service\Gmail\MessagePartBody::class;
+	protected $bodyDataType   = '';
+	/**
+	 * @var string
+	 */
+	public $filename;
+	protected $headersType     = \PostSMTP\Vendor\Google\Service\Gmail\MessagePartHeader::class;
+	protected $headersDataType = 'array';
+	/**
+	 * @var string
+	 */
+	public $mimeType;
+	/**
+	 * @var string
+	 */
+	public $partId;
+	protected $partsType     = self::class;
+	protected $partsDataType = 'array';
+	/**
+	 * @param MessagePartBody
+	 */
+	public function setBody( \PostSMTP\Vendor\Google\Service\Gmail\MessagePartBody $body ) {
+		$this->body = $body;
+	}
+	/**
+	 * @return MessagePartBody
+	 */
+	public function getBody() {
+		return $this->body;
+	}
+	/**
+	 * @param string
+	 */
+	public function setFilename( $filename ) {
+		$this->filename = $filename;
+	}
+	/**
+	 * @return string
+	 */
+	public function getFilename() {
+		return $this->filename;
+	}
+	/**
+	 * @param MessagePartHeader[]
+	 */
+	public function setHeaders( $headers ) {
+		$this->headers = $headers;
+	}
+	/**
+	 * @return MessagePartHeader[]
+	 */
+	public function getHeaders() {
+		return $this->headers;
+	}
+	/**
+	 * @param string
+	 */
+	public function setMimeType( $mimeType ) {
+		$this->mimeType = $mimeType;
+	}
+	/**
+	 * @return string
+	 */
+	public function getMimeType() {
+		return $this->mimeType;
+	}
+	/**
+	 * @param string
+	 */
+	public function setPartId( $partId ) {
+		$this->partId = $partId;
+	}
+	/**
+	 * @return string
+	 */
+	public function getPartId() {
+		return $this->partId;
+	}
+	/**
+	 * @param MessagePart[]
+	 */
+	public function setParts( $parts ) {
+		$this->parts = $parts;
+	}
+	/**
+	 * @return MessagePart[]
+	 */
+	public function getParts() {
+		return $this->parts;
+	}
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\MessagePart::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_MessagePart');
+\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\MessagePart::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_MessagePart' );

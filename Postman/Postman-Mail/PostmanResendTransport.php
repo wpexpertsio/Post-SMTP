@@ -104,13 +104,22 @@ class PostmanResendTransport extends PostmanAbstractModuleTransport implements P
      * @version 1.0
      */
     public function createMailEngine() {
+        $api_key = Postman_Connection_Resolver::get_primary_field(
+            'resend_api_key',
+            array( $this->options, 'getResendApiKey' )
+        );
 
-        $api_key = $this->options->getResendApiKey();
         require_once 'PostmanResendMailEngine.php';
-        $engine = new PostmanResendMailEngine( $api_key );
+        return new PostmanResendMailEngine( $api_key );
+    }
 
-        return $engine;
-
+    public function createMailEngineFallback() {
+        $api_credentials = array(
+            'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'resend_api_key' ),
+            'is_fallback' => 1,
+        );
+        require_once 'PostmanResendMailEngine.php';
+        return new PostmanResendMailEngine( $api_credentials );
     }
 
     /**

@@ -1,5 +1,4 @@
 <?php
-
 if( !class_exists( 'Post_SMTP_New_Wizard' ) ):
 
 class Post_SMTP_New_Wizard {
@@ -54,6 +53,8 @@ class Post_SMTP_New_Wizard {
 
     private $socket_sequence = array();
 
+    private $existing_db_version = '';
+
     /**
      * Constructor for the class
      * 
@@ -80,6 +81,7 @@ class Post_SMTP_New_Wizard {
             'sparkpost_api',
             'mailjet_api',
             'sendpulse_api',
+            'maileroo_api'
             
         );
         
@@ -104,10 +106,15 @@ class Post_SMTP_New_Wizard {
         add_action( 'wp_ajax_ps_get_office365_auth_url', array( $this, 'ajax_get_office365_auth_url' ) );
         add_action( 'wp_ajax_ps_get_gmail_auth_url', array( $this, 'ajax_get_gmail_auth_url' ) );
         add_action( 'admin_action_zoho_auth_request', array( $this, 'auth_zoho' ) );
+        add_action( 'admin_post_zoho_auth_request', array( $this, 'auth_zoho' ) );
         add_action( 'admin_post_remove_oauth_action', array( $this, 'post_smtp_remove_oauth_action' ) );
         add_action( 'admin_init', array( $this, 'handle_gmail_oauth_redirect' ) );
 		add_action( 'admin_init', array( $this, 'handle_office365_oauth_redirect' ) );
+		add_action( 'admin_init', array( $this, 'capture_edit_connection_context' ) );
 		add_action( 'admin_post_remove_365_oauth_action', array( $this, 'post_smtp_remove_365_oauth_action' ) );
+		add_action( 'wp_ajax_postman_delete_connection', array( $this, 'postman_handle_delete_connection' ) );
+		add_action( 'wp_ajax_nopriv_postman_delete_connection', array( $this, 'postman_handle_delete_connection' ) );
+        add_action( 'wp_ajax_ps_expire_client_transients', array( $this, 'ps_expire_client_transients' ) );
 
         if( isset( $_GET['wizard'] ) && $_GET['wizard'] == 'legacy' ) {
 
@@ -116,8 +123,211 @@ class Post_SMTP_New_Wizard {
         }
 
         $this->options_array = get_option( PostmanOptions::POSTMAN_OPTIONS );
+
+        $this->existing_db_version = get_option( 'postman_db_version' );
         
     }
+    
+    /**
+	* Expire stored OAuth client credentials after wizard completion.
+	*
+	* This function deletes the client_id and client_secret transients,
+	* ensuring sensitive credentials are removed from the database once
+	* the authentication flow is finished. It is typically called via AJAX
+	* after the wizard or "Thank You" step to enhance security.
+	*
+	* @since 3.5.0
+	* @version 1.0.0
+	*/
+	public static function expire_client_transients() {
+	    delete_transient('client_id');
+		delete_transient('client_secret');
+		wp_send_json_success();
+	}
+
+	/**
+	 * Persist current edit context so OAuth callbacks can still update the same connection.
+	 *
+	 * @return void
+	 */
+	public function capture_edit_connection_context() {
+		if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		if ( ! isset( $_GET['page'] ) || 'postman/configuration_wizard' !== sanitize_text_field( wp_unslash( $_GET['page'] ) ) ) {
+			return;
+		}
+		if ( ! isset( $_GET['id'] ) || '' === trim( (string) $_GET['id'] ) ) {
+			return;
+		}
+
+		$connection_id = sanitize_text_field( wp_unslash( $_GET['id'] ) );
+		$connections   = get_option( 'postman_connections', array() );
+		if ( ! is_array( $connections ) || ! isset( $connections[ $connection_id ] ) ) {
+			return;
+		}
+
+		$provider = isset( $connections[ $connection_id ]['provider'] ) ? sanitize_text_field( $connections[ $connection_id ]['provider'] ) : '';
+		$this->set_edit_connection_context(
+			array(
+				'id'       => $connection_id,
+				'provider' => $provider,
+			)
+		);
+	}
+
+	/**
+	 * User-scoped transient key for edit context.
+	 *
+	 * @return string
+	 */
+	private function get_edit_connection_context_key() {
+		return 'post_smtp_edit_connection_context_' . get_current_user_id();
+	}
+
+	/**
+	 * Store edit context.
+	 *
+	 * @param array $context
+	 * @return void
+	 */
+	private function set_edit_connection_context( $context ) {
+		set_transient( $this->get_edit_connection_context_key(), $context, 30 * MINUTE_IN_SECONDS );
+	}
+
+	/**
+	 * Read edit context.
+	 *
+	 * @return array
+	 */
+	private function get_edit_connection_context() {
+		$context = get_transient( $this->get_edit_connection_context_key() );
+		return is_array( $context ) ? $context : array();
+	}
+
+	/**
+	 * Clear edit context.
+	 *
+	 * @return void
+	 */
+	private function clear_edit_connection_context() {
+		delete_transient( $this->get_edit_connection_context_key() );
+	}
+
+	/**
+	 * After a wizard save, either restore the edit OAuth context or clear it.
+	 *
+	 * Office 365 (Pro) and Zoho Mail (Pro) OAuth return URLs resolve the edited row via this transient
+	 * (and optional `?id=`). `ps-save-wizard` runs before redirecting to the provider; clearing the
+	 * transient there made callbacks drop `id`, so the next save could merge into the wrong
+	 * connection (e.g. last in the list).
+	 *
+	 * When the form still carries `postman_fallback_edit` (wizard opened with `?id=`), keep the
+	 * transient so OAuth can append `id` to the return URL and saves keep targeting the same row.
+	 *
+	 * @param array $form_data Parsed wizard POST body.
+	 * @param array $mail_connections Connections array after this save.
+	 * @return void
+	 */
+	private function persist_edit_connection_context_after_save( $form_data, $mail_connections ) {
+		if ( ! is_array( $mail_connections ) ) {
+			$this->clear_edit_connection_context();
+			return;
+		}
+
+		if ( isset( $form_data['postman_fallback_edit'] ) ) {
+			$edit_id = sanitize_text_field( (string) $form_data['postman_fallback_edit'] );
+			if ( '' !== $edit_id && isset( $mail_connections[ $edit_id ] ) ) {
+				$provider = isset( $mail_connections[ $edit_id ]['provider'] )
+					? sanitize_text_field( (string) $mail_connections[ $edit_id ]['provider'] )
+					: '';
+				if ( '' !== $provider ) {
+					$this->set_edit_connection_context(
+						array(
+							'id'       => $edit_id,
+							'provider' => $provider,
+						)
+					);
+					return;
+				}
+			}
+		}
+
+		$this->clear_edit_connection_context();
+	}
+
+	/**
+	 * Writes Office 365 OAuth tokens into `postman_connections` so multiple Microsoft mailboxes can coexist (mirrors Gmail multi-account storage).
+	 *
+	 * @param array $oauth_data Same shape as `postman_office365_oauth` option after redirect.
+	 * @return void
+	 */
+	private function merge_office365_oauth_into_connections( array $oauth_data ) {
+		if ( Postman_Connection_Resolver::is_legacy_mode() ) {
+			return;
+		}
+
+		$connections = get_option( 'postman_connections', array() );
+		if ( ! is_array( $connections ) ) {
+			return;
+		}
+
+		$user_email = isset( $oauth_data['user_email'] ) ? sanitize_email( $oauth_data['user_email'] ) : '';
+		$token_expires = isset( $oauth_data['token_expires'] ) ? absint( $oauth_data['token_expires'] ) : 0;
+		$token_row     = array(
+			'access_token'  => isset( $oauth_data['access_token'] ) ? sanitize_text_field( $oauth_data['access_token'] ) : '',
+			'refresh_token' => isset( $oauth_data['refresh_token'] ) ? sanitize_text_field( $oauth_data['refresh_token'] ) : '',
+			'token_expires' => $token_expires,
+			'user_email'    => $user_email,
+		);
+		if ( $token_expires > 0 ) {
+			$token_row['timestamp'] = $token_expires;
+		}
+
+		$ctx       = $this->get_edit_connection_context();
+		$target_id = null;
+
+		if ( ! empty( $ctx['id'] ) && isset( $ctx['provider'] ) && 'office365_api' === $ctx['provider'] && isset( $connections[ $ctx['id'] ] ) ) {
+			$target_id = $ctx['id'];
+		}
+
+		if ( null === $target_id && $user_email ) {
+			foreach ( $connections as $idx => $row ) {
+				if ( ! isset( $row['provider'] ) || 'office365_api' !== $row['provider'] ) {
+					continue;
+				}
+				$se = isset( $row['sender_email'] ) ? sanitize_email( $row['sender_email'] ) : '';
+				$ue = isset( $row['user_email'] ) ? sanitize_email( $row['user_email'] ) : '';
+				if ( $user_email && ( $user_email === $se || $user_email === $ue ) ) {
+					$target_id = $idx;
+					break;
+				}
+			}
+		}
+
+		if ( null !== $target_id ) {
+			$connections[ $target_id ] = array_merge( $connections[ $target_id ], $token_row );
+			if ( $user_email ) {
+				$connections[ $target_id ]['sender_email'] = $user_email;
+			}
+			update_option( 'postman_connections', $connections );
+			$this->clear_edit_connection_context();
+			return;
+		}
+
+		$connections[] = array_merge(
+			array(
+				'provider'                      => 'office365_api',
+				'sender_email'                  => $user_email,
+				'sender_name'                   => '',
+				'prevent_sender_email_override' => 0,
+				'prevent_sender_name_override'  => 0,
+			),
+			$token_row
+		);
+		update_option( 'postman_connections', $connections );
+		$this->clear_edit_connection_context();
+	}
 
     /**
      * Load the wizard | Action Callback
@@ -136,6 +346,9 @@ class Post_SMTP_New_Wizard {
         $in_active = ( isset( $_GET['step'] ) && $_GET['step'] != 1 ) ? '' : 'ps-active-nav';
         $selected_tansport = $this->options->getTransportType();
         $socket = isset( $_GET['socket'] ) ? "{$_GET['socket']}-outer" : '';
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $selected_connection = 0;
+        $postman_connections = get_option( 'postman_connections' );
         // Add popup trigger file
         require_once POST_SMTP_PATH. '/Postman/Popup/popup.php';
         ?>
@@ -227,27 +440,42 @@ class Post_SMTP_New_Wizard {
                                             $product_url = '';
 
                                             if( is_object( $transport ) ) {
-                                                
                                                 $url = isset( $urls[$transport->getSlug()] ) ? $urls[$transport->getSlug()] : $transport->getLogoURL();
                                                 $this->sockets[$transport->getSlug()] = $transport->getName();
-
                                                 if( isset( $_GET['socket'] ) && !empty( sanitize_text_field( $_GET['socket'] ) ) && $transport->getSlug() == sanitize_text_field( $_GET['socket'] ) ) {
 
-                                                    $checked = 'checked';
+                                                   $checked = 'checked';
 
                                                 }
                                                 elseif( $transport->getSlug() == $this->options->getTransportType() && !is_plugin_active( 'post-smtp-pro/post-smtp-pro.php' ) ) {
 
-                                                    $checked = 'checked';
+                                                    if( ! Postman_Connection_Resolver::is_legacy_mode() ){
+                                                        if ( isset( $id ) ) {
+                                                             $selected_connection = $postman_connections[$id]['provider'];
+                                                             if( $key == $selected_connection ){
+                                                                 $checked = 'checked';
+                                                             }
+                                                         }
+                                                     }else{
+                                                        $checked = 'checked';
+                                                     }
 
                                                 }
                                                 
                                                 $slug = $transport->getSlug();
                                                 $transport_name = $transport->getName();
 
+                                                if( ! Postman_Connection_Resolver::is_legacy_mode() ){
+                                                   if ( isset( $id ) ) {
+                                                        $selected_connection = $postman_connections[$id]['provider'];
+                                                        if( $key == $selected_connection ){
+                                                            $checked = 'checked';
+                                                        }
+                                                    }
+                                                }
+
                                             }
                                             else {
-                                                
                                                 $transport_slug = $key;
 
                                                 if( $transport_slug == 'office365_api' ) {
@@ -256,7 +484,7 @@ class Post_SMTP_New_Wizard {
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Microsoft 365';
                                                     $is_pro = 'ps-pro-extension';
-                                                    $product_url = postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_microsoft&utm_campaign=plugin';
+                                                    $product_url = 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_microsoft&utm_campaign=plugin';
 
                                                 }
                                               if( $transport_slug == 'zohomail_api' ) {
@@ -265,7 +493,7 @@ class Post_SMTP_New_Wizard {
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Zoho';
                                                     $is_pro = 'ps-pro-extension';
-                                                    $product_url = postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_zoho&utm_campaign=plugin';
+                                                    $product_url = 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_zoho&utm_campaign=plugin';
 
                                                 }
                                                 if( !class_exists( 'Post_Smtp_Amazon_Ses' ) && $transport_slug == 'aws_ses_api' ) {
@@ -274,7 +502,7 @@ class Post_SMTP_New_Wizard {
                                                     $slug = $transport_slug;
                                                     $transport_name = 'Amazon SES';
                                                     $is_pro = 'ps-pro-extension';
-                                                    $product_url = postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_amazonses&utm_campaign=plugin';
+                                                    $product_url = 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_amazonses&utm_campaign=plugin';
 
                                                 }
 
@@ -297,12 +525,9 @@ class Post_SMTP_New_Wizard {
                                             if( $row >= 4 && empty( $is_pro ) ) {
 
                                                 $row = 0;
-
                                                 ?>
                                                
                                                 <?php
-
-
                                             }
                                             
                                             ?>
@@ -367,12 +592,46 @@ class Post_SMTP_New_Wizard {
                                         </p>
                                     </div>
                                     <div class="ps-wizard-step ps-wizard-step-2">
+                                    <?php
+                                    $office365_wizard_tokens = get_transient( 'post_smtp_office365_wizard_tokens' );
+                                    if ( ! is_array( $office365_wizard_tokens ) ) {
+                                        $office365_wizard_tokens = array();
+                                    }
+
+                                    $office365_access_token  = $office365_wizard_tokens['access_token'] ?? ( $_GET['o_access_token'] ?? '' );
+                                    $office365_refresh_token = $office365_wizard_tokens['refresh_token'] ?? ( $_GET['o_refresh_token'] ?? '' );
+                                    $office365_expires_in    = $office365_wizard_tokens['expires_in'] ?? ( $_GET['o_expires_in'] ?? '' );
+                                    ?>
+                                    <?php if( isset( $_GET['id'] ) ){ ?>
+                                      <input type="hidden" class="postman_fallback_edit" name="postman_fallback_edit" value="<?php echo esc_attr(  $_GET['id'] ); ?>" >
+                                    <?php } ?>
+                                    <?php if( isset( $_GET['access_token'] ) || isset( $_GET['refresh_token'] ) ){ ?>
+                                      <input type="hidden" name="access_token" value="<?php echo esc_attr( $_GET['access_token'] ?? '' ); ?>" >
+                                      <input type="hidden" name="refresh_token" value="<?php echo esc_attr( $_GET['refresh_token'] ?? '' ); ?>" >
+                                      <input type="hidden" name="token_expires" value="<?php echo esc_attr( $_GET['expires_in'] ?? '' ); ?>" >
+                                      <input type="hidden" name="user_email" value="<?php echo esc_attr( $_GET['user_email'] ?? '' ); ?>" >
+                                      <input type="hidden" name="account_key" value="<?php echo esc_attr( $_GET['account_key'] ?? '' ); ?>" >
+                                    <?php } ?>
+                                    <?php if( ! empty( $office365_access_token ) || ! empty( $office365_refresh_token ) ){ ?>
+                                      <input type="hidden" name="access_token" value="<?php echo esc_attr( $office365_access_token ); ?>" >
+                                      <input type="hidden" name="refresh_token" value="<?php echo esc_attr( $office365_refresh_token ); ?>" >
+                                      <input type="hidden" name="token_expires" value="<?php echo esc_attr( $office365_expires_in ); ?>" >
+                                      <?php delete_transient( 'post_smtp_office365_wizard_tokens' ); ?>
+                                    <?php } ?>
+                                    <?php if( isset( $_GET['g_access_token'] ) || isset( $_GET['g_refresh_token'] ) ){ ?>
+                                      <input type="hidden" name="access_token" value="<?php echo esc_attr( $_GET['g_access_token'] ?? '' ); ?>" >
+                                      <input type="hidden" name="refresh_token" value="<?php echo esc_attr( $_GET['g_refresh_token'] ?? '' ); ?>" >
+                                      <input type="hidden" name="token_expires" value="<?php echo esc_attr( $_GET['g_expires_in'] ?? '' ); ?>" >
+                                      <input type="hidden" name="user_email" value="<?php echo esc_attr( $_GET['user_email'] ?? '' ); ?>" >
+                                      <input type="hidden" name="account_key" value="<?php echo esc_attr( $_GET['account_key'] ?? '' ); ?>" >
+                                    <?php } ?>
+                                        <a href="" data-step="1" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span>Back</a>
                                         <?php
                                         if( !empty( $this->sockets ) ) {
 
-                                            $this->render_name_email_settings();
-
-                                            foreach( $this->sockets as $key => $title ) {
+                                                $this->render_name_email_settings();
+                                         
+                                                foreach( $this->sockets as $key => $title ) {
 
                                                 $active_socket = ( isset( $_GET['socket'] ) && $_GET['socket'] == $key ) ? 'style="display: block;"' : '';
 
@@ -554,8 +813,21 @@ class Post_SMTP_New_Wizard {
                             
                            
                             <div class="ps-wizard-step ps-wizard-step-2">
-                                <p class="ps-wizard-success"><?php echo ( isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
-                                <p class="ps-wizard-error"><?php echo ( !isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
+                                <?php
+                                $wizard_notice_msg = isset( $_GET['msg'] ) ? sanitize_text_field( wp_unslash( $_GET['msg'] ) ) : '';
+                                $wizard_success_q  = isset( $_GET['success'] ) && '1' === (string) $_GET['success'];
+                                // OAuth cancel/deny messages must use error styling even if the redirect incorrectly includes success=1.
+                                $wizard_msg_is_oauth_denied = ( '' !== $wizard_notice_msg ) && (
+                                    false !== stripos( $wizard_notice_msg, 'canceled' ) ||
+                                    false !== stripos( $wizard_notice_msg, 'cancelled' ) ||
+                                    false !== stripos( $wizard_notice_msg, 'denied' ) ||
+                                    false !== stripos( $wizard_notice_msg, 'authentication was cancelled' )
+                                );
+                                $wizard_show_success = ( '' !== $wizard_notice_msg ) && $wizard_success_q && ! $wizard_msg_is_oauth_denied;
+                                $wizard_show_error   = ( '' !== $wizard_notice_msg ) && ( ! $wizard_success_q || $wizard_msg_is_oauth_denied );
+                                ?>
+                                <p class="ps-wizard-success"><?php echo $wizard_show_success ? esc_html( $wizard_notice_msg ) : ''; ?></p>
+                                <p class="ps-wizard-error"><?php echo $wizard_show_error ? esc_html( $wizard_notice_msg ) : ''; ?></p>
                                 <a href="" data-step="1" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span><?php _e( 'Back', 'post-smtp' ); ?></a>
                                 <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="2"></span><?php _e( 'Save and Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                                 <div style="clear: both"></div>
@@ -676,6 +948,9 @@ class Post_SMTP_New_Wizard {
             POST_SMTP_VER,
             true
         );
+
+ 		$localized['delete_connection_nonce'] = wp_create_nonce( 'postman_delete_connection_nonce' );
+        $localized['save_title_nonce'] = wp_create_nonce( 'postman_save_title_nonce' );
         wp_localize_script( 'post-smtp-wizard', 'PostSMTPWizard', $localized );
 
     }
@@ -689,10 +964,40 @@ class Post_SMTP_New_Wizard {
      */
     public function render_name_email_settings() {
 
-        $from_name = null !== $this->options->getMessageSenderName() ? esc_attr( $this->options->getMessageSenderName() ) : '';
-        $from_email = null !== $this->options->getMessageSenderEmail() ? esc_attr( $this->options->getMessageSenderEmail() ) : '';
-        $from_name_enforced = $this->options->isPluginSenderNameEnforced() ? 'checked' : '';
-        $from_email_enforced = $this->options->isPluginSenderEmailEnforced() ? 'checked' : '';
+        $postman_connections = get_option( 'postman_connections' );
+        if ( ! is_array( $postman_connections ) ) {
+            $postman_connections = array();
+        }
+        if( ! Postman_Connection_Resolver::is_legacy_mode() ){
+            if ( isset( $_GET['id'] ) && isset( $postman_connections[ $_GET['id'] ] ) ) {
+                // Use specific connection (edit case)
+                $from_email = $postman_connections[ $_GET['id'] ]['sender_email'] ?? '';
+                $from_name  = $postman_connections[ $_GET['id'] ]['sender_name'] ?? '';
+                $from_name_enforced = $postman_connections[ $_GET['id'] ]['prevent_sender_name_override'] ?? '';
+                $from_email_enforced = $postman_connections[ $_GET['id'] ]['prevent_sender_email_override'] ?? '';
+            } elseif ( ! isset( $_GET['action'] ) || $_GET['action'] !== 'add' ) {
+                // No ID given — use the last connection
+                $last_connection = end( $postman_connections );
+                $from_email = is_array( $last_connection ) && isset( $last_connection['sender_email'] ) ? $last_connection['sender_email'] : '';
+                $from_name  = is_array( $last_connection ) && isset( $last_connection['sender_name'] ) ? $last_connection['sender_name'] : '';
+                $from_name_enforced = $last_connection['prevent_sender_name_override'] ?? '';
+                $from_email_enforced = $last_connection['prevent_sender_email_override'] ?? '';
+            }else{
+                $from_email =  '';
+                $from_name  = '';
+                $from_name_enforced = '';
+                $from_email_enforced ='';
+            }
+            // Fix: ensure checked if value is 1 or '1'
+            $from_email_enforced = ( $from_email_enforced == 1 || $from_email_enforced === '1') ? 'checked' : '';
+            $from_name_enforced = ( $from_name_enforced == 1 || $from_name_enforced === '1') ? 'checked' : '';
+        }else {
+            // Fallback to stored options
+            $from_name  = null !== $this->options->getMessageSenderName() ? esc_attr( $this->options->getMessageSenderName() ) : '';
+            $from_email = null !== $this->options->getMessageSenderEmail() ? esc_attr( $this->options->getMessageSenderEmail() ) : '';
+            $from_name_enforced = $this->options->isPluginSenderNameEnforced() ? 'checked' : '';
+            $from_email_enforced = $this->options->isPluginSenderEmailEnforced() ? 'checked' : '';
+        }
 
         $html = '
         <div class="ps-form-ui ps-name-email-settings">
@@ -857,11 +1162,26 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function render_smtp_settings() {
-
-        $hostname = null !== $this->options->getHostname() ? esc_attr ( $this->options->getHostname() ) : '';
-        $port = null !== $this->options->getPort() ? esc_attr ( $this->options->getPort() ) : '';
-        $username = null !== $this->options->getUsername() ? esc_attr ( $this->options->getUsername() ) : '';
-        $password = null !== $this->options->getPassword() ? esc_attr ( $this->options->getPassword() ) : '';
+        $mail_connections = get_option( 'postman_connections' );
+        $hostname = '';
+        $port = '';
+        $username = '';
+        $password = '';
+        if( ! Postman_Connection_Resolver::is_legacy_mode() ){
+            $mail_connections = get_option('postman_connections');
+            $id = $_GET['id'] ?? null;
+            if ( isset( $mail_connections[$id] ) ) {
+                $hostname = $mail_connections[$id]['hostname'] ?? '';;
+                $port     = $mail_connections[$id]['port'] ?? '';;
+                $username = $mail_connections[$id]['basic_auth_username'] ?? '';;
+                $password = $mail_connections[$id]['basic_auth_password'] ?? '';;    
+            }
+        }else{
+            $hostname = null !== $this->options->getHostname() ? esc_attr ( $this->options->getHostname() ) : '';
+            $port = null !== $this->options->getPort() ? esc_attr ( $this->options->getPort() ) : '';
+            $username = null !== $this->options->getUsername() ? esc_attr ( $this->options->getUsername() ) : '';
+            $password = null !== $this->options->getPassword() ? esc_attr ( $this->options->getPassword() ) : '';    
+        }
 
 
         $html = '<p>' . esc_html__( 'You can set up any SMTP of your choice, but it is important to remember that custom SMTP may not have adequate security.', 'post-smtp' ) . '</p>';
@@ -906,38 +1226,63 @@ class Post_SMTP_New_Wizard {
      * @since 2.7.0
      * @version 1.0.0
      */
+       public function render_gmail_settings() {
+        
+            $mail_connections = get_option( 'postman_connections' );
+            $client_id = '';
+            $client_secret = '';
+            // Retrieve options for premium features and extensions
+            $postman_auth_token = get_option( 'postman_auth_token' );
+            // Wizard reflects the user's intent (extension toggle) regardless
+            // of migration state, because completing this wizard is precisely
+            // what advances the site to the new schema.
+            $gmail_oneclick_enabled = Postman_Connection_Resolver::is_gmail_oneclick_extension_enabled();
+            $auth_url = get_option( 'post_smtp_gmail_auth_url' );
 
-    public function render_gmail_settings() {
-        // Get the Client ID and Client Secret from options
-        $client_id = ! is_null( $this->options->getClientId() ) ? esc_attr( $this->options->getClientId() ) : '';
-        $client_secret = ! is_null( $this->options->getClientSecret() ) ? esc_attr( $this->options->getClientSecret() ) : '';
-        // Check if the 'success' parameter exists in URL
-        $required = isset( $_GET['success'] ) && $_GET['success'] == 1 ? '' : 'required';
-    
-        // Retrieve options for premium features and extensions
-        $post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
-        $postman_auth_token = get_option( 'postman_auth_token' );
-        $bonus_extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : [];
-        $gmail_oneclick_enabled = in_array( 'gmail-oneclick', $bonus_extensions );
-        $auth_url = get_option( 'post_smtp_gmail_auth_url' );
-    
-        // Setup classes and attributes for form visibility
-        $hidden_class = $gmail_oneclick_enabled ? 'ps-hidden' : '';
-        $client_id_required = $gmail_oneclick_enabled ? '' : 'required';
-        $client_secret_required = $gmail_oneclick_enabled ? '' : 'required';
-        $one_click_class = 'ps-enable-gmail-one-click';
-        $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/wizard-google.png';
-        $transport_name = __( '<strong>1-Click</strong> Google Mailer Setup?', 'post-smtp' );
-        $product_url = postman_is_bfcm() ? 
-            'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 
-            'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_gmail_one_click&utm_campaign=plugin';
-    
-    
+            if( ! Postman_Connection_Resolver::is_legacy_mode() ){
+                $id = $_GET['id'] ?? null;
+                $action = isset($_GET['action']) ? $_GET['action'] : '';
+                
+                if ( isset( $mail_connections[ $id ] ) ) {
+                    // Use the selected connection for editing
+                    $client_id     = $mail_connections[ $id ]['oauth_client_id'] ?? '';
+                    $client_secret = $mail_connections[ $id ]['oauth_client_secret'] ?? '';
+                } elseif ( $action === 'add' ) {
+                    $client_id     = '';
+                    $client_secret = '';
+                } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) && empty( $gmail_oneclick_enabled ) ) {
+                    // No ID? Use the last Gmail connection or get last credentials
+                    $gmail_credentials = PostmanOptions::get_last_gmail_credentials( $mail_connections );
+                    $client_id     = $gmail_credentials['client_id'] ?? '';
+                    $client_secret = $gmail_credentials['client_secret'] ?? '';
+                } else {
+                    $client_id     = '';
+                    $client_secret = '';
+                }
+            }else{
+                $client_id = null !== $this->options->getClientId() ? esc_attr ( $this->options->getClientId() ) : '';
+                $client_secret = null !== $this->options->getClientSecret() ? esc_attr ( $this->options->getClientSecret() ) : '';
+            }
+            $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
+
+
+            // Setup classes and attributes for form visibility
+            $hidden_class = $gmail_oneclick_enabled ? 'ps-hidden' : '';
+            $client_id_required = $gmail_oneclick_enabled ? '' : 'required';
+            $client_secret_required = $gmail_oneclick_enabled ? '' : 'required';
+            $one_click_class = 'ps-enable-gmail-one-click';
+            $url = POST_SMTP_URL . '/Postman/Wizard/assets/images/wizard-google.png';
+            $transport_name = __( '<strong>1-Click</strong> Google Mailer Setup?', 'post-smtp' );
+            $product_url = postman_is_bfcm() ? 
+                'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 
+                'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_gmail_one_click&utm_campaign=plugin';
+
+
         if ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) {
             $client_id_required     = '';
             $client_secret_required = '';
         }
-    
+
         // Prepare data for JSON encoding
         $data = [
             'url' => $url,
@@ -945,15 +1290,24 @@ class Post_SMTP_New_Wizard {
             'product_url' => $product_url
         ];
         $json_data = htmlspecialchars( json_encode( $data ), ENT_QUOTES, 'UTF-8' );
-    
+
         // Begin HTML output
-        $html  = '<p>' . esc_html__( 'Post SMTP offers two ways to connect Gmail API with WordPress: One-Click Setup (fastest) and Manual (free).', 'post-smtp' ) . '</p>';
-        $html .= '<div class="ps-force ps-wizard-toggle-row">';
+        $html = '<p>' . sprintf(
+            /* translators: %1$s: Google link, %2$s: Gmail mailer name, %3$s: Description */
+            __( 'Our %1$s<a href="%2$s" target="_blank">%3$s</a> %4$s', 'post-smtp' ),
+            __( '', 'post-smtp' ),
+            esc_url( 'https://www.google.com/gmail/about/' ),
+            __( 'Gmail mailer', 'post-smtp' ),
+            __( 'works with any Gmail or Google Workspace account via the Google API. You can send WordPress emails from your main email address and it\'s more secure than directly connecting to Gmail using SMTP credentials.', 'post-smtp' )
+        ) . '</p>';
+
+        $html .= __( 'The configuration steps are more technical than other options, so our detailed guide will walk you through the whole process.', 'post-smtp' );
+        $html .= '<hr />';
         if ( post_smtp_has_pro() ) {
             $one_click = true;
-            $title_html = sprintf( '<h3>%1$s</h3>', __( 'One-Click Setup', 'post-smtp' ) );
+            $html .= sprintf( '<h3>%1$s</h3>', __( 'One-Click Setup', 'post-smtp' ) );
         } else {
-            $title_html = sprintf(
+            $html .= sprintf(
                 '<h3 class="%1$s" >%1$s <span class="ps-wizard-pro-tag">%2$s</span></h3>',
                 __( 'One-Click Setup', 'post-smtp' ),
                 __( 'PRO', 'post-smtp' )
@@ -962,99 +1316,154 @@ class Post_SMTP_New_Wizard {
             $one_click_class .= ' disabled';
         }
 
-        // Row with toggle + description aligned horizontally
-        $html .= $title_html;
-        $html .= "<div class='ps-wizard-toggle-inner'>";
-        $html .= "
+        $html .= __( '<p>Enable the option for a quick and easy way to connect with Google without the need of manually creating an app. <p>', 'post-smtp' );
+
+        // One-click switch control
+        $html .= "<div>
             <div class='ps-form-switch-control'>
                 <label class='ps-switch-1 ".(!post_smtp_has_pro() ? 'ps-gmail-one-click' : '')." '>
+                
                     <input type='hidden' id='ps-one-click-data' value='" . esc_attr( $json_data ) . "'>
                     <input type='checkbox' class='$one_click_class' " . ( $gmail_oneclick_enabled ? 'checked' : '' ) . ">
                     <span class='slider round'></span>
-                </label>
-            </div>";
-        $html .= '<p class="ps-wizard-toggle-description">' . esc_html__( 'Enable the option for a quick, easy way to connect to Google Workspace (Gmail) API without manually creating an app.', 'post-smtp' ) . '</p>';
-        $html .= '</div>'; // .ps-wizard-toggle-inner
-        $html .= '</div>'; // .ps-force.ps-wizard-toggle-row
+                </label> 
+            </div>
+        </div>";
         // Client ID and Secret inputs
         $html .= '<div class="ps-disable-one-click-setup ' . ( $gmail_oneclick_enabled ? 'ps-hidden' : '' ) . '">
-    
-        <h3 class="%1$s" >Manual Setup</h3>
-        <p>' . esc_html__( 'The free Gmail mailer requires you to create an app manually to generate the Client ID and Client Secret. This ', 'post-smtp' ) . ' <a href="' . esc_url( 'https://postmansmtp.com/docs/mailers/how-to-setup-gmail-with-post-smtp/' ) . '" target="_blank">' . esc_html__( 'step-by-step guide', 'post-smtp' ) . '</a> ' . esc_html__( 'will walk you through the whole process.', 'post-smtp' ) . '</p>';
+            <p>' . sprintf(
+                /* translators: %1$s: Link to Gmail setup documentation */
+                __( 'Read our %1$s <a href="%2$s" target="_blank">%3$s</a> %4$s', 'post-smtp' ),
+                __( '', 'post-smtp' ),
+                esc_url( 'https://postmansmtp.com/documentation/sockets-addons/gmail/' ),
+                __( 'Gmail setup documentation', 'post-smtp' ),
+                __( 'to learn how to create an app manually to generate the Client ID and Client Secret', 'post-smtp' )
+            ) . '</p>';
+
         $html .= '
         <div class="ps-form-control">
             <div><label>' . __( 'Client ID', 'post-smtp' ) . '</label></div>
-            <input type="text" class="ps-gmail-api-client-id" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please enter Client ID.', 'post-smtp' ) ) . '" name="postman_options[' . esc_attr( PostmanOptions::CLIENT_ID ) . ']" value="' . $client_id . '" placeholder="">
+            <input type="text" class="ps-gmail-api-client-id" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please enter Client ID.', 'post-smtp' ) ) . '" name="postman_options[' . esc_attr( PostmanOptions::CLIENT_ID ) . ']" value="' . $client_id . '" placeholder="Client ID">
         </div>';
-    
+
         $html .= '
         <div class="ps-form-control">
             <div><label>' . __( 'Client Secret', 'post-smtp' ) . '</label></div>
-            <input type="text" class="ps-gmail-client-secret" ' . esc_attr( $client_secret_required ) . ' data-error="' . esc_attr( __( 'Please enter Client Secret.', 'post-smtp' ) ) . '" name="postman_options[' . esc_attr( PostmanOptions::CLIENT_SECRET ) . ']" value="' . $client_secret . '" placeholder="">
+            <input type="text" class="ps-gmail-client-secret" ' . esc_attr( $client_secret_required ) . ' data-error="' . esc_attr( __( 'Please enter Client Secret.', 'post-smtp' ) ) . '" name="postman_options[' . esc_attr( PostmanOptions::CLIENT_SECRET ) . ']" value="' . $client_secret . '" placeholder="Client Secret">
         </div>';
-    
+
         $html .= '
         <div class="ps-form-control">
             <div><label>' . __( 'Authorized JavaScript origins', 'post-smtp' ) . '</label></div>
             <input type="text" class="ps-gmail-js-origin" value="' . esc_url( site_url() ) . '" readonly>
         </div>';
-    
+
         $html .= '
         <div class="ps-form-control">
             <div><label>' . __( 'Authorized redirect URI', 'post-smtp' ) . '</label></div>
             <input type="text" class="ps-gmail-redirect-uri" value="' . esc_url( admin_url( 'options-general.php?page=postman' ) ) . '" readonly>
-            <span class="ps-form-control-info">'. esc_html__( 'Please copy this URL into the Authorized Redirect URI field of your Gmail account settings.', 'post-smtp' ) .'</span>
+            <span class="ps-form-control-info">
+            ' . __( 'Please copy this URL into the "Authorized redirect URL" field of your Gmail account settings.', 'post-smtp' ) . '
+            </span>
         </div>';
-    
+
+        $gmail_connect_url = admin_url( 'admin-post.php?action=postman/requestOauthGrant' );
+        if ( isset( $_GET['id'] ) && '' !== trim( (string) $_GET['id'] ) ) {
+            $gmail_connect_url = add_query_arg( 'id', sanitize_text_field( wp_unslash( $_GET['id'] ) ), $gmail_connect_url );
+        }
+
         $html .= '
-         <h3>Authorization (Required)</h3>
-        <p>Before continuing, you will need to allow this plugin to send emails using Gmail API.</p>
-        
-        <input type="hidden"  class="ps-gmail-warning" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) ) . '" />
-        <a href="' . esc_url( admin_url( 'admin-post.php?action=postman/requestOauthGrant' ) ) . '" class="button button-primary ps-blue-btn" id="ps-wizard-connect-gmail">' . __( 'Connect to Gmail API', 'post-smtp' ) . '</a>';
-    
+        <h3>' . __( 'Authorization (Required)', 'post-smtp' ) . '</h3>
+        <p>' . __( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ) . '</p>
+    <input type="hidden"  class="ps-gmail-warning" ' . esc_attr( $client_id_required ) . ' data-error="' . esc_attr( __( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) ) . '" />
+        <a href="' . esc_url( $gmail_connect_url ) . '" class="button button-primary ps-blue-btn" id="ps-wizard-connect-gmail">' . __( 'Connect to Gmail API', 'post-smtp' ) . '</a>';
+
         // Remove OAuth action button
         $html .= '</div>';
         $html .= '<div class="ps-disable-gmail-setup ' . ( $gmail_oneclick_enabled ? '' : 'ps-hidden' ) . '">';
         if ( post_smtp_has_pro() ) {
-            if ( $postman_auth_token && isset( $postman_auth_token['user_email'] ) ) {
+            // Check if we have OAuth token based on database version and connection context
+            $has_oauth_token = false;
+            $oauth_email = '';
+            
+            if( ! Postman_Connection_Resolver::is_legacy_mode() ) {
+                // New connection system - check specific connection or last connection
+                $id = $_GET['id'] ?? null;
+                $action = isset($_GET['action']) ? $_GET['action'] : '';
+                
+                if ( isset( $mail_connections[ $id ] ) && isset( $mail_connections[ $id ]['access_token'] ) ) {
+                    // Use the selected connection for editing
+                    $has_oauth_token = !empty( $mail_connections[ $id ]['access_token'] );
+                    $oauth_email = $mail_connections[ $id ]['sender_email'] ?? '';
+                } elseif ( $action !== 'add' && ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
+                    // No ID and not adding? Use the last Gmail connection
+                    $last_gmail_connection = null;
+                    foreach( array_reverse( $mail_connections, true ) as $conn_id => $connection ) {
+                        if ( isset( $connection['provider'] ) && $connection['provider'] === 'gmail_api' ) {
+                            $last_gmail_connection = $connection;
+                            break;
+                        }
+                    }
+                    if ( $last_gmail_connection ) {
+                        $has_oauth_token = !empty( $last_gmail_connection['access_token'] );
+                        $oauth_email = $last_gmail_connection['sender_email'] ?? '';
+                    }
+                }
+            } else {
+                // Legacy system - use global token
+                $has_oauth_token = $postman_auth_token && isset( $postman_auth_token['user_email'] );
+                $oauth_email = $has_oauth_token ? $postman_auth_token['user_email'] : '';
+            }
+
+            if ( $has_oauth_token || !empty( $oauth_email ) ) {
                 $nonce = wp_create_nonce( 'remove_oauth_action' );
                 $action_url = esc_url( add_query_arg(
                     [
                         '_wpnonce' => $nonce,
                         'action' => 'remove_oauth_action',
+                        'id' => $id,
                     ],
                     admin_url( 'admin-post.php' )
                 ) );
-                if ( isset( $postman_auth_token['user_email'] ) ) {
-                    $html .= ' <span class="icon-circle"><span class="icon-check"></span> </span> <b class= "ps-wizard-success">' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_auth_token['user_email'] ) ) . '</b>';
-                }
+                $html .= ' <span class="icon-circle"><span class="icon-check"></span> </span> <b class= "ps-wizard-success">' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $oauth_email ) ) . '</b>';
                 $html .= '<a href="' . $action_url . '" class="ps-remove-gmail-btn ps-disable-gmail-setup wizard-btn-css">';
                 $html .= esc_html__( 'Remove Authorization', 'post-smtp' );
                 $html .= '</a>';
-            }else {
-                    $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
-                    $html .= "<p>Before proceeding, you’ll need to authorize this plugin to send emails using the Gmail API. This <a href=\"https://postmansmtp.com/docs/mailers/google-workspace-gmail-one-click-setup/\" target='_blank'>step-by-step guide</a> will walk you through the entire process.</p>";
-                    $html .= '<input type="hidden" ' . esc_attr( $required ) . ' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) . '" />';
-                    $html .= '<a href="' . esc_url( $auth_url ) . '" class="button button-primary ps-gmail-btn">';
-                    $html .= esc_html__( 'Sign in with Google', 'post-smtp' );
-                    $html .= '</a>';
-
+            } else {
+                $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
+                $html .= '<p>' . esc_html__( 'Before continuing, you\'ll need to allow this plugin to send emails using Gmail API.', 'post-smtp' ) . '</p>';
+                $html .= '<input type="hidden" ' . esc_attr( $required ) . ' data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Gmail API', 'post-smtp' ) . '" />';
+                $html .= '<a href="' . esc_url( $auth_url ) . '" class="button button-primary ps-gmail-btn">';
+                $html .= esc_html__( 'Sign in with Google', 'post-smtp' );
+                $html .= '</a>';
+                $html .= "<p>By signing in with Google, you can send emails using different 'From' addresses. To do this, disable the 'Force From Email' setting and use your registered aliases as the 'From' address across your WordPress site.</p> <p>Removing the OAuth connection will give you the ability to redo the OAuth connection or link to another Google account.</p>";
             }
         }
-    
+
         $html .= '</div>';
-    
+
         return $html;
     }
+
 
     /**
      * Render Emailit Settings
      */
     public function render_emailit_settings() {
-        $api_key = null !== $this->options->getEmailitApiKey() ? esc_attr ( $this->options->getEmailitApiKey() ) : '';
-        $html = '<p>' . esc_html__( 'It is easy to integrate Emailit mailer to your WordPress website. We recommend you to check the ', 'post-smtp' ) . '<a href="https://postmansmtp.com/docs/mailers/emailit-with-post-smtp/" target="_blank">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
-        $html .= '<div class="ps-wizard-divider"></div>';
+        
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['emailit_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['emailit_api_key'];
+        }
+		 $api_key = $api_key ?: esc_attr( $this->options->getEmailitApiKey() ?? '' );
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p>',
+            esc_url( 'https://emailit.com/' ),
+            __( 'Emailit', 'post-smtp' ),
+            __( 'is a transactional email provider. Enter your API Key and Endpoint below.', 'post-smtp' )
+        );
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
@@ -1068,23 +1477,26 @@ class Post_SMTP_New_Wizard {
      * Render Sweego Settings
      */
     public function render_sweego_settings() {
-        $api_key = null !== $this->options->getSweegoApiKey() ? esc_attr ( $this->options->getSweegoApiKey() ) : '';
-		$html = sprintf(
-			'<p>
-				%1$s <a href="%2$s" target="_blank">%3$s</a> %4$s
-			</p>',
-			__( 'It is easy to integrate Sweego API mailer to your WordPress website.  We recommend checking the', 'post-smtp' ),
-			esc_url( 'https://postmansmtp.com/docs/mailers/how-to-setup-sweego-with-post-smtp/' ),
-			__( 'documentation', 'post-smtp' ),
-			__( 'for a successful integration.', 'post-smtp' )
-		);
-        $html .= '<div class="ps-wizard-divider"></div>';
-        $html .= '
-        <div class="ps-form-control">
-            <div><label>API Key</label></div>
-            <input type="text" class="ps-sweego-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SWEEGO_API_KEY ) .']" value="'.$api_key.'" placeholder="">
-            <div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://app.sweego.io/login" target="_blank">' . esc_html__( 'the API tokens', 'post-smtp' ) . '</a>' . esc_html__( ' in your Sweego account.', 'post-smtp' ) . '</div>
-        </div>';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['sweego_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['sweego_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getSweegoApiKey() ?? '' );
+
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
+            esc_url( 'https://sweego.com/' ),
+            __( 'Sweego', 'post-smtp' ),
+            __( 'is a transactional email provider. Enter your API Key and Endpoint below.', 'post-smtp' ),
+            __( 'Let\'s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sweego-with-post-smtp/' ),
+            __( 'Sweego Documentation', 'post-smtp' )
+        );
+
+        $html .= '<div class="ps-form-control"><div><label>API Key</label></div>       <input type="text" class="ps-sweego-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SWEEGO_API_KEY ) .']" value="' . $api_key . '" placeholder="API Key"></div>';
+
         return $html;
     }
 
@@ -1092,15 +1504,26 @@ class Post_SMTP_New_Wizard {
      * Render Maileroo Settings
      */
     public function render_maileroo_settings() {
-        $api_key = null !== $this->options->getMailerooApiKey() ? esc_attr ( $this->options->getMailerooApiKey() ) : '';
-        $html = '<p>' . esc_html__( 'It is easy to integrate Maileroo mailer to your WordPress website. We recommend you to check the ', 'post-smtp' ) . '<a href="https://postmansmtp.com/docs/mailers/how-to-setup-maileroo-with-post-smtp" target="_blank">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
-        $html .= '<div class="ps-wizard-divider"></div>';
-        $html .= '
-        <div class="ps-form-control">
-            <div><label>API Key</label></div>
-            <input type="text" class="ps-maileroo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILEROO_API_KEY ) .']" value="'.$api_key.'" placeholder="">
-            <div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://app.maileroo.com/dashboard" target="_blank">' . esc_html__( 'the API tokens', 'post-smtp' ) . '</a>' . esc_html__( ' in your Maileroo account.', 'post-smtp' ) . '</div>
-        </div>';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['maileroo_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['maileroo_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getMailerooApiKey() ?? '' );
+
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
+            esc_url( 'https://maileroo.com/' ),
+            __( 'Maileroo', 'post-smtp' ),
+            __( 'is a transactional email provider. Enter your API Key and Endpoint below.', 'post-smtp' ),
+            __( 'Let\'s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-maileroo-with-post-smtp/' ),
+            __( 'Maileroo Documentation', 'post-smtp' )
+        );
+
+        $html .= '<div class="ps-form-control"><div><label>API Key</label></div>       <input type="text" class="ps-maileroo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILEROO_API_KEY ) .']" value="' . $api_key . '" placeholder="API Key"></div>';
+
         return $html;
     }
 
@@ -1112,7 +1535,15 @@ class Post_SMTP_New_Wizard {
      */
     public function render_mandrill_settings() {
 
-        $api_key = null !== $this->options->getMandrillApiKey() ? esc_attr ( $this->options->getMandrillApiKey() ) : '';
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        $mail_connections = get_option( 'postman_connections' );
+        
+        // Check if 'id' exists and 'mandrill_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['mandrill_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['mandrill_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getMandrillApiKey() ?? '' );
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Mandrill mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mandrill-with-post-smtp/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
@@ -1143,7 +1574,16 @@ class Post_SMTP_New_Wizard {
      */
     public function render_sendgrid_settings() {
 
-        $api_key = null !== $this->options->getSendGridApiKey() ? esc_attr ( $this->options->getSendGridApiKey() ) : '';
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        $mail_connections = get_option( 'postman_connections' );
+        
+        // Check if 'id' exists and 'sendgrid_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['sendgrid_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['sendgrid_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getSendGridApiKey() ?? '' );
+
         $selected_region = $this->options->getSendGridRegion() ? esc_attr( $this->options->getSendGridRegion() ) : 'AG';
 
         $html = '<p>' . esc_html__( 'It is easy to integrate SendGrid mailer to your WordPress website. We recommend you to check the ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendgrid-with-post-smtp/" target="_blank">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
@@ -1179,8 +1619,24 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function render_mailersend_settings() {
-
-        $api_key = null !== $this->options->getMailerSendApiKey() ? esc_attr ( $this->options->getMailerSendApiKey() ) : '';
+        
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['mailersend_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['mailersend_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getMailerSendApiKey() ?? '' );
+        
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
+            esc_url( 'https://mailersend.com/' ),
+            __( 'MailerSend', 'post-smtp' ),
+            __( 'is a popular transactional email provider that sends more than 35 billion emails every month. If you\'re just starting out, the free plan allows you to send up to 100 emails each day without entering your credit card details.', 'post-smtp' ),
+            __( 'Let’s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mailersend-with-post-smtp/' ),
+            __( 'MailerSend Documentation', 'post-smtp' )
+        );
 
         $html = '<p>' . esc_html__( 'It is easy to integrate MailerSend API mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mailersend-with-post-smtp/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
         $html .= '<div class="ps-wizard-divider"></div>';
@@ -1206,9 +1662,21 @@ class Post_SMTP_New_Wizard {
      */
     public function render_mailgun_settings() {
 
-        $api_key = null !== $this->options->getMailgunApiKey() ? esc_attr ( $this->options->getMailgunApiKey() ) : '';
-        $domain_name = null !== $this->options->getMailgunDomainName() ? esc_attr ( $this->options->getMailgunDomainName() ) : '';
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        $domain_name = '';
+        $region = '';
+
+        $mail_connections = get_option( 'postman_connections' );
         $region = null !== $this->options->getMailgunRegion() ? ' checked' : '';
+        
+        // Check if 'id' exists and 'mailgun_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['mailgun_api_key'] ?? '';
+            $domain_name = $mail_connections[$id]['mailgun_domain_name'] ?? '';
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getMailgunApiKey() ?? '' );
+        $domain_name = $api_key ?: esc_attr( $this->options->getMailgunDomainName() ?? '' );
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Mailgun mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-configure-post-smtp-with-mail-gun/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
@@ -1261,7 +1729,13 @@ class Post_SMTP_New_Wizard {
      */
     public function render_brevo_settings() {
 
-        $api_key = null !== $this->options->getSendinblueApiKey() ? esc_attr ( $this->options->getSendinblueApiKey() ) : '';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['sendinblue_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['sendinblue_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getSendinblueApiKey() ?? '' );
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Brevo mailer to your WordPress website. We recommend you to check the ', 'post-smtp' ) . '<a href="https://postmansmtp.com/docs/mailers/how-to-setup-brevo-with-post-smtp/" target="_blank">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
@@ -1289,8 +1763,14 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function render_mailtrap_settings() {
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
 
-        $api_key = null !== $this->options->getMailtrapApiKey() ? esc_attr ( $this->options->getMailtrapApiKey() ) : '';
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[ $id ]['mailtrap_api_key'] ) ) {
+            $api_key = $mail_connections[ $id ]['mailtrap_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getMailtrapApiKey() ?? '' );
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Mailtrap mailer to your WordPress website. We recommend you to check the ', 'post-smtp' ) . '<a href="https://postmansmtp.com/docs/mailers/how-to-setup-mailtrap-with-post-smtp" target="_blank">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
@@ -1320,7 +1800,13 @@ class Post_SMTP_New_Wizard {
      */
     public function render_resend_settings() {
 
-        $api_key = null !== $this->options->getResendApiKey() ? esc_attr ( $this->options->getResendApiKey() ) : '';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['resend_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['resend_api_key'];
+        }
+		 $api_key = $api_key ?: esc_attr( $this->options->getResendApiKey() ?? '' );
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Resend mailer to your WordPress website. We recommend you to check the ', 'post-smtp' ) . '<a href="https://postmansmtp.com/docs/mailers/how-to-setup-resend-with-post-smtp" target="_blank">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
         $html .= '<div class="ps-wizard-divider"></div>';
@@ -1346,7 +1832,15 @@ class Post_SMTP_New_Wizard {
      */
     public function render_postmark_settings() {
 
-        $api_key = null !== $this->options->getPostmarkApiKey() ? esc_attr ( $this->options->getPostmarkApiKey() ) : '';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        
+        // Check if 'id' exists and 'postmark_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['postmark_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['postmark_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getPostmarkApiKey() ?? '' );
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Postmark mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/postmark/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
         $html .= '<div class="ps-wizard-divider"></div>';
@@ -1376,9 +1870,26 @@ class Post_SMTP_New_Wizard {
      */
     public function render_sparkpost_settings() {
 
-        $api_key = null !== $this->options->getSparkPostApiKey() ? esc_attr ( $this->options->getSparkPostApiKey() ) : '';
-        $html = '<p>' . esc_html__( 'It is easy to integrate SparkPost mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/sparkpost/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
-        $html .= '<div class="ps-wizard-divider"></div>';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        
+        // Check if 'id' exists and 'sparkpost_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['sparkpost_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['sparkpost_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getSparkPostApiKey() ?? '' );
+
+        $html = sprintf(
+            '<p><a href="%1$s" target="_blank">%2$s</a> %3$s</p><p>%4$s <a href="%5$s" target="_blank">%6$s</a></p>',
+            esc_url( 'https://www.sparkpost.com/' ),
+            __( 'SparkPost', 'post-smtp' ),
+            __( 'is a transactional email provider that\'s trusted by big brands and small businesses. It sends more than 4 trillion emails each year and reports 99.9% uptime. You can get started with the free test account that lets you send up to 500 emails per month.', 'post-smtp' ),
+            __( 'Let\'s get started with our', 'post-smtp' ),
+            esc_url( 'https://postmansmtp.com/documentation/sockets-addons/sparkpost/' ),
+            __( 'SparkPost Documentation', 'post-smtp' )
+        );
+
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
@@ -1404,7 +1915,15 @@ class Post_SMTP_New_Wizard {
      */
     public function render_elasticemail_settings() {
 
-        $api_key = null !== $this->options->getElasticEmailApiKey() ? esc_attr ( $this->options->getElasticEmailApiKey() ) : '';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        
+        // Check if 'id' exists and 'elasticemail_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['elasticemail_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['elasticemail_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getElasticEmailApiKey() ?? '' );
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Elastic Email mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/docs/mailers/how-to-setup-elastic-mail-with-post-smtp/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
@@ -1433,9 +1952,19 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function render_mailjet_settings() {
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        $secret_key = '';
+        $mail_connections = get_option( 'postman_connections' );
+        
+        // Check if 'id' exists and 'mailjet_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['mailjet_api_key'] ?? '';
+            $secret_key = $mail_connections[$id]['mailjet_secret_key'] ?? '';
+        }
 
-        $api_key = null !== $this->options->getMailjetApiKey() ? esc_attr ( $this->options->getMailjetApiKey() ) : '';
-        $secret_key = null !== $this->options->getMailjetApiKey() ? esc_attr ( $this->options->getMailjetSecretKey() ) : '';
+        $api_key = $api_key ?: esc_attr( $this->options->getMailjetApiKey() ?? '' );
+        $secret_key = $secret_key ?: esc_attr( $this->options->getMailjetSecretKey() ?? '' );
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate Mailjet mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/docs/mailers/how-to-setup-mailjet-with-post-smtp/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
@@ -1443,13 +1972,13 @@ class Post_SMTP_New_Wizard {
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
-            <input type="text" class="ps-elasticemail-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_API_KEY ) .']" value="'.$api_key.'" placeholder=""></div>
+            <input type="text" class="ps-mailjet-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_API_KEY ) .']" value="'.$api_key.'" placeholder=""></div>
         ';
 
         $html .= '
         <div class="ps-form-control">
             <div><label>Secret Key</label></div>
-            <input type="text" class="ps-elasticemail-secret-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="">'.
+            <input type="text" class="ps-mailjet-secret-key" required data-error="'.__( 'Please enter Secret Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILJET_SECRET_KEY ) .']" value="'.$secret_key.'" placeholder="">'.
             /**
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
@@ -1470,9 +1999,18 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function render_sendpulse_settings() {
-
-        $api_key = null !== $this->options->getSendpulseApiKey() ? esc_attr ( $this->options->getSendpulseApiKey() ) : '';
-        $secret_key = null !== $this->options->getSendpulseSecretKey() ? esc_attr ( $this->options->getSendpulseSecretKey() ) : '';
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        $secret_key = '';
+        $mail_connections = get_option( 'postman_connections' );
+        
+        // Check if 'id' exists and 'sendpulse_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) ) {
+            $api_key = $mail_connections[$id]['sendpulse_api_key'] ?? '';
+            $secret_key = $mail_connections[$id]['sendpulse_secret_key'] ?? '';
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getSendpulseApiKey() ?? '' );
+        $secret_key = $secret_key ?: esc_attr( $this->options->getSendpulseSecretKey() ?? '' );
 
 
         $html = '<p>' . esc_html__( 'It is easy to integrate SendPulse mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-sendpulse/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
@@ -1525,6 +2063,13 @@ class Post_SMTP_New_Wizard {
         $access_key_id = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ] ) ? base64_decode( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ] ) : '';
         $access_key_secret = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ] ) ? base64_decode( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ] ) : '';
         $region = isset( $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] ) ? $this->options_array[ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ] : '';
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        if ( isset( $_GET['id'] ) ) {
+            $access_key_id = $mail_connections[$id][ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_ACCESS_KEY_ID ];
+            $access_key_secret = $mail_connections[$id][ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_SECRET_ACCESS_KEY ];
+            $region = $mail_connections[$id][ PostSMTPSES\PostSmtpAmazonSesTransport::OPTION_REGION ];
+        }
 
 
         $html = '<p>' . esc_html__( 'Due to the technical nature of this SMTP implementation, it is recommended to study this ', 'post-smtp' ) . '<a href="' . esc_url( 'https://postmansmtp.com/docs/mailers/new-amazon-ses/' ) . '" target="_blank">' . esc_html__( 'step-by-step guide', 'post-smtp' ) . '</a>' . esc_html__( ' at the time of setup.', 'post-smtp' ) . '</p>';
@@ -1568,20 +2113,62 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function render_office365_settings() {
-        $options = get_option( PostmanOptions::POSTMAN_OPTIONS );
-        $app_client_id = isset( $options['office365_app_id'] ) ? base64_decode( $options['office365_app_id'] ) : '';
-        $app_client_secret = isset( $options['office365_app_password'] ) ? base64_decode( $options['office365_app_password'] ) : '';
-        $redirect_uri = admin_url();
-        
-        // Check if access token exists for Office 365
-        $office365_oauth = get_option( 'postman_office365_oauth' );
-        $has_access_token = $office365_oauth && isset( $office365_oauth['access_token'] ) && ! empty( $office365_oauth['access_token'] );
-        
-        // Retrieve options for premium features and extensions
+
+        $mail_connections  = get_option( 'postman_connections' );
+        $options = get_option( PostmanOptions::POSTMAN_OPTIONS, array() );
+
         $post_smtp_pro_options = get_option( 'post_smtp_pro', [] );
-        $postman_office365_auth_token = get_option( 'postman_office365_oauth' );
         $extensions = isset( $post_smtp_pro_options['extensions'] ) ? $post_smtp_pro_options['extensions'] : [];
         $office365_oneclick_enabled = in_array( 'microsoft-one-click', $extensions );
+
+        $id                = null;
+        if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
+            $id = $_GET['id'] ?? null;
+            $action = isset($_GET['action']) ? $_GET['action'] : '';
+            $app_client_id = '';
+            $app_client_secret = '';
+            if ( isset( $mail_connections[ $id ] ) ) {
+                // Selected connection exists → use it
+                $app_client_id     = $mail_connections[ $id ]['office365_app_id'] ?? '';
+                $app_client_secret = $mail_connections[ $id ]['office365_app_password'] ?? '';
+            } elseif ( $action === 'add' ) {
+                $app_client_id     = '';
+                $app_client_secret = '';
+            } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) && ! $office365_oneclick_enabled ) {
+                // Manual setup only: reuse last Office 365 app credentials (matches Gmail wizard behavior).
+                $last_connection   = PostmanOptions::get_last_office365_credentials( $mail_connections );
+                $app_client_id     = $last_connection['office365_app_id'] ?? '';
+                $app_client_secret = $last_connection['office365_app_password'] ?? '';
+            } else {
+                // One-click enabled without a selected connection: blank fields (do not inherit another account).
+                $app_client_id     = '';
+                $app_client_secret = '';
+            }
+
+        } else {
+            // Legacy options: plaintext or accidental multi-base64 (see Postman_Connection_Resolver).
+            $app_client_id     = isset( $options['office365_app_id'] )
+                ? Postman_Connection_Resolver::decode_stored_option_secret( $options['office365_app_id'] )
+                : '';
+            $app_client_secret = isset( $options['office365_app_password'] )
+                ? Postman_Connection_Resolver::decode_stored_option_secret( $options['office365_app_password'] )
+                : '';
+        }
+
+        $redirect_uri = admin_url();
+        
+        // Check if access token exists for Office 365 (global option, used by One-Click + legacy send path).
+        $office365_oauth = get_option( 'postman_office365_oauth' );
+        $postman_office365_auth_token = $office365_oauth;
+        $has_access_token = $office365_oauth && isset( $office365_oauth['access_token'] ) && ! empty( $office365_oauth['access_token'] );
+
+        $wizard_action = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
+        $is_add_office365_connection = ( ! Postman_Connection_Resolver::is_legacy_mode() && 'add' === $wizard_action );
+        if ( $is_add_office365_connection ) {
+            // Adding another Microsoft account: ignore stored global tokens for validation + One-Click UI (same idea as Gmail `action=add`).
+            $has_access_token = false;
+        }
+
         $office365_auth_url = get_option( 'post_smtp_office365_auth_url' );
 
         $html = '<p>' . esc_html__( 'To establish a SMTP connection, you will need to create an app in your Azure account. This ', 'post-smtp' ) . ' <a href="' . esc_url( 'https://postmansmtp.com/docs/mailers/how-to-setup-office-365-with-post-smtp/' ) . '" target="_blank">' . esc_html__( 'step-by-step guide', 'post-smtp' ) . '</a> ' . esc_html__( 'will walk you through the whole process.', 'post-smtp' ) . '</p>';
@@ -1608,7 +2195,7 @@ class Post_SMTP_New_Wizard {
             // Determine whether we have both token and email stored for Office365
             // Only treat stored user_email as valid when one-click is enabled.
             $has_email = false;
-            if ( $office365_oneclick_enabled && $office365_oauth && isset( $office365_oauth['user_email'] ) && ! empty( $office365_oauth['user_email'] ) ) {
+            if ( ! $is_add_office365_connection && $office365_oneclick_enabled && $office365_oauth && isset( $office365_oauth['user_email'] ) && ! empty( $office365_oauth['user_email'] ) ) {
                 $has_email = true;
             }
 
@@ -1747,25 +2334,68 @@ class Post_SMTP_New_Wizard {
         <a class="button button-primary ps-blue-btn" id="ps-wizard-connect-office365">Connect to Office 365</a>';
 	
         $html .= '</div>';
-            
+
+        // One-click authorization UI — align with Gmail: `action=add` always shows Sign in so another mailbox can be linked.
+        $moc_show_connected   = false;
+        $moc_connected_email  = '';
+        $glob_oauth_has_token = $office365_oauth && isset( $office365_oauth['access_token'] ) && ! empty( $office365_oauth['access_token'] );
+        $glob_user_email      = isset( $office365_oauth['user_email'] ) ? sanitize_email( $office365_oauth['user_email'] ) : '';
+
+        if ( $office365_oneclick_enabled && post_smtp_has_pro() ) {
+            if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
+                $wiz_act = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
+                if ( 'add' === $wiz_act ) {
+                    $moc_show_connected = false;
+                } elseif ( isset( $mail_connections[ $id ] ) && isset( $mail_connections[ $id ]['provider'] ) && 'office365_api' === $mail_connections[ $id ]['provider'] ) {
+                    $row        = $mail_connections[ $id ];
+                    $conn_email = isset( $row['sender_email'] ) ? sanitize_email( $row['sender_email'] ) : ( isset( $row['user_email'] ) ? sanitize_email( $row['user_email'] ) : '' );
+                    $has_row_t  = ! empty( $row['access_token'] );
+                    $glob_match = $glob_oauth_has_token && $glob_user_email && $conn_email && strtolower( $glob_user_email ) === strtolower( $conn_email );
+                    if ( $has_row_t || $glob_match ) {
+                        $moc_show_connected  = true;
+                        $moc_connected_email = $conn_email ? $conn_email : $glob_user_email;
+                    }
+                } elseif ( 'add' !== $wiz_act && ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
+                    $last_o = null;
+                    foreach ( array_reverse( $mail_connections, true ) as $connection ) {
+                        if ( isset( $connection['provider'] ) && 'office365_api' === $connection['provider'] ) {
+                            $last_o = $connection;
+                            break;
+                        }
+                    }
+                    if ( $last_o ) {
+                        $conn_email = isset( $last_o['sender_email'] ) ? sanitize_email( $last_o['sender_email'] ) : ( isset( $last_o['user_email'] ) ? sanitize_email( $last_o['user_email'] ) : '' );
+                        $has_row_t  = ! empty( $last_o['access_token'] );
+                        $glob_match = $glob_oauth_has_token && $glob_user_email && $conn_email && strtolower( $glob_user_email ) === strtolower( $conn_email );
+                        if ( $has_row_t || $glob_match ) {
+                            $moc_show_connected  = true;
+                            $moc_connected_email = $conn_email ? $conn_email : $glob_user_email;
+                        }
+                    }
+                }
+            } elseif ( $postman_office365_auth_token && isset( $postman_office365_auth_token['user_email'] ) ) {
+                $moc_show_connected  = true;
+                $moc_connected_email = $postman_office365_auth_token['user_email'];
+            }
+        }
+
         $html .= '<div class="ps-disable-office365-setup ' . ( $office365_oneclick_enabled ? '' : 'ps-hidden' ) . '">';
         if ( post_smtp_has_pro() ) {
-            if ( $postman_office365_auth_token  && isset( $postman_office365_auth_token['user_email'] ) ) {
+            if ( $moc_show_connected && '' !== $moc_connected_email ) {
                 $nonce = wp_create_nonce( 'remove_365_oauth_action' );
-                $action_url = esc_url( add_query_arg(
-                    [
-                        '_wpnonce' => $nonce,
-                        'action' => 'remove_365_oauth_action',
-                    ],
-                    admin_url( 'admin-post.php' )
-                ) );
-                if ( isset( $postman_office365_auth_token['user_email'] ) ) {
-                $html .= '<span class="icon-circle"><span class="icon-check"></span> </span> <b>' . sprintf( esc_html__('Connected with: %s', 'post-smtp'), esc_html( $postman_office365_auth_token['user_email'] ) ) . '</b>';
+                $remove_args = array(
+                    '_wpnonce' => $nonce,
+                    'action'   => 'remove_365_oauth_action',
+                );
+                if ( ! Postman_Connection_Resolver::is_legacy_mode() && null !== $id && '' !== $id ) {
+                    $remove_args['id'] = $id;
                 }
+                $action_url = esc_url( add_query_arg( $remove_args, admin_url( 'admin-post.php' ) ) );
+                $html .= '<span class="icon-circle"><span class="icon-check"></span> </span> <b>' . sprintf( esc_html__( 'Connected with: %s', 'post-smtp' ), esc_html( $moc_connected_email ) ) . '</b>';
                 $html .= '<a href="' . $action_url . '" class="button button-secondary ps-remove-office365-btn">';
                 $html .= esc_html__( 'Remove Authorization', 'post-smtp' );
                 $html .= '</a>';
-            }else {
+            } else {
                 $html .= '<h3>' . esc_html__( 'Authorization (Required)', 'post-smtp' ) . '</h3>';
                 $html .= '<p>' . 'Before proceeding, you’ll need to authorize this plugin to send emails using the Office 365 API. This <a href="https://postmansmtp.com/docs/mailers/microsoft-365-one-click-setup/" target="_blank">step-by-step guide</a> will walk you through the entire process.</p>';
                 $html .= '<input class="office_365-require" type="hidden" ' . esc_attr( $required ) . ' value="' . ( ( $has_access_token && $has_email ) ? '1' : '' ) . '" data-error="' . esc_attr__( 'Please authenticate by clicking Connect to Office 365 API', 'post-smtp' ) . '" />';
@@ -1799,9 +2429,40 @@ class Post_SMTP_New_Wizard {
             'jp'        => __( 'Japan (JP)', 'postsmtp-zoho' ),
         );
         $selected_region = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_REGION ]: '';
-        
-        $client_id = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] ) ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] : '';
-        $client_secret = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) ? base64_decode( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] ) : '';
+
+        if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
+            $mail_connections = get_option( 'postman_connections' );
+            $id = $_GET['id'] ?? null;
+            $action = isset($_GET['action']) ? $_GET['action'] : '';
+            $client_id = '';
+            $client_secret = '';
+            if ( isset( $mail_connections[ $id ] ) ) {
+                // Selected connection
+                $client_id     = $mail_connections[ $id ]['zohomail_client_id'] ?? '';
+                $client_secret = $mail_connections[ $id ]['zohomail_client_secret'] ?? '';
+            } elseif ( $action === 'add' ) {
+                $client_id     = '';
+                $client_secret = '';
+            } elseif ( ! empty( $mail_connections ) && is_array( $mail_connections ) ) {
+                // No ID → use helper function to find last Zoho credentials
+                $zoho_credentials = PostmanOptions::get_last_zoho_credentials( $mail_connections );
+                $client_id     = $zoho_credentials['client_id'];
+                $client_secret = $zoho_credentials['client_secret'];
+            } else {
+                // Nothing found
+                $client_id     = '';
+                $client_secret = '';
+            }
+
+        } else {
+            $client_id     = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ] )
+                                ? $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_ID ]
+                                : '';
+            $client_secret = isset( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] )
+                                ? base64_decode( $this->options_array[ ZohoMailPostSMTP\ZohoMailTransport::OPTION_CLIENT_SECRET ] )
+                                : '';
+        }
+
         $required = ( isset( $_GET['success'] ) && $_GET['success'] == 1 ) ? '' : 'required';
 
 
@@ -1848,20 +2509,35 @@ class Post_SMTP_New_Wizard {
         </div>
         ';
         
+        $zoho_auth_url_args = array(
+            'action' => 'zoho_auth_request',
+        );
+        if ( isset( $_GET['id'] ) && '' !== trim( (string) $_GET['id'] ) ) {
+            $zoho_auth_url_args['id'] = sanitize_text_field( wp_unslash( $_GET['id'] ) );
+        }
+        $zoho_auth_url = add_query_arg( $zoho_auth_url_args, admin_url( 'admin-post.php' ) );
+
         $html .= '
         <h3>'.__( 'Authorization (Required)', 'post-smtp' ).'</h3>
         <p>'.__( 'Before continuing, you\'ll need to allow this plugin to send emails using Zoho.', 'post-smtp' ).'</p>
         <input type="hidden" '.$required.' data-error="Please authenticate by clicking Connect to Zoho" />
-        <a href="'.admin_url( 'admin.php?postman/configuration_wizard&action=zoho_auth_request' ).'" class="button button-primary ps-blue-btn" id="ps-wizard-connect-zoho">Connect to Zoho</a>';
+        <a href="'.esc_url( $zoho_auth_url ).'" class="button button-primary ps-blue-btn" id="ps-wizard-connect-zoho">Connect to Zoho</a>';
 
         return $html;
 
     }
 
     public function render_smtp2go_settings() {
-        ob_start();
-
-        $api_key = null === $this->options->getSmtp2GoApiKey() ? '' : esc_attr( $this->options->getSmtp2GoApiKey() );
+	    ob_start();
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        
+        // Check if 'id' exists and 'smtp2go_api_key' is set in the connection.
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['smtp2go_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['smtp2go_api_key'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getSmtp2GoApiKey() ?? '' );
 
 
         echo '<p>' . esc_html__( 'It is easy to integrate SMTP2GO mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/how-to-setup-smtp2go-with-post-smtp/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
@@ -1880,9 +2556,9 @@ class Post_SMTP_New_Wizard {
 
     /**
      * Save Wizard | AJAX Callback
-     * 
+     *
      * @since 2.7.0
-     * @version 1.0.0
+     * @version 1.1.0
      */
     public function save_wizard() {
 
@@ -1892,72 +2568,20 @@ class Post_SMTP_New_Wizard {
         }
         $response = false;
 
-        if( 
-            isset( $_POST['action'] )
-            &&
-            'ps-save-wizard' == $_POST['action'] 
-            &&
-            isset( $form_data['security'] )
-            &&
+        if (
+            isset( $_POST['action'] ) &&
+            'ps-save-wizard' === $_POST['action'] &&
             wp_verify_nonce( $form_data['security'], 'post-smtp' )
         ) {
-
-            if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
-                
-                $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
-                
-                $options = get_option( PostmanOptions::POSTMAN_OPTIONS );
-                $_options = $options;
-                $options = $options ? $options : array();
-                
-                //for the checkboxes
-                $sanitized['prevent_sender_email_override'] = isset( $sanitized['prevent_sender_email_override'] ) ? 1 : '';
-                $sanitized['prevent_sender_name_override'] = isset( $sanitized['prevent_sender_name_override'] ) ? 1 : '';
-                
-                //Envelop Email Address
-                $sanitized['envelope_sender'] = isset( $sanitized['sender_email'] ) ? $sanitized['sender_email'] : '';
-
-                //Encode API Keys
-                $sanitized['office365_app_id'] = isset( $sanitized['office365_app_id'] ) ? $sanitized['office365_app_id'] : '';
-                $sanitized['office365_app_password'] = isset( $sanitized['office365_app_password'] ) ? $sanitized['office365_app_password'] : '';
-                $sanitized[PostmanOptions::SENDINBLUE_API_KEY] = isset( $sanitized[PostmanOptions::SENDINBLUE_API_KEY] ) ? $sanitized[PostmanOptions::SENDINBLUE_API_KEY] : '';
-                $sanitized[PostmanOptions::MAILTRAP_API_KEY] = isset( $sanitized[PostmanOptions::MAILTRAP_API_KEY] ) ? $sanitized[PostmanOptions::MAILTRAP_API_KEY] : '';
-                $sanitized['sparkpost_api_key'] = isset( $sanitized['sparkpost_api_key'] ) ? $sanitized['sparkpost_api_key'] : '';
-                $sanitized['postmark_api_key'] = isset( $sanitized['postmark_api_key'] ) ? $sanitized['postmark_api_key'] : '';
-                $sanitized['mailgun_api_key'] = isset( $sanitized['mailgun_api_key'] ) ? $sanitized['mailgun_api_key'] : '';
-                $sanitized[PostmanOptions::SENDGRID_API_KEY] = isset( $sanitized[PostmanOptions::SENDGRID_API_KEY] ) ? $sanitized[PostmanOptions::SENDGRID_API_KEY] : '';
-                $sanitized['sendgrid_region']  = isset( $sanitized['sendgrid_region'] ) ? $sanitized['sendgrid_region'] : '';
-                $sanitized['resend_api_key']  = isset( $sanitized['resend_api_key'] ) ? $sanitized['resend_api_key'] : '';
-                $sanitized[PostmanOptions::EMAILIT_API_KEY]  = isset( $sanitized[PostmanOptions::EMAILIT_API_KEY] ) ? $sanitized[PostmanOptions::EMAILIT_API_KEY] : '';
-                $sanitized[PostmanOptions::MAILEROO_API_KEY]  = isset( $sanitized[PostmanOptions::MAILEROO_API_KEY] ) ? $sanitized[PostmanOptions::MAILEROO_API_KEY] : '';
-                $sanitized[PostmanOptions::SWEEGO_API_KEY]  = isset( $sanitized[PostmanOptions::SWEEGO_API_KEY] ) ? $sanitized[PostmanOptions::SWEEGO_API_KEY] : '';
-                $sanitized['mandrill_api_key'] = isset( $sanitized['mandrill_api_key'] ) ? $sanitized['mandrill_api_key'] : '';
-                $sanitized[PostmanOptions::MAILERSEND_API_KEY] = isset( $sanitized[PostmanOptions::MAILERSEND_API_KEY] ) ? $sanitized[PostmanOptions::MAILERSEND_API_KEY] : '';
-                $sanitized['elasticemail_api_key'] = isset( $sanitized['elasticemail_api_key'] ) ? $sanitized['elasticemail_api_key'] : '';
-                $sanitized[PostmanOptions::MAILJET_API_KEY] = isset( $sanitized[PostmanOptions::MAILJET_API_KEY] ) ? $sanitized[PostmanOptions::MAILJET_API_KEY] : '';
-                $sanitized[PostmanOptions::MAILJET_SECRET_KEY] = isset( $sanitized[PostmanOptions::MAILJET_SECRET_KEY] ) ? $sanitized[PostmanOptions::MAILJET_SECRET_KEY] : '';
-                $sanitized['basic_auth_password'] = isset( $sanitized['basic_auth_password'] ) ? $sanitized['basic_auth_password'] : '';
-                $sanitized['ses_access_key_id'] = isset( $sanitized['ses_access_key_id'] ) ? $sanitized['ses_access_key_id'] : '';
-                $sanitized['ses_secret_access_key'] = isset( $sanitized['ses_secret_access_key'] ) ? $sanitized['ses_secret_access_key'] : '';
-                $sanitized['ses_region'] = isset( $sanitized['ses_region'] ) ? $sanitized['ses_region'] : '';
-                $sanitized['enc_type'] = 'tls';
-                $sanitized['auth_type'] = 'login';
-                $sanitized['slack_token'] = base64_decode( isset( $options['slack_token'] ) ? $options['slack_token'] : '' );
-                $sanitized['pushover_user'] = base64_decode( isset( $options['pushover_user'] ) ? $options['pushover_user'] : '' );
-                $sanitized['pushover_token'] = base64_decode( isset( $options['pushover_token'] ) ? $options['pushover_token'] : '' );
-                foreach( $sanitized as $key => $value ) {
-                    $options[$key] = $value;
-                }
-                
-                if( $options == $_options ) {
-                    $response = true;
-                } else {
-                    $response = update_option( PostmanOptions::POSTMAN_OPTIONS , $options );
-                    do_action( 'post_smtp_wizard_configuration_saved' );
-                }
-                
+            if ( $this->existing_db_version === '1.0.1' ) {
+                $response = $this->handle_legacy_save( $form_data );
+                delete_transient( PostmanSession::ACTION );
+                wp_send_json( array(), 200 );
+            } else {
+                $response_data = $this->handle_new_version_save( $form_data );
+                delete_transient( PostmanSession::ACTION );
+                wp_send_json_success( $response_data );
             }
-            
         }
 
         // Prevent redirection after a normal settings save (see PostmanSession::ACTION).
@@ -2034,34 +2658,32 @@ class Post_SMTP_New_Wizard {
         }
 
         // Nonce check for CSRF protection.
-        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_office365_auth_url' ) ) {
+        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'ps_get_gmail_auth_url' ) ) {
             wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ), 400 );
         }
 
-        if ( ! function_exists( 'post_smtp_get_office365_auth_url' ) ) {
-            wp_send_json_error( array( 'message' => 'Office 365 One-Click is not available.' ), 500 );
+        if ( ! function_exists( 'post_smtp_get_gmail_auth_url' ) ) {
+            wp_send_json_error( array( 'message' => 'Gmail One-Click is not available.' ), 500 );
         }
 
-        $auth_url = post_smtp_get_office365_auth_url();
+        $auth_url = post_smtp_get_gmail_auth_url();
 
         if ( empty( $auth_url ) ) {
-            wp_send_json_error( array( 'message' => 'Failed to generate Office 365 auth URL.' ), 500 );
-            if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_gmail_auth_url' ) ) {
-                wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ), 400 );
-            }
-
-            if ( ! function_exists( 'post_smtp_get_gmail_auth_url' ) ) {
-                wp_send_json_error( array( 'message' => 'Gmail One-Click is not available.' ), 500 );
-            }
-
-            $auth_url = post_smtp_get_gmail_auth_url();
-
-            if ( empty( $auth_url ) ) {
-                wp_send_json_error( array( 'message' => 'Failed to generate Gmail auth URL.' ), 500 );
-            }
-
-            wp_send_json_success( array( 'auth_url' => esc_url_raw( $auth_url ) ) );
+            wp_send_json_error( array( 'message' => 'Failed to generate Gmail auth URL.' ), 500 );
         }
+
+        $sender_email = '';
+        if ( isset( $_POST['sender_email'] ) ) {
+            $sender_email = sanitize_email( wp_unslash( $_POST['sender_email'] ) );
+        }
+        if ( empty( $sender_email ) ) {
+            $sender_email = sanitize_email( PostmanOptions::getInstance()->getMessageSenderEmail() );
+        }
+        if ( ! empty( $sender_email ) ) {
+            $auth_url = add_query_arg( array( 'login_hint' => $sender_email ), $auth_url );
+        }
+
+        wp_send_json_success( array( 'auth_url' => esc_url_raw( $auth_url ) ) );
     }
     
 
@@ -2111,6 +2733,405 @@ class Post_SMTP_New_Wizard {
         update_option( 'post_smtp_pro', $options );
 
         wp_send_json_success( array( 'message' => 'Option updated successfully!' ) );
+
+        // Fallback response
+        wp_send_json_error();
+    }
+
+    /**
+     * Handle saving for version 1.0.1
+     *
+     * @since 2.7.0
+     * @version
+     */
+    private function handle_legacy_save( $form_data ) {
+
+        if ( ! isset( $form_data['postman_options'] ) || empty( $form_data['postman_options'] ) ) {
+            return false;
+        }
+
+        $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
+        $options = get_option( PostmanOptions::POSTMAN_OPTIONS, array() );
+        $original_options = $options;
+
+        // Normalize checkboxes
+        $sanitized['prevent_sender_email_override'] = isset( $sanitized['prevent_sender_email_override'] ) ? 1 : '';
+        $sanitized['prevent_sender_name_override'] = isset( $sanitized['prevent_sender_name_override'] ) ? 1 : '';
+        $sanitized['envelope_sender'] = isset( $sanitized['sender_email'] ) ? $sanitized['sender_email'] : '';
+        $sanitized['slack_token'] = base64_decode( $options['slack_token'] ?? '' ) ?: '';
+        $sanitized['pushover_user'] = base64_decode( $options['pushover_user'] ?? '' ) ?: '';
+        $sanitized['pushover_token'] = base64_decode( $options['pushover_token'] ?? '' ) ?: '';
+
+        // Map of keys to preserve
+        $keys = array(
+            'office365_app_id', 'office365_app_password', PostmanOptions::SENDINBLUE_API_KEY,
+            'sparkpost_api_key', 'postmark_api_key', 'mailgun_api_key', 'mailersend_api_key', 'emailit_api_key',
+            'resend_api_key', PostmanOptions::SENDGRID_API_KEY, 'mandrill_api_key', 'elasticemail_api_key',
+            PostmanOptions::MAILJET_API_KEY, PostmanOptions::MAILJET_SECRET_KEY,
+            'basic_auth_password', 'ses_access_key_id', 'ses_secret_access_key', 'ses_region'
+        );
+
+        foreach ( $keys as $key ) {
+            $sanitized[ $key ] = isset( $sanitized[ $key ] ) ? $sanitized[ $key ] : '';
+        }
+
+        $sanitized['enc_type'] = 'tls';
+        $sanitized['auth_type'] = 'login';
+
+        $options = array_merge( $options, $sanitized );
+
+        return $options === $original_options ? true : update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
+    }
+
+    /**
+     * Handle saving for newer DB versions
+     *
+     * @since 2.7.0
+     * @version
+     */
+    private function handle_new_version_save( $form_data ) {
+
+        $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
+        $transport_type = isset( $sanitized['transport_type'] ) ? $sanitized['transport_type'] : '';
+        $api_keys = $this->get_transport_type_keys( $transport_type );
+        $postman_options = get_option( 'postman_options', array() );
+        
+        $new_connection = array(
+            'provider' => $transport_type,
+            'sender_email' => isset( $sanitized['sender_email'] ) ? $sanitized['sender_email'] : '',
+            'sender_name' => isset( $sanitized['sender_name'] ) ? $sanitized['sender_name'] : '',
+            'prevent_sender_email_override' => isset( $sanitized['prevent_sender_email_override'] ) ? 1 : '',
+            'prevent_sender_name_override' => isset( $sanitized['prevent_sender_name_override'] ) ? 1 : '',
+        );
+
+        foreach ( $api_keys as $key ) {
+            if ( isset( $sanitized[ $key ] ) ) {
+                $new_connection[ $key ] = sanitize_text_field( $sanitized[ $key ] );
+            }
+        }
+
+        $this->handle_special_providers( $transport_type, $form_data, $sanitized, $new_connection );
+       // $this->update_sender_meta( $sanitized, $transport_type );
+
+        $mail_connections = get_option( 'postman_connections', array() );
+
+        if ( isset( $form_data['postman_fallback_edit'] ) ) {
+            $id = $form_data['postman_fallback_edit'];
+            $mail_connections[ $id ] = array_merge( $mail_connections[ $id ], $new_connection );
+        } else {
+
+          	if ( isset( $form_data['access_token'] ) && ! empty( $form_data['access_token'] ) ) {
+				$id = null;
+
+				$edit_context = $this->get_edit_connection_context();
+				if (
+					isset( $edit_context['id'], $edit_context['provider'] ) &&
+					$edit_context['provider'] === $transport_type &&
+					isset( $mail_connections[ $edit_context['id'] ] )
+				) {
+					$id = $edit_context['id'];
+				}
+
+				// For Gmail one-click, prefer exact account matching to avoid overwriting latest connection.
+				if ( null === $id && $transport_type === 'gmail_api' && ! empty( $new_connection['account_key'] ) ) {
+					foreach ( $mail_connections as $index => $connection ) {
+						if (
+							isset( $connection['provider'], $connection['account_key'] ) &&
+							$connection['provider'] === 'gmail_api' &&
+							$connection['account_key'] === $new_connection['account_key']
+						) {
+							$id = $index;
+							break;
+						}
+					}
+				}
+
+				if ( null === $id && $transport_type === 'gmail_api' && ! empty( $new_connection['user_email'] ) ) {
+					foreach ( $mail_connections as $index => $connection ) {
+						if (
+							isset( $connection['provider'], $connection['user_email'] ) &&
+							$connection['provider'] === 'gmail_api' &&
+							$connection['user_email'] === $new_connection['user_email']
+						) {
+							$id = $index;
+							break;
+						}
+					}
+				}
+
+				if ( null === $id && $transport_type === 'office365_api' && ! empty( $new_connection['user_email'] ) ) {
+					foreach ( $mail_connections as $index => $connection ) {
+						if (
+							isset( $connection['provider'], $connection['user_email'] ) &&
+							$connection['provider'] === 'office365_api' &&
+							$connection['user_email'] === $new_connection['user_email']
+						) {
+							$id = $index;
+							break;
+						}
+					}
+				}
+
+				if ( null === $id && $transport_type === 'zohomail_api' ) {
+					$nc_cid = isset( $new_connection['zohomail_client_id'] ) ? (string) $new_connection['zohomail_client_id'] : '';
+					$se     = isset( $new_connection['sender_email'] ) ? sanitize_email( $new_connection['sender_email'] ) : '';
+					if ( '' !== $nc_cid && '' !== $se ) {
+						foreach ( $mail_connections as $index => $connection ) {
+							if ( ! isset( $connection['provider'] ) || 'zohomail_api' !== $connection['provider'] ) {
+								continue;
+							}
+							$cc_cid = isset( $connection['zohomail_client_id'] ) ? (string) $connection['zohomail_client_id'] : '';
+							$c_se   = isset( $connection['sender_email'] ) ? sanitize_email( $connection['sender_email'] ) : '';
+							$c_ue   = isset( $connection['user_email'] ) ? sanitize_email( $connection['user_email'] ) : '';
+							if ( $cc_cid === $nc_cid && ( $c_se === $se || $c_ue === $se ) ) {
+								$id = $index;
+								break;
+							}
+						}
+					}
+				}
+
+				if ( null === $id && $transport_type === 'zohomail_api' && ! empty( $new_connection['user_email'] ) ) {
+					foreach ( $mail_connections as $index => $connection ) {
+						if (
+							isset( $connection['provider'], $connection['user_email'] ) &&
+							$connection['provider'] === 'zohomail_api' &&
+							$connection['user_email'] === $new_connection['user_email']
+						) {
+							$id = $index;
+							break;
+						}
+					}
+				}
+
+				if ( null === $id && ! empty( $mail_connections ) ) {
+					$id = array_key_last( $mail_connections );
+				}
+
+				if ( null !== $id && isset( $mail_connections[ $id ] ) ) {
+					$mail_connections[ $id ] = array_merge( $mail_connections[ $id ], $new_connection );
+				} else {
+					$mail_connections[] = $new_connection;
+					$id = array_key_last( $mail_connections );
+				}
+
+				update_option( 'postman_connections', $mail_connections );
+				$this->clear_edit_connection_context();
+
+				return array(
+					'index'  => $id,
+					'status' => 'updated_token_only',
+				);
+
+            } else {
+				// Gmail one-click: when account_key exists, update matching account;
+				// otherwise append a brand-new connection to avoid overwriting last one.
+				if ( $transport_type === 'gmail_api' && ! empty( $new_connection['account_key'] ) ) {
+					$matched_index = null;
+					foreach ( $mail_connections as $index => $connection ) {
+						if (
+							isset( $connection['provider'], $connection['account_key'] ) &&
+							$connection['provider'] === 'gmail_api' &&
+							$connection['account_key'] === $new_connection['account_key']
+						) {
+							$matched_index = $index;
+							break;
+						}
+					}
+
+					if ( null !== $matched_index ) {
+						$mail_connections[ $matched_index ] = array_merge( $mail_connections[ $matched_index ], $new_connection );
+						$id = $matched_index;
+					} else {
+						$mail_connections[] = $new_connection;
+						$id = array_key_last( $mail_connections );
+					}
+				} elseif ( $transport_type === 'office365_api' && ! empty( $new_connection['user_email'] ) ) {
+					$matched_index = null;
+					foreach ( $mail_connections as $index => $connection ) {
+						if (
+							isset( $connection['provider'] ) &&
+							$connection['provider'] === 'office365_api' &&
+							(
+								( isset( $connection['user_email'] ) && $connection['user_email'] === $new_connection['user_email'] ) ||
+								( isset( $connection['sender_email'] ) && $connection['sender_email'] === $new_connection['user_email'] )
+							)
+						) {
+							$matched_index = $index;
+							break;
+						}
+					}
+
+					if ( null !== $matched_index ) {
+						$mail_connections[ $matched_index ] = array_merge( $mail_connections[ $matched_index ], $new_connection );
+						$id = $matched_index;
+					} else {
+						$mail_connections[] = $new_connection;
+						$id = array_key_last( $mail_connections );
+					}
+				} elseif ( $transport_type === 'zohomail_api' && ! empty( $new_connection['user_email'] ) ) {
+					$matched_index = null;
+					foreach ( $mail_connections as $index => $connection ) {
+						if (
+							isset( $connection['provider'] ) &&
+							$connection['provider'] === 'zohomail_api' &&
+							(
+								( isset( $connection['user_email'] ) && $connection['user_email'] === $new_connection['user_email'] ) ||
+								( isset( $connection['sender_email'] ) && $connection['sender_email'] === $new_connection['user_email'] )
+							)
+						) {
+							$matched_index = $index;
+							break;
+						}
+					}
+
+					if ( null !== $matched_index ) {
+						$mail_connections[ $matched_index ] = array_merge( $mail_connections[ $matched_index ], $new_connection );
+						$id = $matched_index;
+					} else {
+						$mail_connections[] = $new_connection;
+						$id = array_key_last( $mail_connections );
+					}
+				} elseif ( $transport_type === 'zohomail_api' ) {
+					$matched_index = null;
+					$nc_cid        = isset( $new_connection['zohomail_client_id'] ) ? (string) $new_connection['zohomail_client_id'] : '';
+					$se            = isset( $new_connection['sender_email'] ) ? sanitize_email( $new_connection['sender_email'] ) : '';
+					if ( '' !== $nc_cid && '' !== $se ) {
+						foreach ( $mail_connections as $index => $connection ) {
+							if ( ! isset( $connection['provider'] ) || 'zohomail_api' !== $connection['provider'] ) {
+								continue;
+							}
+							$cc_cid = isset( $connection['zohomail_client_id'] ) ? (string) $connection['zohomail_client_id'] : '';
+							$c_se   = isset( $connection['sender_email'] ) ? sanitize_email( $connection['sender_email'] ) : '';
+							$c_ue   = isset( $connection['user_email'] ) ? sanitize_email( $connection['user_email'] ) : '';
+							if ( $cc_cid === $nc_cid && ( $c_se === $se || $c_ue === $se ) ) {
+								$matched_index = $index;
+								break;
+							}
+						}
+					}
+
+					if ( null !== $matched_index ) {
+						$mail_connections[ $matched_index ] = array_merge( $mail_connections[ $matched_index ], $new_connection );
+						$id = $matched_index;
+					} else {
+						$mail_connections[] = $new_connection;
+						$id = array_key_last( $mail_connections );
+					}
+				} else {
+					$mail_connections[] = $new_connection;
+					$id = array_key_last( $mail_connections );
+				}
+			}
+        }
+        
+        $saved = update_option( 'postman_connections', $mail_connections );
+		$this->persist_edit_connection_context_after_save( $form_data, $mail_connections );
+
+          $postman_options = array_merge( 
+			$postman_options, array(
+				'sender_email'   => $new_connection['sender_email'],
+				'sender_name'    => $new_connection['sender_name'],
+				'slack_token'    => base64_decode( $postman_options['slack_token'] ?? '' ) ?: '',
+				'pushover_user'  => base64_decode( $postman_options['pushover_user'] ?? '' ) ?: '',
+				'pushover_token' => base64_decode( $postman_options['pushover_token'] ?? '' ) ?: '',
+        	)
+		);
+
+        update_option( 'postman_options', $postman_options );
+
+		// OAuth grant (admin-post) reads client_id/client_secret transients; wizard only saves to connections.
+		if ( 'gmail_api' === $transport_type ) {
+			$cid  = isset( $new_connection['oauth_client_id'] ) ? trim( (string) $new_connection['oauth_client_id'] ) : '';
+			$csec = isset( $new_connection['oauth_client_secret'] ) ? trim( (string) $new_connection['oauth_client_secret'] ) : '';
+			if ( '' !== $cid && '' !== $csec ) {
+				set_transient( 'client_id', $cid, 15 * MINUTE_IN_SECONDS );
+				set_transient( 'client_secret', $csec, 15 * MINUTE_IN_SECONDS );
+			}
+		}
+
+        return array(
+            'index'  => $id,
+            'status' => $saved ? 'updated' : 'not_updated',
+        );
+    }
+
+    /**
+     * Handle provider-specific logic
+     *
+     * @since 2.7.0
+     * @version 2.0
+     */
+    private function handle_special_providers( $type, $form_data, $sanitized, &$connection ) {
+
+        // Common token keys
+        $token_keys = array( 'access_token', 'refresh_token', 'token_expires' );
+
+        switch ( $type ) {
+            case 'zohomail_api':
+                $connection = array_merge( $connection, array(
+                    'zohomail_client_id'     => $sanitized['zohomail_client_id'] ?? '',
+                    'zohomail_client_secret' => $sanitized['zohomail_client_secret'] ?? '',
+                    'user_email'             => isset( $form_data['user_email'] ) ? sanitize_email( $form_data['user_email'] ) : ( $connection['user_email'] ?? '' ),
+                    'timestamp'              => time() + 3600,
+                ) );
+                break;
+
+            case 'office365_api':
+                $office_expires = isset( $form_data['token_expires'] ) ? absint( $form_data['token_expires'] ) : 0;
+                $connection = array_merge( $connection, array(
+                    'office365_app_id'       => $sanitized['office365_app_id'] ?? '',
+                    'office365_app_password' => $sanitized['office365_app_password'] ?? '',
+                    'user_email'             => isset( $form_data['user_email'] ) ? sanitize_email( $form_data['user_email'] ) : ( $connection['user_email'] ?? '' ),
+                    'timestamp'              => $office_expires > 0 ? $office_expires : time() + 3600,
+                ) );
+                break;
+
+            case 'gmail_api':
+                $connection = array_merge( $connection, array(
+                    'oauth_client_id'     => $sanitized['oauth_client_id'] ?? '',
+                    'oauth_client_secret' => $sanitized['oauth_client_secret'] ?? '',
+                    'auth_token_expires'  => $form_data['token_expires'] ?? '',
+                    'timestamp'           => time() + 3600,
+                    'user_email'          => isset( $form_data['user_email'] ) ? sanitize_email( $form_data['user_email'] ) : ( $connection['user_email'] ?? '' ),
+                    'account_key'         => isset( $form_data['account_key'] ) ? sanitize_text_field( $form_data['account_key'] ) : ( $connection['account_key'] ?? '' ),
+                ) );
+                break;
+        }
+
+        // Apply token fields (if exist) for all 3 types.
+        if ( in_array( $type, array( 'zohomail_api', 'office365_api', 'gmail_api' ), true ) ) {
+            foreach ( $token_keys as $field ) {
+                if ( isset( $form_data[ $field ] ) ) {
+                    $connection[ $field ] = sanitize_text_field( $form_data[ $field ] );
+                }
+            }
+            if ( 'office365_api' === $type && ! empty( $connection['token_expires'] ) ) {
+                $connection['timestamp'] = absint( $connection['token_expires'] );
+            }
+        }
+    }
+
+
+    /**
+     * Update sender email/name in PostmanOptions
+     *
+     * @since 2.7.0
+     * @version
+     */
+    private function update_sender_meta( $sanitized, $transport_type ) {
+
+        $options = get_option( PostmanOptions::POSTMAN_OPTIONS, array() );
+
+        $options['sender_email'] = isset( $sanitized['sender_email'] ) ? sanitize_text_field( $sanitized['sender_email'] ) : '';
+        $options['sender_name']  = isset( $sanitized['sender_name'] ) ? sanitize_text_field( $sanitized['sender_name'] ) : '';
+
+        if ( $transport_type === 'office365_api' ) {
+            $options['office365_app_id'] = isset( $sanitized['office365_app_id'] ) ? sanitize_text_field( $sanitized['office365_app_id'] ) : '';
+            $options['office365_app_password'] = isset( $sanitized['office365_app_password'] ) ? sanitize_text_field( $sanitized['office365_app_password'] ) : '';
+        }
+
+        update_option( PostmanOptions::POSTMAN_OPTIONS, $options );
     }
 
     /**
@@ -2218,17 +3239,56 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function auth_zoho() {
+        // Persist edit context explicitly for Zoho callback flow (same transient as Office 365 / wizard capture).
+        $connections = get_option( 'postman_connections', array() );
+        if ( ! is_array( $connections ) ) {
+            $connections = array();
+        }
+
+        if ( isset( $_GET['id'] ) && '' !== trim( (string) $_GET['id'] ) ) {
+            $connection_id = sanitize_text_field( wp_unslash( $_GET['id'] ) );
+            if (
+                isset( $connections[ $connection_id ] ) &&
+                isset( $connections[ $connection_id ]['provider'] ) &&
+                'zohomail_api' === $connections[ $connection_id ]['provider']
+            ) {
+                $this->set_edit_connection_context(
+                    array(
+                        'id'       => $connection_id,
+                        'provider' => 'zohomail_api',
+                    )
+                );
+            }
+        } else {
+            $ctx = $this->get_edit_connection_context();
+            if (
+                isset( $ctx['id'], $ctx['provider'] ) &&
+                'zohomail_api' === $ctx['provider'] &&
+                isset( $connections[ $ctx['id'] ] ) &&
+                isset( $connections[ $ctx['id'] ]['provider'] ) &&
+                'zohomail_api' === $connections[ $ctx['id'] ]['provider']
+            ) {
+                $this->set_edit_connection_context(
+                    array(
+                        'id'       => $ctx['id'],
+                        'provider' => 'zohomail_api',
+                    )
+                );
+            }
+        }
 
         $zoho_mailer = new PostSMTP_ZohoMail();
         $oauthClient = $zoho_mailer->zohomail_configuration();
         $PostmanOauthClient = new ZohoMailPostSMTP\ZohoMailOauth( $oauthClient );
+  
         $state = get_transient( PostSMTP_ZohoMail::STATE );
         // Save client state so we can validate in response
-        
         if ( $state === false ) {
             $state = bin2hex( random_bytes( 32 / 2 ) );
             set_transient( PostSMTP_ZohoMail::STATE, $state, 5 * MINUTE_IN_SECONDS );
         }
+
+    
         
         // // Generate the auth URL
         $redirect_url = $PostmanOauthClient->getZohoMailAuthURL( array(
@@ -2236,6 +3296,7 @@ class Post_SMTP_New_Wizard {
         ) );
 
         wp_redirect( $redirect_url );
+        exit;
 
     }
 	
@@ -2244,12 +3305,16 @@ class Post_SMTP_New_Wizard {
      *
      * This function removes only the sensitive fields (tokens, email, and expiration)
      * from the stored Office 365 OAuth option instead of deleting the entire record.
+     * When using multi-connection storage (see POST_SMTP_DB_VERSION), it also removes
+     * the matching `office365_api` entry from `postman_connections`, mirroring Gmail OAuth removal.
      */
     public function post_smtp_remove_365_oauth_action() {
         // Verify nonce for security
         if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'remove_365_oauth_action' ) ) {
             wp_die( esc_html__( 'Nonce verification failed. Please try again.', 'post-smtp' ) );
         }
+
+        $redirect_url = admin_url( 'admin.php?page=postman/configuration_wizard&socket=office365_api&step=2&action=add' );
 
         // Get the saved Office 365 OAuth data
         $oauth_data = get_option( 'postman_office365_oauth', [] );
@@ -2267,8 +3332,25 @@ class Post_SMTP_New_Wizard {
             update_option( 'postman_office365_oauth', $oauth_data );
         }
 
-        // Redirect back to configuration wizard page
-        wp_redirect( admin_url( "admin.php?socket=office365_api&step=2&page=postman/configuration_wizard" ) );
+        if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
+            // Remove legacy/global auth first so UI does not show stale "Connected with".
+            delete_option( 'postman_auth_token' );
+
+            $id = isset( $_GET['id'] ) ? absint( $_GET['id'] ) : null;
+            $mail_connections = get_option( 'postman_connections', array() );
+
+            if ( null !== $id && isset( $mail_connections[ $id ] ) && isset( $mail_connections[ $id ]['provider'] ) && $mail_connections[ $id ]['provider'] === 'office365_api' ) {
+                unset( $mail_connections[ $id ] );
+                update_option( 'postman_connections', $mail_connections );
+            }
+
+            $redirect_url = admin_url( 'admin.php?socket=office365_api&step=2&page=postman/configuration_wizard&action=add' );
+        } else {
+            delete_option( 'postman_auth_token' );
+            $redirect_url = admin_url( 'admin.php?socket=office365_api&step=2&page=postman/configuration_wizard&action=add' );
+        }
+
+        wp_redirect( $redirect_url );
         exit;
     }
 
@@ -2326,6 +3408,8 @@ class Post_SMTP_New_Wizard {
 
 			// Save the OAuth parameters to the WordPress options table.
 			update_option( 'postman_office365_oauth', $oauth_data );
+
+			$this->merge_office365_oauth_into_connections( $oauth_data );
 		}
 	}
 
@@ -2345,15 +3429,33 @@ class Post_SMTP_New_Wizard {
             wp_die( esc_html__( 'Nonce verification failed. Please try again.', 'post-smtp' ) );
         }
 
-        // Remove the OAuth access token option from the WordPress database.
-        delete_option( 'postman_auth_token' );
+        $redirect_url = admin_url( "admin.php?page=postman/configuration_wizard&socket=gmail_api&step=2&action=add" );
 
-        // Redirect the user back to the settings page with a success query parameter.
-        wp_redirect( admin_url( "admin.php?socket=gmail_api&step=2&page=postman/configuration_wizard" ) );
+        if ( ! Postman_Connection_Resolver::is_legacy_mode() ) {
+            // Remove legacy/global auth first so UI does not show stale "Connected with".
+            delete_option( 'postman_auth_token' );
 
-        // Terminate script execution to prevent further processing after the redirect.
+            $id = isset( $_GET['id'] ) ? absint( $_GET['id'] ) : null;
+            $mail_connections = get_option( 'postman_connections', array() );
+
+            if ( null !== $id && isset( $mail_connections[ $id ] ) && isset( $mail_connections[ $id ]['provider'] ) && $mail_connections[ $id ]['provider'] === 'gmail_api' ) {
+                // Remove complete Gmail connection entry from connections list.
+                unset( $mail_connections[ $id ] );
+                update_option( 'postman_connections', $mail_connections );
+            }
+
+            // Go back to wizard without removed id.
+            $redirect_url = admin_url( "admin.php?socket=gmail_api&step=2&page=postman/configuration_wizard&action=add" );
+        } else {
+            delete_option( 'postman_auth_token' );
+            $redirect_url = admin_url( "admin.php?socket=gmail_api&step=2&page=postman/configuration_wizard&action=add" );
+        }
+
+        // Redirect the user back with success
+        wp_redirect( $redirect_url );
         exit;
     }
+
 
     /**
      * Handles the OAuth redirect, retrieves the token parameters from the URL,
@@ -2397,6 +3499,7 @@ class Post_SMTP_New_Wizard {
             $expires_in    = isset( $_GET['expires_in'] ) ? intval( $_GET['expires_in'] ) : 0;
             $msg           = isset( $_GET['msg'] ) ? sanitize_text_field( $_GET['msg'] ) : '';
             $user_email    = isset( $_GET['user_email'] ) ? sanitize_email( $_GET['user_email'] ) : '';
+            $account_key   = isset( $_GET['account_key'] ) ? sanitize_text_field( $_GET['account_key'] ) : '';
             $auth_token_expires = time() + $expires_in;
 
             if ( $access_token ) {
@@ -2406,12 +3509,135 @@ class Post_SMTP_New_Wizard {
                     'auth_token_expires'=> $auth_token_expires,
                     'vendor_name'       => 'google',
                     'user_email'        => $user_email,
+                    'account_key'       => $account_key,
                 );
                 // Save the OAuth parameters to the WordPress options table.
                 update_option( 'postman_auth_token', $oauth_data );
             }
         }
     }
+
+     /* Get transport type keys based on the provided transport type.
+     *
+     * This function returns an array of keys required for a specific
+     * transport type. Each transport type may require different API keys
+     * or configuration values.
+     *
+     * @param string $transport_type The transport type (e.g., 'smtp', 'mandrill').
+     * @return array The array of keys specific to the transport type.
+     * 
+     * @since 3.0.1
+     * @version 1.0.0
+     */
+    public function get_transport_type_keys( $transport_type ) {
+        // Define API key mappings for each transport type.
+        $api_keys_definitions = array(
+            'smtp'           => array(
+                'enc_type', 
+                'hostname', 
+                'port', 
+                'sender_email', 
+                'envelope_sender', 
+                'basic_auth_username', 
+                'basic_auth_password',
+            ),
+            'mandrill_api'       => array( 'mandrill_api_key' ),
+            'sendgrid_api'   => array( 'sendgrid_api_key' ),
+            'sendinblue_api' => array( 'sendinblue_api_key' ),
+            'mailjet_api'    => array( 
+                'mailjet_api_key', 
+                'mailjet_secret_key', 
+            ),
+            'sendpulse_api'  => array( 
+                'sendpulse_api_key', 
+                'sendpulse_secret_key', 
+            ),
+            'postmark_api'   => array( 'postmark_api_key' ),
+            'sparkpost_api'  => array( 'sparkpost_api_key' ),
+            'mailgun_api'    => array( 
+                'mailgun_api_key', 
+                'mailgun_domain_name', 
+            ),
+            'elasticemail_api' => array( 'elasticemail_api_key' ),
+            'mailtrap_api'   => array( 'mailtrap_api_key' ),
+            'maileroo_api'   => array( 'maileroo_api_key' ),
+            'sweego_api'     => array( 'sweego_api_key' ),
+            'smtp2go_api'    => array( 'smtp2go_api_key' ),
+            'aws_ses_api'  => array( 'ses_access_key_id', 'ses_secret_access_key', 'ses_region' ),
+            'mailersend_api' => array( 'mailersend_api_key' ),
+            'emailit_api' => array( 'emailit_api_key' ),
+            'resend_api' => array( 'resend_api_key' ),
+        );
+
+        /**
+         * Filter the API keys definitions array to allow modification.
+         *
+         * @param array $api_keys_definitions An associative array of transport types and their keys.
+         */
+        $api_keys_definitions = apply_filters( 'post_smtp_transport_type_keys', $api_keys_definitions );
+
+        // Return the keys for the specific transport type, or an empty array if not found.
+        return isset( $api_keys_definitions[ $transport_type ] ) ? $api_keys_definitions[ $transport_type ] : array();
+    }
+	
+	/**
+	 * Handles the deletion of a specific SMTP connection via AJAX.
+	 *
+	 * - Verifies the nonce for security.
+	 * - Sanitizes and validates the incoming connection ID.
+	 * - Updates the 'postman_connections' option in the database.
+	 * - Optionally, can clear the primary/fallback setting if the deleted connection was selected.
+	 *
+	 * @return void Sends a JSON response back to the AJAX request.
+	 */
+	public function postman_handle_delete_connection() {
+		// Direct inline nonce verification.
+		check_ajax_referer( 'postman_delete_connection_nonce' );
+
+		$connection_id = sanitize_text_field( $_POST['connection_id'] ?? '' );
+
+		if ( $connection_id == '' ) {
+			wp_send_json_error( 'Invalid connection ID.' );
+		}
+
+		$connections = get_option( 'postman_connections', array() );
+
+		if ( isset( $connections[ $connection_id ] ) ) {
+			unset( $connections[ $connection_id ] );
+			update_option( 'postman_connections', $connections );
+			wp_send_json_success();
+		} else {
+			wp_send_json_error( 'Connection not found.' );
+		}
+	}
+
+    /**
+     * Handles the deletion of specific OAuth-related transients via AJAX.
+     *
+     * - Verifies the nonce for security.
+     * - Deletes the 'client_id' and 'client_secret' transients from the database.
+     * - Sends a JSON response indicating success or failure.
+     *
+     * @return void Sends a JSON response back to the AJAX request.
+     */
+    public function ps_expire_client_transients() {
+
+        // Delete the transients
+        $deleted_client_id     = delete_transient( 'client_id' );
+        $deleted_client_secret = delete_transient( 'client_secret' );
+
+        if ( $deleted_client_id || $deleted_client_secret ) {
+            wp_send_json_success( array(
+                'message' => 'Client ID and Client Secret transients cleared successfully.'
+            ) );
+        } else {
+            wp_send_json_error( array(
+                'message' => 'No transients found to delete.'
+            ) );
+        }
+    }
+
+
 }
 
 new Post_SMTP_New_Wizard();

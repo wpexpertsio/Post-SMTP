@@ -232,7 +232,12 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$message = new PostmanMessage();
 			$options = PostmanOptions::getInstance();
 			// the From is set now so that it can be overridden
-			$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
+			$transport_registry = PostmanTransportRegistry::getInstance();
+			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
+				$transport = $transport_registry->getActiveTransport();
+			} else {
+				$transport = $options->is_fallback ? $transport_registry->getFallbackConnection() : $transport_registry->getPrimaryConnection();
+			}
 			if ( $transport !== null ) {
 				$fromEmail = $transport->getFromEmailAddress();
 				$fromName = $transport->getFromName();
@@ -264,18 +269,44 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// get the Options and AuthToken
 			$options = PostmanOptions::getInstance();
 			$authorizationToken = PostmanOAuthToken::getInstance();
+			$pro_options = get_option( 'post_smtp_pro', [] );
+			$bonus_extensions = isset( $pro_options['bonus_extensions'] ) ? $pro_options['bonus_extensions'] : [];
+			$is_fallback = false;
 
-			// get the transport and create the transportConfig and engine
-			$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
+			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
+				// get the transport and create the transportConfig and engine.
+				$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
 
+			}else{
+				// get primaryconnection and Config and engine.
+				$transport_registry = PostmanTransportRegistry::getInstance();
+				$transport = $transport_registry->getPrimaryConnection();
+		
+				if ( is_array( $bonus_extensions ) && in_array( 'smart-routing', $bonus_extensions, true ) ) {
+				
+					/**
+					 * Allows modification of the primary transport in the else condition.
+					 *
+					 * @param PostmanTransportRegistry $transport_registry The full PostmanTransportRegistry instance.
+					 * @param mixed $transport The current primary transport instance.
+					 */
+					$transport = apply_filters( 'post_smtp_modify_primary_transport', $transport_registry, $transport, $message );
+				}
+			
+			}
+		
 			// create the Mail Engine
 			$engine = $transport->createMailEngine();
+			if ( ! is_object( $engine ) || ! method_exists( $engine, 'send' ) ) {
+				throw new Exception( __( 'Unable to initialize mail engine for the selected transport.', 'post-smtp' ) );
+			}
 
 			// add plugin-specific attributes to PostmanMessage
 			$message->addHeaders( $options->getAdditionalHeaders() );
 			$message->addTo( $options->getForcedToRecipients() );
 			$message->addCc( $options->getForcedCcRecipients() );
-			$message->addBcc( $options->getForcedBccRecipients() );
+			$message->addBcc($options->getForcedCcRecipients() );
+
 
 			// Ensure originalTo reflects the final list of all \"To\" recipients,
 			// including any global \"To Recipient(s)\" configured in Settings.
@@ -284,7 +315,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// apply the WordPress filters
 			// may impact the from address, from email, charset and content-type
 			$message->applyFilters();
-
+		
 			// create the body parts (if they are both missing)
 			if ( $message->isBodyPartsEmpty() ) {
 				$message->createBodyParts();
@@ -295,15 +326,12 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			if ( $this->logger->isDebug() ) {
 				$this->logger->debug( 'testMode=' . $testMode );
 			}
-
 			// start the clock
 			$startTime = microtime( true ) * 1000;
 
 			try {
-
 				// prepare the message
 				$message->validate( $transport );
-
 				// send the message
 				if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {
 					if ( $transport->isLockingRequired() ) {
@@ -311,7 +339,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 						// may throw an exception attempting to contact the OAuth2 provider
 						$this->ensureAuthtokenIsUpdated( $transport, $options, $authorizationToken );
 					}
-
+				
 					$this->logger->debug( 'Sending mail' );
 
 					// may throw an exception attempting to contact the SMTP server
@@ -322,9 +350,9 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 					 * @since 2.5.0
 					 * @version 1.0.0
 					 */
-					if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) && apply_filters( 'post_smtp_send_email', true ) ) {
-
+                    if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) && apply_filters( 'post_smtp_send_email', true ) ) {
 						$engine->send( $message );
+					    
 
 					} else {
 						$this->transcript = 'Bypassed By MailControl For Post SMTP';
@@ -335,28 +363,49 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 						PostmanState::getInstance()->incrementSuccessfulDelivery();
 					}
 				}
-
 				// clean up
 				$this->postSend( $engine, $startTime, $options, $transport );
+		
+                /**
+                 * Do stuff after successful delivery
+                 */
+                do_action( 'post_smtp_on_success', $log, $message, $engine->getTranscript(), $transport, $is_fallback );
 
-				   /**
-					* Do stuff after successful delivery
-					*/
-				   if ($transport !== null) {
-					   do_action( 'post_smtp_on_success', $log, $message, $engine->getTranscript(), $transport );
-				   } else {
-					   if ($this->logger) {
-						   $this->logger->warning('Transport is null, skipping post_smtp_on_success action to avoid fatal error.');
-					   }
-				   }
-				   // return successful
-				   return true;
+				/**
+				 * Delete temporary transients used during Gmail OAuth authorization.
+				 */
+				delete_transient( 'client_id' );
+				delete_transient( 'client_secret' );
+				
+				/**
+				 * Remove the transient flag used to force sending from the primary connection.
+				 * This ensures that future emails can dynamically determine the appropriate connection.
+				 */
+				delete_transient( 'post_smtp_force_primary_connection' );
+
+				
+				/** 
+				 * Clear fallback edit flag after settings are saved 
+				 */
+				delete_transient( 'post_smtp_fallback_edit' );
+				
+				
+				// Success: Delete the transient after sending the email
+                 delete_transient( 'post_smtp_smart_routing_route' );
+
+				// return successful
+				return true;
 			} catch ( Exception $e ) {
+				
+				$force_primary = get_transient( 'post_smtp_force_primary_connection' );
 				// save the error for later
 				$this->exception = $e;
 
 				// write the error to the PHP log
 				$this->logger->error( get_class( $e ) . ' code=' . $e->getCode() . ' message=' . trim( $e->getMessage() ) );
+
+				// Failure: Delete the transient in case of an error
+        		delete_transient( 'post_smtp_smart_routing_route' );
 
 				// increment the failure counter, unless we are just tesitng
 				if ( ! $testMode && $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {
@@ -367,22 +416,40 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				$this->postSend( $engine, $startTime, $options, $transport );
 
 
-				   /**
-					* Do stuff after failed delivery
-					*/
-				   if ($transport !== null) {
-					   do_action( 'post_smtp_on_failed', $log, $message, $engine->getTranscript(), $transport, $e->getMessage() );
-				   } else {
-					   if ($this->logger) {
-						   $this->logger->warning('Transport is null, skipping post_smtp_on_failed action to avoid fatal error.');
-					   }
-				   }
+                /**
+                 * Do stuff after failed delivery
+                 */
+                do_action( 'post_smtp_on_failed', $log, $message, $engine->getTranscript(), $transport, $e->getMessage(), $is_fallback );
+				
+				/**
+				 * Remove the transient flag used to force sending from the primary connection.
+				 * This ensures that future emails can dynamically determine the appropriate connection.
+				 */
+				delete_transient( 'post_smtp_force_primary_connection' );
 
-				   // Fallback
-				   if ( $this->fallback( $log, $message, $options ) ) {
+				/** 
+				 * Clear fallback edit flag after settings are saved 
+				 */
+				delete_transient( 'post_smtp_fallback_edit' );
+				
+				$is_legacy = Postman_Connection_Resolver::is_legacy_mode();
 
-					   return true;
+				$should_fallback =
+					$is_legacy ||
+					(
+						$force_primary !== false &&
+						(int) $force_primary === 1 &&
+						$testMode
+					);
 
+				if ( $should_fallback && $this->fallback( $log, $message, $options ) ) {
+					return true;
+				}
+				
+				if( ! $testMode ){
+					if ( $this->fallback( $log, $message, $options ) ) {
+						return true;
+					}
 				}
 
 				$mail_error_data = array(
@@ -406,22 +473,211 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		}
 
 		private function fallback( $log, $postMessage,$options ) {
+			if ( ! $options->is_fallback && $this->may_attempt_fallback( $options ) ) {
 
-			if ( ! $options->is_fallback && $options->getFallbackIsEnabled() && $options->getFallbackIsEnabled() == 'yes' ) {
-
-				$options->is_fallback = true;
-
-				$status = $this->sendMessage( $postMessage, $log );
-
-				$options->is_fallback = false;
+                $options->is_fallback = true;
+				if ( Postman_Connection_Resolver::is_legacy_mode() ) {
+	                $status = $this->sendMessage( $postMessage, $log );
+				}else{
+					$status = $this->sendMessageFallback( $postMessage, $log );
+				}
+                $options->is_fallback = false;
 
 				return $status;
-
+				
 			} else {
 				$options->is_fallback = false;
 			}
 
 			return false;
+		}
+
+		/**
+		 * Whether fallback delivery may run after a primary failure.
+		 *
+		 * Legacy mode only needs fallback SMTP enabled plus a hostname (`selected_fallback`
+		 * did not exist on old installs). New mode needs a real index into `postman_connections`.
+		 *
+		 * Important: never use loose `!= ''` on the fallback index — in PHP, `0 == ''` is
+		 * true, so `0 != ''` is false and incorrectly skipped fallback when the index is 0.
+		 *
+		 * @param PostmanOptions $options Plugin options.
+		 * @return bool
+		 */
+		private function may_attempt_fallback( PostmanOptions $options ) {
+			if ( 'yes' !== $options->getFallbackIsEnabled() ) {
+				return false;
+			}
+
+			if ( Postman_Connection_Resolver::is_legacy_mode() ) {
+				$hostname = $options->getFallbackHostname();
+				if ( is_string( $hostname ) ) {
+					return '' !== trim( $hostname );
+				}
+				return ! empty( $hostname );
+			}
+
+			$index = $options->getSelectedFallback();
+			if ( null === $index || false === $index || '' === $index ) {
+				return false;
+			}
+
+			$connections = get_option( 'postman_connections', array() );
+			if ( ! is_array( $connections ) ) {
+				return false;
+			}
+
+			return array_key_exists( $index, $connections );
+		}
+
+		/**
+		 * A convenient place for any code to inject a constructed PostmanMessage
+		 * (for example, from MyMail)
+		 *
+		 * The body parts may be set already at this time.
+		 *
+		 * @param PostmanMessage $message
+		 * @return boolean
+		 */
+		public function sendMessageFallback( PostmanMessage $message, PostmanEmailLog $log ) {
+
+		    $this->apply_default_headers( $message );
+
+			// get the Options and AuthToken
+			$options = PostmanOptions::getInstance();
+			$authorizationToken = PostmanOAuthToken::getInstance();
+			$is_fallback = true;
+
+			$transport_registry = PostmanTransportRegistry::getInstance();
+			$transport = $transport_registry->getFallbackConnection();
+			$pro_options = get_option( 'post_smtp_pro', [] );
+			$bonus_extensions = isset( $pro_options['bonus_extensions'] ) ? $pro_options['bonus_extensions'] : [];
+		
+			if ( is_array( $bonus_extensions ) && in_array( 'smart-routing', $bonus_extensions, true ) ) {
+				/**
+				 * Allows modification of the primary transport in the else condition.
+				 *
+				 * @param PostmanTransportRegistry $transport_registry The full PostmanTransportRegistry instance.
+				 * @param mixed $transport The current primary transport instance.
+				 */
+				$transport = apply_filters( 'post_smtp_modify_primary_transport', $transport_registry, $transport, $message );
+			
+			}
+		
+			// create the Mail Engine
+			$engine = $transport->createMailEngineFallback();
+			if ( ! is_object( $engine ) || ! method_exists( $engine, 'send' ) ) {
+				throw new Exception( __( 'Unable to initialize fallback mail engine for the selected transport.', 'post-smtp' ) );
+			}
+			// add plugin-specific attributes to PostmanMessage
+			$message->addHeaders( $options->getAdditionalHeaders() );
+			$message->addTo( $options->getForcedToRecipients() );
+			$message->addCc( $options->getForcedCcRecipients() );
+			$message->addBcc( $options->getForcedBccRecipients() );
+
+			// apply the WordPress filters
+			// may impact the from address, from email, charset and content-type
+			$message->applyFilters();
+		
+			// create the body parts (if they are both missing)
+			if ( $message->isBodyPartsEmpty() ) {
+				$message->createBodyParts();
+			}
+
+			// is this a test run?
+			$testMode = apply_filters( 'postman_test_email', false );
+			if ( $this->logger->isDebug() ) {
+				$this->logger->debug( 'testMode=' . $testMode );
+			}
+
+			// start the clock
+			$startTime = microtime( true ) * 1000;
+
+			try {
+				// prepare the message
+				if ( Postman_Connection_Resolver::is_legacy_mode() ) {
+					$message->validate( $transport );
+				}
+
+				// send the message
+				if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {
+					if ( $transport->isLockingRequired() ) {
+						PostmanUtils::lock();
+						// may throw an exception attempting to contact the OAuth2 provider
+						$this->ensureAuthtokenIsUpdated( $transport, $options, $authorizationToken );
+					}
+
+					$this->logger->debug( 'Sending mail' );
+
+					// may throw an exception attempting to contact the SMTP server
+					/**
+					 * Filters to send email or not
+					 * 
+					 * @param bool $send_email
+					 * @since 2.5.0
+					 * @version 1.0.0
+					 */
+                    if ( $send_email = apply_filters( 'post_smtp_do_send_email', true ) && apply_filters( 'post_smtp_send_email', true ) ) {
+						$engine->send( $message );
+
+                    } else {
+                        $this->transcript = 'Bypassed By MailControl For Post SMTP';
+                    }
+
+					// increment the success counter, unless we are just tesitng
+					if ( ! $testMode ) {
+						PostmanState::getInstance()->incrementSuccessfulDelivery();
+					}
+				}
+
+				// clean up
+				$this->postSend( $engine, $startTime, $options, $transport );
+
+                /**
+                 * Do stuff after successful delivery
+                 */
+                do_action( 'post_smtp_on_success', $log, $message, $engine->getTranscript(), $transport, $is_fallback );
+
+				// return successful
+				return true;
+			} catch ( Exception $e ) {
+				// save the error for later
+				$this->exception = $e;
+
+				// write the error to the PHP log
+				$this->logger->error( get_class( $e ) . ' code=' . $e->getCode() . ' message=' . trim( $e->getMessage() ) );
+
+				// increment the failure counter, unless we are just tesitng
+				if ( ! $testMode && $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {
+					PostmanState::getInstance()->incrementFailedDelivery();
+				}
+
+				// clean up
+				$this->postSend( $engine, $startTime, $options, $transport );
+
+				/**
+                 * Do stuff after failed delivery
+                 */
+                do_action( 'post_smtp_on_failed', $log, $message, $engine->getTranscript(), $transport, $e->getMessage(), $is_fallback );
+
+				$mail_error_data = array(
+					'to' => $message->getToRecipients(),
+					'subject' => $message->getSubject(),
+					'message' => $message->getBody(),
+					'headers' => $message->getHeaders(),
+					'attachments' => $message->getAttachments()
+				);
+				$mail_error_data['phpmailer_exception_code'] = $e->getCode();
+
+				do_action( 'wp_mail_failed', new WP_Error( 'wp_mail_failed', $e->getMessage(), $mail_error_data ) );
+
+				// return failure
+                if ( PostmanOptions::getInstance()->getSmtpMailer() == 'phpmailer' ) {
+                    throw new phpmailerException($e->getMessage(), $e->getCode());
+                }
+				return false;
+
+			}
 		}
 
 		/**

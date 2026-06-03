@@ -29,80 +29,80 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
-interface Postman_Zend_Mail_Storage_Writable_Interface
-{
-    /**
-     * create a new folder
-     *
-     * This method also creates parent folders if necessary. Some mail storages may restrict, which folder
-     * may be used as parent or which chars may be used in the folder name
-     *
-     * @param string                          $name         global name of folder, local name if $parentFolder is set
-     * @param string|Postman_Zend_Mail_Storage_Folder $parentFolder parent folder for new folder, else root folder is parent
-     * @return null
-     * @throws Postman_Zend_Mail_Storage_Exception
-     */
-    public function createFolder($name, $parentFolder = null);
+interface Postman_Zend_Mail_Storage_Writable_Interface {
 
-    /**
-     * remove a folder
-     *
-     * @param string|Postman_Zend_Mail_Storage_Folder $name      name or instance of folder
-     * @return null
-     * @throws Postman_Zend_Mail_Storage_Exception
-     */
-    public function removeFolder($name);
+	/**
+	 * create a new folder
+	 *
+	 * This method also creates parent folders if necessary. Some mail storages may restrict, which folder
+	 * may be used as parent or which chars may be used in the folder name
+	 *
+	 * @param string                                  $name         global name of folder, local name if $parentFolder is set
+	 * @param string|Postman_Zend_Mail_Storage_Folder $parentFolder parent folder for new folder, else root folder is parent
+	 * @return null
+	 * @throws Postman_Zend_Mail_Storage_Exception
+	 */
+	public function createFolder( $name, $parentFolder = null );
 
-    /**
-     * rename and/or move folder
-     *
-     * The new name has the same restrictions as in createFolder()
-     *
-     * @param string|Postman_Zend_Mail_Storage_Folder $oldName name or instance of folder
-     * @param string                          $newName new global name of folder
-     * @return null
-     * @throws Postman_Zend_Mail_Storage_Exception
-     */
-    public function renameFolder($oldName, $newName);
+	/**
+	 * remove a folder
+	 *
+	 * @param string|Postman_Zend_Mail_Storage_Folder $name      name or instance of folder
+	 * @return null
+	 * @throws Postman_Zend_Mail_Storage_Exception
+	 */
+	public function removeFolder( $name );
 
-    /**
-     * append a new message to mail storage
-     *
-     * @param  string|Postman_Zend_Mail_Message|Postman_Zend_Mime_Message $message message as string or instance of message class
-     * @param  null|string|Postman_Zend_Mail_Storage_Folder       $folder  folder for new message, else current folder is taken
-     * @param  null|array                                 $flags   set flags for new message, else a default set is used
-     * @throws Postman_Zend_Mail_Storage_Exception
-     */
-    public function appendMessage($message, $folder = null, $flags = null);
+	/**
+	 * rename and/or move folder
+	 *
+	 * The new name has the same restrictions as in createFolder()
+	 *
+	 * @param string|Postman_Zend_Mail_Storage_Folder $oldName name or instance of folder
+	 * @param string                                  $newName new global name of folder
+	 * @return null
+	 * @throws Postman_Zend_Mail_Storage_Exception
+	 */
+	public function renameFolder( $oldName, $newName );
 
-    /**
-     * copy an existing message
-     *
-     * @param  int                             $id     number of message
-     * @param  string|Postman_Zend_Mail_Storage_Folder $folder name or instance of targer folder
-     * @return null
-     * @throws Postman_Zend_Mail_Storage_Exception
-     */
-    public function copyMessage($id, $folder);
+	/**
+	 * append a new message to mail storage
+	 *
+	 * @param  string|Postman_Zend_Mail_Message|Postman_Zend_Mime_Message $message message as string or instance of message class
+	 * @param  null|string|Postman_Zend_Mail_Storage_Folder               $folder  folder for new message, else current folder is taken
+	 * @param  null|array                                                 $flags   set flags for new message, else a default set is used
+	 * @throws Postman_Zend_Mail_Storage_Exception
+	 */
+	public function appendMessage( $message, $folder = null, $flags = null );
 
-    /**
-     * move an existing message
-     *
-     * @param  int                             $id     number of message
-     * @param  string|Postman_Zend_Mail_Storage_Folder $folder name or instance of targer folder
-     * @return null
-     * @throws Postman_Zend_Mail_Storage_Exception
-     */
-    public function moveMessage($id, $folder);
+	/**
+	 * copy an existing message
+	 *
+	 * @param  int                                     $id     number of message
+	 * @param  string|Postman_Zend_Mail_Storage_Folder $folder name or instance of targer folder
+	 * @return null
+	 * @throws Postman_Zend_Mail_Storage_Exception
+	 */
+	public function copyMessage( $id, $folder );
 
-    /**
-     * set flags for message
-     *
-     * NOTE: this method can't set the recent flag.
-     *
-     * @param  int   $id    number of message
-     * @param  array $flags new flags for message
-     * @throws Postman_Zend_Mail_Storage_Exception
-     */
-    public function setFlags($id, $flags);
+	/**
+	 * move an existing message
+	 *
+	 * @param  int                                     $id     number of message
+	 * @param  string|Postman_Zend_Mail_Storage_Folder $folder name or instance of targer folder
+	 * @return null
+	 * @throws Postman_Zend_Mail_Storage_Exception
+	 */
+	public function moveMessage( $id, $folder );
+
+	/**
+	 * set flags for message
+	 *
+	 * NOTE: this method can't set the recent flag.
+	 *
+	 * @param  int   $id    number of message
+	 * @param  array $flags new flags for message
+	 * @throws Postman_Zend_Mail_Storage_Exception
+	 */
+	public function setFlags( $id, $flags );
 }

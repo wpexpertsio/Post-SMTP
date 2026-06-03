@@ -21,7 +21,7 @@ class Post_SMTP_Mobile_Controller {
 
 			if( $connected_devices[$this->auth_token]['enable_notification'] ) {
 
-				add_action( 'post_smtp_on_failed', array( $this, 'push_notification' ), 10, 5 );
+				add_action( 'post_smtp_on_failed', array( $this, 'push_notification' ), 10, 6 );
 
 			}
 			
@@ -71,7 +71,7 @@ class Post_SMTP_Mobile_Controller {
 		
 	}
 	
-	public function push_notification( $log, $postmanMessage, $transcript, $transport, $errorMessage ) {
+	public function push_notification( $log, $postmanMessage, $transcript, $transport, $errorMessage, $is_fallback = false ) {
 		
 		$site_title = get_bloginfo( 'name' );
 		$title = '🚫 Email failed';

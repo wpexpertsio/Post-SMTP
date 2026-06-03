@@ -29,75 +29,67 @@ use PostSMTP\Vendor\Monolog\Formatter\FormatterInterface;
  *
  * @author Alexey Karapetov <alexey@karapetov.com>
  */
-class HandlerWrapper implements \PostSMTP\Vendor\Monolog\Handler\HandlerInterface, \PostSMTP\Vendor\Monolog\ResettableInterface
-{
-    /**
-     * @var HandlerInterface
-     */
-    protected $handler;
-    /**
-     * HandlerWrapper constructor.
-     * @param HandlerInterface $handler
-     */
-    public function __construct(\PostSMTP\Vendor\Monolog\Handler\HandlerInterface $handler)
-    {
-        $this->handler = $handler;
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function isHandling(array $record)
-    {
-        return $this->handler->isHandling($record);
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function handle(array $record)
-    {
-        return $this->handler->handle($record);
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function handleBatch(array $records)
-    {
-        return $this->handler->handleBatch($records);
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function pushProcessor($callback)
-    {
-        $this->handler->pushProcessor($callback);
-        return $this;
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function popProcessor()
-    {
-        return $this->handler->popProcessor();
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function setFormatter(\PostSMTP\Vendor\Monolog\Formatter\FormatterInterface $formatter)
-    {
-        $this->handler->setFormatter($formatter);
-        return $this;
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormatter()
-    {
-        return $this->handler->getFormatter();
-    }
-    public function reset()
-    {
-        if ($this->handler instanceof \PostSMTP\Vendor\Monolog\ResettableInterface) {
-            return $this->handler->reset();
-        }
-    }
+class HandlerWrapper implements \PostSMTP\Vendor\Monolog\Handler\HandlerInterface, \PostSMTP\Vendor\Monolog\ResettableInterface {
+
+	/**
+	 * @var HandlerInterface
+	 */
+	protected $handler;
+	/**
+	 * HandlerWrapper constructor.
+	 *
+	 * @param HandlerInterface $handler
+	 */
+	public function __construct( \PostSMTP\Vendor\Monolog\Handler\HandlerInterface $handler ) {
+		$this->handler = $handler;
+	}
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isHandling( array $record ) {
+		return $this->handler->isHandling( $record );
+	}
+	/**
+	 * {@inheritdoc}
+	 */
+	public function handle( array $record ) {
+		return $this->handler->handle( $record );
+	}
+	/**
+	 * {@inheritdoc}
+	 */
+	public function handleBatch( array $records ) {
+		return $this->handler->handleBatch( $records );
+	}
+	/**
+	 * {@inheritdoc}
+	 */
+	public function pushProcessor( $callback ) {
+		$this->handler->pushProcessor( $callback );
+		return $this;
+	}
+	/**
+	 * {@inheritdoc}
+	 */
+	public function popProcessor() {
+		return $this->handler->popProcessor();
+	}
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setFormatter( \PostSMTP\Vendor\Monolog\Formatter\FormatterInterface $formatter ) {
+		$this->handler->setFormatter( $formatter );
+		return $this;
+	}
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getFormatter() {
+		return $this->handler->getFormatter();
+	}
+	public function reset() {
+		if ( $this->handler instanceof \PostSMTP\Vendor\Monolog\ResettableInterface ) {
+			return $this->handler->reset();
+		}
+	}
 }

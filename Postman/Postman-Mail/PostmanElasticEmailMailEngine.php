@@ -1,223 +1,213 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
-if( !class_exists( 'PostmanElasticEmailMailEngine' ) ):
-    
-require 'Services/ElasticEmail/Handler.php'; 
+if ( ! class_exists( 'PostmanElasticEmailMailEngine' ) ) :
 
-class PostmanElasticEmailMailEngine implements PostmanMailEngine {
+	require 'Services/ElasticEmail/Handler.php';
+	require_once plugin_dir_path( __FILE__ ) . 'PostMailConnections.php';
 
-    protected $logger;
+	class PostmanElasticEmailMailEngine implements PostmanMailEngine {
 
-    private $transcript;
+		protected $logger;
 
-    private $api_key;
+		private $transcript;
+
+		private $api_key;
+		private $is_fallback;
 
 
-    /**
-     * @since 2.6.0
-     * @version 1.0
-     */
-    public function __construct( $api_key ) {
-        
-        assert( !empty( $api_key ) );
-        $this->api_key = $api_key;
+		/**
+		 * @since 2.6.0
+		 * @version 1.0
+		 */
+		public function __construct( $api_key ) {
 
-        // create the logger
-        $this->logger = new PostmanLogger( get_class( $this ) );
-        
-    }
+			if ( is_array( $api_key ) ) {
+				// When passed as an array with additional data.
+				assert( ! empty( $api_key['api_key'] ) );
+				$this->api_key     = $api_key['api_key'];
+				$this->is_fallback = $api_key['is_fallback'] ?? null;
+			} else {
+				// When passed as a string (just the API key).
+				assert( ! empty( $api_key ) );
+				$this->api_key     = $api_key;
+				$this->is_fallback = null;
+			}
+			// create the logger
+			$this->logger = new PostmanLogger( get_class( $this ) );
+		}
 
-    /**
-     * @since 2.6.0
-     * @version 1.0
-     */
-    public function getTranscript() {
+		/**
+		 * @since 2.6.0
+		 * @version 1.0
+		 */
+		public function getTranscript() {
 
-        return $this->transcript;
+			return $this->transcript;
+		}
 
-    }
+		private function addAttachmentsToMail( PostmanMessage $message ) {
 
-    private function addAttachmentsToMail( PostmanMessage $message ) {
+			$attachments = $message->getAttachments();
+			if ( ! is_array( $attachments ) ) {
+				// WordPress may a single filename or a newline-delimited string list of multiple filenames
+				$attArray = explode( PHP_EOL, $attachments );
+			} else {
+				$attArray = $attachments;
+			}
+			// otherwise WordPress sends an array
+			$attachments = array();
+			foreach ( $attArray as $file ) {
+				if ( ! empty( $file ) ) {
+					$this->logger->debug( 'Adding attachment: ' . $file );
 
-        $attachments = $message->getAttachments();
-        if ( ! is_array( $attachments ) ) {
-            // WordPress may a single filename or a newline-delimited string list of multiple filenames
-            $attArray = explode( PHP_EOL, $attachments );
-        } else {
-            $attArray = $attachments;
-        }
-        // otherwise WordPress sends an array
-        $attachments = array();
-        foreach ( $attArray as $file ) {
-            if ( ! empty( $file ) ) {
-                $this->logger->debug( 'Adding attachment: ' . $file );
+					$file_name     = basename( $file );
+					$file_parts    = explode( '.', $file_name );
+					$file_type     = wp_check_filetype( $file );
+					$attachments[] = array(
+						'BinaryContent' => base64_encode( file_get_contents( $file ) ),
+						'Name'          => $file_name,
+						'ContentType'   => $file_type['type'],
+					);
+				}
+			}
 
-                $file_name = basename( $file );
-                $file_parts = explode( '.', $file_name );
-                $file_type = wp_check_filetype( $file );
-                $attachments[] = array(
-                    'BinaryContent' =>  base64_encode( file_get_contents( $file ) ),
-                    'Name'          =>  $file_name,
-                    'ContentType'   =>  $file_type['type']
-                );
-            }
-        }
-        
-        return $attachments;
+			return $attachments;
+		}
 
-    }
+		/**
+		 * @since 2.6.0
+		 * @version 1.0
+		 */
+		public function send( PostmanMessage $message ) {
 
-    /**
-     * @since 2.6.0
-     * @version 1.0
-     */
-    public function send( PostmanMessage $message ) { 
+			$options       = PostmanOptions::getInstance();
+			$email_content = array();
 
-        $options = PostmanOptions::getInstance();
-        $email_content = array();
-        
-        //ElasticEmail preparation
-        if ( $this->logger->isDebug() ) {
+			// ElasticEmail preparation
+			if ( $this->logger->isDebug() ) {
 
-            $this->logger->debug( 'Creating SendGrid service with apiKey=' . $this->api_key );
+				$this->logger->debug( 'Creating SendGrid service with apiKey=' . $this->api_key );
 
-        }
+			}
 
-        $elasticemail = new PostmanElasticEmail( $this->api_key );
-        
-        //$email_content['Recipients'] = 
+			$elasticemail = new PostmanElasticEmail( $this->api_key );
 
-        //Adding to receipients
-        $to = array();
-        foreach ( (array) $message->getToRecipients() as $recipient ) {
+			// $email_content['Recipients'] =
 
-            $to[] = $recipient->getEmail();
+			// Adding to receipients
+			$to = array();
+			foreach ( (array) $message->getToRecipients() as $key => $recipient ) {
 
-        }
+				$to[] = ! empty( $recipient->getName() ) ? $recipient->getName() . ' <' . $recipient->getEmail() . '>' : $recipient->getEmail();
 
-        //Adding cc receipients
-        $cc = array();
-        foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
+			}
 
-            $cc[] = $recipient->getEmail();
+			// Adding cc receipients
+			$cc = array();
+			foreach ( (array) $message->getCcRecipients() as $recipient ) {
 
-        }
+				$cc[] = ! empty( $recipient->getName() ) ? $recipient->getName() . ' <' . $recipient->getEmail() . '>' : $recipient->getEmail();
 
-        //Adding bcc receipients
-        $bcc = array();
-        foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
+			}
 
-            $bcc[] = $recipient->getEmail();
+			// Adding bcc receipients
+			$bcc = array();
+			foreach ( (array) $message->getBccRecipients() as $recipient ) {
 
-        }
+				$bcc[] = ! empty( $recipient->getName() ) ? $recipient->getName() . ' <' . $recipient->getEmail() . '>' : $recipient->getEmail();
 
-        $recipients = array( 'To' => $to );
-        if ( ! empty( $cc ) ) {
-            $recipients['CC'] = $cc;
-        }
-        if ( ! empty( $bcc ) ) {
-            $recipients['BCC'] = $bcc;
-        }
-        $email_content['Recipients'] = $recipients;
+			}
 
-        $charset = 'UTF-8';
-        $body_parts = array();
-        $plain_message = '';
+			$email_content['Recipients'] = array(
+				'To'  => $to,
+				'CC'  => $cc,
+				'BCC' => $bcc,
+			);
 
-        $textPart = $message->getBodyTextPart();
-        if ( ! empty( $textPart ) ) {
-            $this->logger->debug( 'Adding body as text' );
-            $plain_message = $textPart;
-            $body_parts[] = array(
-                'ContentType' => 'PlainText',
-                'Content'     => $textPart,
-                'Charset'     => $charset,
-            );
-        }
+			// Adding PlainText Body
+			if ( ! empty( $message->getBodyTextPart() ) ) {
 
-        $htmlPart = $message->getBodyHtmlPart();
-        if ( ! empty( $htmlPart ) ) {
-            $this->logger->debug( 'Adding body as html' );
-            if ( empty( $plain_message ) ) {
-                $plain_message = wp_strip_all_tags( $htmlPart );
-            }
-            $body_parts[] = array(
-                'ContentType' => 'HTML',
-                'Content'     => $htmlPart,
-                'Charset'     => $charset,
-            );
-        }
+				$body = $message->getBodyTextPart();
+				$this->logger->debug( 'Adding body as text' );
+				$email_content['Content'] = array(
+					'Body' => array(
+						0 => array(
+							'ContentType' => 'PlainText',
+							'Content'     => $body,
+						),
+					),
+				);
+			}
 
-        if ( empty( $body_parts ) ) {
-            $fallback_body = $message->getBody();
-            if ( ! empty( $fallback_body ) ) {
-                $this->logger->debug( 'Adding body from raw message content' );
-                $content_type = $message->getContentType();
-                $is_html = ! empty( $content_type ) && substr( $content_type, 0, 9 ) === 'text/html';
-                $plain_message = $is_html ? wp_strip_all_tags( $fallback_body ) : $fallback_body;
-                $body_parts[] = array(
-                    'ContentType' => $is_html ? 'HTML' : 'PlainText',
-                    'Content'     => $fallback_body,
-                    'Charset'     => $charset,
-                );
-            }
-        }
+			// Adding HTML Body
+			if ( ! empty( $message->getBodyHtmlPart() ) ) {
 
-        $sender = $message->getFromAddress();
-        $senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-        $senderName = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
+				$body = $message->getBodyHtmlPart();
+				$this->logger->debug( 'Adding body as html' );
+				$email_content['Content'] = array(
+					'Body' => array(
+						0 => array(
+							'ContentType' => 'HTML',
+							'Content'     => $body,
+						),
+					),
+				);
+			}
 
-        $replyTo = $message->getReplyTo();
-        $replyTo_email = ! empty( $replyTo ) ? $replyTo->getEmail() : '';
+			$sender      = $message->getFromAddress();
+			$resolved    = Postman_Connection_Resolver::resolve_sender( $sender, (bool) $this->is_fallback );
+			$senderEmail = $resolved['email'];
+			$senderName  = $resolved['name'];
 
-        $email_content['Content'] = array(
-            'From'    => ! empty( $senderName ) ? $senderName . ' <' . $senderEmail . '>' : $senderEmail,
-            'Subject' => $message->getSubject(),
-            'Body'    => $body_parts,
-        );
+			$replyTo       = $message->getReplyTo();
+			$replyTo_email = ! empty( $replyTo ) ? $replyTo->getEmail() : '';
 
-        if ( ! empty( $replyTo_email ) ) {
-            $email_content['Content']['ReplyTo'] = ! empty( $replyTo->getName() )
-                ? $replyTo->getName() . ' <' . $replyTo->getEmail() . '>'
-                : $replyTo->getEmail();
-        }
+			$email_content['Content']['EnvelopeFrom'] = ! empty( $senderName ) ? $senderName . ' <' . $senderEmail . '>' : $senderEmail;
+			$email_content['Content']['From']         = ! empty( $senderName ) ? $senderName . ' <' . $senderEmail . '>' : $senderEmail;
 
-        $attachments = $this->addAttachmentsToMail( $message );
-        if ( ! empty( $attachments ) ) {
-            $email_content['Content']['Attachments'] = $attachments;
-        }
+			if ( ! empty( $replyTo_email ) ) {
 
-        $email_content['message'] = $plain_message;
+				$email_content['Content']['ReplyTo'] = ! empty( $replyTo->getName() ) ? $replyTo->getName() . ' <' . $replyTo->getEmail() . '>' : $replyTo->getEmail();
 
-        try {
+			}
 
-            // send the message
-            if ( $this->logger->isDebug() ) {
-                $this->logger->debug( 'Sending mail' );
-            }
+			$email_content['Content']['Subject'] = $message->getSubject();
 
-            $response = $elasticemail->send( $email_content );
-            
-            $this->transcript = print_r( $response, true );
-            $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-            $this->transcript .= print_r( $email_content, true );
-            $this->logger->debug( 'Transcript=' . $this->transcript );
-            
-        } catch (Exception $e) {
+			$attachments = $this->addAttachmentsToMail( $message );
 
-            $this->transcript = $e->getMessage();
-            $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-            $this->transcript .= print_r( $email_content, true );
-            $this->logger->debug( 'Transcript=' . $this->transcript );
+			if ( ! empty( $attachments ) ) {
 
-            throw $e;
-    
-        }
+				$email_content['Content']['Attachments'] = $attachments;
 
-    }
+			}
 
-}
+			try {
+
+				// send the message
+				if ( $this->logger->isDebug() ) {
+					$this->logger->debug( 'Sending mail' );
+				}
+
+				$response = $elasticemail->send( $email_content );
+
+				$this->transcript  = print_r( $response, true );
+				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
+				$this->transcript .= print_r( $email_content, true );
+				$this->logger->debug( 'Transcript=' . $this->transcript );
+
+			} catch ( Exception $e ) {
+
+				$this->transcript  = $e->getMessage();
+				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
+				$this->transcript .= print_r( $email_content, true );
+				$this->logger->debug( 'Transcript=' . $this->transcript );
+
+				throw $e;
+
+			}
+		}
+	}
 endif;

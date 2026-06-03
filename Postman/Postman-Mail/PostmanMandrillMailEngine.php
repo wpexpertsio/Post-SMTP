@@ -1,11 +1,12 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 
-	require_once 'Services/Mandrill/Handler.php'; 
+	require_once 'Services/Mandrill/Handler.php';
+	require_once plugin_dir_path( __FILE__ ) . 'PostMailConnections.php';
 
 	/**
 	 * Sends mail with Mandrill API
@@ -23,6 +24,7 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 
 		private $apiKey;
 		private $mandrillMessage;
+		private $is_fallback;
 
 		/**
 		 *
@@ -30,16 +32,25 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 		 * @param mixed $accessToken
 		 */
 		function __construct( $apiKey ) {
-			assert( ! empty( $apiKey ) );
-			$this->apiKey = $apiKey;
+			if ( is_array( $apiKey ) ) {
+				// When passed as an array with additional data
+				assert( ! empty( $api_key['api_key'] ) );
+				$this->apiKey      = $apiKey['api_key'];
+				$this->is_fallback = $apiKey['is_fallback'] ?? null;
+			} else {
+				// When passed as a string (just the API key)
+				assert( ! empty( $apiKey ) );
+				$this->apiKey      = $apiKey;
+				$this->is_fallback = null;
+			}
 
 			// create the logger
 			$this->logger = new PostmanLogger( get_class( $this ) );
 
 			// create the Message
 			$this->mandrillMessage = array(
-					'to' => array(),
-					'headers' => array(),
+				'to'      => array(),
+				'headers' => array(),
 			);
 		}
 
@@ -49,7 +60,7 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 		 * @see PostmanSmtpEngine::send()
 		 */
 		public function send( PostmanMessage $message ) {
-			
+
 			$mandrill = new PostmanMandrill( $this->apiKey );
 			$this->get_email_body( $message );
 
@@ -65,8 +76,8 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 				}
 
 				$request = array(
-					'message' 	=> $this->mandrillMessage,
-					'key'		=> $this->apiKey
+					'message' => $this->mandrillMessage,
+					'key'     => $this->apiKey,
 				);
 
 				$result = $mandrill->send( $request );
@@ -77,14 +88,14 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 
 				$response_body = json_decode( $result['body'] );
 				$response_body = reset( $response_body );
-				$email_status = $response_body->status;
-				$is_sent = ( $email_status == 'queued' OR $email_status == 'sent' );
+				$email_status  = $response_body->status;
+				$is_sent       = ( $email_status == 'queued' or $email_status == 'sent' );
 
 				if ( ! $is_sent ) {
 
-					$e = "Error: " . $response_body->reject_reason;
+					$e = 'Error: ' . $response_body->reject_reason;
 
-					$this->transcript = $e;
+					$this->transcript  = $e;
 					$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 					$this->transcript .= print_r( $result, true );
 
@@ -92,11 +103,11 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 
 					throw new Exception( $e );
 				}
-				$this->transcript = print_r( $result, true );
+				$this->transcript  = print_r( $result, true );
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 				$this->transcript .= print_r( $this->mandrillMessage, true );
 			} catch ( Exception $e ) {
-				$this->transcript = $e->getMessage();
+				$this->transcript  = $e->getMessage();
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
 				$this->transcript .= print_r( $this->mandrillMessage, true );
 				throw $e;
@@ -133,9 +144,9 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 					if ( ! empty( $file ) ) {
 						$this->logger->debug( 'Adding attachment: ' . $file );
 						$attachment = array(
-								'type' => 'attachment',
-								'name' => basename( $file ),
-								'content' => base64_encode( file_get_contents( $file ) ),
+							'type'    => 'attachment',
+							'name'    => basename( $file ),
+							'content' => base64_encode( file_get_contents( $file ) ),
 						);
 						array_push( $this->mandrillMessage ['attachments'], $attachment );
 					}
@@ -147,7 +158,7 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 		public function getTranscript() {
 			return $this->transcript;
 		}
-		
+
 		/**
 		 * get_email_body
 		 *
@@ -164,7 +175,7 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 			}
 
 			// add the headers - see http://framework.zend.com/manual/1.12/en/zend.mail.additional-headers.html
-			foreach ( ( array ) $message->getHeaders() as $header ) {
+			foreach ( (array) $message->getHeaders() as $header ) {
 				$this->logger->debug( sprintf( 'Adding user header %s=%s', $header ['name'], $header ['content'] ) );
 				$this->addHeader( $header ['name'], $header ['content'], true );
 			}
@@ -179,8 +190,9 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 			// add the From Header
 			$sender = $message->getFromAddress();
 			{
-				$senderEmail = PostmanOptions::getInstance()->getMessageSenderEmail();
-				$senderName = $sender->getName();
+				$resolved    = Postman_Connection_Resolver::resolve_sender( $sender, (bool) $this->is_fallback );
+				$senderEmail = $resolved['email'];
+				$senderName  = $sender->getName();
 				assert( ! empty( $senderEmail ) );
 				$this->mandrillMessage ['from_email'] = $senderEmail;
 			if ( ! empty( $senderName ) ) {
@@ -194,34 +206,34 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 			$this->addHeader( 'Sender', $options->getEnvelopeSender() );
 
 			// add the to recipients
-			foreach ( ( array ) $message->getToRecipients() as $recipient ) {
+			foreach ( (array) $message->getToRecipients() as $recipient ) {
 				$recipient->log( $this->logger, 'To' );
 				$recipient = array(
-						'email' => $recipient->getEmail(),
-						'name' => $recipient->getName(),
-						'type' => 'to',
+					'email' => $recipient->getEmail(),
+					'name'  => $recipient->getName(),
+					'type'  => 'to',
 				);
 				array_push( $this->mandrillMessage ['to'], $recipient );
 			}
 
 			// add the cc recipients
-			foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
+			foreach ( (array) $message->getCcRecipients() as $recipient ) {
 				$recipient->log( $this->logger, 'Cc' );
 				$recipient = array(
-						'email' => $recipient->getEmail(),
-						'name' => $recipient->getName(),
-						'type' => 'cc',
+					'email' => $recipient->getEmail(),
+					'name'  => $recipient->getName(),
+					'type'  => 'cc',
 				);
 				array_push( $this->mandrillMessage ['to'], $recipient );
 			}
 
 			// add the bcc recipients
-			foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
+			foreach ( (array) $message->getBccRecipients() as $recipient ) {
 				$recipient->log( $this->logger, 'Bcc' );
 				$recipient = array(
-						'email' => $recipient->getEmail(),
-						'name' => $recipient->getName(),
-						'type' => 'bcc',
+					'email' => $recipient->getEmail(),
+					'name'  => $recipient->getName(),
+					'type'  => 'bcc',
 				);
 				array_push( $this->mandrillMessage ['to'], $recipient );
 			}
@@ -270,4 +282,3 @@ if ( ! class_exists( 'PostmanMandrillMailEngine' ) ) {
 		}
 	}
 }
-

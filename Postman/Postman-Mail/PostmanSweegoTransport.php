@@ -38,10 +38,13 @@ class PostmanSweegoTransport extends PostmanAbstractModuleTransport implements P
         return 'Sweego_api';
     }
     public function createMailEngine() {
-        $apiKey = $this->options->getSweegoApiKey();
+        $apiKey = Postman_Connection_Resolver::get_primary_field(
+            'sweego_api_key',
+            array( $this->options, 'getSweegoApiKey' )
+        );
+
         require_once 'PostmanSweegoMailEngine.php';
-        $engine = new PostmanSweegoMailEngine($apiKey);
-        return $engine;
+        return new PostmanSweegoMailEngine( $apiKey );
     }
     public function getDeliveryDetails() {
         return sprintf(__('Postman will send mail via the <b>%1$s %2$s</b>.', 'post-smtp'), '🔐', $this->getName());
@@ -119,5 +122,20 @@ class PostmanSweegoTransport extends PostmanAbstractModuleTransport implements P
     }
     public function has_granted() {
         return true;
+    }
+
+    /**
+     * Create Sweego mail engine for Fallback delivery.
+     * @since 3.0.1
+     * @version 1.0
+     */
+    public function createMailEngineFallback() {
+        $api_credentials = array(
+            'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'sweego_api_key' ),
+            'is_fallback' => 1,
+        );
+
+        require_once 'PostmanSweegoMailEngine.php';
+        return new PostmanSweegoMailEngine( $api_credentials );
     }
 }

@@ -25,8 +25,8 @@ namespace PostSMTP\Vendor\Google\Service\Gmail\Resource;
  *   $cse = $gmailService->users_settings_cse;
  *  </code>
  */
-class UsersSettingsCse extends \PostSMTP\Vendor\Google\Service\Resource
-{
+class UsersSettingsCse extends \PostSMTP\Vendor\Google\Service\Resource {
+
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\Resource\UsersSettingsCse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_Resource_UsersSettingsCse');
+\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\Resource\UsersSettingsCse::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_Resource_UsersSettingsCse' );

@@ -3,22 +3,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+
 if ( ! class_exists( 'PostmanEmailItMailEngine' ) ) {
 
 	require_once 'Services/Emailit/Handler.php';
 
 	/**
-	 * Sends mail with the EmailIt API.
+	 * Sends mail with the EmailIt API, supporting fallback and smart routing.
 	 */
 	class PostmanEmailItMailEngine implements PostmanMailEngine {
 
 		protected $logger;
 		private   $transcript;
 		private   $apiKey;
+		private   $is_fallback = false;
+		private   $route_key = null;
 
-		public function __construct( $apiKey ) {
-			assert( ! empty( $apiKey ) );
-			$this->apiKey  = $apiKey;
+		/**
+		 * @param string|array $credentials API key string or array with keys: api_key, is_fallback, route_key
+		 */
+		public function __construct( $credentials ) {
+			if ( is_array( $credentials ) ) {
+				$this->apiKey = isset( $credentials['api_key'] ) ? $credentials['api_key'] : ( isset( $credentials[0] ) ? $credentials[0] : '' );
+				$this->is_fallback = !empty( $credentials['is_fallback'] );
+				$this->route_key = isset( $credentials['route_key'] ) ? $credentials['route_key'] : null;
+			} else {
+				$this->apiKey = $credentials;
+			}
 			$this->logger  = new PostmanLogger( get_class( $this ) );
 		}
 
@@ -30,29 +41,45 @@ if ( ! class_exists( 'PostmanEmailItMailEngine' ) ) {
 		 * @throws Exception On error.
 		 */
 		public function send( PostmanMessage $message ) {
-			$options  = PostmanOptions::getInstance();
-			$emailit  = new PostmanEmailIt( $this->apiKey );
+			$options = PostmanOptions::getInstance();
+			$emailit = new PostmanEmailIt( $this->apiKey );
 
-			$recipients = [];
-			$duplicates = [];
-
-			// Sender.
-			$sender      = $message->getFromAddress();
-			$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-			$senderName  = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
+			$sender   = $message->getFromAddress();
+			$resolved = Postman_Connection_Resolver::resolve_sender(
+				$sender,
+				(bool) $this->is_fallback,
+				$this->route_key
+			);
+			$senderEmail = $resolved['email'];
+			$senderName  = $resolved['name'];
 			$sender->log( $this->logger, 'From' );
 
-			// Recipients.
+			// Recipients
+			$recipients = [];
+			$duplicates = [];
 			foreach ( (array) $message->getToRecipients() as $recipient ) {
 				$recipients[] = $recipient->getEmail();
 			}
 
-			// Subject and Body.
+			// CC and BCC
+			$ccs = [];
+			$cc_names = [];
+			foreach ( (array) $message->getCcRecipients() as $cc ) {
+				$ccs[] = $cc->getEmail();
+				if ( !empty($cc->getName()) ) $cc_names[] = $cc->getName();
+			}
+			$bccs = [];
+			$bcc_names = [];
+			foreach ( (array) $message->getBccRecipients() as $bcc ) {
+				$bccs[] = $bcc->getEmail();
+				if ( !empty($bcc->getName()) ) $bcc_names[] = $bcc->getName();
+			}
+
+			// Subject and Body
 			$subject     = $message->getSubject();
 			$textPart    = $message->getBodyTextPart();
 			$htmlPart    = $message->getBodyHtmlPart();
 			$htmlContent = ! empty( $htmlPart ) ? $htmlPart : nl2br( $textPart );
-
 			if ( empty( $htmlContent ) ) {
 				$htmlContent = '<p>(No content)</p>';
 			}
@@ -73,6 +100,14 @@ if ( ! class_exists( 'PostmanEmailItMailEngine' ) ) {
 					'clicks' => true,
 				],
 			];
+			if ( !empty( $ccs ) ) {
+				$content['cc'] = implode( ',', $ccs );
+				if ( !empty($cc_names) ) $content['cc_names'] = implode( ',', $cc_names );
+			}
+			if ( !empty( $bccs ) ) {
+				$content['bcc'] = implode( ',', $bccs );
+				if ( !empty($bcc_names) ) $content['bcc_names'] = implode( ',', $bcc_names );
+			}
 
 			// CC.
 			$cc = [];
@@ -98,7 +133,15 @@ if ( ! class_exists( 'PostmanEmailItMailEngine' ) ) {
 				$content['attachments'] = $attachments;
 			}
 
-			// Send.
+			// Add fallback and route info for logging/debugging
+			if ( $this->is_fallback ) {
+				$content['fallback'] = true;
+			}
+			if ( $this->route_key ) {
+				$content['route_key'] = $this->route_key;
+			}
+
+			// Send
 			try {
 				$this->logger->debug( 'Sending mail via EmailIt' );
 				$response     = $emailit->send( $content );

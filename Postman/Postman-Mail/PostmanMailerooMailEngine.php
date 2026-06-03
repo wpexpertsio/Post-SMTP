@@ -12,10 +12,21 @@ class PostmanMailerooMailEngine implements PostmanMailEngine {
     protected $logger;
     private $transcript;
     private $api_key;
+    private $is_fallback = false;
+    private $route_key = null;
 
-    public function __construct( $api_key ) {
-        assert( !empty( $api_key ) );
-        $this->api_key = $api_key;
+    /**
+     * @param string|array $credentials Either raw API key string or an array ['api_key'=>..., 'is_fallback'=>1]
+     */
+    public function __construct( $credentials ) {
+        if ( is_array( $credentials ) ) {
+            $this->api_key     = isset( $credentials['api_key'] ) ? $credentials['api_key'] : '';
+            $this->is_fallback = ! empty( $credentials['is_fallback'] );
+            $this->route_key   = isset( $credentials['route_key'] ) ? $credentials['route_key'] : null;
+        } else {
+            $this->api_key = $credentials;
+        }
+        assert( ! empty( $this->api_key ) );
         $this->logger = new PostmanLogger( get_class( $this ) );
     }
 
@@ -75,8 +86,13 @@ class PostmanMailerooMailEngine implements PostmanMailEngine {
         $duplicates = [];
 
         $sender      = $message->getFromAddress();
-        $senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-        $senderName  = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
+        $sender_data = Postman_Connection_Resolver::resolve_sender(
+            $sender,
+            (bool) $this->is_fallback,
+            $this->route_key
+        );
+        $senderEmail = $sender_data['email'];
+        $senderName  = $sender_data['name'];
         $sender->log( $this->logger, 'From' );
 
         foreach ( (array) $message->getToRecipients() as $recipient ) {
@@ -174,7 +190,7 @@ class PostmanMailerooMailEngine implements PostmanMailEngine {
         }
 
         try {
-            $this->logger->debug( 'Sending mail via Maileroo' );
+            $this->logger->debug( 'Sending mail via Maileroo' . ( $this->is_fallback ? ' [fallback]' : '' ) );
             $response = $maileroo->send( $content );
             $responseCode = wp_remote_retrieve_response_code( $response );
             $responseBody = wp_remote_retrieve_body( $response );

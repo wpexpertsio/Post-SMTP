@@ -14,15 +14,22 @@ class PostmanResendMailEngine implements PostmanMailEngine {
     private $transcript;
 
     private $api_key;
+    private $is_fallback = false;
+    private $route_key = null;
 
     /**
      * @since 3.2.0
      * @version 1.0
      */
     public function __construct( $api_key ) {
-        
-        assert( !empty( $api_key ) );
-        $this->api_key = $api_key;
+        if ( is_array( $api_key ) ) {
+			$this->api_key = isset( $api_key['api_key'] ) ? $api_key['api_key'] : ( isset( $api_key[0] ) ? $api_key[0] : '' );
+			$this->is_fallback = !empty( $api_key['is_fallback'] );
+			$this->route_key = isset( $api_key['route_key'] ) ? $api_key['route_key'] : null;
+		} else {
+			$this->api_key = $api_key;
+			$this->is_fallback = null;
+		}
 
         // create the logger
         $this->logger = new PostmanLogger( get_class( $this ) );
@@ -71,21 +78,26 @@ class PostmanResendMailEngine implements PostmanMailEngine {
      * @since 3.2.0
      * @version 1.0
      */
-    public function send( PostmanMessage $message ) { 
+    public function send( PostmanMessage $message ) {
 
         $options = PostmanOptions::getInstance();
-        
+
+        $sender = $message->getFromAddress();
+        $resend = new PostmanResend( $this->api_key );
         //Resend preparation
         if ( $this->logger->isDebug() ) {
             $this->logger->debug( 'Creating Resend service with apiKey=' . $this->api_key );
         }
+        $resolved    = Postman_Connection_Resolver::resolve_sender(
+            $sender,
+            (bool) $this->is_fallback,
+            $this->route_key
+        );
+        $senderEmail = $resolved['email'];
+        $senderName  = $resolved['name'];
 
-        $resend = new PostmanResend( $this->api_key);
-        $sender = $message->getFromAddress();
-        $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-        $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
         $headers = array();
-        
+
         $sender->log( $this->logger, 'From' );
 
         $sendEmail['from'] = $senderName . ' <' . $senderEmail . '>';

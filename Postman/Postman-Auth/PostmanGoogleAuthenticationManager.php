@@ -14,8 +14,8 @@ if (! class_exists ( "PostmanGoogleAuthenticationManager" )) {
 	 */
 	class PostmanGoogleAuthenticationManager extends PostmanAbstractAuthenticationManager implements PostmanAuthenticationManager {
 		
-		// This endpoint is the target of the initial request. It handles active session lookup, authenticating the user, and user consent.
-		const GOOGLE_ENDPOINT = 'https://accounts.google.com/o/oauth2/auth';
+		// OAuth 2.0 authorization endpoint (v2). Do not double-encode query values; use raw values with build_query/http_build_query.
+		const GOOGLE_ENDPOINT = 'https://accounts.google.com/o/oauth2/v2/auth';
 		const GOOGLE_REFRESH = 'https://www.googleapis.com/oauth2/v3/token';
 		
 		// this scope doesn't work
@@ -60,18 +60,19 @@ if (! class_exists ( "PostmanGoogleAuthenticationManager" )) {
 		 * @see PostmanAuthenticationManager::requestVerificationCode()
 		 */
 		public function requestVerificationCode($transactionId) {
-			$params = array (
-					'response_type' => 'code',
-					'redirect_uri' => urlencode ( $this->getCallbackUri () ),
-					'client_id' => $this->getClientId (),
-					'scope' => urlencode ( self::SCOPE_FULL_ACCESS ),
-					'access_type' => 'offline',
-					'approval_prompt' => 'force',
-					'state' => $transactionId,
-					'login_hint' => $this->senderEmail 
+			$params = array(
+				'response_type'   => 'code',
+				'client_id'       => $this->getClientId(),
+				'redirect_uri'    => $this->getCallbackUri(),
+				'scope'           => self::SCOPE_FULL_ACCESS,
+				'access_type'     => 'offline',
+				'prompt'          => 'consent',
+				'state'           => $transactionId,
+				'login_hint'      => $this->senderEmail,
+				'include_granted_scopes' => 'true',
 			);
-			
-			$authUrl = $this->getAuthorizationUrl () . '?' . build_query ( $params );
+
+			$authUrl = $this->getAuthorizationUrl() . '?' . build_query( $params );
 			
 			$this->getLogger ()->debug ( 'Requesting verification code from Google' );
 			PostmanUtils::redirect ( $authUrl );

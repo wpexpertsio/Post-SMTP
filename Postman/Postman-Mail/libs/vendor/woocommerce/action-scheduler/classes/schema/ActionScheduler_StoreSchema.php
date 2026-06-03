@@ -19,11 +19,11 @@ class ActionScheduler_StoreSchema extends ActionScheduler_Abstract_Schema {
 	protected $schema_version = 7;
 
 	public function __construct() {
-		$this->tables = [
+		$this->tables = array(
 			self::ACTIONS_TABLE,
 			self::CLAIMS_TABLE,
 			self::GROUPS_TABLE,
-		];
+		);
 	}
 
 	/**
@@ -35,15 +35,14 @@ class ActionScheduler_StoreSchema extends ActionScheduler_Abstract_Schema {
 
 	protected function get_table_definition( $table ) {
 		global $wpdb;
-		$table_name       = $wpdb->$table;
-		$charset_collate  = $wpdb->get_charset_collate();
-		$max_index_length = 191; // @see wp_get_db_schema()
+		$table_name                                      = $wpdb->$table;
+		$charset_collate                                 = $wpdb->get_charset_collate();
+		$max_index_length                                = 191; // @see wp_get_db_schema()
 		$hook_status_scheduled_date_gmt_max_index_length = $max_index_length - 20 - 8; // - status, - scheduled_date_gmt
-		$default_date     = self::DEFAULT_DATE;
+		$default_date                                    = self::DEFAULT_DATE;
 		switch ( $table ) {
 
 			case self::ACTIONS_TABLE:
-
 				return "CREATE TABLE {$table_name} (
 				        action_id bigint(20) unsigned NOT NULL auto_increment,
 				        hook varchar(191) NOT NULL,
@@ -70,7 +69,6 @@ class ActionScheduler_StoreSchema extends ActionScheduler_Abstract_Schema {
 				        ) $charset_collate";
 
 			case self::CLAIMS_TABLE:
-
 				return "CREATE TABLE {$table_name} (
 				        claim_id bigint(20) unsigned NOT NULL auto_increment,
 				        date_created_gmt datetime NULL default '{$default_date}',
@@ -79,7 +77,6 @@ class ActionScheduler_StoreSchema extends ActionScheduler_Abstract_Schema {
 				        ) $charset_collate";
 
 			case self::GROUPS_TABLE:
-
 				return "CREATE TABLE {$table_name} (
 				        group_id bigint(20) unsigned NOT NULL auto_increment,
 				        slug varchar(255) NOT NULL,

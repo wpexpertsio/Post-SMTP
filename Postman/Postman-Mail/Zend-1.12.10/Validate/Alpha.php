@@ -30,120 +30,115 @@ require_once 'Zend/Validate/Abstract.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Validate_Alpha extends Postman_Zend_Validate_Abstract
-{
-    const INVALID      = 'alphaInvalid';
-    const NOT_ALPHA    = 'notAlpha';
-    const STRING_EMPTY = 'alphaStringEmpty';
+class Postman_Zend_Validate_Alpha extends Postman_Zend_Validate_Abstract {
 
-    /**
-     * Whether to allow white space characters; off by default
-     *
-     * @var boolean
-     * @deprecated
-     */
-    public $allowWhiteSpace;
+	const INVALID      = 'alphaInvalid';
+	const NOT_ALPHA    = 'notAlpha';
+	const STRING_EMPTY = 'alphaStringEmpty';
 
-    /**
-     * Alphabetic filter used for validation
-     *
-     * @var Postman_Zend_Filter_Alpha
-     */
-    protected static $_filter = null;
+	/**
+	 * Whether to allow white space characters; off by default
+	 *
+	 * @var boolean
+	 * @deprecated
+	 */
+	public $allowWhiteSpace;
 
-    /**
-     * Validation failure message template definitions
-     *
-     * @var array
-     */
-    protected $_messageTemplates = array(
-        self::INVALID      => "Invalid type given. String expected",
-        self::NOT_ALPHA    => "'%value%' contains non alphabetic characters",
-        self::STRING_EMPTY => "'%value%' is an empty string"
-    );
+	/**
+	 * Alphabetic filter used for validation
+	 *
+	 * @var Postman_Zend_Filter_Alpha
+	 */
+	protected static $_filter = null;
 
-    /**
-     * Sets default option values for this instance
-     *
-     * @param boolean|Postman_Zend_Config $allowWhiteSpace
-     */
-    public function __construct($allowWhiteSpace = false)
-    {
-        if ($allowWhiteSpace instanceof Postman_Zend_Config) {
-            $allowWhiteSpace = $allowWhiteSpace->toArray();
-        }
+	/**
+	 * Validation failure message template definitions
+	 *
+	 * @var array
+	 */
+	protected $_messageTemplates = array(
+		self::INVALID      => 'Invalid type given. String expected',
+		self::NOT_ALPHA    => "'%value%' contains non alphabetic characters",
+		self::STRING_EMPTY => "'%value%' is an empty string",
+	);
 
-        if (is_array($allowWhiteSpace)) {
-            if (array_key_exists('allowWhiteSpace', $allowWhiteSpace)) {
-                $allowWhiteSpace = $allowWhiteSpace['allowWhiteSpace'];
-            } else {
-                $allowWhiteSpace = false;
-            }
-        }
+	/**
+	 * Sets default option values for this instance
+	 *
+	 * @param boolean|Postman_Zend_Config $allowWhiteSpace
+	 */
+	public function __construct( $allowWhiteSpace = false ) {
+		if ( $allowWhiteSpace instanceof Postman_Zend_Config ) {
+			$allowWhiteSpace = $allowWhiteSpace->toArray();
+		}
 
-        $this->allowWhiteSpace = (boolean) $allowWhiteSpace;
-    }
+		if ( is_array( $allowWhiteSpace ) ) {
+			if ( array_key_exists( 'allowWhiteSpace', $allowWhiteSpace ) ) {
+				$allowWhiteSpace = $allowWhiteSpace['allowWhiteSpace'];
+			} else {
+				$allowWhiteSpace = false;
+			}
+		}
 
-    /**
-     * Returns the allowWhiteSpace option
-     *
-     * @return boolean
-     */
-    public function getAllowWhiteSpace()
-    {
-        return $this->allowWhiteSpace;
-    }
+		$this->allowWhiteSpace = (bool) $allowWhiteSpace;
+	}
 
-    /**
-     * Sets the allowWhiteSpace option
-     *
-     * @param boolean $allowWhiteSpace
-     * @return Postman_Zend_Filter_Alpha Provides a fluent interface
-     */
-    public function setAllowWhiteSpace($allowWhiteSpace)
-    {
-        $this->allowWhiteSpace = (boolean) $allowWhiteSpace;
-        return $this;
-    }
+	/**
+	 * Returns the allowWhiteSpace option
+	 *
+	 * @return boolean
+	 */
+	public function getAllowWhiteSpace() {
+		return $this->allowWhiteSpace;
+	}
 
-    /**
-     * Defined by Postman_Zend_Validate_Interface
-     *
-     * Returns true if and only if $value contains only alphabetic characters
-     *
-     * @param  string $value
-     * @return boolean
-     */
-    public function isValid($value)
-    {
-        if (!is_string($value)) {
-            $this->_error(self::INVALID);
-            return false;
-        }
+	/**
+	 * Sets the allowWhiteSpace option
+	 *
+	 * @param boolean $allowWhiteSpace
+	 * @return Postman_Zend_Filter_Alpha Provides a fluent interface
+	 */
+	public function setAllowWhiteSpace( $allowWhiteSpace ) {
+		$this->allowWhiteSpace = (bool) $allowWhiteSpace;
+		return $this;
+	}
 
-        $this->_setValue($value);
+	/**
+	 * Defined by Postman_Zend_Validate_Interface
+	 *
+	 * Returns true if and only if $value contains only alphabetic characters
+	 *
+	 * @param  string $value
+	 * @return boolean
+	 */
+	public function isValid( $value ) {
+		if ( ! is_string( $value ) ) {
+			$this->_error( self::INVALID );
+			return false;
+		}
 
-        if ('' === $value) {
-            $this->_error(self::STRING_EMPTY);
-            return false;
-        }
+		$this->_setValue( $value );
 
-        if (null === self::$_filter) {
-            /**
-             * @see Postman_Zend_Filter_Alpha
-             */
-            require_once 'Zend/Filter/Alpha.php';
-            self::$_filter = new Postman_Zend_Filter_Alpha();
-        }
+		if ( '' === $value ) {
+			$this->_error( self::STRING_EMPTY );
+			return false;
+		}
 
-        self::$_filter->allowWhiteSpace = $this->allowWhiteSpace;
+		if ( null === self::$_filter ) {
+			/**
+			 * @see Postman_Zend_Filter_Alpha
+			 */
+			require_once 'Zend/Filter/Alpha.php';
+			self::$_filter = new Postman_Zend_Filter_Alpha();
+		}
 
-        if ($value !== self::$_filter->filter($value)) {
-            $this->_error(self::NOT_ALPHA);
-            return false;
-        }
+		self::$_filter->allowWhiteSpace = $this->allowWhiteSpace;
 
-        return true;
-    }
+		if ( $value !== self::$_filter->filter( $value ) ) {
+			$this->_error( self::NOT_ALPHA );
+			return false;
+		}
 
+		return true;
+	}
 }

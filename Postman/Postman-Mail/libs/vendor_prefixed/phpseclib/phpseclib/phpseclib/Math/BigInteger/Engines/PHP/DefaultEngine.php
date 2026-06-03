@@ -18,6 +18,6 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP\Reductions\EvalBarret
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class DefaultEngine extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP\Reductions\EvalBarrett
-{
+abstract class DefaultEngine extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP\Reductions\EvalBarrett {
+
 }

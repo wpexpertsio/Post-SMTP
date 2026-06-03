@@ -73,11 +73,28 @@ class PostmanMailerSendTransport extends PostmanAbstractModuleTransport implemen
 	 * @see PostmanModuleTransport::createMailEngine()
 	 */
 	public function createMailEngine() {
-		$apiKey = $this->options->getMailerSendApiKey ();
+		$apiKey = Postman_Connection_Resolver::get_primary_field(
+			'mailersend_api_key',
+			array( $this->options, 'getMailerSendApiKey' )
+		);
+
 		require_once 'PostmanMailerSendMailEngine.php';
-		$engine = new PostmanMailerSendMailEngine ( $apiKey );
-		return $engine;
+		return new PostmanMailerSendMailEngine( $apiKey );
 	}
+
+	/**
+	 * @since 3.5.0
+	 * @version 1.0
+	 */
+	public function createMailEngineFallback() {
+		$api_credentials = array(
+			'api_key'     => Postman_Connection_Resolver::get_fallback_field( 'mailersend_api_key' ),
+			'is_fallback' => 1,
+		);
+		require_once 'PostmanMailerSendMailEngine.php';
+		return new PostmanMailerSendMailEngine( $api_credentials );
+	}
+
 	public function getDeliveryDetails() {
 		/* translators: where (1) is the secure icon and (2) is the transport name */
 		return sprintf ( __ ( 'Postman will send mail via the <b>%1$s %2$s</b>.', 'post-smtp' ), '🔐', $this->getName () );

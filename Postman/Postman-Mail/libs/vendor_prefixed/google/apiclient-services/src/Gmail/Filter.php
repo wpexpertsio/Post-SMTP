@@ -17,58 +17,52 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class Filter extends \PostSMTP\Vendor\Google\Model
-{
-    protected $actionType = \PostSMTP\Vendor\Google\Service\Gmail\FilterAction::class;
-    protected $actionDataType = '';
-    protected $criteriaType = \PostSMTP\Vendor\Google\Service\Gmail\FilterCriteria::class;
-    protected $criteriaDataType = '';
-    /**
-     * @var string
-     */
-    public $id;
-    /**
-     * @param FilterAction
-     */
-    public function setAction(\PostSMTP\Vendor\Google\Service\Gmail\FilterAction $action)
-    {
-        $this->action = $action;
-    }
-    /**
-     * @return FilterAction
-     */
-    public function getAction()
-    {
-        return $this->action;
-    }
-    /**
-     * @param FilterCriteria
-     */
-    public function setCriteria(\PostSMTP\Vendor\Google\Service\Gmail\FilterCriteria $criteria)
-    {
-        $this->criteria = $criteria;
-    }
-    /**
-     * @return FilterCriteria
-     */
-    public function getCriteria()
-    {
-        return $this->criteria;
-    }
-    /**
-     * @param string
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+class Filter extends \PostSMTP\Vendor\Google\Model {
+
+	protected $actionType       = \PostSMTP\Vendor\Google\Service\Gmail\FilterAction::class;
+	protected $actionDataType   = '';
+	protected $criteriaType     = \PostSMTP\Vendor\Google\Service\Gmail\FilterCriteria::class;
+	protected $criteriaDataType = '';
+	/**
+	 * @var string
+	 */
+	public $id;
+	/**
+	 * @param FilterAction
+	 */
+	public function setAction( \PostSMTP\Vendor\Google\Service\Gmail\FilterAction $action ) {
+		$this->action = $action;
+	}
+	/**
+	 * @return FilterAction
+	 */
+	public function getAction() {
+		return $this->action;
+	}
+	/**
+	 * @param FilterCriteria
+	 */
+	public function setCriteria( \PostSMTP\Vendor\Google\Service\Gmail\FilterCriteria $criteria ) {
+		$this->criteria = $criteria;
+	}
+	/**
+	 * @return FilterCriteria
+	 */
+	public function getCriteria() {
+		return $this->criteria;
+	}
+	/**
+	 * @param string
+	 */
+	public function setId( $id ) {
+		$this->id = $id;
+	}
+	/**
+	 * @return string
+	 */
+	public function getId() {
+		return $this->id;
+	}
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\Filter::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_Filter');
+\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\Filter::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_Filter' );

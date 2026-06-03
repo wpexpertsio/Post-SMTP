@@ -30,195 +30,184 @@ require_once 'Zend/Validate/Abstract.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Validate_Between extends Postman_Zend_Validate_Abstract
-{
-    /**
-     * Validation failure message key for when the value is not between the min and max, inclusively
-     */
-    const NOT_BETWEEN        = 'notBetween';
+class Postman_Zend_Validate_Between extends Postman_Zend_Validate_Abstract {
 
-    /**
-     * Validation failure message key for when the value is not strictly between the min and max
-     */
-    const NOT_BETWEEN_STRICT = 'notBetweenStrict';
+	/**
+	 * Validation failure message key for when the value is not between the min and max, inclusively
+	 */
+	const NOT_BETWEEN = 'notBetween';
 
-    /**
-     * Validation failure message template definitions
-     *
-     * @var array
-     */
-    protected $_messageTemplates = array(
-        self::NOT_BETWEEN        => "'%value%' is not between '%min%' and '%max%', inclusively",
-        self::NOT_BETWEEN_STRICT => "'%value%' is not strictly between '%min%' and '%max%'"
-    );
+	/**
+	 * Validation failure message key for when the value is not strictly between the min and max
+	 */
+	const NOT_BETWEEN_STRICT = 'notBetweenStrict';
 
-    /**
-     * Additional variables available for validation failure messages
-     *
-     * @var array
-     */
-    protected $_messageVariables = array(
-        'min' => '_min',
-        'max' => '_max'
-    );
+	/**
+	 * Validation failure message template definitions
+	 *
+	 * @var array
+	 */
+	protected $_messageTemplates = array(
+		self::NOT_BETWEEN        => "'%value%' is not between '%min%' and '%max%', inclusively",
+		self::NOT_BETWEEN_STRICT => "'%value%' is not strictly between '%min%' and '%max%'",
+	);
 
-    /**
-     * Minimum value
-     *
-     * @var mixed
-     */
-    protected $_min;
+	/**
+	 * Additional variables available for validation failure messages
+	 *
+	 * @var array
+	 */
+	protected $_messageVariables = array(
+		'min' => '_min',
+		'max' => '_max',
+	);
 
-    /**
-     * Maximum value
-     *
-     * @var mixed
-     */
-    protected $_max;
+	/**
+	 * Minimum value
+	 *
+	 * @var mixed
+	 */
+	protected $_min;
 
-    /**
-     * Whether to do inclusive comparisons, allowing equivalence to min and/or max
-     *
-     * If false, then strict comparisons are done, and the value may equal neither
-     * the min nor max options
-     *
-     * @var boolean
-     */
-    protected $_inclusive;
+	/**
+	 * Maximum value
+	 *
+	 * @var mixed
+	 */
+	protected $_max;
 
-    /**
-     * Sets validator options
-     * Accepts the following option keys:
-     *   'min' => scalar, minimum border
-     *   'max' => scalar, maximum border
-     *   'inclusive' => boolean, inclusive border values
-     *
-     * @param  array|Postman_Zend_Config $options
-     * @throws Postman_Zend_Validate_Exception
-     */
-    public function __construct($options)
-    {
-        if ($options instanceof Postman_Zend_Config) {
-            $options = $options->toArray();
-        } else if (!is_array($options)) {
-            $options = func_get_args();
-            $temp['min'] = array_shift($options);
-            if (!empty($options)) {
-                $temp['max'] = array_shift($options);
-            }
+	/**
+	 * Whether to do inclusive comparisons, allowing equivalence to min and/or max
+	 *
+	 * If false, then strict comparisons are done, and the value may equal neither
+	 * the min nor max options
+	 *
+	 * @var boolean
+	 */
+	protected $_inclusive;
 
-            if (!empty($options)) {
-                $temp['inclusive'] = array_shift($options);
-            }
+	/**
+	 * Sets validator options
+	 * Accepts the following option keys:
+	 *   'min' => scalar, minimum border
+	 *   'max' => scalar, maximum border
+	 *   'inclusive' => boolean, inclusive border values
+	 *
+	 * @param  array|Postman_Zend_Config $options
+	 * @throws Postman_Zend_Validate_Exception
+	 */
+	public function __construct( $options ) {
+		if ( $options instanceof Postman_Zend_Config ) {
+			$options = $options->toArray();
+		} elseif ( ! is_array( $options ) ) {
+			$options     = func_get_args();
+			$temp['min'] = array_shift( $options );
+			if ( ! empty( $options ) ) {
+				$temp['max'] = array_shift( $options );
+			}
 
-            $options = $temp;
-        }
+			if ( ! empty( $options ) ) {
+				$temp['inclusive'] = array_shift( $options );
+			}
 
-        if (!array_key_exists('min', $options) || !array_key_exists('max', $options)) {
-            require_once 'Zend/Validate/Exception.php';
-            throw new Postman_Zend_Validate_Exception("Missing option. 'min' and 'max' has to be given");
-        }
+			$options = $temp;
+		}
 
-        if (!array_key_exists('inclusive', $options)) {
-            $options['inclusive'] = true;
-        }
+		if ( ! array_key_exists( 'min', $options ) || ! array_key_exists( 'max', $options ) ) {
+			require_once 'Zend/Validate/Exception.php';
+			throw new Postman_Zend_Validate_Exception( "Missing option. 'min' and 'max' has to be given" );
+		}
 
-        $this->setMin($options['min'])
-             ->setMax($options['max'])
-             ->setInclusive($options['inclusive']);
-    }
+		if ( ! array_key_exists( 'inclusive', $options ) ) {
+			$options['inclusive'] = true;
+		}
 
-    /**
-     * Returns the min option
-     *
-     * @return mixed
-     */
-    public function getMin()
-    {
-        return $this->_min;
-    }
+		$this->setMin( $options['min'] )
+			->setMax( $options['max'] )
+			->setInclusive( $options['inclusive'] );
+	}
 
-    /**
-     * Sets the min option
-     *
-     * @param  mixed $min
-     * @return Postman_Zend_Validate_Between Provides a fluent interface
-     */
-    public function setMin($min)
-    {
-        $this->_min = $min;
-        return $this;
-    }
+	/**
+	 * Returns the min option
+	 *
+	 * @return mixed
+	 */
+	public function getMin() {
+		return $this->_min;
+	}
 
-    /**
-     * Returns the max option
-     *
-     * @return mixed
-     */
-    public function getMax()
-    {
-        return $this->_max;
-    }
+	/**
+	 * Sets the min option
+	 *
+	 * @param  mixed $min
+	 * @return Postman_Zend_Validate_Between Provides a fluent interface
+	 */
+	public function setMin( $min ) {
+		$this->_min = $min;
+		return $this;
+	}
 
-    /**
-     * Sets the max option
-     *
-     * @param  mixed $max
-     * @return Postman_Zend_Validate_Between Provides a fluent interface
-     */
-    public function setMax($max)
-    {
-        $this->_max = $max;
-        return $this;
-    }
+	/**
+	 * Returns the max option
+	 *
+	 * @return mixed
+	 */
+	public function getMax() {
+		return $this->_max;
+	}
 
-    /**
-     * Returns the inclusive option
-     *
-     * @return boolean
-     */
-    public function getInclusive()
-    {
-        return $this->_inclusive;
-    }
+	/**
+	 * Sets the max option
+	 *
+	 * @param  mixed $max
+	 * @return Postman_Zend_Validate_Between Provides a fluent interface
+	 */
+	public function setMax( $max ) {
+		$this->_max = $max;
+		return $this;
+	}
 
-    /**
-     * Sets the inclusive option
-     *
-     * @param  boolean $inclusive
-     * @return Postman_Zend_Validate_Between Provides a fluent interface
-     */
-    public function setInclusive($inclusive)
-    {
-        $this->_inclusive = $inclusive;
-        return $this;
-    }
+	/**
+	 * Returns the inclusive option
+	 *
+	 * @return boolean
+	 */
+	public function getInclusive() {
+		return $this->_inclusive;
+	}
 
-    /**
-     * Defined by Postman_Zend_Validate_Interface
-     *
-     * Returns true if and only if $value is between min and max options, inclusively
-     * if inclusive option is true.
-     *
-     * @param  mixed $value
-     * @return boolean
-     */
-    public function isValid($value)
-    {
-        $this->_setValue($value);
+	/**
+	 * Sets the inclusive option
+	 *
+	 * @param  boolean $inclusive
+	 * @return Postman_Zend_Validate_Between Provides a fluent interface
+	 */
+	public function setInclusive( $inclusive ) {
+		$this->_inclusive = $inclusive;
+		return $this;
+	}
 
-        if ($this->_inclusive) {
-            if ($this->_min > $value || $value > $this->_max) {
-                $this->_error(self::NOT_BETWEEN);
-                return false;
-            }
-        } else {
-            if ($this->_min >= $value || $value >= $this->_max) {
-                $this->_error(self::NOT_BETWEEN_STRICT);
-                return false;
-            }
-        }
-        return true;
-    }
+	/**
+	 * Defined by Postman_Zend_Validate_Interface
+	 *
+	 * Returns true if and only if $value is between min and max options, inclusively
+	 * if inclusive option is true.
+	 *
+	 * @param  mixed $value
+	 * @return boolean
+	 */
+	public function isValid( $value ) {
+		$this->_setValue( $value );
 
+		if ( $this->_inclusive ) {
+			if ( $this->_min > $value || $value > $this->_max ) {
+				$this->_error( self::NOT_BETWEEN );
+				return false;
+			}
+		} elseif ( $this->_min >= $value || $value >= $this->_max ) {
+				$this->_error( self::NOT_BETWEEN_STRICT );
+				return false;
+		}
+		return true;
+	}
 }

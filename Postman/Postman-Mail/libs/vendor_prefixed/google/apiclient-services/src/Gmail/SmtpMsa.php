@@ -17,98 +17,88 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class SmtpMsa extends \PostSMTP\Vendor\Google\Model
-{
-    /**
-     * @var string
-     */
-    public $host;
-    /**
-     * @var string
-     */
-    public $password;
-    /**
-     * @var int
-     */
-    public $port;
-    /**
-     * @var string
-     */
-    public $securityMode;
-    /**
-     * @var string
-     */
-    public $username;
-    /**
-     * @param string
-     */
-    public function setHost($host)
-    {
-        $this->host = $host;
-    }
-    /**
-     * @return string
-     */
-    public function getHost()
-    {
-        return $this->host;
-    }
-    /**
-     * @param string
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-    }
-    /**
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-    /**
-     * @param int
-     */
-    public function setPort($port)
-    {
-        $this->port = $port;
-    }
-    /**
-     * @return int
-     */
-    public function getPort()
-    {
-        return $this->port;
-    }
-    /**
-     * @param string
-     */
-    public function setSecurityMode($securityMode)
-    {
-        $this->securityMode = $securityMode;
-    }
-    /**
-     * @return string
-     */
-    public function getSecurityMode()
-    {
-        return $this->securityMode;
-    }
-    /**
-     * @param string
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-    }
-    /**
-     * @return string
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
+class SmtpMsa extends \PostSMTP\Vendor\Google\Model {
+
+	/**
+	 * @var string
+	 */
+	public $host;
+	/**
+	 * @var string
+	 */
+	public $password;
+	/**
+	 * @var int
+	 */
+	public $port;
+	/**
+	 * @var string
+	 */
+	public $securityMode;
+	/**
+	 * @var string
+	 */
+	public $username;
+	/**
+	 * @param string
+	 */
+	public function setHost( $host ) {
+		$this->host = $host;
+	}
+	/**
+	 * @return string
+	 */
+	public function getHost() {
+		return $this->host;
+	}
+	/**
+	 * @param string
+	 */
+	public function setPassword( $password ) {
+		$this->password = $password;
+	}
+	/**
+	 * @return string
+	 */
+	public function getPassword() {
+		return $this->password;
+	}
+	/**
+	 * @param int
+	 */
+	public function setPort( $port ) {
+		$this->port = $port;
+	}
+	/**
+	 * @return int
+	 */
+	public function getPort() {
+		return $this->port;
+	}
+	/**
+	 * @param string
+	 */
+	public function setSecurityMode( $securityMode ) {
+		$this->securityMode = $securityMode;
+	}
+	/**
+	 * @return string
+	 */
+	public function getSecurityMode() {
+		return $this->securityMode;
+	}
+	/**
+	 * @param string
+	 */
+	public function setUsername( $username ) {
+		$this->username = $username;
+	}
+	/**
+	 * @return string
+	 */
+	public function getUsername() {
+		return $this->username;
+	}
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\SmtpMsa::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_SmtpMsa');
+\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\SmtpMsa::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_SmtpMsa' );

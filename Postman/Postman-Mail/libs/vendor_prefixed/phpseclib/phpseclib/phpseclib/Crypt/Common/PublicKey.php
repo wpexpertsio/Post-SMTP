@@ -15,10 +15,10 @@ namespace PostSMTP\Vendor\phpseclib3\Crypt\Common;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-interface PublicKey
-{
-    public function verify($message, $signature);
-    //public function encrypt($plaintext);
-    public function toString($type, array $options = []);
-    public function getFingerprint($algorithm);
+interface PublicKey {
+
+	public function verify( $message, $signature );
+	// public function encrypt($plaintext);
+	public function toString( $type, array $options = array() );
+	public function getFingerprint( $algorithm );
 }

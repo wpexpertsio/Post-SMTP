@@ -35,271 +35,261 @@
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Mime_Message
-{
-    /**
-     * The Postman_Zend_Mime_Parts of the message
-     *
-     * @var array
-     */
-    protected $_parts = array();
+class Postman_Zend_Mime_Message {
 
-    /**
-     * The Postman_Zend_Mime object for the message
-     *
-     * @var Postman_Zend_Mime|null
-     */
-    protected $_mime = null;
+	/**
+	 * The Postman_Zend_Mime_Parts of the message
+	 *
+	 * @var array
+	 */
+	protected $_parts = array();
 
-    /**
-     * Returns the list of all Postman_Zend_Mime_Parts in the message
-     *
-     * @return array of Postman_Zend_Mime_Part
-     */
-    public function getParts()
-    {
-        return $this->_parts;
-    }
+	/**
+	 * The Postman_Zend_Mime object for the message
+	 *
+	 * @var Postman_Zend_Mime|null
+	 */
+	protected $_mime = null;
 
-    /**
-     * Sets the given array of Postman_Zend_Mime_Parts as the array for the message
-     *
-     * @param array $parts
-     */
-    public function setParts($parts)
-    {
-        $this->_parts = $parts;
-    }
+	/**
+	 * Returns the list of all Postman_Zend_Mime_Parts in the message
+	 *
+	 * @return array of Postman_Zend_Mime_Part
+	 */
+	public function getParts() {
+		return $this->_parts;
+	}
 
-    /**
-     * Append a new Postman_Zend_Mime_Part to the current message
-     *
-     * @param Postman_Zend_Mime_Part $part
-     */
-    public function addPart(Postman_Zend_Mime_Part $part)
-    {
-        /**
-         * @todo check for duplicate object handle
-         */
-        $this->_parts[] = $part;
-    }
+	/**
+	 * Sets the given array of Postman_Zend_Mime_Parts as the array for the message
+	 *
+	 * @param array $parts
+	 */
+	public function setParts( $parts ) {
+		$this->_parts = $parts;
+	}
 
-    /**
-     * Check if message needs to be sent as multipart
-     * MIME message or if it has only one part.
-     *
-     * @return boolean
-     */
-    public function isMultiPart()
-    {
-        return (count($this->_parts) > 1);
-    }
+	/**
+	 * Append a new Postman_Zend_Mime_Part to the current message
+	 *
+	 * @param Postman_Zend_Mime_Part $part
+	 */
+	public function addPart( Postman_Zend_Mime_Part $part ) {
+		/**
+		 * @todo check for duplicate object handle
+		 */
+		$this->_parts[] = $part;
+	}
 
-    /**
-     * Set Postman_Zend_Mime object for the message
-     *
-     * This can be used to set the boundary specifically or to use a subclass of
-     * Postman_Zend_Mime for generating the boundary.
-     *
-     * @param Postman_Zend_Mime $mime
-     */
-    public function setMime(Postman_Zend_Mime $mime)
-    {
-        $this->_mime = $mime;
-    }
+	/**
+	 * Check if message needs to be sent as multipart
+	 * MIME message or if it has only one part.
+	 *
+	 * @return boolean
+	 */
+	public function isMultiPart() {
+		return ( count( $this->_parts ) > 1 );
+	}
 
-    /**
-     * Returns the Postman_Zend_Mime object in use by the message
-     *
-     * If the object was not present, it is created and returned. Can be used to
-     * determine the boundary used in this message.
-     *
-     * @return Postman_Zend_Mime
-     */
-    public function getMime()
-    {
-        if ($this->_mime === null) {
-            $this->_mime = new Postman_Zend_Mime();
-        }
+	/**
+	 * Set Postman_Zend_Mime object for the message
+	 *
+	 * This can be used to set the boundary specifically or to use a subclass of
+	 * Postman_Zend_Mime for generating the boundary.
+	 *
+	 * @param Postman_Zend_Mime $mime
+	 */
+	public function setMime( Postman_Zend_Mime $mime ) {
+		$this->_mime = $mime;
+	}
 
-        return $this->_mime;
-    }
+	/**
+	 * Returns the Postman_Zend_Mime object in use by the message
+	 *
+	 * If the object was not present, it is created and returned. Can be used to
+	 * determine the boundary used in this message.
+	 *
+	 * @return Postman_Zend_Mime
+	 */
+	public function getMime() {
+		if ( $this->_mime === null ) {
+			$this->_mime = new Postman_Zend_Mime();
+		}
 
-    /**
-     * Generate MIME-compliant message from the current configuration
-     *
-     * This can be a multipart message if more than one MIME part was added. If
-     * only one part is present, the content of this part is returned. If no
-     * part had been added, an empty string is returned.
-     *
-     * Parts are seperated by the mime boundary as defined in Postman_Zend_Mime. If
-     * {@link setMime()} has been called before this method, the Postman_Zend_Mime
-     * object set by this call will be used. Otherwise, a new Postman_Zend_Mime object
-     * is generated and used.
-     *
-     * @param string $EOL EOL string; defaults to {@link Postman_Zend_Mime::LINEEND}
-     * @return string
-     */
-    public function generateMessage($EOL = Postman_Zend_Mime::LINEEND)
-    {
-        if (!$this->isMultiPart()) {
-            $body = array_shift($this->_parts);
-            $body = $body->getContent($EOL);
-        } else {
-            $mime = $this->getMime();
+		return $this->_mime;
+	}
 
-            $boundaryLine = $mime->boundaryLine($EOL);
-            $body = 'This is a message in Mime Format.  If you see this, '
-                  . "your mail reader does not support this format." . $EOL;
+	/**
+	 * Generate MIME-compliant message from the current configuration
+	 *
+	 * This can be a multipart message if more than one MIME part was added. If
+	 * only one part is present, the content of this part is returned. If no
+	 * part had been added, an empty string is returned.
+	 *
+	 * Parts are seperated by the mime boundary as defined in Postman_Zend_Mime. If
+	 * {@link setMime()} has been called before this method, the Postman_Zend_Mime
+	 * object set by this call will be used. Otherwise, a new Postman_Zend_Mime object
+	 * is generated and used.
+	 *
+	 * @param string $EOL EOL string; defaults to {@link Postman_Zend_Mime::LINEEND}
+	 * @return string
+	 */
+	public function generateMessage( $EOL = Postman_Zend_Mime::LINEEND ) {
+		if ( ! $this->isMultiPart() ) {
+			$body = array_shift( $this->_parts );
+			$body = $body->getContent( $EOL );
+		} else {
+			$mime = $this->getMime();
 
-            foreach (array_keys($this->_parts) as $p) {
-                $body .= $boundaryLine
-                         . $this->getPartHeaders($p, $EOL)
-                         . $EOL
-                         . $this->getPartContent($p, $EOL);
-            }
+			$boundaryLine = $mime->boundaryLine( $EOL );
+			$body         = 'This is a message in Mime Format.  If you see this, '
+					. 'your mail reader does not support this format.' . $EOL;
 
-            $body .= $mime->mimeEnd($EOL);
-        }
+			foreach ( array_keys( $this->_parts ) as $p ) {
+				$body .= $boundaryLine
+						. $this->getPartHeaders( $p, $EOL )
+						. $EOL
+						. $this->getPartContent( $p, $EOL );
+			}
 
-        return trim($body);
-    }
+			$body .= $mime->mimeEnd( $EOL );
+		}
 
-    /**
-     * Get the headers of a given part as an array
-     *
-     * @param int $partnum
-     * @return array
-     */
-    public function getPartHeadersArray($partnum)
-    {
-        return $this->_parts[$partnum]->getHeadersArray();
-    }
+		return trim( $body );
+	}
 
-    /**
-     * Get the headers of a given part as a string
-     *
-     * @param  int    $partnum
-     * @param  string $EOL
-     * @return string
-     */
-    public function getPartHeaders($partnum, $EOL = Postman_Zend_Mime::LINEEND)
-    {
-        return $this->_parts[$partnum]->getHeaders($EOL);
-    }
+	/**
+	 * Get the headers of a given part as an array
+	 *
+	 * @param int $partnum
+	 * @return array
+	 */
+	public function getPartHeadersArray( $partnum ) {
+		return $this->_parts[ $partnum ]->getHeadersArray();
+	}
 
-    /**
-     * Get the (encoded) content of a given part as a string
-     *
-     * @param  int    $partnum
-     * @param  string $EOL
-     * @return string
-     */
-    public function getPartContent($partnum, $EOL = Postman_Zend_Mime::LINEEND)
-    {
-        return $this->_parts[$partnum]->getContent($EOL);
-    }
+	/**
+	 * Get the headers of a given part as a string
+	 *
+	 * @param  int    $partnum
+	 * @param  string $EOL
+	 * @return string
+	 */
+	public function getPartHeaders( $partnum, $EOL = Postman_Zend_Mime::LINEEND ) {
+		return $this->_parts[ $partnum ]->getHeaders( $EOL );
+	}
 
-    /**
-     * Explode MIME multipart string into seperate parts
-     *
-     * Parts consist of the header and the body of each MIME part.
-     *
-     * @param  string $body
-     * @param  string $boundary
-     * @throws Postman_Zend_Exception
-     * @return array
-     */
-    protected static function _disassembleMime($body, $boundary)
-    {
-        $start = 0;
-        $res   = array();
-        // find every mime part limiter and cut out the
-        // string before it.
-        // the part before the first boundary string is discarded:
-        $p = strpos($body, '--' . $boundary . "\n", $start);
-        if ($p === false) {
-            // no parts found!
-            return array();
-        }
+	/**
+	 * Get the (encoded) content of a given part as a string
+	 *
+	 * @param  int    $partnum
+	 * @param  string $EOL
+	 * @return string
+	 */
+	public function getPartContent( $partnum, $EOL = Postman_Zend_Mime::LINEEND ) {
+		return $this->_parts[ $partnum ]->getContent( $EOL );
+	}
 
-        // position after first boundary line
-        $start = $p + 3 + strlen($boundary);
+	/**
+	 * Explode MIME multipart string into seperate parts
+	 *
+	 * Parts consist of the header and the body of each MIME part.
+	 *
+	 * @param  string $body
+	 * @param  string $boundary
+	 * @throws Postman_Zend_Exception
+	 * @return array
+	 */
+	protected static function _disassembleMime( $body, $boundary ) {
+		$start = 0;
+		$res   = array();
+		// find every mime part limiter and cut out the
+		// string before it.
+		// the part before the first boundary string is discarded:
+		$p = strpos( $body, '--' . $boundary . "\n", $start );
+		if ( $p === false ) {
+			// no parts found!
+			return array();
+		}
 
-        while (($p = strpos($body, '--' . $boundary . "\n", $start))
-               !== false) {
-            $res[] = substr($body, $start, $p - $start);
-            $start = $p + 3 + strlen($boundary);
-        }
+		// position after first boundary line
+		$start = $p + 3 + strlen( $boundary );
 
-        // no more parts, find end boundary
-        $p = strpos($body, '--' . $boundary . '--', $start);
-        if ($p === false) {
-            throw new Postman_Zend_Exception('Not a valid Mime Message: End Missing');
-        }
+		while ( ( $p = strpos( $body, '--' . $boundary . "\n", $start ) )
+				!== false ) {
+			$res[] = substr( $body, $start, $p - $start );
+			$start = $p + 3 + strlen( $boundary );
+		}
 
-        // the remaining part also needs to be parsed:
-        $res[] = substr($body, $start, $p - $start);
+		// no more parts, find end boundary
+		$p = strpos( $body, '--' . $boundary . '--', $start );
+		if ( $p === false ) {
+			throw new Postman_Zend_Exception( 'Not a valid Mime Message: End Missing' );
+		}
 
-        return $res;
-    }
+		// the remaining part also needs to be parsed:
+		$res[] = substr( $body, $start, $p - $start );
 
-    /**
-     * Decodes a MIME encoded string and returns a Postman_Zend_Mime_Message object with
-     * all the MIME parts set according to the given string
-     *
-     * @param  string $message
-     * @param  string $boundary
-     * @param  string $EOL EOL string; defaults to {@link Postman_Zend_Mime::LINEEND}
-     * @throws Postman_Zend_Exception
-     * @return Postman_Zend_Mime_Message
-     */
-    public static function createFromMessage(
-        $message, $boundary, $EOL = Postman_Zend_Mime::LINEEND
-    )
-    {
-        require_once 'Zend/Mime/Decode.php';
-        $parts = Postman_Zend_Mime_Decode::splitMessageStruct($message, $boundary, $EOL);
+		return $res;
+	}
 
-        $res = new self();
-        foreach ($parts as $part) {
-            // now we build a new MimePart for the current Message Part:
-            $newPart = new Postman_Zend_Mime_Part($part['body']);
-            foreach ($part['header'] as $key => $value) {
-                /**
-                 * @todo check for characterset and filename
-                 */
-                switch (strtolower($key)) {
-                    case 'content-type':
-                        $newPart->type = $value;
-                        break;
-                    case 'content-transfer-encoding':
-                        $newPart->encoding = $value;
-                        break;
-                    case 'content-id':
-                        $newPart->id = trim($value, '<>');
-                        break;
-                    case 'content-disposition':
-                        $newPart->disposition = $value;
-                        break;
-                    case 'content-description':
-                        $newPart->description = $value;
-                        break;
-                    case 'content-location':
-                        $newPart->location = $value;
-                        break;
-                    case 'content-language':
-                        $newPart->language = $value;
-                        break;
-                    default:
-                        throw new Postman_Zend_Exception(
-                            'Unknown header ignored for MimePart:' . $key
-                        );
-                }
-            }
-            $res->addPart($newPart);
-        }
+	/**
+	 * Decodes a MIME encoded string and returns a Postman_Zend_Mime_Message object with
+	 * all the MIME parts set according to the given string
+	 *
+	 * @param  string $message
+	 * @param  string $boundary
+	 * @param  string $EOL EOL string; defaults to {@link Postman_Zend_Mime::LINEEND}
+	 * @throws Postman_Zend_Exception
+	 * @return Postman_Zend_Mime_Message
+	 */
+	public static function createFromMessage(
+		$message,
+		$boundary,
+		$EOL = Postman_Zend_Mime::LINEEND
+	) {
+		require_once 'Zend/Mime/Decode.php';
+		$parts = Postman_Zend_Mime_Decode::splitMessageStruct( $message, $boundary, $EOL );
 
-        return $res;
-    }
+		$res = new self();
+		foreach ( $parts as $part ) {
+			// now we build a new MimePart for the current Message Part:
+			$newPart = new Postman_Zend_Mime_Part( $part['body'] );
+			foreach ( $part['header'] as $key => $value ) {
+				/**
+				 * @todo check for characterset and filename
+				 */
+				switch ( strtolower( $key ) ) {
+					case 'content-type':
+						$newPart->type = $value;
+						break;
+					case 'content-transfer-encoding':
+						$newPart->encoding = $value;
+						break;
+					case 'content-id':
+						$newPart->id = trim( $value, '<>' );
+						break;
+					case 'content-disposition':
+						$newPart->disposition = $value;
+						break;
+					case 'content-description':
+						$newPart->description = $value;
+						break;
+					case 'content-location':
+						$newPart->location = $value;
+						break;
+					case 'content-language':
+						$newPart->language = $value;
+						break;
+					default:
+						throw new Postman_Zend_Exception(
+							'Unknown header ignored for MimePart:' . $key
+						);
+				}
+			}
+			$res->addPart( $newPart );
+		}
+
+		return $res;
+	}
 }

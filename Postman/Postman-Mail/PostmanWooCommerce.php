@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 if ( ! class_exists( 'PostmanWoocommerce' ) ) {
@@ -14,7 +14,7 @@ if ( ! class_exists( 'PostmanWoocommerce' ) ) {
 		}
 
 		public function set_vars() {
-			$this->options = PostmanOptions::getInstance ();
+			$this->options = PostmanOptions::getInstance();
 		}
 
 		public function hooks() {
@@ -32,7 +32,7 @@ if ( ! class_exists( 'PostmanWoocommerce' ) ) {
 			$key = $this->find_woocommerce_email_from_address( $settings );
 
 			if ( $key ) {
-				$settings[$key] = array(
+				$settings[ $key ] = array(
 					'title'             => __( '"From" address', 'post-smtp' ),
 					'desc'              => __( 'This is override by the account configured on Post SMTP plugin configuration.', 'post-smtp' ),
 					'id'                => 'woocommerce_email_from_address',
@@ -51,7 +51,7 @@ if ( ! class_exists( 'PostmanWoocommerce' ) ) {
 			return $settings;
 		}
 
-		private function find_woocommerce_email_from_address($settings) {
+		private function find_woocommerce_email_from_address( $settings ) {
 			foreach ( $settings as $key => $data ) {
 				if ( isset( $data['id'] ) && $data['id'] == 'woocommerce_email_from_address' ) {
 					return $key;

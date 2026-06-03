@@ -51,62 +51,59 @@ namespace PostSMTP\Vendor\phpseclib3\Crypt;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class AES extends \PostSMTP\Vendor\phpseclib3\Crypt\Rijndael
-{
-    /**
-     * Dummy function
-     *
-     * Since \phpseclib3\Crypt\AES extends \phpseclib3\Crypt\Rijndael, this function is, technically, available, but it doesn't do anything.
-     *
-     * @see \phpseclib3\Crypt\Rijndael::setBlockLength()
-     * @param int $length
-     * @throws \BadMethodCallException anytime it's called
-     */
-    public function setBlockLength($length)
-    {
-        throw new \BadMethodCallException('The block length cannot be set for AES.');
-    }
-    /**
-     * Sets the key length
-     *
-     * Valid key lengths are 128, 192, and 256.  Set the link to bool(false) to disable a fixed key length
-     *
-     * @see \phpseclib3\Crypt\Rijndael:setKeyLength()
-     * @param int $length
-     * @throws \LengthException if the key length isn't supported
-     */
-    public function setKeyLength($length)
-    {
-        switch ($length) {
-            case 128:
-            case 192:
-            case 256:
-                break;
-            default:
-                throw new \LengthException('Key of size ' . $length . ' not supported by this algorithm. Only keys of sizes 128, 192 or 256 supported');
-        }
-        parent::setKeyLength($length);
-    }
-    /**
-     * Sets the key.
-     *
-     * Rijndael supports five different key lengths, AES only supports three.
-     *
-     * @see \phpseclib3\Crypt\Rijndael:setKey()
-     * @see setKeyLength()
-     * @param string $key
-     * @throws \LengthException if the key length isn't supported
-     */
-    public function setKey($key)
-    {
-        switch (\strlen($key)) {
-            case 16:
-            case 24:
-            case 32:
-                break;
-            default:
-                throw new \LengthException('Key of size ' . \strlen($key) . ' not supported by this algorithm. Only keys of sizes 16, 24 or 32 supported');
-        }
-        parent::setKey($key);
-    }
+class AES extends \PostSMTP\Vendor\phpseclib3\Crypt\Rijndael {
+
+	/**
+	 * Dummy function
+	 *
+	 * Since \phpseclib3\Crypt\AES extends \phpseclib3\Crypt\Rijndael, this function is, technically, available, but it doesn't do anything.
+	 *
+	 * @see \phpseclib3\Crypt\Rijndael::setBlockLength()
+	 * @param int $length
+	 * @throws \BadMethodCallException anytime it's called
+	 */
+	public function setBlockLength( $length ) {
+		throw new \BadMethodCallException( 'The block length cannot be set for AES.' );
+	}
+	/**
+	 * Sets the key length
+	 *
+	 * Valid key lengths are 128, 192, and 256.  Set the link to bool(false) to disable a fixed key length
+	 *
+	 * @see \phpseclib3\Crypt\Rijndael:setKeyLength()
+	 * @param int $length
+	 * @throws \LengthException if the key length isn't supported
+	 */
+	public function setKeyLength( $length ) {
+		switch ( $length ) {
+			case 128:
+			case 192:
+			case 256:
+				break;
+			default:
+				throw new \LengthException( 'Key of size ' . $length . ' not supported by this algorithm. Only keys of sizes 128, 192 or 256 supported' );
+		}
+		parent::setKeyLength( $length );
+	}
+	/**
+	 * Sets the key.
+	 *
+	 * Rijndael supports five different key lengths, AES only supports three.
+	 *
+	 * @see \phpseclib3\Crypt\Rijndael:setKey()
+	 * @see setKeyLength()
+	 * @param string $key
+	 * @throws \LengthException if the key length isn't supported
+	 */
+	public function setKey( $key ) {
+		switch ( \strlen( $key ) ) {
+			case 16:
+			case 24:
+			case 32:
+				break;
+			default:
+				throw new \LengthException( 'Key of size ' . \strlen( $key ) . ' not supported by this algorithm. Only keys of sizes 16, 24 or 32 supported' );
+		}
+		parent::setKey( $key );
+	}
 }

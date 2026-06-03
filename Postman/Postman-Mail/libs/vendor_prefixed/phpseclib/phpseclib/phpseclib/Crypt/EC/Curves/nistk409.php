@@ -12,6 +12,6 @@
  */
 namespace PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves;
 
-final class nistk409 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\sect409k1
-{
+final class nistk409 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\sect409k1 {
+
 }

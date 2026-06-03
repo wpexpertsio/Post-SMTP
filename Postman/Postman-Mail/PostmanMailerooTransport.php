@@ -166,15 +166,77 @@ class PostmanMailerooTransport extends PostmanAbstractModuleTransport implements
         }
 
         /**
+         * Maileroo keys must be printable ASCII for X-API-Key (reject binary from over-decoded options).
+         *
+         * @param mixed $key
+         * @return bool
+         */
+        private static function is_maileroo_api_key_plausible( $key ) {
+            $k = trim( (string) $key );
+            if ( strlen( $k ) < 4 ) {
+                return false;
+            }
+
+            return (bool) preg_match( '/\A[\x20-\x7E]+\z/', $k );
+        }
+
+        /**
+         * Prefer resolver value; if missing or corrupted, fall back to legacy postman_options read.
+         *
+         * @param mixed $from_resolver Value from {@see Postman_Connection_Resolver::get_primary_field()}.
+         * @return string
+         */
+        private function resolve_maileroo_api_key_for_primary_send( $from_resolver ) {
+            if ( self::is_maileroo_api_key_plausible( $from_resolver ) ) {
+                return trim( (string) $from_resolver );
+            }
+            $legacy = trim( (string) $this->options->getMailerooApiKey() );
+            if ( self::is_maileroo_api_key_plausible( $legacy ) ) {
+                return $legacy;
+            }
+
+            return trim( (string) $from_resolver );
+        }
+
+        /**
          * Create Maileroo mail engine instance
-        * @since 2.1
-        * @version 1.0
-        */
+         * Adds smart routing and connection-aware key resolution.
+         * @since 2.1
+         * @version 1.1
+         */
         public function createMailEngine() {
-            $api_key = $this->options->getMailerooApiKey();
+            $api_key = $this->resolve_maileroo_api_key_for_primary_send(
+                Postman_Connection_Resolver::get_primary_field(
+                    'maileroo_api_key',
+                    array( $this->options, 'getMailerooApiKey' )
+                )
+            );
+
             require_once 'PostmanMailerooMailEngine.php';
-            $engine = new PostmanMailerooMailEngine( $api_key );
-            return $engine;
+            return new PostmanMailerooMailEngine( $api_key );
+        }
+
+        /**
+         * Create Maileroo mail engine for Fallback delivery.
+         * Passes a structured credentials array and flags fallback mode.
+         * @since 3.0.1
+         * @version 1.0
+         */
+        public function createMailEngineFallback() {
+            $key = trim( (string) Postman_Connection_Resolver::get_fallback_field( 'maileroo_api_key' ) );
+            if ( ! self::is_maileroo_api_key_plausible( $key ) ) {
+                $try = base64_decode( $key, true );
+                if ( false !== $try && self::is_maileroo_api_key_plausible( $try ) ) {
+                    $key = trim( (string) $try );
+                }
+            }
+            $api_credentials = array(
+                'api_key'     => $key,
+                'is_fallback' => 1,
+            );
+
+            require_once 'PostmanMailerooMailEngine.php';
+            return new PostmanMailerooMailEngine( $api_credentials );
         }
 }
 endif;

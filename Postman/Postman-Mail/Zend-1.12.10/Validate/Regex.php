@@ -30,117 +30,113 @@ require_once 'Zend/Validate/Abstract.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Validate_Regex extends Postman_Zend_Validate_Abstract
-{
-    const INVALID   = 'regexInvalid';
-    const NOT_MATCH = 'regexNotMatch';
-    const ERROROUS  = 'regexErrorous';
+class Postman_Zend_Validate_Regex extends Postman_Zend_Validate_Abstract {
 
-    /**
-     * @var array
-     */
-    protected $_messageTemplates = array(
-        self::INVALID   => "Invalid type given. String, integer or float expected",
-        self::NOT_MATCH => "'%value%' does not match against pattern '%pattern%'",
-        self::ERROROUS  => "There was an internal error while using the pattern '%pattern%'",
-    );
+	const INVALID   = 'regexInvalid';
+	const NOT_MATCH = 'regexNotMatch';
+	const ERROROUS  = 'regexErrorous';
 
-    /**
-     * @var array
-     */
-    protected $_messageVariables = array(
-        'pattern' => '_pattern'
-    );
+	/**
+	 * @var array
+	 */
+	protected $_messageTemplates = array(
+		self::INVALID   => 'Invalid type given. String, integer or float expected',
+		self::NOT_MATCH => "'%value%' does not match against pattern '%pattern%'",
+		self::ERROROUS  => "There was an internal error while using the pattern '%pattern%'",
+	);
 
-    /**
-     * Regular expression pattern
-     *
-     * @var string
-     */
-    protected $_pattern;
+	/**
+	 * @var array
+	 */
+	protected $_messageVariables = array(
+		'pattern' => '_pattern',
+	);
 
-    /**
-     * Sets validator options
-     *
-     * @param  string|Postman_Zend_Config $pattern
-     * @throws Postman_Zend_Validate_Exception On missing 'pattern' parameter
-     */
-    public function __construct($pattern)
-    {
-        if ($pattern instanceof Postman_Zend_Config) {
-            $pattern = $pattern->toArray();
-        }
+	/**
+	 * Regular expression pattern
+	 *
+	 * @var string
+	 */
+	protected $_pattern;
 
-        if (is_array($pattern)) {
-            if (array_key_exists('pattern', $pattern)) {
-                $pattern = $pattern['pattern'];
-            } else {
-                require_once 'Zend/Validate/Exception.php';
-                throw new Postman_Zend_Validate_Exception("Missing option 'pattern'");
-            }
-        }
+	/**
+	 * Sets validator options
+	 *
+	 * @param  string|Postman_Zend_Config $pattern
+	 * @throws Postman_Zend_Validate_Exception On missing 'pattern' parameter
+	 */
+	public function __construct( $pattern ) {
+		if ( $pattern instanceof Postman_Zend_Config ) {
+			$pattern = $pattern->toArray();
+		}
 
-        $this->setPattern($pattern);
-    }
+		if ( is_array( $pattern ) ) {
+			if ( array_key_exists( 'pattern', $pattern ) ) {
+				$pattern = $pattern['pattern'];
+			} else {
+				require_once 'Zend/Validate/Exception.php';
+				throw new Postman_Zend_Validate_Exception( "Missing option 'pattern'" );
+			}
+		}
 
-    /**
-     * Returns the pattern option
-     *
-     * @return string
-     */
-    public function getPattern()
-    {
-        return $this->_pattern;
-    }
+		$this->setPattern( $pattern );
+	}
 
-    /**
-     * Sets the pattern option
-     *
-     * @param  string $pattern
-     * @throws Postman_Zend_Validate_Exception if there is a fatal error in pattern matching
-     * @return Postman_Zend_Validate_Regex Provides a fluent interface
-     */
-    public function setPattern($pattern)
-    {
-        $this->_pattern = (string) $pattern;
-        $status         = @preg_match($this->_pattern, "Test");
+	/**
+	 * Returns the pattern option
+	 *
+	 * @return string
+	 */
+	public function getPattern() {
+		return $this->_pattern;
+	}
 
-        if (false === $status) {
-            require_once 'Zend/Validate/Exception.php';
-            throw new Postman_Zend_Validate_Exception("Internal error while using the pattern '$this->_pattern'");
-        }
+	/**
+	 * Sets the pattern option
+	 *
+	 * @param  string $pattern
+	 * @throws Postman_Zend_Validate_Exception if there is a fatal error in pattern matching
+	 * @return Postman_Zend_Validate_Regex Provides a fluent interface
+	 */
+	public function setPattern( $pattern ) {
+		$this->_pattern = (string) $pattern;
+		$status         = @preg_match( $this->_pattern, 'Test' );
 
-        return $this;
-    }
+		if ( false === $status ) {
+			require_once 'Zend/Validate/Exception.php';
+			throw new Postman_Zend_Validate_Exception( "Internal error while using the pattern '$this->_pattern'" );
+		}
 
-    /**
-     * Defined by Postman_Zend_Validate_Interface
-     *
-     * Returns true if and only if $value matches against the pattern option
-     *
-     * @param  string $value
-     * @return boolean
-     */
-    public function isValid($value)
-    {
-        if (!is_string($value) && !is_int($value) && !is_float($value)) {
-            $this->_error(self::INVALID);
-            return false;
-        }
+		return $this;
+	}
 
-        $this->_setValue($value);
+	/**
+	 * Defined by Postman_Zend_Validate_Interface
+	 *
+	 * Returns true if and only if $value matches against the pattern option
+	 *
+	 * @param  string $value
+	 * @return boolean
+	 */
+	public function isValid( $value ) {
+		if ( ! is_string( $value ) && ! is_int( $value ) && ! is_float( $value ) ) {
+			$this->_error( self::INVALID );
+			return false;
+		}
 
-        $status = @preg_match($this->_pattern, $value);
-        if (false === $status) {
-            $this->_error(self::ERROROUS);
-            return false;
-        }
+		$this->_setValue( $value );
 
-        if (!$status) {
-            $this->_error(self::NOT_MATCH);
-            return false;
-        }
+		$status = @preg_match( $this->_pattern, $value );
+		if ( false === $status ) {
+			$this->_error( self::ERROROUS );
+			return false;
+		}
 
-        return true;
-    }
+		if ( ! $status ) {
+			$this->_error( self::NOT_MATCH );
+			return false;
+		}
+
+		return true;
+	}
 }

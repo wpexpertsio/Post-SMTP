@@ -1,3 +1,41 @@
+/**
+ * Require From Name and From Email before Office 365 / Gmail OAuth or connect actions.
+ *
+ * @returns {boolean}
+ */
+function psWizardValidateFromSenderFields() {
+    var $wrap = jQuery('.ps-name-email-settings');
+    var $name = $wrap.find('.ps-from-name').first();
+    var $email = $wrap.find('.ps-from-email').first();
+    if (!$name.length) {
+        $name = jQuery('.ps-from-name').first();
+    }
+    if (!$email.length) {
+        $email = jQuery('.ps-from-email').first();
+    }
+
+    var fromName = ($name.val() || '').trim();
+    var fromEmail = ($email.val() || '').trim();
+
+    var showErr = function ($input, fallbackMsg) {
+        var msg = $input.attr('data-error') || fallbackMsg;
+        jQuery('.ps-wizard-error').html('<span class="dashicons dashicons-warning"></span> ' + msg);
+        $input.focus();
+    };
+
+    if (!fromName) {
+        showErr($name, 'Please enter From Name.');
+        return false;
+    }
+    if (!fromEmail) {
+        showErr($email, 'Please enter From Email.');
+        return false;
+    }
+
+    jQuery('.ps-wizard-error').html('');
+    return true;
+}
+
 jQuery(document).ready(function () {
     let finalStepConfettiShown = false;
     jQuery('.ps-wizard-socket-check:checked').siblings('.ps-wizard-socket-tick-container').css({ 'opacity': 1 });
@@ -301,9 +339,13 @@ jQuery(document).ready(function () {
             //If everything is good to go, lets save settings.
             if (validated === true) {
 
-                var button = jQuery('.ps-wizard-step-2').find('.ps-wizard-next-btn');
-                var buttonHTML = jQuery(button).html();
-                jQuery(button).html('Saving...');
+                var button = jQuery( '.ps-wizard-step-2' ).find( '.ps-wizard-next-btn' );
+                var buttonHTML = jQuery( button ).html();
+                jQuery( button ).html( 'Saving...' );
+                
+                setTimeout(function () {
+                    jQuery(button).html(buttonHTML);
+                }, 2000);
 
                 // Step 1: Get selected socket from step 1
                 var $step1 = jQuery('.ps-wizard-step-1');
@@ -337,6 +379,28 @@ jQuery(document).ready(function () {
                         nextStep(stepID);
                         var _element = jQuery('.ps-wizard-outer').removeClass();
                         jQuery(_element).addClass('ps-wizard-outer ps-wizard-send-email');
+
+                        const wizardStep = jQuery('.ps-wizard-step-2');
+                        const connectionIndex = response.data.index; // Adjust key name based on actual response structure.
+                    
+                        // Debugging: Log the extracted index to see if it has a value.
+                        console.log('Connection Index:', connectionIndex);
+                    
+                        // Use a more reliable check to handle 0 or null values.
+                        if (connectionIndex !== undefined && connectionIndex !== null) {
+                            if (wizardStep.find('.postman_fallback_edit').length) {
+                                wizardStep.find('.postman_fallback_edit').val(connectionIndex);
+                            } else {
+                                jQuery('<input>', {
+                                    type: 'hidden',
+                                    class: 'postman_fallback_edit',
+                                    name: 'postman_fallback_edit',
+                                    value: connectionIndex
+                                }).appendTo(wizardStep);
+                            }
+                        } else {
+                            console.error('Connection index is undefined or null!');
+                        }
 
                     },
                     error: function (response) {
@@ -547,16 +611,18 @@ jQuery(document).ready(function () {
 
         e.preventDefault();
         jQuery('#ps-dns-results__el_id').empty();
-        var sendTo = jQuery('.ps-test-to').val();
-        var security = jQuery('#security').val();
-        var socket = jQuery('.ps-wizard-step-1').attr('data-socket');
-        var apikey = jQuery('.ps-wizard-step-1').attr('data-apikey');
-        var fromEmail = jQuery('.ps-wizard-step-2').attr('data-from-email');
-        var $btn = jQuery(this);
-        $btn.prop('disabled', true);
+        var sendTo = jQuery( '.ps-test-to' ).val();
+        var security = jQuery( '#security' ).val();
+        const id = new URLSearchParams( window.location.search ).get('id');
 
-        if (sendTo == '') {
-            jQuery('.ps-wizard-error').html(`<span class="dashicons dashicons-warning"></span> ${PostSMTPWizard.Step3E4}`);
+        var socket = jQuery( '.ps-wizard-step-1' ).attr( 'data-socket' );
+		var apikey = jQuery( '.ps-wizard-step-1' ).attr( 'data-apikey' );
+        var fromEmail = jQuery('.ps-wizard-step-2').attr('data-from-email');
+        var $btn = jQuery( this );
+        $btn.prop( 'disabled', true );
+        
+        if( sendTo == '' ) {
+            jQuery( '.ps-wizard-error' ).html( `<span class="dashicons dashicons-warning"></span> ${PostSMTPWizard.Step3E4}` );
             return;
 
         }
@@ -569,6 +635,8 @@ jQuery(document).ready(function () {
                 action: 'postman_send_test_email',
                 email: sendTo,
                 security: security,
+                primary  : '0',
+                edit : id,
             },
             success: function (response) {
 
@@ -586,18 +654,19 @@ jQuery(document).ready(function () {
                         <p>Please wait, we are checking your email health.</p>
                     </div>`
                     );
-                    jQuery.ajax({
-                        url: ajaxurl,
-                        type: 'POST',
-                        data: {
-                            action: 'ps-mail-test',
-                            email: sendTo,
-                            security: security,
-                            socket: socket,
-                            apikey: apikey,
-                            from: fromEmail
-                        },
-                        success: function (response) {
+                        jQuery.ajax( {
+                            url: ajaxurl,
+                            type: 'POST',
+                            data: {
+                                action: 'ps-mail-test',
+                                email: sendTo,  
+                                security: security,
+                                socket: socket,
+                                apikey: apikey,
+                                from: fromEmail,
+                                edit: id
+                            },
+                            success: function( response ) {
 
                             jQuery('.ps-loading-test-report').remove();
                             $btn.prop('disabled', false)
@@ -769,6 +838,10 @@ jQuery(document).ready(function () {
 
         e.preventDefault();
 
+        if (!psWizardValidateFromSenderFields()) {
+            return;
+        }
+
         var office365_app_id = jQuery('.ps-office365-client-id').val();
         var office365_app_password = jQuery('.ps-office365-client-secret').val();
         var _button = jQuery(this).html();
@@ -815,6 +888,10 @@ jQuery(document).ready(function () {
     jQuery(document).on('click', '#ps-wizard-connect-gmail', function (e) {
 
         e.preventDefault();
+
+        if (!psWizardValidateFromSenderFields()) {
+            return;
+        }
 
         var clientID = jQuery('.ps-gmail-api-client-id').val();
         var clientSecret = jQuery('.ps-gmail-client-secret').val();
@@ -904,6 +981,10 @@ jQuery(document).ready(function () {
 
         e.preventDefault();
 
+        if (!psWizardValidateFromSenderFields()) {
+            return;
+        }
+
         var $button = jQuery(this);
         var originalText = $button.text();
 
@@ -926,7 +1007,8 @@ jQuery(document).ready(function () {
                     dataType: 'json',
                     data: {
                         action: 'ps_get_gmail_auth_url',
-                        nonce: (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmail_auth_nonce) ? PostSMTPWizard.gmail_auth_nonce : ''
+                        nonce: (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.gmail_auth_nonce) ? PostSMTPWizard.gmail_auth_nonce : '',
+                        sender_email: (jQuery('.ps-from-email').val() || '').trim()
                     },
                     success: function (response) {
                         if (response.success && response.data && response.data.auth_url) {
@@ -1070,6 +1152,81 @@ jQuery(document).ready(function () {
         }, 2000);
 
     });
+	let activeEditButton;
+    jQuery('.postman-delete-connection-btn').click(function(e) {
+        e.preventDefault();
+        var connectionId = jQuery(this).data('id');
+        
+        if (!confirm('Are you sure you want to delete this connection?')) {
+            return;
+        }
+
+        jQuery.post(ajaxurl, {
+            action: 'postman_delete_connection',
+            connection_id: connectionId,
+            _wpnonce: PostSMTPWizard.delete_connection_nonce
+        }, function(response) {
+            if (response.success) {
+                alert('Connection deleted successfully.');
+                location.reload();
+            } else {
+                alert('Failed to delete connection.');
+            }
+        });
+    });
+	
+    function openModal(wizardValue) {
+        jQuery('#editModal').css('display', 'flex');
+        jQuery('body').addClass('post-smtp-modal-open');
+		jQuery('#titleInput').val('');
+		jQuery('#wizardValue').val('');
+
+        jQuery('#wizardValue').val(wizardValue);
+    }
+
+    function closeModal(event) {
+        if (event) event.preventDefault();
+        jQuery('#editModal').hide();
+        jQuery('body').removeClass('post-smtp-modal-open');
+    }
+
+    // Open modal with wizard value
+    jQuery('.post-smtp-modal-trigger-btn').on('click', function() {
+		 activeEditButton = jQuery(this);
+        const wizardValue = jQuery(this).data('wizard');
+        openModal(wizardValue);
+    });
+
+    // Save title
+    jQuery('.post-smtp-modal-save-btn').on('click', saveTitle);
+
+    // Close modal
+    jQuery('.post-smtp-modal-close-btn').on('click', closeModal);
+	
+	function saveTitle() {
+		const title = jQuery('#titleInput').val();
+		const wizardIndex = jQuery('#wizardValue').val();
+
+		jQuery.ajax({
+			url: ajaxurl,
+			method: 'POST',
+			data: {
+				action: 'save_connection_title',
+				title: title,
+				index: wizardIndex,
+				_wpnonce: PostSMTPWizard.save_title_nonce
+			},
+			success: function(response) {
+				  activeEditButton.closest('tr').find('td:first strong').text(title);  
+				closeModal();
+			},
+			error: function(error) {
+				alert('Failed To Save Title');
+			}
+		});
+	}
+
+	
 
     const gmail_icon = PostSMTPWizard.gmail_icon;
     const office365_icon = PostSMTPWizard.office365_icon;
@@ -1244,7 +1401,12 @@ jQuery(document).ready(function ($) {
 
     // Listen for changes on the checkbox
     jQuery('.ps-enable-gmail-one-click').on('change', toggleFields);
-
+    
+    // Place this in your admin JS file or enqueue it for the wizard page
+	jQuery(document).on('click', '.ps-finish-wizard', function(e) {
+		jQuery.post( ajaxurl, { action: 'ps_expire_client_transients' });
+	});
+    
 });
 
 jQuery(document).ready(function ($) {
@@ -1279,7 +1441,24 @@ jQuery(document).ready(function ($) {
     });
     jQuery(document).on('click', '.ps-gmail-btn', function (e) {
         e.preventDefault();
-        var redirectURI = jQuery(this).attr('href');
+        var $button = jQuery(this);
+
+        if ($button.hasClass('ps-gmail-btn--busy')) {
+            return false;
+        }
+
+        if (!psWizardValidateFromSenderFields()) {
+            return false;
+        }
+
+        var redirectURI = $button.attr('href');
+        var originalText = $button.text();
+        $button.addClass('ps-gmail-btn--busy').attr({ 'aria-busy': 'true', 'aria-disabled': 'true' }).text('Redirecting...');
+
+        var resetButton = function () {
+            $button.removeClass('ps-gmail-btn--busy').removeAttr('aria-busy').removeAttr('aria-disabled').text(originalText);
+        };
+
         jQuery.ajax({
             url: ajaxurl,
             type: 'POST',
@@ -1290,19 +1469,32 @@ jQuery(document).ready(function ($) {
             },
             success: function (response) {
                 window.location.assign(redirectURI);
-
             },
-
+            error: function () {
+                resetButton();
+            }
         });
     });
 
     jQuery(document).on('click', '.ps-office365-btn', function (e) {
         e.preventDefault();
-        var redirectURI = jQuery(this).attr('href');
         var $button = jQuery(this);
-        var originalText = $button.text();
 
-        $button.prop('disabled', true).text('Redirecting...');
+        // <a> elements ignore .prop('disabled'); guard + class block repeat clicks.
+        if ($button.hasClass('ps-office365-btn--busy')) {
+            return false;
+        }
+
+        if (!psWizardValidateFromSenderFields()) {
+            return false;
+        }
+
+        var originalText = $button.text();
+        $button.addClass('ps-office365-btn--busy').attr({ 'aria-busy': 'true', 'aria-disabled': 'true' }).text('Redirecting...');
+
+        var resetButton = function () {
+            $button.removeClass('ps-office365-btn--busy').removeAttr('aria-busy').removeAttr('aria-disabled').text(originalText);
+        };
 
         jQuery.ajax({
             url: ajaxurl,
@@ -1326,22 +1518,23 @@ jQuery(document).ready(function ($) {
                         if (response.success && response.data && response.data.auth_url) {
                             window.location.assign(response.data.auth_url);
                         } else {
-                            $button.prop('disabled', false).text(originalText);
+                            resetButton();
                             if (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.office365AuthErrorText) {
                                 alert(PostSMTPWizard.office365AuthErrorText);
                             }
                         }
                     },
                     error: function () {
-                        $button.prop('disabled', false).text(originalText);
+                        resetButton();
                         if (typeof PostSMTPWizard !== 'undefined' && PostSMTPWizard.office365AuthErrorText) {
                             alert(PostSMTPWizard.office365AuthErrorText);
                         }
                     }
                 });
-
             },
-
+            error: function () {
+                resetButton();
+            }
         });
     });
 

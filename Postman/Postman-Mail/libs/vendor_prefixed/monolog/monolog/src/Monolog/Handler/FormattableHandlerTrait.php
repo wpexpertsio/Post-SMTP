@@ -20,38 +20,36 @@ use PostSMTP\Vendor\Monolog\Formatter\LineFormatter;
  *
  * @author Jordi Boggiano <j.boggiano@seld.be>
  */
-trait FormattableHandlerTrait
-{
-    /**
-     * @var FormatterInterface
-     */
-    protected $formatter;
-    /**
-     * {@inheritdoc}
-     * @suppress PhanTypeMismatchReturn
-     */
-    public function setFormatter(\PostSMTP\Vendor\Monolog\Formatter\FormatterInterface $formatter) : \PostSMTP\Vendor\Monolog\Handler\HandlerInterface
-    {
-        $this->formatter = $formatter;
-        return $this;
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormatter() : \PostSMTP\Vendor\Monolog\Formatter\FormatterInterface
-    {
-        if (!$this->formatter) {
-            $this->formatter = $this->getDefaultFormatter();
-        }
-        return $this->formatter;
-    }
-    /**
-     * Gets the default formatter.
-     *
-     * Overwrite this if the LineFormatter is not a good default for your handler.
-     */
-    protected function getDefaultFormatter() : \PostSMTP\Vendor\Monolog\Formatter\FormatterInterface
-    {
-        return new \PostSMTP\Vendor\Monolog\Formatter\LineFormatter();
-    }
+trait FormattableHandlerTrait {
+
+	/**
+	 * @var FormatterInterface
+	 */
+	protected $formatter;
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @suppress PhanTypeMismatchReturn
+	 */
+	public function setFormatter( \PostSMTP\Vendor\Monolog\Formatter\FormatterInterface $formatter ): \PostSMTP\Vendor\Monolog\Handler\HandlerInterface {
+		$this->formatter = $formatter;
+		return $this;
+	}
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getFormatter(): \PostSMTP\Vendor\Monolog\Formatter\FormatterInterface {
+		if ( ! $this->formatter ) {
+			$this->formatter = $this->getDefaultFormatter();
+		}
+		return $this->formatter;
+	}
+	/**
+	 * Gets the default formatter.
+	 *
+	 * Overwrite this if the LineFormatter is not a good default for your handler.
+	 */
+	protected function getDefaultFormatter(): \PostSMTP\Vendor\Monolog\Formatter\FormatterInterface {
+		return new \PostSMTP\Vendor\Monolog\Formatter\LineFormatter();
+	}
 }

@@ -17,6 +17,6 @@
  */
 namespace PostSMTP\Vendor\Google\Auth\HttpHandler;
 
-class Guzzle7HttpHandler extends \PostSMTP\Vendor\Google\Auth\HttpHandler\Guzzle6HttpHandler
-{
+class Guzzle7HttpHandler extends \PostSMTP\Vendor\Google\Auth\HttpHandler\Guzzle6HttpHandler {
+
 }

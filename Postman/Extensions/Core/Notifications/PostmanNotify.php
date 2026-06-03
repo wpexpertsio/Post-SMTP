@@ -29,7 +29,7 @@ class PostmanNotify {
 		add_filter( 'post_smtp_admin_tabs', array( $this, 'tabs' ) );
 		add_action( 'post_smtp_settings_menu', array( $this, 'menu' ) );
 		add_action( 'post_smtp_settings_fields', array( $this, 'settings' ) );
-		add_action( 'post_smtp_on_failed', array( $this, 'notify' ), 10, 5 );
+		add_action( 'post_smtp_on_failed', array( $this, 'notify' ), 10, 6 );
 		add_filter( 'post_smtp_sanitize', array( $this, 'sanitize' ), 10, 3 );
 		
 		// Register AJAX handler for test notification
@@ -89,17 +89,13 @@ class PostmanNotify {
 
         //Webhook Alerts
         $webhook_urls = array();
+		$postman_options = ( isset( $_POST['postman_options'] ) && is_array( $_POST['postman_options'] ) ) ? $_POST['postman_options'] : array();
+		$webhook_input   = ( isset( $postman_options['webhook_alerts_urls'] ) && is_array( $postman_options['webhook_alerts_urls'] ) ) ? $postman_options['webhook_alerts_urls'] : array();
 
-        if( isset( $_POST['postman_options']['webhook_alerts_urls'] ) ) {
-            
-            foreach ( $_POST['postman_options']['webhook_alerts_urls'] as $key => $url ) {
-
-                if( ! empty( $url ) ) {
-                    $webhook_urls[] = esc_url_raw( $url );
-                }
-    
-            }
-
+		foreach ( $webhook_input as $url ) {
+			if ( ! empty( $url ) ) {
+				$webhook_urls[] = esc_url_raw( $url );
+			}
 		}
 
 		update_option( PostmanWebhookAlertsNotify::WEBHOOK_OPTION, $webhook_urls );
@@ -301,7 +297,7 @@ class PostmanNotify {
 	 * @param PostmanTransport $transport
 	 * @param string           $errorMessage
 	 */
-	public function notify( $log, $postmanMessage, $transcript, $transport, $errorMessage ) {
+	public function notify( $log, $postmanMessage, $transcript, $transport, $errorMessage, $is_fallback = false ) {
 		$message  = __( 'You getting this message because an error detected while delivered your email.', 'post-smtp' );
 		$message .= "\r\n" . sprintf( __( 'For the domain: %1$s', 'post-smtp' ), get_bloginfo( 'url' ) );
 		$message .= "\r\n" . __( 'The log to paste when you open a support issue:', 'post-smtp' ) . "\r\n";

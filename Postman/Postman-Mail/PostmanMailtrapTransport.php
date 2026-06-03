@@ -95,17 +95,80 @@ class PostmanMailtrapTransport extends PostmanAbstractModuleTransport implements
     }
 
     /**
+     * Mailtrap API tokens must be printable ASCII (reject binary from over-decoded options).
+     *
+     * @param mixed $key
+     * @return bool
+     */
+    private static function is_mailtrap_api_key_plausible( $key ) {
+        $k = trim( (string) $key );
+        if ( strlen( $k ) < 4 ) {
+            return false;
+        }
+
+        return (bool) preg_match( '/\A[\x20-\x7E]+\z/', $k );
+    }
+
+    /**
+     * Prefer resolver value; if missing or corrupted, fall back to legacy postman_options read.
+     *
+     * @param mixed $from_resolver Value from {@see Postman_Connection_Resolver::get_primary_field()}.
+     * @return string
+     */
+    private function resolve_mailtrap_api_key_for_primary_send( $from_resolver ) {
+        if ( self::is_mailtrap_api_key_plausible( $from_resolver ) ) {
+            return trim( (string) $from_resolver );
+        }
+        $legacy = trim( (string) $this->options->getMailtrapApiKey() );
+        if ( self::is_mailtrap_api_key_plausible( $legacy ) ) {
+            return $legacy;
+        }
+
+        return trim( (string) $from_resolver );
+    }
+
+    /**
      * @since 2.9.0
      * @version 1.0
      */
     public function createMailEngine() {
+        $api_key = $this->resolve_mailtrap_api_key_for_primary_send(
+            Postman_Connection_Resolver::get_primary_field(
+                'mailtrap_api_key',
+                array( $this->options, 'getMailtrapApiKey' )
+            )
+        );
+        $route_key = Postman_Connection_Resolver::get_route_key();
 
-        $api_key = $this->options->getMailtrapApiKey();
+        $api_credentials = ( $route_key !== null )
+            ? array( 'api_key' => $api_key, 'route_key' => $route_key )
+            : array( 'api_key' => $api_key );
+
         require_once 'PostmanMailtrapMailEngine.php';
-		$engine = new PostmanMailtrapMailEngine( $api_key );
+        return new PostmanMailtrapMailEngine( $api_credentials );
+    }
 
-		return $engine;
+    /**
+     * Create Mailtrap mail engine for fallback delivery.
+     *
+     * @since 3.2.0
+     * @version 1.0
+     */
+    public function createMailEngineFallback() {
+        $key = trim( (string) Postman_Connection_Resolver::get_fallback_field( 'mailtrap_api_key' ) );
+        if ( ! self::is_mailtrap_api_key_plausible( $key ) ) {
+            $try = base64_decode( $key, true );
+            if ( false !== $try && self::is_mailtrap_api_key_plausible( $try ) ) {
+                $key = trim( (string) $try );
+            }
+        }
+        $api_credentials = array(
+            'api_key'     => $key,
+            'is_fallback' => 1,
+        );
 
+        require_once 'PostmanMailtrapMailEngine.php';
+        return new PostmanMailtrapMailEngine( $api_credentials );
     }
 
     /**

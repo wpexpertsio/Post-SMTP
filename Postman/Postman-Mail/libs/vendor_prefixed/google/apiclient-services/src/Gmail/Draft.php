@@ -17,42 +17,38 @@
  */
 namespace PostSMTP\Vendor\Google\Service\Gmail;
 
-class Draft extends \PostSMTP\Vendor\Google\Model
-{
-    /**
-     * @var string
-     */
-    public $id;
-    protected $messageType = \PostSMTP\Vendor\Google\Service\Gmail\Message::class;
-    protected $messageDataType = '';
-    /**
-     * @param string
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-    /**
-     * @param Message
-     */
-    public function setMessage(\PostSMTP\Vendor\Google\Service\Gmail\Message $message)
-    {
-        $this->message = $message;
-    }
-    /**
-     * @return Message
-     */
-    public function getMessage()
-    {
-        return $this->message;
-    }
+class Draft extends \PostSMTP\Vendor\Google\Model {
+
+	/**
+	 * @var string
+	 */
+	public $id;
+	protected $messageType     = \PostSMTP\Vendor\Google\Service\Gmail\Message::class;
+	protected $messageDataType = '';
+	/**
+	 * @param string
+	 */
+	public function setId( $id ) {
+		$this->id = $id;
+	}
+	/**
+	 * @return string
+	 */
+	public function getId() {
+		return $this->id;
+	}
+	/**
+	 * @param Message
+	 */
+	public function setMessage( \PostSMTP\Vendor\Google\Service\Gmail\Message $message ) {
+		$this->message = $message;
+	}
+	/**
+	 * @return Message
+	 */
+	public function getMessage() {
+		return $this->message;
+	}
 }
 // Adding a class alias for backwards compatibility with the previous class name.
-\class_alias(\PostSMTP\Vendor\Google\Service\Gmail\Draft::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_Draft');
+\class_alias( \PostSMTP\Vendor\Google\Service\Gmail\Draft::class, 'PostSMTP\\Vendor\\Google_Service_Gmail_Draft' );

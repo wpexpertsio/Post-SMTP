@@ -21,16 +21,14 @@
 			// Set 30-second timeout for SMTP2GO requests
 			$this->set_additional_args( array( 'timeout' => 30 ) );
 		}			
-		
 		private function get_headers() {
-				return array(
-					'Content-Type'  =>  'application/json',
-					'X-Smtp2go-Api-Key' => $this->api_key,
-					'accept' => 'application/json',
-				);
-			}
-
-			public function send( $content ) {
+			return array(
+				'Content-Type'  =>  'application/json',
+				'X-Smtp2go-Api-Key' => $this->api_key,
+				'accept' => 'application/json',
+			);
+		}
+		public function send( $content ) {
 				$content = json_encode( $content );
 
 				$response = $this->request(

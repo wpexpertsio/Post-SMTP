@@ -18,23 +18,20 @@ use PostSMTP\Vendor\Doctrine\CouchDB\CouchDBClient;
  *
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class DoctrineCouchDBHandler extends \PostSMTP\Vendor\Monolog\Handler\AbstractProcessingHandler
-{
-    private $client;
-    public function __construct(\PostSMTP\Vendor\Doctrine\CouchDB\CouchDBClient $client, $level = \PostSMTP\Vendor\Monolog\Logger::DEBUG, $bubble = \true)
-    {
-        $this->client = $client;
-        parent::__construct($level, $bubble);
-    }
-    /**
-     * {@inheritDoc}
-     */
-    protected function write(array $record)
-    {
-        $this->client->postDocument($record['formatted']);
-    }
-    protected function getDefaultFormatter()
-    {
-        return new \PostSMTP\Vendor\Monolog\Formatter\NormalizerFormatter();
-    }
+class DoctrineCouchDBHandler extends \PostSMTP\Vendor\Monolog\Handler\AbstractProcessingHandler {
+
+	private $client;
+	public function __construct( \PostSMTP\Vendor\Doctrine\CouchDB\CouchDBClient $client, $level = \PostSMTP\Vendor\Monolog\Logger::DEBUG, $bubble = \true ) {
+		$this->client = $client;
+		parent::__construct( $level, $bubble );
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function write( array $record ) {
+		$this->client->postDocument( $record['formatted'] );
+	}
+	protected function getDefaultFormatter() {
+		return new \PostSMTP\Vendor\Monolog\Formatter\NormalizerFormatter();
+	}
 }

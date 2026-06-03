@@ -30,83 +30,81 @@ require_once 'Zend/Validate/Abstract.php';
  * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Postman_Zend_Validate_Ccnum extends Postman_Zend_Validate_Abstract
-{
-    /**
-     * Validation failure message key for when the value is not of valid length
-     */
-    const LENGTH   = 'ccnumLength';
+class Postman_Zend_Validate_Ccnum extends Postman_Zend_Validate_Abstract {
 
-    /**
-     * Validation failure message key for when the value fails the mod-10 checksum
-     */
-    const CHECKSUM = 'ccnumChecksum';
+	/**
+	 * Validation failure message key for when the value is not of valid length
+	 */
+	const LENGTH = 'ccnumLength';
 
-    /**
-     * Digits filter for input
-     *
-     * @var Postman_Zend_Filter_Digits
-     */
-    protected static $_filter = null;
+	/**
+	 * Validation failure message key for when the value fails the mod-10 checksum
+	 */
+	const CHECKSUM = 'ccnumChecksum';
 
-    /**
-     * Validation failure message template definitions
-     *
-     * @var array
-     */
-    protected $_messageTemplates = array(
-        self::LENGTH   => "'%value%' must contain between 13 and 19 digits",
-        self::CHECKSUM => "Luhn algorithm (mod-10 checksum) failed on '%value%'"
-    );
+	/**
+	 * Digits filter for input
+	 *
+	 * @var Postman_Zend_Filter_Digits
+	 */
+	protected static $_filter = null;
 
-    public function __construct()
-    {
-        trigger_error('Using the Ccnum validator is deprecated in favor of the CreditCard validator');
-    }
+	/**
+	 * Validation failure message template definitions
+	 *
+	 * @var array
+	 */
+	protected $_messageTemplates = array(
+		self::LENGTH   => "'%value%' must contain between 13 and 19 digits",
+		self::CHECKSUM => "Luhn algorithm (mod-10 checksum) failed on '%value%'",
+	);
 
-    /**
-     * Defined by Postman_Zend_Validate_Interface
-     *
-     * Returns true if and only if $value follows the Luhn algorithm (mod-10 checksum)
-     *
-     * @param  string $value
-     * @return boolean
-     */
-    public function isValid($value)
-    {
-        $this->_setValue($value);
+	public function __construct() {
+		trigger_error( 'Using the Ccnum validator is deprecated in favor of the CreditCard validator' );
+	}
 
-        if (null === self::$_filter) {
-            /**
-             * @see Postman_Zend_Filter_Digits
-             */
-            require_once 'Zend/Filter/Digits.php';
-            self::$_filter = new Postman_Zend_Filter_Digits();
-        }
+	/**
+	 * Defined by Postman_Zend_Validate_Interface
+	 *
+	 * Returns true if and only if $value follows the Luhn algorithm (mod-10 checksum)
+	 *
+	 * @param  string $value
+	 * @return boolean
+	 */
+	public function isValid( $value ) {
+		$this->_setValue( $value );
 
-        $valueFiltered = self::$_filter->filter($value);
+		if ( null === self::$_filter ) {
+			/**
+			 * @see Postman_Zend_Filter_Digits
+			 */
+			require_once 'Zend/Filter/Digits.php';
+			self::$_filter = new Postman_Zend_Filter_Digits();
+		}
 
-        $length = strlen($valueFiltered);
+		$valueFiltered = self::$_filter->filter( $value );
 
-        if ($length < 13 || $length > 19) {
-            $this->_error(self::LENGTH);
-            return false;
-        }
+		$length = strlen( $valueFiltered );
 
-        $sum    = 0;
-        $weight = 2;
+		if ( $length < 13 || $length > 19 ) {
+			$this->_error( self::LENGTH );
+			return false;
+		}
 
-        for ($i = $length - 2; $i >= 0; $i--) {
-            $digit = $weight * $valueFiltered[$i];
-            $sum += floor($digit / 10) + $digit % 10;
-            $weight = $weight % 2 + 1;
-        }
+		$sum    = 0;
+		$weight = 2;
 
-        if ((10 - $sum % 10) % 10 != $valueFiltered[$length - 1]) {
-            $this->_error(self::CHECKSUM, $valueFiltered);
-            return false;
-        }
+		for ( $i = $length - 2; $i >= 0; $i-- ) {
+			$digit  = $weight * $valueFiltered[ $i ];
+			$sum   += floor( $digit / 10 ) + $digit % 10;
+			$weight = $weight % 2 + 1;
+		}
 
-        return true;
-    }
+		if ( ( 10 - $sum % 10 ) % 10 != $valueFiltered[ $length - 1 ] ) {
+			$this->_error( self::CHECKSUM, $valueFiltered );
+			return false;
+		}
+
+		return true;
+	}
 }

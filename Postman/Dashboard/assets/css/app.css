@@ -469,13 +469,13 @@
 }
 
 
-.mb-24[data-v-b8fab578] {
+.mb-24[data-v-77e11aa6] {
 	margin-bottom: 24px;
 }
-.post-smtp-selector-wrapper[data-v-b8fab578] {
+.post-smtp-selector-wrapper[data-v-77e11aa6] {
 	position: relative;
 }
-.post-smtp-selector-wrapper a.re-launch-wizard[data-v-b8fab578] {
+.post-smtp-selector-wrapper a.re-launch-wizard[data-v-77e11aa6] {
 	float: right;
 	padding: 8px 16px;
 	background: #f3f7ff;
@@ -488,7 +488,7 @@
 	text-align: left;
 	text-decoration: none;
 }
-.post-smtp-selector-wrapper[data-v-b8fab578]::after {
+.post-smtp-selector-wrapper[data-v-77e11aa6]::after {
 	content: '';
 	clear: both;
 	display: table;
@@ -1104,7 +1104,7 @@
 	border-radius: inherit;
 	pointer-events: none;
 	z-index: 0;
-	background-image: url( ../99fc648a4769e7b2776d.svg );
+	background-image: url( ../560ea6be4f14b80c2b09.svg );
 	background-repeat: repeat;
 	background-size: 120px 120px;
 	opacity: 0.55;

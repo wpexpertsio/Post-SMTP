@@ -8,7 +8,7 @@ class ActionScheduler_CanceledSchedule extends ActionScheduler_SimpleSchedule {
 	/**
 	 * Deprecated property @see $this->__wakeup() for details.
 	 **/
-	private $timestamp = NULL;
+	private $timestamp = null;
 
 	/**
 	 * @param DateTime $after

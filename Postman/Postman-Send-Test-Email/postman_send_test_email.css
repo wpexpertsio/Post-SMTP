@@ -177,13 +177,7 @@
 }
 
 .need-more-line::after {
-	height: 491px !important;
-}
-
-.ps-ste-clearfix::after {
-	clear: both;
-	display: table;
-	content: '';
+	height: 486px !important;
 }
 
 

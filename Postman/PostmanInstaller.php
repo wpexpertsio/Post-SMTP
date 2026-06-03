@@ -71,14 +71,23 @@ class PostmanInstaller {
 		$options = get_option( PostmanOptions::POSTMAN_OPTIONS );
 		$args = array(
 			'fallback_smtp_enabled' => 'no',
+			'primary_connection' => 0,
 		);
 
 		if ( empty( $options ) ) {
 			add_option( 'postman_options', $args );
 
 		} else {
-			if ( empty( $options['fallback_smtp_enabled'] ) ) {
-				$result = array_merge($options, $args);
+			$missing = [];
+
+			if ( ! isset( $options['fallback_smtp_enabled'] ) ) {
+				$missing['fallback_smtp_enabled'] = 'no';
+			}
+			if ( ! isset( $options['primary_connection'] ) ) {
+				$missing['primary_connection'] = 0;
+			}
+			if ( ! empty( $missing ) ) {
+				$result = array_merge( $options, $missing );
 				update_option( PostmanOptions::POSTMAN_OPTIONS, $result );
 			}
 		}

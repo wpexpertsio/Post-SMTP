@@ -16,6 +16,6 @@ namespace PostSMTP\Vendor\phpseclib3\Math\Common;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class FiniteField
-{
+abstract class FiniteField {
+
 }

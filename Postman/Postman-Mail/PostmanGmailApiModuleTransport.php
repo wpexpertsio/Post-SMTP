@@ -24,8 +24,9 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
     private $gmail_oneclick_enabled = false;
 	public function __construct($rootPluginFilenameAndPath) {
 		parent::__construct ( $rootPluginFilenameAndPath );
-		$this->gmail_oneclick_enabled = in_array( 'gmail-oneclick', get_option( 'post_smtp_pro', [] )['extensions'] ?? [] );
-
+		// One-Click depends on per-connection OAuth fields that only exist
+		// in the new schema; gate the feature on migration completion too.
+		$this->gmail_oneclick_enabled = Postman_Connection_Resolver::is_gmail_oneclick_enabled();
 		// add a hook on the plugins_loaded event
 		add_action ( 'admin_init', array (
 				$this,
@@ -51,8 +52,27 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	 * @see PostmanModuleTransport::createMailEngine()
 	 */
 	public function createMailEngine() {
+		$fallback_flag = array(
+			'is_fallback' => null,
+		);
+
 		require_once 'PostmanZendMailEngine.php';
-		return new PostmanZendMailEngine ( $this );
+		return new PostmanZendMailEngine ( $this , $fallback_flag );
+	}
+
+	/**
+	 * @since 3.0.1
+	 * @version 1.0
+	 */
+	public function createMailEngineFallback() {
+
+		$fallback_flag = array(
+            'is_fallback' => 1,
+        );
+
+		require_once 'PostmanZendMailEngine.php';
+		return new PostmanZendMailEngine ( $this , $fallback_flag );
+
 	}
 
 	
@@ -61,31 +81,82 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 	 *
 	 * @see PostmanZendModuleTransport::createZendMailTransport()
 	 */
-	public function createZendMailTransport($fakeHostname, $fakeConfig) {
+	public function createZendMailTransport($fakeHostname, $fakeConfig ) {
 		if (PostmanOptions::AUTHENTICATION_TYPE_OAUTH2 == $this->getAuthenticationType ()) {
 			$config = PostmanOAuth2ConfigurationFactory::createConfig ( $this );
 		} else {
 			$config = PostmanBasicAuthConfigurationFactory::createConfig ( $this );
 		}
+		// build the Gmail Client.
+		$authToken = PostmanOAuthToken::getInstance();
 		
+		$options = PostmanOptions::getInstance();
+
+		/*
+		 * Resolve the active connection ID. PostmanZendMailEngine::send()
+		 * passes an empty array() as $fakeConfig for the legacy-mode and
+		 * primary-send paths, null for new-mode primary, and the integer
+		 * 1 for new-mode fallback — so a non-truthy $fakeConfig means
+		 * primary (with optional smart-routing override), and a truthy
+		 * $fakeConfig means fallback.
+		 */
+		$connection_details = get_option( 'postman_connections', array() );
+		if ( ! is_array( $connection_details ) ) {
+			$connection_details = array();
+		}
+
+		$is_fallback = (bool) $fakeConfig;
+		$id          = null;
+		if ( $is_fallback ) {
+			$id = $options->getSelectedFallback();
+		} else {
+			$route_key = get_transient( 'post_smtp_smart_routing_route' );
+			$id        = ( $route_key !== false && $route_key !== null && $route_key !== '' )
+				? $route_key
+				: $options->getSelectedPrimary();
+		}
+
+		$selected_connection = array();
+		if ( $id !== null && $id !== '' && isset( $connection_details[ $id ] ) && is_array( $connection_details[ $id ] ) ) {
+			$selected_connection = $connection_details[ $id ];
+		}
+
+		/*
+		 * Prefer the new-schema connection row when one exists. The wizard's
+		 * One-Click OAuth flow writes access_token / refresh_token /
+		 * account_key / user_email straight into postman_connections without
+		 * bumping postman_db_version, so this branch fires correctly even
+		 * before the fallback migration has run. Pure-legacy installs (no
+		 * postman_connections row yet) keep working through the legacy
+		 * postman_options + PostmanOAuthToken path below.
+		 */
+		if ( ! empty( $selected_connection ) ) {
+			$client_id     = isset( $selected_connection['oauth_client_id'] ) ? $selected_connection['oauth_client_id'] : '';
+			$client_secret = isset( $selected_connection['oauth_client_secret'] ) ? $selected_connection['oauth_client_secret'] : '';
+			$access_token  = isset( $selected_connection['access_token'] ) ? $selected_connection['access_token'] : '';
+			$refresh_token = isset( $selected_connection['refresh_token'] ) ? $selected_connection['refresh_token'] : '';
+		} else {
+			$client_id     = $this->options->getClientId();
+			$client_secret = $this->options->getClientSecret();
+			$access_token  = $authToken->getAccessToken();
+			$refresh_token = $authToken->getRefreshToken();
+		}
 		// Google's autoloader will try and load this so we list it first
 		require_once 'PostmanGmailApiModuleZendMailTransport.php';
 
 		//Load Google Client API
         require_once 'libs/vendor/autoload.php';
 		
-		// build the Gmail Client
-		$authToken = PostmanOAuthToken::getInstance ();
+
 		$client = new Google_Client(
             array(
-                'client_id'     => $this->options->getClientId(),
-                'client_secret' => $this->options->getClientSecret(),
+                'client_id'     => $client_id,
+                'client_secret' => $client_secret,
                 'redirect_uris' => array(
                     $this->getScribe()->getCallbackUrl(),
                 ),
             )
         );
-		
 		// rebuild the google access token
 		$token = new stdClass ();
         $client->setApplicationName( 'Post SMTP ' . POST_SMTP_VER );
@@ -96,20 +167,26 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
         $client->setRedirectUri( $this->getScribe()->getCallbackUrl() );
         
         if ( $this->gmail_oneclick_enabled ) {
-			$config = [];
+			$config = array(
+				'account_key'   => isset( $selected_connection['account_key'] ) ? $selected_connection['account_key'] : '',
+				'gmail_email'   => isset( $selected_connection['user_email'] ) ? $selected_connection['user_email'] : '',
+				'access_token'  => isset( $selected_connection['access_token'] ) ? $selected_connection['access_token'] : '',
+			);
 			return new PostmanGmailApiModuleZendMailTransport ( self::HOST, $config );
 		}
 		try {
 			
 			//If Access Token Expired, get new one
 			if( $client->isAccessTokenExpired() ) {
-				$client->fetchAccessTokenWithRefreshToken( $authToken->getRefreshToken() );
+				
+				$client->fetchAccessTokenWithRefreshToken( $refresh_token );
 				
 			}
 			//Lets go with the old one
 			else {
-				$client->setAccessToken( $authToken->getAccessToken() );
-				$client->setRefreshToken( $authToken->getRefreshToken() );
+				
+				$client->setAccessToken( $access_token );
+				$client->setRefreshToken( $refresh_token );
 				
 			}
 			

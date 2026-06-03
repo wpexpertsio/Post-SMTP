@@ -26,11 +26,11 @@ class ActionScheduler_DBStore extends ActionScheduler_Store {
 	protected static $max_index_length = 191;
 
 	/** @var array List of claim filters. */
-	protected $claim_filters = [
+	protected $claim_filters = array(
 		'group'          => '',
 		'hooks'          => '',
 		'exclude-groups' => '',
-	];
+	);
 
 	/**
 	 * Initialize the data store
@@ -147,7 +147,7 @@ class ActionScheduler_DBStore extends ActionScheduler_Store {
 		$placeholder_sql = implode( ', ', $placeholders );
 		$where_clause    = $this->build_where_clause_for_insert( $data, $table_name, $unique );
 		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $column_sql and $where_clause are already prepared. $placeholder_sql is hardcoded.
-		$insert_query    = $wpdb->prepare(
+		$insert_query = $wpdb->prepare(
 			"
 INSERT INTO $table_name ( $column_sql )
 SELECT $placeholder_sql FROM DUAL
@@ -396,22 +396,25 @@ AND `group_id` = %d
 			throw new InvalidArgumentException( __( 'Invalid value for select or count parameter. Cannot query actions.', 'action-scheduler' ) );
 		}
 
-		$query = wp_parse_args( $query, array(
-			'hook'                  => '',
-			'args'                  => null,
-			'partial_args_matching' => 'off', // can be 'like' or 'json'
-			'date'                  => null,
-			'date_compare'          => '<=',
-			'modified'              => null,
-			'modified_compare'      => '<=',
-			'group'                 => '',
-			'status'                => '',
-			'claimed'               => null,
-			'per_page'              => 5,
-			'offset'                => 0,
-			'orderby'               => 'date',
-			'order'                 => 'ASC',
-		 ) );
+		$query = wp_parse_args(
+			$query,
+			array(
+				'hook'                  => '',
+				'args'                  => null,
+				'partial_args_matching' => 'off', // can be 'like' or 'json'
+				'date'                  => null,
+				'date_compare'          => '<=',
+				'modified'              => null,
+				'modified_compare'      => '<=',
+				'group'                 => '',
+				'status'                => '',
+				'claimed'               => null,
+				'per_page'              => 5,
+				'offset'                => 0,
+				'orderby'               => 'date',
+				'order'                 => 'ASC',
+			)
+		);
 
 		/** @var \wpdb $wpdb */
 		global $wpdb;
@@ -428,22 +431,22 @@ AND `group_id` = %d
 		}
 
 		$sql        = ( 'count' === $select_or_count ) ? 'SELECT count(a.action_id)' : 'SELECT a.action_id';
-		$sql        .= " FROM {$wpdb->actionscheduler_actions} a";
+		$sql       .= " FROM {$wpdb->actionscheduler_actions} a";
 		$sql_params = array();
 
 		if ( ! empty( $query['group'] ) || 'group' === $query['orderby'] ) {
 			$sql .= " LEFT JOIN {$wpdb->actionscheduler_groups} g ON g.group_id=a.group_id";
 		}
 
-		$sql .= " WHERE 1=1";
+		$sql .= ' WHERE 1=1';
 
 		if ( ! empty( $query['group'] ) ) {
-			$sql          .= " AND g.slug=%s";
+			$sql         .= ' AND g.slug=%s';
 			$sql_params[] = $query['group'];
 		}
 
 		if ( ! empty( $query['hook'] ) ) {
-			$sql          .= " AND a.hook=%s";
+			$sql         .= ' AND a.hook=%s';
 			$sql_params[] = $query['hook'];
 		}
 
@@ -466,26 +469,28 @@ AND `group_id` = %d
 						}
 						$placeholder = isset( $supported_types[ $value_type ] ) ? $supported_types[ $value_type ] : false;
 						if ( ! $placeholder ) {
-							throw new \RuntimeException( sprintf(
+							throw new \RuntimeException(
+								sprintf(
 								/* translators: %s: provided value type */
-								__( 'The value type for the JSON partial matching is not supported. Must be either integer, boolean, double or string. %s type provided.', 'action-scheduler' ),
-								$value_type
-							) );
+									__( 'The value type for the JSON partial matching is not supported. Must be either integer, boolean, double or string. %s type provided.', 'action-scheduler' ),
+									$value_type
+								)
+							);
 						}
-						$sql          .= ' AND JSON_EXTRACT(a.args, %s)='.$placeholder;
-						$sql_params[] = '$.'.$key;
+						$sql         .= ' AND JSON_EXTRACT(a.args, %s)=' . $placeholder;
+						$sql_params[] = '$.' . $key;
 						$sql_params[] = $value;
 					}
 					break;
 				case 'like':
 					foreach ( $query['args'] as $key => $value ) {
-						$sql          .= ' AND a.args LIKE %s';
+						$sql         .= ' AND a.args LIKE %s';
 						$json_partial = $wpdb->esc_like( trim( json_encode( array( $key => $value ) ), '{}' ) );
 						$sql_params[] = "%{$json_partial}%";
 					}
 					break;
 				case 'off':
-					$sql          .= " AND a.args=%s";
+					$sql         .= ' AND a.args=%s';
 					$sql_params[] = $this->get_args_for_query( $query['args'] );
 					break;
 				default:
@@ -821,7 +826,7 @@ AND `group_id` = %d
 	 * Set a claim filter.
 	 *
 	 * @param string $filter_name Claim filter name.
-	 * @param mixed $filter_values Values to filter.
+	 * @param mixed  $filter_values Values to filter.
 	 * @return void
 	 */
 	public function set_claim_filter( $filter_name, $filter_values ) {
@@ -861,8 +866,8 @@ AND `group_id` = %d
 		/** @var \wpdb $wpdb */
 		global $wpdb;
 
-		$now    = as_get_datetime_object();
-		$date   = is_null( $before_date ) ? $now : clone $before_date;
+		$now  = as_get_datetime_object();
+		$date = is_null( $before_date ) ? $now : clone $before_date;
 		// can't use $wpdb->update() because of the <= condition.
 		$update = "UPDATE {$wpdb->actionscheduler_actions} SET claim_id=%d, last_attempt_gmt=%s, last_attempt_local=%s";
 		$params = array(
@@ -889,13 +894,13 @@ AND `group_id` = %d
 
 		if ( ! empty( $hooks ) ) {
 			$placeholders = array_fill( 0, count( $hooks ), '%s' );
-			$where        .= ' AND hook IN (' . join( ', ', $placeholders ) . ')';
+			$where       .= ' AND hook IN (' . join( ', ', $placeholders ) . ')';
 			$params       = array_merge( $params, array_values( $hooks ) );
 		}
 
 		$group_operator = 'IN';
 		if ( empty( $group ) ) {
-			$group = $this->get_claim_filter( 'exclude-groups' );
+			$group          = $this->get_claim_filter( 'exclude-groups' );
 			$group_operator = 'NOT IN';
 		}
 
@@ -919,7 +924,7 @@ AND `group_id` = %d
 			}
 
 			$id_list = implode( ',', array_map( 'intval', $group_ids ) );
-			$where   .= " AND group_id {$group_operator} ( $id_list )";
+			$where  .= " AND group_id {$group_operator} ( $id_list )";
 		}
 
 		/**
@@ -1031,7 +1036,7 @@ AND `group_id` = %d
 		$row_updates = 0;
 		if ( count( $action_ids ) > 0 ) {
 			$action_id_string = implode( ',', array_map( 'absint', $action_ids ) );
-			$row_updates = $wpdb->query( "UPDATE {$wpdb->actionscheduler_actions} SET claim_id = 0 WHERE action_id IN ({$action_id_string})" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$row_updates      = $wpdb->query( "UPDATE {$wpdb->actionscheduler_actions} SET claim_id = 0 WHERE action_id IN ({$action_id_string})" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		$wpdb->delete( $wpdb->actionscheduler_claims, array( 'claim_id' => $claim->get_id() ), array( '%d' ) );
