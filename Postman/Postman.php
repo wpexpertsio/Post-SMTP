@@ -374,6 +374,9 @@ class Postman {
 			// if the configuration is broken, and the user has started to configure the plugin
 			// show this error message
 			$messages = $transport->getConfigurationMessages();
+			if ( ! is_array( $messages ) ) {
+				$messages = array();
+			}
 			foreach ( $messages as $message ) {
 				if ( $message ) {
 					// log the warning message
