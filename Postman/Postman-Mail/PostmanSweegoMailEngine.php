@@ -40,15 +40,16 @@ if ( ! class_exists( 'PostmanSweegoMailEngine' ) ) {
 		 */
 
 		public function send( PostmanMessage $message ) {
-			$options  = PostmanOptions::getInstance();
-			$sweego  = new PostmanSweego( $this->apiKey );
+			$sweego = new PostmanSweego( $this->apiKey );
 
 			$recipients = [];
-			$duplicates = [];			// Sender.
-				$sender      = $message->getFromAddress();
-				$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-				$senderName  = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
-				$sender->log( $this->logger, 'From' );
+			$duplicates = [];
+
+			$sender      = $message->getFromAddress();
+			$resolved    = Postman_Connection_Resolver::resolve_sender( $sender, (bool) $this->is_fallback );
+			$senderEmail = $resolved['email'];
+			$senderName  = $resolved['name'];
+			$sender->log( $this->logger, 'From' );
 
 				// Recipients.
 				foreach ( (array) $message->getToRecipients() as $recipient ) {
@@ -70,7 +71,8 @@ if ( ! class_exists( 'PostmanSweegoMailEngine' ) ) {
 
 			// Prepare content for Sweego API
 			$content = [
-				'provider'      => 'string',
+				'channel'       => 'email',
+				'provider'      => 'sweego',
 				'campaign-type' => 'market',
 				'from'          => [
 					'email' => $senderEmail,
