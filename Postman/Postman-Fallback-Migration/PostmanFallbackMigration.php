@@ -258,6 +258,9 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 		 */
 		private function save_mail_connections() {
 			$postman_options = get_option( 'postman_options', array() );
+			if ( class_exists( 'PostmanOptions' ) ) {
+				PostmanOptions::getInstance()->reload();
+			}
 			$current_transport_type = isset( $postman_options['transport_type'] ) && '' !== (string) $postman_options['transport_type']
 				? (string) $postman_options['transport_type']
 				: 'default';
@@ -305,8 +308,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			}
 			unset( $connection );
 
-			// HTTP API mailers (Maileroo, Mailtrap, …) must use PostmanOptions getters so keys are not over-decoded.
-			$this->supplement_api_keys_from_legacy_getters( $api_keys, $current_transport_type );
+			// HTTP API mailers (Maileroo, SendPulse, …) must use PostmanOptions getters so keys are not over-decoded.
+			$this->supplement_api_keys_from_legacy_getters( $api_keys, $current_transport_type, $postman_options );
 
 			/*
 			 * Gmail / Microsoft / Zoho one-click often persist OAuth tokens only on
@@ -711,7 +714,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 			);
 
 			// Initialize the API keys array.
-			$api_keys = array();
+			$api_keys    = array();
+			$http_api_map = $this->get_http_api_legacy_credential_map();
 
 			// Helper function to sanitize and get values.
 			$get_value = function ( $key ) use ( $postman_options ) {
@@ -740,6 +744,28 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					$include = (bool) array_filter( $values );
 					if ( ! $include && isset( $postman_options['transport_type'] ) && $key === $postman_options['transport_type'] ) {
 						$include = true;
+					}
+					if ( $include ) {
+						$api_keys[ $key ]             = array_combine( $fields, $values );
+						$api_keys[ $key ]['provider'] = $key;
+						$api_keys[ $key ]['title']    = $this->format_provider_title( $key );
+					}
+					continue;
+				}
+
+				// HTTP API mailers (SendPulse, Mailjet, Maileroo, …): include when active even if decode-ready values look empty.
+				if ( isset( $http_api_map[ $key ] ) ) {
+					$include = (bool) array_filter( $values );
+					if ( ! $include && isset( $postman_options['transport_type'] ) && $key === $postman_options['transport_type'] ) {
+						$include = true;
+					}
+					if ( ! $include ) {
+						foreach ( $fields as $field ) {
+							if ( ! empty( $postman_options[ $field ] ) ) {
+								$include = true;
+								break;
+							}
+						}
 					}
 					if ( $include ) {
 						$api_keys[ $key ]             = array_combine( $fields, $values );
@@ -883,7 +909,32 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				}
 			}
 
-			$this->supplement_api_keys_from_legacy_getters( $api_keys, $current_transport_type );
+			$http_api_map = $this->get_http_api_legacy_credential_map();
+			if ( isset( $http_api_map[ $current_transport_type ] ) ) {
+				$has_flat_credentials = false;
+				foreach ( $http_api_map[ $current_transport_type ]['fields'] as $pair ) {
+					if ( ! empty( $postman_options[ $pair[0] ] ) ) {
+						$has_flat_credentials = true;
+						break;
+					}
+				}
+				if ( ! isset( $api_keys[ $current_transport_type ] ) && $has_flat_credentials ) {
+					$api_keys[ $current_transport_type ] = array(
+						'provider' => $current_transport_type,
+						'title'    => $this->format_provider_title( $current_transport_type ),
+					);
+				}
+				if ( isset( $api_keys[ $current_transport_type ] ) ) {
+					foreach ( $http_api_map[ $current_transport_type ]['fields'] as $pair ) {
+						$field = $pair[0];
+						if ( ! empty( $postman_options[ $field ] ) && empty( $api_keys[ $current_transport_type ][ $field ] ) ) {
+							$api_keys[ $current_transport_type ][ $field ] = sanitize_text_field( (string) $postman_options[ $field ] );
+						}
+					}
+				}
+			}
+
+			$this->supplement_api_keys_from_legacy_getters( $api_keys, $current_transport_type, $postman_options );
 		}
 
 		/**
@@ -1280,13 +1331,10 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 		 *
 		 * @param array  $api_keys            Provider map (by reference).
 		 * @param string $preferred_transport Active transport slug; when set, that provider is always attempted first.
+		 * @param array  $postman_options     Legacy flat options snapshot for getter fallback.
 		 */
-		private function supplement_api_keys_from_legacy_getters( array &$api_keys, $preferred_transport = '' ) {
-			if ( ! class_exists( 'PostmanOptions' ) ) {
-				return;
-			}
-
-			$options_instance = PostmanOptions::getInstance();
+		private function supplement_api_keys_from_legacy_getters( array &$api_keys, $preferred_transport = '', array $postman_options = array() ) {
+			$options_instance = class_exists( 'PostmanOptions' ) ? PostmanOptions::getInstance() : null;
 			$map              = $this->get_http_api_legacy_credential_map();
 			$order            = array_keys( $map );
 
@@ -1306,10 +1354,14 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				foreach ( $map[ $provider ]['fields'] as $pair ) {
 					$field  = $pair[0];
 					$getter = $pair[1];
-					if ( ! method_exists( $options_instance, $getter ) ) {
-						continue;
+					$value  = null;
+
+					if ( null !== $options_instance && method_exists( $options_instance, $getter ) ) {
+						$value = $options_instance->$getter();
 					}
-					$value = $options_instance->$getter();
+					if ( ( null === $value || '' === trim( (string) $value ) ) && ! empty( $postman_options[ $field ] ) ) {
+						$value = $this->resolve_migration_http_api_secret( $postman_options[ $field ] );
+					}
 					if ( null !== $value && '' !== trim( (string) $value ) ) {
 						$resolved[ $field ] = trim( (string) $value );
 					}
@@ -1330,6 +1382,48 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					$api_keys[ $provider ][ $field ] = $value;
 				}
 			}
+		}
+
+		/**
+		 * Safe read for HTTP API secrets during migration (single base64 layer, then chain decode).
+		 *
+		 * @param mixed $stored Raw option value.
+		 * @return string
+		 */
+		private function resolve_migration_http_api_secret( $stored ) {
+			if ( null === $stored || '' === (string) $stored ) {
+				return '';
+			}
+
+			$plain = trim( (string) $stored );
+			$once  = base64_decode( $plain, true );
+			if ( false !== $once && $this->migration_http_api_secret_is_plausible( $once ) ) {
+				return trim( (string) $once );
+			}
+
+			$from_chain = Postman_Connection_Resolver::decode_stored_option_secret( $stored );
+			if ( $this->migration_http_api_secret_is_plausible( $from_chain ) ) {
+				return trim( (string) $from_chain );
+			}
+
+			if ( $this->migration_http_api_secret_is_plausible( $plain ) ) {
+				return $plain;
+			}
+
+			return trim( (string) $from_chain );
+		}
+
+		/**
+		 * @param mixed $key Candidate secret.
+		 * @return bool
+		 */
+		private function migration_http_api_secret_is_plausible( $key ) {
+			$key = trim( (string) $key );
+			if ( '' === $key || strlen( $key ) > 2048 ) {
+				return false;
+			}
+
+			return (bool) preg_match( '/\A[\x20-\x7E]+\z/', $key );
 		}
 
 		/**
@@ -1390,7 +1484,10 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'mandrill_api_key'     => 'mandrill',
 				'sendgrid_api_key'     => 'sendgrid_api',
 				'sendinblue_api_key'   => 'sendinblue_api',
+				'sendpulse_api_key'    => 'sendpulse_api',
+				'sendpulse_secret_key' => 'sendpulse_api',
 				'mailjet_api_key'      => 'mailjet_api',
+				'mailjet_secret_key'   => 'mailjet_api',
 				'postmark_api_key'     => 'postmark_api',
 				'resend_api_key'       => 'resend_api',
 				'sweego_api_key'       => 'sweego_api',

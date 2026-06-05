@@ -838,10 +838,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				return POST_SMTP_API_KEY;
 			}
 
-			if ( isset( $this->options[PostmanOptions::SENDPULSE_API_KEY] ) ) {
-				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::SENDPULSE_API_KEY ] );
-			}
-
+			return $this->get_http_api_secret_from_option( PostmanOptions::SENDPULSE_API_KEY );
 		}
 
 		/**
@@ -871,10 +868,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 				return POST_SMTP_SECRET_KEY;
 			}
 
-			if ( isset( $this->options[PostmanOptions::SENDPULSE_SECRET_KEY] ) ) {
-				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::SENDPULSE_SECRET_KEY ] );
-			}
-
+			return $this->get_http_api_secret_from_option( PostmanOptions::SENDPULSE_SECRET_KEY );
 		}
 
 		/**
