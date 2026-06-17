@@ -302,6 +302,11 @@ class PostmanNotify {
 	 * @param string           $errorMessage
 	 */
 	public function notify( $log, $postmanMessage, $transcript, $transport, $errorMessage ) {
+
+		if ( PostmanMailNotify::is_sending() || $this->is_notification_delivery( $postmanMessage ) ) {
+			return;
+		}
+
 		$message  = __( 'You getting this message because an error detected while delivered your email.', 'post-smtp' );
 		$message .= "\r\n" . sprintf( __( 'For the domain: %1$s', 'post-smtp' ), get_bloginfo( 'url' ) );
 		$message .= "\r\n" . __( 'The log to paste when you open a support issue:', 'post-smtp' ) . "\r\n";
@@ -338,6 +343,26 @@ class PostmanNotify {
 			}
 			$this->push_to_chrome( $errorMessage );
 		}
+	}
+
+	/**
+	 * Detect whether a failed delivery was itself a Post SMTP notification email.
+	 *
+	 * @param PostmanMessage $postmanMessage
+	 * @return bool
+	 */
+	private function is_notification_delivery( $postmanMessage ) {
+		if ( ! $postmanMessage instanceof PostmanMessage ) {
+			return false;
+		}
+
+		foreach ( (array) $postmanMessage->getHeaders() as $header ) {
+			if ( isset( $header['name'] ) && 0 === strcasecmp( $header['name'], PostmanMailNotify::NOTIFICATION_HEADER ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public function push_to_chrome( $message ) {
