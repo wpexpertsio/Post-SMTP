@@ -138,7 +138,9 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 					return;
 				}
 			}
-            do_action('post_smtp_handle_oauth', $this->messageHandler );
+			if ( PostmanUtils::isPostSmtpOAuthCallbackRequest() ) {
+				do_action( 'post_smtp_handle_oauth', $this->messageHandler );
+			}
 
 			// continue to initialize the AdminController
 			add_action( 'init', array(

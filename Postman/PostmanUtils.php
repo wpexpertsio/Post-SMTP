@@ -24,6 +24,7 @@ class PostmanUtils {
 
 	// custom admin post page
 	const ADMIN_POST_OAUTH2_GRANT_URL_PART = 'admin-post.php?action=postman/requestOauthGrant';
+	const OAUTH_CALLBACK_ACTION            = 'post_smtp_oauth_callback';
 
 		const NO_ECHO = false;
 
@@ -52,6 +53,63 @@ class PostmanUtils {
 	 */
 	public static function getGrantOAuthPermissionUrl() {
 		return get_admin_url() . self::ADMIN_POST_OAUTH2_GRANT_URL_PART;
+	}
+
+	/**
+	 * Dedicated redirect URI for manual OAuth flows (Office 365, etc.).
+	 *
+	 * Isolates Post SMTP callbacks from the shared wp-admin/ root used by other plugins.
+	 *
+	 * @return string
+	 */
+	public static function getOAuthCallbackUrl() {
+		return admin_url( 'admin-post.php?action=' . self::OAUTH_CALLBACK_ACTION );
+	}
+
+	/**
+	 * Legacy redirect URI previously registered in Azure for Office 365 manual setup.
+	 *
+	 * @return string
+	 */
+	public static function getLegacyOAuthCallbackUrl() {
+		return admin_url();
+	}
+
+	/**
+	 * Whether the current admin request targets a Post SMTP OAuth callback endpoint.
+	 *
+	 * Prevents unrelated plugin OAuth returns (e.g. admin.php?page=other-plugin) from
+	 * being inspected by Post SMTP extension handlers.
+	 *
+	 * @return bool
+	 */
+	public static function isPostSmtpOAuthCallbackRequest() {
+		if ( ! is_admin() ) {
+			return false;
+		}
+
+		$has_oauth_params = isset( $_GET['code'] ) || isset( $_GET['error'] );
+
+		if ( isset( $_REQUEST['action'] ) && self::OAUTH_CALLBACK_ACTION === sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) ) {
+			return $has_oauth_params;
+		}
+
+		global $pagenow;
+
+		// Legacy Office 365 manual setup: bare wp-admin/ root.
+		if ( isset( $pagenow ) && 'index.php' === $pagenow && ! isset( $_GET['page'] ) && $has_oauth_params ) {
+			return true;
+		}
+
+		// Wizard-based extension callbacks (Zoho Mail, etc.).
+		if ( isset( $pagenow ) && 'admin.php' === $pagenow && isset( $_GET['page'] ) && $has_oauth_params ) {
+			$page = sanitize_text_field( wp_unslash( $_GET['page'] ) );
+			if ( 0 === strpos( $page, self::POSTMAN_SETTINGS_PAGE_STUB ) && isset( $_GET['socket'] ) ) {
+				return true;
+			}
+		}
+
+		return (bool) apply_filters( 'post_smtp_is_oauth_callback_request', false );
 	}
 
 	/**

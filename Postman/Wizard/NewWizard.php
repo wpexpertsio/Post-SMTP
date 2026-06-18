@@ -2155,7 +2155,7 @@ class Post_SMTP_New_Wizard {
                 : '';
         }
 
-        $redirect_uri = admin_url();
+        $redirect_uri = PostmanUtils::getOAuthCallbackUrl();
         
         // Check if access token exists for Office 365 (global option, used by One-Click + legacy send path).
         $office365_oauth = get_option( 'postman_office365_oauth' );
@@ -3392,7 +3392,7 @@ class Post_SMTP_New_Wizard {
 			$msg           = isset( $_GET['msg'] ) ? sanitize_text_field( $_GET['msg'] ) : '';
 			$user_email    = isset( $_GET['user_email'] ) ? sanitize_email( $_GET['user_email'] ) : '';
 			$auth_token_expires = time() + $expires_in;
-            $redirect_uri = admin_url();
+            $redirect_uri = PostmanUtils::getOAuthCallbackUrl();
 			// Prepare the OAuth data array for storing in WordPress options
 			$oauth_data = array(
 				'access_token'      => $access_token,
