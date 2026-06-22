@@ -203,33 +203,13 @@
 }
 
 
-.customer-support[data-v-7b742791] {
-	padding: 0 !important;
-	background: linear-gradient(180deg, #40518E 0%, #231F20 100%);
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
-	height: 268px;
-}
-.customer-support-content[data-v-7b742791] {
-	width: 213px;
-}
-.customer-support-content p[data-v-7b742791] {
-	font-family: Poppins;
-	font-size: 14px;
-	font-weight: 500;
-	line-height: 20px;
-	text-align: center;
-	color: #B8BDCA;
-}
-.troubleshooting[data-v-7b742791] {
+.troubleshooting[data-v-981174a6] {
 	padding: 0 !important;
 }
-.mb-24[data-v-7b742791] {
+.mb-24[data-v-981174a6] {
 	margin-bottom: 24px;
 }
-.troubleshooting-header[data-v-7b742791] {
+.troubleshooting-header[data-v-981174a6] {
 	border-radius: 4px 4px 0 0;
 	background: #EFF4FD;
 	padding: 16px 24px;
@@ -240,31 +220,165 @@
 	line-height: 20px;
 	color: #231F20;
 }
-.troubleshooting-content[data-v-7b742791] {
+.troubleshooting-content[data-v-981174a6] {
 	padding: 24px;
 }
-.troubleshoot.email[data-v-7b742791] {
+.troubleshoot.email[data-v-981174a6] {
 	list-style: url(../57f4451f3be03da17463.svg) inside;
 }
-.troubleshoot.import-export[data-v-7b742791] {
+.troubleshoot.import-export[data-v-981174a6] {
 	list-style: url(../d0a8e6270627cef66c74.svg) inside;
 }
-.troubleshoot.connectivity[data-v-7b742791] {
+.troubleshoot.connectivity[data-v-981174a6] {
 	list-style: url(../5b76dc43e6c63f11fb6d.svg) inside;
 }
-.troubleshoot.diagnostic[data-v-7b742791] {
+.troubleshoot.diagnostic[data-v-981174a6] {
 	list-style: url(../258d1cba1f474caf0c4b.svg) inside;
 }
-.troubleshoot.reset[data-v-7b742791] {
+.troubleshoot.reset[data-v-981174a6] {
 	list-style: url(../9fdeee5472f16554c9e9.svg) inside;
 }
-.troubleshoot a[data-v-7b742791] {
+.troubleshoot a[data-v-981174a6] {
 	font-family: Poppins;
 	font-size: 14px;
 	font-weight: 400;
 	line-height: 20px;
 	color: #8B8F9A;
 	text-decoration: underline;
+}
+
+
+.gmail-one-click-banner[data-v-43cba40d] {
+	overflow: hidden;
+	border: 1px solid #dce3f0;
+	border-radius: 12px;
+	background: #ffffff;
+	box-shadow: 0 2px 8px rgba( 35, 31, 32, 0.06 );
+}
+.gmail-one-click-banner__visual[data-v-43cba40d] {
+	padding: 12px 12px 0;
+	background: #ffffff;
+}
+.gmail-one-click-banner__gif[data-v-43cba40d] {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 8px 8px 0 0;
+}
+.gmail-one-click-banner__body[data-v-43cba40d] {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 16px 16px 18px;
+}
+.gmail-one-click-banner__unlock[data-v-43cba40d] {
+	margin: 0;
+	font-family: Poppins, system-ui, sans-serif;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1.2;
+	color: #375caf;
+}
+.gmail-one-click-banner__headline[data-v-43cba40d] {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 8px;
+}
+.gmail-one-click-banner__title[data-v-43cba40d] {
+	margin: 0;
+	flex: 1 1 auto;
+	min-width: 0;
+	font-family: Poppins, system-ui, sans-serif;
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 1.25;
+	color: #375caf;
+}
+.gmail-one-click-banner__badge[data-v-43cba40d] {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 8px 4px 6px;
+	border-radius: 5px;
+	background: #1a3567;
+}
+.gmail-one-click-banner__badge-icon[data-v-43cba40d] {
+	display: block;
+	width: 14px;
+	height: auto;
+}
+.gmail-one-click-banner__badge-text[data-v-43cba40d] {
+	font-family: Poppins, system-ui, sans-serif;
+	font-size: 10px;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: 0.06em;
+	color: #ffd114;
+}
+.gmail-one-click-banner__description[data-v-43cba40d] {
+	margin: 0;
+	font-family: Poppins, system-ui, sans-serif;
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.45;
+	color: #464646;
+}
+.gmail-one-click-banner__benefits[data-v-43cba40d] {
+	margin: 2px 0 4px;
+	padding: 0;
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+}
+.gmail-one-click-banner__benefits li[data-v-43cba40d] {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	font-family: Poppins, system-ui, sans-serif;
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 1.35;
+	color: #231f20;
+}
+.gmail-one-click-banner__check[data-v-43cba40d] {
+	flex-shrink: 0;
+	width: 12px;
+	height: 12px;
+	margin-top: 1px;
+}
+.gmail-one-click-banner__cta[data-v-43cba40d] {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 85%;
+	margin: 0 auto;
+	padding: 12px 16px;
+	border-radius: 8px;
+	background: #3a5eaf;
+	color: #ffffff;
+	font-family: Poppins, system-ui, sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	transition: background 0.15s ease, transform 0.15s ease;
+}
+.gmail-one-click-banner__cta[data-v-43cba40d]:hover,
+.gmail-one-click-banner__cta[data-v-43cba40d]:focus {
+	background: #2f4f98;
+	color: #ffffff;
+	text-decoration: none;
+	box-shadow: none;
+	transform: translateY( -1px );
+}
+.gmail-one-click-banner__cta-icon[data-v-43cba40d] {
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
 }
 
 
@@ -469,13 +583,13 @@
 }
 
 
-.mb-24[data-v-b8fab578] {
+.mb-24[data-v-77e11aa6] {
 	margin-bottom: 24px;
 }
-.post-smtp-selector-wrapper[data-v-b8fab578] {
+.post-smtp-selector-wrapper[data-v-77e11aa6] {
 	position: relative;
 }
-.post-smtp-selector-wrapper a.re-launch-wizard[data-v-b8fab578] {
+.post-smtp-selector-wrapper a.re-launch-wizard[data-v-77e11aa6] {
 	float: right;
 	padding: 8px 16px;
 	background: #f3f7ff;
@@ -488,7 +602,7 @@
 	text-align: left;
 	text-decoration: none;
 }
-.post-smtp-selector-wrapper[data-v-b8fab578]::after {
+.post-smtp-selector-wrapper[data-v-77e11aa6]::after {
 	content: '';
 	clear: both;
 	display: table;
@@ -1104,7 +1218,7 @@
 	border-radius: inherit;
 	pointer-events: none;
 	z-index: 0;
-	background-image: url( ../99fc648a4769e7b2776d.svg );
+	background-image: url( ../560ea6be4f14b80c2b09.svg );
 	background-repeat: repeat;
 	background-size: 120px 120px;
 	opacity: 0.55;
@@ -1586,21 +1700,11 @@
     background: #F9FBFF;
 }
 
-.gmail-one-click{
-    width:274px
-}
 .gmail-wrapper{
     padding: 0px !important;
     border-bottom: none !important;
-}
-a.gmail-click:active, a.gmail-click:visited{
-    color: #fff;
-    text-decoration: none;
-}
-a.gmail-click:hover,a.gmail-click:focus{
-    color: #fff;
-    text-decoration: none;
-    box-shadow: none;
+    border: none !important;
+    margin-bottom: 24px;
 }
 
 .office-one-click{

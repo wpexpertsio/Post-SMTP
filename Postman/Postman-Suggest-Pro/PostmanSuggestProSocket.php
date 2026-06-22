@@ -30,7 +30,9 @@ class PostmanSuggestProSocket {
         
         if( !post_smtp_has_pro() ) {
 
-            add_action( 'admin_menu', array( $this, 'add_menu' ), 22 );
+            add_action( 'admin_menu', array( $this, 'add_menu' ), 10000000000 );
+            add_action( 'admin_head', array( $this, 'add_upgrade_to_pro_menu_styles' ) );
+            add_action( 'admin_head', array( $this, 'add_upgrade_to_pro_menu_script' ) );
         
         }
         if( !post_smtp_has_pro() && !$hide_notice ){
@@ -215,38 +217,149 @@ class PostmanSuggestProSocket {
     }
 
     /**
-     * Add menu
+     * Pricing URL for the Upgrade to Pro menu item.
+     *
+     * @since 3.8.0
+     * @return string
+     */
+    private function get_upgrade_to_pro_url() {
+        return 'https://postmansmtp.com/pricing/?utm_source=wp_org&utm_medium=read_me';
+    }
+
+    /**
+     * Add Upgrade to Pro menu item styles.
+     *
+     * @since 3.8.0
+     */
+    public function add_upgrade_to_pro_menu_styles() {
+        ?>
+        <style type="text/css">
+            #adminmenu #toplevel_page_postman .wp-submenu a.post-smtp-upgrade-to-pro-link,
+            #adminmenu #toplevel_page_postman .wp-submenu a[href*="postmansmtp.com/pricing"] {
+                display: block;
+                background-color: #00a32a !important;
+                color: #fff !important;
+                font-weight: 700;
+                margin: 6px 10px 2px;
+                border-radius: 3px;
+                border: none !important;
+                border-left: 0 !important;
+                box-shadow: none !important;
+                outline: none;
+            }
+
+            #adminmenu #toplevel_page_postman .wp-submenu a.post-smtp-upgrade-to-pro-link:hover,
+            #adminmenu #toplevel_page_postman .wp-submenu a.post-smtp-upgrade-to-pro-link:focus,
+            #adminmenu #toplevel_page_postman .wp-submenu a[href*="postmansmtp.com/pricing"]:hover,
+            #adminmenu #toplevel_page_postman .wp-submenu a[href*="postmansmtp.com/pricing"]:focus {
+                background-color: #008a20 !important;
+                color: #fff !important;
+                border: none !important;
+                border-left: 0 !important;
+                box-shadow: none !important;
+                outline: none;
+            }
+
+            #adminmenu #toplevel_page_postman .wp-submenu a.post-smtp-upgrade-to-pro-link::before,
+            #adminmenu #toplevel_page_postman .wp-submenu a.post-smtp-upgrade-to-pro-link::after,
+            #adminmenu #toplevel_page_postman .wp-submenu a[href*="postmansmtp.com/pricing"]::before,
+            #adminmenu #toplevel_page_postman .wp-submenu a[href*="postmansmtp.com/pricing"]::after {
+                display: none !important;
+                content: none !important;
+            }
+
+            #adminmenu #toplevel_page_postman .wp-submenu li:has( a.post-smtp-upgrade-to-pro-link ),
+            #adminmenu #toplevel_page_postman .wp-submenu li:has( a[href*="postmansmtp.com/pricing"] ) {
+                background: transparent !important;
+                box-shadow: none !important;
+            }
+
+            #adminmenu #toplevel_page_postman .wp-submenu li:has( a.post-smtp-upgrade-to-pro-link ):hover,
+            #adminmenu #toplevel_page_postman .wp-submenu li:has( a.post-smtp-upgrade-to-pro-link ):focus-within,
+            #adminmenu #toplevel_page_postman .wp-submenu li:has( a[href*="postmansmtp.com/pricing"] ):hover,
+            #adminmenu #toplevel_page_postman .wp-submenu li:has( a[href*="postmansmtp.com/pricing"] ):focus-within {
+                background: transparent !important;
+                box-shadow: none !important;
+            }
+        </style>
+        <?php
+    }
+
+    /**
+     * Open the Upgrade to Pro menu link directly in a new tab.
+     *
+     * @since 3.8.0
+     */
+    public function add_upgrade_to_pro_menu_script() {
+        ?>
+        <script>
+            (function() {
+                function setupUpgradeToProLink() {
+                    var links = document.querySelectorAll( '#adminmenu #toplevel_page_postman .wp-submenu a[href*="postmansmtp.com/pricing"]' );
+
+                    for ( var i = 0; i < links.length; i++ ) {
+                        var link = links[ i ];
+
+                        if ( link.dataset.postSmtpUpgradeReady ) {
+                            continue;
+                        }
+
+                        link.dataset.postSmtpUpgradeReady = '1';
+                        link.classList.add( 'post-smtp-upgrade-to-pro-link' );
+                        link.setAttribute( 'target', '_blank' );
+                        link.setAttribute( 'rel', 'noopener noreferrer' );
+                        link.addEventListener( 'click', function( event ) {
+                            event.preventDefault();
+                            event.stopImmediatePropagation();
+                            window.open( this.href, '_blank', 'noopener,noreferrer' );
+                            return false;
+                        } );
+                    }
+                }
+
+                if ( document.readyState === 'loading' ) {
+                    document.addEventListener( 'DOMContentLoaded', setupUpgradeToProLink );
+                } else {
+                    setupUpgradeToProLink();
+                }
+
+                var adminMenu = document.getElementById( 'adminmenu' );
+
+                if ( adminMenu && window.MutationObserver ) {
+                    var observer = new MutationObserver( setupUpgradeToProLink );
+                    observer.observe( adminMenu, { childList: true, subtree: true } );
+                }
+            })();
+        </script>
+        <?php
+    }
+
+    /**
+     * Add Upgrade to Pro menu item.
      * 
      * @since 2.8.6
      * @version 1.0.0
      */
     public function add_menu() {
+        global $submenu;
 
-        if( postman_is_bfcm() ) {
+        $parent_slug = PostmanViewController::POSTMAN_MENU_SLUG;
 
-            $menu_text = sprintf( 
-                '<span class="dashicons dashicons-superhero ps-pro-icon"></span>%1$s<span class="menu-counter"><b>%2$s</b></span>', 
-                __( 'Extensions', 'post-smtp' ),
-                '24%OFF'
-            );
-
+        if ( ! current_user_can( 'manage_options' ) || ! isset( $submenu[ $parent_slug ] ) ) {
+            return;
         }
-        else {
 
-            $menu_text = sprintf( '<span class="dashicons dashicons-superhero ps-pro-icon"></span> %1$s', __( 'Extensions', 'post-smtp' ) );
+        $menu_text = sprintf(
+            '<span class="post-smtp-upgrade-to-pro-menu">%s</span>',
+            esc_html__( 'Upgrade to Pro', 'post-smtp' )
+        );
 
-        }
-        
-        add_submenu_page(
-            PostmanViewController::POSTMAN_MENU_SLUG,
-            __( 'Extensions', 'post-smtp' ),
+        $submenu[ $parent_slug ][] = array(
             $menu_text,
             'manage_options',
-            'extensions',
-            array( $this, 'extensions' ),
-            99
+            esc_url( $this->get_upgrade_to_pro_url() ),
+            __( 'Upgrade to Pro', 'post-smtp' ),
         );
-        
     }
 
     public function extensions() {

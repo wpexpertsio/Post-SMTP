@@ -293,9 +293,21 @@ return array(
 	),
 	'sidebar'       => array(
 		'titleTroubleshooting' => __( 'Troubleshooting', 'post-smtp' ),
-		'appointment'          => array(
-			'description' => __( 'Let Our Experts Handle Your Post SMTP Plugin Setup', 'post-smtp' ),
-			'button'      => __( 'Book Now', 'post-smtp' ),
+		'gmailOneClick'        => array(
+			'unlock'      => __( 'Unlock', 'post-smtp' ),
+			'badge'       => __( 'PRO', 'post-smtp' ),
+			'title'       => __( 'Gmail One-Click Setup', 'post-smtp' ),
+			'description' => __( 'Connect Gmail in seconds and skip the complex manual configuration.', 'post-smtp' ),
+			'benefits'    => array(
+				__( 'One-click Gmail authentication', 'post-smtp' ),
+				__( 'No App Passwords required', 'post-smtp' ),
+				__( 'No Google Cloud configuration', 'post-smtp' ),
+				__( 'Automatic OAuth setup', 'post-smtp' ),
+				__( 'Secure Gmail authentication', 'post-smtp' ),
+				__( 'Start sending emails instantly', 'post-smtp' ),
+			),
+			'button' => __( 'Upgrade to Pro', 'post-smtp' ),
+			'gifAlt' => __( 'Gmail One-Click Setup demo animation', 'post-smtp' ),
 		),
 		'troubleshooting'      => array(
 			__( 'Send test email', 'post-smtp' ),

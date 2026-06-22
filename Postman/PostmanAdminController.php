@@ -157,6 +157,8 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 					'postmanModifyLinksOnPluginsListPage',
 			) );
 
+			add_action( 'admin_head', array( $this, 'addPluginsPageProLinkStyles' ) );
+
 			require_once( 'PostmanPluginFeedback.php' );
 		}
 
@@ -299,6 +301,22 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		 * @param mixed $links
 		 * @return multitype:
 		 */
+		public function addPluginsPageProLinkStyles() {
+			global $pagenow;
+
+			if ( 'plugins.php' !== $pagenow || post_smtp_has_pro() ) {
+				return;
+			}
+			?>
+			<style type="text/css">
+				.post-smtp-pro-link {
+					color: #00a32a !important;
+					font-weight: bold;
+				}
+			</style>
+			<?php
+		}
+
 		public function postmanModifyLinksOnPluginsListPage( $links ) {
 			// only administrators should be able to trigger this
 			if ( PostmanUtils::isAdmin() ) {
@@ -307,6 +325,18 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 						sprintf( '<a href="%s" class="postman_settings">%s</a>',  admin_url( 'admin.php?page=postman%2Fconfiguration' ), __( 'Settings', 'post-smtp' ) ),
 						sprintf( '<a href="%s" class="postman_settings">%s</a>', 'https://postmansmtp.com', __( 'Visit us', 'post-smtp' ) ),
 				);
+
+				if ( ! post_smtp_has_pro() ) {
+					array_unshift(
+						$mylinks,
+						sprintf(
+							'<a href="%s" target="_blank" rel="noopener noreferrer" class="post-smtp-pro-link">%s</a>',
+							esc_url( 'https://postmansmtp.com/pricing/?utm_source=wp_org&utm_medium=read_me' ),
+							esc_html__( 'Get Post SMTP Pro', 'post-smtp' )
+						)
+					);
+				}
+
 				return array_merge( $mylinks, $links );
 			}
 		}
