@@ -248,41 +248,41 @@
 }
 
 
-.gmail-one-click-banner[data-v-244016a5] {
+.gmail-one-click-banner[data-v-3571051b] {
 	overflow: hidden;
 	border: 1px solid #dce3f0;
 	border-radius: 12px;
 	background: #ffffff;
 	box-shadow: 0 2px 8px rgba( 35, 31, 32, 0.06 );
 }
-.gmail-one-click-banner__visual[data-v-244016a5] {
+.gmail-one-click-banner__visual[data-v-3571051b] {
 	padding: 12px 12px 0;
 	background: #ffffff;
 }
-.gmail-one-click-banner__gif[data-v-244016a5] {
+.gmail-one-click-banner__gif[data-v-3571051b] {
 	display: block;
 	width: 100%;
 	height: auto;
 	border-radius: 8px 8px 0 0;
 }
-.gmail-one-click-banner__body[data-v-244016a5] {
+.gmail-one-click-banner__body[data-v-3571051b] {
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
 	padding: 16px 16px 18px;
 }
-.gmail-one-click-banner__header[data-v-244016a5] {
+.gmail-one-click-banner__header[data-v-3571051b] {
 	display: flex;
 	flex-direction: column;
 	gap: 2px;
 }
-.gmail-one-click-banner__unlock-row[data-v-244016a5] {
+.gmail-one-click-banner__unlock-row[data-v-3571051b] {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	width: 100%;
 }
-.gmail-one-click-banner__unlock[data-v-244016a5] {
+.gmail-one-click-banner__unlock[data-v-3571051b] {
 	margin: 0;
 	font-family: Poppins, system-ui, sans-serif;
 	font-size: 10px;
@@ -290,7 +290,7 @@
 	line-height: 1.2;
 	color: #375caf;
 }
-.gmail-one-click-banner__title[data-v-244016a5] {
+.gmail-one-click-banner__title[data-v-3571051b] {
 	margin: 0;
 	font-family: Poppins, system-ui, sans-serif;
 	font-size: 15px;
@@ -298,7 +298,7 @@
 	line-height: 1.25;
 	color: #375caf;
 }
-.gmail-one-click-banner__badge[data-v-244016a5] {
+.gmail-one-click-banner__badge[data-v-3571051b] {
 	flex-shrink: 0;
 	box-sizing: border-box;
 	display: inline-flex;
@@ -311,12 +311,12 @@
 	background-color: #eae6ff;
 	background-image: linear-gradient( 98.77deg, #214a72 -14.75%, #3a5eaf 98.73% );
 }
-.gmail-one-click-banner__badge-icon[data-v-244016a5] {
+.gmail-one-click-banner__badge-icon[data-v-3571051b] {
 	display: block;
 	width: auto;
 	height: 8px;
 }
-.gmail-one-click-banner__badge-text[data-v-244016a5] {
+.gmail-one-click-banner__badge-text[data-v-3571051b] {
 	font-family: Poppins, system-ui, sans-serif;
 	font-size: 8px;
 	font-weight: 700;
@@ -324,7 +324,7 @@
 	letter-spacing: 0.06em;
 	color: #ffd114;
 }
-.gmail-one-click-banner__description[data-v-244016a5] {
+.gmail-one-click-banner__description[data-v-3571051b] {
 	margin: 0;
 	font-family: Poppins, system-ui, sans-serif;
 	font-size: 12px;
@@ -332,7 +332,7 @@
 	line-height: 1.45;
 	color: #464646;
 }
-.gmail-one-click-banner__benefits[data-v-244016a5] {
+.gmail-one-click-banner__benefits[data-v-3571051b] {
 	margin: 2px 0 4px;
 	padding: 0;
 	list-style: none;
@@ -340,7 +340,7 @@
 	flex-direction: column;
 	gap: 7px;
 }
-.gmail-one-click-banner__benefits li[data-v-244016a5] {
+.gmail-one-click-banner__benefits li[data-v-3571051b] {
 	display: flex;
 	align-items: flex-start;
 	gap: 8px;
@@ -350,13 +350,13 @@
 	line-height: 1.35;
 	color: #231f20;
 }
-.gmail-one-click-banner__check[data-v-244016a5] {
+.gmail-one-click-banner__check[data-v-3571051b] {
 	flex-shrink: 0;
 	width: 12px;
 	height: 12px;
 	margin-top: 1px;
 }
-.gmail-one-click-banner__cta[data-v-244016a5] {
+.gmail-one-click-banner__cta[data-v-3571051b] {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -374,15 +374,15 @@
 	text-decoration: none;
 	transition: background 0.15s ease, transform 0.15s ease;
 }
-.gmail-one-click-banner__cta[data-v-244016a5]:hover,
-.gmail-one-click-banner__cta[data-v-244016a5]:focus {
+.gmail-one-click-banner__cta[data-v-3571051b]:hover,
+.gmail-one-click-banner__cta[data-v-3571051b]:focus {
 	background: #2f4f98;
 	color: #ffffff;
 	text-decoration: none;
 	box-shadow: none;
 	transform: translateY( -1px );
 }
-.gmail-one-click-banner__cta-icon[data-v-244016a5] {
+.gmail-one-click-banner__cta-icon[data-v-3571051b] {
 	flex-shrink: 0;
 	width: 20px;
 	height: 20px;

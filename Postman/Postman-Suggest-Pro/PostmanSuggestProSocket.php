@@ -223,7 +223,7 @@ class PostmanSuggestProSocket {
      * @return string
      */
     private function get_upgrade_to_pro_url() {
-        return 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=plugins_page';
+        return 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=sub_menu';
     }
 
     /**
