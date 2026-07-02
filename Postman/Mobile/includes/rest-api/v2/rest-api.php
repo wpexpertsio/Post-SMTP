@@ -56,9 +56,10 @@ class Post_SMTP_Mobile_Rest_API_V2 {
 		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? sanitize_text_field( (string) $request->get_header( 'fcm_token' ) ) : '';
 		$start = $request->get_param( 'start' ) !== null ? absint( $request->get_param( 'start' ) ) : 0;
 		$end = $request->get_param( 'end' ) !== null ? absint( $request->get_param( 'end' ) ) : 25;
-		$this->filter = $request->get_param( 'filter' ) !== 'all' ? sanitize_text_field( (string) $request->get_param( 'filter' ) ) : '';
-		$query = $request->get_param( 'query' ) !== '' ? sanitize_text_field( (string) $request->get_param( 'query' ) ) : '';
-		$mainwp_site_id = $request->get_param( 'mainwp_site_id' ) !== '' ? sanitize_text_field( (string) $request->get_param( 'mainwp_site_id' ) ) : '';
+		$filter_param = $request->get_param( 'filter' ) !== null ? sanitize_key( (string) $request->get_param( 'filter' ) ) : 'all';
+		$this->filter = in_array( $filter_param, array( 'all', 'success', 'failed' ), true ) ? $filter_param : 'all';
+		$query = $request->get_param( 'query' ) !== null && $request->get_param( 'query' ) !== '' ? sanitize_text_field( (string) $request->get_param( 'query' ) ) : '';
+		$mainwp_site_id = $request->get_param( 'mainwp_site_id' ) !== null && $request->get_param( 'mainwp_site_id' ) !== '' ? sanitize_text_field( (string) $request->get_param( 'mainwp_site_id' ) ) : '';
 		
 		if( $this->has_mainwp ) {
 			
@@ -128,7 +129,7 @@ class Post_SMTP_Mobile_Rest_API_V2 {
      */
 	public function validate_license( WP_REST_Request $request ) {
 
-		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
+		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? sanitize_text_field( (string) $request->get_header( 'fcm_token' ) ) : '';
 
 		/**
 		 * Validate License

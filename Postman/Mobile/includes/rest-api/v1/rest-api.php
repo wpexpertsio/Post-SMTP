@@ -116,11 +116,12 @@ class Post_SMTP_Mobile_Rest_API {
 		$args['order'] = 'DESC';
 		
 		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? sanitize_text_field( (string) $request->get_header( 'fcm_token' ) ) : '';
-		$app_build_number = $request->get_header( 'app_build_number' ) !== null ? $request->get_header( 'app_build_number' ) : '';
+		$app_build_number = $request->get_header( 'app_build_number' ) !== null ? absint( $request->get_header( 'app_build_number' ) ) : 0;
 		$start = $request->get_param( 'start' ) !== null ? absint( $request->get_param( 'start' ) ) : 0;
 		$end = $request->get_param( 'end' ) !== null ? absint( $request->get_param( 'end' ) ) : 25;
-		$this->filter = $request->get_param( 'filter' ) !== 'all' ? sanitize_text_field( (string) $request->get_param( 'filter' ) ) : '';
-		$query = $request->get_param( 'query' ) !== '' ? sanitize_text_field( (string) $request->get_param( 'query' ) ) : '';
+		$filter_param = $request->get_param( 'filter' ) !== null ? sanitize_key( (string) $request->get_param( 'filter' ) ) : 'all';
+		$this->filter = in_array( $filter_param, array( 'success', 'failed' ), true ) ? $filter_param : '';
+		$query = $request->get_param( 'query' ) !== null && $request->get_param( 'query' ) !== '' ? sanitize_text_field( (string) $request->get_param( 'query' ) ) : '';
 		
 		if( empty( $query ) && !empty( $this->filter ) ) {
 			
@@ -175,7 +176,8 @@ class Post_SMTP_Mobile_Rest_API {
 	public function get_log( WP_REST_Request $request ) {
 		
 		$id = $request->get_param( 'id' ) !== null ? absint( $request->get_param( 'id' ) ) : 1;
-		$type = $request->get_param( 'type' ) !== null ? sanitize_text_field( (string) $request->get_param( 'type' ) ) : 'log';
+		$type_param = $request->get_param( 'type' ) !== null ? sanitize_key( (string) $request->get_param( 'type' ) ) : 'log';
+		$type = in_array( $type_param, array( 'log', 'transcript', 'details' ), true ) ? $type_param : 'log';
 		$view_token = post_smtp_create_mobile_log_view_token( $id, $type );
 		
 		$url = add_query_arg(

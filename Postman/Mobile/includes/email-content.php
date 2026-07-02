@@ -192,7 +192,12 @@ class Post_SMTP_Email_Content {
 									// Remove any stray broken closing tbody tag fragments that can leak as text.
 									$message = preg_replace( '/<\/tbod[^>]*>/i', '', $message );
 
-									echo wp_kses_post( $message );
+									if ( ! class_exists( 'PostmanEmailLogs' ) ) {
+										require_once POST_SMTP_PATH . '/Postman/PostmanEmailLogs.php';
+									}
+
+									$email_logs = PostmanEmailLogs::get_instance();
+									echo $email_logs->purify_html( $message );
 									?>
 								</div>
 							</div>

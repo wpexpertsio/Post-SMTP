@@ -251,6 +251,37 @@ function postman_is_bfcm() {
 endif;
 
 /**
+ * Return a private log directory protected from direct HTTP access.
+ *
+ * @since 3.9.6
+ * @return string Absolute directory path.
+ */
+if ( ! function_exists( 'post_smtp_get_private_log_dir' ) ) :
+function post_smtp_get_private_log_dir() {
+	$dir = trailingslashit( WP_CONTENT_DIR ) . 'post-smtp-private';
+
+	if ( ! file_exists( $dir ) ) {
+		wp_mkdir_p( $dir );
+	}
+
+	$index_file = $dir . '/index.php';
+	if ( ! file_exists( $index_file ) ) {
+		file_put_contents( $index_file, "<?php\n// Silence is golden.\n" );
+	}
+
+	$htaccess_file = $dir . '/.htaccess';
+	if ( ! file_exists( $htaccess_file ) ) {
+		file_put_contents(
+			$htaccess_file,
+			"<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nDeny from all\n</IfModule>\n"
+		);
+	}
+
+	return $dir;
+}
+endif;
+
+/**
  * Derive the encryption key for stored plugin secrets.
  *
  * @since 3.9.6
@@ -398,5 +429,85 @@ function post_smtp_consume_mobile_log_view_token( $view_token ) {
 	delete_transient( 'post_smtp_log_view_' . $view_token );
 
 	return $payload;
+}
+endif;
+
+/**
+ * Derive a MainWP child API key from the site public key.
+ *
+ * @since 3.9.6
+ * @param string $pubkey Raw MainWP child public key.
+ * @return string
+ */
+if ( ! function_exists( 'post_smtp_mainwp_derive_api_key' ) ) :
+function post_smtp_mainwp_derive_api_key( $pubkey ) {
+	$pubkey = (string) $pubkey;
+
+	if ( '' === $pubkey ) {
+		return '';
+	}
+
+	return hash_hmac( 'sha256', $pubkey, wp_salt( 'auth' ) . '|post_smtp_mainwp' );
+}
+endif;
+
+/**
+ * Validate a MainWP API key (HMAC preferred; legacy MD5 accepted for compatibility).
+ *
+ * @since 3.9.6
+ * @param string $api_key  Provided API key.
+ * @param string $pubkey   Raw MainWP child public key.
+ * @return bool
+ */
+if ( ! function_exists( 'post_smtp_mainwp_validate_api_key' ) ) :
+function post_smtp_mainwp_validate_api_key( $api_key, $pubkey ) {
+	$api_key = (string) $api_key;
+	$pubkey  = (string) $pubkey;
+
+	if ( '' === $api_key || '' === $pubkey ) {
+		return false;
+	}
+
+	$secure_key = post_smtp_mainwp_derive_api_key( $pubkey );
+
+	if ( hash_equals( $secure_key, $api_key ) ) {
+		return true;
+	}
+
+	// Legacy MainWP parent integrations that still send md5( pubkey ).
+	return hash_equals( md5( $pubkey ), $api_key );
+}
+endif;
+
+/**
+ * Return the API key to send in MainWP child outbound requests.
+ *
+ * Outbound requests target the external MainWP parent extension, which may
+ * still expect the legacy md5( pubkey ) format until that extension is updated.
+ *
+ * @since 3.9.6
+ * @param string $pubkey Raw MainWP child public key.
+ * @return string
+ */
+if ( ! function_exists( 'post_smtp_mainwp_get_outbound_api_key' ) ) :
+function post_smtp_mainwp_get_outbound_api_key( $pubkey ) {
+	$pubkey = (string) $pubkey;
+
+	if ( '' === $pubkey ) {
+		return '';
+	}
+
+	/**
+	 * Use HMAC-SHA256 outbound API keys when the MainWP parent supports them.
+	 *
+	 * @since 3.9.6
+	 * @param bool   $use_hmac Whether to send the HMAC-derived key.
+	 * @param string $pubkey   Raw MainWP child public key.
+	 */
+	if ( apply_filters( 'post_smtp_mainwp_use_hmac_outbound_api_key', false, $pubkey ) ) {
+		return post_smtp_mainwp_derive_api_key( $pubkey );
+	}
+
+	return md5( $pubkey );
 }
 endif;
