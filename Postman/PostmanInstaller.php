@@ -247,7 +247,7 @@ class PostmanInstaller {
 			$this->logger->debug( 'Upgrading database: added plugin version and encoding password' );
 			$options ['version'] = '1.3.3';
 			if ( isset( $options ['basic_auth_password'] ) ) {
-				$options ['basic_auth_password'] = base64_encode( $options ['basic_auth_password'] );
+				$options ['basic_auth_password'] = post_smtp_encode_secret( $options ['basic_auth_password'] );
 			}
 			update_option( 'postman_options', $options );
 		}
