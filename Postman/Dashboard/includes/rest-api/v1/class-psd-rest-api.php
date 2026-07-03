@@ -122,7 +122,7 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 						'id'            => $log->id,
 						'subject'       => $log->original_subject,
 						'sent_to'       => $log->to_header,
-						'delivery_time' => gmdate( 'F d, Y h:i a', $log->time ),
+						'delivery_time' => date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $log->time ),
 					);
 
 					if ( 1 == absint( $log->success ) ||  $log->success === 'Sent ( ** Fallback ** )' ) {
@@ -180,7 +180,7 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 					$date_format = get_option( 'date_format' );
 					$time_format = get_option( 'time_format' );
 
-					$response['time'] = date( "{$date_format} {$time_format}", $response['time'] );
+					$response['time'] = date_i18n( "{$date_format} {$time_format}", $response['time'] );
 
 				}
 

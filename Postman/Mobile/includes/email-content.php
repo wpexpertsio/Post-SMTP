@@ -126,7 +126,7 @@ class Post_SMTP_Email_Content {
 										<?php endif; ?>
 										<tr>
 											<td><strong>Date:</strong></td>
-											<td><?php echo esc_html( date( "{$date_format} {$time_format}", $log['time'] ) ); ?></td>
+											<td><?php echo esc_html( date_i18n( "{$date_format} {$time_format}", $log['time'] ) ); ?></td>
 										</tr>
 										<tr>
 											<td><strong>Subject:</strong></td>
