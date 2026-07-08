@@ -74,6 +74,7 @@ class Post_SMTP_New_Wizard {
             'emailit_api',
             'sweego_api',
             'resend_api',
+            'smtpcom_api',
             'elasticemail_api',
             'mailgun_api',
             'smtp2go_api',
@@ -426,6 +427,7 @@ class Post_SMTP_New_Wizard {
                                                 'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
                                                 'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png',
                                                 'resend_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/resend.png',
+                                                'smtpcom_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtpcom.png',
                                                 'emailit_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/emailit.png',
                                                 'maileroo_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/maileroo.png',
                                                 'sweego_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sweego.png'
@@ -1108,6 +1110,9 @@ class Post_SMTP_New_Wizard {
             break;
             case 'resend_api':
                 echo wp_kses( $this->render_resend_settings(), $this->allowed_tags );
+            break;
+            case 'smtpcom_api':
+                echo wp_kses( $this->render_smtpcom_settings(), $this->allowed_tags );
             break;
             case 'postmark_api':
                 echo wp_kses( $this->render_postmark_settings(), $this->allowed_tags );
@@ -1815,6 +1820,48 @@ class Post_SMTP_New_Wizard {
             <div><label>API Key</label></div>
             <input type="text" class="ps-resend-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::RESEND_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
             '<div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://resend.com/api-keys" target="_blank">' . esc_html__( 'the API tokens', 'post-smtp' ) . '</a>' . esc_html__( ' in your Resend account.', 'post-smtp' ) . '</div>'
+            .
+        '</div>
+        ';
+
+        return $html;
+
+    }
+
+    /**
+     * Render SMTP.com Settings
+     *
+     * @since 3.6.0
+     * @version 1.0.0
+     */
+    public function render_smtpcom_settings() {
+
+        $mail_connections = get_option( 'postman_connections' );
+        $id = $_GET['id'] ?? null;
+        $api_key = '';
+        $channel = '';
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['smtpcom_api_key'] ) ) {
+            $api_key = $mail_connections[$id]['smtpcom_api_key'];
+        }
+        if ( isset( $_GET['id'] ) && isset( $mail_connections[$id]['smtpcom_channel'] ) ) {
+            $channel = $mail_connections[$id]['smtpcom_channel'];
+        }
+        $api_key = $api_key ?: esc_attr( $this->options->getSmtpcomApiKey() ?? '' );
+        $channel = $channel ?: esc_attr( $this->options->getSmtpcomChannel() ?? '' );
+
+        $html = '<p>' . esc_html__( 'Integrate SMTP.com with Post SMTP using the REST API. See the ', 'post-smtp' ) . '<a href="https://www.smtp.com/resources/api-documentation/" target="_blank">' . esc_html__( 'API documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for setup details.', 'post-smtp' ) . '</p>';
+        $html .= '<div class="ps-wizard-divider"></div>';
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>API Key</label></div>
+            <input type="text" class="ps-smtpcom-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SMTPCOM_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
+            '<div class="ps-form-control-info">' . esc_html__( 'Create an API key in your ', 'post-smtp' ) . '<a href="https://www.smtp.com/" target="_blank">' . esc_html__( 'SMTP.com account', 'post-smtp' ) . '</a>.</div>'
+            .
+        '</div>
+        <div class="ps-form-control">
+            <div><label>Channel</label></div>
+            <input type="text" class="ps-smtpcom-channel" name="postman_options['. esc_attr( PostmanOptions::SMTPCOM_CHANNEL ) .']" value="'.$channel.'" placeholder="">'.
+            '<div class="ps-form-control-info">' . esc_html__( 'Optional channel name from your SMTP.com account.', 'post-smtp' ) . '</div>'
             .
         '</div>
         ';
@@ -2766,7 +2813,7 @@ class Post_SMTP_New_Wizard {
         $keys = array(
             'office365_app_id', 'office365_app_password', PostmanOptions::SENDINBLUE_API_KEY,
             'sparkpost_api_key', 'postmark_api_key', 'mailgun_api_key', 'mailersend_api_key', 'emailit_api_key',
-            'resend_api_key', PostmanOptions::SENDGRID_API_KEY, 'mandrill_api_key', 'elasticemail_api_key',
+            'resend_api_key', PostmanOptions::SMTPCOM_API_KEY, PostmanOptions::SMTPCOM_CHANNEL, PostmanOptions::SENDGRID_API_KEY, 'mandrill_api_key', 'elasticemail_api_key',
             PostmanOptions::MAILJET_API_KEY, PostmanOptions::MAILJET_SECRET_KEY,
             'basic_auth_password', 'ses_access_key_id', 'ses_secret_access_key', 'ses_region'
         );
@@ -3567,6 +3614,7 @@ class Post_SMTP_New_Wizard {
             'mailersend_api' => array( 'mailersend_api_key' ),
             'emailit_api' => array( 'emailit_api_key' ),
             'resend_api' => array( 'resend_api_key' ),
+            'smtpcom_api' => array( 'smtpcom_api_key', 'smtpcom_channel' ),
         );
 
         /**

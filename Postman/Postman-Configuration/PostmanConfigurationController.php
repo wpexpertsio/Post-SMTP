@@ -821,6 +821,11 @@ class PostmanConfigurationController {
 		do_settings_sections( PostmanResendTransport::RESEND_AUTH_OPTIONS );
 		print '</div>';
 
+		// Render the SMTP.com API settings.
+		print '<div id="smtpcom_settings" class="authentication_setting non-basic non-oauth2">';
+		do_settings_sections( PostmanSmtpcomTransport::SMTPCOM_AUTH_OPTIONS );
+		print '</div>';
+
 		// Render the Emailit API settings.
 		print '<div id="emailit_settings" class="authentication_setting non-basic non-oauth2">';
 		do_settings_sections( PostmanEmailitTransport::EMAILIT_AUTH_OPTIONS );
@@ -985,6 +990,14 @@ class PostmanConfigurationController {
 				'title'       => __( 'Authentication', 'post-smtp' ),
 				'description' => __( 'Create an account at <a href="https://www.resend.com/" target="_blank">resend.com</a> and enter your API key below.', 'post-smtp' ),
 				'resend_api_key',
+				'sender_name',
+				'sender_email',
+			),'smtpcom_api' => array(
+				'provider'    => 'smtpcom_api',
+				'title'       => __( 'Authentication', 'post-smtp' ),
+				'description' => __( 'Create an account at <a href="https://www.smtp.com/" target="_blank">smtp.com</a> and enter your API key below.', 'post-smtp' ),
+				'smtpcom_api_key',
+				'smtpcom_channel',
 				'sender_name',
 				'sender_email',
 			),'maileroo_api' => array(

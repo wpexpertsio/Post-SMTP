@@ -602,7 +602,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 						'mandrill_api_key', 'sendgrid_api_key', 'sendinblue_api_key', 'mailjet_api_key', 'mailjet_secret_key',
 						'sendpulse_api_key', 'sendpulse_secret_key', 'postmark_api_key', 'sparkpost_api_key',
 						'mailgun_api_key', 'mailgun_domain_name', 'elasticemail_api_key', 'smtp2go_api_key',
-						'mailersend_api_key', 'emailit_api_key', 'resend_api_key', 'maileroo_api_key', 'sweego_api_key',
+						'mailersend_api_key', 'emailit_api_key', 'resend_api_key', 'smtpcom_api_key', 'maileroo_api_key', 'sweego_api_key',
 						'mailtrap_api_key',
 					);
 					$parts = array( $provider );
@@ -707,7 +707,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				),
 				'mailersend_api'   => array( 'mailersend_api_key'),
 				'emailit_api'      => array( 'emailit_api_key'),
-				'resend_api'       => array( 'resend_api_key'),	
+				'resend_api'       => array( 'resend_api_key'),
+				'smtpcom_api'      => array( 'smtpcom_api_key', 'smtpcom_channel' ),	
 				'maileroo_api'     => array( 'maileroo_api_key' ),
 				'mailtrap_api'     => array( 'mailtrap_api_key' ),
 				'sweego_api'       => array( 'sweego_api_key' ),
@@ -1194,6 +1195,8 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 					return array( 'maileroo_api_key' );
 				case 'resend_api':
 					return array( 'resend_api_key' );
+				case 'smtpcom_api':
+					return array( 'smtpcom_api_key', 'smtpcom_channel' );
 				case 'sweego_api':
 					return array( 'sweego_api_key' );
 				case 'mailersend_api':
@@ -1306,6 +1309,11 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'resend_api'       => array(
 					'fields' => array(
 						array( 'resend_api_key', 'getResendApiKey' ),
+					),
+				),
+				'smtpcom_api'      => array(
+					'fields' => array(
+						array( 'smtpcom_api_key', 'getSmtpcomApiKey' ),
 					),
 				),
 				'maileroo_api'     => array(
@@ -1490,6 +1498,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'mailjet_secret_key'   => 'mailjet_api',
 				'postmark_api_key'     => 'postmark_api',
 				'resend_api_key'       => 'resend_api',
+				'smtpcom_api_key'      => 'smtpcom_api',
 				'sweego_api_key'       => 'sweego_api',
 				'mailersend_api_key'   => 'mailersend_api',
 				'emailit_api_key'      => 'emailit_api',
@@ -1565,7 +1574,7 @@ if ( ! class_exists( 'PostmanFallbackMigration' ) ) :
 				'postmark_api_key', 'sparkpost_api_key', 'mailgun_api_key',
 				'mailgun_domain_name', 'elasticemail_api_key', 'smtp2go_api_key',
 				'oauth_client_id', 'oauth_client_secret','emailit_api_key',
-				'resend_api_key','maileroo_api_key', 'mailtrap_api_key', 'sweego_api_key',
+				'resend_api_key','smtpcom_api_key','maileroo_api_key', 'mailtrap_api_key', 'sweego_api_key',
 				'office365_app_id', 'office365_app_password',
 				'zohomail_client_id', 'zohomail_client_secret', 'zohomail_region',
 				'ses_access_key_id', 'ses_secret_access_key', 'ses_region',

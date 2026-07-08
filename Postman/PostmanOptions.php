@@ -90,11 +90,13 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const MANDRILL_API_KEY = 'mandrill_api_key';
 		const SENDGRID_API_KEY = 'sendgrid_api_key';
 		const MAILERSEND_API_KEY = 'mailersend_api_key';
-	const SENDGRID_REGION = 'sendgrid_region';
-	const SENDINBLUE_API_KEY = 'sendinblue_api_key';
-	const MAILTRAP_API_KEY = 'mailtrap_api_key';
-	const RESEND_API_KEY = 'resend_api_key';
-	const MAILJET_API_KEY = 'mailjet_api_key';
+		const SENDGRID_REGION = 'sendgrid_region';
+		const SENDINBLUE_API_KEY = 'sendinblue_api_key';
+		const MAILTRAP_API_KEY = 'mailtrap_api_key';
+		const RESEND_API_KEY = 'resend_api_key';
+		const SMTPCOM_API_KEY = 'smtpcom_api_key';
+		const SMTPCOM_CHANNEL = 'smtpcom_channel';
+		const MAILJET_API_KEY = 'mailjet_api_key';
 		const MAILJET_SECRET_KEY = 'mailjet_secret_key';
 		const SENDPULSE_API_KEY = 'sendpulse_api_key';
 		const SENDPULSE_SECRET_KEY = 'sendpulse_secret_key';
@@ -809,6 +811,38 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
 
         }
+
+		/**
+		 * Get SMTP.com API Key
+		 *
+		 * @since 3.6.0
+		 * @version 1.0
+		 */
+		public function getSmtpcomApiKey() {
+
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+				return POST_SMTP_API_KEY;
+			}
+
+			if ( isset( $this->options[ PostmanOptions::SMTPCOM_API_KEY ] ) ) {
+				return $this->decode_option_secret_for_read( $this->options[ PostmanOptions::SMTPCOM_API_KEY ] );
+			}
+
+		}
+
+		/**
+		 * Get SMTP.com channel name
+		 *
+		 * @since 3.6.0
+		 * @version 1.0
+		 */
+		public function getSmtpcomChannel() {
+
+			if ( isset( $this->options[ PostmanOptions::SMTPCOM_CHANNEL ] ) ) {
+				return $this->options[ PostmanOptions::SMTPCOM_CHANNEL ];
+			}
+
+		}
 
 		/**
 		 * Gets Mailjet API key
