@@ -90,7 +90,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
         public function write_failed_log($log, $message, $transcript, $transport, $statusMessage) {
             $options = PostmanOptions::getInstance();
             if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION || $options->getRunMode() == PostmanOptions::RUN_MODE_LOG_ONLY ) {
-                $this->writeFailureLog( $log, $message, $transcript, $transport, $statusMessage );
+                $this->writeFailureLog( $log, $transcript, $transport, $statusMessage, $message );
             }
         }
 
@@ -110,7 +110,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 					$statusMessage = sprintf( '%s: %s', __( 'Warning', 'post-smtp' ), __( 'An empty subject line can result in delivery failure.', 'post-smtp' ) );
 					$status = 'WARN';
 				}
-				$this->createLog( $log, $message, $transcript, $statusMessage, $status, $transport );
+				$this->createLog( $log, $transcript, $statusMessage, $status, $transport, $message );
 				$this->writeToEmailLog( $log );
 			}
 		}
@@ -127,9 +127,9 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 * @param mixed                $originalMessage
 		 * @param mixed                $originalHeaders
 		 */
-		public function writeFailureLog( PostmanEmailLog $log, PostmanMessage $message = null, $transcript, PostmanModuleTransport $transport, $statusMessage ) {
+		public function writeFailureLog( PostmanEmailLog $log, $transcript, PostmanModuleTransport $transport, $statusMessage, ?PostmanMessage $message = null ) {
 			if ( PostmanOptions::getInstance()->isMailLoggingEnabled() ) {
-				$this->createLog( $log, $message, $transcript, $statusMessage, false, $transport );
+				$this->createLog( $log, $transcript, $statusMessage, false, $transport, $message );
 				$this->writeToEmailLog( $log,$message );
 			}
 		}
@@ -139,7 +139,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 *
 		 * From http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields
 		 */
-		private function writeToEmailLog( PostmanEmailLog $log, PostmanMessage $message = null ) {
+		private function writeToEmailLog( PostmanEmailLog $log, ?PostmanMessage $message = null ) {
 
 		    $options = PostmanOptions::getInstance();
 
@@ -299,7 +299,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		 * @param PostmanModuleTransport $transport
 		 * @return PostmanEmailLog
 		 */
-		private function createLog( PostmanEmailLog $log, PostmanMessage $message = null, $transcript, $statusMessage, $success, PostmanModuleTransport $transport ) {
+		private function createLog( PostmanEmailLog $log, $transcript, $statusMessage, $success, PostmanModuleTransport $transport, ?PostmanMessage $message = null ) {
 			if ( $message ) {
 				$log->sender = $message->getFromAddress()->format();
 				$log->toRecipients = $this->flattenEmails( $message->getToRecipients() );

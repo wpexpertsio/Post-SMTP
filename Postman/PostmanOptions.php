@@ -376,7 +376,10 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
             }
 
 			if ( isset( $this->options [ PostmanOptions::TRANSPORT_TYPE ] ) ) {
-				return $this->options [ PostmanOptions::TRANSPORT_TYPE ]; }
+				return $this->options [ PostmanOptions::TRANSPORT_TYPE ];
+			}
+
+			return '';
 		}
 
 		public function getAuthenticationType() {

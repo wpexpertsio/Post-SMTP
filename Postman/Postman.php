@@ -105,7 +105,7 @@ class Postman {
 
 		// get plugin metadata - alternative to get_plugin_data
 		$this->pluginData = array(
-				'name' => __( 'Postman SMTP', 'post-smtp' ),
+				'name' => 'Postman SMTP',
 				'version' => $version,
 		);
 
@@ -179,6 +179,17 @@ class Postman {
 				'on_plugins_loaded',
 		) );
 
+		// load the text domain at init per WordPress 6.7+ requirements
+		add_action( 'init', array(
+				$this,
+				'loadTextDomain',
+		), 0 );
+
+		add_action( 'init', array(
+				$this,
+				'on_init',
+		), 1 );
+
 		//Conflicting with backupbuddy, will be removed soon 
         //add_filter( 'extra_plugin_headers', [ $this, 'add_extension_headers' ] );
 
@@ -217,18 +228,19 @@ class Postman {
 	 */
 	public function on_plugins_loaded() {
 
-		// register the email transports
-		$this->registerTransports( $this->rootPluginFilenameAndPath );
-
-		// load the text domain
-		$this->loadTextDomain();
-
 		// register the setup_admin function on plugins_loaded because we need to call
 		// current_user_can to verify the capability of the current user
 		if ( PostmanUtils::isAdmin() && is_admin() ) {
 			$this->setup_admin();
 		}
 		
+	}
+
+	/**
+	 * Register transports after textdomain is loaded (WordPress 6.7+).
+	 */
+	public function on_init() {
+		$this->registerTransports( $this->rootPluginFilenameAndPath );
 	}
 
 	/**
@@ -500,7 +512,7 @@ class Postman {
 	/**
 	 * Loads the appropriate language file
 	 */
-	private function loadTextDomain() {
+	public function loadTextDomain() {
 		// had to hardcode the third parameter, Relative path to WP_PLUGIN_DIR,
 		// because __FILE__ returns the wrong path if the plugin is installed as a symlink
 		$shortLocale = substr( get_locale(), 0, 2 );

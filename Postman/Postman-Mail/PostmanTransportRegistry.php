@@ -82,11 +82,11 @@ class PostmanTransportRegistry {
 	public function getCurrentTransport() {
 		$selectedTransport = PostmanOptions::getInstance()->getTransportType();
 		$transports        = $this->getTransports();
-		if ( ! isset( $transports [ $selectedTransport ] ) ) {
-			return $transports ['default'];
-		} else {
-			return $transports [ $selectedTransport ];
+		if ( null === $selectedTransport || ! isset( $transports[ $selectedTransport ] ) ) {
+			return $transports['default'];
 		}
+
+		return $transports[ $selectedTransport ];
 	}
 
 	/**
