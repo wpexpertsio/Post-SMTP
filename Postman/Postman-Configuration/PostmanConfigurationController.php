@@ -995,7 +995,7 @@ class PostmanConfigurationController {
 			),'smtpcom_api' => array(
 				'provider'    => 'smtpcom_api',
 				'title'       => __( 'Authentication', 'post-smtp' ),
-				'description' => __( 'Create an account at <a href="https://www.smtp.com/" target="_blank">smtp.com</a> and enter your API key below.', 'post-smtp' ),
+				'description' => __( 'Create an account at <a href="https://www.smtp.com/" target="_blank">SMTP</a> and enter your API key below.', 'post-smtp' ),
 				'smtpcom_api_key',
 				'smtpcom_channel',
 				'sender_name',

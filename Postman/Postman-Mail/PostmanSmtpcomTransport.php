@@ -45,7 +45,7 @@ class PostmanSmtpcomTransport extends PostmanAbstractModuleTransport implements 
 	}
 
 	public function getName() {
-		return __( 'SMTP.com', 'post-smtp' );
+		return __( 'SMTP', 'post-smtp' );
 	}
 
 	public function getHostname() {
@@ -203,7 +203,7 @@ class PostmanSmtpcomTransport extends PostmanAbstractModuleTransport implements 
 			sprintf(
 				__( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
 				'https://www.smtp.com/',
-				'smtp.com',
+				'SMTP',
 				'https://www.smtp.com/resources/api-documentation/'
 			)
 		);
@@ -236,7 +236,7 @@ class PostmanSmtpcomTransport extends PostmanAbstractModuleTransport implements 
 			esc_attr( $this->options->getSmtpcomChannel() ?? '' ),
 			__( 'Optional', 'post-smtp' )
 		);
-		print '<p class="description">' . esc_html__( 'Channel name from your SMTP.com account. Leave empty to use the default channel.', 'post-smtp' ) . '</p>';
+		print '<p class="description">' . esc_html__( 'Channel name from your SMTP account. Leave empty to use the default channel.', 'post-smtp' ) . '</p>';
 
 	}
 

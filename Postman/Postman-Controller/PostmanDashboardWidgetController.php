@@ -663,7 +663,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 					'office365_api'    => 'Office365 API',
 					'mailersend_api'   => 'MailerSend API',
 					'resend_api'       => 'Resend API',
-					'smtpcom_api'      => 'SMTP.com API',
+					'smtpcom_api'      => 'SMTP API',
 				);
 
 				$provider_label = $provider_names[ $provider_slug ] ?? strtoupper( $provider_slug );
