@@ -463,27 +463,8 @@ class Postman {
 
 		$postman_transport_registry = PostmanTransportRegistry::getInstance();
 
-        $postman_transport_registry->registerTransport( new PostmanDefaultModuleTransport( $rootPluginFilenameAndPath ) );
-        $postman_transport_registry->registerTransport( new PostmanSmtpModuleTransport( $rootPluginFilenameAndPath ) );
-        $postman_transport_registry->registerTransport( new PostmanGmailApiModuleTransport( $rootPluginFilenameAndPath ) );
-        $postman_transport_registry->registerTransport( new PostmanMandrillTransport( $rootPluginFilenameAndPath ) );
-        $postman_transport_registry->registerTransport( new PostmanSendGridTransport( $rootPluginFilenameAndPath ) );
-        $postman_transport_registry->registerTransport( new PostmanMailerSendTransport( $rootPluginFilenameAndPath ) );
-        $postman_transport_registry->registerTransport( new PostmanMailgunTransport( $rootPluginFilenameAndPath ) );
-        $postman_transport_registry->registerTransport( new PostmanSendinblueTransport( $rootPluginFilenameAndPath ) );
-        $postman_transport_registry->registerTransport( new PostmanMailtrapTransport( $rootPluginFilenameAndPath ) );
-		$postman_transport_registry->registerTransport( new PostmanResendTransport( $rootPluginFilenameAndPath ) );
-		$postman_transport_registry->registerTransport( new PostmanMailjetTransport( $rootPluginFilenameAndPath ) );
-		$postman_transport_registry->registerTransport( new PostmanSendpulseTransport( $rootPluginFilenameAndPath ) );
-		$postman_transport_registry->registerTransport( new PostmanPostmarkTransport( $rootPluginFilenameAndPath ) );
-		$postman_transport_registry->registerTransport( new PostmanSparkPostTransport( $rootPluginFilenameAndPath ) );
-		$postman_transport_registry->registerTransport( new PostmanElasticEmailTransport( $rootPluginFilenameAndPath ) );
-		$postman_transport_registry->registerTransport( new PostmanSmtp2GoTransport( $rootPluginFilenameAndPath ) );
-		$postman_transport_registry->registerTransport( new PostmanEmailitTransport( $rootPluginFilenameAndPath ) );
-		$postman_transport_registry->registerTransport( new PostmanMailerooTransport( $rootPluginFilenameAndPath ) );
-		$postman_transport_registry->registerTransport( new PostmanSweegoTransport( $rootPluginFilenameAndPath ) );
-
-		do_action( 'postsmtp_register_transport', $postman_transport_registry );
+		// Use centralized registration (idempotent — safe if already registered before init).
+		$postman_transport_registry->registerAllTransports( $rootPluginFilenameAndPath );
 	}
 
 	/**

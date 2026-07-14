@@ -268,6 +268,12 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			// get the transport and create the transportConfig and engine
 			$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
 
+			if ( ! $transport ) {
+				$this->logger->error( 'No mail transport available; transports may not be registered yet.' );
+				$this->exception = new Exception( 'Post SMTP: no mail transport available.' );
+				return false;
+			}
+
 			// create the Mail Engine
 			$engine = $transport->createMailEngine();
 
