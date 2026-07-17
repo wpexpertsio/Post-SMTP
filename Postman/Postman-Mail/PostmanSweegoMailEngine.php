@@ -104,14 +104,16 @@ if ( ! class_exists( 'PostmanSweegoMailEngine' ) ) {
 			}
 		}
 
-		// Add Reply-To if set
+		// Add Reply-To if set (Sweego payload uses hyphenated keys).
 		$replyTo = $message->getReplyTo();
 		if ( $replyTo ) {
-			$content['replyTo'] = [
+			$content['reply-to'] = [
 				'email' => $replyTo->getEmail(),
 				'name'  => $replyTo->getName() ?: '',
 			];
-		}			// Attachments.
+		}
+
+		// Attachments.
 			$attachments = $this->addAttachmentsToMail( $message );
 			if ( ! empty( $attachments ) ) {
 				$content['attachments'] = $attachments;
