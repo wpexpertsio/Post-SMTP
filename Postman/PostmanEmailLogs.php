@@ -517,7 +517,7 @@ class PostmanEmailLogs {
             //Lets manage the Date format :)
             foreach( $data as $row ) {
 
-                $row->time = date( "{$date_format} {$time_format}", $row->time );
+                $row->time = date_i18n( "{$date_format} {$time_format}", $row->time );
 
                 if( $row->success == 1 ) {
 
@@ -739,7 +739,7 @@ class PostmanEmailLogs {
                 $data[10] = $log->original_message;
                 $data[11] = $log->original_headers;
                 $data[12] = $log->session_transcript;
-                $data[13] = date( "$date_format $time_format", $log->time );
+                $data[13] = date_i18n( "$date_format $time_format", $log->time );
                 
                 fputcsv($fp, $data);
 
@@ -821,7 +821,7 @@ class PostmanEmailLogs {
 				$date_format = get_option( 'date_format' );
 				$time_format = get_option( 'time_format' );
 				
-				$log['time'] = date( "{$date_format} {$time_format}", $log['time'] );
+				$log['time'] = date_i18n( "{$date_format} {$time_format}", $log['time'] );
 
 			}
 
