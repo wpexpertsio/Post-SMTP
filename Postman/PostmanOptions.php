@@ -418,7 +418,13 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			}
 
 			if ( isset( $this->options [ PostmanOptions::BASIC_AUTH_PASSWORD ] ) ) {
-				return base64_decode( $this->options [ PostmanOptions::BASIC_AUTH_PASSWORD ] );
+				$value = $this->options [ PostmanOptions::BASIC_AUTH_PASSWORD ];
+				$decoded = base64_decode( $value, true );
+				// If decoding fails (e.g. password stored as plain text or from import), return as-is so auth still works.
+				if ( $decoded === false ) {
+					return $value;
+				}
+				return $decoded;
 			}
 		}
 
