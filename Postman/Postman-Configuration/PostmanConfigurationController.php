@@ -345,7 +345,7 @@ class PostmanConfigurationController {
         <!-- Fallback Start -->
         <section id="fallback">
             <h2><?php esc_html_e( 'Failed emails fallback', 'post-smtp' ); ?></h2>
-            <p><?php esc_html_e( 'By enable this option, if your email is fail to send Post SMTP will try to use the SMTP service you define here.', 'post-smtp' ); ?></p>
+            <p><?php esc_html_e( 'By enabling this option, if your email has failed to send, Post SMTP will try to use the SMTP service you define here.', 'post-smtp' ); ?></p>
             <table class="form-table">
                 <tr valign="">
                     <th scope="row"><?php esc_html_e( 'Use Fallback?', 'post-smtp' ); ?></th>
