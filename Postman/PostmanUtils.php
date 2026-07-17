@@ -32,6 +32,23 @@ class PostmanUtils {
 	 */
 	public static function staticInit() {
 		PostmanUtils::$logger = new PostmanLogger( 'PostmanUtils' );
+		add_filter( 'map_meta_cap', array( __CLASS__, 'mapPostmanMetaCap' ), 10, 4 );
+	}
+
+	/**
+	 * Let Role Editor (and similar) grant Post SMTP caps without requiring both.
+	 *
+	 * @param string[] $caps
+	 * @param string   $cap
+	 * @param int      $user_id
+	 * @param array    $args
+	 * @return string[]
+	 */
+	public static function mapPostmanMetaCap( $caps, $cap, $user_id, $args ) {
+		if ( Postman::MANAGE_POSTMAN_CAPABILITY_NAME === $cap || Postman::MANAGE_POSTMAN_CAPABILITY_LOGS === $cap ) {
+			return array( $cap );
+		}
+		return $caps;
 	}
 
 	/**
@@ -360,6 +377,13 @@ class PostmanUtils {
 			$logger->trace( 'calling current_user_can' );
 		}
 		return current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) && is_admin();
+	}
+
+	/**
+	 * Users who may view and manage email logs but not Post SMTP settings.
+	 */
+	public static function canManagePostmanLogs() {
+		return current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) && is_admin();
 	}
 
 	/**
