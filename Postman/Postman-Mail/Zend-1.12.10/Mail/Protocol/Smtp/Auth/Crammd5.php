@@ -39,6 +39,20 @@
 class Postman_Zend_Mail_Protocol_Smtp_Auth_Crammd5 extends Postman_Zend_Mail_Protocol_Smtp
 {
     /**
+     * CRAM-MD5 username
+     *
+     * @var string
+     */
+    protected $_username;
+
+    /**
+     * CRAM-MD5 password
+     *
+     * @var string
+     */
+    protected $_password;
+
+    /**
      * Constructor.
      *
      * @param  string $host   (Default: 127.0.0.1)
