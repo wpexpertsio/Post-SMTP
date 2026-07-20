@@ -133,7 +133,7 @@ if ( ! class_exists( 'PostmanMyMailConnector' ) ) {
 			$message->addHeaders( $mailobject->headers );
 			$message->setBodyTextPart( $mailobject->mailer->AltBody );
 			$message->setBodyHtmlPart( $mailobject->mailer->Body );
-			$message->setBody( $mailobject->mailer->AltBody . $mailobject->mailer->Body );
+			$message->setBody( $mailobject->mailer->Body );
 			$message->setSubject( $mailobject->subject );
 			$message->addTo( $mailobject->to );
 			$message->setReplyTo( $mailobject->reply_to );
