@@ -54,15 +54,9 @@ class PostmanTransportRegistry {
 			return false;
 		}
 
-		// Prevent concurrent registration attempts
+		// Skip duplicate attempts within the same request (PHP is single-threaded).
 		if ( $this->registration_attempted ) {
-			// Wait a moment for concurrent registration to complete
-			$attempts = 0;
-			while ( $this->transports === null && $attempts < 10 ) {
-				usleep( 10000 ); // 10ms
-				$attempts++;
-			}
-			return $this->transports !== null;
+			return $this->transports !== null && ! empty( $this->transports );
 		}
 
 		$this->registration_attempted = true;
