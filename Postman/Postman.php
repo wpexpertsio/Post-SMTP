@@ -72,6 +72,7 @@ class Postman {
         require_once 'Postman-Mail/PostmanMailtrapTransport.php';
         require_once 'Postman-Mail/PostmanResendTransport.php';
 		require_once 'Postman-Mail/PostmanCloudflareTransport.php';
+		require_once 'Postman-Mail/PostmanSmtpcomTransport.php';
 		require_once 'Postman-Mail/PostmanMailjetTransport.php';
 		require_once 'Postman-Mail/PostmanEmailitTransport.php';
 		require_once 'Postman-Mail/PostmanMailerooTransport.php';

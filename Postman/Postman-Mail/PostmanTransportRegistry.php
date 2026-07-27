@@ -70,6 +70,7 @@ class PostmanTransportRegistry {
 			require_once $pluginPath . '/Postman/Postman-Mail/PostmanMailtrapTransport.php';
 			require_once $pluginPath . '/Postman/Postman-Mail/PostmanResendTransport.php';
 			require_once $pluginPath . '/Postman/Postman-Mail/PostmanCloudflareTransport.php';
+			require_once $pluginPath . '/Postman/Postman-Mail/PostmanSmtpcomTransport.php';
 			require_once $pluginPath . '/Postman/Postman-Mail/PostmanMailjetTransport.php';
 			require_once $pluginPath . '/Postman/Postman-Mail/PostmanSendpulseTransport.php';
 			require_once $pluginPath . '/Postman/Postman-Mail/PostmanPostmarkTransport.php';
@@ -92,6 +93,7 @@ class PostmanTransportRegistry {
 		$this->registerTransport( new PostmanMailtrapTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanResendTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanCloudflareTransport( $rootPluginFilenameAndPath ) );
+		$this->registerTransport( new PostmanSmtpcomTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanMailjetTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanSendpulseTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanPostmarkTransport( $rootPluginFilenameAndPath ) );

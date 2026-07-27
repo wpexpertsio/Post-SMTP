@@ -319,6 +319,9 @@ class PostmanConfigurationController {
 		print '<div id="cloudflare_settings" class="authentication_setting non-basic non-oauth2">';
 		do_settings_sections( PostmanCloudflareTransport::CLOUDFLARE_AUTH_OPTIONS );
 		print '</div>';
+		print '<div id="smtpcom_settings" class="authentication_setting non-basic non-oauth2">';
+		do_settings_sections( PostmanSmtpcomTransport::SMTPCOM_AUTH_OPTIONS );
+		print '</div>';
 		print '<div id="mailjet_settings" class="authentication_setting non-basic non-oauth2">';
         do_settings_sections( PostmanMailjetTransport::MAILJET_AUTH_OPTIONS );
 		print '</div>';

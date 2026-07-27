@@ -94,6 +94,8 @@ Preview Any Email: You can preview your emails and see how it looks.
 == SMTP Mailer Options for Post SMTP ==
 With Post SMTP, you get many SMTP mailer options, such as:
 
+* [SMTP.com SMTP](https://www.smtp.com/resources/api-documentation/) - **Newly Added**
+
 * [Sweego SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-sweego-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) - **Newly Added**
 
 * [Mailtrap SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-mailtrap-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) - **Newly Added**
@@ -325,6 +327,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 == Changelog ==
 
 = 4.0.0 – July 24, 2026 =
+* NEW – Added [SMTP.com](https://www.smtp.com/) as an email service provider.
 
 = 3.9.5 – June 24, 2026 =
 * TWEAK – Updated dashboard banners and removed the Extensions screen from the plugin menu.

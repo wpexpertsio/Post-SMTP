@@ -74,6 +74,7 @@ class Post_SMTP_New_Wizard {
             'sweego_api',
             'resend_api',
             'cloudflare_api',
+            'smtpcom_api',
             'elasticemail_api',
             'mailgun_api',
             'smtp2go_api',
@@ -215,6 +216,7 @@ class Post_SMTP_New_Wizard {
                                                 'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png',
                                                 'resend_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/resend.png',
                                                 'cloudflare_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/cloudflare.png',
+                                                'smtpcom_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtpcom.png',
                                                 'emailit_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/emailit.png',
                                                 'maileroo_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/maileroo.png',
                                                 'sweego_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sweego.png'
@@ -809,6 +811,9 @@ class Post_SMTP_New_Wizard {
             case 'cloudflare_api':
                 echo wp_kses( $this->render_cloudflare_settings(), $this->allowed_tags );
             break;
+            case 'smtpcom_api':
+                echo wp_kses( $this->render_smtpcom_settings(), $this->allowed_tags );
+            break;
             case 'postmark_api':
                 echo wp_kses( $this->render_postmark_settings(), $this->allowed_tags );
             break;
@@ -1368,6 +1373,37 @@ class Post_SMTP_New_Wizard {
             <div><label>Account ID</label></div>
             <input type="text" class="ps-cloudflare-account-id" required data-error="'.__( 'Please enter Account ID.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::CLOUDFLARE_ACCOUNT_ID ) .']" value="'.$account_id.'" placeholder="">'.
             '<div class="ps-form-control-info">' . esc_html__( 'You can find the Account ID in your Cloudflare dashboard URL and account settings.', 'post-smtp' ) . '</div>'
+            .
+        '</div>
+        ';
+
+        return $html;
+    }
+
+    /**
+     * Render SMTP.com Settings
+     *
+     * @since 4.0.0
+     * @version 1.0.0
+     */
+    public function render_smtpcom_settings() {
+
+        $api_key = null !== $this->options->getSmtpcomApiKey() ? esc_attr( $this->options->getSmtpcomApiKey() ) : '';
+        $channel = null !== $this->options->getSmtpcomChannel() ? esc_attr( $this->options->getSmtpcomChannel() ) : '';
+
+        $html = '<p>' . esc_html__( 'It is easy to integrate SMTP.com mailer to your WordPress website. We recommend you to check the ', 'post-smtp' ) . '<a href="https://www.smtp.com/resources/api-documentation/" target="_blank">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
+        $html .= '<div class="ps-wizard-divider"></div>';
+        $html .= '
+        <div class="ps-form-control">
+            <div><label>API Key</label></div>
+            <input type="text" class="ps-smtpcom-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SMTPCOM_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
+            '<div class="ps-form-control-info">' . esc_html__( 'Create an API key in your ', 'post-smtp' ) . '<a href="https://www.smtp.com/" target="_blank">' . esc_html__( 'SMTP.com account', 'post-smtp' ) . '</a>.</div>'
+            .
+        '</div>
+        <div class="ps-form-control">
+            <div><label>Channel</label></div>
+            <input type="text" class="ps-smtpcom-channel" name="postman_options['. esc_attr( PostmanOptions::SMTPCOM_CHANNEL ) .']" value="'.$channel.'" placeholder="">'.
+            '<div class="ps-form-control-info">' . esc_html__( 'Optional channel name from your SMTP.com account.', 'post-smtp' ) . '</div>'
             .
         '</div>
         ';
@@ -1968,6 +2004,8 @@ class Post_SMTP_New_Wizard {
                 $sanitized['resend_api_key']  = isset( $sanitized['resend_api_key'] ) ? $sanitized['resend_api_key'] : '';
                 $sanitized[PostmanOptions::CLOUDFLARE_API_TOKEN] = isset( $sanitized[PostmanOptions::CLOUDFLARE_API_TOKEN] ) ? $sanitized[PostmanOptions::CLOUDFLARE_API_TOKEN] : '';
                 $sanitized[PostmanOptions::CLOUDFLARE_ACCOUNT_ID] = isset( $sanitized[PostmanOptions::CLOUDFLARE_ACCOUNT_ID] ) ? $sanitized[PostmanOptions::CLOUDFLARE_ACCOUNT_ID] : '';
+                $sanitized[PostmanOptions::SMTPCOM_API_KEY] = isset( $sanitized[PostmanOptions::SMTPCOM_API_KEY] ) ? $sanitized[PostmanOptions::SMTPCOM_API_KEY] : '';
+                $sanitized[PostmanOptions::SMTPCOM_CHANNEL] = isset( $sanitized[PostmanOptions::SMTPCOM_CHANNEL] ) ? $sanitized[PostmanOptions::SMTPCOM_CHANNEL] : '';
                 $sanitized[PostmanOptions::EMAILIT_API_KEY]  = isset( $sanitized[PostmanOptions::EMAILIT_API_KEY] ) ? $sanitized[PostmanOptions::EMAILIT_API_KEY] : '';
                 $sanitized[PostmanOptions::MAILEROO_API_KEY]  = isset( $sanitized[PostmanOptions::MAILEROO_API_KEY] ) ? $sanitized[PostmanOptions::MAILEROO_API_KEY] : '';
                 $sanitized[PostmanOptions::SWEEGO_API_KEY]  = isset( $sanitized[PostmanOptions::SWEEGO_API_KEY] ) ? $sanitized[PostmanOptions::SWEEGO_API_KEY] : '';
