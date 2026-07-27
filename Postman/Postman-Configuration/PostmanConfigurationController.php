@@ -169,16 +169,17 @@ class PostmanConfigurationController {
 	 * Register the Setup Wizard screen
 	 */
 	public function addSetupWizardSubmenu() {
-		$page = add_submenu_page( 
-			PostmanViewController::POSTMAN_MENU_SLUG, 
-			sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ), 
-			__( 'Postman SMTP', 'post-smtp' ), 
-			Postman::MANAGE_POSTMAN_CAPABILITY_NAME, 
-			PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG, 
+		$page = add_submenu_page(
+			' ',
+			sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ),
+			__( 'Postman SMTP', 'post-smtp' ),
+			'manage_options',
+			PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG,
 			array(
 				$this,
 				'outputWizardContent',
-		) );
+			)
+		);
 		// When the plugin options page is loaded, also load the stylesheet
 		add_action( 'admin_print_styles-' . $page, array(
 				$this,
@@ -190,18 +191,7 @@ class PostmanConfigurationController {
 	 * Hides submenu 
 	 */
 	public function hide_submenu_item( $submenu_file ) {
-
-		$hidden_submenus = array(
-			PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG => true,
-		);
-
-		// Hide the submenu.
-		foreach ( $hidden_submenus as $submenu => $unused ) {
-			remove_submenu_page( PostmanViewController::POSTMAN_MENU_SLUG, $submenu );
-		}
-
 		return $submenu_file;
-
 	}
 
 	/**

@@ -376,7 +376,20 @@ class PostmanUtils {
 		if ( $logger->isTrace() ) {
 			$logger->trace( 'calling current_user_can' );
 		}
-		return current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) && is_admin();
+		if ( current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
+			return is_admin();
+		}
+		// Allow admin bootstrap on wizard redirect when caps are stale (e.g. Cloudways Redis).
+		if ( is_admin() && current_user_can( 'manage_options' ) ) {
+			if ( get_option( 'post_smtp_activation_redirect' ) ) {
+				return true;
+			}
+			$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+			if ( 'postman/configuration_wizard' === $page ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

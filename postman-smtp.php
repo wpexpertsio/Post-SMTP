@@ -253,6 +253,7 @@ function ps_fs_redirect_on_activation_if_capable( $do_redirect ) {
 		return $do_redirect;
 	}
 
-	return current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
+	return current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME )
+		|| current_user_can( 'manage_options' );
 }
 ps_fs()->add_filter( 'redirect_on_activation', 'ps_fs_redirect_on_activation_if_capable', 10, 1 );
