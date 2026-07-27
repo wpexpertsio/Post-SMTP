@@ -166,14 +166,9 @@ class Post_SMTP_Mobile {
      */
     public function generate_qr_code() {
 
-        // Load bundled QR library if QRcode is not already defined.
-        if ( ! class_exists( 'QRcode' ) ) {
-            include_once __DIR__ . '/includes/phpqrcode/qrlib.php';
-        }
-
-        // If QRcode exists but doesn't have png(), another component is conflicting.
-        // Bail out gracefully so the page doesn't fatal; QR code simply won't render.
-        if ( ! class_exists( 'QRcode' ) || ! is_callable( array( 'QRcode', 'png' ) ) ) {
+        $qr_class = $this->get_qrcode_class();
+        if ( $qr_class === null ) {
+            $this->qr_code = null;
             return;
         }
 

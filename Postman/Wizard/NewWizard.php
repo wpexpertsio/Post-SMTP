@@ -214,7 +214,7 @@ class Post_SMTP_New_Wizard {
                                                 'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
                                                 'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png',
                                                 'resend_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/resend.png',
-                                                'cloudflare_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/cloudflare.svg',
+                                                'cloudflare_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/cloudflare.png',
                                                 'emailit_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/emailit.png',
                                                 'maileroo_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/maileroo.png',
                                                 'sweego_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sweego.png'

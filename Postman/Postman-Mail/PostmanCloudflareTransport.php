@@ -173,7 +173,7 @@ class PostmanCloudflareTransport extends PostmanAbstractModuleTransport implemen
 	}
 
 	public function getLogoURL() {
-		return POST_SMTP_ASSETS . 'images/logos/cloudflare.svg';
+		return POST_SMTP_ASSETS . 'images/logos/cloudflare.png';
 	}
 
 	public function has_granted() {
