@@ -320,7 +320,7 @@ class PostmanGetDiagnosticsViaAjax {
 			$this->addToDiagnostics( 'Postman Sender Domain (Envelope|Message)', ($hostname = substr( strrchr( $this->options->getEnvelopeSender(), '@' ), 1 )) . ' | ' . ($hostname = substr( strrchr( $this->options->getMessageSenderEmail(), '@' ), 1 )) );
 		}
 		}
-		$this->addToDiagnostics( 'Postman Prevent Message Sender Override (Email|Name)', ($this->options->isSenderEmailOverridePrevented() ? 'Yes' : 'No') . ' | ' . ($this->options->isSenderNameOverridePrevented() ? 'Yes' : 'No') );
+		$this->addToDiagnostics( 'Postman Prevent Message Sender Override (Email|Name)', ($this->options->isPluginSenderEmailEnforced() ? 'Yes' : 'No') . ' | ' . ($this->options->isPluginSenderNameEnforced() ? 'Yes' : 'No') );
 		{
 			// status of the active transport
 			$transport = $transportRegistry->getActiveTransport();

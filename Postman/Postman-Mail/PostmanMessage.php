@@ -228,7 +228,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			// Postman has it's own 'user override' filter
 			$options = PostmanOptions::getInstance();
 			$forcedEmailAddress = $options->getMessageSenderEmail();
-			if ( $options->isSenderEmailOverridePrevented() && $this->getFromAddress()->getEmail() !== $forcedEmailAddress ) {
+			if ( $options->isPluginSenderEmailEnforced() && $this->getFromAddress()->getEmail() !== $forcedEmailAddress ) {
 				$this->logger->debug( sprintf( 'Forced From email address: before=%s after=%s', $this->getFromAddress()->getEmail(), $forcedEmailAddress ) );
 				$this->getFromAddress()->setEmail( $forcedEmailAddress );
 			}
@@ -240,7 +240,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 			}
 
 			$forcedEmailName = $options->getMessageSenderName();
-			if ( $options->isSenderNameOverridePrevented() && $this->getFromAddress()->getName() !== $forcedEmailName ) {
+			if ( $options->isPluginSenderNameEnforced() && $this->getFromAddress()->getName() !== $forcedEmailName ) {
 				$this->logger->debug( sprintf( 'Forced From email name: before=%s after=%s', $this->getFromAddress()->getName(), $forcedEmailName ) );
 				$this->getFromAddress()->setName( $forcedEmailName );
 			}
