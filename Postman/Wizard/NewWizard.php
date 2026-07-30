@@ -176,29 +176,29 @@ class Post_SMTP_New_Wizard {
 
                                         $row  = 0;
 
-                                        $transports = array_merge( array_flip( $this->socket_sequence ), $transports );
-										
-                                        foreach( $transports as $key => $transport ) {
+                                        $urls = array(
+                                            'default'           =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.png',
+                                            'smtp'              =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.png',
+                                            'gmail_api'         =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/gmail.png',
+                                            'mandrill_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mandrill.png',
+                                            'sendgrid_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendgrid.png',
+                                            'mailersend_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailersend.png',
+                                            'mailgun_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailgun.png',
+                                            'sendinblue_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/brevo.png',
+                                            'postmark_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/postmark.png',
+                                            'sparkpost_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sparkpost.png',
+                                            'mailjet_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailjet.png',
+                                            'sendpulse_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendpulse.png',
+                                            'smtp2go_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp2go.png',
+                                            'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.png',
+                                            'elasticemail_api'  =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/elasticemail.png',
+                                            'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
+                                            'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png'
+                                        );
 
-                                            $urls = array(
-                                                'default'           =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.png',
-                                                'smtp'              =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp.png',
-                                                'gmail_api'         =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/gmail.png',
-                                                'mandrill_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mandrill.png',
-                                                'sendgrid_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendgrid.png',
-                                                'mailersend_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailersend.png',
-                                                'mailgun_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailgun.png',
-                                                'sendinblue_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/brevo.png',
-                                                'postmark_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/postmark.png',
-                                                'sparkpost_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sparkpost.png',
-                                                'mailjet_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/mailjet.png',
-                                                'sendpulse_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/sendpulse.png',
-                                                'smtp2go_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtp2go.png',
-                                                'office365_api'     =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/ms365.png',
-                                                'elasticemail_api'  =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/elasticemail.png',
-                                                'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
-                                                'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png'
-                                            );
+                                        $transports = array_merge( array_flip( $this->socket_sequence ), $transports );
+
+                                        foreach( $transports as $key => $transport ) {
 
                                             $url = '';
                                             $checked = '';
