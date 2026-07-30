@@ -94,9 +94,20 @@ if ( ! class_exists( 'PostmanMailgunMailEngine' ) ) {
 			return json_encode( $recipient_variables );
 		}
 
-		private function addHeader( $name, $value, $deprecated = '' ) {
+		private function addHeader( $name, $value, $append = false ) {
 			if ( $value && ! empty( $value ) ) {
-				$this->mailgunMessage['h:' . $name] = preg_replace('/.*:\s?/', '', $value);
+				$clean = preg_replace( '/.*:\s?/', '', $value );
+				$key   = 'h:' . $name;
+
+				if ( $append && isset( $this->mailgunMessage[ $key ] ) ) {
+					$existing = $this->mailgunMessage[ $key ];
+					if ( ! is_array( $existing ) ) {
+						$existing = array( $existing );
+					}
+					$this->mailgunMessage[ $key ] = array_merge( $existing, array( $clean ) );
+				} else {
+					$this->mailgunMessage[ $key ] = $clean;
+				}
 			}
 		}
 
