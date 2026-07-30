@@ -247,7 +247,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		public function on_init() {
 			// only administrators should be able to trigger this
 			if ( PostmanUtils::isAdmin() ) {
-								$transport = PostmanTransportRegistry::getInstance()->getCurrentTransport();
+								$transport = PostmanTransportRegistry::getInstance()->getSelectedTransport();
 				$this->oauthScribe = $transport->getScribe();
 
 				// register content handlers

@@ -236,7 +236,7 @@ class PostmanTransportRegistry {
 		
 		$message = array();
 		
-		if ( $this->getCurrentTransport()->isConfiguredAndReady() ) {
+		if ( $this->getSelectedTransport()->isConfiguredAndReady() ) {
 			if ( PostmanOptions::getInstance()->getRunMode() != PostmanOptions::RUN_MODE_PRODUCTION ) {
 				$message = array(
 					'error' => true,

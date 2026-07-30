@@ -361,7 +361,7 @@ class Postman {
 				$this->messageHandler->addError( $message );
 			}
 		} else {
-			$transport = PostmanTransportRegistry::getInstance()->getCurrentTransport();
+			$transport = PostmanTransportRegistry::getInstance()->getSelectedTransport();
 			$scribe = $transport->getScribe();
 
 			$virgin = $options->isNew();
