@@ -303,7 +303,7 @@ class PostmanEmailLogs {
      * @since 2.5.0
      * @version 1.0.0
      */
-    public function save( $data, $id = '' ) {
+    public function save( $data, $id = 0 ) {
         
         $data['time'] = !isset( $data['time'] ) ? current_time( 'timestamp' ) : $data['time'];
 

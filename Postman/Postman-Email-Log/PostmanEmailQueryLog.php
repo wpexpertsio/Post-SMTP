@@ -299,7 +299,7 @@ class PostmanEmailQueryLog {
      * @since 2.5.0
      * @version 1.0.0
      */
-    public function get_all_logs( $ids = array() ) {
+    public function get_all_logs( $ids = array(-1) ) {
 
         $ids = implode( ',', $ids );
         $ids = $ids == -1 ? '' : "WHERE id IN ({$ids});";
