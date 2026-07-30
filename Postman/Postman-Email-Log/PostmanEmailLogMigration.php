@@ -48,20 +48,22 @@ class PostmanEmailLogsMigration {
 
         }
 
-        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-migrate-logs' ) {
+        $is_admin_request = is_admin() && current_user_can( 'manage_options' );
+
+        if( $is_admin_request && isset( $_GET['action'] ) && $_GET['action'] == 'ps-migrate-logs' ) {
 
             $this->update_database();
 
         }
 
-        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-delete-old-logs' ) {
+        if( $is_admin_request && isset( $_GET['action'] ) && $_GET['action'] == 'ps-delete-old-logs' ) {
 
             $this->log( 'Info: Delete old logs' );
 
             $this->trash_all_old_logs();
 
         }
-        
+
         //Add Hook of Migration, Schedule Migration
         if( $this->migrating && ( isset( $_GET['page'] ) && $_GET['page'] == 'postman_email_log' ) ) {
 
@@ -70,28 +72,28 @@ class PostmanEmailLogsMigration {
         }
 
         //Switch back to old system
-        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-switch-back' ) {
+        if( $is_admin_request && isset( $_GET['action'] ) && $_GET['action'] == 'ps-switch-back' ) {
 
             $this->switch_back();
 
         }
 
         //Switch to new system
-        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-switch-to-new' ) {
+        if( $is_admin_request && isset( $_GET['action'] ) && $_GET['action'] == 'ps-switch-to-new' ) {
 
             $this->switch_to_new();
 
         }
 
         //Revert Migration
-        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-revert-migration' ) {
+        if( $is_admin_request && isset( $_GET['action'] ) && $_GET['action'] == 'ps-revert-migration' ) {
 
             $this->revert_migration();
 
         }
 
         //Skip Migration
-        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-skip-migration' ) {
+        if( $is_admin_request && isset( $_GET['action'] ) && $_GET['action'] == 'ps-skip-migration' ) {
 
             $this->skip_migration();
 

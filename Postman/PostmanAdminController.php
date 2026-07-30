@@ -127,6 +127,9 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				if ( isset( $_GET['error'] ) && $_GET['error'] === 'access_denied' ) {
 					$this->logger->debug( 'User denied Gmail OAuth access' );
 
+					// Clear the OAuth in-progress flag so subsequent requests don't bounce through this branch.
+					$session->unsetOauthInProgress();
+
 					$message = __( 'Gmail authorization was cancelled by the user.', 'post-smtp' );
 					$this->messageHandler->addError( $message );
 
@@ -142,6 +145,8 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 
 					// queue the function that processes the incoming grant code
 					$this->registerInitFunction( 'handleAuthorizationGrant' );
+					// Clear the OAuth in-progress flag so subsequent requests don't re-enter this branch.
+					$session->unsetOauthInProgress();
 					return;
 				}
 			}
