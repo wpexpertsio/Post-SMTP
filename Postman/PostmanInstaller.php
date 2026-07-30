@@ -150,6 +150,12 @@ class PostmanInstaller {
 		// NB: This setting is saved to the database, so it might be better to run this on theme/plugin activation
 		// add the custom capability to the administrator role
 		$role = get_role( Postman::ADMINISTRATOR_ROLE_NAME );
+		if ( ! $role ) {
+			if ( $this->logger->isDebug() ) {
+				$this->logger->debug( sprintf( 'Skipping capability change: %s role not found', Postman::ADMINISTRATOR_ROLE_NAME ) );
+			}
+			return;
+		}
 		$role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
 		$role->add_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
 	}
@@ -165,6 +171,12 @@ class PostmanInstaller {
 		// NB: This setting is saved to the database, so it might be better to run this on theme/plugin activation
 		// remove the custom capability from the administrator role
 		$role = get_role( Postman::ADMINISTRATOR_ROLE_NAME );
+		if ( ! $role ) {
+			if ( $this->logger->isDebug() ) {
+				$this->logger->debug( sprintf( 'Skipping capability change: %s role not found', Postman::ADMINISTRATOR_ROLE_NAME ) );
+			}
+			return;
+		}
 		$role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
         $role->remove_cap( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
 	}
