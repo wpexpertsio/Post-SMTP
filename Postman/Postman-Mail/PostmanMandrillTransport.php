@@ -85,7 +85,7 @@ class PostmanMandrillTransport extends PostmanAbstractModuleTransport implements
 	 * @return string
 	 */
 	public function getSecurityType() {
-		return self::PROTOCOL;
+		return PostmanOptions::SECURITY_TYPE_NONE;
 	}
 	/**
 	 * v0.2.1
