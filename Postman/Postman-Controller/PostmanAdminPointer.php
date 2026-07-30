@@ -24,7 +24,7 @@ if (! class_exists ( 'PostmanAdminPointer' )) {
 			$this->rootPluginFilenameAndPath = $rootPluginFilenameAndPath;
 
 			// Don't run on WP < 3.3
-			if (get_bloginfo ( 'version' ) < '3.3' || true)
+			if (version_compare ( get_bloginfo ( 'version' ), '3.3', '<' ))
 				return;
 
 			add_action ( 'admin_enqueue_scripts', array (
@@ -98,7 +98,7 @@ if (! class_exists ( 'PostmanAdminPointer' )) {
 		}
 		function wptuts_register_pointer_testing($p) {
 			// only do this for administrators
-			if (PostmanUtils::isAdmin () && false) {
+			if (PostmanUtils::isAdmin ()) {
 				$p ['postman16_log'] = array (
 						'target' => '.configure_manually',
 						'options' => array (
