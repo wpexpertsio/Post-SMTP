@@ -60,6 +60,7 @@ if ( ! class_exists( 'PostmanSweegoMailEngine' ) ) {
 
 		// Prepare content for Sweego API
 		$content = [
+			'channel'       => 'email',
 			'provider'      => 'string',
 			'campaign-type' => 'market',
 			'from'          => [
