@@ -143,7 +143,7 @@ class PostmanEmailQueryLog {
 
         // Status Filter
         $clause_for_status = '';
-        if( isset( $args['status'] ) && !empty( $args['status'] ) ) {
+        if( !empty( $args['status'] ) ) {
 
             $clause_for_status = strpos( $this->query, 'WHERE' ) !== FALSE ? ' AND' : ' WHERE';
             
