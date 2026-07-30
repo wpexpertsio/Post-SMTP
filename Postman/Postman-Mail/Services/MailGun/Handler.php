@@ -69,11 +69,23 @@ class PostmanMailGun extends PostmanServiceRequest {
         $headers['Authorization'] = 'Basic ' . base64_encode('api:' . $this->api_key);
 
 
-        if( isset( $this->content['attachment'] ) ) {
+        $has_array_value = false;
+        foreach ( $this->content as $value ) {
+            if ( is_array( $value ) ) {
+                $has_array_value = true;
+                break;
+            }
+        }
+
+        $has_attachment = isset( $this->content['attachment'] );
+
+        if ( $has_attachment || $has_array_value ) {
 
             //Remove attachment from content, to manage it separately
-            $attachments = $this->content['attachment'];
-            unset( $this->content['attachment'] );
+            $attachments = $has_attachment ? $this->content['attachment'] : array();
+            if ( $has_attachment ) {
+                unset( $this->content['attachment'] );
+            }
 
             //Let's create the boundary string. It must be unique
             //so we use the MD5 algorithm to generate a random hash
