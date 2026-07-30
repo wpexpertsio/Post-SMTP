@@ -157,11 +157,6 @@ class PostmanEmailQueryLog {
                 $this->query .= "{$clause_for_status} `success` != 1 ";
     
             }
-            else {
-    
-                $this->query .= '';
-    
-            }
 
         }
 		
