@@ -3946,7 +3946,7 @@
 
             $this->_storage->connectivity_test = array(
                 'is_connected' => $is_connected,
-                'host'         => $_SERVER['HTTP_HOST'],
+                'host'         => isset( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : '',
                 'server_ip'    => WP_FS__REMOTE_ADDR,
                 'is_active'    => $is_active,
                 'timestamp'    => WP_FS__SCRIPT_START_TIME,
@@ -6558,10 +6558,7 @@
             $next_schedule = $this->next_sync_cron();
 
             // The event is properly scheduled, so no need to reschedule it.
-            if (
-                is_numeric( $next_schedule ) &&
-                $next_schedule > time()
-            ) {
+            if ( is_numeric( $next_schedule ) ) {
                 return;
             }
 
@@ -7098,7 +7095,6 @@
          */
         function _enqueue_connect_essentials() {
             wp_enqueue_script( 'jquery' );
-            wp_enqueue_script( 'json2' );
 
             fs_enqueue_local_script( 'postmessage', 'nojquery.ba-postmessage.js' );
             fs_enqueue_local_script( 'fs-postmessage', 'postmessage.js' );
@@ -8839,8 +8835,13 @@
                      isset( $site_active_plugins[ $basename ] )
                 ) {
                     // Plugin was site level activated.
-                    $site_active_plugins_cache->plugins[ $basename ]              = $network_plugins[ $basename ];
-                    $site_active_plugins_cache->plugins[ $basename ]['is_active'] = true;
+                    $site_active_plugins_cache->plugins[ $basename ] = array(
+                        'slug'           => $network_plugins[ $basename ]['slug'],
+                        'version'        => $network_plugins[ $basename ]['Version'],
+                        'title'          => $network_plugins[ $basename ]['Name'],
+                        'is_active'      => $is_active,
+                        'is_uninstalled' => false,
+                    );
                 } else if ( isset( $site_active_plugins_cache->plugins[ $basename ] ) &&
                             ! isset( $site_active_plugins[ $basename ] )
                 ) {
@@ -14029,6 +14030,10 @@
                 $result['next_page'] = $next_page;
             }
 
+            if ( $result['success'] ) {
+                $this->do_action( 'after_license_activation' );
+            }
+
             return $result;
         }
 
@@ -15777,6 +15782,10 @@
         function get_site_info( $site = null, $load_registration = false ) {
             $this->_logger->entrance();
 
+            $fs_hook_snapshot = new FS_Hook_Snapshot();
+            // Remove all filters from `switch_blog`.
+            $fs_hook_snapshot->remove( 'switch_blog' );
+
             $switched = false;
 
             $registration_date = null;
@@ -15835,6 +15844,9 @@
             if ( $switched ) {
                 restore_current_blog();
             }
+
+            // Add the filters back to `switch_blog`.
+            $fs_hook_snapshot->restore( 'switch_blog' );
 
             return $info;
         }
@@ -17420,7 +17432,7 @@
                 FS_User_Lock::instance()->unlock();
             }
 
-            if ( 1 < count( $installs ) ) {
+            if ( 1 < count( $installs ) || fs_is_network_admin() ) {
                 // Only network level opt-in can have more than one install.
                 $is_network_level_opt_in = true;
             }
@@ -17641,6 +17653,31 @@
         /**
          * Install plugin with new user.
          *
+         * You can use this method to sync activation with the Freemius WP SDK where the activation happened outside of the regular opt-in flow, for example if you're using an external licensing server with our api:
+         *
+         * https://docs.freemius.com/api/licenses/activate
+         *
+         * In that case you can call this method like following:
+         *
+         * ```
+         *
+         * my_fs()->install_with_new_user(
+         *     $result['user_id'],
+         *     $result['user_public_key'],
+         *     $result['user_secret_key'],
+         *     $result['is_marketing_allowed'],
+         *     null,
+         *     true,
+         *     $result['install_id'],
+         *     $result['install_public_key'],
+         *     $result['install_secret_key'],
+         *     false
+         * );
+         *
+         * ```
+         *
+         * Here `$result` represents the object returned by the API endpoint.
+         *
          * @author Vova Feldman (@svovaf)
          * @since  1.1.7.4
          *
@@ -17658,7 +17695,7 @@
          *
          * @return string If redirect is `false`, returns the next page the user should be redirected to.
          */
-        private function install_with_new_user(
+        public function install_with_new_user(
             $user_id,
             $user_public_key,
             $user_secret_key,
@@ -21655,6 +21692,8 @@
                 return;
             }
 
+            $this->do_action( 'after_license_activation' );
+
             $premium_license = new FS_Plugin_License( $license );
 
             // Updated site plan.
@@ -21734,6 +21773,8 @@
                     'error'
                 );
 
+                $this->do_action( 'after_license_deactivation', $license );
+
                 return;
             }
 
@@ -21753,6 +21794,8 @@
             $this->_update_site_license( null );
 
             $this->_store_account();
+
+            $this->do_action( 'after_license_deactivation', $license );
 
             if ( $show_notice ) {
                 $this->_admin_notices->add(
@@ -23505,7 +23548,7 @@
                         $params['plugin_public_key'] = $this->get_public_key();
                     }
 
-                    $result = $api->get( 'pricing.json?' . http_build_query( $params ) );
+                    $result = $api->get( $this->add_show_pending( 'pricing.json?' . http_build_query( $params ) ) );
                     break;
                 case 'start_trial':
                     $trial_plan_id = fs_request_get( 'plan_id' );
@@ -24686,23 +24729,39 @@
                     $this->get_premium_slug() :
                     $this->premium_plugin_basename();
 
-                return sprintf(
-                /* translators: %1$s: Product title; %2$s: Plan title */
-                    $this->get_text_inline( ' The paid version of %1$s is already installed. Please activate it to start benefiting the %2$s features. %3$s', 'activate-premium-version' ),
-                    sprintf( '<em>%s</em>', esc_html( $this->get_plugin_title() ) ),
-                    $plan_title,
-                    sprintf(
-                        '<a style="margin-left: 10px;" href="%s"><button class="button button-primary">%s</button></a>',
-                        ( $this->is_theme() ?
-                            wp_nonce_url( 'themes.php?action=activate&amp;stylesheet=' . $premium_theme_slug_or_plugin_basename, 'switch-theme_' . $premium_theme_slug_or_plugin_basename ) :
-                            wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . $premium_theme_slug_or_plugin_basename, 'activate-plugin_' . $premium_theme_slug_or_plugin_basename ) ),
-                        esc_html( sprintf(
-                        /* translators: %s: Plan title */
-                            $this->get_text_inline( 'Activate %s features', 'activate-x-features' ),
-                            $plan_title
-                        ) )
-                    )
-                );
+                if ( is_admin() ) {
+                    return sprintf(
+                        /* translators: %1$s: Product title; %2$s: Plan title */
+                        $this->get_text_inline( ' The paid version of %1$s is already installed. Please activate it to start benefiting from the %2$s features. %3$s', 'activate-premium-version' ),
+                        sprintf( '<em>%s</em>', esc_html( $this->get_plugin_title() ) ),
+                        $plan_title,
+                        sprintf(
+                            '<a style="margin-left: 10px;" href="%s"><button class="button button-primary">%s</button></a>',
+                            ( $this->is_theme() ?
+                                wp_nonce_url( 'themes.php?action=activate&amp;stylesheet=' . $premium_theme_slug_or_plugin_basename, 'switch-theme_' . $premium_theme_slug_or_plugin_basename ) :
+                                wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . $premium_theme_slug_or_plugin_basename, 'activate-plugin_' . $premium_theme_slug_or_plugin_basename ) ),
+                            esc_html( sprintf(
+                            /* translators: %s: Plan title */
+                                $this->get_text_inline( 'Activate %s features', 'activate-x-features' ),
+                                $plan_title
+                            ) )
+                        )
+                    );
+                } else {
+                    return sprintf(
+                        /* translators: %1$s: Product title; %3$s: Plan title */
+                        $this->get_text_inline( ' The paid version of %1$s is already installed. Please navigate to the %2$s to activate it and start benefiting from the %3$s features.', 'activate-premium-version-plugins-page' ),
+                        sprintf( '<em>%s</em>', esc_html( $this->get_plugin_title() ) ),
+                        sprintf(
+                            '<a href="%s">%s</a>',
+                            admin_url( $this->is_theme() ? 'themes.php' : 'plugins.php' ),
+                            ( $this->is_theme() ?
+                                $this->get_text_inline( 'Themes page', 'themes-page' ) :
+                                $this->get_text_inline( 'Plugins page', 'plugins-page' ) )
+                        ),
+                        $plan_title
+                    );
+                }
             } else {
                 // @since 1.2.1.5 The free version is auto deactivated.
                 $deactivation_step = version_compare( $this->version, '1.2.1.5', '<' ) ?

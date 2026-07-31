@@ -258,6 +258,10 @@
             'val' => WP_FS__DIR,
         ),
         array(
+            'key' => 'DISABLE_WP_CRON',
+            'val' => defined( 'DISABLE_WP_CRON' ) ? ( DISABLE_WP_CRON ? 'true' : 'false' ) : 'Not defined',
+        ),
+        array(
             'key' => 'wp_using_ext_object_cache()',
             'val' => wp_using_ext_object_cache() ? 'true' : 'false',
         ),
@@ -282,7 +286,11 @@
                 echo ' class="alternate"';
             } ?>>
                 <td><?php echo $p['key'] ?></td>
-                <td><?php echo $p['val'] ?></td>
+                <td><?php echo $p['val'] ?><?php
+                    if ( 'DISABLE_WP_CRON' === $p['key'] && 'true' === $p['val'] ) {
+                        echo '<p><small><strong>Freemius SDK’s sync cron jobs will not run unless an alternative server-side cron is set up.</strong></small></p>';
+                    }
+                ?></td>
             </tr>
             <?php $alternate = ! $alternate ?>
         <?php endforeach ?>
@@ -353,6 +361,7 @@
             </tr>
             </thead>
             <tbody>
+            <?php $alternate = false; ?>
             <?php foreach ( $modules as $slug => $data ) : ?>
                 <?php
                 if ( WP_FS__MODULE_TYPE_THEME !== $module_type ) {
@@ -376,12 +385,12 @@
                         $active_modules_by_id[ $data->id ] = true;
                     }
                 ?>
-                <tr<?php if ( $is_active ) {
+                <tr<?php if ( $alternate ) { echo ' class="alternate" '; } ?><?php if ( $is_active ) {
                     $has_api_connectivity = $fs->has_api_connectivity();
 
                     if ( true === $has_api_connectivity && $fs->is_on() ) {
                         echo ' style="background: #E6FFE6; font-weight: bold"';
-                    } else {
+                    } else if ( false === $has_api_connectivity || ! $fs->is_on() ) {
                         echo ' style="background: #ffd0d0; font-weight: bold"';
                     }
                 } ?>>
@@ -389,14 +398,14 @@
                     <td><?php echo $slug ?></td>
                     <td><?php echo $data->version ?></td>
                     <td><?php echo $data->title ?></td>
-                    <td<?php if ( $is_active && true !== $has_api_connectivity ) {
+                    <td<?php if ( $is_active && false === $has_api_connectivity ) {
                         echo ' style="color: red; text-transform: uppercase;"';
                     } ?>><?php if ( $is_active ) {
                             echo esc_html( true === $has_api_connectivity ?
                                 fs_text_x_inline( 'Connected', 'as connection was successful' ) :
                                 ( false === $has_api_connectivity ?
                                     fs_text_x_inline( 'Blocked', 'as connection blocked' ) :
-                                    fs_text_x_inline( 'Unknown', 'API connectivity state is unknown' ) )
+                                    fs_text_x_inline( 'No requests yet', 'API connectivity state is unknown' ) )
                             );
                         } ?></td>
                     <td<?php if ( $is_active && ! $fs->is_on() ) {
@@ -450,6 +459,7 @@
                         <?php endif ?>
                     </td>
                 </tr>
+            <?php $alternate = ! $alternate ?>
             <?php endforeach ?>
             </tbody>
         </table>
