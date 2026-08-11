@@ -248,7 +248,7 @@ class PostmanTransportRegistry {
 		$message = array();
 		
 		if ( $this->getCurrentTransport()->isConfiguredAndReady() ) {
-			if ( PostmanOptions::getInstance()->getRunMode() != PostmanOptions::RUN_MODE_PRODUCTION ) {
+			if ( PostmanOptions::getInstance()->isNonProductionRunMode() ) {
 				$message = array(
 					'error' => true,
 					'message' => __( 'Postman is in <em>non-Production</em> mode and is dumping all emails.', 'post-smtp' ),

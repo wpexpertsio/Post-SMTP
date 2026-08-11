@@ -111,6 +111,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const LOG_LEVEL = 'log_level';
 		const RUN_MODE = 'run_mode';
 		const RUN_MODE_PRODUCTION = 'production';
+		const RUN_MODE_LOG_FAILED_ONLY = 'log_failed_only';
 		const RUN_MODE_LOG_ONLY = 'log_only';
 		const RUN_MODE_IGNORE = 'ignore';
 		const MAIL_LOG_ENABLED_OPTION = 'mail_log_enabled';
@@ -249,6 +250,44 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			if ( isset( $this->options [ self::RUN_MODE ] ) ) {
 				return $this->options [ self::RUN_MODE ];
 			} else { 				return self::DEFAULT_RUN_MODE; }
+		}
+
+		/**
+		 * Whether the current run mode should deliver emails.
+		 */
+		public function shouldSendEmail() {
+			$mode = $this->getRunMode();
+
+			return self::RUN_MODE_PRODUCTION === $mode || self::RUN_MODE_LOG_FAILED_ONLY === $mode;
+		}
+
+		/**
+		 * Whether successful emails should be written to the email log.
+		 */
+		public function shouldLogSuccessfulEmail() {
+			$mode = $this->getRunMode();
+
+			return self::RUN_MODE_PRODUCTION === $mode || self::RUN_MODE_LOG_ONLY === $mode;
+		}
+
+		/**
+		 * Whether failed emails should be written to the email log.
+		 */
+		public function shouldLogFailedEmail() {
+			$mode = $this->getRunMode();
+
+			return self::RUN_MODE_PRODUCTION === $mode
+				|| self::RUN_MODE_LOG_ONLY === $mode
+				|| self::RUN_MODE_LOG_FAILED_ONLY === $mode;
+		}
+
+		/**
+		 * Whether the run mode prevents real email delivery.
+		 */
+		public function isNonProductionRunMode() {
+			$mode = $this->getRunMode();
+
+			return self::RUN_MODE_PRODUCTION !== $mode && self::RUN_MODE_LOG_FAILED_ONLY !== $mode;
 		}
 		public function getMailLoggingMaxEntries() {
 			if ( isset( $this->options [ PostmanOptions::MAIL_LOG_MAX_ENTRIES ] ) ) {

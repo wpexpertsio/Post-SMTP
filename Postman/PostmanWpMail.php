@@ -305,7 +305,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				$message->validate( $transport );
 
 				// send the message
-				if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {
+				if ( $options->shouldSendEmail() ) {
 					if ( $transport->isLockingRequired() ) {
 						PostmanUtils::lock();
 						// may throw an exception attempting to contact the OAuth2 provider
@@ -359,7 +359,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				$this->logger->error( get_class( $e ) . ' code=' . $e->getCode() . ' message=' . trim( $e->getMessage() ) );
 
 				// increment the failure counter, unless we are just tesitng
-				if ( ! $testMode && $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {
+				if ( ! $testMode && $options->shouldSendEmail() ) {
 					PostmanState::getInstance()->incrementFailedDelivery();
 				}
 

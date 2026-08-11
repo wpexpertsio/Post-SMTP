@@ -562,7 +562,7 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 			} else if ($this->wpMailBinder->isUnboundDueToException ()) {
 				printf ( '<p><span style="color:red">%s</span></p>', __ ( 'Postman: wp_mail has been declared by another plugin or theme, so you won\'t be able to use Postman until the conflict is resolved.', 'post-smtp' ) );
 			} else {
-				if ($this->options->getRunMode () != PostmanOptions::RUN_MODE_PRODUCTION) {
+				if ( $this->options->isNonProductionRunMode() ) {
 					printf ( '<p><span style="background-color:yellow">%s</span></p>', __ ( 'Postman is in <em>non-Production</em> mode and is dumping all emails.', 'post-smtp' ) );
 				} else if (PostmanTransportRegistry::getInstance ()->getSelectedTransport ()->isConfiguredAndReady ()) {
 					printf ( '<p class="wp-menu-image dashicons-before dashicons-email"> %s </p>', sprintf ( _n ( '<span style="color:green">Postman is configured</span> and has delivered <span style="color:green">%d</span> email.', '<span style="color:green">Postman is configured</span> and has delivered <span style="color:green">%d</span> emails.', PostmanState::getInstance ()->getSuccessfulDeliveries (), 'post-smtp' ), PostmanState::getInstance ()->getSuccessfulDeliveries () ) );

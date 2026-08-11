@@ -69,6 +69,10 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 				$msg = __( 'Post SMTP is in Log Only mode', 'post-smtp' );
 				$background = '#d32f2f';
 				$color = '#fff';
+			} elseif ( $run_mode === PostmanOptions::RUN_MODE_LOG_FAILED_ONLY ) {
+				$msg = __( 'Post SMTP is logging failed emails only', 'post-smtp' );
+				$background = '#1565c0';
+				$color = '#fff';
 			} elseif ( $run_mode === PostmanOptions::RUN_MODE_IGNORE ) {
 				$msg = __( 'Post SMTP is in No Action mode', 'post-smtp' );
 				$background = '#fbc02d';
@@ -255,7 +259,7 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 
 		            if ( PostmanTransportRegistry::getInstance()->getActiveTransport()->isConfiguredAndReady() ) {
 
-			            if ( $this->options->getRunMode() != PostmanOptions::RUN_MODE_PRODUCTION ) {
+			            if ( $this->options->isNonProductionRunMode() ) {
 				            printf(
 					            '<div class="ps-config-bar">
 								<span>%s</span><span style="color: orange;" class="dashicons dashicons-yes-alt"></span>
