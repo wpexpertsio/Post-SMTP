@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /*
  * Plugin Name: Post SMTP
  * Plugin URI: https://postmansmtp.com/
- * Description: Email not reliable? Post SMTP is the first and only WordPress SMTP plugin to implement OAuth 2.0 for Gmail, Hotmail and Yahoo Mail. Setup is a breeze with the Configuration Wizard and integrated Port Tester. Enjoy worry-free delivery even if your password changes!
+ * Description: Email delivery issues? Post SMTP is a powerful WordPress SMTP plugin for reliable email delivery with Gmail, Outlook, Microsoft 365, Brevo, and more. Set up easily with the Configuration Wizard, Email Logs, test emails, and delivery troubleshooting. Enjoy secure, reliable WordPress email delivery even when passwords change!
  * Version: 4.0.0
  * Author: Post SMTP
  * Text Domain: post-smtp

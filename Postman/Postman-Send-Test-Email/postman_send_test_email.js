@@ -1,6 +1,18 @@
 ( function( $ ) {
 	$( document ).ready( function( $e ) {
 
+		$( '#postman_test_email_wizard' ).on( 'submit', function( e ) {
+			e.preventDefault();
+			$( '.send-test-email .ps-next-button' ).trigger( 'click' );
+		} );
+
+		$( document ).on( 'keydown', '#postman_test_options_test_email', function( e ) {
+			if ( e.key === 'Enter' || e.keyCode === 13 ) {
+				e.preventDefault();
+				$( '.send-test-email .ps-next-button' ).trigger( 'click' );
+			}
+		} );
+
 		$( document ).on( 'click', '.send-test-email .ps-next-button', function( e ) {
 			e.preventDefault();
 

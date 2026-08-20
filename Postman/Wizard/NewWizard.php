@@ -215,7 +215,7 @@ class Post_SMTP_New_Wizard {
                                                 'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
                                                 'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png',
                                                 'resend_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/resend.png',
-                                                'cloudflare_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/cloudflare.png',
+                                                'cloudflare_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/cloudflare-figma.svg',
                                                 'smtpcom_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtpcom.png',
                                                 'emailit_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/emailit.png',
                                                 'maileroo_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/maileroo.png',
@@ -362,7 +362,7 @@ class Post_SMTP_New_Wizard {
                                             <div class="box">
                                                 <div class="ps-wizard-step ps-wizard-step-1">
                                                     <p class="ps-wizard-error"></p>
-                                                    <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="1"><?php _e( 'Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
+                                                    <button type="button" class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="1"><?php _e( 'Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                                                     <div style="clear: both"></div>
                                                 </div>         
                                             </div>
@@ -408,7 +408,7 @@ class Post_SMTP_New_Wizard {
                                                 <span class="ps-form-control-info"><?php _e( 'Enter the email address where you want to send a test email message.', 'post-smtp' ) ?></span>
                                                 <p style="color: #B3B3B3;" class="ps-form-control-info"><?php _e( 'Are your WordPress emails getting broken? Check out our guide on', 'post-smtp' ) ?> <a href="https://postmansmtp.com/fix-for-broken-emails/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank"><?php _e( 'how to fix Broken Emails', 'post-smtp' ) ?></a>.</p>
                                             </div>
-                                            <button class="button button-primary ps-blue-btn ps-wizard-send-test-email" data-step="3"><?php _e( 'Send Test Email', 'post-smtp' ) ?> <span class="dashicons dashicons-email"></span></button>
+                                            <button type="button" class="button button-primary ps-blue-btn ps-wizard-send-test-email" data-step="3"><?php _e( 'Send Test Email', 'post-smtp' ) ?> <span class="dashicons dashicons-email"></span></button>
                                             <div>
                                                 <p class="ps-wizard-error"></p>
                                                 <p class="ps-wizard-success"></p>
@@ -561,12 +561,12 @@ class Post_SMTP_New_Wizard {
                                 <p class="ps-wizard-success"><?php echo ( isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
                                 <p class="ps-wizard-error"><?php echo ( !isset( $_GET['success'] ) && isset( $_GET['msg'] ) ) ? sanitize_text_field( $_GET['msg'] ) : ''; ?></p>
                                 <a href="" data-step="1" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span><?php _e( 'Back', 'post-smtp' ); ?></a>
-                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="2"></span><?php _e( 'Save and Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
+                                <button type="button" class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="2"><?php _e( 'Save and Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                                 <div style="clear: both"></div>
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-3">
                                 <a href="" data-step="2" class="ps-wizard-back"><span class="dashicons dashicons-arrow-left-alt"></span><?php _e( 'Back', 'post-smtp' ) ?></a>
-                                <button class="button button-primary ps-blue-btn ps-wizard-next-btn ps-finish-wizard" data-step="3"><?php _e( 'I\'ll send a test email later.', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
+                                <button type="button" class="button button-primary ps-blue-btn ps-wizard-next-btn ps-finish-wizard" data-step="3"><?php _e( 'I\'ll send a test email later.', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                             </div>
                             <div class="ps-wizard-step ps-wizard-step-4">
                                 <div class="ps-wizard-congrates">
@@ -1366,13 +1366,13 @@ class Post_SMTP_New_Wizard {
         <div class="ps-form-control">
             <div><label>API Token</label></div>
             <input type="text" class="ps-cloudflare-api-token" required data-error="'.__( 'Please enter API Token.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::CLOUDFLARE_API_TOKEN ) .']" value="'.$api_token.'" placeholder="">'.
-            '<div class="ps-form-control-info">' . esc_html__( 'Create a token in Cloudflare that can send email using Email Routing.', 'post-smtp' ) . '</div>'
+            '<div class="ps-form-control-info">' . esc_html__( 'Create a token in ', 'post-smtp' ) . '<a href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Cloudflare', 'post-smtp' ) . '</a>' . esc_html__( ' that can send email using Email Routing.', 'post-smtp' ) . '</div>'
             .
         '</div>
         <div class="ps-form-control">
             <div><label>Account ID</label></div>
             <input type="text" class="ps-cloudflare-account-id" required data-error="'.__( 'Please enter Account ID.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::CLOUDFLARE_ACCOUNT_ID ) .']" value="'.$account_id.'" placeholder="">'.
-            '<div class="ps-form-control-info">' . esc_html__( 'You can find the Account ID in your Cloudflare dashboard URL and account settings.', 'post-smtp' ) . '</div>'
+            '<div class="ps-form-control-info">' . esc_html__( 'You can find the Account ID in your ', 'post-smtp' ) . '<a href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Cloudflare dashboard', 'post-smtp' ) . '</a>.</div>'
             .
         '</div>
         ';
@@ -1391,7 +1391,7 @@ class Post_SMTP_New_Wizard {
         $api_key = null !== $this->options->getSmtpcomApiKey() ? esc_attr( $this->options->getSmtpcomApiKey() ) : '';
         $channel = null !== $this->options->getSmtpcomChannel() ? esc_attr( $this->options->getSmtpcomChannel() ) : '';
 
-        $html = '<p>' . esc_html__( 'It is easy to integrate SMTP.com mailer to your WordPress website. We recommend you to check the ', 'post-smtp' ) . '<a href="https://www.smtp.com/resources/api-documentation/" target="_blank">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
+        $html = '<p>' . esc_html__( 'It is easy to integrate SMTP.com mailer to your WordPress website. We recommend you to check the ', 'post-smtp' ) . '<a href="https://postmansmtp.com/docs/mailers/how-to-setup-smtp-mailer-with-post-smtp/" target="_blank">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
         $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
@@ -1401,7 +1401,7 @@ class Post_SMTP_New_Wizard {
             .
         '</div>
         <div class="ps-form-control">
-            <div><label>Channel</label></div>
+            <div><label>Channel Name</label></div>
             <input type="text" class="ps-smtpcom-channel" name="postman_options['. esc_attr( PostmanOptions::SMTPCOM_CHANNEL ) .']" value="'.$channel.'" placeholder="">'.
             '<div class="ps-form-control-info">' . esc_html__( 'Optional channel name from your SMTP.com account.', 'post-smtp' ) . '</div>'
             .

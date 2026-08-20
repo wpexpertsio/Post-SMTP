@@ -121,7 +121,7 @@ class PostmanSmtpcomTransport extends PostmanAbstractModuleTransport implements 
 
 		add_settings_field(
 			PostmanOptions::SMTPCOM_CHANNEL,
-			__( 'Channel', 'post-smtp' ),
+			__( 'Channel Name', 'post-smtp' ),
 			array( $this, 'smtpcom_channel_callback' ),
 			self::SMTPCOM_AUTH_OPTIONS,
 			self::SMTPCOM_AUTH_SECTION
@@ -135,7 +135,7 @@ class PostmanSmtpcomTransport extends PostmanAbstractModuleTransport implements 
 				__( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
 				'https://www.smtp.com/',
 				'SMTP.com',
-				'https://www.smtp.com/resources/api-documentation/'
+				'https://postmansmtp.com/docs/mailers/how-to-setup-smtp-mailer-with-post-smtp/'
 			)
 		);
 	}
@@ -183,7 +183,7 @@ class PostmanSmtpcomTransport extends PostmanAbstractModuleTransport implements 
 		print '<br />';
 		print $this->smtpcom_api_key_callback();
 		print '<br />';
-		printf( '<label for="smtpcom_channel">%s</label>', __( 'Channel', 'post-smtp' ) );
+		printf( '<label for="smtpcom_channel">%s</label>', __( 'Channel Name', 'post-smtp' ) );
 		print '<br />';
 		print $this->smtpcom_channel_callback();
 		print '</section>';

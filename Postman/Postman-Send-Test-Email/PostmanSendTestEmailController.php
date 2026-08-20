@@ -217,7 +217,7 @@ class PostmanSendTestEmailController {
 										</div>
 
 										<span id="when-button-clicked" class="float-left spinner" style="margin-top: 10px;display: none;"></span>
-										<button class="button button-primary ps-blue-button ps-next-button">
+										<button type="button" class="button button-primary ps-blue-button ps-next-button">
 											' . esc_html__( 'Send Test Email', 'post-smtp' ) . '
 											<span class="dashicons dashicons-email"></span>
 										</button>
