@@ -396,7 +396,14 @@
 }
 
 .ps-wizard-socket-radio img[src*="cloudflare"] {
-  width: 50px;
+  width: 70px;
+  height: auto;
+  object-fit: contain;
+  padding: 8px 0 3px 0;
+}
+
+.ps-wizard-socket-radio img[src*="smtpcom"] {
+  width: 40px;
   height: auto;
   object-fit: contain;
   padding: 8px 0 3px 0;
