@@ -326,8 +326,21 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
-= 4.0.0 – July 24, 2026 =
-* NEW – Added [SMTP.com](https://www.smtp.com/) as an email service provider.
+= v 4.0.0 - Aug 24, 2026 =
+* NEW - Added [SMTP.com](https://www.smtp.com/) as an email service provider.
+* NEW - Added CloudFlare API as an email service provider.
+* Improvement - Updated Sweego integration.
+* Improvement - Verified compatibility with WordPress v 7.1.
+* Fix - Resolved issue where newsletter emails were rendered incorrectly via Microsoft 365 API.
+* Fix - Fixed critical error when sending Wordfence Admin Authentication emails.
+* Fix - Resolved PHP 8.3 depreciation warnings.
+* Fix - Fixed fatal error occurring on the configuration page for version 3.7.0.
+* Fix - Fixed issue where the Resend feature sent raw HTML instead of rendered emails.
+* Fix - Corrected delivery time in logs to match WordPress timezone settings.
+* Fix - Added missing angle brackets in Message-ID header to prevent Google Workspace bounces.
+* Fix - Resolved issue where Reply-to settings were not being honored.
+* Fix - Fixed Cyrillic domain support issues.
+* Fix - Addressed various PHP warnings and minor UI/UX improvements.
 
 = 3.9.5 – June 24, 2026 =
 * TWEAK – Updated dashboard banners and removed the Extensions screen from the plugin menu.
