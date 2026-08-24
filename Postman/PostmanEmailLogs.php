@@ -4,9 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require 'Postman-Email-Log/PostmanEmailQueryLog.php';
-$purifier = dirname(__DIR__) . '/includes/libs/HTMLPurifier/HTMLPurifier.auto.php';
-if ( file_exists( $purifier ) ) {
-    require_once $purifier;
+
+if ( ! class_exists( 'HTMLPurifier_Bootstrap', false ) && class_exists( '\PostSMTP\Kernel\Libraries\LibraryLoader' ) ) {
+	\PostSMTP\Kernel\Libraries\LibraryLoader::init();
 }
 
 class PostmanEmailLogs {

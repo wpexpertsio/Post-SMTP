@@ -1,0 +1,18 @@
+{
+  "name": "post-smtp-admin-app",
+  "version": "4.0.0",
+  "private": true,
+  "description": "Post SMTP React admin SPA",
+  "scripts": {
+    "build": "wp-scripts build src/index.js --output-path=build",
+    "start": "wp-scripts start src/index.js --output-path=build",
+    "lint:js": "wp-scripts lint-js src/"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.62.0",
+    "react-router-dom": "^6.28.0"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^30.7.0"
+  }
+}

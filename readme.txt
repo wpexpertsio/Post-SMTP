@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: smtp, gmail smtp, email,  email logs, office 365
 Requires at least: 5.6.0
 Tested up to: 7.0
-Stable tag: 3.9.4
+Stable tag: 3.9.5
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -323,6 +323,9 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 Important: If you are using version 2.8.7 or lower of our plugin, please update to the latest version as soon as possible. This update contains an urgent security fix that prevents potential vulnerabilities and attacks. We apologize for any inconvenience this may cause you and we appreciate your cooperation. Thank you for using our plugin.
 
 == Changelog ==
+
+= 3.9.5 – June 24, 2026 =
+* TWEAK – Updated dashboard banners and removed the Extensions screen from the plugin menu.
 
 = 3.9.4 – June 03, 2026 =
 * FIX – Resolved failed builds reported by Plugintests.com
