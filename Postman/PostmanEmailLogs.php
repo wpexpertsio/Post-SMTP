@@ -501,18 +501,6 @@ class PostmanEmailLogs {
             //WordPress Date, Time Format
             $date_format = get_option( 'date_format' );
 		    $time_format = get_option( 'time_format' );
-            $search = array(
-                '<',
-                '>',
-                '"',
-                "'"
-            );
-            $replace = array(
-                '&lt;',
-                '&gt;',
-                '&quot;',
-                '&#039;'
-            );
    
             //Lets manage the Date format :)
             foreach( $data as $row ) {
@@ -535,7 +523,7 @@ class PostmanEmailLogs {
                 }
                 else {
 
-                    $row->success = '<span title="'.str_replace( $search, $replace, $row->success ).'">Failed</span><a href="#" class="ps-status-log ps-popup-btn">View details</a>';
+                    $row->success = '<span title="' . esc_attr( $row->success ) . '">Failed</span><a href="#" class="ps-status-log ps-popup-btn">View details</a>';
                     
                 }
                 
