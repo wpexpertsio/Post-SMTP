@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin Name: Post SMTP
  * Plugin URI: https://postmansmtp.com/
  * Description: Email delivery issues? Post SMTP is a powerful WordPress SMTP plugin for reliable email delivery with Gmail, Outlook, Microsoft 365, Brevo, and more. Set up easily with the Configuration Wizard, Email Logs, test emails, and delivery troubleshooting. Enjoy secure, reliable WordPress email delivery even when passwords change!
- * Version: 4.0.1
+ * Version: 4.0.2
  * Author: Post SMTP
  * Text Domain: post-smtp
  * Author URI: https://profiles.wordpress.org/saadiqbal/
@@ -102,7 +102,7 @@ ps_fs()->add_filter( 'plugin_icon' , 'ps_fs_custom_icon' );
 define( 'POST_SMTP_BASE', __FILE__ );
 define( 'POST_SMTP_PATH', __DIR__ );
 define( 'POST_SMTP_URL', plugins_url('', POST_SMTP_BASE ) );
-define( 'POST_SMTP_VER', '4.0.1' );
+define( 'POST_SMTP_VER', '4.0.2' );
 define( 'POST_SMTP_DB_VERSION', '1.0.1' );
 define( 'POST_SMTP_ASSETS', plugin_dir_url( __FILE__ ) . 'assets/' );
 
