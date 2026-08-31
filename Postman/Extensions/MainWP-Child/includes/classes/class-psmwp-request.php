@@ -48,10 +48,11 @@ class Post_SMTP_MainWP_Child_Request {
     public function process_email( $to, $subject, $message, $headers = '', $attachments = array() ) {
 
 		$body = array();
-		$pubkey = (string) get_option( 'mainwp_child_pubkey' );
+		$pubkey = get_option( 'mainwp_child_pubkey' );
+		$pubkey = $pubkey ? md5( $pubkey ) : '';
         $request_headers = array(
-            'Site-Id'	=>	sanitize_text_field( (string) get_option( 'mainwp_child_siteid' ) ),
-			'API-Key'	=>	post_smtp_mainwp_get_outbound_api_key( $pubkey ),
+            'Site-Id'	=>	get_option( 'mainwp_child_siteid' ),
+			'API-Key'	=>	$pubkey
         );
 
 		// Let's manage attachments.

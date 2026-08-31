@@ -89,29 +89,17 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 		function dismiss_version_notify() {
             check_admin_referer( 'postsmtp', 'security' );
 
-            if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
-                wp_die( esc_html__( 'Sorry, you are not allowed to perform this action.', 'post-smtp' ), '', array( 'response' => 403 ) );
-            }
-
 			$result = update_option('postman_release_version', true );
 		}
 
         function dismiss_donation_notify() {
             check_admin_referer( 'postsmtp', 'security' );
 
-            if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
-                wp_die( esc_html__( 'Sorry, you are not allowed to perform this action.', 'post-smtp' ), '', array( 'response' => 403 ) );
-            }
-
             $result = update_option('postman_dismiss_donation', true );
         }
 
 		function delete_lock_file() {
             check_admin_referer( 'postman', 'security' );
-
-            if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
-                wp_die( esc_html__( 'Sorry, you are not allowed to perform this action.', 'post-smtp' ), '', array( 'response' => 403 ) );
-            }
 
 			if ( ! PostmanUtils::lockFileExists() ) {
 				echo esc_html__('No lock file found.', 'post-smtp' );
@@ -710,11 +698,6 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 			print '<section id="export_settings" class="ps-left">';
 			printf( '<h3><span>%s<span></h3>', esc_html( $exportTile ) );
 			printf( '<p><span>%s</span></p>', esc_html__( 'Copy this data into another instance of Postman to duplicate the configuration.', 'post-smtp' ) );
-			printf(
-				'<div class="notice notice-warning inline" style="margin: 1em 0;"><p><strong>%s</strong> %s</p></div>',
-				esc_html__( 'Security notice:', 'post-smtp' ),
-				esc_html__( 'This export includes SMTP credentials, OAuth tokens, and other secrets. Store it securely and do not share it in public channels or untrusted locations.', 'post-smtp' )
-			);
 			$data = '';
 			if ( ! PostmanPreRequisitesCheck::checkZlibEncode() ) {
 				$extraDeleteButtonAttributes = sprintf( 'disabled="true"' );
@@ -829,10 +812,6 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
 
 			if( !wp_verify_nonce( $_POST['_wp_nonce'], 'less-secure-security' ) ) {
 				die( 'Not Secure.' );
-			}
-
-			if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
-				wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'post-smtp' ) ), 403 );
 			}
 
 			$result = update_option( 'ps_hide_less_secure', 1 );

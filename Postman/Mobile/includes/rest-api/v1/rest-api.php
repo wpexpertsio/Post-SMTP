@@ -31,31 +31,31 @@ class Post_SMTP_Mobile_Rest_API {
         register_rest_route( 'post-smtp/v1', '/connect-app', array(
             'methods'               => WP_REST_Server::CREATABLE,
             'callback'              => array( $this, 'connect_app' ),
-            'permission_callback'   => 'post_smtp_mobile_permission_connect_app',
+            'permission_callback'   => '__return_true',
         ) );
 		
 		register_rest_route( 'post-smtp/v1', '/get-logs', array(
             'methods'               => WP_REST_Server::READABLE,
             'callback'              => array( $this, 'get_logs' ),
-            'permission_callback'   => 'post_smtp_mobile_permission_fcm_token',
+            'permission_callback'   => '__return_true',
         ) );
 		
 		register_rest_route( 'post-smtp/v1', '/disconnect-site', array(
             'methods'               => WP_REST_Server::EDITABLE,
             'callback'              => array( $this, 'disconnect_site' ),
-            'permission_callback'   => 'post_smtp_mobile_permission_fcm_token',
+            'permission_callback'   => '__return_true',
         ) );
 		
 		register_rest_route( 'post-smtp/v1', '/get-log', array(
             'methods'               => WP_REST_Server::READABLE,
             'callback'              => array( $this, 'get_log' ),
-            'permission_callback'   => 'post_smtp_mobile_permission_fcm_token',
+            'permission_callback'   => '__return_true',
         ) );
 		
 		register_rest_route( 'post-smtp/v1', '/resend-email', array(
             'methods'               => WP_REST_Server::CREATABLE,
             'callback'              => array( $this, 'resend_email' ),
-            'permission_callback'   => 'post_smtp_mobile_permission_fcm_token',
+            'permission_callback'   => '__return_true',
         ) );
 
     }
@@ -68,7 +68,7 @@ class Post_SMTP_Mobile_Rest_API {
 		$device = sanitize_text_field( (string) $request->get_header( 'device' ) );
 		$server_url = esc_url_raw( (string) $request->get_header( 'server_url' ) );
 		
-		if( hash_equals( (string) $nonce, $auth_key ) ) {
+		if( $auth_key === $nonce ) {
 			
 			$data = array(
 				$fcm_token	=>	array(
@@ -81,7 +81,6 @@ class Post_SMTP_Mobile_Rest_API {
 			
 			update_option( 'post_smtp_mobile_app_connection', $data );
 			update_option( 'post_smtp_server_url', $server_url );
-			delete_transient( 'post_smtp_auth_nonce' );
 			
 			$response = array(
 				'fcm_token'			=>	$fcm_token,
@@ -115,13 +114,12 @@ class Post_SMTP_Mobile_Rest_API {
 		$args['order_by'] = 'time';
 		$args['order'] = 'DESC';
 		
-		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? sanitize_text_field( (string) $request->get_header( 'fcm_token' ) ) : '';
-		$app_build_number = $request->get_header( 'app_build_number' ) !== null ? absint( $request->get_header( 'app_build_number' ) ) : 0;
-		$start = $request->get_param( 'start' ) !== null ? absint( $request->get_param( 'start' ) ) : 0;
-		$end = $request->get_param( 'end' ) !== null ? absint( $request->get_param( 'end' ) ) : 25;
-		$filter_param = $request->get_param( 'filter' ) !== null ? sanitize_key( (string) $request->get_param( 'filter' ) ) : 'all';
-		$this->filter = in_array( $filter_param, array( 'success', 'failed' ), true ) ? $filter_param : '';
-		$query = $request->get_param( 'query' ) !== null && $request->get_param( 'query' ) !== '' ? sanitize_text_field( (string) $request->get_param( 'query' ) ) : '';
+		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
+		$app_build_number = $request->get_header( 'app_build_number' ) !== null ? $request->get_header( 'app_build_number' ) : '';
+		$start = $request->get_param( 'start' ) !== null ? $request->get_param( 'start' ) : 0;
+		$end = $request->get_param( 'end' ) !== null ? $request->get_param( 'end' ) : 25;
+		$this->filter = $request->get_param( 'filter' ) !== 'all' ? $request->get_param( 'filter' ) : '';
+		$query = $request->get_param( 'query' ) !== '' ? $request->get_param( 'query' ) : '';
 		
 		if( empty( $query ) && !empty( $this->filter ) ) {
 			
@@ -141,64 +139,76 @@ class Post_SMTP_Mobile_Rest_API {
 			
 		}
 		
-		$logs_query = new PostmanEmailQueryLog();
-		$args['start'] = $start;
-		$args['end'] = $end;
-		
-		if( empty( $args ) ) {
+		if( post_smtp_mobile_validate( $fcm_token ) ) {
+			
+			$logs_query = new PostmanEmailQueryLog();
+			$args['start'] = $start;
+			$args['end'] = $end;
+			
+			if( empty( $args ) ) {
+				
+				wp_send_json_success(
+					array( 'message' => 'Logs not found.' ),
+					200
+				);
+				
+			}
+			
+			if( !empty( $app_build_number ) &&  $app_build_number >= 14 ) {
+				
+				$response = array(
+					'logs'				=>	$logs_query->get_logs( $args ),
+					'plugin_version'	=>	POST_SMTP_VER
+				);
+				
+			}
+			else {
+				$response = $logs_query->get_logs( $args );
+			}
 			
 			wp_send_json_success(
-				array( 'message' => 'Logs not found.' ),
+				$response,
 				200
 			);
 			
 		}
 		
-		if( !empty( $app_build_number ) &&  $app_build_number >= 14 ) {
-			
-			$response = array(
-				'logs'				=>	$logs_query->get_logs( $args ),
-				'plugin_version'	=>	POST_SMTP_VER
-			);
-			
-		}
-		else {
-			$response = $logs_query->get_logs( $args );
-		}
-		
-		wp_send_json_success(
-			$response,
-			200
-		);
-		
 	}
 	
 	public function get_log( WP_REST_Request $request ) {
 		
-		$id = $request->get_param( 'id' ) !== null ? absint( $request->get_param( 'id' ) ) : 1;
-		$type_param = $request->get_param( 'type' ) !== null ? sanitize_key( (string) $request->get_param( 'type' ) ) : 'log';
-		$type = in_array( $type_param, array( 'log', 'transcript', 'details' ), true ) ? $type_param : 'log';
-		$view_token = post_smtp_create_mobile_log_view_token( $id, $type );
+		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
+		$id = $request->get_param( 'id' ) !== null ? $request->get_param( 'id' ) : 1;
+		$type = $request->get_param( 'type' ) !== null ? $request->get_param( 'type' ) : 'log';
 		
-		$url = add_query_arg(
-			array(
-				'ps_log_view' => $view_token,
-			),
-			admin_url( 'admin.php' )
-		);
-		
-		wp_send_json_success(
-			$url,
-			200
-		);
+		if( post_smtp_mobile_validate( $fcm_token ) ) {
+			
+			$url = add_query_arg(
+				array(
+					'access_token' => sanitize_text_field( (string) $fcm_token ),
+					'type' => sanitize_text_field( (string) $type ),
+					'log_id' => absint( $id ),
+				),
+				admin_url( 'admin.php' )
+			);
+			
+			wp_send_json_success(
+			 	$url,
+				200
+			);
+			
+		}
 		
 	}
 	
 	public function resend_email( WP_REST_Request $request ) {
 		
-		$id = $request->get_param( 'id' ) !== null ? absint( $request->get_param( 'id' ) ) : 0;
+		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
+		$id = $request->get_param( 'id' ) !== null ? $request->get_param( 'id' ) : '';
 		
-		if( empty( $id ) ){
+		if( post_smtp_mobile_validate( $fcm_token ) ) {
+			
+			if( empty( $id ) ){
 				
 				wp_send_json_error( 
 					array(
@@ -272,10 +282,14 @@ class Post_SMTP_Mobile_Rest_API {
 				);
 				
 			}
+			
+		}
 		
 	}
 	
 	public function disconnect_site( WP_REST_Request $request ) {
+		
+		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
 		
 		if( !class_exists( 'PostmanEmailQueryLog' ) ) {
 			
@@ -283,25 +297,29 @@ class Post_SMTP_Mobile_Rest_API {
 			
 		}
 		
-		$response = delete_option( 'post_smtp_mobile_app_connection' );
-		$response = delete_option( 'post_smtp_server_url' );
-		
-		if( $response ) {
+		if( post_smtp_mobile_validate( $fcm_token ) ) {
 			
-			wp_send_json_success(
+			$response = delete_option( 'post_smtp_mobile_app_connection' );
+			$response = delete_option( 'post_smtp_server_url' );
+			
+			if( $response ) {
+				
+				wp_send_json_success(
+					array(
+						'message'	=> 'Site Disconnected.'
+					),
+					200
+				);	
+			}
+			
+			wp_send_json_error( 
 				array(
-					'message'	=> 'Site Disconnected.'
-				),
-				200
-			);	
+					'error'	=>	'Invalid Request.'
+				), 
+				403 
+			);
+			
 		}
-		
-		wp_send_json_error( 
-			array(
-				'error'	=>	'Invalid Request.'
-			), 
-			403 
-		);
 		
 	}
 	

@@ -8,34 +8,19 @@ class Post_SMTP_Email_Content {
 	
 	public function __construct() {
 		
-		if ( ! is_admin() ) {
-			return;
-		}
-
-		if ( isset( $_GET['ps_log_view'] ) ) {
-			$payload = post_smtp_consume_mobile_log_view_token( sanitize_text_field( wp_unslash( $_GET['ps_log_view'] ) ) );
-
-			if ( $payload ) {
-				$this->log_id = absint( $payload['log_id'] );
-				$this->type   = sanitize_text_field( (string) $payload['type'] );
-				$this->render_html();
-			}
-
-			return;
-		}
-
-		// Deprecated: legacy mobile clients passed the long-lived FCM token in the URL.
-		if(
-			isset( $_GET['access_token'] )
+		if( 
+			is_admin()
 			&&
-			isset( $_GET['log_id'] )
+			isset( $_GET['access_token'] ) 
 			&&
-			isset( $_GET['type'] )
+			isset( $_GET['log_id'] ) 
+			&&
+			isset( $_GET['type'] ) 
 		) {
 			
-			$this->access_token = sanitize_text_field( wp_unslash( $_GET['access_token'] ) );
-			$this->log_id = sanitize_text_field( wp_unslash( $_GET['log_id'] ) );
-			$this->type = sanitize_text_field( wp_unslash( $_GET['type'] ) );
+			$this->access_token = sanitize_text_field( $_GET['access_token'] );
+			$this->log_id = sanitize_text_field( $_GET['log_id'] );
+			$this->type = sanitize_text_field( $_GET['type'] );
 			
 			$this->render_html();
 			
@@ -46,9 +31,8 @@ class Post_SMTP_Email_Content {
 	public function render_html() {
 		
 		$device = get_option( 'post_smtp_mobile_app_connection' );
-		$authorized_via_view_token = ( '' === $this->access_token && '' !== $this->log_id && '' !== $this->type );
 		
-		if( ! $authorized_via_view_token && empty( $this->access_token ) ) {
+		if( empty( $this->access_token ) ) {
 			
 			wp_send_json_error( 
 				array(
@@ -58,7 +42,8 @@ class Post_SMTP_Email_Content {
 			);
 			
 		}
-		elseif( $authorized_via_view_token || ( $device && isset( $device[$this->access_token] ) ) ) {
+		//Valid Request
+		elseif( $device && isset( $device[$this->access_token] ) ) {
 			
 			if( !class_exists( 'PostmanEmailQueryLog' ) ) {
 
@@ -192,12 +177,7 @@ class Post_SMTP_Email_Content {
 									// Remove any stray broken closing tbody tag fragments that can leak as text.
 									$message = preg_replace( '/<\/tbod[^>]*>/i', '', $message );
 
-									if ( ! class_exists( 'PostmanEmailLogs' ) ) {
-										require_once POST_SMTP_PATH . '/Postman/PostmanEmailLogs.php';
-									}
-
-									$email_logs = PostmanEmailLogs::get_instance();
-									echo $email_logs->purify_html( $message );
+									echo wp_kses_post( $message );
 									?>
 								</div>
 							</div>

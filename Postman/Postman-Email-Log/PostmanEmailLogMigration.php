@@ -10,31 +10,6 @@ class PostmanEmailLogsMigration {
     private $logging_file_url = '';
 
     /**
-     * Whether the current user may run migration actions.
-     *
-     * @since 3.9.6
-     * @return bool
-     */
-    private function user_can_migrate() {
-        return current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS );
-    }
-
-    /**
-     * Block unauthorized migration requests.
-     *
-     * @since 3.9.6
-     */
-    private function deny_unauthorized_migration() {
-        if ( ! $this->user_can_migrate() ) {
-            wp_die(
-                esc_html__( 'Sorry, you are not allowed to manage Post SMTP log migrations.', 'post-smtp' ),
-                esc_html__( 'Forbidden', 'post-smtp' ),
-                array( 'response' => 403 )
-            );
-        }
-    }
-
-    /**
      *  Constructor PostmanEmailLogsMigration
      * 
      * @since 2.4.0
@@ -42,24 +17,18 @@ class PostmanEmailLogsMigration {
      */
     public function __construct() {
 
-        $private_log_dir = post_smtp_get_private_log_dir();
-
         if( is_multisite() ) {
 
-            $this->logging_file = $private_log_dir . '/migration-' . get_current_blog_id() . '.log';
+            $this->logging_file = WP_CONTENT_DIR . '/post-smtp-migration-' . get_current_blog_id() . '.log';
+            $this->logging_file_url = WP_CONTENT_URL . '/post-smtp-migration-' . get_current_blog_id() . '.log';
 
         }
         else {
 
-            $this->logging_file = $private_log_dir . '/migration.log';
+            $this->logging_file = WP_CONTENT_DIR . '/post-smtp-migration.log';
+            $this->logging_file_url = WP_CONTENT_URL . '/post-smtp-migration.log';
             
         }
-
-        $this->logging_file_url = wp_nonce_url(
-            admin_url( 'admin.php?page=postman_email_log&action=ps-view-migration-log' ),
-            'ps-migrate-logs',
-            'security'
-        );
 
         $this->new_logging = get_option( 'postman_db_version' );
         $this->migrating = get_option( 'ps_migrate_logs' );
@@ -125,12 +94,6 @@ class PostmanEmailLogsMigration {
         if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-skip-migration' ) {
 
             $this->skip_migration();
-
-        }
-
-        if( isset( $_GET['action'] ) && $_GET['action'] == 'ps-view-migration-log' ) {
-
-            $this->view_migration_log();
 
         }
 
@@ -217,7 +180,7 @@ class PostmanEmailLogsMigration {
                 $new_logging
             ): ?>
                 <p><?php echo _e( 'Great! You have successfully migrated to new logs.', 'post-smtp' ); ?> 
-                    <?php echo file_exists( $this->logging_file ) ? '<a href="' . esc_url( $this->logging_file_url ) . '" target="_blank">View Migration Log</a>' : ''; ?>
+                    <?php echo file_exists( $this->logging_file ) ? '<a href="'.$this->logging_file_url.'" target="_blank">View Migration Log</a>' : ''; ?>
                 </p>
                 <a href="<?php echo esc_url( $switch_back ); ?>" class="button button-primary">View old logs</a>
                 <a href="<?php echo esc_url( $delete_url ); ?>" class="button button-primary">Delete old Logs</a>
@@ -335,8 +298,6 @@ class PostmanEmailLogsMigration {
 
         }
 
-        $this->deny_unauthorized_migration();
-
         $this->log( 'Info: Creating table' );
 
         //Let's start migration 
@@ -380,15 +341,9 @@ class PostmanEmailLogsMigration {
      */
     public function migrate_logs() {
 
-        if( ! wp_verify_nonce( $_POST['security'], 'ps-migrate-logs' ) ) {
-            wp_send_json_error( array( 'message' => 'Security check failed.' ), 403 );
-        }
+        if( wp_verify_nonce( $_POST['security'], 'ps-migrate-logs' ) ) {
 
-        if ( ! $this->user_can_migrate() ) {
-            wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'post-smtp' ) ), 403 );
-        }
-
-        if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-migrate-logs' ) {
+            if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-migrate-logs' ) {
     
                 if( $this->have_old_logs ) {
 
@@ -460,6 +415,8 @@ class PostmanEmailLogsMigration {
         
                 }
     
+            }
+
         }
 
     }
@@ -626,13 +583,9 @@ class PostmanEmailLogsMigration {
      */
     public function trash_all_old_logs() {
 
-        if( ! wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
-            return;
-        }
+        if( wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
 
-        $this->deny_unauthorized_migration();
-
-        global $wpdb;
+            global $wpdb;
 
             $result = $wpdb->get_results(
                 "SELECT ID 
@@ -667,6 +620,8 @@ class PostmanEmailLogsMigration {
 
             wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
 
+        }
+
     }
 
 
@@ -678,17 +633,15 @@ class PostmanEmailLogsMigration {
      */
     public function switch_back() {
 
-        if( ! wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
-            return;
-        }
+        if( wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
 
-        $this->deny_unauthorized_migration();
+            $this->log( 'Info: `switch_back` Switching to old system' );
 
-        $this->log( 'Info: `switch_back` Switching to old system' );
+            delete_option( 'postman_db_version' );
 
-        delete_option( 'postman_db_version' );
+            wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
 
-        wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+        } 
 
     }
 
@@ -701,17 +654,15 @@ class PostmanEmailLogsMigration {
      */
     public function switch_to_new() {
 
-        if( ! wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
-            return;
-        }
+        if( wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
 
-        $this->deny_unauthorized_migration();
+            $this->log( 'Info: `switch_to_new` Switching to new system' );
 
-        $this->log( 'Info: `switch_to_new` Switching to new system' );
+            update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
 
-        update_option( 'postman_db_version', POST_SMTP_DB_VERSION );
+            wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
 
-        wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+        } 
 
     }
 
@@ -853,10 +804,6 @@ class PostmanEmailLogsMigration {
 
         if( isset( $_POST['action'] ) && $_POST['action'] == 'ps-db-update-notice-dismiss' && wp_verify_nonce( $_POST['security'], 'ps-migrate-logs' ) ) {
 
-            if ( ! $this->user_can_migrate() ) {
-                wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'post-smtp' ) ), 403 );
-            }
-
             set_transient( 'ps_dismiss_update_notice', 1, WEEK_IN_SECONDS );
 
         }
@@ -872,36 +819,34 @@ class PostmanEmailLogsMigration {
      */
     public function revert_migration() {
 
-        if( ! wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
-            return;
-        }
+        if( wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
 
-        $this->deny_unauthorized_migration();
+            $this->log( 'Info: `revert_migration` Reverting Migration' );
+            $email_logs = new PostmanEmailLogs;
 
-        $this->log( 'Info: `revert_migration` Reverting Migration' );
-        $email_logs = new PostmanEmailLogs;
+            delete_option( 'ps_migrate_logs' );
+            $this->log( 'Info: `revert_migration` Deleted option ps_migrate_logs' );
 
-        delete_option( 'ps_migrate_logs' );
-        $this->log( 'Info: `revert_migration` Deleted option ps_migrate_logs' );
+            if( $email_logs->uninstall_tables() ) {
 
-        if( $email_logs->uninstall_tables() ) {
+                $this->log( 'Info: `revert_migration` Tables Uninstalled' );
+            
+                global $wpdb;
+                $response = $wpdb->query(
+                    "UPDATE {$wpdb->posts} SET pinged = '' WHERE post_type = 'postman_sent_mail';"                
+                );
 
-            $this->log( 'Info: `revert_migration` Tables Uninstalled' );
-        
-            global $wpdb;
-            $response = $wpdb->query(
-                "UPDATE {$wpdb->posts} SET pinged = '' WHERE post_type = 'postman_sent_mail';"                
-            );
+                if( $response ) {
 
-            if( $response ) {
+                    $this->log( 'Info: `revert_migration` pinged unset' );
 
-                $this->log( 'Info: `revert_migration` pinged unset' );
+                }
 
             }
 
-        }
+            wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
 
-        wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+        }
 
     }
 
@@ -914,76 +859,47 @@ class PostmanEmailLogsMigration {
      */
     public function skip_migration() {
 
-        if( ! wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
-            return;
+        if( wp_verify_nonce( $_GET['security'], 'ps-migrate-logs' ) ) {
+
+            $this->log( 'Info: `skip_migration` Skipping Migration' );
+
+            delete_option( 'ps_migrate_logs' );
+            $this->log( 'Info: `skip_migration` Deleted option ps_migrate_logs' );
+
+            $email_logs = new PostmanEmailLogs;
+            $email_logs->install_table();
+    
+            $this->log( 'Info: Table created' );
+            
+            global $wpdb;
+
+            $result = $wpdb->get_results(
+                "SELECT ID 
+                FROM {$wpdb->posts} 
+                WHERE post_type = 'postman_sent_mail';",
+                OBJECT_K
+            );
+            $log_ids = array_keys( $result );
+            $log_ids = implode( ',', $log_ids );
+
+            $this->log( 'Info: `trash_all_old_logs` Delete log IDs: ' . $log_ids );
+
+            $result = $wpdb->get_results(
+                "DELETE p.*, pm.*
+                FROM {$wpdb->posts} AS p
+                INNER JOIN 
+                {$wpdb->postmeta} AS pm
+                ON p.ID = pm.post_id
+                WHERE p.post_type = 'postman_sent_mail' && p.ID IN ({$log_ids});"
+            );
+
+            $result = $result ? 'Successfully deleted' : 'Failed';
+
+            $this->log( 'Info: `trash_all_old_logs` Delete result: ' . print_r( $result, true ) );
+
+            wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
+
         }
-
-        $this->deny_unauthorized_migration();
-
-        $this->log( 'Info: `skip_migration` Skipping Migration' );
-
-        delete_option( 'ps_migrate_logs' );
-        $this->log( 'Info: `skip_migration` Deleted option ps_migrate_logs' );
-
-        $email_logs = new PostmanEmailLogs;
-        $email_logs->install_table();
-
-        $this->log( 'Info: Table created' );
-        
-        global $wpdb;
-
-        $result = $wpdb->get_results(
-            "SELECT ID 
-            FROM {$wpdb->posts} 
-            WHERE post_type = 'postman_sent_mail';",
-            OBJECT_K
-        );
-        $log_ids = array_keys( $result );
-        $log_ids = implode( ',', $log_ids );
-
-        $this->log( 'Info: `trash_all_old_logs` Delete log IDs: ' . $log_ids );
-
-        $result = $wpdb->get_results(
-            "DELETE p.*, pm.*
-            FROM {$wpdb->posts} AS p
-            INNER JOIN 
-            {$wpdb->postmeta} AS pm
-            ON p.ID = pm.post_id
-            WHERE p.post_type = 'postman_sent_mail' && p.ID IN ({$log_ids});"
-        );
-
-        $result = $result ? 'Successfully deleted' : 'Failed';
-
-        $this->log( 'Info: `trash_all_old_logs` Delete result: ' . print_r( $result, true ) );
-
-        wp_redirect( admin_url( 'admin.php?page=postman_email_log' ) );
-
-    }
-
-
-    /**
-     * Stream migration log to authorized admins only.
-     *
-     * @since 3.9.6
-     */
-    public function view_migration_log() {
-
-        if ( ! isset( $_GET['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['security'] ) ), 'ps-migrate-logs' ) ) {
-            wp_die( esc_html__( 'Security check failed.', 'post-smtp' ), esc_html__( 'Forbidden', 'post-smtp' ), array( 'response' => 403 ) );
-        }
-
-        $this->deny_unauthorized_migration();
-
-        if ( ! file_exists( $this->logging_file ) ) {
-            wp_die( esc_html__( 'Migration log not found.', 'post-smtp' ), esc_html__( 'Not Found', 'post-smtp' ), array( 'response' => 404 ) );
-        }
-
-        nocache_headers();
-        header( 'Content-Type: text/plain; charset=utf-8' );
-        header( 'Content-Disposition: inline; filename="post-smtp-migration.log"' );
-
-        readfile( $this->logging_file );
-        exit;
 
     }
 

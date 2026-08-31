@@ -174,18 +174,16 @@ if ( ! class_exists( 'PostmanInputSanitizer' ) ) {
 				$this->logger->debug( 'Warning, second sanitizePassword attempt detected' );
 			} else if ( isset( $input [ $key ] ) ) {
 				if ( strlen( $input [ $key ] ) > 0 && preg_match( '/^\**$/', $input [ $key ] ) ) {
-					// if the password is all stars, then keep the existing stored value
-					$new_input [ $key ] = $this->options->getStoredSecret( $key );
+					// if the password is all stars, then keep the existing password
+					$new_input [ $key ] = $existingPassword;
 				} else {
 					// otherwise the password is new, so trim it
 					$new_input [ $key ] = sanitize_text_field( trim( $input [ $key ] ) );
 				}
 				// log it
 				$this->logSanitize( $desc, $new_input [ $key ] );
-				// encrypt password/API key for storage
-				if ( '' !== $new_input [ $key ] ) {
-					$new_input [ $key ] = post_smtp_encode_secret( $new_input [ $key ] );
-				}
+				// base-64 scramble password
+				$new_input [ $key ] = base64_encode( $new_input [ $key ] );
 
 				$this->logger->debug( sprintf( 'Encoding %s as %s', $desc, $new_input [ $key ] ) );
 			}

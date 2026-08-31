@@ -31,13 +31,13 @@ class Post_SMTP_Mobile_Rest_API_V2 {
 		register_rest_route( 'post-smtp/v2', '/get-logs', array(
             'methods'               => WP_REST_Server::READABLE,
             'callback'              => array( $this, 'get_logs' ),
-            'permission_callback'   => 'post_smtp_mobile_permission_fcm_token',
+            'permission_callback'   => '__return_true',
         ) );
 
 		register_rest_route( 'post-smtp/v2', '/validate-license', array(
             'methods'               => WP_REST_Server::READABLE,
             'callback'              => array( $this, 'validate_license' ),
-            'permission_callback'   => 'post_smtp_mobile_permission_fcm_token',
+            'permission_callback'   => '__return_true',
         ) );
 
     }
@@ -53,13 +53,12 @@ class Post_SMTP_Mobile_Rest_API_V2 {
 		$args['order_by'] = 'time';
 		$args['order'] = 'DESC';
 		
-		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? sanitize_text_field( (string) $request->get_header( 'fcm_token' ) ) : '';
-		$start = $request->get_param( 'start' ) !== null ? absint( $request->get_param( 'start' ) ) : 0;
-		$end = $request->get_param( 'end' ) !== null ? absint( $request->get_param( 'end' ) ) : 25;
-		$filter_param = $request->get_param( 'filter' ) !== null ? sanitize_key( (string) $request->get_param( 'filter' ) ) : 'all';
-		$this->filter = in_array( $filter_param, array( 'all', 'success', 'failed' ), true ) ? $filter_param : 'all';
-		$query = $request->get_param( 'query' ) !== null && $request->get_param( 'query' ) !== '' ? sanitize_text_field( (string) $request->get_param( 'query' ) ) : '';
-		$mainwp_site_id = $request->get_param( 'mainwp_site_id' ) !== null && $request->get_param( 'mainwp_site_id' ) !== '' ? sanitize_text_field( (string) $request->get_param( 'mainwp_site_id' ) ) : '';
+		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
+		$start = $request->get_param( 'start' ) !== null ? $request->get_param( 'start' ) : 0;
+		$end = $request->get_param( 'end' ) !== null ? $request->get_param( 'end' ) : 25;
+		$this->filter = $request->get_param( 'filter' ) !== 'all' ? $request->get_param( 'filter' ) : '';
+		$query = $request->get_param( 'query' ) !== '' ? $request->get_param( 'query' ) : '';
+		$mainwp_site_id = $request->get_param( 'mainwp_site_id' ) !== '' ? $request->get_param( 'mainwp_site_id' ) : '';
 		
 		if( $this->has_mainwp ) {
 			
@@ -90,34 +89,38 @@ class Post_SMTP_Mobile_Rest_API_V2 {
 			
 		}
 		
-		$logs_query = new PostmanEmailQueryLog();
-		$args['start'] = $start;
-		$args['end'] = $end;
-		
-		if( empty( $args ) ) {
+		if( post_smtp_mobile_validate( $fcm_token ) ) {
+			
+			$logs_query = new PostmanEmailQueryLog();
+			$args['start'] = $start;
+			$args['end'] = $end;
+			
+			if( empty( $args ) ) {
+				
+				wp_send_json_success(
+					array( 'message' => 'Logs not found.' ),
+					200
+				);
+				
+			}
+			
+			$response = array(
+				'logs'				=>	$logs_query->get_logs( $args ),
+				'plugin_version'	=>	POST_SMTP_VER
+			);
+			
+			if( $this->has_mainwp ) {
+				
+				$response['mainwp'] = post_smtp_mobile_get_child_sites();
+				
+			}
 			
 			wp_send_json_success(
-				array( 'message' => 'Logs not found.' ),
+				$response,
 				200
 			);
 			
 		}
-		
-		$response = array(
-			'logs'				=>	$logs_query->get_logs( $args ),
-			'plugin_version'	=>	POST_SMTP_VER
-		);
-		
-		if( $this->has_mainwp ) {
-			
-			$response['mainwp'] = post_smtp_mobile_get_child_sites();
-			
-		}
-		
-		wp_send_json_success(
-			$response,
-			200
-		);
 		
 	}
 
@@ -129,7 +132,7 @@ class Post_SMTP_Mobile_Rest_API_V2 {
      */
 	public function validate_license( WP_REST_Request $request ) {
 
-		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? sanitize_text_field( (string) $request->get_header( 'fcm_token' ) ) : '';
+		$fcm_token = $request->get_header( 'fcm_token' ) !== null ? $request->get_header( 'fcm_token' ) : '';
 
 		/**
 		 * Validate License
@@ -140,31 +143,28 @@ class Post_SMTP_Mobile_Rest_API_V2 {
 		 */
 		$validate_license = apply_filters( 'post_smtp_mobile_validate_license', false );
 
-		if( ! $validate_license ) {
-			wp_send_json_error(
-				array( 'message' => 'License not found.' ),
-				404
-			);
-		}
+		if( post_smtp_mobile_validate( $fcm_token ) && $validate_license ) {
 			
-		$response = array();
+			$response = array();
 
-		/**
-		 * License Response
-		 * 
-		 * @param array $response
-		 * 
-		 * @since 2.9.4
-		 */
-		$response = apply_filters( 'post_smtp_mobile_license_response', $response );
+			/**
+			 * License Response
+			 * 
+			 * @param array $response
+			 * 
+			 * @since 2.9.4
+			 */
+			$response = apply_filters( 'post_smtp_mobile_license_response', $response );
 
-		if( !empty( $response ) ) {
+			if( !empty( $response ) ) {
 
-			wp_send_json_success(
-				$response,
-				200
-			);
+				wp_send_json_success(
+					$response,
+					200
+				);
 
+			}
+			
 		}
 
 		wp_send_json_error(
