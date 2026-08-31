@@ -66,9 +66,9 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 
 			check_admin_referer( 'post_smtp_dash_widget_lite_nonce' );
 
-			// if ( ! current_user_can( post_smtp()->get_capability_manage_options() ) ) {
-				// wp_send_json_error();
-			// }
+			if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
+				wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'post-smtp' ) ), 403 );
+			}
 
 			$meta  = ! empty( $_POST['meta'] ) ? sanitize_key( $_POST['meta'] ) : '';
 			$value = ! empty( $_POST['value'] ) ? sanitize_key( $_POST['value'] ) : 0;

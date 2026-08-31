@@ -5,8 +5,6 @@ class Postman_Email_Tester {
 
     private static $instance;
 
-    private $x_mt_token_wp = 'wp_9f3a7c2e8b1d4a6f5c8e9b2d1a3f7c6e';
-
     //TODO: Replace URL with Production URL
     private $base_url = 'https://smtper.postmansmtp.com/wp-json/mail-tester/v1';
 
@@ -51,6 +49,25 @@ class Postman_Email_Tester {
     public function test_mail() {
         check_admin_referer( 'post-smtp', 'security' );
 
+        if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
+            wp_send_json_error(
+                array(
+                    'message' => __( 'Unauthorized.', 'post-smtp' ),
+                ),
+                403
+            );
+        }
+
+        $mail_tester_token = $this->get_mail_tester_token();
+        if ( '' === $mail_tester_token ) {
+            wp_send_json_error(
+                array(
+                    'message' => __( 'Mail tester is not configured. Define POST_SMTP_MAIL_TESTER_TOKEN in wp-config.php.', 'post-smtp' ),
+                ),
+                503
+            );
+        }
+
         $email  = sanitize_email( $_POST['email'] ?? '' );
         $socket = sanitize_text_field( $_POST['socket'] ?? '' );
         $apikey = sanitize_text_field( $_POST['apikey'] ?? '' );
@@ -58,8 +75,8 @@ class Postman_Email_Tester {
         $args = array(
             'method'  => WP_REST_Server::READABLE,
             'headers' => array(
-                'X-MT-Token-WP' => $this->x_mt_token_wp,
-                'IP'            => $_SERVER['REMOTE_ADDR'],
+                'X-MT-Token-WP' => $mail_tester_token,
+                'IP'            => isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '',
                 'Site-URL'      => get_site_url(),
             ),
         );
@@ -74,6 +91,28 @@ class Postman_Email_Tester {
         // else {
         //     $this->handle_legacy_test( $email, $args );
         // }
+    }
+
+    /**
+     * Resolve the shared mail-tester token from wp-config or a filtered value.
+     *
+     * Define POST_SMTP_MAIL_TESTER_TOKEN in wp-config.php to override the default.
+     *
+     * @since 3.9.6
+     * @return string
+     */
+    private function get_mail_tester_token() {
+        if ( defined( 'POST_SMTP_MAIL_TESTER_TOKEN' ) ) {
+            return (string) POST_SMTP_MAIL_TESTER_TOKEN;
+        }
+
+        /**
+         * Filter the mail tester shared token when POST_SMTP_MAIL_TESTER_TOKEN is not defined.
+         *
+         * @since 3.9.6
+         * @param string $token Mail tester token.
+         */
+        return (string) apply_filters( 'post_smtp_mail_tester_token', 'wp_9f3a7c2e8b1d4a6f5c8e9b2d1a3f7c6e' );
     }
 
     /**

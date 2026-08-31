@@ -42,23 +42,21 @@ class PSMWP_Rest_API {
      */
     public function activate_from_mainwp( WP_REST_Request $request ) {
 
-        $params = $request->get_params();
-		$headers = $request->get_headers();
-		$api_key = empty( $request->get_header( 'api_key' ) ) ? '' : sanitize_text_field( $request->get_header( 'api_key' ) );
-		$action = $request->get_param( 'action' );
-		$parent_configured = $request->get_param( 'parent_configured' );
+		$api_key = empty( $request->get_header( 'api_key' ) ) ? '' : sanitize_text_field( (string) $request->get_header( 'api_key' ) );
+		$action = sanitize_key( (string) $request->get_param( 'action' ) );
+		$parent_configured = rest_sanitize_boolean( $request->get_param( 'parent_configured' ) ) ? '1' : '0';
 
         //Lets Validate :D
 		if( $this->validate( $api_key ) ) {
 
-            if( $action == 'enable_post_smtp' ) {
+            if( $action === 'enable_post_smtp' ) {
 				
 				update_option( 'post_smtp_use_from_main_site', '1' );
 				update_option( 'post_smtp_parent_configured', $parent_configured );
 				
 			}
 			
-			if( $action == 'disable_post_smtp' ) {
+			if( $action === 'disable_post_smtp' ) {
 				
 				 delete_option( 'post_smtp_use_from_main_site' );
 				 delete_option( 'post_smtp_parent_configured' );
@@ -100,9 +98,8 @@ class PSMWP_Rest_API {
 		}
 		
         $pubkey = get_option( 'mainwp_child_pubkey' );
-		$pubkey = $pubkey ? md5( $pubkey ) : '';
 
-        if( $pubkey != $api_key ) {
+		if ( ! post_smtp_mainwp_validate_api_key( $api_key, (string) $pubkey ) ) {
 			
 			wp_send_json(
 				array(
@@ -113,15 +110,8 @@ class PSMWP_Rest_API {
 			);
 			
 		}
-		
-		//Let's allow request
-		if( 
-            $pubkey == $api_key
-		) {
-			
-			return true;
-			
-		}
+
+		return true;
 
     }
 

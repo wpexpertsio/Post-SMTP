@@ -195,9 +195,9 @@ class PostmanEmailLogController {
 	public function resendMail() {
         check_admin_referer( 'resend', 'security' );
 
-		if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) ) {
-			wp_send_json_error( array( 'message' => __( 'Sorry, you are not allowed to resend emails.', 'post-smtp' ) ) );
-		}
+        if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_LOGS ) ) {
+            wp_send_json_error( __( 'Sorry, you are not allowed to resend emails.', 'post-smtp' ), 403 );
+        }
 
 		// get the email address of the recipient from the HTTP Request
 		$postid = $this->getRequestParameter( 'email' );

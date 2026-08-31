@@ -106,6 +106,13 @@ define( 'POST_SMTP_VER', '4.0.1' );
 define( 'POST_SMTP_DB_VERSION', '1.0.1' );
 define( 'POST_SMTP_ASSETS', plugin_dir_url( __FILE__ ) . 'assets/' );
 
+/**
+ * Optional shared token for the Post SMTP mail tester API.
+ * Override in wp-config.php to avoid using the default filter value.
+ *
+ * define( 'POST_SMTP_MAIL_TESTER_TOKEN', 'your-token-here' );
+ */
+
 $postman_smtp_exist = in_array( 'postman-smtp/postman-smtp.php', (array) get_option( 'active_plugins', array() ) );
 $required_php_version = version_compare( PHP_VERSION, '5.6.0', '<' );
 

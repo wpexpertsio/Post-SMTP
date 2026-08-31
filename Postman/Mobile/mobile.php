@@ -442,6 +442,10 @@ class Post_SMTP_Mobile {
      */
     public function regenerate_qrcode() {
 
+        if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
+            wp_die( esc_html__( 'Sorry, you are not allowed to perform this action.', 'post-smtp' ) );
+        }
+
         if( ! isset( $_GET['_psnonce'] ) || ! wp_verify_nonce( $_GET['_psnonce'], 'ps-regenerate-qrcode-nonce' ) ) {
 
             die( 'Security Check' );
