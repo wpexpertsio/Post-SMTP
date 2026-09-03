@@ -70,8 +70,19 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
 			$extension_url = 'https://postmansmtp.com/pricing/?utm_source=wordpress&utm_medium=email&utm_campaign=email_report&utm_content=report_and_tracking';
 			$disable_url = 'https://postmansmtp.com/pricing/?utm_source=wordpress&utm_medium=email&utm_campaign=email_report&utm_content=email_health_report/';
 
-            $body = '<div style=" width: 500px; margin: 0 auto; color: rgba(125, 152, 178, 1); font-size: 12px; font-family: Poppins, sans-serif;">
-        <table>
+			$duration_str = ! empty( $duration ) ? strtolower( $duration ) : 'week';
+			$duration_title = ! empty( $duration ) ? ucfirst( $duration ) : 'Week';
+
+            $body = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Post SMTP Report</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #ffffff;">
+    <div style=" width: 500px; margin: 0 auto; color: rgba(125, 152, 178, 1); font-size: 12px; font-family: Poppins, sans-serif;">
+        <table style="width: 100%; border-collapse: collapse;">
             <tr>
                 <td style="padding: 20px 0;text-align: center;">
                     <a href="https://postmansmtp.com"><img src="'.POST_SMTP_ASSETS.'images/reporting/post_logo.png"/></a>
@@ -80,7 +91,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
             <tr>
                 <td style="padding: 20px;background: #F0F6FF;border-radius: 10px;">
                     <h4 style=" margin: 0 0 5px 0;">Hi '.$admin_name.' </h4>
-                    <p style=" margin: 0 0 5px 0;">Here is a quick overview of how your emails were performing in the past '.$duration.'</p>
+                    <p style=" margin: 0 0 5px 0;">Here is a quick overview of how your emails were performing in the past '.$duration_str.'</p>
                     <table style=" width: 100%; ">
                         <tr>
                             <td style=" width: 80px;">
@@ -178,63 +189,60 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
            <!---->';
             }
             
-            if(!empty($logs)) {
+            if ( ! empty( $logs ) ) {
                 $logs_html = '';
                 $logs_html .= '<!-- loop-->';
                 $row = 1;
                 foreach ( $logs as $log ) {
-                     // Let break if greater than 3.
+                    // Let break if greater than 3.
                     if ( $row > 3 ) {
                         break;
-                    } else { 
-                        $logs_html .= '
-                         <tr style="background: #F0F6FF;">
-                            <td style="padding:10px;color:#444a6d;font-size: 12px;font-weight:400;text-align: left;">'.$log->subject.'</td>
-                            <td style="padding: 10px;"></td>
-                            <td style="padding: 10px;"></td>
-                            <td style="padding: 10px;"></td>
-                            <td style="padding: 10px;"></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td style="padding: 10px; text-align: center;">'.( isset( $log->total ) ? $log->total : '' ).'</td>
-                            <td style="padding: 10px; text-align: center;">'.( isset( $log->sent ) ? $log->sent : '' ).'</td>
-                            <td style="padding: 10px; text-align: center;">'.( isset( $log->failed ) ? $log->failed : '' ).'</td>
-                            <td style="padding: 10px; text-align: center;">'.( isset( $log->opened ) ? $log->opened : '' ).'</td>
-                        </tr>
-                        ';
                     }
-                    $row ++;
+
+                    $bg = ( $row % 2 === 1 ) ? 'background: #F0F6FF;' : 'background: #FFFFFF;';
+                    $subject = ! empty( $log->subject ) ? $log->subject : __( '(No Subject)', 'post-smtp' );
+                    $total_count = isset( $log->total ) ? (int) $log->total : 0;
+                    $sent_count = isset( $log->sent ) ? (int) $log->sent : 0;
+                    $failed_count = isset( $log->failed ) ? (int) $log->failed : 0;
+                    $opened_count = ( $is_addonactivated && isset( $log->opened ) ) ? (int) $log->opened : 0;
+
+                    $logs_html .= '
+                    <tr style="' . $bg . '">
+                        <td style="width: 48%; padding: 10px; color: #444a6d; font-size: 12px; font-weight: 400; text-align: left; word-break: break-word;">' . esc_html( $subject ) . '</td>
+                        <td style="width: 13%; padding: 10px 5px; text-align: center; color: #444a6d; font-size: 12px;">' . $total_count . '</td>
+                        <td style="width: 13%; padding: 10px 5px; text-align: center; color: #444a6d; font-size: 12px;">' . $sent_count . '</td>
+                        <td style="width: 13%; padding: 10px 5px; text-align: center; color: #444a6d; font-size: 12px;">' . $failed_count . '</td>
+                        <td style="width: 13%; padding: 10px 5px; text-align: center; color: #444a6d; font-size: 12px;">' . $opened_count . '</td>
+                    </tr>
+                    ';
+                    $row++;
                 }
                 $logs_html .= '<!-- end loop-->';
-            }
-
-            if(empty($log)) {
-                  $logs_html = '';
-                  $logs_html .= '<tr><td colspan="5">No emails were sent last '.$duration.'</td></tr>';
+            } else {
+                $logs_html = '<tr><td colspan="5" style="padding: 15px 10px; text-align: center; color: #444a6d; font-size: 12px;">No emails were sent last ' . esc_html( $duration_str ) . '</td></tr>';
             }
             
             if($is_addonactivated && ! empty($logs)) {
                 $body .= '<tr>
                 <td style=" text-align: center;">
                     <h4 style="text-align:center;color:#214A72;font-size:16px;display: inline-block;">
-                        <img src="'.POST_SMTP_ASSETS.'images/reporting/dashicons-clock.png" alt="dashicons-clock" style="vertical-align:middle;width: 20px;margin: -4px 0 0 0;"> Last '.$duration.' Top Emails
+                        <img src="'.POST_SMTP_ASSETS.'images/reporting/dashicons-clock.png" alt="dashicons-clock" style="vertical-align:middle;width: 20px;margin: -4px 0 0 0;"> Last '.$duration_title.' Top Emails
                     </h4>
-                    <table style="width: 100%; border-spacing: 0;">
+                    <table style="width: 100%; border-spacing: 0; border-collapse: collapse;">
                         <tr>
-                            <td style="width: 50%; color: #151D48; font-size: 14px; font-weight: 600; padding: 10px 0 15px;">
+                            <td style="width: 48%; color: #151D48; font-size: 14px; font-weight: 600; padding: 10px 10px 15px 10px; text-align: left;">
                                 Subject
                             </td>
-                            <td style="color: #83F5AF; width: 12%;text-align: center; padding: 10px 0 15px;">
+                            <td style="color: #83F5AF; width: 13%; text-align: center; padding: 10px 5px 15px 5px; font-weight: 600; font-size: 14px;">
                                 Total
                             </td>
-                            <td style="color: #98B9F9; width: 12%;text-align: center; padding: 10px 0 15px;">
+                            <td style="color: #98B9F9; width: 13%; text-align: center; padding: 10px 5px 15px 5px; font-weight: 600; font-size: 14px;">
                                 Sent
                             </td>
-                            <td style="color: #FF955F; width: 12%;text-align: center; padding: 10px 0 15px;">
+                            <td style="color: #FF955F; width: 13%; text-align: center; padding: 10px 5px 15px 5px; font-weight: 600; font-size: 14px;">
                                 Failed
                             </td>
-                             <td style="color: #FFAE3A; width: 12%;text-align: center; padding: 10px 0 15px;">
+                            <td style="color: #FFAE3A; width: 13%; text-align: center; padding: 10px 5px 15px 5px; font-weight: 600; font-size: 14px;">
                                 Opened
                             </td>
                         </tr>

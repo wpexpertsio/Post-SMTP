@@ -147,7 +147,7 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 			 */
 			$query = apply_filters( 'postman_health_count', $query );
 
-			$query .= "{$where} GROUP BY pl.original_subject";
+			$query .= "{$where} GROUP BY pl.original_subject ORDER BY total DESC";
 			$query .= ! empty( $limit ) ? " LIMIT {$limit}" : '';
 
 			global $wpdb;
@@ -171,18 +171,21 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 			$to = strtotime( $yesterday->format( 'Y-m-d H:i:s' ) );
 			$from = '';
 			$current_time  = current_time( 'timestamp' );
-			$duration = '';
+			$duration = 'week';
 
 			if ( $interval === 'd' ) {
 				$from = strtotime( 'today', $current_time );
+				$duration = 'day';
 			}
 			if ( $interval === 'w' ) {
 				$today  = strtotime( 'today', $current_time );
 				$from = strtotime( '-7 days', $today );
+				$duration = 'week';
 			}
 			if ( $interval === 'm' ) {
 				$today  = strtotime( 'today', $current_time );
 				$from = strtotime( '-1 month', $today );
+				$duration = 'month';
 			}
 
 			$logs = $this->get_total_logs( $from, $current_time );
