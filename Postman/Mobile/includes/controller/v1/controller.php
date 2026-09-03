@@ -73,6 +73,16 @@ class Post_SMTP_Mobile_Controller {
 	
 	public function push_notification( $log, $postmanMessage, $transcript, $transport, $errorMessage ) {
 		
+		if ( class_exists( 'PostmanMailNotify' ) && ( PostmanMailNotify::is_sending() || $this->is_notification_delivery( $postmanMessage ) ) ) {
+			return;
+		}
+
+		$options = PostmanOptions::getInstance();
+		// If fallback is enabled and this is the primary failure, wait for fallback result
+		if ( ! $options->is_fallback && $options->getFallbackIsEnabled() && $options->getFallbackIsEnabled() == 'yes' ) {
+			return;
+		}
+
 		$site_title = get_bloginfo( 'name' );
 		$title = '🚫 Email failed';
 		$title = !empty( $site_title ) ? "{$title} - {$site_title}" : $title;
@@ -91,6 +101,26 @@ class Post_SMTP_Mobile_Controller {
 				)
 			)
 		);
+	}
+
+	/**
+	 * Detect whether a delivery was a Post SMTP internal notification.
+	 *
+	 * @param PostmanMessage $postmanMessage
+	 * @return bool
+	 */
+	private function is_notification_delivery( $postmanMessage ) {
+		if ( ! $postmanMessage instanceof PostmanMessage ) {
+			return false;
+		}
+
+		foreach ( (array) $postmanMessage->getHeaders() as $header ) {
+			if ( isset( $header['name'] ) && 0 === strcasecmp( $header['name'], PostmanMailNotify::NOTIFICATION_HEADER ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 	
 }

@@ -150,11 +150,11 @@ class PostmanEmailQueryLog {
             
             if( $args['status'] == 'success' ) {
                 // Include both regular success (success = 1) and fallback success entries
-                $this->query .= "{$clause_for_status} (`success` = 1 OR `success` = 'Sent ( ** Fallback ** )' OR `success` LIKE '( ** Fallback ** )%') ";
+                $this->query .= "{$clause_for_status} (`success` = 1 OR `success` = 'Sent ( ** Fallback ** )') ";
             }
             elseif ( $args['status'] == 'failed' ) {    
-                // Exclude successful entries (both regular and fallback)
-                $this->query .= "{$clause_for_status} (`success` != 1 AND `success` != 'Sent ( ** Fallback ** )' AND `success` NOT LIKE '( ** Fallback ** )%') ";
+                // Any entry that is not successful (including primary failures and fallback failures)
+                $this->query .= "{$clause_for_status} (`success` != 1 AND `success` != 'Sent ( ** Fallback ** )') ";
             }
             else {
     

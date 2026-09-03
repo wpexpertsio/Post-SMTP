@@ -131,12 +131,16 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 			}
 			$ps_query = new PostmanEmailQueryLog();
 
-			$where = ( ! empty( $from ) && ! empty( $to ) ) ? " WHERE pl.time >= {$from} && pl.time <= {$to}" : '';
-
+			$where_clauses = array();
+			if ( ! empty( $from ) && ! empty( $to ) ) {
+				$where_clauses[] = "pl.time >= {$from} AND pl.time <= {$to}";
+			}
+			$where_clauses[] = "( pl.original_subject NOT LIKE '%Post SMTP email error%' )";
+			$where = ' WHERE ' . implode( ' AND ', $where_clauses );
 
 			$query = "SELECT pl.original_subject AS subject, COUNT( pl.original_subject ) AS total, 
-				SUM( pl.success = 1 OR pl.success = 'Sent ( ** Fallback ** )' OR pl.success LIKE '( ** Fallback ** )%' ) As sent, 
-				SUM( pl.success != 1 AND pl.success != 'Sent ( ** Fallback ** )' AND pl.success NOT LIKE '( ** Fallback ** )%' ) As failed 
+				SUM( pl.success = 1 OR pl.success = 'Sent ( ** Fallback ** )' ) As sent, 
+				SUM( pl.success != 1 AND pl.success != 'Sent ( ** Fallback ** )' ) As failed 
 				FROM {$ps_query->table} AS pl";
 
 			/**

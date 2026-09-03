@@ -344,8 +344,8 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 						$this->transcript = 'Bypassed By MailControl For Post SMTP';
 					}
 
-					// increment the success counter, unless we are just tesitng
-					if ( ! $testMode ) {
+					// increment the success counter, unless we are just tesitng or sending a notification
+					if ( ! $testMode && ! $this->is_notification_message( $message ) ) {
 						PostmanState::getInstance()->incrementSuccessfulDelivery();
 					}
 				}
@@ -372,8 +372,8 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				// write the error to the PHP log
 				$this->logger->error( get_class( $e ) . ' code=' . $e->getCode() . ' message=' . trim( $e->getMessage() ) );
 
-				// increment the failure counter, unless we are just tesitng
-				if ( ! $testMode && $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {
+				// increment the failure counter, unless we are just tesitng or sending a notification
+				if ( ! $testMode && ! $this->is_notification_message( $message ) && $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION ) {
 					PostmanState::getInstance()->incrementFailedDelivery();
 				}
 
@@ -419,7 +419,12 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			}
 		}
 
-		private function fallback( $log, $postMessage,$options ) {
+		private function fallback( $log, $postMessage, $options ) {
+
+			// Do not attempt fallback if this is an internal Post SMTP notification
+			if ( $this->is_notification_message( $postMessage ) ) {
+				return false;
+			}
 
 			if ( ! $options->is_fallback && $options->getFallbackIsEnabled() && $options->getFallbackIsEnabled() == 'yes' ) {
 
@@ -433,6 +438,35 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 			} else {
 				$options->is_fallback = false;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Checks if the message is an internal Post SMTP notification.
+		 *
+		 * @param PostmanMessage $message
+		 * @return bool
+		 */
+		private function is_notification_message( $message ) {
+			if ( class_exists( 'PostmanMailNotify' ) && PostmanMailNotify::is_sending() ) {
+				return true;
+			}
+
+			if ( ! $message instanceof PostmanMessage ) {
+				return false;
+			}
+
+			foreach ( (array) $message->getHeaders() as $header ) {
+				if ( isset( $header['name'] ) && 0 === strcasecmp( $header['name'], PostmanMailNotify::NOTIFICATION_HEADER ) ) {
+					return true;
+				}
+			}
+
+			$subject = $message->getSubject();
+			if ( ! empty( $subject ) && is_string( $subject ) && false !== stripos( $subject, 'Post SMTP email error' ) ) {
+				return true;
 			}
 
 			return false;

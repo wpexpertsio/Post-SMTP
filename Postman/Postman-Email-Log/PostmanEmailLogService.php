@@ -80,6 +80,9 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		}
 
 		public function write_success_log( $log, $message, $transcript, $transport = null ) {
+			if ( $this->is_notification( $message, $log ) ) {
+				return;
+			}
 		    $options = PostmanOptions::getInstance();
             if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION || $options->getRunMode() == PostmanOptions::RUN_MODE_LOG_ONLY ) {
                 $this->writeSuccessLog( $log, $message, $transcript, $transport );
@@ -87,11 +90,56 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
         }
 
         public function write_failed_log( $log, $message, $transcript, $transport = null, $statusMessage = null ) {
+			if ( $this->is_notification( $message, $log ) ) {
+				return;
+			}
             $options = PostmanOptions::getInstance();
             if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION || $options->getRunMode() == PostmanOptions::RUN_MODE_LOG_ONLY ) {
 				$this->writeFailureLog( $log, $transcript, $statusMessage, $transport, $message );
             }
         }
+
+		/**
+		 * Check if an email is an internal Post SMTP notification.
+		 *
+		 * @param PostmanMessage|null $message
+		 * @param PostmanEmailLog|null $log
+		 * @return bool
+		 */
+		private function is_notification( $message = null, $log = null ) {
+			if ( class_exists( 'PostmanMailNotify' ) && PostmanMailNotify::is_sending() ) {
+				return true;
+			}
+
+			if ( $message instanceof PostmanMessage ) {
+				foreach ( (array) $message->getHeaders() as $header ) {
+					if ( isset( $header['name'] ) && 0 === strcasecmp( $header['name'], PostmanMailNotify::NOTIFICATION_HEADER ) ) {
+						return true;
+					}
+				}
+
+				$subject = $message->getSubject();
+				if ( ! empty( $subject ) && is_string( $subject ) && false !== stripos( $subject, 'Post SMTP email error' ) ) {
+					return true;
+				}
+			}
+
+			if ( $log ) {
+				if ( ! empty( $log->originalHeaders ) ) {
+					$headers_str = is_array( $log->originalHeaders ) ? implode( "\n", $log->originalHeaders ) : $log->originalHeaders;
+					if ( false !== stripos( $headers_str, PostmanMailNotify::NOTIFICATION_HEADER ) ) {
+						return true;
+					}
+				}
+
+				$subject = ! empty( $log->originalSubject ) ? $log->originalSubject : ( ! empty( $log->subject ) ? $log->subject : '' );
+				if ( ! empty( $subject ) && is_string( $subject ) && false !== stripos( $subject, 'Post SMTP email error' ) ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
 
 		/**
 		 * Logs successful email attempts
@@ -198,9 +246,8 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
                 $new_status = 'Sent ( ** Fallback ** )';
             }
 
-            if ( $options->is_fallback &&  ! empty( $log->statusMessage ) ) {
-                // $new_status = '( ** Fallback ** ) ' . $log->statusMessage;
-				$new_status = $log->statusMessage;
+            if ( $options->is_fallback && ! empty( $log->statusMessage ) ) {
+                $new_status = '( ** Fallback ** ) ' . $log->statusMessage;
             }
 
             $new_status = apply_filters( 'post_smtp_log_status', $new_status, $log, $message );
@@ -235,7 +282,7 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				 * @since 2.5.0
 				 * @version 1.0.0
 				 */
-				$log_id = apply_filters( 'post_smtp_update_email_log_id', '' );
+				$log_id = $options->is_fallback ? '' : apply_filters( 'post_smtp_update_email_log_id', '' );
 				$log_id = $email_logs->save( $data, $log_id );
 				
 				/**

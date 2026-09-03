@@ -149,10 +149,9 @@ if ( ! class_exists( 'PostsmtpMailer', false ) && class_exists( 'PHPMailer', fal
 					} else {
 						$response = $this->sendSmtp();
 						$result = $response;
-					}
-
-					if ( $response ) {
-						do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport );
+						if ( $response ) {
+							do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport );
+						}
 					}
 				}
 
@@ -163,7 +162,10 @@ if ( ! class_exists( 'PostsmtpMailer', false ) && class_exists( 'PHPMailer', fal
 				$this->mailHeader = '';
 				$this->setError( $exc->getMessage() );
 
-				do_action( 'post_smtp_on_failed', $log, $postmanMessage, $this->transcript, $transport, $exc->getMessage() );
+				// Only fire post_smtp_on_failed if we handled SMTP directly (otherwise PostmanWpMail already fired it)
+				if ( $this->options->getTransportType() === 'smtp' ) {
+					do_action( 'post_smtp_on_failed', $log, $postmanMessage, $this->transcript, $transport, $exc->getMessage() );
+				}
 
 				if ( $this->exceptions ) {
 					throw $exc;
