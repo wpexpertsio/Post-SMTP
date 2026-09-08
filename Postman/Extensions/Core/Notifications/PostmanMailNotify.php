@@ -58,6 +58,7 @@ class PostmanMailNotify implements Postman_Notify {
 		}
 
 		self::$is_sending = true;
+		$GLOBALS['post_smtp_suppress_logging'] = true;
 
 		try {
 
@@ -80,6 +81,7 @@ class PostmanMailNotify implements Postman_Notify {
 
 		} finally {
 			self::$is_sending = false;
+			unset( $GLOBALS['post_smtp_suppress_logging'] );
 		}
 
     }
