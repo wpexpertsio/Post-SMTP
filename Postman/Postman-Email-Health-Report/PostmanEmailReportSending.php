@@ -131,6 +131,10 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 			}
 			$ps_query = new PostmanEmailQueryLog();
 
+			$from  = absint( $from );
+			$to    = absint( $to );
+			$limit = absint( $limit );
+
 			$where = ( ! empty( $from ) && ! empty( $to ) ) ? " WHERE pl.time >= {$from} && pl.time <= {$to}" : '';
 
 
@@ -166,26 +170,30 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 		 */
 		public function get_body( $interval ) {
 
-			$yesterday = new DateTime( 'yesterday' );
-			$yesterday->setTime( 23, 59, 0 );
-			$to = strtotime( $yesterday->format( 'Y-m-d H:i:s' ) );
-			$from = '';
-			$current_time  = current_time( 'timestamp' );
-			$duration = '';
+			$current_time = current_time( 'timestamp' );
+			$from         = '';
+			$to           = '';
+			$duration     = '';
 
 			if ( $interval === 'd' ) {
-				$from = strtotime( 'today', $current_time );
+				$duration = 'day';
+				$from     = strtotime( 'yesterday', $current_time );
+				$to       = strtotime( 'yesterday 23:59:59', $current_time );
 			}
 			if ( $interval === 'w' ) {
-				$today  = strtotime( 'today', $current_time );
-				$from = strtotime( '-7 days', $today );
+				$duration = 'week';
+				$today    = strtotime( 'today', $current_time );
+				$from     = strtotime( '-7 days', $today );
+				$to       = strtotime( 'yesterday 23:59:59', $current_time );
 			}
 			if ( $interval === 'm' ) {
-				$today  = strtotime( 'today', $current_time );
-				$from = strtotime( '-1 month', $today );
+				$duration = 'month';
+				$today    = strtotime( 'today', $current_time );
+				$from     = strtotime( '-1 month', $today );
+				$to       = strtotime( 'yesterday 23:59:59', $current_time );
 			}
 
-			$logs = $this->get_total_logs( $from, $current_time );
+			$logs = $this->get_total_logs( $from, $to );
 
 			include_once POST_SMTP_PATH . '/Postman/Postman-Email-Health-Report/PostmanReportTemplate.php';
 			$get_body = new PostmanReportTemplate();

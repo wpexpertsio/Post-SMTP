@@ -209,7 +209,7 @@ if ( ! class_exists( 'PostmanReportTemplate' ) ) :
                 $logs_html .= '<!-- end loop-->';
             }
 
-            if(empty($log)) {
+            if(empty($logs)) {
                   $logs_html = '';
                   $logs_html .= '<tr><td colspan="5">No emails were sent last '.$duration.'</td></tr>';
             }
