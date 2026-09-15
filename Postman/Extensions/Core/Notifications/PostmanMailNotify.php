@@ -40,29 +40,25 @@ class PostmanMailNotify implements Postman_Notify {
         $notification_emails = explode( ',', $notification_emails );
 
 		$options = PostmanOptions::getInstance();
+		$was_fallback = $options->is_fallback;
+		$options->is_fallback = false;
+
 		$envelope_sender = $options->getEnvelopeSender();
 		if ( empty( $envelope_sender ) ) {
 			$envelope_sender = $options->getMessageSenderEmail();
 		}
+		if ( empty( $envelope_sender ) || ! is_email( $envelope_sender ) ) {
+			$envelope_sender = get_option( 'admin_email' );
+		}
 		$sender_name = $options->getMessageSenderName();
 
 		$subject = "{$domain}: " . __( 'Post SMTP email error', 'post-smtp' );
-		$headers = array( self::NOTIFICATION_HEADER . ': true' );
-
-		if ( ! empty( $envelope_sender ) ) {
-			if ( ! empty( $sender_name ) ) {
-				$headers[] = 'From: ' . sprintf( '%s <%s>', $sender_name, $envelope_sender );
-			} else {
-				$headers[] = 'From: ' . $envelope_sender;
-			}
-		}
 
 		self::$is_sending = true;
 		$GLOBALS['post_smtp_suppress_logging'] = true;
 
 		try {
 
-        //Lets start informing authorities ;')
         foreach ( $notification_emails as $to_email ) {
 
 			$to_email = trim( $to_email );
@@ -71,18 +67,71 @@ class PostmanMailNotify implements Postman_Notify {
 				continue;
 			}
 
-			$sent = wp_mail( $to_email, $subject, $message, $headers );
-
-			if ( ! $sent && ! empty( $envelope_sender ) ) {
-				mail( $to_email, $subject, $message, '', '-f' . $envelope_sender );
-			}
+			$this->send_notification_email( $to_email, $subject, $message, $envelope_sender, $sender_name );
 
         }
 
 		} finally {
+			$options->is_fallback = $was_fallback;
 			self::$is_sending = false;
 			unset( $GLOBALS['post_smtp_suppress_logging'] );
 		}
 
     }
+
+	/**
+	 * Send a failure notification via standalone PHPMailer (PHP mail transport).
+	 *
+	 * Does not use wp_mail() or the Post SMTP mailer.
+	 *
+	 * @param string $to_email
+	 * @param string $subject
+	 * @param string $body
+	 * @param string $from_email
+	 * @param string $from_name
+	 */
+	private function send_notification_email( $to_email, $subject, $body, $from_email, $from_name ) {
+		$mail = $this->create_phpmailer();
+
+		try {
+			$mail->isMail();
+			$mail->CharSet = get_bloginfo( 'charset' );
+
+			if ( ! empty( $from_email ) && is_email( $from_email ) ) {
+				$mail->setFrom( $from_email, $from_name );
+			}
+
+			$mail->addAddress( $to_email );
+			$mail->Subject = $subject;
+			$mail->Body    = $body;
+			$mail->addCustomHeader( self::NOTIFICATION_HEADER, 'true' );
+
+			$mail->send();
+		} catch ( Exception $e ) {
+			// Notification delivery failed; do not route through Post SMTP mailer.
+		}
+	}
+
+	/**
+	 * Create a standalone PHPMailer instance that does not use Post SMTP transport.
+	 *
+	 * @return PHPMailer
+	 */
+	private function create_phpmailer() {
+		if ( version_compare( get_bloginfo( 'version' ), '5.5-alpha', '>=' ) ) {
+			if ( ! class_exists( 'PHPMailer\PHPMailer\PHPMailer', false ) ) {
+				require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
+				require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
+				require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
+			}
+
+			return new PHPMailer\PHPMailer\PHPMailer( true );
+		}
+
+		if ( ! class_exists( 'PHPMailer', false ) ) {
+			require_once ABSPATH . WPINC . '/class-phpmailer.php';
+		}
+
+		return new PHPMailer( true );
+	}
 }

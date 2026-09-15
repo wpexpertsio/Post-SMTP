@@ -328,6 +328,17 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
+= 4.0.2 - September 15, 2026 =
+* Security - Resolved Stored DOM-Based Cross-Site Scripting (XSS) vulnerability in failed email logs on WordPress Multisite.
+* Fix - Resolved fatal error during All-In-One Security (AIOS) unlock email requests.
+* Fix - Prevented redundant wp_posts database queries on AJAX requests to improve performance.
+* Fix - Resolved infinite and duplicate email log generation during mailer and fallback failures.
+* Fix - Corrected email tracking status assignment between primary and fallback mailer logs.
+* Fix - Fixed issue where attachments were missing from fallback mailer logs.
+* Fix - Prevented duplicate failed email log entries from being created on email failures.
+* Fix - Fixed button alignment and cut-off issues in the Bulk Resend popup modal.
+* Fix - Fixed numeric metric alignment and spacing in the Email Reporting section.
+
 = 4.0.1 - Aug 25, 2026 =
 * Rolled back from 4.0.0-beta.1
 
