@@ -1,34 +1,31 @@
-=== Post SMTP – Complete Email Deliverability and SMTP Solution with Email Logs, Alerts, Backup SMTP & Mobile App ===
+=== Post SMTP – Complete Email Delivery and SMTP Solution for WordPress with Email Logs, Alerts, Backup SMTP & Mobile App ===
 Plugin URI: https://postmansmtp.com/
 Contributors: wpexpertsio
-Tags: smtp, gmail smtp, email,  email logs, office 365
+Tags: smtp, wordpress smtp, email logs, gmail smtp, office 365
 Requires at least: 5.6.0
-Tested up to: 7.0
+Tested up to: 7.1
 Stable tag: 4.0.2
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Improve WordPress email deliverability. Connect Gmail SMTP, Microsoft 365, Brevo, SendGrid, Mailgun, Zoho, Amazon SES, etc. #1 WordPress SMTP Plugin.
+Install Post SMTP (WordPress SMTP Plugin) to fix WordPress email delivery. Connect Gmail SMTP, Microsoft 365, Brevo, SendGrid, Zoho, Amazon SES, etc.
 
 == Description ==
 
 [👑 Go Pro](https://postmansmtp.com/pricing/?utm_source=wp_org&utm_medium=read_me) | [💻Live Demo](https://www.tastewp.com/plugins/post-smtp) | [🔌Extensions](https://postmansmtp.com/extension/?utm_source=wp_org&utm_medium=readme_top) | [📱Mobile Application](https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=wp_org&utm_medium=readme_top)
 
-###  WordPress Mail SMTP Plugin 
+###  WordPress SMTP Plugin 
 
 https://www.youtube.com/watch?v=KOWGLQ0MaX0
 
-Are you facing the WordPress not sending emails issue❓Don't worry! Install the Post SMTP Plugin **aka** (WordPress mail SMTP plugin), for smooth WordPress email deliverability.
+Are you dealing with the **WordPress not sending emails** problem? Post SMTP helps you fix WordPress email delivery by connecting your site to a reliable **SMTP or API mailer.**
 
+**Post SMTP is a free WordPress SMTP plugin** that helps you send WordPress emails securely and reliably through Gmail, Microsoft 365, Outlook, Amazon SES, Brevo, Mailgun, SendGrid, Postmark, Zoho Mail, and other supported email service providers.
 
-Over **400,000** website owners use **Post SMTP** daily to send WordPress emails securely and reliably💯 using Gmail SMTP, Microsoft Office 365/Outlook, and other SMTP integrations.
+Beyond SMTP, Post SMTP gives you the tools to **monitor WordPress email delivery.** Track sent and failed emails with **email logs**, inspect delivery errors, and get failure alerts when something goes wrong. You can also configure **backup SMTP connections** to keep your site’s emails moving if your primary mailer becomes unavailable.
 
-Post SMTP is a free, next-generation WordPress SMTP plugin that improves email deliverability for your WordPress site.
-
-The best part is that to ensure high email deliverability the Post SMTP plugin offers 15+ SMTP mailer options, including Gmail, Brevo, Microsoft 365 SMTP (formerly Office 365), Amazon SES, Zoho Mail, Postmark, Mailgun, SendGrid, etc.
-
-With the ✨[Post SMTP Pro version](https://postmansmtp.com/pricing/?utm_source=wp_org&utm_medium=read_me)✨, you can unlock even more advanced features, such as detailed email logs, email delivery stats and reporting, email open-tracking, premium SMTP integration (Microsoft 365, Amazon SES, and Zoho Mail SMTP), multiple options for email alerts (i.e., Teams, Webhook, Twilio, and Slack), and much more.
+With **[20+ SMTP and API mailer options,](https://postmansmtp.com/smtp-integrations/)** Post SMTP works with the email service you already use. Its monitoring and notification tools help you troubleshoot delivery problems faster and keep important WordPress emails on track.
 
 
 == What is SMTP, and Why Do You Need It? ==
@@ -248,9 +245,10 @@ In short, our Expert Assistance is your one-stop destination for all your WordPr
 
 * **[All In One Login](https://wordpress.org/plugins/all-in-one-login/)** – Secure your WordPress login page, change the wp-login.php URL, and add social logins like Google, Facebook, Microsoft, LINE, and more.
 
-* **[WPExperts WooCommerce Store](https://store.wpexperts.io/woocommerce/)** – Explore premium WooCommerce plugins and professional solutions by WPExperts.== Requirements == 
+* **[WPExperts WooCommerce Store](https://store.wpexperts.io/woocommerce/)** – Explore premium WooCommerce plugins and professional solutions by WPExperts.
+== Requirements == 
 * WordPress v6.2 and above is recommended
-* PHP v7.6 and above is recommended.
+* PHP v7.1 and above is recommended.
 * Memory should be at least 800KiB per processing at idle.
 * Ensure your email service provider allows SMTP connection through 3rd party applications, if not you can have it enabled.(Other SMTP)
 * For reliable email deliverability, valid credentials are required.
@@ -258,6 +256,48 @@ In short, our Expert Assistance is your one-stop destination for all your WordPr
 
 
 == Frequently Asked Questions ==
+
+= Why is WordPress not sending emails? =
+WordPress uses the PHP mail() function by default, which may not provide reliable email delivery. Post SMTP routes your WordPress emails through a trusted SMTP or API mailer such as Gmail, Microsoft 365, Amazon SES, Brevo, SendGrid, Mailgun, Postmark, etc. This can help fix failed or missing WordPress emails and improve email delivery.
+
+= How does Post SMTP improve WordPress email delivery? =
+Post SMTP connects your WordPress site to a dedicated SMTP or API mailer instead of relying on your web server's default email function. It also provides email logs, delivery error details, backup connections, failure alerts, and even a dedicated mobile app to help you monitor and troubleshoot WordPress email delivery.
+
+= Does Post SMTP work with Gmail and Google Workspace? =
+Yes. Post SMTP supports Gmail and Google Workspace. You can connect your account using Google's supported authentication method, such as OAuth 2.0, and send WordPress emails through your Gmail or Google Workspace account. Post SMTP also offers Gmail One-Click Setup.
+
+= Does Post SMTP support Microsoft 365 and Outlook? =
+Yes. Post SMTP supports Microsoft 365 and Outlook. You can connect your account using Microsoft's supported authentication method, such as an Application (Client) ID and Client Secret, or use Post SMTP's Microsoft One-Click Setup to connect your account and send WordPress emails through Microsoft 365.
+
+= Does Post SMTP work with WooCommerce? =
+Yes. Post SMTP works with WooCommerce and can deliver transactional emails generated by your store, including order notifications, customer emails, password resets, and other WordPress emails.
+
+= Does Post SMTP support Contact Form 7? =
+Yes. Post SMTP works with Contact Form 7 and other WordPress form plugins. Once you configure a supported SMTP or API mailer, Contact Form 7 emails can use that connection instead of your site's default email function.
+
+= Can Post SMTP log WordPress emails? =
+Yes. Post SMTP includes email logging tools that let you review WordPress email activity and troubleshoot failed messages. Depending on your Post SMTP plan and configuration, you can access additional email log features such as ‘Set email logs retention period’.
+
+= Can Post SMTP resend failed emails? =
+Post SMTP provides tools to troubleshoot failed emails, and supported Pro features let you resend failed messages from the email logs. Check the current Pro feature list for the latest availability.
+
+= Does Post SMTP support backup SMTP connections? =
+Yes. Post SMTP supports backup or fallback connections that can help keep your WordPress emails moving when your primary mailer fails. You can configure an additional mailer as a backup connection to improve email reliability.
+
+= Can I receive email failure alerts? =
+Yes. Post SMTP can notify you when WordPress email delivery fails. It supports multiple notification options, including email, Slack, SMS via Twilio, mobile app, push notifications through webhooks and the Chrome Extension, and other supported notification channels. These alerts help you spot email delivery problems quickly and act before they affect your users.
+
+= Is Post SMTP free? =
+Yes. Post SMTP offers a free version that provides SMTP and supported mailer connections for WordPress email delivery. Post SMTP Pro adds premium SMTP Mailers with One-Click Setup, advanced features for email logs, monitoring, reporting, alerts, email open tracking, and other advanced email-management needs.
+
+= What is included in Post SMTP Pro? =
+Post SMTP Pro offers premium mailer options, One-Click Setup for Gmail SMTP and Microsoft 365 SMTP, and advanced email delivery and monitoring capabilities to the free plugin. Depending on the current Pro release, features can include advanced email logs, email quota scheduling, additional monitoring (email open tracking) and reporting tools, enhanced notifications, email resending, and other premium functionality.
+
+= Which email providers does Post SMTP support? =
+Post SMTP supports 20+ SMTP and API mailer options, including Gmail, Google Workspace, Microsoft 365, Outlook, Amazon SES, Brevo, Zoho Mail, Postmark, Mailgun, SendGrid, SMTP.com, Cloudflare Email Service, and other supported providers. Available mailers can change as Post SMTP adds or updates integrations.
+
+= How do I migrate from another SMTP plugin to Post SMTP? =
+You can migrate to Post SMTP by installing the plugin, selecting your email provider, and configuring the required SMTP or API connection. After setup, send a test email and check the email logs to confirm delivery. If you are migrating from another SMTP plugin, review your existing mailer settings and credentials before switching.
 
 = What is OAuth 2.0? =
 
@@ -994,89 +1034,89 @@ Add notice about Google Less Secure App.
 * NEW Filter `postman_test_email_args` added to modify test email arguments.
 * NEW Action `wp_mail_succeeded` added to exectue on every success email delivery.
 
-= 2.0.24 - 2022-02-13
+= 2.0.24 - 2022-02-13 =
 * Update: THE FUTURE OF Post SMTP - https://postmansmtp.com/the-future-of-post-smtp/
 
-= 2.0.23 - 2021-04-22
+= 2.0.23 - 2021-04-22 =
 * Fixed: `WP_Scripts::localize called incorrectly` message.
 
-= 2.0.22 - 2021-02-14
+= 2.0.22 - 2021-02-14 =
 * Update: Chrome extension URL change
 * Fixed: Double save when extension save to option
 
-= 2.0.21 - 2021-02-11
+= 2.0.21 - 2021-02-11 =
 * Fixed: Security issue - nonce validation.
 * Fixed: Class PostmanViewController not found
 * New: New wp-config.php constant to disable the email logger = `POST_SMTP_CORE_MAIL_LOG`.
 
-= 2.0.20 - 2021-01-19
+= 2.0.20 - 2021-01-19 =
 * Fixed: All reported office 365 issues.
 * New: Add link to Amazon SES Extension
 
-= 2.0.19 - 2021-01-19
+= 2.0.19 - 2021-01-19 =
 * Fixed: All reported office 365 issues.
 * New: Add link to Amazon SES Extension
 
-= 2.0.18 - 2021-01-17
+= 2.0.18 - 2021-01-17 =
 * New: Plugin Extensions
 
-= 2.0.16 - 2020-12-13
+= 2.0.16 - 2020-12-13 =
 * Update: General Info
 
-= 2.0.15 - 2020-08-12
+= 2.0.15 - 2020-08-12 =
 * Fixed: WordPress 5.5 compatibility (stable)
 
-= 2.0.14 - 2020-08-11
+= 2.0.14 - 2020-08-11 =
 * Removed: WordPress 5.5 compatibility (bug)
 
-= 2.0.13 - 2020-08-11
+= 2.0.13 - 2020-08-11 =
 * Fixed: WordPress 5.5 compatibility
 * Fixed: Email log filtering
 * Fixed: Pushover notifications
 * New: Suggest solution for email delivery errors
 
-= 2.0.12 - 2020-05-18
+= 2.0.12 - 2020-05-18 =
 * Updated: Readme file info
 
-= 2.0.11 - 2020-02-25
+= 2.0.11 - 2020-02-25 =
 * Fixed: Slack notifications
 
-= 2.0.10 - 2020-01-21
+= 2.0.10 - 2020-01-21 =
 * Fixed: HTML content type
 * Fixed: Sendgrid crash when has duplicates recipients (bypass, Sendgrid issue).
 * Fixed: Few OAuth undefined notifications
 * Fixed: Duplicate Emails - When you have notify and confirm (Ninja forms, etc..)
 * Fixed: Logs wp_error convert
 
-= 2.0.9 - 2020-01-13
+= 2.0.9 - 2020-01-13 =
 * Fixed: Notify on error bug - crash site
 * Fixed: From header
 
-= 2.0.8 - 2020-01-12
+= 2.0.8 - 2020-01-12 =
 * Updated: Reply-To header bug
 
-= 2.0.7 - 2020-01-12
+= 2.0.7 - 2020-01-12 =
 * Updated: Improve PHPMailer method.
 * Updated: Bug fixes.
 
-= 2.0.6 - 2019-10-08
+= 2.0.6 - 2019-10-08 =
 * Updated: Bug fixes.
 
-= 2.0.5 - 2019-09-26
+= 2.0.5 - 2019-09-26 =
 * New: You can now export logs to CSV.
 * Updated: Few notifications errors, and minor improvements.
 
-= 2.0.4 - 2019-08-27
+= 2.0.4 - 2019-08-27 =
 * Updated: More security.
 
-= 2.0.3 - 2019-08-21
+= 2.0.3 - 2019-08-21 =
 * Fixed: A few security issues.
 
-= 2.0.2 - 2019-05-19
+= 2.0.2 - 2019-05-19 =
 * Fixed: Sendgrid code fix.
 * Fixed: Default method (nothing configured) will use the default mail on the server and not SMTP.
 
-= 2.0.1 - 2019-05-15
+= 2.0.1 - 2019-05-15 =
 * New: Mailer Type - Added an option to send without overwrite the 'wp_mail' function, better compability to WordPress delivery. hopefully will be the default in the future.
 * Updated: Sendgrid API was upgraded and rewritten to the new version.
 * Fixed: Message-Id header was missing on SMTP
@@ -1084,69 +1124,69 @@ Add notice about Google Less Secure App.
 * Fixed: The localization was fixed to match translate.wordpress.org translation system ( Thanks to Niels de Blaauw from Level-Level ).
 * Fixed: Code and optimization ( Thanks to Niels de Blaauw from Level-Level ).
 
-= 1.9.8 - 2019-02-18
+= 1.9.8 - 2019-02-18 =
 * New: a new from field to the fallback - Can't trust the username as "from" value (email address).
 
-= 1.9.7 - 2019-02-17
+= 1.9.7 - 2019-02-17 =
 * New: Fallback Feature - Configure a backup SMTP when emails are failing.
 * New: WordPress Multisite compability - with global settings.
 * New: Email Log capability - give other user cheking the logs.
 * Fixed: compatibility with mailster plugin
 * Fixed: Mandrill exception bug - Thanks to Niels de Blaauw from Level-Level
 
-= 1.9.6 - 2019-01-29
+= 1.9.6 - 2019-01-29 =
 * Added support for our new chrome notification extension.
 * few fixes
 
-= 1.9.5 - 2018-10-02
+= 1.9.5 - 2018-10-02 =
 * Added support for Mailgun Europe region.
 * Replace "buggy" mime_content_type php function
 
-= 1.9.4 - 2018-08-03
+= 1.9.4 - 2018-08-03 =
 The most stupid idea ever remove (auto security select)
 
-= 1.9.3 - 2018-07-26
+= 1.9.3 - 2018-07-26 =
 Removed auto configure for port 25 (can be TLS)
 
-= 1.9.2 - 2018-07-23
+= 1.9.2 - 2018-07-23 =
 Removed deprecated functions from 7.2 + comment unready feature
 
-= 1.9.1 - 2018-07-22
+= 1.9.1 - 2018-07-22 =
 Syntx stupid mistake
 
-= 1.9.0 - 2018-07-22
+= 1.9.0 - 2018-07-22 =
 * Better support for secure delivery
 * Support for constants auth (inside wp-config), check the detailes our [Blog](https://postmansmtp.com/post-smtp-1-9-0-better-support-for-secure-delivery)
 * Automatic encryption select base on the port input - 25, 465, 587, 2525
 
-= 1.8.9 - 2018-04-24
+= 1.8.9 - 2018-04-24 =
 * Sendgrid bug
 
-= 1.8.8 - 2018-04-24
+= 1.8.8 - 2018-04-24 =
 * file added to svn - contactform7
 
-= 1.8.6 - 2018-04-24
+= 1.8.6 - 2018-04-24 =
 * Fix lockfile erros
 * Contact form 7 integration
 * PHP 5.6 requirement
 
-= 1.8.5 - 2018-04-19
+= 1.8.5 - 2018-04-19 =
 * Remove Beta Woocommerce integration
 * Better check for WPML less then version 3.9
 
-= 1.8.4 - 2018-04-18
+= 1.8.4 - 2018-04-18 =
 * New: Multiple notification options to failed emails
 * Upgrade: The Gmail code was upgraded and code change to support large attachments
 * Add: Fix release lock file error
 * Change: "Not configured..." message is now dismissible
 
-= 1.8.3 - 2018-03-21
+= 1.8.3 - 2018-03-21 =
 * Fix: SendGrid API Call Structure (The previous try didn't work)
 
-= 1.8.2 - 2018-03-21
+= 1.8.2 - 2018-03-21 =
 * Fix: SendGrid API Call Structure
 
-= 1.8.1 - 2018-03-20
+= 1.8.1 - 2018-03-20 =
 * New: Sendgrid API & Client Version 6
 * New: Add email log 'send to' column
 * Fix: fallback emails on hosting require the '-f' parameter
@@ -1156,16 +1196,16 @@ Syntx stupid mistake
 * Added: added filters to from_name and from_email filters (local connection)
 * change hostname extrect logic
 
-= 1.8 - 2017-12-24
+= 1.8 - 2017-12-24 =
 * New: Mailgun API integration
 * New: New filter controls
 * New: WPML conflict fix
 * Fix: Minor old bugs
 
-= 1.7.10 - 2017-11-21 ==
+= 1.7.10 - 2017-11-21 =
 * Fixed: bug while detecting transcript error
 
-= 1.7.9 - 2017-11-20
+= 1.7.9 - 2017-11-20 =
 * Fixed: misspled false
 * Fixed: feedback form
 * Fixed: Some localization strings
@@ -1173,8 +1213,8 @@ Syntx stupid mistake
 * New: Option to input emails when resend email
 * Added: explain message on email log filter
 
-= 1.7.8 - 2017-11-17
-* = Menu Items grouping =
+= 1.7.8 - 2017-11-17 =
+* Menu Items grouping 
 * Fixed: IP detection error in some web hosts
 * Fixed: Link open in new page attribute = _blank
 * Fixed: Replace deprecated PHP 7 functions.
@@ -1183,12 +1223,12 @@ Syntx stupid mistake
 * Added: Alert on sending error (Fallback to local mail)
 * Added: Email body preview (not raw)
 
-= 1.7.7 - 2017-10-17
+= 1.7.7 - 2017-10-17 =
 * Fixed: Error sending files with sendgrid
 * Fixed: Wrong attachments format in Mandrill
 * Fixed: Wrong Sender Header in Mandrill
 
-= 1.7.6 - 2017-10-17
+= 1.7.6 - 2017-10-17 =
 * Missing sendgrid files
 * Fixed: Localization slug
 
