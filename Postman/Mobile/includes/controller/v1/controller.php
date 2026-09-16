@@ -78,8 +78,9 @@ class Post_SMTP_Mobile_Controller {
 		}
 
 		$options = PostmanOptions::getInstance();
-		// If fallback is enabled and this is the primary failure, wait for fallback result
-		if ( ! $options->is_fallback && $options->getFallbackIsEnabled() && $options->getFallbackIsEnabled() == 'yes' ) {
+
+		// Notify on primary failure even when fallback is enabled; skip duplicate on fallback failure.
+		if ( $options->is_fallback && 'yes' === $options->getFallbackIsEnabled() ) {
 			return;
 		}
 

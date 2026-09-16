@@ -308,10 +308,17 @@ class PostmanNotify {
 		}
 
 		$options = PostmanOptions::getInstance();
+		$notification_service = PostmanNotifyOptions::getInstance()->getNotificationService();
+		$fallback_enabled     = ( 'yes' === $options->getFallbackIsEnabled() );
 
-		// If fallback is enabled and this is the primary failure (fallback has not run yet),
-		// do not send notification yet - wait to see if fallback succeeds or fails.
-		if ( ! $options->is_fallback && $options->getFallbackIsEnabled() && $options->getFallbackIsEnabled() == 'yes' ) {
+		// Email notifications wait for the fallback result; Slack, Pushover, and webhooks
+		// should alert on the primary failure even when fallback later succeeds.
+		if ( ! $options->is_fallback && $fallback_enabled && 'default' === $notification_service ) {
+			return;
+		}
+
+		// Non-email channels already notified on the primary attempt.
+		if ( $options->is_fallback && $fallback_enabled && 'default' !== $notification_service ) {
 			return;
 		}
 
