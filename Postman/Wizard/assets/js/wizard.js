@@ -1375,10 +1375,6 @@ jQuery(document).ready(function ($) {
             .first()
             .text("Amazon (AWS) SES API");
 
-        jQuery(".ps-form-ui.ps-wizard-socket.postmark_api h3")
-            .first()
-            .text("PostMark API");
-
         jQuery(".ps-form-ui.ps-wizard-socket.mailtrap_api h3")
             .first()
             .text("Mailtrap API ");

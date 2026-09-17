@@ -274,6 +274,16 @@
   color: #000;
 }
 
+a.ps-referral-link,
+a.ps-referral-link:link,
+a.ps-referral-link:visited,
+a.ps-referral-link:hover,
+a.ps-referral-link:focus,
+a.ps-referral-link:active {
+  color: #214A72 !important;
+  text-decoration: none !important;
+}
+
 .smtp-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
   height: 870px !important;
 }

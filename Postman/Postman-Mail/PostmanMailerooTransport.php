@@ -94,7 +94,16 @@ class PostmanMailerooTransport extends PostmanAbstractModuleTransport implements
         }
 
         public function printMailerooAuthSectionInfo() {
-            printf('<p id="wizard_maileroo_auth_help">%s</p>', sprintf(__('Enter your Maileroo <a href="https://app.maileroo.com/dashboard" target="_blank">API key</a> and endpoint below.', 'post-smtp')));
+            printf(
+                '<p id="wizard_maileroo_auth_help">%s</p>',
+                sprintf(
+                    __( 'Enter your %1$s and endpoint below.', 'post-smtp' ),
+                    PostmanReferralLinks::link(
+                        PostmanReferralLinks::get_maileroo_url(),
+                        __( 'Maileroo API key', 'post-smtp' )
+                    )
+                )
+            );
         }
 
         public function maileroo_api_key_callback() {

@@ -1739,3 +1739,13 @@ label.ps-switch-1.ps-gmail-one-click:hover:before {
     background-size: 100%;
 
 }
+
+a.ps-referral-link,
+a.ps-referral-link:link,
+a.ps-referral-link:visited,
+a.ps-referral-link:hover,
+a.ps-referral-link:focus,
+a.ps-referral-link:active {
+    color: #214A72 !important;
+    text-decoration: none !important;
+}

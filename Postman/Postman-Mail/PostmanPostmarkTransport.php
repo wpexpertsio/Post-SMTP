@@ -195,9 +195,13 @@ if( !class_exists( 'PostmanPostmarkTransport' ) ):
          */
         public function printPostmarkAuthSectionInfo() {
 
-            printf (
-                '<p id="wizard_postmark_auth_help">%s</p>', sprintf ( __ ( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API Token</a> below.', 'post-smtp' ),
-                    'https://postmarkapp.com/', 'postmarkapp.com', 'https://account.postmarkapp.com/sign_up' )
+            printf(
+                '<p id="wizard_postmark_auth_help">%s</p>',
+                sprintf(
+                    /* translators: %s: linked postmarkapp.com signup URL */
+                    __( 'Create an account at %s and enter an API Token below.', 'post-smtp' ),
+                    PostmanReferralLinks::link( PostmanReferralLinks::get_postmark_url(), 'postmarkapp.com' )
+                )
             );
 
         }

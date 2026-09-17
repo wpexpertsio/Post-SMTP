@@ -132,10 +132,11 @@ class PostmanSmtpcomTransport extends PostmanAbstractModuleTransport implements 
 		printf(
 			'<p id="wizard_smtpcom_auth_help">%s</p>',
 			sprintf(
-				__( 'Create an account at <a href="%1$s" target="_blank">%2$s</a> and enter <a href="%3$s" target="_blank">an API key</a> below.', 'post-smtp' ),
-				'https://www.smtp.com/',
-				'SMTP.com',
-				'https://postmansmtp.com/docs/mailers/how-to-setup-smtp-mailer-with-post-smtp/'
+				__( 'Create an account at %1$s and enter an API key below.', 'post-smtp' ),
+				PostmanReferralLinks::link(
+					PostmanReferralLinks::get_smtpcom_url(),
+					'SMTP.com'
+				)
 			)
 		);
 	}
@@ -155,7 +156,14 @@ class PostmanSmtpcomTransport extends PostmanAbstractModuleTransport implements 
 			esc_attr( $this->options->getSmtpcomChannel() ?? '' ),
 			__( 'Optional', 'post-smtp' )
 		);
-		print '<p class="description">' . esc_html__( 'Channel name from your SMTP.com account. Leave empty to use the default channel.', 'post-smtp' ) . '</p>';
+		print '<p class="description">' . sprintf(
+			/* translators: %s: linked "SMTP.com account" */
+			esc_html__( 'Channel name from your %s. Leave empty to use the default channel.', 'post-smtp' ),
+			PostmanReferralLinks::link(
+				PostmanReferralLinks::get_smtpcom_url(),
+				__( 'SMTP.com account', 'post-smtp' )
+			)
+		) . '</p>';
 	}
 
 	public function registerStylesAndScripts() {

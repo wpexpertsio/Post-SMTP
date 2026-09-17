@@ -387,9 +387,40 @@ class Post_SMTP_New_Wizard {
                                                     $display_title = $title;
                                                     if ( 'office365_api' === $key ) {
                                                         $display_title = 'Microsoft 365 / Outlook';
+                                                    } elseif ( 'postmark_api' === $key ) {
+                                                        $display_title = PostmanReferralLinks::link(
+                                                            PostmanReferralLinks::get_postmark_url(),
+                                                            __( 'PostMark API', 'post-smtp' )
+                                                        );
+                                                    } elseif ( 'smtpcom_api' === $key ) {
+                                                        $display_title = PostmanReferralLinks::link(
+                                                            PostmanReferralLinks::get_smtpcom_url(),
+                                                            $title
+                                                        );
+                                                    } elseif ( 'maileroo_api' === $key ) {
+                                                        $display_title = PostmanReferralLinks::link(
+                                                            PostmanReferralLinks::get_maileroo_url(),
+                                                            $title
+                                                        );
                                                     }
                                                     ?>
-                                                    <h3><?php echo $display_title == 'Default' ? '' : esc_attr( $display_title ); ?></h3>
+                                                    <h3><?php
+                                                    if ( 'Default' === $display_title ) {
+                                                        echo '';
+                                                    } else {
+                                                        echo wp_kses(
+                                                            $display_title,
+                                                            array(
+                                                                'a' => array(
+                                                                    'href'   => array(),
+                                                                    'class'  => array(),
+                                                                    'target' => array(),
+                                                                    'rel'    => array(),
+                                                                ),
+                                                            )
+                                                        );
+                                                    }
+                                                    ?></h3>
                                                     <?php $this->render_socket_settings( $key ); ?>
                                                 </div>
                                                 <?php
@@ -1105,13 +1136,22 @@ class Post_SMTP_New_Wizard {
      */
     public function render_maileroo_settings() {
         $api_key = null !== $this->options->getMailerooApiKey() ? esc_attr ( $this->options->getMailerooApiKey() ) : '';
-        $html = '<p>' . esc_html__( 'It is easy to integrate Maileroo mailer to your WordPress website. We recommend you to check the ', 'post-smtp' ) . '<a href="https://postmansmtp.com/docs/mailers/how-to-setup-maileroo-with-post-smtp" target="_blank">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
+        $html = '<p>' . sprintf(
+            /* translators: %1$s: linked "Maileroo mailer", %2$s: linked "documentation" */
+            esc_html__( 'It is easy to integrate %1$s to your WordPress website. We recommend you to check the %2$s for a successful integration.', 'post-smtp' ),
+            PostmanReferralLinks::link( PostmanReferralLinks::get_maileroo_url(), __( 'Maileroo mailer', 'post-smtp' ) ),
+            '<a href="https://postmansmtp.com/docs/mailers/how-to-setup-maileroo-with-post-smtp" target="_blank" rel="noopener noreferrer">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>'
+        ) . '</p>';
         $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
             <input type="text" class="ps-maileroo-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::MAILEROO_API_KEY ) .']" value="'.$api_key.'" placeholder="">
-            <div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://app.maileroo.com/dashboard" target="_blank">' . esc_html__( 'the API tokens', 'post-smtp' ) . '</a>' . esc_html__( ' in your Maileroo account.', 'post-smtp' ) . '</div>
+            <div class="ps-form-control-info">' . sprintf(
+                /* translators: %s: linked "Maileroo account" */
+                esc_html__( 'You can find the API tokens in your %s.', 'post-smtp' ),
+                PostmanReferralLinks::link( PostmanReferralLinks::get_maileroo_url(), __( 'Maileroo account', 'post-smtp' ) )
+            ) . '</div>
         </div>';
         return $html;
     }
@@ -1391,19 +1431,36 @@ class Post_SMTP_New_Wizard {
         $api_key = null !== $this->options->getSmtpcomApiKey() ? esc_attr( $this->options->getSmtpcomApiKey() ) : '';
         $channel = null !== $this->options->getSmtpcomChannel() ? esc_attr( $this->options->getSmtpcomChannel() ) : '';
 
-        $html = '<p>' . esc_html__( 'It is easy to integrate SMTP.com mailer to your WordPress website. We recommend you to check the ', 'post-smtp' ) . '<a href="https://postmansmtp.com/docs/mailers/how-to-setup-smtp-mailer-with-post-smtp/" target="_blank">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
+        $smtpcom_account_link = PostmanReferralLinks::link(
+            PostmanReferralLinks::get_smtpcom_url(),
+            __( 'SMTP.com account', 'post-smtp' )
+        );
+        $html = '<p>' . sprintf(
+            /* translators: %1$s: linked "SMTP.com mailer", %2$s: linked "documentation" */
+            esc_html__( 'It is easy to integrate %1$s to your WordPress website. We recommend you to check the %2$s for a successful integration.', 'post-smtp' ),
+            PostmanReferralLinks::link( PostmanReferralLinks::get_smtpcom_url(), __( 'SMTP.com mailer', 'post-smtp' ) ),
+            '<a href="https://postmansmtp.com/docs/mailers/how-to-setup-smtp-mailer-with-post-smtp/" target="_blank" rel="noopener noreferrer">' . esc_html__( 'documentation', 'post-smtp' ) . '</a>'
+        ) . '</p>';
         $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
             <div><label>API Key</label></div>
             <input type="text" class="ps-smtpcom-api-key" required data-error="'.__( 'Please enter API Key.', 'post-smtp' ).'" name="postman_options['. esc_attr( PostmanOptions::SMTPCOM_API_KEY ) .']" value="'.$api_key.'" placeholder="">'.
-            '<div class="ps-form-control-info">' . esc_html__( 'Create an API key in your ', 'post-smtp' ) . '<a href="https://www.smtp.com/" target="_blank">' . esc_html__( 'SMTP.com account', 'post-smtp' ) . '</a>.</div>'
+            '<div class="ps-form-control-info">' . sprintf(
+                /* translators: %s: linked "SMTP.com account" */
+                esc_html__( 'Create an API key in your %s.', 'post-smtp' ),
+                $smtpcom_account_link
+            ) . '</div>'
             .
         '</div>
         <div class="ps-form-control">
             <div><label>Channel Name</label></div>
             <input type="text" class="ps-smtpcom-channel" name="postman_options['. esc_attr( PostmanOptions::SMTPCOM_CHANNEL ) .']" value="'.$channel.'" placeholder="">'.
-            '<div class="ps-form-control-info">' . esc_html__( 'Optional channel name from your SMTP.com account.', 'post-smtp' ) . '</div>'
+            '<div class="ps-form-control-info">' . sprintf(
+                /* translators: %s: linked "SMTP.com account" */
+                esc_html__( 'Optional channel name from your %s.', 'post-smtp' ),
+                $smtpcom_account_link
+            ) . '</div>'
             .
         '</div>
         ';
@@ -1422,7 +1479,12 @@ class Post_SMTP_New_Wizard {
 
         $api_key = null !== $this->options->getPostmarkApiKey() ? esc_attr ( $this->options->getPostmarkApiKey() ) : '';
 
-        $html = '<p>' . esc_html__( 'It is easy to integrate Postmark mailer to your WordPress website. We recommend you to ', 'post-smtp' ) . '<a href="https://postmansmtp.com/documentation/sockets-addons/postmark/" target="_blank">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>' . esc_html__( ' for a successful integration.', 'post-smtp' ) . '</p>';
+        $html = '<p>' . sprintf(
+            /* translators: %1$s: linked "Postmark mailer", %2$s: linked "check the documentation" */
+            esc_html__( 'It is easy to integrate %1$s to your WordPress website. We recommend you to %2$s for a successful integration.', 'post-smtp' ),
+            PostmanReferralLinks::link( PostmanReferralLinks::get_postmark_url(), __( 'Postmark mailer', 'post-smtp' ) ),
+            '<a href="https://postmansmtp.com/documentation/sockets-addons/postmark/" target="_blank" rel="noopener noreferrer">' . esc_html__( 'check the documentation', 'post-smtp' ) . '</a>'
+        ) . '</p>';
         $html .= '<div class="ps-wizard-divider"></div>';
         $html .= '
         <div class="ps-form-control">
@@ -1432,7 +1494,11 @@ class Post_SMTP_New_Wizard {
              * Translators: %1$s Text, %2$s URL, %3$s URL Text, %4$s Text, %5$s URL, %6$s URL Text
              */
 
-            '<div class="ps-form-control-info">' . esc_html__( 'You can find ', 'post-smtp' ) . '<a href="https://account.postmarkapp.com/api_tokens" target="_blank">' . esc_html__( 'the API tokens', 'post-smtp' ) . '</a>' . esc_html__( ' in your Postmark account.', 'post-smtp' ) . '</div>'
+            '<div class="ps-form-control-info">' . sprintf(
+                /* translators: %s: linked "Postmark account" */
+                esc_html__( 'You can find the API tokens in your %s.', 'post-smtp' ),
+                PostmanReferralLinks::link( PostmanReferralLinks::get_postmark_url(), __( 'Postmark account', 'post-smtp' ) )
+            ) . '</div>'
             .'
         </div>
         ';
