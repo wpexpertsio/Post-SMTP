@@ -303,22 +303,7 @@ class PostmanNotify {
 	 */
 	public function notify( $log, $postmanMessage, $transcript, $transport, $errorMessage ) {
 
-		if ( PostmanMailNotify::is_sending() || $this->is_notification_delivery( $postmanMessage ) ) {
-			return;
-		}
-
-		$options = PostmanOptions::getInstance();
-		$notification_service = PostmanNotifyOptions::getInstance()->getNotificationService();
-		$fallback_enabled     = ( 'yes' === $options->getFallbackIsEnabled() );
-
-		// Email notifications wait for the fallback result; Slack, Pushover, and webhooks
-		// should alert on the primary failure even when fallback later succeeds.
-		if ( ! $options->is_fallback && $fallback_enabled && 'default' === $notification_service ) {
-			return;
-		}
-
-		// Non-email channels already notified on the primary attempt.
-		if ( $options->is_fallback && $fallback_enabled && 'default' !== $notification_service ) {
+		if ( ! self::should_send_failure_notification( $postmanMessage ) ) {
 			return;
 		}
 
@@ -361,12 +346,34 @@ class PostmanNotify {
 	}
 
 	/**
-	 * Detect whether a failed delivery was itself a Post SMTP notification email.
+	 * Whether a failed delivery should trigger user notifications.
 	 *
-	 * @param PostmanMessage $postmanMessage
+	 * Fires once per mailer attempt: primary failure sends one notification, and a
+	 * separate notification is sent if the fallback mailer also fails. Invalid
+	 * recipient failures are included. Internal notification emails are excluded.
+	 *
+	 * @param PostmanMessage|null $postmanMessage
 	 * @return bool
 	 */
-	private function is_notification_delivery( $postmanMessage ) {
+	public static function should_send_failure_notification( $postmanMessage ) {
+		if ( class_exists( 'PostmanMailNotify' ) && PostmanMailNotify::is_sending() ) {
+			return false;
+		}
+
+		if ( self::is_notification_delivery( $postmanMessage ) ) {
+			return false;
+		}
+
+		return (bool) apply_filters( 'post_smtp_should_send_failure_notification', true, $postmanMessage );
+	}
+
+	/**
+	 * Detect whether a failed delivery was itself a Post SMTP notification email.
+	 *
+	 * @param PostmanMessage|null $postmanMessage
+	 * @return bool
+	 */
+	private static function is_notification_delivery( $postmanMessage ) {
 		if ( ! $postmanMessage instanceof PostmanMessage ) {
 			return false;
 		}
