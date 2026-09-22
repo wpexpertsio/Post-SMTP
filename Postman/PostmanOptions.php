@@ -145,6 +145,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		const DEFAULT_PLUGIN_MESSAGE_SENDER_EMAIL_ENFORCED = false;
 		const DEFAULT_TEMP_DIRECTORY = '/tmp';
 		const DEFAULT_PHP_COMPATIBILITY_MODE = false;
+		const MAILCHANNELS_API_KEY = 'mailchannels_api_key';
 		const SMTP2GO_API_KEY = 'smtp2go_api_key';
 
 		const SMTP_MAILERS = [
@@ -865,6 +866,16 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 
 			}
 
+		}
+
+		public function getMailChannelsApiKey() {
+			if ( defined( 'POST_SMTP_API_KEY' ) ) {
+				return POST_SMTP_API_KEY;
+			}
+			if ( isset( $this->options[ self::MAILCHANNELS_API_KEY ] ) ) {
+				return base64_decode( $this->options[ self::MAILCHANNELS_API_KEY ] );
+			}
+			return '';
 		}
 
 		public function getSmtp2GoApiKey() {
