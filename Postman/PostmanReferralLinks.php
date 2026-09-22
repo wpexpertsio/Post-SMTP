@@ -12,9 +12,9 @@ class PostmanReferralLinks {
 
 	const LINK_CLASS = 'ps-referral-link';
 
-	const POSTMARK = 'https://www.postmarkapp.com/?via=3baffd';
-	const MAILEROO = 'https://maileroo.com/?r=WithinPlugin';
-	const SMTPCOM  = 'https://pstk.smtp.com/sp9wc9xviv0a';
+	const POSTMARK = 'http://postmansmtp.com/go/postmark';
+	const MAILEROO = 'https://postmansmtp.com/go/maileroo';
+	const SMTPCOM  = 'postmansmtp.com/go/smtp-com';
 
 	public static function get_postmark_url() {
 		return apply_filters( 'post_smtp_postmark_referral_url', self::POSTMARK );
