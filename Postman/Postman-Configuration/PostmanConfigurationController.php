@@ -321,6 +321,10 @@ class PostmanConfigurationController {
 		do_settings_sections( PostmanSmtp2GoTransport::SMTP2GO_AUTH_OPTIONS );
 		print '</div>';
 
+		print '<div id="mailchannels_settings" class="authentication_setting non-basic non-oauth2">';
+		do_settings_sections( PostmanMailChannelsTransport::MAILCHANNELS_AUTH_OPTIONS );
+		print '</div>';
+
 		do_action( 'post_smtp_settings_sections' );
 
 		print '</section>';

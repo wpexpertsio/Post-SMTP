@@ -218,6 +218,14 @@ In short, our Expert Assistance is your one-stop destination for all your WordPr
 
 == Frequently Asked Questions ==
 
+= How do I use MailChannels Email API? =
+
+Select MailChannels in the setup wizard or the Account settings and enter a MailChannels API key with the `api` scope. This mailer requires PHP 8.2 or later; the PHP requirements of other mailers are unchanged. Configure Domain Lockdown and SPF for your sending domain using the [MailChannels setup guide](https://docs.mailchannels.com/email-api/php/quickstart), then send a Post SMTP test email.
+
+The integration uses the official MailChannels PHP SDK and supports To, Cc, Bcc, Reply-To, text and HTML bodies, custom headers, and local file attachments. MailChannels manages delivery and the envelope sender. Set up DKIM in your MailChannels account. A successful test means MailChannels accepted the message, not that it reached the recipient's inbox.
+
+When selected, this mailer sends email addresses, message content, headers, and attachments to [MailChannels](https://www.mailchannels.com/email-api/) for delivery. See the [MailChannels privacy policy](https://www.mailchannels.com/privacy-policy/). No MailChannels requests are made just by opening settings.
+
 = What is OAuth 2.0? =
 
 A modern replacement for traditional password-based authentication. Post supports the OAuth 2.0 implementations of all three major e-mail providers: Gmail, Office365, Brevo, Mailgun, Hotmail and Yahoo Mail.

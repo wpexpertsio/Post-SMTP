@@ -71,6 +71,7 @@ class Post_SMTP_New_Wizard {
             'sparkpost_api',
             'mailjet_api',
             'smtp2go_api',
+            'mailchannels_api',
             'sendpulse_api',
             
         );
@@ -658,6 +659,9 @@ class Post_SMTP_New_Wizard {
             case 'zohomail_api';
                 echo wp_kses( $this->render_zoho_settings(), $this->allowed_tags );
             break;
+            case 'mailchannels_api':
+                echo wp_kses( $this->render_mailchannels_settings(), $this->allowed_tags );
+                break;
             case 'smtp2go_api':
 	            echo wp_kses( $this->render_smtp2go_settings(), $this->allowed_tags );
                 break;
@@ -1685,6 +1689,16 @@ public function render_gmail_settings() {
 
         return $html;
 
+    }
+
+    public function render_mailchannels_settings() {
+        ob_start();
+        $transport = PostmanTransportRegistry::getInstance()->getTransport( 'mailchannels_api' );
+        $transport->printMailChannelsSectionInfo();
+        echo '<div class="ps-form-control"><div><label>' . esc_html__( 'API Key', 'post-smtp' ) . '</label></div>';
+        $transport->mailchannelsApiKeyCallback( false );
+        echo '</div>';
+        return ob_get_clean();
     }
 
     public function render_smtp2go_settings() {

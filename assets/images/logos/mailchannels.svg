@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="48" viewBox="0 0 220 48" role="img" aria-label="MailChannels">
+  <rect x="4" y="12" width="32" height="24" rx="3" fill="none" stroke="#1769aa" stroke-width="2"/>
+  <path d="m5 14 15 12 15-12" fill="none" stroke="#1769aa" stroke-width="2"/>
+  <text x="46" y="32" font-family="Arial,sans-serif" font-size="24" fill="#222">MailChannels</text>
+</svg>
