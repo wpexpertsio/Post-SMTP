@@ -1,9 +1,9 @@
-=== Post SMTP – Complete Email Delivery and SMTP Solution for WordPress with Email Logs, Alerts, Backup SMTP & Mobile App ===
+=== Post SMTP – Complete Email Delivery and SMTP Solution with Email Logs, Alerts, Backup SMTP & Mobile App ===
 Plugin URI: https://postmansmtp.com/
 Contributors: wpexpertsio
 Tags: smtp, wordpress smtp, email logs, gmail smtp, office 365
 Requires at least: 5.6.0
-Tested up to: 7.1
+Tested up to: 7.1.2
 Stable tag: 4.0.2
 Requires PHP: 7.1
 License: GPLv2 or later
@@ -368,7 +368,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
-= 4.0.2 - September 15, 2026 =
+= 4.0.2 - September 28, 2026 =
 * Security - Resolved Stored DOM-Based Cross-Site Scripting (XSS) vulnerability in failed email logs on WordPress Multisite.
 * Fix - Resolved fatal error during All-In-One Security (AIOS) unlock email requests.
 * Fix - Prevented redundant wp_posts database queries on AJAX requests to improve performance.
