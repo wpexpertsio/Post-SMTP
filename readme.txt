@@ -368,7 +368,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 == Changelog ==
 
-= 4.0.2 - September 28, 2026 =
+= 4.0.2 - Sep 24, 2026 =
 * Security - Resolved Stored DOM-Based Cross-Site Scripting (XSS) vulnerability in failed email logs on WordPress Multisite.
 * Fix - Resolved fatal error during All-In-One Security (AIOS) unlock email requests.
 * Fix - Prevented redundant wp_posts database queries on AJAX requests to improve performance.
