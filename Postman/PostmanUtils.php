@@ -238,13 +238,20 @@ class PostmanUtils {
 				'TiB',
 				'PiB',
 		);
-		
-		$log = log( $size, 1024 );
-		$unit_key = floor( $log );
-		$pow = pow( 1024, $unit_key );
-		$pow = floor( $pow );
 
-		return @round( $size / $pow, 2 ) . ' ' . $unit[$unit_key];
+		// memory_get_usage() deltas are zero or negative when nothing was
+		// allocated or memory was freed. log() of those is -INF or NAN, and
+		// dividing by 1024 ** -INF is a DivisionByZeroError in PHP 8.
+		$sign = $size < 0 ? '-' : '';
+		$size = abs( $size );
+
+		if ( $size < 1024 ) {
+			return $sign . $size . ' ' . $unit[0];
+		}
+
+		$unit_key = min( (int) floor( log( $size, 1024 ) ), count( $unit ) - 1 );
+
+		return $sign . round( $size / pow( 1024, $unit_key ), 2 ) . ' ' . $unit[$unit_key];
 	}
 
 	/**
