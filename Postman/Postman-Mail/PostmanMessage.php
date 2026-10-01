@@ -25,6 +25,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		// set by the caller
 		private $from;
 		private $replyTo;
+		private $replyToRaw;
 		private $toRecipients;
 		private $ccRecipients;
 		private $bccRecipients;
@@ -36,6 +37,7 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		private $attachments;
 		private $date;
 		private $messageId;
+		private $messageIdGenerated = false;
 
 		// determined by the send() method
 		private $isTextHtml;
@@ -543,11 +545,13 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		}
 		function setReplyTo( $replyTo ) {
 			if ( ! empty( $replyTo ) ) {
+				$this->replyToRaw = $replyTo;
 				$this->replyTo = new PostmanEmailAddress( $replyTo );
 			}
 		}
-		function setMessageId( $messageId ) {
+		function setMessageId( $messageId, $generated = false ) {
 			$this->messageId = $messageId;
+			$this->messageIdGenerated = $generated;
 		}
 		function setDate( $date ) {
 			$this->date = $date;
@@ -569,11 +573,17 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 		public function getBccRecipients() {
 			return $this->bccRecipients;
 		}
+		public function getReplyToRaw() {
+			return $this->replyToRaw;
+		}
 		public function getReplyTo() {
 			return $this->replyTo;
 		}
 		public function getDate() {
 			return $this->date;
+		}
+		public function isMessageIdGenerated() {
+			return $this->messageIdGenerated;
 		}
 		public function getMessageId() {
 			return $this->messageId;

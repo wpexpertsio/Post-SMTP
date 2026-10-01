@@ -1099,7 +1099,7 @@ class PostmanManageConfigurationAjaxHandler extends PostmanAbstractAjaxHandler {
 				if( defined( get_class( $transport ) . "::PRIORITY" ) ) {
 
 					$priority = $transport::PRIORITY;
-					$overrideMenu[$priority] = $overrideItem;
+					$overrideMenu[$priority][] = $overrideItem;
 
 				}
 				else {
@@ -1115,19 +1115,14 @@ class PostmanManageConfigurationAjaxHandler extends PostmanAbstractAjaxHandler {
 		//Sort in DESC order
 		krsort( $overrideMenu );
 		
-		//Start Placing sockets in last, because they don't have there own priority.
-		foreach( $last_items as $item ) {
-
-			$overrideMenu[] = $item;
-
-		}
-		
 		$menu = array();
-		foreach ( $overrideMenu as $key ) {
-			array_push( $menu, $key );
+		foreach ( $overrideMenu as $items ) {
+			foreach ( $items as $item ) {
+				$menu[] = $item;
+			}
 		}
-		
-		return $menu;
+
+		return array_merge( $menu, $last_items );
 		
 	}
 

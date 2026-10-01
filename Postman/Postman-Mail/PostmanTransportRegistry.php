@@ -56,6 +56,8 @@ class PostmanTransportRegistry {
 
 		$this->registration_attempted = true;
 
+		require_once __DIR__ . '/PostmanBirdTransport.php';
+
 		if ( ! class_exists( 'PostmanDefaultModuleTransport' ) ) {
 			$pluginPath = defined( 'POST_SMTP_PATH' ) ? POST_SMTP_PATH : dirname( dirname( __FILE__ ) );
 
@@ -92,6 +94,7 @@ class PostmanTransportRegistry {
 		$this->registerTransport( new PostmanSendinblueTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanMailtrapTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanResendTransport( $rootPluginFilenameAndPath ) );
+		$this->registerTransport( new PostmanBirdTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanCloudflareTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanSmtpcomTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanMailjetTransport( $rootPluginFilenameAndPath ) );
@@ -212,7 +215,8 @@ class PostmanTransportRegistry {
 		$transports = $this->getTransports();
 		if ( $transports !== null && isset( $transports [ $selectedTransport ] ) ) {
 			$transport = $transports [ $selectedTransport ];
-			if ( $transport->getSlug() == $selectedTransport && $transport->isConfiguredAndReady() ) {
+			// Invalid Bird settings must fail through its engine, not silently switch to PHP mail.
+			if ( $transport->getSlug() == $selectedTransport && ( $selectedTransport === 'bird_api' || $transport->isConfiguredAndReady() ) ) {
 				return $transport;
 			}
 		}
@@ -364,6 +368,11 @@ class PostmanTransportRegistry {
 					'message' => __( 'Postman is configured.', 'post-smtp' ),
 				);
 			}
+		} elseif ( $transport && $transport->getSlug() === 'bird_api' ) {
+			$message = array(
+				'error' => true,
+				'message' => __( 'Bird is not configured. Check the API key and sender email address.', 'post-smtp' ),
+			);
 		} else {
 			$message = array(
 				'error' => true,

@@ -341,7 +341,12 @@ jQuery(document).ready(function () {
                     },
                     error: function (response) {
 
-                        jQuery('.ps-wizard-error').html(`<span class="dashicons dashicons-warning"></span> ${PostSMTPWizard.Step2E3}`);
+                        var birdError = response.responseJSON && response.responseJSON.data && response.responseJSON.data.message;
+                        if (jQuery('.ps-wizard-socket-check:checked').val() === 'bird_api' && typeof birdError === 'string') {
+                            jQuery('.ps-wizard-error').text(birdError);
+                        } else {
+                            jQuery('.ps-wizard-error').html(`<span class="dashicons dashicons-warning"></span> ${PostSMTPWizard.Step2E3}`);
+                        }
 
                     },
                     complete: function (response) {

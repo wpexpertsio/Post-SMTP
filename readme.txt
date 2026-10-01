@@ -102,6 +102,7 @@ With Post SMTP, you get many SMTP mailer options, such as:
 * [Emailit SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-emailit-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) 
 
 * [Resend SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-resend-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) 
+* [Bird email API](https://bird.com/docs)
 
 * [MailerSend SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mailersend-with-post-smtp/?utm_source=wp_org&utm_medium=read_me)
 
@@ -132,6 +133,14 @@ With Post SMTP, you get many SMTP mailer options, such as:
 * [Other SMTP](https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-other-smtp/?utm_source=wp_org&utm_medium=read_me) (To connect any SMTP server)
 
 You often need to install a different WordPress mail smtp plugin for each SMTP mailer setup. However, with Post SMTP, you can set up all popular SMTP providers, such as Gmail one-click setup, Microsoft Office 365, Mailgun, Amazon SES, Zoho Mail, etc.
+
+== Bird email API ==
+
+Select Bird in the setup wizard or manual settings. Create a [Bird account](https://bird.com), verify your sending domain in Bird, and enter [an API Key](https://bird.com/dashboard/w/api-keys) with `emails` write access. Use Post SMTP's shared sender address and name. The key selects the region automatically; a blank key field keeps an already saved key.
+
+The current setup wizard is recommended. In the legacy wizard, enter `platform.bird.com` as the outgoing mail server hostname, choose Bird and API Key, and enter your key. Its port check confirms connectivity, not authentication or delivery.
+
+When Bird is selected, Post SMTP sends the sender, recipients, subject, message bodies, custom headers and attachments to Bird's regional email API over HTTPS. The API key authenticates these requests. Bird is a third-party email delivery service. API acceptance does not confirm delivery; check Bird's email log for delivery results. See [Bird's documentation](https://bird.com/docs) and [service terms](https://bird.com/legal/terms).
 
 ==  Microsoft 365 SMTP ==
 Millions of businesses around the world use Microsoft 365 (formerly Office 365) or Outlook for their email communications. With Post SMTP Pro, you can easily connect your existing [Outlook or Microsoft 365 (formerly Office365) account with WordPress](https://postmansmtp.com/connect-microsoft-outlook-to-wordpress/?utm_source=wp_org&utm_medium=read_me) via **one-click SMTP setup** to improve email deliverability.

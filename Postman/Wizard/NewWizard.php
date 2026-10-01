@@ -20,13 +20,15 @@ class Post_SMTP_New_Wizard {
             'required'		=>	array(),
             'data-error'    =>  array(),
             'readonly'      =>  array(),
-            'disabled'      =>  array()
+            'disabled'      =>  array(),
+            'autocomplete'  =>  array()
         ),
         'div'           =>  array(
             'class'         =>  array()
         ),
         'label'         =>  array(
-            'class'         =>  array()
+            'class'         =>  array(),
+            'for'           =>  array()
         ),
         'span'          => array(
             'class'         =>  array()
@@ -73,6 +75,7 @@ class Post_SMTP_New_Wizard {
             'emailit_api',
             'sweego_api',
             'resend_api',
+            'bird_api',
             'cloudflare_api',
             'smtpcom_api',
             'elasticemail_api',
@@ -215,6 +218,7 @@ class Post_SMTP_New_Wizard {
                                                 'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
                                                 'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png',
                                                 'resend_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/resend.png',
+                                                'bird_api'          =>  POST_SMTP_URL . '/assets/images/logos/bird.svg',
                                                 'cloudflare_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/cloudflare-figma.svg',
                                                 'smtpcom_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtpcom.png',
                                                 'emailit_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/emailit.png',
@@ -835,6 +839,9 @@ class Post_SMTP_New_Wizard {
             break;
             case 'mailtrap_api':
                 echo wp_kses( $this->render_mailtrap_settings(), $this->allowed_tags );
+            break;
+            case 'bird_api':
+                echo wp_kses( PostmanBirdSettings::fields( true ), $this->allowed_tags );
             break;
             case 'resend_api':
                 echo wp_kses( $this->render_resend_settings(), $this->allowed_tags );
@@ -2044,6 +2051,17 @@ class Post_SMTP_New_Wizard {
 
             if( isset( $form_data['postman_options'] ) && !empty( $form_data['postman_options'] ) ) {
                 
+                if ( ( $form_data['postman_options']['transport_type'] ?? '' ) === 'bird_api' ) {
+                    if ( ! current_user_can( 'manage_options' ) ) {
+                        wp_send_json_error( array( 'message' => __( 'You cannot change mail settings.', 'post-smtp' ) ), 403 );
+                    }
+                    try {
+                        PostmanBirdSettings::saveWizard( $form_data['bird_post_smtp'] ?? null );
+                    } catch ( RuntimeException $error ) {
+                        wp_send_json_error( array( 'message' => $error->getMessage() ), 422 );
+                    }
+                }
+
                 $sanitized = post_smtp_sanitize_array( $form_data['postman_options'] );
                 
                 $options = get_option( PostmanOptions::POSTMAN_OPTIONS );
