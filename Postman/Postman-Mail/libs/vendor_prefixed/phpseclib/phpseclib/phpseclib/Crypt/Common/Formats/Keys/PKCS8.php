@@ -40,7 +40,7 @@ use PostSMTP\Vendor\phpseclib3\File\ASN1\Maps;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Keys\PKCS
+abstract class PKCS8 extends PKCS
 {
     /**
      * Default encryption algorithm
@@ -76,6 +76,12 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
      * @var bool
      */
     private static $oidsLoaded = \false;
+    /**
+     * Binary key flag
+     *
+     * @var bool
+     */
+    private static $binary = \false;
     /**
      * Sets the default encryption algorithm
      *
@@ -124,36 +130,37 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
         // strlen('pbeWithSHAAnd') == 13
         switch ($algo) {
             case 'DES':
-                $cipher = new \PostSMTP\Vendor\phpseclib3\Crypt\DES('cbc');
+                $cipher = new DES('cbc');
                 break;
             case 'RC2':
-                $cipher = new \PostSMTP\Vendor\phpseclib3\Crypt\RC2('cbc');
+                $cipher = new RC2('cbc');
+                $cipher->setKeyLength(64);
                 break;
             case '3-KeyTripleDES':
-                $cipher = new \PostSMTP\Vendor\phpseclib3\Crypt\TripleDES('cbc');
+                $cipher = new TripleDES('cbc');
                 break;
             case '2-KeyTripleDES':
-                $cipher = new \PostSMTP\Vendor\phpseclib3\Crypt\TripleDES('cbc');
+                $cipher = new TripleDES('cbc');
                 $cipher->setKeyLength(128);
                 break;
             case '128BitRC2':
-                $cipher = new \PostSMTP\Vendor\phpseclib3\Crypt\RC2('cbc');
+                $cipher = new RC2('cbc');
                 $cipher->setKeyLength(128);
                 break;
             case '40BitRC2':
-                $cipher = new \PostSMTP\Vendor\phpseclib3\Crypt\RC2('cbc');
+                $cipher = new RC2('cbc');
                 $cipher->setKeyLength(40);
                 break;
             case '128BitRC4':
-                $cipher = new \PostSMTP\Vendor\phpseclib3\Crypt\RC4();
+                $cipher = new RC4();
                 $cipher->setKeyLength(128);
                 break;
             case '40BitRC4':
-                $cipher = new \PostSMTP\Vendor\phpseclib3\Crypt\RC4();
+                $cipher = new RC4();
                 $cipher->setKeyLength(40);
                 break;
             default:
-                throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedAlgorithmException("{$algo} is not a supported algorithm");
+                throw new UnsupportedAlgorithmException("{$algo} is not a supported algorithm");
         }
         return $cipher;
     }
@@ -199,26 +206,26 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
     {
         switch ($algo) {
             case 'desCBC':
-                $cipher = new \PostSMTP\Vendor\phpseclib3\Crypt\TripleDES('cbc');
+                $cipher = new DES('cbc');
                 break;
             case 'des-EDE3-CBC':
-                $cipher = new \PostSMTP\Vendor\phpseclib3\Crypt\TripleDES('cbc');
+                $cipher = new TripleDES('cbc');
                 break;
             case 'rc2CBC':
-                $cipher = new \PostSMTP\Vendor\phpseclib3\Crypt\RC2('cbc');
+                $cipher = new RC2('cbc');
                 // in theory this can be changed
                 $cipher->setKeyLength(128);
                 break;
             case 'rc5-CBC-PAD':
-                throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedAlgorithmException('rc5-CBC-PAD is not supported for PBES2 PKCS#8 keys');
+                throw new UnsupportedAlgorithmException('rc5-CBC-PAD is not supported for PBES2 PKCS#8 keys');
             case 'aes128-CBC-PAD':
             case 'aes192-CBC-PAD':
             case 'aes256-CBC-PAD':
-                $cipher = new \PostSMTP\Vendor\phpseclib3\Crypt\AES('cbc');
+                $cipher = new AES('cbc');
                 $cipher->setKeyLength(\substr($algo, 3, 3));
                 break;
             default:
-                throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedAlgorithmException("{$algo} is not supported");
+                throw new UnsupportedAlgorithmException("{$algo} is not supported");
         }
         return $cipher;
     }
@@ -229,15 +236,15 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
     private static function initialize_static_variables()
     {
         if (!isset(static::$childOIDsLoaded)) {
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\InsufficientSetupException('This class should not be called directly');
+            throw new InsufficientSetupException('This class should not be called directly');
         }
         if (!static::$childOIDsLoaded) {
-            \PostSMTP\Vendor\phpseclib3\File\ASN1::loadOIDs(\is_array(static::OID_NAME) ? \array_combine(static::OID_NAME, static::OID_VALUE) : [static::OID_NAME => static::OID_VALUE]);
+            ASN1::loadOIDs(\is_array(static::OID_NAME) ? \array_combine(static::OID_NAME, static::OID_VALUE) : [static::OID_NAME => static::OID_VALUE]);
             static::$childOIDsLoaded = \true;
         }
         if (!self::$oidsLoaded) {
             // from https://tools.ietf.org/html/rfc2898
-            \PostSMTP\Vendor\phpseclib3\File\ASN1::loadOIDs([
+            ASN1::loadOIDs([
                 // PBES1 encryption schemes
                 'pbeWithMD2AndDES-CBC' => '1.2.840.113549.1.5.1',
                 'pbeWithMD2AndRC2-CBC' => '1.2.840.113549.1.5.4',
@@ -285,9 +292,14 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
      */
     protected static function load($key, $password = '')
     {
+        if (!Strings::is_stringable($key)) {
+            throw new \UnexpectedValueException('Key should be a string - not a ' . \gettype($key));
+        }
+        $isPublic = \strpos($key, 'PUBLIC') !== \false;
+        $isPrivate = \strpos($key, 'PRIVATE') !== \false;
         $decoded = self::preParse($key);
         $meta = [];
-        $decrypted = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($decoded[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\EncryptedPrivateKeyInfo::MAP);
+        $decrypted = ASN1::asn1map($decoded[0], Maps\EncryptedPrivateKeyInfo::MAP);
         if (\strlen($password) && \is_array($decrypted)) {
             $algorithm = $decrypted['encryptionAlgorithm']['algorithm'];
             switch ($algorithm) {
@@ -308,43 +320,49 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
                     $hash = self::getPBES1Hash($algorithm);
                     $kdf = self::getPBES1KDF($algorithm);
                     $meta['meta']['algorithm'] = $algorithm;
-                    $temp = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($decrypted['encryptionAlgorithm']['parameters']);
+                    $temp = ASN1::decodeBER($decrypted['encryptionAlgorithm']['parameters']);
                     if (!$temp) {
                         throw new \RuntimeException('Unable to decode BER');
                     }
-                    \extract(\PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($temp[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\PBEParameter::MAP));
+                    $map = ASN1::asn1map($temp[0], Maps\PBEParameter::MAP);
+                    $salt = $map['salt'];
+                    $iterationCount = $map['iterationCount'];
                     $iterationCount = (int) $iterationCount->toString();
                     $cipher->setPassword($password, $kdf, $hash, $salt, $iterationCount);
                     $key = $cipher->decrypt($decrypted['encryptedData']);
-                    $decoded = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($key);
+                    $decoded = ASN1::decodeBER($key);
                     if (!$decoded) {
                         throw new \RuntimeException('Unable to decode BER 2');
                     }
                     break;
                 case 'id-PBES2':
                     $meta['meta']['algorithm'] = $algorithm;
-                    $temp = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($decrypted['encryptionAlgorithm']['parameters']);
+                    $temp = ASN1::decodeBER($decrypted['encryptionAlgorithm']['parameters']);
                     if (!$temp) {
                         throw new \RuntimeException('Unable to decode BER');
                     }
-                    $temp = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($temp[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\PBES2params::MAP);
-                    \extract($temp);
+                    $temp = ASN1::asn1map($temp[0], Maps\PBES2params::MAP);
+                    $keyDerivationFunc = $temp['keyDerivationFunc'];
+                    $encryptionScheme = $temp['encryptionScheme'];
                     $cipher = self::getPBES2EncryptionObject($encryptionScheme['algorithm']);
                     $meta['meta']['cipher'] = $encryptionScheme['algorithm'];
-                    $temp = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($decrypted['encryptionAlgorithm']['parameters']);
+                    $temp = ASN1::decodeBER($decrypted['encryptionAlgorithm']['parameters']);
                     if (!$temp) {
                         throw new \RuntimeException('Unable to decode BER');
                     }
-                    $temp = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($temp[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\PBES2params::MAP);
-                    \extract($temp);
-                    if (!$cipher instanceof \PostSMTP\Vendor\phpseclib3\Crypt\RC2) {
+                    $temp = ASN1::asn1map($temp[0], Maps\PBES2params::MAP);
+                    $keyDerivationFunc = $temp['keyDerivationFunc'];
+                    $encryptionScheme = $temp['encryptionScheme'];
+                    if (!$cipher instanceof RC2) {
                         $cipher->setIV($encryptionScheme['parameters']['octetString']);
                     } else {
-                        $temp = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($encryptionScheme['parameters']);
+                        $temp = ASN1::decodeBER($encryptionScheme['parameters']);
                         if (!$temp) {
                             throw new \RuntimeException('Unable to decode BER');
                         }
-                        \extract(\PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($temp[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\RC2CBCParameter::MAP));
+                        $map = ASN1::asn1map($temp[0], Maps\RC2CBCParameter::MAP);
+                        $rc2ParametersVersion = $map['rc2ParametersVersion'];
+                        $iv = $map['iv'];
                         $effectiveKeyLength = (int) $rc2ParametersVersion->toString();
                         switch ($effectiveKeyLength) {
                             case 160:
@@ -363,13 +381,17 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
                     $meta['meta']['keyDerivationFunc'] = $keyDerivationFunc['algorithm'];
                     switch ($keyDerivationFunc['algorithm']) {
                         case 'id-PBKDF2':
-                            $temp = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($keyDerivationFunc['parameters']);
+                            $temp = ASN1::decodeBER($keyDerivationFunc['parameters']);
                             if (!$temp) {
                                 throw new \RuntimeException('Unable to decode BER');
                             }
-                            $prf = ['algorithm' => 'id-hmacWithSHA1'];
-                            $params = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($temp[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\PBKDF2params::MAP);
-                            \extract($params);
+                            $params = ASN1::asn1map($temp[0], Maps\PBKDF2params::MAP);
+                            if (empty($params['prf'])) {
+                                $params['prf'] = ['algorithm' => 'id-hmacWithSHA1'];
+                            }
+                            $salt = $params['salt'];
+                            $iterationCount = $params['iterationCount'];
+                            $prf = $params['prf'];
                             $meta['meta']['prf'] = $prf['algorithm'];
                             $hash = \str_replace('-', '/', \substr($prf['algorithm'], 11));
                             $params = [$password, 'pbkdf2', $hash, $salt, (int) $iterationCount->toString()];
@@ -378,39 +400,42 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
                             }
                             $cipher->setPassword(...$params);
                             $key = $cipher->decrypt($decrypted['encryptedData']);
-                            $decoded = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($key);
+                            $decoded = ASN1::decodeBER($key);
                             if (!$decoded) {
                                 throw new \RuntimeException('Unable to decode BER 3');
                             }
                             break;
                         default:
-                            throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedAlgorithmException('Only PBKDF2 is supported for PBES2 PKCS#8 keys');
+                            throw new UnsupportedAlgorithmException('Only PBKDF2 is supported for PBES2 PKCS#8 keys');
                     }
                     break;
                 case 'id-PBMAC1':
                     //$temp = ASN1::decodeBER($decrypted['encryptionAlgorithm']['parameters']);
                     //$value = ASN1::asn1map($temp[0], Maps\PBMAC1params::MAP);
                     // since i can't find any implementation that does PBMAC1 it is unsupported
-                    throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedAlgorithmException('Only PBES1 and PBES2 PKCS#8 keys are supported.');
+                    throw new UnsupportedAlgorithmException('Only PBES1 and PBES2 PKCS#8 keys are supported.');
             }
         }
-        $private = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($decoded[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\OneAsymmetricKey::MAP);
+        $private = ASN1::asn1map($decoded[0], Maps\OneAsymmetricKey::MAP);
         if (\is_array($private)) {
-            if (isset($private['privateKeyAlgorithm']['parameters']) && !$private['privateKeyAlgorithm']['parameters'] instanceof \PostSMTP\Vendor\phpseclib3\File\ASN1\Element && isset($decoded[0]['content'][1]['content'][1])) {
+            if ($isPublic) {
+                throw new \UnexpectedValueException('Human readable string claims public key but DER encoded string claims private key');
+            }
+            if (isset($private['privateKeyAlgorithm']['parameters']) && !$private['privateKeyAlgorithm']['parameters'] instanceof ASN1\Element && isset($decoded[0]['content'][1]['content'][1])) {
                 $temp = $decoded[0]['content'][1]['content'][1];
-                $private['privateKeyAlgorithm']['parameters'] = new \PostSMTP\Vendor\phpseclib3\File\ASN1\Element(\substr($key, $temp['start'], $temp['length']));
+                $private['privateKeyAlgorithm']['parameters'] = new ASN1\Element(\substr($key, $temp['start'], $temp['length']));
             }
             if (\is_array(static::OID_NAME)) {
                 if (!\in_array($private['privateKeyAlgorithm']['algorithm'], static::OID_NAME)) {
-                    throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedAlgorithmException($private['privateKeyAlgorithm']['algorithm'] . ' is not a supported key type');
+                    throw new UnsupportedAlgorithmException($private['privateKeyAlgorithm']['algorithm'] . ' is not a supported key type');
                 }
             } else {
                 if ($private['privateKeyAlgorithm']['algorithm'] != static::OID_NAME) {
-                    throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedAlgorithmException('Only ' . static::OID_NAME . ' keys are supported; this is a ' . $private['privateKeyAlgorithm']['algorithm'] . ' key');
+                    throw new UnsupportedAlgorithmException('Only ' . static::OID_NAME . ' keys are supported; this is a ' . $private['privateKeyAlgorithm']['algorithm'] . ' key');
                 }
             }
             if (isset($private['publicKey'])) {
-                if ($private['publicKey'][0] != "\0") {
+                if ($private['publicKey'][0] != "\x00") {
                     throw new \UnexpectedValueException('The first byte of the public key should be null - not ' . \bin2hex($private['publicKey'][0]));
                 }
                 $private['publicKey'] = \substr($private['publicKey'], 1);
@@ -421,28 +446,42 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
         // is that the former has an octet string and the later has a bit string. the first byte of a bit
         // string represents the number of bits in the last byte that are to be ignored but, currently,
         // bit strings wanting a non-zero amount of bits trimmed are not supported
-        $public = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($decoded[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\PublicKeyInfo::MAP);
+        $public = ASN1::asn1map($decoded[0], Maps\PublicKeyInfo::MAP);
         if (\is_array($public)) {
-            if ($public['publicKey'][0] != "\0") {
+            if ($isPrivate) {
+                throw new \UnexpectedValueException('Human readable string claims private key but DER encoded string claims public key');
+            }
+            if ($public['publicKey'][0] != "\x00") {
                 throw new \UnexpectedValueException('The first byte of the public key should be null - not ' . \bin2hex($public['publicKey'][0]));
             }
             if (\is_array(static::OID_NAME)) {
                 if (!\in_array($public['publicKeyAlgorithm']['algorithm'], static::OID_NAME)) {
-                    throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedAlgorithmException($public['publicKeyAlgorithm']['algorithm'] . ' is not a supported key type');
+                    throw new UnsupportedAlgorithmException($public['publicKeyAlgorithm']['algorithm'] . ' is not a supported key type');
                 }
             } else {
                 if ($public['publicKeyAlgorithm']['algorithm'] != static::OID_NAME) {
-                    throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedAlgorithmException('Only ' . static::OID_NAME . ' keys are supported; this is a ' . $public['publicKeyAlgorithm']['algorithm'] . ' key');
+                    throw new UnsupportedAlgorithmException('Only ' . static::OID_NAME . ' keys are supported; this is a ' . $public['publicKeyAlgorithm']['algorithm'] . ' key');
                 }
             }
-            if (isset($public['publicKeyAlgorithm']['parameters']) && !$public['publicKeyAlgorithm']['parameters'] instanceof \PostSMTP\Vendor\phpseclib3\File\ASN1\Element && isset($decoded[0]['content'][0]['content'][1])) {
+            if (isset($public['publicKeyAlgorithm']['parameters']) && !$public['publicKeyAlgorithm']['parameters'] instanceof ASN1\Element && isset($decoded[0]['content'][0]['content'][1])) {
                 $temp = $decoded[0]['content'][0]['content'][1];
-                $public['publicKeyAlgorithm']['parameters'] = new \PostSMTP\Vendor\phpseclib3\File\ASN1\Element(\substr($key, $temp['start'], $temp['length']));
+                $public['publicKeyAlgorithm']['parameters'] = new ASN1\Element(\substr($key, $temp['start'], $temp['length']));
             }
             $public['publicKey'] = \substr($public['publicKey'], 1);
             return $public;
         }
         throw new \RuntimeException('Unable to parse using either OneAsymmetricKey or PublicKeyInfo ASN1 maps');
+    }
+    /**
+     * Toggle between binary (DER) and printable (PEM) keys
+     *
+     * Printable keys are what are generated by default.
+     *
+     * @param bool $enabled
+     */
+    public static function setBinaryOutput($enabled)
+    {
+        self::$binary = $enabled;
     }
     /**
      * Wrap a private key appropriately
@@ -460,7 +499,7 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
     {
         self::initialize_static_variables();
         $key = ['version' => 'v1', 'privateKeyAlgorithm' => ['algorithm' => \is_string(static::OID_NAME) ? static::OID_NAME : $oid], 'privateKey' => $key];
-        if ($oid != 'id-Ed25519' && $oid != 'id-Ed448') {
+        if ($oid != 'id-Ed25519' && $oid != 'id-Ed448' && $oid != 'id-X25519' && $oid != 'id-X448') {
             $key['privateKeyAlgorithm']['parameters'] = $params;
         }
         if (!empty($attr)) {
@@ -470,9 +509,9 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
             $key['version'] = 'v2';
             $key['publicKey'] = $publicKey;
         }
-        $key = \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER($key, \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\OneAsymmetricKey::MAP);
+        $key = ASN1::encodeDER($key, Maps\OneAsymmetricKey::MAP);
         if (!empty($password) && \is_string($password)) {
-            $salt = \PostSMTP\Vendor\phpseclib3\Crypt\Random::string(8);
+            $salt = Random::string(8);
             $iterationCount = isset($options['iterationCount']) ? $options['iterationCount'] : self::$defaultIterationCount;
             $encryptionAlgorithm = isset($options['encryptionAlgorithm']) ? $options['encryptionAlgorithm'] : self::$defaultEncryptionAlgorithm;
             $encryptionScheme = isset($options['encryptionScheme']) ? $options['encryptionScheme'] : self::$defaultEncryptionScheme;
@@ -481,33 +520,39 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
                 $crypto = self::getPBES2EncryptionObject($encryptionScheme);
                 $hash = \str_replace('-', '/', \substr($prf, 11));
                 $kdf = 'pbkdf2';
-                $iv = \PostSMTP\Vendor\phpseclib3\Crypt\Random::string($crypto->getBlockLength() >> 3);
+                $iv = Random::string($crypto->getBlockLength() >> 3);
                 $PBKDF2params = ['salt' => $salt, 'iterationCount' => $iterationCount, 'prf' => ['algorithm' => $prf, 'parameters' => null]];
-                $PBKDF2params = \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER($PBKDF2params, \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\PBKDF2params::MAP);
-                if (!$crypto instanceof \PostSMTP\Vendor\phpseclib3\Crypt\RC2) {
+                $PBKDF2params = ASN1::encodeDER($PBKDF2params, Maps\PBKDF2params::MAP);
+                if (!$crypto instanceof RC2) {
                     $params = ['octetString' => $iv];
                 } else {
                     $params = ['rc2ParametersVersion' => 58, 'iv' => $iv];
-                    $params = \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER($params, \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\RC2CBCParameter::MAP);
-                    $params = new \PostSMTP\Vendor\phpseclib3\File\ASN1\Element($params);
+                    $params = ASN1::encodeDER($params, Maps\RC2CBCParameter::MAP);
+                    $params = new ASN1\Element($params);
                 }
-                $params = ['keyDerivationFunc' => ['algorithm' => 'id-PBKDF2', 'parameters' => new \PostSMTP\Vendor\phpseclib3\File\ASN1\Element($PBKDF2params)], 'encryptionScheme' => ['algorithm' => $encryptionScheme, 'parameters' => $params]];
-                $params = \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER($params, \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\PBES2params::MAP);
+                $params = ['keyDerivationFunc' => ['algorithm' => 'id-PBKDF2', 'parameters' => new ASN1\Element($PBKDF2params)], 'encryptionScheme' => ['algorithm' => $encryptionScheme, 'parameters' => $params]];
+                $params = ASN1::encodeDER($params, Maps\PBES2params::MAP);
                 $crypto->setIV($iv);
             } else {
                 $crypto = self::getPBES1EncryptionObject($encryptionAlgorithm);
                 $hash = self::getPBES1Hash($encryptionAlgorithm);
                 $kdf = self::getPBES1KDF($encryptionAlgorithm);
                 $params = ['salt' => $salt, 'iterationCount' => $iterationCount];
-                $params = \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER($params, \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\PBEParameter::MAP);
+                $params = ASN1::encodeDER($params, Maps\PBEParameter::MAP);
             }
             $crypto->setPassword($password, $kdf, $hash, $salt, $iterationCount);
             $key = $crypto->encrypt($key);
-            $key = ['encryptionAlgorithm' => ['algorithm' => $encryptionAlgorithm, 'parameters' => new \PostSMTP\Vendor\phpseclib3\File\ASN1\Element($params)], 'encryptedData' => $key];
-            $key = \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER($key, \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\EncryptedPrivateKeyInfo::MAP);
-            return "-----BEGIN ENCRYPTED PRIVATE KEY-----\r\n" . \chunk_split(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($key), 64) . "-----END ENCRYPTED PRIVATE KEY-----";
+            $key = ['encryptionAlgorithm' => ['algorithm' => $encryptionAlgorithm, 'parameters' => new ASN1\Element($params)], 'encryptedData' => $key];
+            $key = ASN1::encodeDER($key, Maps\EncryptedPrivateKeyInfo::MAP);
+            if (isset($options['binary']) ? $options['binary'] : self::$binary) {
+                return $key;
+            }
+            return "-----BEGIN ENCRYPTED PRIVATE KEY-----\r\n" . \chunk_split(Strings::base64_encode($key), 64) . "-----END ENCRYPTED PRIVATE KEY-----";
         }
-        return "-----BEGIN PRIVATE KEY-----\r\n" . \chunk_split(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($key), 64) . "-----END PRIVATE KEY-----";
+        if (isset($options['binary']) ? $options['binary'] : self::$binary) {
+            return $key;
+        }
+        return "-----BEGIN PRIVATE KEY-----\r\n" . \chunk_split(Strings::base64_encode($key), 64) . "-----END PRIVATE KEY-----";
     }
     /**
      * Wrap a public key appropriately
@@ -517,15 +562,18 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
      * @param string $oid
      * @return string
      */
-    protected static function wrapPublicKey($key, $params, $oid = null)
+    protected static function wrapPublicKey($key, $params, $oid = null, array $options = [])
     {
         self::initialize_static_variables();
-        $key = ['publicKeyAlgorithm' => ['algorithm' => \is_string(static::OID_NAME) ? static::OID_NAME : $oid], 'publicKey' => "\0" . $key];
-        if ($oid != 'id-Ed25519' && $oid != 'id-Ed448') {
+        $key = ['publicKeyAlgorithm' => ['algorithm' => \is_string(static::OID_NAME) ? static::OID_NAME : $oid], 'publicKey' => "\x00" . $key];
+        if ($oid != 'id-Ed25519' && $oid != 'id-Ed448' && $oid != 'id-X25519' && $oid != 'id-X448') {
             $key['publicKeyAlgorithm']['parameters'] = $params;
         }
-        $key = \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER($key, \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\PublicKeyInfo::MAP);
-        return "-----BEGIN PUBLIC KEY-----\r\n" . \chunk_split(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($key), 64) . "-----END PUBLIC KEY-----";
+        $key = ASN1::encodeDER($key, Maps\PublicKeyInfo::MAP);
+        if (isset($options['binary']) ? $options['binary'] : self::$binary) {
+            return $key;
+        }
+        return "-----BEGIN PUBLIC KEY-----\r\n" . \chunk_split(Strings::base64_encode($key), 64) . "-----END PUBLIC KEY-----";
     }
     /**
      * Perform some preliminary parsing of the key
@@ -536,18 +584,15 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
     private static function preParse(&$key)
     {
         self::initialize_static_variables();
-        if (!\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::is_stringable($key)) {
-            throw new \UnexpectedValueException('Key should be a string - not a ' . \gettype($key));
-        }
         if (self::$format != self::MODE_DER) {
-            $decoded = \PostSMTP\Vendor\phpseclib3\File\ASN1::extractBER($key);
+            $decoded = ASN1::extractBER($key);
             if ($decoded !== \false) {
                 $key = $decoded;
             } elseif (self::$format == self::MODE_PEM) {
                 throw new \UnexpectedValueException('Expected base64-encoded PEM format but was unable to decode base64 text');
             }
         }
-        $decoded = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($key);
+        $decoded = ASN1::decodeBER($key);
         if (!$decoded) {
             throw new \RuntimeException('Unable to decode BER');
         }
@@ -561,25 +606,28 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
      */
     public static function extractEncryptionAlgorithm($key)
     {
+        if (!Strings::is_stringable($key)) {
+            throw new \UnexpectedValueException('Key should be a string - not a ' . \gettype($key));
+        }
         $decoded = self::preParse($key);
-        $r = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($decoded[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\EncryptedPrivateKeyInfo::MAP);
+        $r = ASN1::asn1map($decoded[0], Maps\EncryptedPrivateKeyInfo::MAP);
         if (!\is_array($r)) {
             throw new \RuntimeException('Unable to parse using EncryptedPrivateKeyInfo map');
         }
         if ($r['encryptionAlgorithm']['algorithm'] == 'id-PBES2') {
-            $decoded = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($r['encryptionAlgorithm']['parameters']->element);
+            $decoded = ASN1::decodeBER($r['encryptionAlgorithm']['parameters']->element);
             if (!$decoded) {
                 throw new \RuntimeException('Unable to decode BER');
             }
-            $r['encryptionAlgorithm']['parameters'] = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($decoded[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\PBES2params::MAP);
+            $r['encryptionAlgorithm']['parameters'] = ASN1::asn1map($decoded[0], Maps\PBES2params::MAP);
             $kdf =& $r['encryptionAlgorithm']['parameters']['keyDerivationFunc'];
             switch ($kdf['algorithm']) {
                 case 'id-PBKDF2':
-                    $decoded = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($kdf['parameters']->element);
+                    $decoded = ASN1::decodeBER($kdf['parameters']->element);
                     if (!$decoded) {
                         throw new \RuntimeException('Unable to decode BER');
                     }
-                    $kdf['parameters'] = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($decoded[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\PBKDF2params::MAP);
+                    $kdf['parameters'] = ASN1::asn1map($decoded[0], Maps\PBKDF2params::MAP);
             }
         }
         return $r['encryptionAlgorithm'];

@@ -29,7 +29,7 @@ abstract class Base
     /**
      * Finite Field Integer factory
      *
-     * @var \phpseclib3\Math\FiniteField\Integer
+     * @var FiniteField\Integer
      */
     protected $factory;
     /**
@@ -42,11 +42,11 @@ abstract class Base
         return $this->factory->randomInteger();
     }
     /**
-     * Converts a BigInteger to a \phpseclib3\Math\FiniteField\Integer integer
+     * Converts a BigInteger to a FiniteField\Integer integer
      *
      * @return object
      */
-    public function convertInteger(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $x)
+    public function convertInteger(BigInteger $x)
     {
         return $this->factory->newInteger($x);
     }
@@ -78,7 +78,7 @@ abstract class Base
      *
      * @return array
      */
-    public function multiplyPoint(array $p, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $d)
+    public function multiplyPoint(array $p, BigInteger $d)
     {
         $alreadyInternal = isset($p[2]);
         $r = $alreadyInternal ? [[], $p] : [[], $this->convertToInternal($p)];
@@ -99,18 +99,18 @@ abstract class Base
     {
         static $one;
         if (!isset($one)) {
-            $one = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(1);
+            $one = new BigInteger(1);
         }
-        return \PostSMTP\Vendor\phpseclib3\Math\BigInteger::randomRange($one, $this->order->subtract($one));
+        return BigInteger::randomRange($one, $this->order->subtract($one));
     }
     /**
      * Performs range check
      */
-    public function rangeCheck(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $x)
+    public function rangeCheck(BigInteger $x)
     {
         static $zero;
         if (!isset($zero)) {
-            $zero = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger();
+            $zero = new BigInteger();
         }
         if (!isset($this->order)) {
             throw new \RuntimeException('setOrder needs to be called before this method');
@@ -122,14 +122,14 @@ abstract class Base
     /**
      * Sets the Order
      */
-    public function setOrder(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $order)
+    public function setOrder(BigInteger $order)
     {
         $this->order = $order;
     }
     /**
      * Returns the Order
      *
-     * @return \phpseclib3\Math\BigInteger
+     * @return BigInteger
      */
     public function getOrder()
     {

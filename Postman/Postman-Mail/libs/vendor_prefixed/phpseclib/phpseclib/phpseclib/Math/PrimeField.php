@@ -21,7 +21,7 @@ use PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class PrimeField extends \PostSMTP\Vendor\phpseclib3\Math\Common\FiniteField
+class PrimeField extends FiniteField
 {
     /**
      * Instance Counter
@@ -38,14 +38,14 @@ class PrimeField extends \PostSMTP\Vendor\phpseclib3\Math\Common\FiniteField
     /**
      * Default constructor
      */
-    public function __construct(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $modulo)
+    public function __construct(BigInteger $modulo)
     {
-        //if (!$modulo->isPrime()) {
-        //    throw new \UnexpectedValueException('PrimeField requires a prime number be passed to the constructor');
-        //}
+        if (!$modulo->isPrime()) {
+            throw new \UnexpectedValueException('PrimeField requires a prime number be passed to the constructor');
+        }
         $this->instanceID = self::$instanceCounter++;
-        \PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer::setModulo($this->instanceID, $modulo);
-        \PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer::setRecurringModuloFunction($this->instanceID, $modulo->createRecurringModuloFunction());
+        Integer::setModulo($this->instanceID, $modulo);
+        Integer::setRecurringModuloFunction($this->instanceID, $modulo->createRecurringModuloFunction());
     }
     /**
      * Use a custom defined modular reduction function
@@ -61,9 +61,9 @@ class PrimeField extends \PostSMTP\Vendor\phpseclib3\Math\Common\FiniteField
      *
      * @return Integer
      */
-    public function newInteger(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $num)
+    public function newInteger(BigInteger $num)
     {
-        return new \PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer($this->instanceID, $num);
+        return new Integer($this->instanceID, $num);
     }
     /**
      * Returns an integer on the finite field between one and the prime modulo
@@ -74,9 +74,9 @@ class PrimeField extends \PostSMTP\Vendor\phpseclib3\Math\Common\FiniteField
     {
         static $one;
         if (!isset($one)) {
-            $one = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(1);
+            $one = new BigInteger(1);
         }
-        return new \PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer($this->instanceID, \PostSMTP\Vendor\phpseclib3\Math\BigInteger::randomRange($one, \PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer::getModulo($this->instanceID)));
+        return new Integer($this->instanceID, BigInteger::randomRange($one, Integer::getModulo($this->instanceID)));
     }
     /**
      * Returns the length of the modulo in bytes
@@ -85,7 +85,7 @@ class PrimeField extends \PostSMTP\Vendor\phpseclib3\Math\Common\FiniteField
      */
     public function getLengthInBytes()
     {
-        return \PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer::getModulo($this->instanceID)->getLengthInBytes();
+        return Integer::getModulo($this->instanceID)->getLengthInBytes();
     }
     /**
      * Returns the length of the modulo in bits
@@ -94,13 +94,13 @@ class PrimeField extends \PostSMTP\Vendor\phpseclib3\Math\Common\FiniteField
      */
     public function getLength()
     {
-        return \PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer::getModulo($this->instanceID)->getLength();
+        return Integer::getModulo($this->instanceID)->getLength();
     }
     /**
      *  Destructor
      */
     public function __destruct()
     {
-        \PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer::cleanupCache($this->instanceID);
+        Integer::cleanupCache($this->instanceID);
     }
 }

@@ -8,29 +8,29 @@ final class Is
     /**
      * Returns true if a promise is pending.
      */
-    public static function pending(\PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface $promise) : bool
+    public static function pending(PromiseInterface $promise) : bool
     {
-        return $promise->getState() === \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface::PENDING;
+        return $promise->getState() === PromiseInterface::PENDING;
     }
     /**
      * Returns true if a promise is fulfilled or rejected.
      */
-    public static function settled(\PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface $promise) : bool
+    public static function settled(PromiseInterface $promise) : bool
     {
-        return $promise->getState() !== \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface::PENDING;
+        return $promise->getState() !== PromiseInterface::PENDING;
     }
     /**
      * Returns true if a promise is fulfilled.
      */
-    public static function fulfilled(\PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface $promise) : bool
+    public static function fulfilled(PromiseInterface $promise) : bool
     {
-        return $promise->getState() === \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface::FULFILLED;
+        return $promise->getState() === PromiseInterface::FULFILLED;
     }
     /**
      * Returns true if a promise is rejected.
      */
-    public static function rejected(\PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface $promise) : bool
+    public static function rejected(PromiseInterface $promise) : bool
     {
-        return $promise->getState() === \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface::REJECTED;
+        return $promise->getState() === PromiseInterface::REJECTED;
     }
 }

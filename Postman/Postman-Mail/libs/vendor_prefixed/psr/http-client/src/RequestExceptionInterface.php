@@ -10,7 +10,7 @@ use PostSMTP\Vendor\Psr\Http\Message\RequestInterface;
  *      - Request is invalid (e.g. method is missing)
  *      - Runtime request errors (e.g. the body stream is not seekable)
  */
-interface RequestExceptionInterface extends \PostSMTP\Vendor\Psr\Http\Client\ClientExceptionInterface
+interface RequestExceptionInterface extends ClientExceptionInterface
 {
     /**
      * Returns the request.
@@ -19,5 +19,5 @@ interface RequestExceptionInterface extends \PostSMTP\Vendor\Psr\Http\Client\Cli
      *
      * @return RequestInterface
      */
-    public function getRequest() : \PostSMTP\Vendor\Psr\Http\Message\RequestInterface;
+    public function getRequest() : RequestInterface;
 }

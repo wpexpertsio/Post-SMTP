@@ -23,7 +23,7 @@ class PrepareBodyMiddleware
     {
         $this->nextHandler = $nextHandler;
     }
-    public function __invoke(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $options) : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
+    public function __invoke(RequestInterface $request, array $options) : PromiseInterface
     {
         $fn = $this->nextHandler;
         // Don't do anything if the request has no body.
@@ -34,7 +34,7 @@ class PrepareBodyMiddleware
         // Add a default content-type if possible.
         if (!$request->hasHeader('Content-Type')) {
             if ($uri = $request->getBody()->getMetadata('uri')) {
-                if (\is_string($uri) && ($type = \PostSMTP\Vendor\GuzzleHttp\Psr7\MimeType::fromFilename($uri))) {
+                if (\is_string($uri) && ($type = Psr7\MimeType::fromFilename($uri))) {
                     $modify['set_headers']['Content-Type'] = $type;
                 }
             }
@@ -43,27 +43,27 @@ class PrepareBodyMiddleware
         if (!$request->hasHeader('Content-Length') && !$request->hasHeader('Transfer-Encoding')) {
             $size = $request->getBody()->getSize();
             if ($size !== null) {
-                $modify['set_headers']['Content-Length'] = $size;
+                $modify['set_headers']['Content-Length'] = (string) $size;
             } else {
                 $modify['set_headers']['Transfer-Encoding'] = 'chunked';
             }
         }
         // Add the expect header if needed.
         $this->addExpectHeader($request, $options, $modify);
-        return $fn(\PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::modifyRequest($request, $modify), $options);
+        return $fn(Psr7\Utils::modifyRequest($request, $modify), $options);
     }
     /**
      * Add expect header
      */
-    private function addExpectHeader(\PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, array $options, array &$modify) : void
+    private function addExpectHeader(RequestInterface $request, array $options, array &$modify) : void
     {
         // Determine if the Expect header should be used
         if ($request->hasHeader('Expect')) {
             return;
         }
         $expect = $options['expect'] ?? null;
-        // Return if disabled or if you're not using HTTP/1.1 or HTTP/2.0
-        if ($expect === \false || $request->getProtocolVersion() < 1.1) {
+        // Return if disabled or using HTTP/1.0
+        if ($expect === \false || $request->getProtocolVersion() === '1.0') {
             return;
         }
         // The expect header is unconditionally enabled

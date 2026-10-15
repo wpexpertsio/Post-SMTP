@@ -18,7 +18,7 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class MontgomeryMult extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP\Reductions\Montgomery
+abstract class MontgomeryMult extends Montgomery
 {
     /**
      * Montgomery Multiply

@@ -19,7 +19,7 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP\Base;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class Barrett extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP\Base
+abstract class Barrett extends Base
 {
     /**
      * Barrett Modular Reduction
@@ -62,6 +62,13 @@ abstract class Barrett extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engin
             return self::regularBarrett($n, $m, $class);
         }
         // n = 2 * m.length
+        $correctionNeeded = \false;
+        if ($m_length & 1) {
+            $correctionNeeded = \true;
+            \array_unshift($n, 0);
+            \array_unshift($m, 0);
+            $m_length++;
+        }
         if (($key = \array_search($m, $cache[self::VARIABLE])) === \false) {
             $key = \count($cache[self::VARIABLE]);
             $cache[self::VARIABLE][] = $m;
@@ -80,7 +87,9 @@ abstract class Barrett extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engin
                 'm1' => $m1,
             ];
         } else {
-            \extract($cache[self::DATA][$key]);
+            $cacheValues = $cache[self::DATA][$key];
+            $u = $cacheValues['u'];
+            $m1 = $cacheValues['m1'];
         }
         $cutoff = $m_length + ($m_length >> 1);
         $lsd = \array_slice($n, 0, $cutoff);
@@ -99,6 +108,10 @@ abstract class Barrett extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engin
         $temp = \array_slice($n[self::VALUE], $m_length - 1);
         // if even: ((m.length >> 1) + 2) + (m.length >> 1) == m.length + 2
         // if odd:  ((m.length >> 1) + 2) + (m.length >> 1) == (m.length - 1) + 2 == m.length + 1
+        // note that these are upper bounds. let's say m.length is 2. then you'd be multiplying a
+        // 3 digit number by a 1 digit number. if you're doing 999 * 9 (in base 10) the result will
+        // be a 4 digit number. but if you're multiplying 111 * 1 then the result will be a 3 digit
+        // number.
         $temp = $class::multiplyHelper($temp, \false, $u, \false);
         // if even: (m.length + 2) - ((m.length >> 1) + 1) = m.length - (m.length >> 1) + 1
         // if odd:  (m.length + 1) - ((m.length >> 1) + 1) = m.length - (m.length >> 1)
@@ -106,12 +119,15 @@ abstract class Barrett extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engin
         // if even: (m.length - (m.length >> 1) + 1) + m.length = 2 * m.length - (m.length >> 1) + 1
         // if odd:  (m.length - (m.length >> 1)) + m.length     = 2 * m.length - (m.length >> 1)
         $temp = $class::multiplyHelper($temp, \false, $m, \false);
-        // at this point, if m had an odd number of digits, we'd be subtracting a 2 * m.length - (m.length >> 1) digit
-        // number from a m.length + (m.length >> 1) + 1 digit number.  ie. there'd be an extra digit and the while loop
+        // at this point, if m had an odd number of digits, we'd (probably) be subtracting a 2 * m.length - (m.length >> 1)
+        // digit number from a m.length + (m.length >> 1) + 1 digit number.  ie. there'd be an extra digit and the while loop
         // following this comment would loop a lot (hence our calling _regularBarrett() in that situation).
         $result = $class::subtractHelper($n[self::VALUE], \false, $temp[self::VALUE], \false);
         while (self::compareHelper($result[self::VALUE], $result[self::SIGN], $m, \false) >= 0) {
             $result = $class::subtractHelper($result[self::VALUE], $result[self::SIGN], $m, \false);
+        }
+        if ($correctionNeeded) {
+            \array_shift($result[self::VALUE]);
         }
         return $result[self::VALUE];
     }

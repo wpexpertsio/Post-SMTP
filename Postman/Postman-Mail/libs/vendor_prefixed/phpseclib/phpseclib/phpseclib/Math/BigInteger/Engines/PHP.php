@@ -19,7 +19,7 @@ use PostSMTP\Vendor\phpseclib3\Exception\BadConfigurationException;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class PHP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
+abstract class PHP extends Engine
 {
     /**#@+
      * Array constants
@@ -71,7 +71,7 @@ abstract class PHP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\E
             static::$isValidEngine[static::class] = static::isValidEngine();
         }
         if (!static::$isValidEngine[static::class]) {
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\BadConfigurationException(static::class . ' is not setup correctly on this system');
+            throw new BadConfigurationException(static::class . ' is not setup correctly on this system');
         }
         $this->value = [];
         parent::__construct($x, $base);
@@ -87,7 +87,7 @@ abstract class PHP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\E
         switch (\abs($base)) {
             case 16:
                 $x = \strlen($this->value) & 1 ? '0' . $this->value : $this->value;
-                $temp = new static(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::hex2bin($x), 256);
+                $temp = new static(Strings::hex2bin($x), 256);
                 $this->value = $temp->value;
                 break;
             case 10:
@@ -118,7 +118,7 @@ abstract class PHP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\E
     {
         $length = \strlen($str);
         $pad = 4 - \strlen($str) % 4;
-        return \str_pad($str, $length + $pad, "\0", \STR_PAD_LEFT);
+        return \str_pad($str, $length + $pad, "\x00", \STR_PAD_LEFT);
     }
     /**
      * Converts a BigInteger to a base-10 number.
@@ -240,7 +240,7 @@ abstract class PHP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\E
      * @param bool $y_negative
      * @return array
      */
-    public static function subtractHelper(array $x_value, $x_negative, array $y_value, $y_negative)
+    protected static function subtractHelper(array $x_value, $x_negative, array $y_value, $y_negative)
     {
         $x_size = \count($x_value);
         $y_size = \count($y_value);
@@ -409,13 +409,20 @@ abstract class PHP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\E
      * @internal This function is based off of
      *     {@link http://www.cacr.math.uwaterloo.ca/hac/about/chap14.pdf#page=9 HAC 14.20}.
      */
-    protected function divideHelper(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP $y)
+    protected function divideHelper(PHP $y)
     {
         if (\count($y->value) == 1) {
             list($q, $r) = $this->divide_digit($this->value, $y->value[0]);
             $quotient = new static();
             $remainder = new static();
             $quotient->value = $q;
+            // The common residue is the first positive modulo, so it is only the
+            // negative remainders that need the divisor added. A remainder of 0 is
+            // already the residue; adding the divisor would return the modulus
+            // itself, which is never a valid residue.
+            if ($this->is_negative && $r) {
+                $r = $y->value[0] - $r;
+            }
             $remainder->value = [$r];
             $quotient->is_negative = $this->is_negative != $y->is_negative;
             return [$this->normalize($quotient), $this->normalize($remainder)];
@@ -510,8 +517,9 @@ abstract class PHP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\E
         // unnormalize the remainder
         $x->rshift($shift);
         $quotient->is_negative = $x_sign != $y_sign;
-        // calculate the "common residue", if appropriate
-        if ($x_sign) {
+        // calculate the "common residue", if appropriate. A remainder of 0 is
+        // already the residue -- see divideHelper's single-digit branch.
+        if ($x_sign && \count($x->value)) {
             $y->rshift($shift);
             $x = $y->subtract($x);
         }
@@ -579,7 +587,7 @@ abstract class PHP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\E
      * @param PHP $result
      * @return static
      */
-    protected function normalize(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP $result)
+    protected function normalize(PHP $result)
     {
         $result->precision = $this->precision;
         $result->bitmask = $this->bitmask;
@@ -774,13 +782,13 @@ abstract class PHP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\E
      * @param PHP $n
      * @return PHP
      */
-    protected function powModInner(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP $n)
+    protected function powModInner(PHP $e, PHP $n)
     {
         try {
             $class = static::$modexpEngine[static::class];
             return $class::powModHelper($this, $e, $n, static::class);
         } catch (\Exception $err) {
-            return \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP\DefaultEngine::powModHelper($this, $e, $n, static::class);
+            return PHP\DefaultEngine::powModHelper($this, $e, $n, static::class);
         }
     }
     /**
@@ -900,7 +908,7 @@ abstract class PHP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\E
      * @return int
      * @see self::isPrime()
      */
-    public static function scan1divide(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP $r)
+    public static function scan1divide(PHP $r)
     {
         $r_value =& $r->value;
         for ($i = 0, $r_length = \count($r_value); $i < $r_length; ++$i) {
@@ -921,7 +929,7 @@ abstract class PHP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\E
      * @param PHP $n
      * @return PHP
      */
-    protected function powHelper(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP $n)
+    protected function powHelper(PHP $n)
     {
         if ($n->compare(static::$zero[static::class]) == 0) {
             return new static(1);
@@ -1082,5 +1090,29 @@ abstract class PHP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\E
             unset($vals[\count($vals) - 1]);
         }
         return \array_reverse($vals);
+    }
+    /**
+     * @return bool
+     */
+    protected static function testJITOnWindows()
+    {
+        // see https://github.com/php/php-src/issues/11917
+        if (\strtoupper(\substr(\PHP_OS, 0, 3)) === 'WIN' && \function_exists('opcache_get_status') && \PHP_VERSION_ID < 80213 && !\defined('PostSMTP\\Vendor\\PHPSECLIB_ALLOW_JIT')) {
+            $status = \opcache_get_status();
+            if ($status && isset($status['jit']) && $status['jit']['enabled'] && $status['jit']['on']) {
+                return \true;
+            }
+        }
+        return \false;
+    }
+    /**
+     * Return the size of a BigInteger in bits
+     *
+     * @return int
+     */
+    public function getLength()
+    {
+        $max = \count($this->value) - 1;
+        return $max != -1 ? $max * static::BASE + \intval(\ceil(\log($this->value[$max] + 1, 2))) : 0;
     }
 }

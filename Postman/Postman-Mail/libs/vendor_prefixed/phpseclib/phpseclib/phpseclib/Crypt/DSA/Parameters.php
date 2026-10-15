@@ -16,7 +16,7 @@ use PostSMTP\Vendor\phpseclib3\Crypt\DSA;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class Parameters extends \PostSMTP\Vendor\phpseclib3\Crypt\DSA
+final class Parameters extends DSA
 {
     /**
      * Returns the parameters

@@ -32,12 +32,12 @@ use PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer as PrimeInteger;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class Montgomery extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base
+class Montgomery extends Base
 {
     /**
      * Prime Field Integer factory
      *
-     * @var \phpseclib3\Math\PrimeField
+     * @var PrimeField
      */
     protected $factory;
     /**
@@ -85,24 +85,24 @@ class Montgomery extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base
     /**
      * Sets the modulo
      */
-    public function setModulo(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $modulo)
+    public function setModulo(BigInteger $modulo)
     {
         $this->modulo = $modulo;
-        $this->factory = new \PostSMTP\Vendor\phpseclib3\Math\PrimeField($modulo);
-        $this->zero = $this->factory->newInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger());
-        $this->one = $this->factory->newInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(1));
+        $this->factory = new PrimeField($modulo);
+        $this->zero = $this->factory->newInteger(new BigInteger());
+        $this->one = $this->factory->newInteger(new BigInteger(1));
     }
     /**
      * Set coefficients a
      */
-    public function setCoefficients(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $a)
+    public function setCoefficients(BigInteger $a)
     {
         if (!isset($this->factory)) {
             throw new \RuntimeException('setModulo needs to be called before this method');
         }
         $this->a = $this->factory->newInteger($a);
-        $two = $this->factory->newInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(2));
-        $four = $this->factory->newInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(4));
+        $two = $this->factory->newInteger(new BigInteger(2));
+        $four = $this->factory->newInteger(new BigInteger(4));
         $this->a24 = $this->a->subtract($two)->divide($four);
     }
     /**
@@ -115,15 +115,15 @@ class Montgomery extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base
     public function setBasePoint($x, $y)
     {
         switch (\true) {
-            case !$x instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger && !$x instanceof \PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer:
+            case !$x instanceof BigInteger && !$x instanceof PrimeInteger:
                 throw new \UnexpectedValueException('PostSMTP\\Vendor\\Argument 1 passed to Prime::setBasePoint() must be an instance of either BigInteger or PrimeField\\Integer');
-            case !$y instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger && !$y instanceof \PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer:
+            case !$y instanceof BigInteger && !$y instanceof PrimeInteger:
                 throw new \UnexpectedValueException('PostSMTP\\Vendor\\Argument 2 passed to Prime::setBasePoint() must be an instance of either BigInteger or PrimeField\\Integer');
         }
         if (!isset($this->factory)) {
             throw new \RuntimeException('setModulo needs to be called before this method');
         }
-        $this->p = [$x instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger ? $this->factory->newInteger($x) : $x, $y instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger ? $this->factory->newInteger($y) : $y];
+        $this->p = [$x instanceof BigInteger ? $this->factory->newInteger($x) : $x, $y instanceof BigInteger ? $this->factory->newInteger($y) : $y];
     }
     /**
      * Retrieve the base point as an array
@@ -149,7 +149,7 @@ class Montgomery extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base
      *
      * @return FiniteField[][]
      */
-    private function doubleAndAddPoint(array $p, array $q, \PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer $x1)
+    private function doubleAndAddPoint(array $p, array $q, PrimeInteger $x1)
     {
         if (!isset($this->factory)) {
             throw new \RuntimeException('setModulo needs to be called before this method');
@@ -176,7 +176,7 @@ class Montgomery extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base
         $temp = $da->subtract($cb);
         $z5 = $x1->multiply($temp->multiply($temp));
         $x4 = $aa->multiply($bb);
-        $temp = static::class == \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Curve25519::class ? $bb : $aa;
+        $temp = static::class == Curve25519::class ? $bb : $aa;
         $z4 = $e->multiply($temp->add($this->a24->multiply($e)));
         return [[$x4, $z4], [$x5, $z5]];
     }
@@ -190,12 +190,14 @@ class Montgomery extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base
      *
      * @return array
      */
-    public function multiplyPoint(array $p, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $d)
+    public function multiplyPoint(array $p, BigInteger $d)
     {
         $p1 = [$this->one, $this->zero];
-        $alreadyInternal = isset($x[1]);
+        $alreadyInternal = isset($p[1]);
         $p2 = $this->convertToInternal($p);
         $x = $p[0];
+        $r = $this->randomInteger();
+        $p2 = [$p2[0]->multiply($r), $p2[1]->multiply($r)];
         $b = $d->toBits();
         $b = \str_pad($b, 256, '0', \STR_PAD_LEFT);
         for ($i = 0; $i < \strlen($b); $i++) {
@@ -217,7 +219,7 @@ class Montgomery extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base
      *
      *   x=X/Z
      *
-     * @return \phpseclib3\Math\PrimeField\Integer[]
+     * @return PrimeInteger[]
      */
     public function convertToInternal(array $p)
     {
@@ -233,7 +235,7 @@ class Montgomery extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base
     /**
      * Returns the affine point
      *
-     * @return \phpseclib3\Math\PrimeField\Integer[]
+     * @return PrimeInteger[]
      */
     public function convertToAffine(array $p)
     {
@@ -241,6 +243,9 @@ class Montgomery extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base
             return $p;
         }
         list($x, $z) = $p;
+        if ($z->equals($this->zero)) {
+            return [clone $this->zero];
+        }
         return [$x->divide($z)];
     }
 }

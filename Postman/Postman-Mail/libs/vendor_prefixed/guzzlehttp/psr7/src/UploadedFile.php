@@ -7,9 +7,9 @@ use InvalidArgumentException;
 use PostSMTP\Vendor\Psr\Http\Message\StreamInterface;
 use PostSMTP\Vendor\Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
-class UploadedFile implements \PostSMTP\Vendor\Psr\Http\Message\UploadedFileInterface
+class UploadedFile implements UploadedFileInterface
 {
-    private const ERRORS = [\UPLOAD_ERR_OK, \UPLOAD_ERR_INI_SIZE, \UPLOAD_ERR_FORM_SIZE, \UPLOAD_ERR_PARTIAL, \UPLOAD_ERR_NO_FILE, \UPLOAD_ERR_NO_TMP_DIR, \UPLOAD_ERR_CANT_WRITE, \UPLOAD_ERR_EXTENSION];
+    private const ERROR_MAP = [\UPLOAD_ERR_OK => 'UPLOAD_ERR_OK', \UPLOAD_ERR_INI_SIZE => 'UPLOAD_ERR_INI_SIZE', \UPLOAD_ERR_FORM_SIZE => 'UPLOAD_ERR_FORM_SIZE', \UPLOAD_ERR_PARTIAL => 'UPLOAD_ERR_PARTIAL', \UPLOAD_ERR_NO_FILE => 'UPLOAD_ERR_NO_FILE', \UPLOAD_ERR_NO_TMP_DIR => 'UPLOAD_ERR_NO_TMP_DIR', \UPLOAD_ERR_CANT_WRITE => 'UPLOAD_ERR_CANT_WRITE', \UPLOAD_ERR_EXTENSION => 'UPLOAD_ERR_EXTENSION'];
     /**
      * @var string|null
      */
@@ -41,7 +41,7 @@ class UploadedFile implements \PostSMTP\Vendor\Psr\Http\Message\UploadedFileInte
     /**
      * @param StreamInterface|string|resource $streamOrFile
      */
-    public function __construct($streamOrFile, ?int $size, int $errorStatus, string $clientFilename = null, string $clientMediaType = null)
+    public function __construct($streamOrFile, ?int $size, int $errorStatus, ?string $clientFilename = null, ?string $clientMediaType = null)
     {
         $this->setError($errorStatus);
         $this->size = $size;
@@ -63,11 +63,11 @@ class UploadedFile implements \PostSMTP\Vendor\Psr\Http\Message\UploadedFileInte
         if (\is_string($streamOrFile)) {
             $this->file = $streamOrFile;
         } elseif (\is_resource($streamOrFile)) {
-            $this->stream = new \PostSMTP\Vendor\GuzzleHttp\Psr7\Stream($streamOrFile);
-        } elseif ($streamOrFile instanceof \PostSMTP\Vendor\Psr\Http\Message\StreamInterface) {
+            $this->stream = new Stream($streamOrFile);
+        } elseif ($streamOrFile instanceof StreamInterface) {
             $this->stream = $streamOrFile;
         } else {
-            throw new \InvalidArgumentException('Invalid stream or file provided for UploadedFile');
+            throw new InvalidArgumentException('Invalid stream or file provided for UploadedFile');
         }
     }
     /**
@@ -75,8 +75,8 @@ class UploadedFile implements \PostSMTP\Vendor\Psr\Http\Message\UploadedFileInte
      */
     private function setError(int $error) : void
     {
-        if (\false === \in_array($error, \PostSMTP\Vendor\GuzzleHttp\Psr7\UploadedFile::ERRORS, \true)) {
-            throw new \InvalidArgumentException('Invalid error status for UploadedFile');
+        if (!isset(UploadedFile::ERROR_MAP[$error])) {
+            throw new InvalidArgumentException('Invalid error status for UploadedFile');
         }
         $this->error = $error;
     }
@@ -101,36 +101,36 @@ class UploadedFile implements \PostSMTP\Vendor\Psr\Http\Message\UploadedFileInte
     private function validateActive() : void
     {
         if (\false === $this->isOk()) {
-            throw new \RuntimeException('Cannot retrieve stream due to upload error');
+            throw new RuntimeException(\sprintf('Cannot retrieve stream due to upload error (%s)', self::ERROR_MAP[$this->error]));
         }
         if ($this->isMoved()) {
-            throw new \RuntimeException('Cannot retrieve stream after it has already been moved');
+            throw new RuntimeException('Cannot retrieve stream after it has already been moved');
         }
     }
-    public function getStream() : \PostSMTP\Vendor\Psr\Http\Message\StreamInterface
+    public function getStream() : StreamInterface
     {
         $this->validateActive();
-        if ($this->stream instanceof \PostSMTP\Vendor\Psr\Http\Message\StreamInterface) {
+        if ($this->stream instanceof StreamInterface) {
             return $this->stream;
         }
         /** @var string $file */
         $file = $this->file;
-        return new \PostSMTP\Vendor\GuzzleHttp\Psr7\LazyOpenStream($file, 'r+');
+        return new LazyOpenStream($file, 'r+');
     }
     public function moveTo($targetPath) : void
     {
         $this->validateActive();
         if (\false === self::isStringNotEmpty($targetPath)) {
-            throw new \InvalidArgumentException('Invalid path provided for move operation; must be a non-empty string');
+            throw new InvalidArgumentException('Invalid path provided for move operation; must be a non-empty string');
         }
         if ($this->file) {
             $this->moved = \PHP_SAPI === 'cli' ? \rename($this->file, $targetPath) : \move_uploaded_file($this->file, $targetPath);
         } else {
-            \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::copyToStream($this->getStream(), new \PostSMTP\Vendor\GuzzleHttp\Psr7\LazyOpenStream($targetPath, 'w'));
+            Utils::copyToStream($this->getStream(), new LazyOpenStream($targetPath, 'w'));
             $this->moved = \true;
         }
         if (\false === $this->moved) {
-            throw new \RuntimeException(\sprintf('Uploaded file could not be moved to %s', $targetPath));
+            throw new RuntimeException(\sprintf('Uploaded file could not be moved to %s', $targetPath));
         }
     }
     public function getSize() : ?int

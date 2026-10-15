@@ -7,7 +7,7 @@ use PostSMTP\Vendor\Psr\Http\Message\StreamInterface;
 /**
  * Decorator used to return only a subset of a stream.
  */
-final class LimitStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInterface
+final class LimitStream implements StreamInterface
 {
     use StreamDecoratorTrait;
     /** @var int Offset to start reading from */
@@ -23,7 +23,7 @@ final class LimitStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInter
      * @param int             $offset Position to seek to before reading (only
      *                                works on seekable streams).
      */
-    public function __construct(\PostSMTP\Vendor\Psr\Http\Message\StreamInterface $stream, int $limit = -1, int $offset = 0)
+    public function __construct(StreamInterface $stream, int $limit = -1, int $offset = 0)
     {
         $this->stream = $stream;
         $this->setLimit($limit);
@@ -48,17 +48,24 @@ final class LimitStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInter
     {
         if (null === ($length = $this->stream->getSize())) {
             return null;
-        } elseif ($this->limit === -1) {
-            return $length - $this->offset;
-        } else {
-            return \min($this->limit, $length - $this->offset);
         }
+        $size = $length - $this->offset;
+        if ($this->limit !== -1) {
+            $size = \min($this->limit, $size);
+        }
+        return \max(0, $size);
     }
     /**
      * Allow for a bounded seek on the read limited stream
      */
     public function seek($offset, $whence = \SEEK_SET) : void
     {
+        if (!\is_int($offset)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing %s to StreamInterface::seek() is deprecated; guzzlehttp/psr7 3.0 requires int for $offset.', \get_debug_type($offset));
+        }
+        if (!\is_int($whence)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing %s to StreamInterface::seek() is deprecated; guzzlehttp/psr7 3.0 requires int for $whence.', \get_debug_type($whence));
+        }
         if ($whence !== \SEEK_SET || $offset < 0) {
             throw new \RuntimeException(\sprintf('Cannot seek to offset %s with whence %s', $offset, $whence));
         }
@@ -112,6 +119,9 @@ final class LimitStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInter
     }
     public function read($length) : string
     {
+        if (!\is_int($length)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing %s to StreamInterface::read() is deprecated; guzzlehttp/psr7 3.0 requires int for $length.', \get_debug_type($length));
+        }
         if ($this->limit === -1) {
             return $this->stream->read($length);
         }

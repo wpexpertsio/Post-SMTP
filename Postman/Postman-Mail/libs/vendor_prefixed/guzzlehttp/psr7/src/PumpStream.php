@@ -7,16 +7,19 @@ use PostSMTP\Vendor\Psr\Http\Message\StreamInterface;
 /**
  * Provides a read only stream that pumps data from a PHP callable.
  *
- * When invoking the provided callable, the PumpStream will pass the amount of
- * data requested to read to the callable. The callable can choose to ignore
+ * When invoking the provided callable, the PumpStream will pass the suggested
+ * number of bytes to read to the callable. The callable can choose to ignore
  * this value and return fewer or more bytes than requested. Any extra data
- * returned by the provided callable is buffered internally until drained using
- * the read() function of the PumpStream. The provided callable MUST return
- * false when there is no more data to read.
+ * returned by the callable is buffered internally until drained using the
+ * read() function of the PumpStream. The callable MUST return false or null
+ * when there is no more data to read.
+ *
+ * Userland callables that declare no parameters are tolerated by PHP, but
+ * length-aware callables remain the recommended formal shape.
  */
-final class PumpStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInterface
+final class PumpStream implements StreamInterface
 {
-    /** @var callable(int): (string|false|null)|null */
+    /** @var callable|null */
     private $source;
     /** @var int|null */
     private $size;
@@ -27,26 +30,29 @@ final class PumpStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInterf
     /** @var BufferStream */
     private $buffer;
     /**
-     * @param callable(int): (string|false|null)  $source  Source of the stream data. The callable MAY
-     *                                                     accept an integer argument used to control the
-     *                                                     amount of data to return. The callable MUST
-     *                                                     return a string when called, or false|null on error
-     *                                                     or EOF.
-     * @param array{size?: int, metadata?: array} $options Stream options:
-     *                                                     - metadata: Hash of metadata to use with stream.
-     *                                                     - size: Size of the stream, if known.
+     * @param (callable(): (string|false|null))|(callable(int): (string|false|null)) $source  Source of the stream data. The callable receives
+     *                                                                                        the suggested number of bytes to read, may ignore
+     *                                                                                        that value, and may return fewer or more bytes.
+     *                                                                                        Extra bytes are buffered. The callable MUST return
+     *                                                                                        a string when called, or false|null on error or EOF.
+     *                                                                                        Userland callables that declare no parameters are
+     *                                                                                        tolerated by PHP, but length-aware callables remain
+     *                                                                                        the recommended formal shape.
+     * @param array{size?: int, metadata?: array}                                    $options Stream options:
+     *                                                                                        - metadata: Hash of metadata to use with stream.
+     *                                                                                        - size: Size of the stream, if known.
      */
     public function __construct(callable $source, array $options = [])
     {
         $this->source = $source;
         $this->size = $options['size'] ?? null;
         $this->metadata = $options['metadata'] ?? [];
-        $this->buffer = new \PostSMTP\Vendor\GuzzleHttp\Psr7\BufferStream();
+        $this->buffer = new BufferStream();
     }
     public function __toString() : string
     {
         try {
-            return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::copyToString($this);
+            return Utils::copyToString($this);
         } catch (\Throwable $e) {
             if (\PHP_VERSION_ID >= 70400) {
                 throw $e;
@@ -87,6 +93,12 @@ final class PumpStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInterf
     }
     public function seek($offset, $whence = \SEEK_SET) : void
     {
+        if (!\is_int($offset)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing %s to StreamInterface::seek() is deprecated; guzzlehttp/psr7 3.0 requires int for $offset.', \get_debug_type($offset));
+        }
+        if (!\is_int($whence)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing %s to StreamInterface::seek() is deprecated; guzzlehttp/psr7 3.0 requires int for $whence.', \get_debug_type($whence));
+        }
         throw new \RuntimeException('Cannot seek a PumpStream');
     }
     public function isWritable() : bool
@@ -95,6 +107,9 @@ final class PumpStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInterf
     }
     public function write($string) : int
     {
+        if (!\is_string($string)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing %s to StreamInterface::write() is deprecated; guzzlehttp/psr7 3.0 requires string for $string.', \get_debug_type($string));
+        }
         throw new \RuntimeException('Cannot write to a PumpStream');
     }
     public function isReadable() : bool
@@ -103,6 +118,9 @@ final class PumpStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInterf
     }
     public function read($length) : string
     {
+        if (!\is_int($length)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing %s to StreamInterface::read() is deprecated; guzzlehttp/psr7 3.0 requires int for $length.', \get_debug_type($length));
+        }
         $data = $this->buffer->read($length);
         $readLen = \strlen($data);
         $this->tellPos += $readLen;
@@ -127,6 +145,9 @@ final class PumpStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInterf
      */
     public function getMetadata($key = null)
     {
+        if ($key !== null && !\is_string($key)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing %s to StreamInterface::getMetadata() is deprecated; guzzlehttp/psr7 3.0 requires string|null for $key.', \get_debug_type($key));
+        }
         if (!$key) {
             return $this->metadata;
         }

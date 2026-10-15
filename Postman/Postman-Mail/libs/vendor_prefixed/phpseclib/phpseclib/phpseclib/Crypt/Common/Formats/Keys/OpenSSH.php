@@ -17,6 +17,7 @@ namespace PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Keys;
 use PostSMTP\Vendor\phpseclib3\Common\Functions\Strings;
 use PostSMTP\Vendor\phpseclib3\Crypt\AES;
 use PostSMTP\Vendor\phpseclib3\Crypt\Random;
+use PostSMTP\Vendor\phpseclib3\Exception\BadDecryptionException;
 /**
  * OpenSSH Formatted RSA Key Handler
  *
@@ -56,19 +57,19 @@ abstract class OpenSSH
      */
     public static function load($key, $password = '')
     {
-        if (!\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::is_stringable($key)) {
+        if (!Strings::is_stringable($key)) {
             throw new \UnexpectedValueException('Key should be a string - not a ' . \gettype($key));
         }
         // key format is described here:
         // https://cvsweb.openbsd.org/cgi-bin/cvsweb/src/usr.bin/ssh/PROTOCOL.key?annotate=HEAD
         if (\strpos($key, 'BEGIN OPENSSH PRIVATE KEY') !== \false) {
             $key = \preg_replace('#(?:^-.*?-[\\r\\n]*$)|\\s#ms', '', $key);
-            $key = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_decode($key);
-            $magic = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::shift($key, 15);
-            if ($magic != "openssh-key-v1\0") {
+            $key = Strings::base64_decode($key);
+            $magic = Strings::shift($key, 15);
+            if ($magic != "openssh-key-v1\x00") {
                 throw new \RuntimeException('Expected openssh-key-v1');
             }
-            list($ciphername, $kdfname, $kdfoptions, $numKeys) = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::unpackSSH2('sssN', $key);
+            list($ciphername, $kdfname, $kdfoptions, $numKeys) = Strings::unpackSSH2('sssN', $key);
             if ($numKeys != 1) {
                 // if we wanted to support multiple keys we could update PublicKeyLoader to preview what the # of keys
                 // would be; it'd then call Common\Keys\OpenSSH.php::load() and get the paddedKey. it'd then pass
@@ -82,29 +83,32 @@ abstract class OpenSSH
                     if ($kdfname != 'bcrypt') {
                         throw new \RuntimeException('Only the bcrypt kdf is supported (' . $kdfname . ' encountered)');
                     }
-                    list($salt, $rounds) = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::unpackSSH2('sN', $kdfoptions);
-                    $crypto = new \PostSMTP\Vendor\phpseclib3\Crypt\AES('ctr');
+                    list($salt, $rounds) = Strings::unpackSSH2('sN', $kdfoptions);
+                    $crypto = new AES('ctr');
                     //$crypto->setKeyLength(256);
                     //$crypto->disablePadding();
                     $crypto->setPassword($password, 'bcrypt', $salt, $rounds, 32);
                     break;
                 default:
-                    throw new \RuntimeException('The only supported cipherse are: none, aes256-ctr (' . $ciphername . ' is being used)');
+                    throw new \RuntimeException('The only supported ciphers are: none, aes256-ctr (' . $ciphername . ' is being used)');
             }
-            list($publicKey, $paddedKey) = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::unpackSSH2('ss', $key);
-            list($type) = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::unpackSSH2('s', $publicKey);
+            list($publicKey, $paddedKey) = Strings::unpackSSH2('ss', $key);
+            list($type) = Strings::unpackSSH2('s', $publicKey);
             if (isset($crypto)) {
                 $paddedKey = $crypto->decrypt($paddedKey);
             }
-            list($checkint1, $checkint2) = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::unpackSSH2('NN', $paddedKey);
+            list($checkint1, $checkint2) = Strings::unpackSSH2('NN', $paddedKey);
             // any leftover bytes in $paddedKey are for padding? but they should be sequential bytes. eg. 1, 2, 3, etc.
             if ($checkint1 != $checkint2) {
-                throw new \RuntimeException('The two checkints do not match');
+                if (isset($crypto)) {
+                    throw new BadDecryptionException('Unable to decrypt key - please verify the password you are using');
+                }
+                throw new \RuntimeException("The two checkints do not match ({$checkint1} vs. {$checkint2})");
             }
             self::checkType($type);
             return \compact('type', 'publicKey', 'paddedKey');
         }
-        $parts = \explode(' ', $key, 3);
+        $parts = \preg_split("#[\t ]+#", $key, 3);
         if (!isset($parts[1])) {
             $key = \base64_decode($parts[0]);
             $comment = \false;
@@ -117,7 +121,7 @@ abstract class OpenSSH
         if ($key === \false) {
             throw new \UnexpectedValueException('Key should be a string - not a ' . \gettype($key));
         }
-        list($type) = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::unpackSSH2('s', $key);
+        list($type) = Strings::unpackSSH2('s', $key);
         self::checkType($type);
         if (isset($asciiType) && $asciiType != $type) {
             throw new \RuntimeException('Two different types of keys are claimed: ' . $asciiType . ' and ' . $type);
@@ -162,9 +166,9 @@ abstract class OpenSSH
      */
     protected static function wrapPrivateKey($publicKey, $privateKey, $password, $options)
     {
-        list(, $checkint) = \unpack('N', \PostSMTP\Vendor\phpseclib3\Crypt\Random::string(4));
+        list(, $checkint) = \unpack('N', Random::string(4));
         $comment = isset($options['comment']) ? $options['comment'] : self::$comment;
-        $paddedKey = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('NN', $checkint, $checkint) . $privateKey . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('s', $comment);
+        $paddedKey = Strings::packSSH2('NN', $checkint, $checkint) . $privateKey . Strings::packSSH2('s', $comment);
         $usesEncryption = !empty($password) && \is_string($password);
         /*
           from http://tools.ietf.org/html/rfc4253#section-6 :
@@ -179,17 +183,17 @@ abstract class OpenSSH
             $paddedKey .= \chr($i);
         }
         if (!$usesEncryption) {
-            $key = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('sssNss', 'none', 'none', '', 1, $publicKey, $paddedKey);
+            $key = Strings::packSSH2('sssNss', 'none', 'none', '', 1, $publicKey, $paddedKey);
         } else {
             $rounds = isset($options['rounds']) ? $options['rounds'] : 16;
-            $salt = \PostSMTP\Vendor\phpseclib3\Crypt\Random::string(16);
-            $kdfoptions = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('sN', $salt, $rounds);
-            $crypto = new \PostSMTP\Vendor\phpseclib3\Crypt\AES('ctr');
+            $salt = Random::string(16);
+            $kdfoptions = Strings::packSSH2('sN', $salt, $rounds);
+            $crypto = new AES('ctr');
             $crypto->setPassword($password, 'bcrypt', $salt, $rounds, 32);
             $paddedKey = $crypto->encrypt($paddedKey);
-            $key = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('sssNss', 'aes256-ctr', 'bcrypt', $kdfoptions, 1, $publicKey, $paddedKey);
+            $key = Strings::packSSH2('sssNss', 'aes256-ctr', 'bcrypt', $kdfoptions, 1, $publicKey, $paddedKey);
         }
-        $key = "openssh-key-v1\0{$key}";
-        return "-----BEGIN OPENSSH PRIVATE KEY-----\n" . \chunk_split(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($key), 70, "\n") . "-----END OPENSSH PRIVATE KEY-----\n";
+        $key = "openssh-key-v1\x00{$key}";
+        return "-----BEGIN OPENSSH PRIVATE KEY-----\n" . \chunk_split(Strings::base64_encode($key), 70, "\n") . "-----END OPENSSH PRIVATE KEY-----\n";
     }
 }

@@ -10,7 +10,7 @@ use PostSMTP\Vendor\Psr\Http\Message\UriInterface;
 /**
  * PSR-7 request implementation.
  */
-class Request implements \PostSMTP\Vendor\Psr\Http\Message\RequestInterface
+class Request implements RequestInterface
 {
     use MessageTrait;
     /** @var string */
@@ -29,10 +29,12 @@ class Request implements \PostSMTP\Vendor\Psr\Http\Message\RequestInterface
     public function __construct(string $method, $uri, array $headers = [], $body = null, string $version = '1.1')
     {
         $this->assertMethod($method);
-        if (!$uri instanceof \PostSMTP\Vendor\Psr\Http\Message\UriInterface) {
-            $uri = new \PostSMTP\Vendor\GuzzleHttp\Psr7\Uri($uri);
+        $this->assertProtocolVersion($version);
+        if (!$uri instanceof UriInterface) {
+            $uri = new Uri($uri);
         }
-        $this->method = \strtoupper($method);
+        self::warnOnMethodCasingChange($method);
+        $this->method = Utils::asciiToUpper($method);
         $this->uri = $uri;
         $this->setHeaders($headers);
         $this->protocol = $version;
@@ -40,7 +42,7 @@ class Request implements \PostSMTP\Vendor\Psr\Http\Message\RequestInterface
             $this->updateHostFromUri();
         }
         if ($body !== '' && $body !== null) {
-            $this->stream = \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::streamFor($body);
+            $this->stream = Utils::streamFor($body);
         }
     }
     public function getRequestTarget() : string
@@ -57,10 +59,14 @@ class Request implements \PostSMTP\Vendor\Psr\Http\Message\RequestInterface
         }
         return $target;
     }
-    public function withRequestTarget($requestTarget) : \PostSMTP\Vendor\Psr\Http\Message\RequestInterface
+    public function withRequestTarget($requestTarget) : RequestInterface
     {
-        if (\preg_match('#\\s#', $requestTarget)) {
-            throw new \InvalidArgumentException('Invalid request target provided; cannot contain whitespace');
+        $hasWhitespace = \preg_match('#\\s#', $requestTarget);
+        if ($hasWhitespace === \false) {
+            throw new \RuntimeException('Unable to validate request target: ' . \preg_last_error_msg());
+        }
+        if ($hasWhitespace === 1) {
+            throw new InvalidArgumentException('Invalid request target provided; cannot contain whitespace');
         }
         $new = clone $this;
         $new->requestTarget = $requestTarget;
@@ -70,19 +76,23 @@ class Request implements \PostSMTP\Vendor\Psr\Http\Message\RequestInterface
     {
         return $this->method;
     }
-    public function withMethod($method) : \PostSMTP\Vendor\Psr\Http\Message\RequestInterface
+    public function withMethod($method) : RequestInterface
     {
         $this->assertMethod($method);
+        self::warnOnMethodCasingChange($method);
         $new = clone $this;
-        $new->method = \strtoupper($method);
+        $new->method = Utils::asciiToUpper($method);
         return $new;
     }
-    public function getUri() : \PostSMTP\Vendor\Psr\Http\Message\UriInterface
+    public function getUri() : UriInterface
     {
         return $this->uri;
     }
-    public function withUri(\PostSMTP\Vendor\Psr\Http\Message\UriInterface $uri, $preserveHost = \false) : \PostSMTP\Vendor\Psr\Http\Message\RequestInterface
+    public function withUri(UriInterface $uri, $preserveHost = \false) : RequestInterface
     {
+        if (!\is_bool($preserveHost)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing %s to RequestInterface::withUri() is deprecated; guzzlehttp/psr7 3.0 requires bool for $preserveHost.', \get_debug_type($preserveHost));
+        }
         if ($uri === $this->uri) {
             return $this;
         }
@@ -99,9 +109,11 @@ class Request implements \PostSMTP\Vendor\Psr\Http\Message\RequestInterface
         if ($host == '') {
             return;
         }
+        Uri::assertValidHost($host);
         if (($port = $this->uri->getPort()) !== null) {
             $host .= ':' . $port;
         }
+        $this->assertValue($host);
         if (isset($this->headerNames['host'])) {
             $header = $this->headerNames['host'];
         } else {
@@ -118,7 +130,14 @@ class Request implements \PostSMTP\Vendor\Psr\Http\Message\RequestInterface
     private function assertMethod($method) : void
     {
         if (!\is_string($method) || $method === '') {
-            throw new \InvalidArgumentException('Method must be a non-empty string.');
+            throw new InvalidArgumentException('Method must be a non-empty string.');
+        }
+        $this->assertNoLineSeparators($method, 'Method');
+    }
+    private static function warnOnMethodCasingChange(string $method) : void
+    {
+        if ($method !== Utils::asciiToUpper($method)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing a non-uppercase HTTP method is deprecated; guzzlehttp/psr7 3.0 preserves method casing and will no longer uppercase it. Normalize the method before constructing or modifying requests if uppercase is required.');
         }
     }
 }

@@ -37,11 +37,11 @@ abstract class XML
      */
     public static function load($key, $password = '')
     {
-        if (!\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::is_stringable($key)) {
+        if (!Strings::is_stringable($key)) {
             throw new \UnexpectedValueException('Key should be a string - not a ' . \gettype($key));
         }
         if (!\class_exists('DOMDocument')) {
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\BadConfigurationException('The dom extension is not setup correctly on this system');
+            throw new BadConfigurationException('The dom extension is not setup correctly on this system');
         }
         $use_errors = \libxml_use_internal_errors(\true);
         $dom = new \DOMDocument();
@@ -60,7 +60,7 @@ abstract class XML
             if (!$temp->length) {
                 continue;
             }
-            $value = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_decode($temp->item(0)->nodeValue), 256);
+            $value = new BigInteger(Strings::base64_decode($temp->item(0)->nodeValue), 256);
             switch ($key) {
                 case 'p':
                     // a prime modulus meeting the [DSS] requirements
@@ -110,14 +110,14 @@ abstract class XML
      *
      * See https://www.w3.org/TR/xmldsig-core/#sec-DSAKeyValue
      *
-     * @param \phpseclib3\Math\BigInteger $p
-     * @param \phpseclib3\Math\BigInteger $q
-     * @param \phpseclib3\Math\BigInteger $g
-     * @param \phpseclib3\Math\BigInteger $y
+     * @param BigInteger $p
+     * @param BigInteger $q
+     * @param BigInteger $g
+     * @param BigInteger $y
      * @return string
      */
-    public static function savePublicKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $p, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $q, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $g, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $y)
+    public static function savePublicKey(BigInteger $p, BigInteger $q, BigInteger $g, BigInteger $y)
     {
-        return "<DSAKeyValue>\r\n" . '  <P>' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($p->toBytes()) . "</P>\r\n" . '  <Q>' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($q->toBytes()) . "</Q>\r\n" . '  <G>' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($g->toBytes()) . "</G>\r\n" . '  <Y>' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($y->toBytes()) . "</Y>\r\n" . '</DSAKeyValue>';
+        return "<DSAKeyValue>\r\n" . '  <P>' . Strings::base64_encode($p->toBytes()) . "</P>\r\n" . '  <Q>' . Strings::base64_encode($q->toBytes()) . "</Q>\r\n" . '  <G>' . Strings::base64_encode($g->toBytes()) . "</G>\r\n" . '  <Y>' . Strings::base64_encode($y->toBytes()) . "</Y>\r\n" . '</DSAKeyValue>';
     }
 }

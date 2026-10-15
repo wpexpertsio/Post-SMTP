@@ -20,7 +20,7 @@ use PostSMTP\Vendor\Psr\Http\Message\RequestInterface;
  *
  * @final
  */
-class Pool implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromisorInterface
+class Pool implements PromisorInterface
 {
     /**
      * @var EachPromise
@@ -36,7 +36,7 @@ class Pool implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromisorInterface
      *                                  - fulfilled: (callable) Function to invoke when a request completes.
      *                                  - rejected: (callable) Function to invoke when a request is rejected.
      */
-    public function __construct(\PostSMTP\Vendor\GuzzleHttp\ClientInterface $client, $requests, array $config = [])
+    public function __construct(ClientInterface $client, $requests, array $config = [])
     {
         if (!isset($config['concurrency'])) {
             $config['concurrency'] = 25;
@@ -47,24 +47,28 @@ class Pool implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromisorInterface
         } else {
             $opts = [];
         }
-        $iterable = \PostSMTP\Vendor\GuzzleHttp\Promise\Create::iterFor($requests);
+        if (!\is_iterable($requests)) {
+            \trigger_deprecation('guzzlehttp/guzzle', '7.11', 'Passing a non-iterable request collection to %s::__construct() or %s::batch() is deprecated; guzzlehttp/guzzle 8.0 will require an iterable.', __CLASS__, __CLASS__);
+            $requests = [$requests];
+        }
+        $iterable = P\Create::iterFor($requests);
         $requests = static function () use($iterable, $client, $opts) {
             foreach ($iterable as $key => $rfn) {
-                if ($rfn instanceof \PostSMTP\Vendor\Psr\Http\Message\RequestInterface) {
+                if ($rfn instanceof RequestInterface) {
                     (yield $key => $client->sendAsync($rfn, $opts));
                 } elseif (\is_callable($rfn)) {
                     (yield $key => $rfn($opts));
                 } else {
-                    throw new \InvalidArgumentException('Each value yielded by the iterator must be a Psr7\\Http\\Message\\RequestInterface or a callable that returns a promise that fulfills with a Psr7\\Message\\Http\\ResponseInterface object.');
+                    throw new \InvalidArgumentException('Each value yielded by the iterator must be a Psr\\Http\\Message\\RequestInterface or a callable that returns a promise that fulfills with a Psr\\Http\\Message\\ResponseInterface object.');
                 }
             }
         };
-        $this->each = new \PostSMTP\Vendor\GuzzleHttp\Promise\EachPromise($requests(), $config);
+        $this->each = new EachPromise($requests(), $config);
     }
     /**
      * Get promise
      */
-    public function promise() : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
+    public function promise() : PromiseInterface
     {
         return $this->each->promise();
     }
@@ -79,14 +83,14 @@ class Pool implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromisorInterface
      * @param ClientInterface $client   Client used to send the requests
      * @param array|\Iterator $requests Requests to send concurrently.
      * @param array           $options  Passes through the options available in
-     *                                  {@see \GuzzleHttp\Pool::__construct}
+     *                                  {@see Pool::__construct}
      *
      * @return array Returns an array containing the response or an exception
      *               in the same order that the requests were sent.
      *
      * @throws \InvalidArgumentException if the event format is incorrect.
      */
-    public static function batch(\PostSMTP\Vendor\GuzzleHttp\ClientInterface $client, $requests, array $options = []) : array
+    public static function batch(ClientInterface $client, $requests, array $options = []) : array
     {
         $res = [];
         self::cmpCallback($options, 'fulfilled', $res);

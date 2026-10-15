@@ -36,22 +36,22 @@ abstract class ASN1
         if (!\is_string($sig)) {
             return \false;
         }
-        $decoded = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($sig);
+        $decoded = Encoder::decodeBER($sig);
         if (empty($decoded)) {
             return \false;
         }
-        $components = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($decoded[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\DssSigValue::MAP);
+        $components = Encoder::asn1map($decoded[0], Maps\DssSigValue::MAP);
         return $components;
     }
     /**
      * Returns a signature in the appropriate format
      *
-     * @param \phpseclib3\Math\BigInteger $r
-     * @param \phpseclib3\Math\BigInteger $s
+     * @param BigInteger $r
+     * @param BigInteger $s
      * @return string
      */
-    public static function save(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $r, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $s)
+    public static function save(BigInteger $r, BigInteger $s)
     {
-        return \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER(\compact('r', 's'), \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\DssSigValue::MAP);
+        return Encoder::encodeDER(\compact('r', 's'), Maps\DssSigValue::MAP);
     }
 }

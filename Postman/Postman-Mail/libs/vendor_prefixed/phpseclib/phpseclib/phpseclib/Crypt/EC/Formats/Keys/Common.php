@@ -13,10 +13,14 @@
 namespace PostSMTP\Vendor\phpseclib3\Crypt\EC\Formats\Keys;
 
 use PostSMTP\Vendor\phpseclib3\Common\Functions\Strings;
+use PostSMTP\Vendor\phpseclib3\Crypt\EC;
 use PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base as BaseCurve;
 use PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Binary as BinaryCurve;
+use PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgomery;
 use PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Prime as PrimeCurve;
 use PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards as TwistedEdwardsCurve;
+use PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Curve25519;
+use PostSMTP\Vendor\phpseclib3\Exception\BadConfigurationException;
 use PostSMTP\Vendor\phpseclib3\Exception\UnsupportedCurveException;
 use PostSMTP\Vendor\phpseclib3\File\ASN1;
 use PostSMTP\Vendor\phpseclib3\File\ASN1\Maps;
@@ -175,7 +179,7 @@ trait Common
                 'brainpoolP512r1' => '1.3.36.3.3.2.8.1.1.13',
                 'brainpoolP512t1' => '1.3.36.3.3.2.8.1.1.14',
             ];
-            \PostSMTP\Vendor\phpseclib3\File\ASN1::loadOIDs([
+            ASN1::loadOIDs([
                 'prime-field' => '1.2.840.10045.1.1',
                 'characteristic-two-field' => '1.2.840.10045.1.2',
                 'characteristic-two-basis' => '1.2.840.10045.1.2.3',
@@ -194,9 +198,9 @@ trait Common
      * If the key contains an implicit curve phpseclib needs the curve
      * to be explicitly provided
      *
-     * @param \phpseclib3\Crypt\EC\BaseCurves\Base $curve
+     * @param BaseCurve $curve
      */
-    public static function setImplicitCurve(\PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base $curve)
+    public static function setImplicitCurve(BaseCurve $curve)
     {
         self::$implicitCurve = $curve;
     }
@@ -205,7 +209,7 @@ trait Common
      * on the curve parameters
      *
      * @param array $params
-     * @return \phpseclib3\Crypt\EC\BaseCurves\Base|false
+     * @return BaseCurve|false
      */
     protected static function loadCurveByParam(array $params)
     {
@@ -213,9 +217,9 @@ trait Common
             throw new \RuntimeException('No parameters are present');
         }
         if (isset($params['namedCurve'])) {
-            $curve = '\\PostSMTP\\Vendor\\phpseclib3\\Crypt\\EC\\Curves\\' . $params['namedCurve'];
+            $curve = '\\phpseclib3\\Crypt\\EC\\Curves\\' . $params['namedCurve'];
             if (!\class_exists($curve)) {
-                throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedCurveException('Named Curve of ' . $params['namedCurve'] . ' is not supported');
+                throw new UnsupportedCurveException('Named Curve of ' . $params['namedCurve'] . ' is not supported');
             }
             return new $curve();
         }
@@ -229,25 +233,25 @@ trait Common
             $data = $params['specifiedCurve'];
             switch ($data['fieldID']['fieldType']) {
                 case 'prime-field':
-                    $curve = new \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Prime();
+                    $curve = new PrimeCurve();
                     $curve->setModulo($data['fieldID']['parameters']);
-                    $curve->setCoefficients(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($data['curve']['a'], 256), new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($data['curve']['b'], 256));
-                    $point = self::extractPoint("\0" . $data['base'], $curve);
+                    $curve->setCoefficients(new BigInteger($data['curve']['a'], 256), new BigInteger($data['curve']['b'], 256));
+                    $point = self::extractPoint("\x00" . $data['base'], $curve);
                     $curve->setBasePoint(...$point);
                     $curve->setOrder($data['order']);
                     return $curve;
                 case 'characteristic-two-field':
-                    $curve = new \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Binary();
-                    $params = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($data['fieldID']['parameters']);
-                    $params = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($params[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\Characteristic_two::MAP);
+                    $curve = new BinaryCurve();
+                    $params = ASN1::decodeBER($data['fieldID']['parameters']);
+                    $params = ASN1::asn1map($params[0], Maps\Characteristic_two::MAP);
                     $modulo = [(int) $params['m']->toString()];
                     switch ($params['basis']) {
                         case 'tpBasis':
                             $modulo[] = (int) $params['parameters']->toString();
                             break;
                         case 'ppBasis':
-                            $temp = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($params['parameters']);
-                            $temp = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($temp[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\Pentanomial::MAP);
+                            $temp = ASN1::decodeBER($params['parameters']);
+                            $temp = ASN1::asn1map($temp[0], Maps\Pentanomial::MAP);
                             $modulo[] = (int) $temp['k3']->toString();
                             $modulo[] = (int) $temp['k2']->toString();
                             $modulo[] = (int) $temp['k1']->toString();
@@ -255,13 +259,13 @@ trait Common
                     $modulo[] = 0;
                     $curve->setModulo(...$modulo);
                     $len = \ceil($modulo[0] / 8);
-                    $curve->setCoefficients(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::bin2hex($data['curve']['a']), \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::bin2hex($data['curve']['b']));
-                    $point = self::extractPoint("\0" . $data['base'], $curve);
+                    $curve->setCoefficients(Strings::bin2hex($data['curve']['a']), Strings::bin2hex($data['curve']['b']));
+                    $point = self::extractPoint("\x00" . $data['base'], $curve);
                     $curve->setBasePoint(...$point);
                     $curve->setOrder($data['order']);
                     return $curve;
                 default:
-                    throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedCurveException('Field Type of ' . $data['fieldID']['fieldType'] . ' is not supported');
+                    throw new UnsupportedCurveException('Field Type of ' . $data['fieldID']['fieldType'] . ' is not supported');
             }
         }
         throw new \RuntimeException('No valid parameters are present');
@@ -272,12 +276,15 @@ trait Common
      * Supports both compressed and uncompressed points
      *
      * @param string $str
-     * @param \phpseclib3\Crypt\EC\BaseCurves\Base $curve
+     * @param BaseCurve $curve
      * @return object[]
      */
-    public static function extractPoint($str, \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base $curve)
+    public static function extractPoint($str, BaseCurve $curve)
     {
-        if ($curve instanceof \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards) {
+        if ($curve instanceof Montgomery) {
+            return [new BigInteger($str, 256)];
+        }
+        if ($curve instanceof TwistedEdwardsCurve) {
             // first step of point deciding as discussed at the following URL's:
             // https://tools.ietf.org/html/rfc8032#section-5.1.3
             // https://tools.ietf.org/html/rfc8032#section-5.2.3
@@ -285,7 +292,7 @@ trait Common
             $y = \strrev($y);
             $sign = (bool) (\ord($y[0]) & 0x80);
             $y[0] = $y[0] & \chr(0x7f);
-            $y = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($y, 256);
+            $y = new BigInteger($y, 256);
             if ($y->compare($curve->getModulo()) >= 0) {
                 throw new \RuntimeException('The Y coordinate should not be >= the modulo');
             }
@@ -297,10 +304,10 @@ trait Common
         }
         // the first byte of a bit string represents the number of bits in the last byte that are to be ignored but,
         // currently, bit strings wanting a non-zero amount of bits trimmed are not supported
-        if (($val = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::shift($str)) != "\0") {
-            throw new \UnexpectedValueException('extractPoint expects the first byte to be null - not ' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::bin2hex($val));
+        if (($val = Strings::shift($str)) != "\x00") {
+            throw new \UnexpectedValueException('extractPoint expects the first byte to be null - not ' . Strings::bin2hex($val));
         }
-        if ($str == "\0") {
+        if ($str == "\x00") {
             return [];
         }
         $keylen = \strlen($str);
@@ -313,10 +320,10 @@ trait Common
         if ($keylen == 2 * $order + 1) {
             \preg_match("#(.)(.{{$order}})(.{{$order}})#s", $str, $matches);
             list(, $w, $x, $y) = $matches;
-            if ($w != "\4") {
-                throw new \UnexpectedValueException('The first byte of an uncompressed point should be 04 - not ' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::bin2hex($val));
+            if ($w != "\x04") {
+                throw new \UnexpectedValueException('The first byte of an uncompressed point should be 04 - not ' . Strings::bin2hex($val));
             }
-            $point = [$curve->convertInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($x, 256)), $curve->convertInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($y, 256))];
+            $point = [$curve->convertInteger(new BigInteger($x, 256)), $curve->convertInteger(new BigInteger($y, 256))];
             if (!$curve->verifyPoint($point)) {
                 throw new \RuntimeException('Unable to verify that point exists on curve');
             }
@@ -328,12 +335,12 @@ trait Common
      * Encode Parameters
      *
      * @todo Maybe at some point this could be moved to __toString() for each of the curves?
-     * @param \phpseclib3\Crypt\EC\BaseCurves\Base $curve
+     * @param BaseCurve $curve
      * @param bool $returnArray optional
      * @param array $options optional
      * @return string|false
      */
-    private static function encodeParameters(\PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base $curve, $returnArray = \false, array $options = [])
+    private static function encodeParameters(BaseCurve $curve, $returnArray = \false, array $options = [])
     {
         $useNamedCurves = isset($options['namedCurve']) ? $options['namedCurve'] : self::$useNamedCurves;
         $reflect = new \ReflectionClass($curve);
@@ -344,14 +351,14 @@ trait Common
                     $reflect = $reflect->getParentClass();
                     $name = $reflect->getShortName();
                 }
-                return $returnArray ? ['namedCurve' => $name] : \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER(['namedCurve' => $name], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\ECParameters::MAP);
+                return $returnArray ? ['namedCurve' => $name] : ASN1::encodeDER(['namedCurve' => $name], Maps\ECParameters::MAP);
             }
             foreach (new \DirectoryIterator(__DIR__ . '/../../Curves/') as $file) {
                 if ($file->getExtension() != 'php') {
                     continue;
                 }
                 $testName = $file->getBasename('.php');
-                $class = 'PostSMTP\\Vendor\\phpseclib3\\Crypt\\EC\\Curves\\' . $testName;
+                $class = 'phpseclib3\\Crypt\\EC\\Curves\\' . $testName;
                 $reflect = new \ReflectionClass($class);
                 if ($reflect->isFinal()) {
                     continue;
@@ -359,7 +366,7 @@ trait Common
                 $candidate = new $class();
                 switch ($name) {
                     case 'Prime':
-                        if (!$candidate instanceof \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Prime) {
+                        if (!$candidate instanceof PrimeCurve) {
                             break;
                         }
                         if (!$candidate->getModulo()->equals($curve->getModulo())) {
@@ -379,9 +386,9 @@ trait Common
                         if ($candidateY->toBytes() != $curveY->toBytes()) {
                             break;
                         }
-                        return $returnArray ? ['namedCurve' => $testName] : \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER(['namedCurve' => $testName], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\ECParameters::MAP);
+                        return $returnArray ? ['namedCurve' => $testName] : ASN1::encodeDER(['namedCurve' => $testName], Maps\ECParameters::MAP);
                     case 'Binary':
-                        if (!$candidate instanceof \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Binary) {
+                        if (!$candidate instanceof BinaryCurve) {
                             break;
                         }
                         if ($candidate->getModulo() != $curve->getModulo()) {
@@ -401,7 +408,7 @@ trait Common
                         if ($candidateY->toBytes() != $curveY->toBytes()) {
                             break;
                         }
-                        return $returnArray ? ['namedCurve' => $testName] : \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER(['namedCurve' => $testName], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\ECParameters::MAP);
+                        return $returnArray ? ['namedCurve' => $testName] : ASN1::encodeDER(['namedCurve' => $testName], Maps\ECParameters::MAP);
                 }
             }
         }
@@ -415,7 +422,7 @@ trait Common
         $point = $curve->getBasePoint();
         $x = $point[0]->toBytes();
         $y = $point[1]->toBytes();
-        if ($curve instanceof \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Prime) {
+        if ($curve instanceof PrimeCurve) {
             /*
              * valid versions are:
              *
@@ -428,10 +435,10 @@ trait Common
              */
             // other (optional) parameters can be calculated using the methods discused at
             // https://crypto.stackexchange.com/q/28947/4520
-            $data = ['version' => 'ecdpVer1', 'fieldID' => ['fieldType' => 'prime-field', 'parameters' => $curve->getModulo()], 'curve' => ['a' => $curve->getA()->toBytes(), 'b' => $curve->getB()->toBytes()], 'base' => "\4" . $x . $y, 'order' => $order];
-            return $returnArray ? ['specifiedCurve' => $data] : \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER(['specifiedCurve' => $data], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\ECParameters::MAP);
+            $data = ['version' => 'ecdpVer1', 'fieldID' => ['fieldType' => 'prime-field', 'parameters' => $curve->getModulo()], 'curve' => ['a' => $curve->getA()->toBytes(), 'b' => $curve->getB()->toBytes()], 'base' => "\x04" . $x . $y, 'order' => $order];
+            return $returnArray ? ['specifiedCurve' => $data] : ASN1::encodeDER(['specifiedCurve' => $data], Maps\ECParameters::MAP);
         }
-        if ($curve instanceof \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Binary) {
+        if ($curve instanceof BinaryCurve) {
             $modulo = $curve->getModulo();
             $basis = \count($modulo);
             $m = \array_shift($modulo);
@@ -441,29 +448,69 @@ trait Common
             switch ($basis) {
                 case 3:
                     $basis = 'tpBasis';
-                    $modulo = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($modulo[0]);
+                    $modulo = new BigInteger($modulo[0]);
                     break;
                 case 5:
                     $basis = 'ppBasis';
                     // these should be in strictly ascending order (hence the commented out rsort above)
-                    $modulo = ['k1' => new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($modulo[2]), 'k2' => new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($modulo[1]), 'k3' => new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($modulo[0])];
-                    $modulo = \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER($modulo, \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\Pentanomial::MAP);
-                    $modulo = new \PostSMTP\Vendor\phpseclib3\File\ASN1\Element($modulo);
+                    $modulo = ['k1' => new BigInteger($modulo[2]), 'k2' => new BigInteger($modulo[1]), 'k3' => new BigInteger($modulo[0])];
+                    $modulo = ASN1::encodeDER($modulo, Maps\Pentanomial::MAP);
+                    $modulo = new ASN1\Element($modulo);
             }
-            $params = \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER(['m' => new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($m), 'basis' => $basis, 'parameters' => $modulo], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\Characteristic_two::MAP);
-            $params = new \PostSMTP\Vendor\phpseclib3\File\ASN1\Element($params);
-            $a = \ltrim($curve->getA()->toBytes(), "\0");
+            $params = ASN1::encodeDER(['m' => new BigInteger($m), 'basis' => $basis, 'parameters' => $modulo], Maps\Characteristic_two::MAP);
+            $params = new ASN1\Element($params);
+            $a = \ltrim($curve->getA()->toBytes(), "\x00");
             if (!\strlen($a)) {
-                $a = "\0";
+                $a = "\x00";
             }
-            $b = \ltrim($curve->getB()->toBytes(), "\0");
+            $b = \ltrim($curve->getB()->toBytes(), "\x00");
             if (!\strlen($b)) {
-                $b = "\0";
+                $b = "\x00";
             }
-            $data = ['version' => 'ecdpVer1', 'fieldID' => ['fieldType' => 'characteristic-two-field', 'parameters' => $params], 'curve' => ['a' => $a, 'b' => $b], 'base' => "\4" . $x . $y, 'order' => $order];
-            return $returnArray ? ['specifiedCurve' => $data] : \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER(['specifiedCurve' => $data], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\ECParameters::MAP);
+            $data = ['version' => 'ecdpVer1', 'fieldID' => ['fieldType' => 'characteristic-two-field', 'parameters' => $params], 'curve' => ['a' => $a, 'b' => $b], 'base' => "\x04" . $x . $y, 'order' => $order];
+            return $returnArray ? ['specifiedCurve' => $data] : ASN1::encodeDER(['specifiedCurve' => $data], Maps\ECParameters::MAP);
         }
-        throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedCurveException('Curve cannot be serialized');
+        throw new UnsupportedCurveException('Curve cannot be serialized');
+    }
+    private static function deriveMontgomeryPublicKey(array $components)
+    {
+        $curve = $components['curve'];
+        $dA = $components['dA'];
+        $forcedEngine = EC::getForcedEngine();
+        $useLibsodium = !isset($forcedEngine) && $curve instanceof Curve25519 && \function_exists('sodium_crypto_box_publickey_from_secretkey');
+        if ($forcedEngine === 'libsodium') {
+            $useLibsodium = \true;
+            if (!$curve instanceof Curve25519) {
+                throw new \RuntimeException('Engine libsodium is forced but is not supported for Curve448');
+            }
+            if (!\function_exists('sodium_crypto_box_publickey_from_secretkey')) {
+                throw new BadConfigurationException('Engine libsodium is forced but not available');
+            }
+        }
+        if ($useLibsodium) {
+            //$r = pack('H*', '0900000000000000000000000000000000000000000000000000000000000000');
+            //$QA = sodium_crypto_scalarmult($dA->toBytes(), $r);
+            $QA = \sodium_crypto_box_publickey_from_secretkey(\str_pad($dA->toBytes(), 32, \chr(0), \STR_PAD_LEFT));
+            return [$components['curve']->convertInteger(new BigInteger(\strrev($QA), 256))];
+        }
+        $useOpenSSL = !isset($forcedEngine) && \function_exists('openssl_pkey_get_private');
+        if ($forcedEngine == 'OpenSSL') {
+            $useOpenSSL = \true;
+            if (!\function_exists('openssl_pkey_get_private')) {
+                throw new BadConfigurationException('Engine OpenSSL is forced but is not available');
+            }
+        }
+        if ($useOpenSSL) {
+            $pem = PKCS8::savePrivateKey($dA, $curve, []);
+            $res = \openssl_pkey_get_private($pem);
+            if ($res !== \false && ($details = \openssl_pkey_get_details($res)) !== \false) {
+                $index = $curve instanceof Curve25519 ? 'x25519' : 'x448';
+                return isset($details[$index]['pub_key']) ? [$curve->convertInteger(new BigInteger(\strrev($details[$index]['pub_key']), 256))] : PKCS8::load($details['key'])['QA'];
+            } elseif ($forcedEngine == 'OpenSSL') {
+                throw new BadConfigurationException('Engine OpenSSL is forced but was unable to derive the public key because of ' . \openssl_error_string());
+            }
+        }
+        return [$components['curve']->multiplyPoint($components['curve']->getBasePoint(), $components['dA'])[0]];
     }
     /**
      * Use Specified Curve

@@ -18,7 +18,6 @@
  */
 namespace PostSMTP\Vendor\phpseclib3\Crypt\DH\Formats\Keys;
 
-use PostSMTP\Vendor\phpseclib3\Common\Functions\Strings;
 use PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Keys\PKCS8 as Progenitor;
 use PostSMTP\Vendor\phpseclib3\File\ASN1;
 use PostSMTP\Vendor\phpseclib3\File\ASN1\Maps;
@@ -28,7 +27,7 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Keys\PKCS8
+abstract class PKCS8 extends Progenitor
 {
     /**
      * OID Name
@@ -57,31 +56,21 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
      */
     public static function load($key, $password = '')
     {
-        if (!\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::is_stringable($key)) {
-            throw new \UnexpectedValueException('Key should be a string - not a ' . \gettype($key));
-        }
-        $isPublic = \strpos($key, 'PUBLIC') !== \false;
         $key = parent::load($key, $password);
         $type = isset($key['privateKey']) ? 'privateKey' : 'publicKey';
-        switch (\true) {
-            case !$isPublic && $type == 'publicKey':
-                throw new \UnexpectedValueException('Human readable string claims non-public key but DER encoded string claims public key');
-            case $isPublic && $type == 'privateKey':
-                throw new \UnexpectedValueException('Human readable string claims public key but DER encoded string claims private key');
-        }
-        $decoded = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($key[$type . 'Algorithm']['parameters']->element);
+        $decoded = ASN1::decodeBER($key[$type . 'Algorithm']['parameters']->element);
         if (empty($decoded)) {
             throw new \RuntimeException('Unable to decode BER of parameters');
         }
-        $components = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($decoded[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\DHParameter::MAP);
+        $components = ASN1::asn1map($decoded[0], Maps\DHParameter::MAP);
         if (!\is_array($components)) {
             throw new \RuntimeException('Unable to perform ASN1 mapping on parameters');
         }
-        $decoded = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($key[$type]);
+        $decoded = ASN1::decodeBER($key[$type]);
         switch (\true) {
             case !isset($decoded):
             case !isset($decoded[0]['content']):
-            case !$decoded[0]['content'] instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger:
+            case !$decoded[0]['content'] instanceof BigInteger:
                 throw new \RuntimeException('Unable to decode BER of parameters');
         }
         $components[$type] = $decoded[0]['content'];
@@ -90,37 +79,37 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
     /**
      * Convert a private key to the appropriate format.
      *
-     * @param \phpseclib3\Math\BigInteger $prime
-     * @param \phpseclib3\Math\BigInteger $base
-     * @param \phpseclib3\Math\BigInteger $privateKey
-     * @param \phpseclib3\Math\BigInteger $publicKey
+     * @param BigInteger $prime
+     * @param BigInteger $base
+     * @param BigInteger $privateKey
+     * @param BigInteger $publicKey
      * @param string $password optional
      * @param array $options optional
      * @return string
      */
-    public static function savePrivateKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $prime, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $base, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $privateKey, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $publicKey, $password = '', array $options = [])
+    public static function savePrivateKey(BigInteger $prime, BigInteger $base, BigInteger $privateKey, BigInteger $publicKey, $password = '', array $options = [])
     {
         $params = ['prime' => $prime, 'base' => $base];
-        $params = \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER($params, \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\DHParameter::MAP);
-        $params = new \PostSMTP\Vendor\phpseclib3\File\ASN1\Element($params);
-        $key = \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER($privateKey, ['type' => \PostSMTP\Vendor\phpseclib3\File\ASN1::TYPE_INTEGER]);
+        $params = ASN1::encodeDER($params, Maps\DHParameter::MAP);
+        $params = new ASN1\Element($params);
+        $key = ASN1::encodeDER($privateKey, ['type' => ASN1::TYPE_INTEGER]);
         return self::wrapPrivateKey($key, [], $params, $password, null, '', $options);
     }
     /**
      * Convert a public key to the appropriate format
      *
-     * @param \phpseclib3\Math\BigInteger $prime
-     * @param \phpseclib3\Math\BigInteger $base
-     * @param \phpseclib3\Math\BigInteger $publicKey
+     * @param BigInteger $prime
+     * @param BigInteger $base
+     * @param BigInteger $publicKey
      * @param array $options optional
      * @return string
      */
-    public static function savePublicKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $prime, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $base, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $publicKey, array $options = [])
+    public static function savePublicKey(BigInteger $prime, BigInteger $base, BigInteger $publicKey, array $options = [])
     {
         $params = ['prime' => $prime, 'base' => $base];
-        $params = \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER($params, \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\DHParameter::MAP);
-        $params = new \PostSMTP\Vendor\phpseclib3\File\ASN1\Element($params);
-        $key = \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER($publicKey, ['type' => \PostSMTP\Vendor\phpseclib3\File\ASN1::TYPE_INTEGER]);
-        return self::wrapPublicKey($key, $params);
+        $params = ASN1::encodeDER($params, Maps\DHParameter::MAP);
+        $params = new ASN1\Element($params);
+        $key = ASN1::encodeDER($publicKey, ['type' => ASN1::TYPE_INTEGER]);
+        return self::wrapPublicKey($key, $params, null, $options);
     }
 }

@@ -24,7 +24,7 @@ interface PromiseInterface
      * @param callable $onFulfilled Invoked when the promise fulfills.
      * @param callable $onRejected  Invoked when the promise is rejected.
      */
-    public function then(callable $onFulfilled = null, callable $onRejected = null) : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface;
+    public function then(?callable $onFulfilled = null, ?callable $onRejected = null) : PromiseInterface;
     /**
      * Appends a rejection handler callback to the promise, and returns a new
      * promise resolving to the return value of the callback if it is called,
@@ -33,7 +33,7 @@ interface PromiseInterface
      *
      * @param callable $onRejected Invoked when the promise is rejected.
      */
-    public function otherwise(callable $onRejected) : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface;
+    public function otherwise(callable $onRejected) : PromiseInterface;
     /**
      * Get the state of the promise ("pending", "rejected", or "fulfilled").
      *

@@ -18,7 +18,7 @@ use PostSMTP\Vendor\phpseclib3\Exception\BadConfigurationException;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
+class GMP extends Engine
 {
     /**
      * Can Bitwise operations be done fast?
@@ -56,7 +56,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
             static::$isValidEngine[static::class] = self::isValidEngine();
         }
         if (!static::$isValidEngine[static::class]) {
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\BadConfigurationException('GMP is not setup correctly on this system');
+            throw new BadConfigurationException('GMP is not setup correctly on this system');
         }
         if ($x instanceof \GMP) {
             $this->value = $x;
@@ -109,7 +109,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
     public function toBits($twos_compliment = \false)
     {
         $hex = $this->toHex($twos_compliment);
-        $bits = \gmp_strval(\gmp_init($hex, 16), 2);
+        $bits = \strlen($hex) ? \gmp_strval(\gmp_init($hex, 16), 2) : '';
         if ($this->precision > 0) {
             $bits = \substr($bits, -$this->precision);
         }
@@ -141,7 +141,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $y
      * @return GMP
      */
-    public function add(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $y)
+    public function add(GMP $y)
     {
         $temp = new self();
         $temp->value = $this->value + $y->value;
@@ -153,7 +153,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $y
      * @return GMP
      */
-    public function subtract(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $y)
+    public function subtract(GMP $y)
     {
         $temp = new self();
         $temp->value = $this->value - $y->value;
@@ -165,7 +165,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $x
      * @return GMP
      */
-    public function multiply(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $x)
+    public function multiply(GMP $x)
     {
         $temp = new self();
         $temp->value = $this->value * $x->value;
@@ -182,7 +182,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $y
      * @return array{GMP, GMP}
      */
-    public function divide(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $y)
+    public function divide(GMP $y)
     {
         $quotient = new self();
         $remainder = new self();
@@ -210,7 +210,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @return int in case < 0 if $this is less than $y; > 0 if $this is greater than $y, and 0 if they are equal.
      * @see self::equals()
      */
-    public function compare(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $y)
+    public function compare(GMP $y)
     {
         $r = \gmp_cmp($this->value, $y->value);
         if ($r < -1) {
@@ -229,7 +229,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $x
      * @return bool
      */
-    public function equals(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $x)
+    public function equals(GMP $x)
     {
         return $this->value == $x->value;
     }
@@ -241,7 +241,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $n
      * @return false|GMP
      */
-    public function modInverse(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $n)
+    public function modInverse(GMP $n)
     {
         $temp = new self();
         $temp->value = \gmp_invert($this->value, $n->value);
@@ -258,9 +258,12 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $n
      * @return GMP[]
      */
-    public function extendedGCD(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $n)
+    public function extendedGCD(GMP $n)
     {
-        \extract(\gmp_gcdext($this->value, $n->value));
+        $extended = \gmp_gcdext($this->value, $n->value);
+        $g = $extended['g'];
+        $s = $extended['s'];
+        $t = $extended['t'];
         return ['gcd' => $this->normalize(new self($g)), 'x' => $this->normalize(new self($s)), 'y' => $this->normalize(new self($t))];
     }
     /**
@@ -271,7 +274,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $n
      * @return GMP
      */
-    public function gcd(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $n)
+    public function gcd(GMP $n)
     {
         $r = \gmp_gcd($this->value, $n->value);
         return $this->normalize(new self($r));
@@ -293,7 +296,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $x
      * @return GMP
      */
-    public function bitwise_and(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $x)
+    public function bitwise_and(GMP $x)
     {
         $temp = new self();
         $temp->value = $this->value & $x->value;
@@ -305,7 +308,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $x
      * @return GMP
      */
-    public function bitwise_or(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $x)
+    public function bitwise_or(GMP $x)
     {
         $temp = new self();
         $temp->value = $this->value | $x->value;
@@ -317,7 +320,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $x
      * @return GMP
      */
-    public function bitwise_xor(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $x)
+    public function bitwise_xor(GMP $x)
     {
         $temp = new self();
         $temp->value = $this->value ^ $x->value;
@@ -360,7 +363,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $n
      * @return GMP
      */
-    public function modPow(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $n)
+    public function modPow(GMP $e, GMP $n)
     {
         return $this->powModOuter($e, $n);
     }
@@ -373,7 +376,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $n
      * @return GMP
      */
-    public function powMod(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $n)
+    public function powMod(GMP $e, GMP $n)
     {
         return $this->powModOuter($e, $n);
     }
@@ -384,7 +387,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $n
      * @return GMP
      */
-    protected function powModInner(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $n)
+    protected function powModInner(GMP $e, GMP $n)
     {
         $class = static::$modexpEngine[static::class];
         return $class::powModHelper($this, $e, $n);
@@ -397,7 +400,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $result
      * @return GMP
      */
-    protected function normalize(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $result)
+    protected function normalize(GMP $result)
     {
         $result->precision = $this->precision;
         $result->bitmask = $this->bitmask;
@@ -421,7 +424,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param Engine $max
      * @return GMP
      */
-    protected static function randomRangePrimeInner(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine $x, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine $min, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine $max)
+    protected static function randomRangePrimeInner(Engine $x, Engine $min, Engine $max)
     {
         $p = \gmp_nextprime($x->value);
         if ($p <= $max->value) {
@@ -441,7 +444,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $max
      * @return false|GMP
      */
-    public static function randomRangePrime(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $min, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $max)
+    public static function randomRangePrime(GMP $min, GMP $max)
     {
         return self::randomRangePrimeOuter($min, $max);
     }
@@ -458,7 +461,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $max
      * @return GMP
      */
-    public static function randomRange(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $min, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $max)
+    public static function randomRange(GMP $min, GMP $max)
     {
         return self::randomRangeHelper($min, $max);
     }
@@ -503,7 +506,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $n
      * @return GMP
      */
-    public function pow(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $n)
+    public function pow(GMP $n)
     {
         $temp = new self();
         $temp->value = $this->value ** $n->value;
@@ -515,7 +518,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP ...$nums
      * @return GMP
      */
-    public static function min(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP ...$nums)
+    public static function min(GMP ...$nums)
     {
         return self::minHelper($nums);
     }
@@ -525,7 +528,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP ...$nums
      * @return GMP
      */
-    public static function max(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP ...$nums)
+    public static function max(GMP ...$nums)
     {
         return self::maxHelper($nums);
     }
@@ -536,7 +539,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $max
      * @return bool
      */
-    public function between(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $min, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $max)
+    public function between(GMP $min, GMP $max)
     {
         return $this->compare($min) >= 0 && $this->compare($max) <= 0;
     }
@@ -551,8 +554,8 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
     public function createRecurringModuloFunction()
     {
         $temp = $this->value;
-        return function (\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $x) use($temp) {
-            return new \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP($x->value % $temp);
+        return function (GMP $x) use($temp) {
+            return new GMP($x->value % $temp);
         };
     }
     /**
@@ -563,7 +566,7 @@ class GMP extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param GMP $r
      * @return int
      */
-    public static function scan1divide(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $r)
+    public static function scan1divide(GMP $r)
     {
         $s = \gmp_scan1($r->value, 0);
         $r->value >>= $s;

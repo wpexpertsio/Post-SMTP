@@ -33,8 +33,8 @@ abstract class Raw
         switch (\true) {
             case !\is_array($sig):
             case !isset($sig['r']) || !isset($sig['s']):
-            case !$sig['r'] instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger:
-            case !$sig['s'] instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger:
+            case !$sig['r'] instanceof BigInteger:
+            case !$sig['s'] instanceof BigInteger:
                 return \false;
         }
         return ['r' => $sig['r'], 's' => $sig['s']];
@@ -42,11 +42,11 @@ abstract class Raw
     /**
      * Returns a signature in the appropriate format
      *
-     * @param \phpseclib3\Math\BigInteger $r
-     * @param \phpseclib3\Math\BigInteger $s
+     * @param BigInteger $r
+     * @param BigInteger $s
      * @return string
      */
-    public static function save(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $r, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $s)
+    public static function save(BigInteger $r, BigInteger $s)
     {
         return \compact('r', 's');
     }

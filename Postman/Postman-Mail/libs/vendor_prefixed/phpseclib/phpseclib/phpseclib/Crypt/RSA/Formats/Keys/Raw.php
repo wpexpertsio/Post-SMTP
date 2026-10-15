@@ -95,7 +95,7 @@ abstract class Raw
             return $components;
         }
         if (!isset($components['exponents'])) {
-            $one = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(1);
+            $one = new BigInteger(1);
             $temp = $components['primes'][1]->subtract($one);
             $exponents = [1 => $components['publicExponent']->modInverse($temp)];
             $temp = $components['primes'][2]->subtract($one);
@@ -116,9 +116,9 @@ abstract class Raw
     /**
      * Convert a private key to the appropriate format.
      *
-     * @param \phpseclib3\Math\BigInteger $n
-     * @param \phpseclib3\Math\BigInteger $e
-     * @param \phpseclib3\Math\BigInteger $d
+     * @param BigInteger $n
+     * @param BigInteger $e
+     * @param BigInteger $d
      * @param array $primes
      * @param array $exponents
      * @param array $coefficients
@@ -126,10 +126,10 @@ abstract class Raw
      * @param array $options optional
      * @return array
      */
-    public static function savePrivateKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $n, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $d, array $primes, array $exponents, array $coefficients, $password = '', array $options = [])
+    public static function savePrivateKey(BigInteger $n, BigInteger $e, BigInteger $d, array $primes, array $exponents, array $coefficients, $password = '', array $options = [])
     {
         if (!empty($password) && \is_string($password)) {
-            throw new \PostSMTP\Vendor\phpseclib3\Crypt\RSA\Formats\Keys\UnsupportedFormatException('Raw private keys do not support encryption');
+            throw new UnsupportedFormatException('Raw private keys do not support encryption');
         }
         return ['e' => clone $e, 'n' => clone $n, 'd' => clone $d, 'primes' => \array_map(function ($var) {
             return clone $var;
@@ -142,11 +142,11 @@ abstract class Raw
     /**
      * Convert a public key to the appropriate format
      *
-     * @param \phpseclib3\Math\BigInteger $n
-     * @param \phpseclib3\Math\BigInteger $e
+     * @param BigInteger $n
+     * @param BigInteger $e
      * @return array
      */
-    public static function savePublicKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $n, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $e)
+    public static function savePublicKey(BigInteger $n, BigInteger $e)
     {
         return ['e' => clone $e, 'n' => clone $n];
     }

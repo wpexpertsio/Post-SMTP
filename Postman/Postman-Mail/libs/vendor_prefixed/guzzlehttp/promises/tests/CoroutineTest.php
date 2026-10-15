@@ -1,0 +1,117 @@
+<?php
+
+declare (strict_types=1);
+namespace PostSMTP\Vendor\GuzzleHttp\Promise\Tests;
+
+use PostSMTP\Vendor\GuzzleHttp\Promise\Coroutine;
+use PostSMTP\Vendor\GuzzleHttp\Promise\FulfilledPromise;
+use PostSMTP\Vendor\GuzzleHttp\Promise\Promise;
+use PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface;
+use PostSMTP\Vendor\GuzzleHttp\Promise\RejectedPromise;
+use PostSMTP\Vendor\GuzzleHttp\Promise\Utils;
+use PostSMTP\Vendor\PHPUnit\Framework\TestCase;
+use ReflectionClass;
+class CoroutineTest extends TestCase
+{
+    public function testReturnsCoroutine() : void
+    {
+        $fn = function () {
+            (yield 'foo');
+        };
+        $this->assertInstanceOf(Coroutine::class, Coroutine::of($fn));
+    }
+    /**
+     * @dataProvider promiseInterfaceMethodProvider
+     *
+     * @param string $method
+     * @param array  $args
+     */
+    public function testShouldProxyPromiseMethodsToResultPromise($method, $args = []) : void
+    {
+        $coroutine = new Coroutine(function () {
+            (yield 0);
+        });
+        $mockPromise = $this->getMockForAbstractClass(PromiseInterface::class);
+        $mockPromise->expects($this->once())->method($method)->with(...$args);
+        $resultPromiseProp = (new ReflectionClass(Coroutine::class))->getProperty('result');
+        if (\PHP_VERSION_ID < 80100) {
+            $resultPromiseProp->setAccessible(\true);
+        }
+        $resultPromiseProp->setValue($coroutine, $mockPromise);
+        $coroutine->{$method}(...$args);
+    }
+    public static function promiseInterfaceMethodProvider()
+    {
+        return [['then', [null, null]], ['otherwise', [function () : void {
+        }]], ['wait', [\true]], ['getState', []], ['resolve', [null]], ['reject', [null]]];
+    }
+    public function testShouldCancelResultPromiseAndOutsideCurrentPromise() : void
+    {
+        $coroutine = new Coroutine(function () {
+            (yield 0);
+        });
+        $mockPromises = ['result' => $this->getMockForAbstractClass(PromiseInterface::class), 'currentPromise' => $this->getMockForAbstractClass(PromiseInterface::class)];
+        foreach ($mockPromises as $propName => $mockPromise) {
+            /**
+             * @var \PHPUnit_Framework_MockObject_MockObject $mockPromise
+             */
+            $mockPromise->expects($this->once())->method('cancel')->with();
+            $promiseProp = (new ReflectionClass(Coroutine::class))->getProperty($propName);
+            if (\PHP_VERSION_ID < 80100) {
+                $promiseProp->setAccessible(\true);
+            }
+            $promiseProp->setValue($coroutine, $mockPromise);
+        }
+        $coroutine->cancel();
+    }
+    public function testCanCancelAfterFulfilledCoroutine() : void
+    {
+        $coroutine = new Coroutine(function () {
+            (yield new FulfilledPromise('ok'));
+        });
+        Utils::queue()->run();
+        $coroutine->cancel();
+        $this->assertSame(PromiseInterface::FULFILLED, $coroutine->getState());
+    }
+    public function testCanCancelAfterRejectedCoroutine() : void
+    {
+        $coroutine = new Coroutine(function () {
+            (yield new RejectedPromise('no'));
+        });
+        Utils::queue()->run();
+        $coroutine->cancel();
+        $this->assertSame(PromiseInterface::REJECTED, $coroutine->getState());
+    }
+    public function testWaitShouldResolveChainedCoroutines() : void
+    {
+        $promisor = function () {
+            return Coroutine::of(function () {
+                (yield $promise = new Promise(function () use(&$promise) : void {
+                    $promise->resolve(1);
+                }));
+            });
+        };
+        $promise = $promisor()->then($promisor)->then($promisor);
+        $this->assertSame(1, $promise->wait());
+    }
+    public function testWaitShouldHandleIntermediateErrors() : void
+    {
+        $promise = Coroutine::of(function () {
+            (yield $promise = new Promise(function () use(&$promise) : void {
+                $promise->resolve(1);
+            }));
+        })->then(function () {
+            return Coroutine::of(function () {
+                (yield $promise = new Promise(function () use(&$promise) : void {
+                    $promise->reject(new \Exception());
+                }));
+            });
+        })->otherwise(function (?\Exception $error = null) {
+            if (!$error) {
+                self::fail('Error did not propagate.');
+            }
+            return 3;
+        });
+        $this->assertSame(3, $promise->wait());
+    }
+}

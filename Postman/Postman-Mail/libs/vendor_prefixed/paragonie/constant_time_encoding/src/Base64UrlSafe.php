@@ -3,6 +3,7 @@
 declare (strict_types=1);
 namespace PostSMTP\Vendor\ParagonIE\ConstantTime;
 
+use PostSMTP\Vendor\Override;
 /**
  *  Copyright (c) 2016 - 2022 Paragon Initiative Enterprises.
  *  Copyright (c) 2014 Steve "Sc00bz" Thomas (steve at tobtu dot com)
@@ -31,7 +32,7 @@ namespace PostSMTP\Vendor\ParagonIE\ConstantTime;
  *
  * @package ParagonIE\ConstantTime
  */
-abstract class Base64UrlSafe extends \PostSMTP\Vendor\ParagonIE\ConstantTime\Base64
+abstract class Base64UrlSafe extends Base64
 {
     /**
      * Uses bitwise operators instead of table-lookups to turn 6-bit integers
@@ -44,6 +45,7 @@ abstract class Base64UrlSafe extends \PostSMTP\Vendor\ParagonIE\ConstantTime\Bas
      * @param int $src
      * @return int
      */
+    #[\Override]
     protected static function decode6Bits(int $src) : int
     {
         $ret = -1;
@@ -66,6 +68,7 @@ abstract class Base64UrlSafe extends \PostSMTP\Vendor\ParagonIE\ConstantTime\Bas
      * @param int $src
      * @return string
      */
+    #[\Override]
     protected static function encode6Bits(int $src) : string
     {
         $diff = 0x41;

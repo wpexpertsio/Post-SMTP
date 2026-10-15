@@ -22,23 +22,24 @@
  */
 namespace PostSMTP\Vendor\phpseclib3\Crypt\EC\Formats\Keys;
 
-use PostSMTP\Vendor\phpseclib3\Common\Functions\Strings;
 use PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Keys\PKCS8 as Progenitor;
 use PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base as BaseCurve;
 use PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgomery as MontgomeryCurve;
 use PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards as TwistedEdwardsCurve;
+use PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Curve25519;
+use PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Curve448;
 use PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Ed25519;
 use PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Ed448;
-use PostSMTP\Vendor\phpseclib3\Exception\UnsupportedCurveException;
 use PostSMTP\Vendor\phpseclib3\File\ASN1;
 use PostSMTP\Vendor\phpseclib3\File\ASN1\Maps;
 use PostSMTP\Vendor\phpseclib3\Math\BigInteger;
+use PostSMTP\Vendor\phpseclib3\Math\Common\FiniteField\Integer;
 /**
  * PKCS#8 Formatted EC Key Handler
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Keys\PKCS8
+abstract class PKCS8 extends Progenitor
 {
     use Common;
     /**
@@ -46,13 +47,13 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
      *
      * @var array
      */
-    const OID_NAME = ['id-ecPublicKey', 'id-Ed25519', 'id-Ed448'];
+    const OID_NAME = ['id-ecPublicKey', 'id-Ed25519', 'id-Ed448', 'id-X25519', 'id-X448'];
     /**
      * OID Value
      *
      * @var string
      */
-    const OID_VALUE = ['1.2.840.10045.2.1', '1.3.101.112', '1.3.101.113'];
+    const OID_VALUE = ['1.2.840.10045.2.1', '1.3.101.112', '1.3.101.113', '1.3.101.110', '1.3.101.111'];
     /**
      * Break a public or private key down into its constituent components
      *
@@ -68,46 +69,39 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
         // in the parent class as needed and in the context of the parent it's the parent
         // one that's called
         self::initialize_static_variables();
-        if (!\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::is_stringable($key)) {
-            throw new \UnexpectedValueException('Key should be a string - not a ' . \gettype($key));
-        }
-        $isPublic = \strpos($key, 'PUBLIC') !== \false;
         $key = parent::load($key, $password);
         $type = isset($key['privateKey']) ? 'privateKey' : 'publicKey';
-        switch (\true) {
-            case !$isPublic && $type == 'publicKey':
-                throw new \UnexpectedValueException('Human readable string claims non-public key but DER encoded string claims public key');
-            case $isPublic && $type == 'privateKey':
-                throw new \UnexpectedValueException('Human readable string claims public key but DER encoded string claims private key');
-        }
         switch ($key[$type . 'Algorithm']['algorithm']) {
             case 'id-Ed25519':
             case 'id-Ed448':
                 return self::loadEdDSA($key);
+            case 'id-X25519':
+            case 'id-X448':
+                return self::loadECDH($key);
         }
-        $decoded = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($key[$type . 'Algorithm']['parameters']->element);
+        $decoded = ASN1::decodeBER($key[$type . 'Algorithm']['parameters']->element);
         if (!$decoded) {
             throw new \RuntimeException('Unable to decode BER');
         }
-        $params = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($decoded[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\ECParameters::MAP);
+        $params = ASN1::asn1map($decoded[0], Maps\ECParameters::MAP);
         if (!$params) {
             throw new \RuntimeException('PostSMTP\\Vendor\\Unable to decode the parameters using Maps\\ECParameters');
         }
         $components = [];
         $components['curve'] = self::loadCurveByParam($params);
-        if ($isPublic) {
-            $components['QA'] = self::extractPoint("\0" . $key['publicKey'], $components['curve']);
+        if ($type == 'publicKey') {
+            $components['QA'] = self::extractPoint("\x00" . $key['publicKey'], $components['curve']);
             return $components;
         }
-        $decoded = \PostSMTP\Vendor\phpseclib3\File\ASN1::decodeBER($key['privateKey']);
+        $decoded = ASN1::decodeBER($key['privateKey']);
         if (!$decoded) {
             throw new \RuntimeException('Unable to decode BER');
         }
-        $key = \PostSMTP\Vendor\phpseclib3\File\ASN1::asn1map($decoded[0], \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\ECPrivateKey::MAP);
+        $key = ASN1::asn1map($decoded[0], Maps\ECPrivateKey::MAP);
         if (isset($key['parameters']) && $params != $key['parameters']) {
             throw new \RuntimeException('The PKCS8 parameter field does not match the private key parameter field');
         }
-        $components['dA'] = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($key['privateKey'], 256);
+        $components['dA'] = new BigInteger($key['privateKey'], 256);
         $components['curve']->rangeCheck($components['dA']);
         $components['QA'] = isset($key['publicKey']) ? self::extractPoint($key['publicKey'], $components['curve']) : $components['curve']->multiplyPoint($components['curve']->getBasePoint(), $components['dA']);
         return $components;
@@ -121,11 +115,10 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
     {
         $components = [];
         if (isset($key['privateKey'])) {
-            $components['curve'] = $key['privateKeyAlgorithm']['algorithm'] == 'id-Ed25519' ? new \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Ed25519() : new \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Ed448();
-            // 0x04 == octet string
-            // 0x20 == length (32 bytes)
-            if (\substr($key['privateKey'], 0, 2) != "\4 ") {
-                throw new \RuntimeException('The first two bytes of the private key field should be 0x0420');
+            $components['curve'] = $key['privateKeyAlgorithm']['algorithm'] == 'id-Ed25519' ? new Ed25519() : new Ed448();
+            $expected = \chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength($components['curve']::SIZE);
+            if (\substr($key['privateKey'], 0, 2) != $expected) {
+                throw new \RuntimeException('The first two bytes of the ' . $key['privateKeyAlgorithm']['algorithm'] . ' private key field should be 0x' . \bin2hex($expected));
             }
             $arr = $components['curve']->extractSecret(\substr($key['privateKey'], 2));
             $components['dA'] = $arr['dA'];
@@ -133,7 +126,7 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
         }
         if (isset($key['publicKey'])) {
             if (!isset($components['curve'])) {
-                $components['curve'] = $key['publicKeyAlgorithm']['algorithm'] == 'id-Ed25519' ? new \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Ed25519() : new \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Ed448();
+                $components['curve'] = $key['publicKeyAlgorithm']['algorithm'] == 'id-Ed25519' ? new Ed25519() : new Ed448();
             }
             $components['QA'] = self::extractPoint($key['publicKey'], $components['curve']);
         }
@@ -142,56 +135,79 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
         }
         return $components;
     }
+    private static function loadECDH(array $key)
+    {
+        $components = [];
+        if (isset($key['privateKey'])) {
+            $components['curve'] = $key['privateKeyAlgorithm']['algorithm'] == 'id-X25519' ? new Curve25519() : new Curve448();
+            $expected = \chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength($components['curve']::SIZE);
+            $privateKey = (string) $key['privateKey'];
+            if (\substr($privateKey, 0, 2) != $expected) {
+                throw new \RuntimeException('The first two bytes of the ' . $key['privateKeyAlgorithm']['algorithm'] . ' private key field should be 0x' . \bin2hex($expected));
+            }
+            $components['dA'] = new BigInteger(\substr($privateKey, 2), 256);
+        }
+        if (isset($key['publicKey'])) {
+            if (!isset($components['curve'])) {
+                $components['curve'] = $key['publicKeyAlgorithm']['algorithm'] == 'id-X25519' ? new Curve25519() : new Curve448();
+            }
+            $components['QA'] = [$components['curve']->convertInteger(new BigInteger(\strrev($key['publicKey']), 256))];
+        }
+        if (isset($key['privateKey']) && !isset($components['QA'])) {
+            $components['QA'] = self::deriveMontgomeryPublicKey($components);
+        }
+        return $components;
+    }
     /**
      * Convert an EC public key to the appropriate format
      *
-     * @param \phpseclib3\Crypt\EC\BaseCurves\Base $curve
-     * @param \phpseclib3\Math\Common\FiniteField\Integer[] $publicKey
+     * @param BaseCurve $curve
+     * @param Integer[] $publicKey
      * @param array $options optional
      * @return string
      */
-    public static function savePublicKey(\PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base $curve, array $publicKey, array $options = [])
+    public static function savePublicKey(BaseCurve $curve, array $publicKey, array $options = [])
     {
         self::initialize_static_variables();
-        if ($curve instanceof \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgomery) {
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedCurveException('Montgomery Curves are not supported');
+        if ($curve instanceof MontgomeryCurve) {
+            return self::wrapPublicKey(\str_pad(\strrev($publicKey[0]->toBytes()), $curve::SIZE, "\x00", \STR_PAD_RIGHT), null, $curve instanceof Curve25519 ? 'id-X25519' : 'id-X448', $options);
         }
-        if ($curve instanceof \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards) {
-            return self::wrapPublicKey($curve->encodePoint($publicKey), null, $curve instanceof \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Ed25519 ? 'id-Ed25519' : 'id-Ed448');
+        if ($curve instanceof TwistedEdwardsCurve) {
+            return self::wrapPublicKey($curve->encodePoint($publicKey), null, $curve instanceof Ed25519 ? 'id-Ed25519' : 'id-Ed448', $options);
         }
-        $params = new \PostSMTP\Vendor\phpseclib3\File\ASN1\Element(self::encodeParameters($curve, \false, $options));
-        $key = "\4" . $publicKey[0]->toBytes() . $publicKey[1]->toBytes();
-        return self::wrapPublicKey($key, $params, 'id-ecPublicKey');
+        $params = new ASN1\Element(self::encodeParameters($curve, \false, $options));
+        $key = "\x04" . $publicKey[0]->toBytes() . $publicKey[1]->toBytes();
+        return self::wrapPublicKey($key, $params, 'id-ecPublicKey', $options);
     }
     /**
      * Convert a private key to the appropriate format.
      *
-     * @param \phpseclib3\Math\BigInteger $privateKey
-     * @param \phpseclib3\Crypt\EC\BaseCurves\Base $curve
-     * @param \phpseclib3\Math\Common\FiniteField\Integer[] $publicKey
+     * @param BigInteger $privateKey
+     * @param BaseCurve $curve
+     * @param Integer[] $publicKey
      * @param string $secret optional
      * @param string $password optional
      * @param array $options optional
      * @return string
      */
-    public static function savePrivateKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $privateKey, \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base $curve, array $publicKey, $secret = null, $password = '', array $options = [])
+    public static function savePrivateKey(BigInteger $privateKey, BaseCurve $curve, array $publicKey, $secret = null, $password = '', array $options = [])
     {
         self::initialize_static_variables();
-        if ($curve instanceof \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgomery) {
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedCurveException('Montgomery Curves are not supported');
+        if ($curve instanceof MontgomeryCurve) {
+            return self::wrapPrivateKey(\chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength($curve::SIZE) . \str_pad($privateKey->toBytes(), $curve::SIZE, "\x00", \STR_PAD_LEFT), [], null, $password, $curve instanceof Curve25519 ? 'id-X25519' : 'id-X448');
         }
-        if ($curve instanceof \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards) {
-            return self::wrapPrivateKey("\4 " . $secret, [], null, $password, $curve instanceof \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Ed25519 ? 'id-Ed25519' : 'id-Ed448');
+        if ($curve instanceof TwistedEdwardsCurve) {
+            return self::wrapPrivateKey(\chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength($curve::SIZE) . $secret, [], null, $password, $curve instanceof Ed25519 ? 'id-Ed25519' : 'id-Ed448');
         }
-        $publicKey = "\4" . $publicKey[0]->toBytes() . $publicKey[1]->toBytes();
-        $params = new \PostSMTP\Vendor\phpseclib3\File\ASN1\Element(self::encodeParameters($curve, \false, $options));
+        $publicKey = "\x04" . $publicKey[0]->toBytes() . $publicKey[1]->toBytes();
+        $params = new ASN1\Element(self::encodeParameters($curve, \false, $options));
         $key = [
             'version' => 'ecPrivkeyVer1',
             'privateKey' => $privateKey->toBytes(),
             //'parameters' => $params,
-            'publicKey' => "\0" . $publicKey,
+            'publicKey' => "\x00" . $publicKey,
         ];
-        $key = \PostSMTP\Vendor\phpseclib3\File\ASN1::encodeDER($key, \PostSMTP\Vendor\phpseclib3\File\ASN1\Maps\ECPrivateKey::MAP);
+        $key = ASN1::encodeDER($key, Maps\ECPrivateKey::MAP);
         return self::wrapPrivateKey($key, [], $params, $password, 'id-ecPublicKey', '', $options);
     }
 }

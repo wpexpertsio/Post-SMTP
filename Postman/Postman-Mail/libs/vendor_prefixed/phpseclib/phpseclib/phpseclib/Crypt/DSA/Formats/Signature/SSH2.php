@@ -34,7 +34,7 @@ abstract class SSH2
         if (!\is_string($sig)) {
             return \false;
         }
-        $result = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::unpackSSH2('ss', $sig);
+        $result = Strings::unpackSSH2('ss', $sig);
         if ($result === \false) {
             return \false;
         }
@@ -42,20 +42,20 @@ abstract class SSH2
         if ($type != 'ssh-dss' || \strlen($blob) != 40) {
             return \false;
         }
-        return ['r' => new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(\substr($blob, 0, 20), 256), 's' => new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(\substr($blob, 20), 256)];
+        return ['r' => new BigInteger(\substr($blob, 0, 20), 256), 's' => new BigInteger(\substr($blob, 20), 256)];
     }
     /**
      * Returns a signature in the appropriate format
      *
-     * @param \phpseclib3\Math\BigInteger $r
-     * @param \phpseclib3\Math\BigInteger $s
+     * @param BigInteger $r
+     * @param BigInteger $s
      * @return string
      */
-    public static function save(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $r, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $s)
+    public static function save(BigInteger $r, BigInteger $s)
     {
         if ($r->getLength() > 160 || $s->getLength() > 160) {
             return \false;
         }
-        return \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('ss', 'ssh-dss', \str_pad($r->toBytes(), 20, "\0", \STR_PAD_LEFT) . \str_pad($s->toBytes(), 20, "\0", \STR_PAD_LEFT));
+        return Strings::packSSH2('ss', 'ssh-dss', \str_pad($r->toBytes(), 20, "\x00", \STR_PAD_LEFT) . \str_pad($s->toBytes(), 20, "\x00", \STR_PAD_LEFT));
     }
 }

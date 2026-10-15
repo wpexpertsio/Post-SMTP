@@ -44,11 +44,35 @@ final class UriResolver
         return $newPath;
     }
     /**
+     * Returns the path, prefixed with "./" when it would otherwise begin a relative-path reference with a segment
+     * containing a colon.
+     *
+     * Such a segment would be mistaken for a scheme name (RFC 3986 Section 4.2), so a URI without a scheme and
+     * authority cannot hold the path, but reference resolution and percent-encoding normalization can produce one.
+     * The "./" prefix the RFC prescribes resolves back to the same path.
+     *
+     * @see https://datatracker.ietf.org/doc/html/rfc3986#section-4.2
+     *
+     * @internal
+     */
+    public static function guardedPath(UriInterface $uri, string $path) : string
+    {
+        if ($uri->getScheme() !== '' || $uri->getAuthority() !== '' || \strpos(\explode('/', $path, 2)[0], ':') === \false) {
+            return $path;
+        }
+        return './' . $path;
+    }
+    /**
      * Converts the relative URI into a new URI that is resolved against the base URI.
      *
+     * When the resolved path is a relative-path reference whose first segment contains a colon,
+     * which would be mistaken for a scheme name (RFC 3986 Section 4.2), it is prefixed with "./",
+     * e.g. "./a:b".
+     *
      * @see https://datatracker.ietf.org/doc/html/rfc3986#section-5.2
+     * @see https://datatracker.ietf.org/doc/html/rfc3986#section-4.2
      */
-    public static function resolve(\PostSMTP\Vendor\Psr\Http\Message\UriInterface $base, \PostSMTP\Vendor\Psr\Http\Message\UriInterface $rel) : \PostSMTP\Vendor\Psr\Http\Message\UriInterface
+    public static function resolve(UriInterface $base, UriInterface $rel) : UriInterface
     {
         if ((string) $rel === '') {
             // we can simply return the same base URI instance for this same-document reference
@@ -58,34 +82,33 @@ final class UriResolver
             return $rel->withPath(self::removeDotSegments($rel->getPath()));
         }
         if ($rel->getAuthority() != '') {
-            $targetAuthority = $rel->getAuthority();
-            $targetPath = self::removeDotSegments($rel->getPath());
-            $targetQuery = $rel->getQuery();
+            return $rel->withScheme($base->getScheme())->withPath(self::removeDotSegments($rel->getPath()));
+        }
+        if ($rel->getPath() === '') {
+            $targetPath = $base->getPath();
+            $targetQuery = $rel->getQuery() != '' ? $rel->getQuery() : $base->getQuery();
         } else {
-            $targetAuthority = $base->getAuthority();
-            if ($rel->getPath() === '') {
-                $targetPath = $base->getPath();
-                $targetQuery = $rel->getQuery() != '' ? $rel->getQuery() : $base->getQuery();
+            if ($rel->getPath()[0] === '/') {
+                $targetPath = $rel->getPath();
             } else {
-                if ($rel->getPath()[0] === '/') {
-                    $targetPath = $rel->getPath();
+                if ($base->getAuthority() != '' && $base->getPath() === '') {
+                    $targetPath = '/' . $rel->getPath();
                 } else {
-                    if ($targetAuthority != '' && $base->getPath() === '') {
-                        $targetPath = '/' . $rel->getPath();
+                    $lastSlashPos = \strrpos($base->getPath(), '/');
+                    if ($lastSlashPos === \false) {
+                        $targetPath = $rel->getPath();
                     } else {
-                        $lastSlashPos = \strrpos($base->getPath(), '/');
-                        if ($lastSlashPos === \false) {
-                            $targetPath = $rel->getPath();
-                        } else {
-                            $targetPath = \substr($base->getPath(), 0, $lastSlashPos + 1) . $rel->getPath();
-                        }
+                        $targetPath = \substr($base->getPath(), 0, $lastSlashPos + 1) . $rel->getPath();
                     }
                 }
-                $targetPath = self::removeDotSegments($targetPath);
-                $targetQuery = $rel->getQuery();
             }
+            $targetPath = self::removeDotSegments($targetPath);
+            $targetQuery = $rel->getQuery();
         }
-        return new \PostSMTP\Vendor\GuzzleHttp\Psr7\Uri(\PostSMTP\Vendor\GuzzleHttp\Psr7\Uri::composeComponents($base->getScheme(), $targetAuthority, $targetPath, $targetQuery, $rel->getFragment()));
+        if ($targetPath !== $base->getPath()) {
+            $targetPath = self::guardedPath($base, $targetPath);
+        }
+        return $base->withPath($targetPath)->withQuery($targetQuery)->withFragment($rel->getFragment());
     }
     /**
      * Returns the target URI as a relative reference from the base URI.
@@ -108,12 +131,12 @@ final class UriResolver
      *
      *    echo UriResolver::relativize($base, new Uri('/a/b/c'));  // prints 'c' as well
      */
-    public static function relativize(\PostSMTP\Vendor\Psr\Http\Message\UriInterface $base, \PostSMTP\Vendor\Psr\Http\Message\UriInterface $target) : \PostSMTP\Vendor\Psr\Http\Message\UriInterface
+    public static function relativize(UriInterface $base, UriInterface $target) : UriInterface
     {
         if ($target->getScheme() !== '' && ($base->getScheme() !== $target->getScheme() || $target->getAuthority() === '' && $base->getAuthority() !== '')) {
             return $target;
         }
-        if (\PostSMTP\Vendor\GuzzleHttp\Psr7\Uri::isRelativePathReference($target)) {
+        if (Uri::isRelativePathReference($target)) {
             // As the target is already highly relative we return it as-is. It would be possible to resolve
             // the target with `$target = self::resolve($base, $target);` and then try make it more relative
             // by removing a duplicate query. But let's not do that automatically.
@@ -143,7 +166,7 @@ final class UriResolver
         }
         return $emptyPathUri;
     }
-    private static function getRelativePath(\PostSMTP\Vendor\Psr\Http\Message\UriInterface $base, \PostSMTP\Vendor\Psr\Http\Message\UriInterface $target) : string
+    private static function getRelativePath(UriInterface $base, UriInterface $target) : string
     {
         $sourceSegments = \explode('/', $base->getPath());
         $targetSegments = \explode('/', $target->getPath());

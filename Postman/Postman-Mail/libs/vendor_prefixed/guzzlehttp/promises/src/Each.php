@@ -20,9 +20,10 @@ final class Each
      *
      * @param mixed $iterable Iterator or array to iterate over.
      */
-    public static function of($iterable, callable $onFulfilled = null, callable $onRejected = null) : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
+    public static function of($iterable, ?callable $onFulfilled = null, ?callable $onRejected = null) : PromiseInterface
     {
-        return (new \PostSMTP\Vendor\GuzzleHttp\Promise\EachPromise($iterable, ['fulfilled' => $onFulfilled, 'rejected' => $onRejected]))->promise();
+        $iterable = self::prepareIterable($iterable, __FUNCTION__);
+        return (new EachPromise($iterable, ['fulfilled' => $onFulfilled, 'rejected' => $onRejected]))->promise();
     }
     /**
      * Like of, but only allows a certain number of outstanding promises at any
@@ -35,9 +36,10 @@ final class Each
      * @param mixed        $iterable
      * @param int|callable $concurrency
      */
-    public static function ofLimit($iterable, $concurrency, callable $onFulfilled = null, callable $onRejected = null) : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
+    public static function ofLimit($iterable, $concurrency, ?callable $onFulfilled = null, ?callable $onRejected = null) : PromiseInterface
     {
-        return (new \PostSMTP\Vendor\GuzzleHttp\Promise\EachPromise($iterable, ['fulfilled' => $onFulfilled, 'rejected' => $onRejected, 'concurrency' => $concurrency]))->promise();
+        $iterable = self::prepareIterable($iterable, __FUNCTION__);
+        return (new EachPromise($iterable, ['fulfilled' => $onFulfilled, 'rejected' => $onRejected, 'concurrency' => $concurrency]))->promise();
     }
     /**
      * Like limit, but ensures that no promise in the given $iterable argument
@@ -47,10 +49,19 @@ final class Each
      * @param mixed        $iterable
      * @param int|callable $concurrency
      */
-    public static function ofLimitAll($iterable, $concurrency, callable $onFulfilled = null) : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
+    public static function ofLimitAll($iterable, $concurrency, ?callable $onFulfilled = null) : PromiseInterface
     {
-        return self::ofLimit($iterable, $concurrency, $onFulfilled, function ($reason, $idx, \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface $aggregate) : void {
+        $iterable = self::prepareIterable($iterable, __FUNCTION__);
+        return self::ofLimit($iterable, $concurrency, $onFulfilled, function ($reason, $idx, PromiseInterface $aggregate) : void {
             $aggregate->reject($reason);
         });
+    }
+    private static function prepareIterable($iterable, string $method) : iterable
+    {
+        if (\is_iterable($iterable)) {
+            return $iterable;
+        }
+        \trigger_deprecation('guzzlehttp/promises', '2.5', 'Passing a non-iterable to %s::%s() is deprecated; guzzlehttp/promises 3.0 will require an iterable.', self::class, $method);
+        return [$iterable];
     }
 }

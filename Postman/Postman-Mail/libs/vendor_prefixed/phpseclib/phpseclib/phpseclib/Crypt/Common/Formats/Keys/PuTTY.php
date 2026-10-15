@@ -72,7 +72,7 @@ abstract class PuTTY
         $sequence = 0;
         while (\strlen($symkey) < $length) {
             $temp = \pack('Na*', $sequence++, $password);
-            $symkey .= \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::hex2bin(\sha1($temp));
+            $symkey .= Strings::hex2bin(\sha1($temp));
         }
         return \substr($symkey, 0, $length);
     }
@@ -99,7 +99,7 @@ abstract class PuTTY
                 $flavour = \SODIUM_CRYPTO_PWHASH_ALG_ARGON2ID13;
                 break;
             default:
-                throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedAlgorithmException('Only Argon2i and Argon2id are supported');
+                throw new UnsupportedAlgorithmException('Only Argon2i and Argon2id are supported');
         }
         $length = 80;
         // keylen + ivlen + mac_keylen
@@ -118,7 +118,7 @@ abstract class PuTTY
      */
     public static function load($key, $password)
     {
-        if (!\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::is_stringable($key)) {
+        if (!Strings::is_stringable($key)) {
             throw new \UnexpectedValueException('Key should be a string - not a ' . \gettype($key));
         }
         if (\strpos($key, 'BEGIN SSH2 PUBLIC KEY') !== \false) {
@@ -161,10 +161,10 @@ abstract class PuTTY
         }
         $components = [];
         $key = \preg_split('#\\r\\n|\\r|\\n#', \trim($key));
-        if (\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::shift($key[0], \strlen('PuTTY-User-Key-File-')) != 'PuTTY-User-Key-File-') {
+        if (Strings::shift($key[0], \strlen('PuTTY-User-Key-File-')) != 'PuTTY-User-Key-File-') {
             return \false;
         }
-        $version = (int) \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::shift($key[0], 3);
+        $version = (int) Strings::shift($key[0], 3);
         // should be either "2: " or "3: 0" prior to int casting
         if ($version != 2 && $version != 3) {
             throw new \RuntimeException('Only v2 and v3 PuTTY private keys are supported');
@@ -172,15 +172,15 @@ abstract class PuTTY
         $components['type'] = $type = \rtrim($key[0]);
         if (!\in_array($type, static::$types)) {
             $error = \count(static::$types) == 1 ? 'Only ' . static::$types[0] . ' keys are supported. ' : '';
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedAlgorithmException($error . 'This is an unsupported ' . $type . ' key');
+            throw new UnsupportedAlgorithmException($error . 'This is an unsupported ' . $type . ' key');
         }
         $encryption = \trim(\preg_replace('#Encryption: (.+)#', '$1', $key[1]));
         $components['comment'] = \trim(\preg_replace('#Comment: (.+)#', '$1', $key[2]));
         $publicLength = \trim(\preg_replace('#Public-Lines: (\\d+)#', '$1', $key[3]));
-        $public = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_decode(\implode('', \array_map('trim', \array_slice($key, 4, $publicLength))));
-        $source = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('ssss', $type, $encryption, $components['comment'], $public);
-        \extract(\unpack('Nlength', \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::shift($public, 4)));
-        $newtype = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::shift($public, $length);
+        $public = Strings::base64_decode(\implode('', \array_map('trim', \array_slice($key, 4, $publicLength))));
+        $source = Strings::packSSH2('ssss', $type, $encryption, $components['comment'], $public);
+        $length = \unpack('Nlength', Strings::shift($public, 4))['length'];
+        $newtype = Strings::shift($public, $length);
         if ($newtype != $type) {
             throw new \RuntimeException('The binary type does not match the human readable type field');
         }
@@ -195,42 +195,45 @@ abstract class PuTTY
         $offset = $publicLength + 4;
         switch ($encryption) {
             case 'aes256-cbc':
-                $crypto = new \PostSMTP\Vendor\phpseclib3\Crypt\AES('cbc');
+                $crypto = new AES('cbc');
                 switch ($version) {
                     case 3:
                         $flavour = \trim(\preg_replace('#Key-Derivation: (.*)#', '$1', $key[$offset++]));
                         $memory = \trim(\preg_replace('#Argon2-Memory: (\\d+)#', '$1', $key[$offset++]));
                         $passes = \trim(\preg_replace('#Argon2-Passes: (\\d+)#', '$1', $key[$offset++]));
                         $parallelism = \trim(\preg_replace('#Argon2-Parallelism: (\\d+)#', '$1', $key[$offset++]));
-                        $salt = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::hex2bin(\trim(\preg_replace('#Argon2-Salt: ([0-9a-f]+)#', '$1', $key[$offset++])));
-                        \extract(self::generateV3Key($password, $flavour, $memory, $passes, $salt));
+                        $salt = Strings::hex2bin(\trim(\preg_replace('#Argon2-Salt: ([0-9a-f]+)#', '$1', $key[$offset++])));
+                        $v3key = self::generateV3Key($password, $flavour, $memory, $passes, $salt);
+                        $symkey = $v3key['symkey'];
+                        $symiv = $v3key['symiv'];
+                        $hashkey = $v3key['hashkey'];
                         break;
                     case 2:
                         $symkey = self::generateV2Key($password, 32);
-                        $symiv = \str_repeat("\0", $crypto->getBlockLength() >> 3);
+                        $symiv = \str_repeat("\x00", $crypto->getBlockLength() >> 3);
                         $hashkey .= $password;
                 }
         }
         switch ($version) {
             case 3:
-                $hash = new \PostSMTP\Vendor\phpseclib3\Crypt\Hash('sha256');
+                $hash = new Hash('sha256');
                 $hash->setKey($hashkey);
                 break;
             case 2:
-                $hash = new \PostSMTP\Vendor\phpseclib3\Crypt\Hash('sha1');
+                $hash = new Hash('sha1');
                 $hash->setKey(\sha1($hashkey, \true));
         }
         $privateLength = \trim(\preg_replace('#Private-Lines: (\\d+)#', '$1', $key[$offset++]));
-        $private = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_decode(\implode('', \array_map('trim', \array_slice($key, $offset, $privateLength))));
+        $private = Strings::base64_decode(\implode('', \array_map('trim', \array_slice($key, $offset, $privateLength))));
         if ($encryption != 'none') {
             $crypto->setKey($symkey);
             $crypto->setIV($symiv);
             $crypto->disablePadding();
             $private = $crypto->decrypt($private);
         }
-        $source .= \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('s', $private);
+        $source .= Strings::packSSH2('s', $private);
         $hmac = \trim(\preg_replace('#Private-MAC: (.+)#', '$1', $key[$offset + $privateLength]));
-        $hmac = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::hex2bin($hmac);
+        $hmac = Strings::hex2bin($hmac);
         if (!\hash_equals($hash->hash($source), $hmac)) {
             throw new \UnexpectedValueException('MAC validation error');
         }
@@ -255,43 +258,46 @@ abstract class PuTTY
         $key = "PuTTY-User-Key-File-{$version}: {$type}\r\n";
         $key .= "Encryption: {$encryption}\r\n";
         $key .= "Comment: {$comment}\r\n";
-        $public = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('s', $type) . $public;
-        $source = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('ssss', $type, $encryption, $comment, $public);
-        $public = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($public);
+        $public = Strings::packSSH2('s', $type) . $public;
+        $source = Strings::packSSH2('ssss', $type, $encryption, $comment, $public);
+        $public = Strings::base64_encode($public);
         $key .= "Public-Lines: " . (\strlen($public) + 63 >> 6) . "\r\n";
         $key .= \chunk_split($public, 64);
         if (empty($password) && !\is_string($password)) {
-            $source .= \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('s', $private);
+            $source .= Strings::packSSH2('s', $private);
             switch ($version) {
                 case 3:
-                    $hash = new \PostSMTP\Vendor\phpseclib3\Crypt\Hash('sha256');
+                    $hash = new Hash('sha256');
                     $hash->setKey('');
                     break;
                 case 2:
-                    $hash = new \PostSMTP\Vendor\phpseclib3\Crypt\Hash('sha1');
+                    $hash = new Hash('sha1');
                     $hash->setKey(\sha1('putty-private-key-file-mac-key', \true));
             }
         } else {
-            $private .= \PostSMTP\Vendor\phpseclib3\Crypt\Random::string(16 - (\strlen($private) & 15));
-            $source .= \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('s', $private);
-            $crypto = new \PostSMTP\Vendor\phpseclib3\Crypt\AES('cbc');
+            $private .= Random::string(16 - (\strlen($private) & 15));
+            $source .= Strings::packSSH2('s', $private);
+            $crypto = new AES('cbc');
             switch ($version) {
                 case 3:
-                    $salt = \PostSMTP\Vendor\phpseclib3\Crypt\Random::string(16);
+                    $salt = Random::string(16);
                     $key .= "Key-Derivation: Argon2id\r\n";
                     $key .= "Argon2-Memory: 8192\r\n";
                     $key .= "Argon2-Passes: 13\r\n";
                     $key .= "Argon2-Parallelism: 1\r\n";
-                    $key .= "Argon2-Salt: " . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::bin2hex($salt) . "\r\n";
-                    \extract(self::generateV3Key($password, 'Argon2id', 8192, 13, $salt));
-                    $hash = new \PostSMTP\Vendor\phpseclib3\Crypt\Hash('sha256');
+                    $key .= "Argon2-Salt: " . Strings::bin2hex($salt) . "\r\n";
+                    $v3key = self::generateV3Key($password, 'Argon2id', 8192, 13, $salt);
+                    $symkey = $v3key['symkey'];
+                    $symiv = $v3key['symiv'];
+                    $hashkey = $v3key['hashkey'];
+                    $hash = new Hash('sha256');
                     $hash->setKey($hashkey);
                     break;
                 case 2:
                     $symkey = self::generateV2Key($password, 32);
-                    $symiv = \str_repeat("\0", $crypto->getBlockLength() >> 3);
+                    $symiv = \str_repeat("\x00", $crypto->getBlockLength() >> 3);
                     $hashkey = 'putty-private-key-file-mac-key' . $password;
-                    $hash = new \PostSMTP\Vendor\phpseclib3\Crypt\Hash('sha1');
+                    $hash = new Hash('sha1');
                     $hash->setKey(\sha1($hashkey, \true));
             }
             $crypto->setKey($symkey);
@@ -300,10 +306,10 @@ abstract class PuTTY
             $private = $crypto->encrypt($private);
             $mac = $hash->hash($source);
         }
-        $private = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($private);
+        $private = Strings::base64_encode($private);
         $key .= 'Private-Lines: ' . (\strlen($private) + 63 >> 6) . "\r\n";
         $key .= \chunk_split($private, 64);
-        $key .= 'Private-MAC: ' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::bin2hex($hash->hash($source)) . "\r\n";
+        $key .= 'Private-MAC: ' . Strings::bin2hex($hash->hash($source)) . "\r\n";
         return $key;
     }
     /**
@@ -318,7 +324,7 @@ abstract class PuTTY
     protected static function wrapPublicKey($key, $type)
     {
         $key = \pack('Na*a*', \strlen($type), $type, $key);
-        $key = "---- BEGIN SSH2 PUBLIC KEY ----\r\n" . 'Comment: "' . \str_replace(['\\', '"'], ['\\\\', '\\"'], self::$comment) . "\"\r\n" . \chunk_split(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($key), 64) . '---- END SSH2 PUBLIC KEY ----';
+        $key = "---- BEGIN SSH2 PUBLIC KEY ----\r\n" . 'Comment: "' . \str_replace(['\\', '"'], ['\\\\', '\\"'], self::$comment) . "\"\r\n" . \chunk_split(Strings::base64_encode($key), 64) . '---- END SSH2 PUBLIC KEY ----';
         return $key;
     }
 }

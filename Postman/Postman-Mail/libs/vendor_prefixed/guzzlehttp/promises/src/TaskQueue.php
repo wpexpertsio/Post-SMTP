@@ -14,7 +14,7 @@ namespace PostSMTP\Vendor\GuzzleHttp\Promise;
  *
  * @final
  */
-class TaskQueue implements \PostSMTP\Vendor\GuzzleHttp\Promise\TaskQueueInterface
+class TaskQueue implements TaskQueueInterface
 {
     private $enableShutdown = \true;
     private $queue = [];

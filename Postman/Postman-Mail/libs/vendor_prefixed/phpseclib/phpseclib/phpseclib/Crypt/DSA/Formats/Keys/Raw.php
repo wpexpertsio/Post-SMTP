@@ -36,12 +36,12 @@ abstract class Raw
         }
         switch (\true) {
             case !isset($key['p']) || !isset($key['q']) || !isset($key['g']):
-            case !$key['p'] instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger:
-            case !$key['q'] instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger:
-            case !$key['g'] instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger:
+            case !$key['p'] instanceof BigInteger:
+            case !$key['q'] instanceof BigInteger:
+            case !$key['g'] instanceof BigInteger:
             case !isset($key['x']) && !isset($key['y']):
-            case isset($key['x']) && !$key['x'] instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger:
-            case isset($key['y']) && !$key['y'] instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger:
+            case isset($key['x']) && !$key['x'] instanceof BigInteger:
+            case isset($key['y']) && !$key['y'] instanceof BigInteger:
                 throw new \UnexpectedValueException('Key appears to be malformed');
         }
         $options = ['p' => 1, 'q' => 1, 'g' => 1, 'x' => 1, 'y' => 1];
@@ -50,28 +50,28 @@ abstract class Raw
     /**
      * Convert a private key to the appropriate format.
      *
-     * @param \phpseclib3\Math\BigInteger $p
-     * @param \phpseclib3\Math\BigInteger $q
-     * @param \phpseclib3\Math\BigInteger $g
-     * @param \phpseclib3\Math\BigInteger $y
-     * @param \phpseclib3\Math\BigInteger $x
+     * @param BigInteger $p
+     * @param BigInteger $q
+     * @param BigInteger $g
+     * @param BigInteger $y
+     * @param BigInteger $x
      * @param string $password optional
      * @return string
      */
-    public static function savePrivateKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $p, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $q, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $g, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $y, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $x, $password = '')
+    public static function savePrivateKey(BigInteger $p, BigInteger $q, BigInteger $g, BigInteger $y, BigInteger $x, $password = '')
     {
         return \compact('p', 'q', 'g', 'y', 'x');
     }
     /**
      * Convert a public key to the appropriate format
      *
-     * @param \phpseclib3\Math\BigInteger $p
-     * @param \phpseclib3\Math\BigInteger $q
-     * @param \phpseclib3\Math\BigInteger $g
-     * @param \phpseclib3\Math\BigInteger $y
+     * @param BigInteger $p
+     * @param BigInteger $q
+     * @param BigInteger $g
+     * @param BigInteger $y
      * @return string
      */
-    public static function savePublicKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $p, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $q, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $g, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $y)
+    public static function savePublicKey(BigInteger $p, BigInteger $q, BigInteger $g, BigInteger $y)
     {
         return \compact('p', 'q', 'g', 'y');
     }

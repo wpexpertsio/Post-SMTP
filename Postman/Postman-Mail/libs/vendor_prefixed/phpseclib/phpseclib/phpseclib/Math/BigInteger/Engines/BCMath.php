@@ -19,7 +19,7 @@ use PostSMTP\Vendor\phpseclib3\Exception\BadConfigurationException;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
+class BCMath extends Engine
 {
     /**
      * Can Bitwise operations be done fast?
@@ -34,6 +34,10 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @see parent::setModExpEngine
      */
     const ENGINE_DIR = 'BCMath';
+    /**
+     * Test to see if bcmod() accepts 2 or 3 parameters
+     */
+    const BCMOD_THREE_PARAMS = \PHP_VERSION_ID >= 72000;
     /**
      * Test for engine validity
      *
@@ -57,7 +61,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
             static::$isValidEngine[static::class] = self::isValidEngine();
         }
         if (!static::$isValidEngine[static::class]) {
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\BadConfigurationException('BCMath is not setup correctly on this system');
+            throw new BadConfigurationException('BCMath is not setup correctly on this system');
         }
         $this->value = '0';
         parent::__construct($x, $base);
@@ -73,7 +77,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
         switch (\abs($base)) {
             case 256:
                 // round $len to the nearest 4
-                $len = \strlen($this->value) + 3 & 0xfffffffc;
+                $len = \strlen($this->value) + 3 & ~3;
                 $x = \str_pad($this->value, $len, \chr(0), \STR_PAD_LEFT);
                 $this->value = '0';
                 for ($i = 0; $i < $len; $i += 4) {
@@ -87,7 +91,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
                 break;
             case 16:
                 $x = \strlen($this->value) & 1 ? '0' . $this->value : $this->value;
-                $temp = new self(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::hex2bin($x), 256);
+                $temp = new self(Strings::hex2bin($x), 256);
                 $this->value = $this->is_negative ? '-' . $temp->value : $temp->value;
                 $this->is_negative = \false;
                 break;
@@ -126,8 +130,8 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
             $current = \substr($current, 1);
         }
         while (\bccomp($current, '0', 0) > 0) {
-            $temp = \bcmod($current, '16777216');
-            $value = \chr($temp >> 16) . \chr($temp >> 8) . \chr($temp) . $value;
+            $temp = self::BCMOD_THREE_PARAMS ? \bcmod($current, '16777216', 0) : \bcmod($current, '16777216');
+            $value = \chr($temp >> 16) . \chr($temp >> 8 & 0xff) . \chr($temp & 0xff) . $value;
             $current = \bcdiv($current, '16777216', 0);
         }
         return $this->precision > 0 ? \substr(\str_pad($value, $this->precision >> 3, \chr(0), \STR_PAD_LEFT), -($this->precision >> 3)) : \ltrim($value, \chr(0));
@@ -138,10 +142,10 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $y
      * @return BCMath
      */
-    public function add(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $y)
+    public function add(BCMath $y)
     {
         $temp = new self();
-        $temp->value = \bcadd($this->value, $y->value);
+        $temp->value = \bcadd($this->value, $y->value, 0);
         return $this->normalize($temp);
     }
     /**
@@ -150,10 +154,10 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $y
      * @return BCMath
      */
-    public function subtract(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $y)
+    public function subtract(BCMath $y)
     {
         $temp = new self();
-        $temp->value = \bcsub($this->value, $y->value);
+        $temp->value = \bcsub($this->value, $y->value, 0);
         return $this->normalize($temp);
     }
     /**
@@ -162,10 +166,10 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $x
      * @return BCMath
      */
-    public function multiply(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $x)
+    public function multiply(BCMath $x)
     {
         $temp = new self();
-        $temp->value = \bcmul($this->value, $x->value);
+        $temp->value = \bcmul($this->value, $x->value, 0);
         return $this->normalize($temp);
     }
     /**
@@ -179,12 +183,12 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $y
      * @return array{static, static}
      */
-    public function divide(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $y)
+    public function divide(BCMath $y)
     {
         $quotient = new self();
         $remainder = new self();
         $quotient->value = \bcdiv($this->value, $y->value, 0);
-        $remainder->value = \bcmod($this->value, $y->value);
+        $remainder->value = self::BCMOD_THREE_PARAMS ? \bcmod($this->value, $y->value, 0) : \bcmod($this->value, $y->value);
         if ($remainder->value[0] == '-') {
             $remainder->value = \bcadd($remainder->value, $y->value[0] == '-' ? \substr($y->value, 1) : $y->value, 0);
         }
@@ -198,7 +202,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $n
      * @return false|BCMath
      */
-    public function modInverse(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $n)
+    public function modInverse(BCMath $n)
     {
         return $this->modInverseHelper($n);
     }
@@ -213,7 +217,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $n
      * @return array{gcd: static, x: static, y: static}
      */
-    public function extendedGCD(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $n)
+    public function extendedGCD(BCMath $n)
     {
         // it might be faster to use the binary xGCD algorithim here, as well, but (1) that algorithim works
         // best when the base is a power of 2 and (2) i don't think it'd make much difference, anyway.  as is,
@@ -246,10 +250,9 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $n
      * @return BCMath
      */
-    public function gcd(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $n)
+    public function gcd(BCMath $n)
     {
-        \extract($this->extendedGCD($n));
-        /** @var BCMath $gcd */
+        $gcd = $this->extendedGCD($n)['gcd'];
         return $gcd;
     }
     /**
@@ -269,7 +272,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $x
      * @return BCMath
      */
-    public function bitwise_and(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $x)
+    public function bitwise_and(BCMath $x)
     {
         return $this->bitwiseAndHelper($x);
     }
@@ -279,9 +282,9 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $x
      * @return BCMath
      */
-    public function bitwise_or(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $x)
+    public function bitwise_or(BCMath $x)
     {
-        return $this->bitwiseXorHelper($x);
+        return $this->bitwiseOrHelper($x);
     }
     /**
      * Logical Exclusive Or
@@ -289,7 +292,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $x
      * @return BCMath
      */
-    public function bitwise_xor(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $x)
+    public function bitwise_xor(BCMath $x)
     {
         return $this->bitwiseXorHelper($x);
     }
@@ -339,7 +342,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @return int in case < 0 if $this is less than $y; > 0 if $this is greater than $y, and 0 if they are equal.
      * @see self::equals()
      */
-    public function compare(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $y)
+    public function compare(BCMath $y)
     {
         return \bccomp($this->value, $y->value, 0);
     }
@@ -351,7 +354,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $x
      * @return bool
      */
-    public function equals(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $x)
+    public function equals(BCMath $x)
     {
         return $this->value == $x->value;
     }
@@ -362,7 +365,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $n
      * @return BCMath
      */
-    public function modPow(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $n)
+    public function modPow(BCMath $e, BCMath $n)
     {
         return $this->powModOuter($e, $n);
     }
@@ -375,7 +378,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $n
      * @return BCMath
      */
-    public function powMod(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $n)
+    public function powMod(BCMath $e, BCMath $n)
     {
         return $this->powModOuter($e, $n);
     }
@@ -386,13 +389,13 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $n
      * @return BCMath
      */
-    protected function powModInner(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $n)
+    protected function powModInner(BCMath $e, BCMath $n)
     {
         try {
             $class = static::$modexpEngine[static::class];
             return $class::powModHelper($this, $e, $n, static::class);
         } catch (\Exception $err) {
-            return \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath\DefaultEngine::powModHelper($this, $e, $n, static::class);
+            return BCMath\DefaultEngine::powModHelper($this, $e, $n, static::class);
         }
     }
     /**
@@ -403,12 +406,12 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $result
      * @return BCMath
      */
-    protected function normalize(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $result)
+    protected function normalize(BCMath $result)
     {
         $result->precision = $this->precision;
         $result->bitmask = $this->bitmask;
         if ($result->bitmask !== \false) {
-            $result->value = \bcmod($result->value, $result->bitmask->value);
+            $result->value = self::BCMOD_THREE_PARAMS ? \bcmod($result->value, $result->bitmask->value, 0) : \bcmod($result->value, $result->bitmask->value);
         }
         return $result;
     }
@@ -421,7 +424,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $max
      * @return false|BCMath
      */
-    public static function randomRangePrime(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $min, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $max)
+    public static function randomRangePrime(BCMath $min, BCMath $max)
     {
         return self::randomRangePrimeOuter($min, $max);
     }
@@ -438,7 +441,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $max
      * @return BCMath
      */
-    public static function randomRange(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $min, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $max)
+    public static function randomRange(BCMath $min, BCMath $max)
     {
         return self::randomRangeHelper($min, $max);
     }
@@ -452,7 +455,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
     protected function make_odd()
     {
         if (!$this->isOdd()) {
-            $this->value = \bcadd($this->value, '1');
+            $this->value = \bcadd($this->value, '1', 0);
         }
     }
     /**
@@ -473,7 +476,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
         }
         $value = $this->value;
         foreach (self::PRIMES as $prime) {
-            $r = \bcmod($this->value, $prime);
+            $r = self::BCMOD_THREE_PARAMS ? \bcmod($this->value, $prime, 0) : \bcmod($this->value, $prime);
             if ($r == '0') {
                 return $this->value == $prime;
             }
@@ -489,7 +492,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @return int
      * @see self::isPrime()
      */
-    public static function scan1divide(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $r)
+    public static function scan1divide(BCMath $r)
     {
         $r_value =& $r->value;
         $s = 0;
@@ -506,10 +509,10 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $n
      * @return BCMath
      */
-    public function pow(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $n)
+    public function pow(BCMath $n)
     {
         $temp = new self();
-        $temp->value = \bcpow($this->value, $n->value);
+        $temp->value = \bcpow($this->value, $n->value, 0);
         return $this->normalize($temp);
     }
     /**
@@ -518,7 +521,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath ...$nums
      * @return BCMath
      */
-    public static function min(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath ...$nums)
+    public static function min(BCMath ...$nums)
     {
         return self::minHelper($nums);
     }
@@ -528,7 +531,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath ...$nums
      * @return BCMath
      */
-    public static function max(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath ...$nums)
+    public static function max(BCMath ...$nums)
     {
         return self::maxHelper($nums);
     }
@@ -539,7 +542,7 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      * @param BCMath $max
      * @return bool
      */
-    public function between(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $min, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $max)
+    public function between(BCMath $min, BCMath $max)
     {
         return $this->compare($min) >= 0 && $this->compare($max) <= 0;
     }
@@ -571,7 +574,8 @@ class BCMath extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\Engine
      */
     public function testBit($x)
     {
-        return \bccomp(\bcmod($this->value, \bcpow('2', $x + 1, 0)), \bcpow('2', $x, 0), 0) >= 0;
+        $divisor = \bcpow('2', $x + 1, 0);
+        return \bccomp(self::BCMOD_THREE_PARAMS ? \bcmod($this->value, $divisor, 0) : \bcmod($this->value, $divisor), \bcpow('2', $x, 0), 0) >= 0;
     }
     /**
      * Is Negative?

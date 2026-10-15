@@ -39,11 +39,11 @@ abstract class XML
      */
     public static function load($key, $password = '')
     {
-        if (!\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::is_stringable($key)) {
+        if (!Strings::is_stringable($key)) {
             throw new \UnexpectedValueException('Key should be a string - not a ' . \gettype($key));
         }
         if (!\class_exists('DOMDocument')) {
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\BadConfigurationException('The dom extension is not setup correctly on this system');
+            throw new BadConfigurationException('The dom extension is not setup correctly on this system');
         }
         $components = ['isPublicKey' => \false, 'primes' => [], 'exponents' => [], 'coefficients' => []];
         $use_errors = \libxml_use_internal_errors(\true);
@@ -63,7 +63,7 @@ abstract class XML
             if (!$temp->length) {
                 continue;
             }
-            $value = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_decode($temp->item(0)->nodeValue), 256);
+            $value = new BigInteger(Strings::base64_decode($temp->item(0)->nodeValue), 256);
             switch ($key) {
                 case 'modulus':
                     $components['modulus'] = $value;
@@ -107,34 +107,34 @@ abstract class XML
     /**
      * Convert a private key to the appropriate format.
      *
-     * @param \phpseclib3\Math\BigInteger $n
-     * @param \phpseclib3\Math\BigInteger $e
-     * @param \phpseclib3\Math\BigInteger $d
+     * @param BigInteger $n
+     * @param BigInteger $e
+     * @param BigInteger $d
      * @param array $primes
      * @param array $exponents
      * @param array $coefficients
      * @param string $password optional
      * @return string
      */
-    public static function savePrivateKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $n, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $d, array $primes, array $exponents, array $coefficients, $password = '')
+    public static function savePrivateKey(BigInteger $n, BigInteger $e, BigInteger $d, array $primes, array $exponents, array $coefficients, $password = '')
     {
         if (\count($primes) != 2) {
             throw new \InvalidArgumentException('XML does not support multi-prime RSA keys');
         }
         if (!empty($password) && \is_string($password)) {
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedFormatException('XML private keys do not support encryption');
+            throw new UnsupportedFormatException('XML private keys do not support encryption');
         }
-        return "<RSAKeyPair>\r\n" . '  <Modulus>' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($n->toBytes()) . "</Modulus>\r\n" . '  <Exponent>' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($e->toBytes()) . "</Exponent>\r\n" . '  <P>' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($primes[1]->toBytes()) . "</P>\r\n" . '  <Q>' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($primes[2]->toBytes()) . "</Q>\r\n" . '  <DP>' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($exponents[1]->toBytes()) . "</DP>\r\n" . '  <DQ>' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($exponents[2]->toBytes()) . "</DQ>\r\n" . '  <InverseQ>' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($coefficients[2]->toBytes()) . "</InverseQ>\r\n" . '  <D>' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($d->toBytes()) . "</D>\r\n" . '</RSAKeyPair>';
+        return "<RSAKeyPair>\r\n" . '  <Modulus>' . Strings::base64_encode($n->toBytes()) . "</Modulus>\r\n" . '  <Exponent>' . Strings::base64_encode($e->toBytes()) . "</Exponent>\r\n" . '  <P>' . Strings::base64_encode($primes[1]->toBytes()) . "</P>\r\n" . '  <Q>' . Strings::base64_encode($primes[2]->toBytes()) . "</Q>\r\n" . '  <DP>' . Strings::base64_encode($exponents[1]->toBytes()) . "</DP>\r\n" . '  <DQ>' . Strings::base64_encode($exponents[2]->toBytes()) . "</DQ>\r\n" . '  <InverseQ>' . Strings::base64_encode($coefficients[2]->toBytes()) . "</InverseQ>\r\n" . '  <D>' . Strings::base64_encode($d->toBytes()) . "</D>\r\n" . '</RSAKeyPair>';
     }
     /**
      * Convert a public key to the appropriate format
      *
-     * @param \phpseclib3\Math\BigInteger $n
-     * @param \phpseclib3\Math\BigInteger $e
+     * @param BigInteger $n
+     * @param BigInteger $e
      * @return string
      */
-    public static function savePublicKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $n, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $e)
+    public static function savePublicKey(BigInteger $n, BigInteger $e)
     {
-        return "<RSAKeyValue>\r\n" . '  <Modulus>' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($n->toBytes()) . "</Modulus>\r\n" . '  <Exponent>' . \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($e->toBytes()) . "</Exponent>\r\n" . '</RSAKeyValue>';
+        return "<RSAKeyValue>\r\n" . '  <Modulus>' . Strings::base64_encode($n->toBytes()) . "</Modulus>\r\n" . '  <Exponent>' . Strings::base64_encode($e->toBytes()) . "</Exponent>\r\n" . '</RSAKeyValue>';
     }
 }

@@ -25,7 +25,7 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class PuTTY extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Keys\PuTTY
+abstract class PuTTY extends Progenitor
 {
     /**
      * Public Handler
@@ -52,47 +52,50 @@ abstract class PuTTY extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
         if (!isset($components['private'])) {
             return $components;
         }
-        \extract($components);
+        $type = $components['type'];
+        $comment = $components['comment'];
+        $public = $components['public'];
+        $private = $components['private'];
         unset($components['public'], $components['private']);
-        list($p, $q, $g, $y) = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::unpackSSH2('iiii', $public);
-        list($x) = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::unpackSSH2('i', $private);
+        list($p, $q, $g, $y) = Strings::unpackSSH2('iiii', $public);
+        list($x) = Strings::unpackSSH2('i', $private);
         return \compact('p', 'q', 'g', 'y', 'x', 'comment');
     }
     /**
      * Convert a private key to the appropriate format.
      *
-     * @param \phpseclib3\Math\BigInteger $p
-     * @param \phpseclib3\Math\BigInteger $q
-     * @param \phpseclib3\Math\BigInteger $g
-     * @param \phpseclib3\Math\BigInteger $y
-     * @param \phpseclib3\Math\BigInteger $x
+     * @param BigInteger $p
+     * @param BigInteger $q
+     * @param BigInteger $g
+     * @param BigInteger $y
+     * @param BigInteger $x
      * @param string $password optional
      * @param array $options optional
      * @return string
      */
-    public static function savePrivateKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $p, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $q, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $g, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $y, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $x, $password = \false, array $options = [])
+    public static function savePrivateKey(BigInteger $p, BigInteger $q, BigInteger $g, BigInteger $y, BigInteger $x, $password = \false, array $options = [])
     {
         if ($q->getLength() != 160) {
             throw new \InvalidArgumentException('SSH only supports keys with an N (length of Group Order q) of 160');
         }
-        $public = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('iiii', $p, $q, $g, $y);
-        $private = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('i', $x);
-        return self::wrapPrivateKey($public, $private, 'ssh-dsa', $password, $options);
+        $public = Strings::packSSH2('iiii', $p, $q, $g, $y);
+        $private = Strings::packSSH2('i', $x);
+        return self::wrapPrivateKey($public, $private, 'ssh-dss', $password, $options);
     }
     /**
      * Convert a public key to the appropriate format
      *
-     * @param \phpseclib3\Math\BigInteger $p
-     * @param \phpseclib3\Math\BigInteger $q
-     * @param \phpseclib3\Math\BigInteger $g
-     * @param \phpseclib3\Math\BigInteger $y
+     * @param BigInteger $p
+     * @param BigInteger $q
+     * @param BigInteger $g
+     * @param BigInteger $y
      * @return string
      */
-    public static function savePublicKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $p, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $q, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $g, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $y)
+    public static function savePublicKey(BigInteger $p, BigInteger $q, BigInteger $g, BigInteger $y)
     {
         if ($q->getLength() != 160) {
             throw new \InvalidArgumentException('SSH only supports keys with an N (length of Group Order q) of 160');
         }
-        return self::wrapPublicKey(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('iiii', $p, $q, $g, $y), 'ssh-dsa');
+        return self::wrapPublicKey(Strings::packSSH2('iiii', $p, $q, $g, $y), 'ssh-dss');
     }
 }

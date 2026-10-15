@@ -6,10 +6,8 @@ use PostSMTP\Vendor\Psr\Http\Client\NetworkExceptionInterface;
 use PostSMTP\Vendor\Psr\Http\Message\RequestInterface;
 /**
  * Exception thrown when a connection cannot be established.
- *
- * Note that no response is present for a ConnectException
  */
-class ConnectException extends \PostSMTP\Vendor\GuzzleHttp\Exception\TransferException implements \PostSMTP\Vendor\Psr\Http\Client\NetworkExceptionInterface
+class ConnectException extends TransferException implements NetworkExceptionInterface
 {
     /**
      * @var RequestInterface
@@ -19,7 +17,7 @@ class ConnectException extends \PostSMTP\Vendor\GuzzleHttp\Exception\TransferExc
      * @var array
      */
     private $handlerContext;
-    public function __construct(string $message, \PostSMTP\Vendor\Psr\Http\Message\RequestInterface $request, \Throwable $previous = null, array $handlerContext = [])
+    public function __construct(string $message, RequestInterface $request, ?\Throwable $previous = null, array $handlerContext = [])
     {
         parent::__construct($message, 0, $previous);
         $this->request = $request;
@@ -28,7 +26,7 @@ class ConnectException extends \PostSMTP\Vendor\GuzzleHttp\Exception\TransferExc
     /**
      * Get the request that caused the exception
      */
-    public function getRequest() : \PostSMTP\Vendor\Psr\Http\Message\RequestInterface
+    public function getRequest() : RequestInterface
     {
         return $this->request;
     }

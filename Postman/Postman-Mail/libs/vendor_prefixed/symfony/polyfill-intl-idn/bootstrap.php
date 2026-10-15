@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-use PostSMTP\Vendor\Symfony\Polyfill\Intl\Idn as p;
+use Symfony\Polyfill\Intl\Idn as p;
 
 if (extension_loaded('intl')) {
     return;

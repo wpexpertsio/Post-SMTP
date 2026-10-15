@@ -1,0 +1,59 @@
+<?php
+
+/**
+ * @author    Jim Wigginton <terrafrost@php.net>
+ * @copyright 2015 Jim Wigginton
+ * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
+ */
+namespace PostSMTP\Vendor\phpseclib3\Tests\Unit\Crypt\DSA;
+
+use PostSMTP\Vendor\phpseclib3\Crypt\DSA;
+use PostSMTP\Vendor\phpseclib3\Crypt\DSA\Parameters;
+use PostSMTP\Vendor\phpseclib3\Crypt\DSA\PrivateKey;
+use PostSMTP\Vendor\phpseclib3\Crypt\DSA\PublicKey;
+use PostSMTP\Vendor\phpseclib3\Exception\BadConfigurationException;
+use PostSMTP\Vendor\phpseclib3\Tests\PhpseclibTestCase;
+/**
+ * @requires PHP 7.0
+ */
+class CreateKeyTest extends PhpseclibTestCase
+{
+    public function testCreateParameters()
+    {
+        $dsa = DSA::createParameters();
+        $this->assertInstanceOf(Parameters::class, $dsa);
+        $this->assertMatchesRegularExpression('#BEGIN DSA PARAMETERS#', "{$dsa}");
+        try {
+            DSA::createParameters(100, 100);
+        } catch (\Exception $e) {
+            $this->assertInstanceOf(\Exception::class, $e);
+        }
+        $dsa = DSA::createParameters(512, 160);
+        $this->assertInstanceOf(Parameters::class, $dsa);
+        $this->assertMatchesRegularExpression('#BEGIN DSA PARAMETERS#', "{$dsa}");
+        return $dsa;
+    }
+    /** @depends testCreateParameters */
+    public function testCreateKey($params)
+    {
+        // libsodium doesn't support DSA but it still ought not result in any errors outside of the BadConfigurationException being thrown
+        $engines = ['libsodium', 'OpenSSL', 'PHP'];
+        foreach ($engines as $engine) {
+            try {
+                DSA::forceEngine($engine);
+                $privatekey = DSA::createKey();
+                $this->assertInstanceOf(PrivateKey::class, $privatekey);
+                $this->assertInstanceOf(PublicKey::class, $privatekey->getPublicKey());
+                $privatekey = DSA::createKey($params);
+                $this->assertInstanceOf(PrivateKey::class, $privatekey);
+                $this->assertInstanceOf(PublicKey::class, $privatekey->getPublicKey());
+                $privatekey = DSA::createKey(512, 160);
+                $this->assertInstanceOf(PrivateKey::class, $privatekey);
+                $this->assertInstanceOf(PublicKey::class, $privatekey->getPublicKey());
+            } catch (BadConfigurationException $e) {
+            }
+        }
+        // reset
+        DSA::forceEngine();
+    }
+}

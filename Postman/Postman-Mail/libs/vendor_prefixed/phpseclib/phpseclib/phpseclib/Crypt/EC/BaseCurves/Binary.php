@@ -28,12 +28,12 @@ use PostSMTP\Vendor\phpseclib3\Math\BinaryField\Integer as BinaryInteger;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class Binary extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base
+class Binary extends Base
 {
     /**
      * Binary Field Integer factory
      *
-     * @var \phpseclib3\Math\BinaryField
+     * @var BinaryField
      */
     protected $factory;
     /**
@@ -78,8 +78,8 @@ class Binary extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base
     public function setModulo(...$modulo)
     {
         $this->modulo = $modulo;
-        $this->factory = new \PostSMTP\Vendor\phpseclib3\Math\BinaryField(...$modulo);
-        $this->one = $this->factory->newInteger("\1");
+        $this->factory = new BinaryField(...$modulo);
+        $this->one = $this->factory->newInteger("\x01");
     }
     /**
      * Set coefficients a and b
@@ -104,9 +104,9 @@ class Binary extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base
     public function setBasePoint($x, $y)
     {
         switch (\true) {
-            case !\is_string($x) && !$x instanceof \PostSMTP\Vendor\phpseclib3\Math\BinaryField\Integer:
+            case !\is_string($x) && !$x instanceof BinaryInteger:
                 throw new \UnexpectedValueException('PostSMTP\\Vendor\\Argument 1 passed to Binary::setBasePoint() must be a string or an instance of BinaryField\\Integer');
-            case !\is_string($y) && !$y instanceof \PostSMTP\Vendor\phpseclib3\Math\BinaryField\Integer:
+            case !\is_string($y) && !$y instanceof BinaryInteger:
                 throw new \UnexpectedValueException('PostSMTP\\Vendor\\Argument 2 passed to Binary::setBasePoint() must be a string or an instance of BinaryField\\Integer');
         }
         if (!isset($this->factory)) {
@@ -264,7 +264,7 @@ class Binary extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base
     /**
      * Returns the modulo
      *
-     * @return \phpseclib3\Math\BigInteger
+     * @return BigInteger
      */
     public function getModulo()
     {
