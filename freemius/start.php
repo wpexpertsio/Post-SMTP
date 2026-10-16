@@ -284,7 +284,9 @@
         } else {
             $current_theme = wp_get_theme();
             // Detect if current theme is the one registered as newer SDK
+            // Post SMTP patch: backport of Freemius/wordpress-sdk#892 (theme plugin_path is the bare stylesheet). Drop when the SDK ships it.
             $is_newest_sdk_module_active = (
+                $fs_newest_sdk->plugin_path === $current_theme->get_stylesheet() ||
                 strpos(
                     $fs_newest_sdk->plugin_path,
                     '../' . $themes_directory_name . '/' . $current_theme->get_stylesheet() . '/'
@@ -300,6 +302,7 @@
             if ( ! $is_newest_sdk_module_active && $current_theme_parent instanceof WP_Theme ) {
                 // Detect if current theme parent is the one registered as newer SDK
                 $is_newest_sdk_module_active = (
+                    $fs_newest_sdk->plugin_path === $current_theme_parent->get_stylesheet() ||
                     strpos(
                         $fs_newest_sdk->plugin_path,
                         '../' . $themes_directory_name . '/' . $current_theme_parent->get_stylesheet() . '/'
