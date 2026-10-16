@@ -17,7 +17,7 @@ use PostSMTP\Vendor\phpseclib3\Crypt\DH;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\DH
+final class PrivateKey extends DH
 {
     use Common\Traits\PasswordProtected;
     /**
@@ -35,7 +35,7 @@ class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\DH
     /**
      * Returns the public key
      *
-     * @return DH\PublicKey
+     * @return PublicKey
      */
     public function getPublicKey()
     {
@@ -44,7 +44,7 @@ class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\DH
             $this->publicKey = $this->base->powMod($this->privateKey, $this->prime);
         }
         $key = $type::savePublicKey($this->prime, $this->base, $this->publicKey);
-        return \PostSMTP\Vendor\phpseclib3\Crypt\DH::loadFormat('PKCS8', $key);
+        return DH::loadFormat('PKCS8', $key);
     }
     /**
      * Returns the private key

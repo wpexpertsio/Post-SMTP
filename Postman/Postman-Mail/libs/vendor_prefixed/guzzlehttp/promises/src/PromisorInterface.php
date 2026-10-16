@@ -11,5 +11,5 @@ interface PromisorInterface
     /**
      * Returns a promise.
      */
-    public function promise() : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface;
+    public function promise() : PromiseInterface;
 }

@@ -39,26 +39,26 @@ abstract class MontgomeryPublic
     {
         switch (\strlen($key)) {
             case 32:
-                $curve = new \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Curve25519();
+                $curve = new Curve25519();
                 break;
             case 56:
-                $curve = new \PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves\Curve448();
+                $curve = new Curve448();
                 break;
             default:
                 throw new \LengthException('The only supported lengths are 32 and 56');
         }
         $components = ['curve' => $curve];
-        $components['QA'] = [$components['curve']->convertInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(\strrev($key), 256))];
+        $components['QA'] = [$components['curve']->convertInteger(new BigInteger(\strrev($key), 256))];
         return $components;
     }
     /**
      * Convert an EC public key to the appropriate format
      *
-     * @param \phpseclib3\Crypt\EC\BaseCurves\Montgomery $curve
+     * @param MontgomeryCurve $curve
      * @param \phpseclib3\Math\Common\FiniteField\Integer[] $publicKey
      * @return string
      */
-    public static function savePublicKey(\PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgomery $curve, array $publicKey)
+    public static function savePublicKey(MontgomeryCurve $curve, array $publicKey)
     {
         return \strrev($publicKey[0]->toBytes());
     }

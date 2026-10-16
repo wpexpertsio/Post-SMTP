@@ -24,7 +24,6 @@
  */
 namespace PostSMTP\Vendor\phpseclib3\Crypt\RSA\Formats\Keys;
 
-use PostSMTP\Vendor\phpseclib3\Common\Functions\Strings;
 use PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Keys\PKCS8 as Progenitor;
 use PostSMTP\Vendor\phpseclib3\File\ASN1;
 use PostSMTP\Vendor\phpseclib3\Math\BigInteger;
@@ -33,7 +32,7 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Keys\PKCS8
+abstract class PKCS8 extends Progenitor
 {
     /**
      * OID Name
@@ -62,29 +61,15 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
      */
     public static function load($key, $password = '')
     {
-        if (!\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::is_stringable($key)) {
-            throw new \UnexpectedValueException('Key should be a string - not a ' . \gettype($key));
-        }
-        if (\strpos($key, 'PUBLIC') !== \false) {
-            $components = ['isPublicKey' => \true];
-        } elseif (\strpos($key, 'PRIVATE') !== \false) {
-            $components = ['isPublicKey' => \false];
-        } else {
-            $components = [];
-        }
         $key = parent::load($key, $password);
         if (isset($key['privateKey'])) {
-            if (!isset($components['isPublicKey'])) {
-                $components['isPublicKey'] = \false;
-            }
+            $components['isPublicKey'] = \false;
             $type = 'private';
         } else {
-            if (!isset($components['isPublicKey'])) {
-                $components['isPublicKey'] = \true;
-            }
+            $components['isPublicKey'] = \true;
             $type = 'public';
         }
-        $result = $components + \PostSMTP\Vendor\phpseclib3\Crypt\RSA\Formats\Keys\PKCS1::load($key[$type . 'Key']);
+        $result = $components + PKCS1::load($key[$type . 'Key']);
         if (isset($key['meta'])) {
             $result['meta'] = $key['meta'];
         }
@@ -93,9 +78,9 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
     /**
      * Convert a private key to the appropriate format.
      *
-     * @param \phpseclib3\Math\BigInteger $n
-     * @param \phpseclib3\Math\BigInteger $e
-     * @param \phpseclib3\Math\BigInteger $d
+     * @param BigInteger $n
+     * @param BigInteger $e
+     * @param BigInteger $d
      * @param array $primes
      * @param array $exponents
      * @param array $coefficients
@@ -103,24 +88,24 @@ abstract class PKCS8 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
      * @param array $options optional
      * @return string
      */
-    public static function savePrivateKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $n, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $d, array $primes, array $exponents, array $coefficients, $password = '', array $options = [])
+    public static function savePrivateKey(BigInteger $n, BigInteger $e, BigInteger $d, array $primes, array $exponents, array $coefficients, $password = '', array $options = [])
     {
-        $key = \PostSMTP\Vendor\phpseclib3\Crypt\RSA\Formats\Keys\PKCS1::savePrivateKey($n, $e, $d, $primes, $exponents, $coefficients);
-        $key = \PostSMTP\Vendor\phpseclib3\File\ASN1::extractBER($key);
+        $key = PKCS1::savePrivateKey($n, $e, $d, $primes, $exponents, $coefficients);
+        $key = ASN1::extractBER($key);
         return self::wrapPrivateKey($key, [], null, $password, null, '', $options);
     }
     /**
      * Convert a public key to the appropriate format
      *
-     * @param \phpseclib3\Math\BigInteger $n
-     * @param \phpseclib3\Math\BigInteger $e
+     * @param BigInteger $n
+     * @param BigInteger $e
      * @param array $options optional
      * @return string
      */
-    public static function savePublicKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $n, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $e, array $options = [])
+    public static function savePublicKey(BigInteger $n, BigInteger $e, array $options = [])
     {
-        $key = \PostSMTP\Vendor\phpseclib3\Crypt\RSA\Formats\Keys\PKCS1::savePublicKey($n, $e);
-        $key = \PostSMTP\Vendor\phpseclib3\File\ASN1::extractBER($key);
-        return self::wrapPublicKey($key, null);
+        $key = PKCS1::savePublicKey($n, $e);
+        $key = ASN1::extractBER($key);
+        return self::wrapPublicKey($key, null, null, $options);
     }
 }

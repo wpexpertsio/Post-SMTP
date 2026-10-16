@@ -11,7 +11,7 @@ namespace PostSMTP\Vendor\GuzzleHttp\Promise;
  *
  * @final
  */
-class FulfilledPromise implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
+class FulfilledPromise implements PromiseInterface
 {
     private $value;
     /**
@@ -24,17 +24,17 @@ class FulfilledPromise implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInt
         }
         $this->value = $value;
     }
-    public function then(callable $onFulfilled = null, callable $onRejected = null) : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
+    public function then(?callable $onFulfilled = null, ?callable $onRejected = null) : PromiseInterface
     {
         // Return itself if there is no onFulfilled function.
         if (!$onFulfilled) {
             return $this;
         }
-        $queue = \PostSMTP\Vendor\GuzzleHttp\Promise\Utils::queue();
-        $p = new \PostSMTP\Vendor\GuzzleHttp\Promise\Promise([$queue, 'run']);
+        $queue = Utils::queue();
+        $p = new Promise([$queue, 'run']);
         $value = $this->value;
         $queue->add(static function () use($p, $value, $onFulfilled) : void {
-            if (\PostSMTP\Vendor\GuzzleHttp\Promise\Is::pending($p)) {
+            if (Is::pending($p)) {
                 try {
                     $p->resolve($onFulfilled($value));
                 } catch (\Throwable $e) {
@@ -44,7 +44,7 @@ class FulfilledPromise implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInt
         });
         return $p;
     }
-    public function otherwise(callable $onRejected) : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
+    public function otherwise(callable $onRejected) : PromiseInterface
     {
         return $this->then(null, $onRejected);
     }

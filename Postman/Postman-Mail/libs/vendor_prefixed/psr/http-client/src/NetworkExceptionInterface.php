@@ -10,7 +10,7 @@ use PostSMTP\Vendor\Psr\Http\Message\RequestInterface;
  *
  * Example: the target host name can not be resolved or the connection failed.
  */
-interface NetworkExceptionInterface extends \PostSMTP\Vendor\Psr\Http\Client\ClientExceptionInterface
+interface NetworkExceptionInterface extends ClientExceptionInterface
 {
     /**
      * Returns the request.
@@ -19,5 +19,5 @@ interface NetworkExceptionInterface extends \PostSMTP\Vendor\Psr\Http\Client\Cli
      *
      * @return RequestInterface
      */
-    public function getRequest() : \PostSMTP\Vendor\Psr\Http\Message\RequestInterface;
+    public function getRequest() : RequestInterface;
 }

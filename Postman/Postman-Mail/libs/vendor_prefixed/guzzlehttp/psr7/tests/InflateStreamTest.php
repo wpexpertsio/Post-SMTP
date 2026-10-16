@@ -1,0 +1,87 @@
+<?php
+
+declare (strict_types=1);
+namespace PostSMTP\Vendor\GuzzleHttp\Tests\Psr7;
+
+use PostSMTP\Vendor\GuzzleHttp\Psr7;
+use PostSMTP\Vendor\GuzzleHttp\Psr7\InflateStream;
+use PostSMTP\Vendor\GuzzleHttp\Psr7\NoSeekStream;
+use PostSMTP\Vendor\PHPUnit\Framework\TestCase;
+/**
+ * @requires extension zlib
+ */
+class InflateStreamTest extends TestCase
+{
+    public function testInflatesRfc1952Streams() : void
+    {
+        $content = \gzencode('test');
+        $a = Psr7\Utils::streamFor($content);
+        $b = new InflateStream($a);
+        self::assertSame('test', (string) $b);
+    }
+    public function testInflatesStreamsRfc1952WithFilename() : void
+    {
+        $content = $this->getGzipStringWithFilename('test');
+        $a = Psr7\Utils::streamFor($content);
+        $b = new InflateStream($a);
+        self::assertSame('test', (string) $b);
+    }
+    public function testInflatesRfc1950Streams() : void
+    {
+        $content = \gzcompress('test');
+        $a = Psr7\Utils::streamFor($content);
+        $b = new InflateStream($a);
+        self::assertSame('test', (string) $b);
+    }
+    public function testInflatesRfc1952StreamsWithExtraFlags() : void
+    {
+        $content = \gzdeflate('test');
+        // RFC 1951. Raw deflate. No header.
+        //  +---+---+---+---+---+---+---+---+---+---+
+        //  |ID1|ID2|CM |FLG|     MTIME     |XFL|OS | (more-->)
+        //  +---+---+---+---+---+---+---+---+---+---+
+        $header = "\x1f\x8b\x08";
+        // set flags FHCRC, FEXTRA, FNAME and FCOMMENT
+        $header .= \chr(0b11110);
+        $header .= "\x00\x00\x00\x00";
+        // MTIME
+        $header .= "\x02\x03";
+        // XFL, OS
+        // 4 byte extra data
+        $header .= "\x04\x00Ap\x00\x00";
+        /* XLEN + EXTRA */
+        // file name (2 bytes + terminator)
+        $header .= "Ap\x00";
+        // file comment (3 bytes + terminator)
+        $header .= "ABC\x00";
+        // crc16
+        $header .= \pack('v', \crc32($header));
+        $a = Psr7\Utils::streamFor($header . $content);
+        $b = new InflateStream($a);
+        self::assertSame('test', (string) $b);
+    }
+    public function testInflatesStreamsPreserveSeekable() : void
+    {
+        $content = \gzencode('test');
+        $seekable = Psr7\Utils::streamFor($content);
+        $seekableInflate = new InflateStream($seekable);
+        self::assertTrue($seekableInflate->isSeekable());
+        self::assertSame('test', (string) $seekableInflate);
+        $nonSeekable = new NoSeekStream(Psr7\Utils::streamFor($content));
+        $nonSeekableInflate = new InflateStream($nonSeekable);
+        self::assertFalse($nonSeekableInflate->isSeekable());
+        self::assertSame('test', (string) $nonSeekableInflate);
+    }
+    private function getGzipStringWithFilename($original_string)
+    {
+        $gzipped = \bin2hex(\gzencode($original_string));
+        $header = \substr($gzipped, 0, 20);
+        // set FNAME flag
+        $header[6] = 0;
+        $header[7] = 8;
+        // make a dummy filename
+        $filename = '64756d6d7900';
+        $rest = \substr($gzipped, 20);
+        return \hex2bin($header . $filename . $rest);
+    }
+}

@@ -33,7 +33,7 @@ use PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer as PrimeInteger;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class TwistedEdwards extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base
+class TwistedEdwards extends Base
 {
     /**
      * The modulo
@@ -80,18 +80,18 @@ class TwistedEdwards extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Bas
     /**
      * Sets the modulo
      */
-    public function setModulo(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $modulo)
+    public function setModulo(BigInteger $modulo)
     {
         $this->modulo = $modulo;
-        $this->factory = new \PostSMTP\Vendor\phpseclib3\Math\PrimeField($modulo);
-        $this->zero = $this->factory->newInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(0));
-        $this->one = $this->factory->newInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(1));
-        $this->two = $this->factory->newInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(2));
+        $this->factory = new PrimeField($modulo);
+        $this->zero = $this->factory->newInteger(new BigInteger(0));
+        $this->one = $this->factory->newInteger(new BigInteger(1));
+        $this->two = $this->factory->newInteger(new BigInteger(2));
     }
     /**
      * Set coefficients a and b
      */
-    public function setCoefficients(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $a, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $d)
+    public function setCoefficients(BigInteger $a, BigInteger $d)
     {
         if (!isset($this->factory)) {
             throw new \RuntimeException('setModulo needs to be called before this method');
@@ -105,20 +105,20 @@ class TwistedEdwards extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Bas
     public function setBasePoint($x, $y)
     {
         switch (\true) {
-            case !$x instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger && !$x instanceof \PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer:
+            case !$x instanceof BigInteger && !$x instanceof PrimeInteger:
                 throw new \UnexpectedValueException('PostSMTP\\Vendor\\Argument 1 passed to Prime::setBasePoint() must be an instance of either BigInteger or PrimeField\\Integer');
-            case !$y instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger && !$y instanceof \PostSMTP\Vendor\phpseclib3\Math\PrimeField\Integer:
+            case !$y instanceof BigInteger && !$y instanceof PrimeInteger:
                 throw new \UnexpectedValueException('PostSMTP\\Vendor\\Argument 2 passed to Prime::setBasePoint() must be an instance of either BigInteger or PrimeField\\Integer');
         }
         if (!isset($this->factory)) {
             throw new \RuntimeException('setModulo needs to be called before this method');
         }
-        $this->p = [$x instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger ? $this->factory->newInteger($x) : $x, $y instanceof \PostSMTP\Vendor\phpseclib3\Math\BigInteger ? $this->factory->newInteger($y) : $y];
+        $this->p = [$x instanceof BigInteger ? $this->factory->newInteger($x) : $x, $y instanceof BigInteger ? $this->factory->newInteger($y) : $y];
     }
     /**
      * Returns the a coefficient
      *
-     * @return \phpseclib3\Math\PrimeField\Integer
+     * @return PrimeInteger
      */
     public function getA()
     {
@@ -127,7 +127,7 @@ class TwistedEdwards extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Bas
     /**
      * Returns the a coefficient
      *
-     * @return \phpseclib3\Math\PrimeField\Integer
+     * @return PrimeInteger
      */
     public function getD()
     {
@@ -153,7 +153,7 @@ class TwistedEdwards extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Bas
     /**
      * Returns the affine point
      *
-     * @return \phpseclib3\Math\PrimeField\Integer[]
+     * @return PrimeInteger[]
      */
     public function convertToAffine(array $p)
     {
@@ -167,7 +167,7 @@ class TwistedEdwards extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Bas
     /**
      * Returns the modulo
      *
-     * @return \phpseclib3\Math\BigInteger
+     * @return BigInteger
      */
     public function getModulo()
     {

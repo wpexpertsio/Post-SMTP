@@ -34,7 +34,7 @@ abstract class SSH2
         if (!\is_string($sig)) {
             return \false;
         }
-        $result = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::unpackSSH2('ss', $sig);
+        $result = Strings::unpackSSH2('ss', $sig);
         if ($result === \false) {
             return \false;
         }
@@ -48,7 +48,7 @@ abstract class SSH2
             default:
                 return \false;
         }
-        $result = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::unpackSSH2('ii', $blob);
+        $result = Strings::unpackSSH2('ii', $blob);
         if ($result === \false) {
             return \false;
         }
@@ -57,12 +57,12 @@ abstract class SSH2
     /**
      * Returns a signature in the appropriate format
      *
-     * @param \phpseclib3\Math\BigInteger $r
-     * @param \phpseclib3\Math\BigInteger $s
+     * @param BigInteger $r
+     * @param BigInteger $s
      * @param string $curve
      * @return string
      */
-    public static function save(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $r, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $s, $curve)
+    public static function save(BigInteger $r, BigInteger $s, $curve)
     {
         switch ($curve) {
             case 'secp256r1':
@@ -77,7 +77,7 @@ abstract class SSH2
             default:
                 return \false;
         }
-        $blob = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('ii', $r, $s);
-        return \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('ss', 'ecdsa-sha2-' . $curve, $blob);
+        $blob = Strings::packSSH2('ii', $r, $s);
+        return Strings::packSSH2('ss', 'ecdsa-sha2-' . $curve, $blob);
     }
 }

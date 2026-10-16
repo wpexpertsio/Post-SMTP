@@ -19,7 +19,7 @@ namespace PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
+class PHP32 extends PHP
 {
     // Constants used by PHP.php
     const BASE = 26;
@@ -62,8 +62,8 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
                     break;
                 }
                 $val = \substr($val, 0, 4 + $i);
-                $val = \str_pad($val, 4, "\0", \STR_PAD_LEFT);
-                if ($val == "\0\0\0\0") {
+                $val = \str_pad($val, 4, "\x00", \STR_PAD_LEFT);
+                if ($val == "\x00\x00\x00\x00") {
                     break;
                 }
                 $i = 0;
@@ -74,10 +74,10 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
             }
             $step = \count($vals) & 3;
             if ($step) {
-                $digit = \floor($digit / \pow(2, 2 * $step));
+                $digit = (int) \floor($digit / \pow(2, 2 * $step));
             }
             if ($step != 3) {
-                $digit &= static::MAX_DIGIT;
+                $digit = (int) \fmod($digit, static::BASE_FULL);
                 $i++;
             }
             $vals[] = $digit;
@@ -95,7 +95,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      */
     public static function isValidEngine()
     {
-        return \PHP_INT_SIZE >= 4;
+        return \PHP_INT_SIZE >= 4 && !self::testJITOnWindows();
     }
     /**
      * Adds two BigIntegers.
@@ -103,7 +103,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $y
      * @return PHP32
      */
-    public function add(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $y)
+    public function add(PHP32 $y)
     {
         $temp = self::addHelper($this->value, $this->is_negative, $y->value, $y->is_negative);
         return $this->convertToObj($temp);
@@ -114,7 +114,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $y
      * @return PHP32
      */
-    public function subtract(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $y)
+    public function subtract(PHP32 $y)
     {
         $temp = self::subtractHelper($this->value, $this->is_negative, $y->value, $y->is_negative);
         return $this->convertToObj($temp);
@@ -125,7 +125,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $y
      * @return PHP32
      */
-    public function multiply(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $y)
+    public function multiply(PHP32 $y)
     {
         $temp = self::multiplyHelper($this->value, $this->is_negative, $y->value, $y->is_negative);
         return $this->convertToObj($temp);
@@ -141,7 +141,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $y
      * @return array{PHP32, PHP32}
      */
-    public function divide(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $y)
+    public function divide(PHP32 $y)
     {
         return $this->divideHelper($y);
     }
@@ -152,7 +152,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $n
      * @return false|PHP32
      */
-    public function modInverse(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $n)
+    public function modInverse(PHP32 $n)
     {
         return $this->modInverseHelper($n);
     }
@@ -163,7 +163,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $n
      * @return PHP32[]
      */
-    public function extendedGCD(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $n)
+    public function extendedGCD(PHP32 $n)
     {
         return $this->extendedGCDHelper($n);
     }
@@ -175,7 +175,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $n
      * @return PHP32
      */
-    public function gcd(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $n)
+    public function gcd(PHP32 $n)
     {
         return $this->extendedGCD($n)['gcd'];
     }
@@ -185,7 +185,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $x
      * @return PHP32
      */
-    public function bitwise_and(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $x)
+    public function bitwise_and(PHP32 $x)
     {
         return $this->bitwiseAndHelper($x);
     }
@@ -195,7 +195,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $x
      * @return PHP32
      */
-    public function bitwise_or(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $x)
+    public function bitwise_or(PHP32 $x)
     {
         return $this->bitwiseOrHelper($x);
     }
@@ -205,7 +205,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $x
      * @return PHP32
      */
-    public function bitwise_xor(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $x)
+    public function bitwise_xor(PHP32 $x)
     {
         return $this->bitwiseXorHelper($x);
     }
@@ -227,7 +227,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @return int in case < 0 if $this is less than $y; > 0 if $this is greater than $y, and 0 if they are equal.
      * @see self::equals()
      */
-    public function compare(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $y)
+    public function compare(PHP32 $y)
     {
         return $this->compareHelper($this->value, $this->is_negative, $y->value, $y->is_negative);
     }
@@ -239,7 +239,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $x
      * @return bool
      */
-    public function equals(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $x)
+    public function equals(PHP32 $x)
     {
         return $this->value === $x->value && $this->is_negative == $x->is_negative;
     }
@@ -250,7 +250,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $n
      * @return PHP32
      */
-    public function modPow(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $n)
+    public function modPow(PHP32 $e, PHP32 $n)
     {
         return $this->powModOuter($e, $n);
     }
@@ -263,7 +263,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $n
      * @return PHP32
      */
-    public function powMod(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $n)
+    public function powMod(PHP32 $e, PHP32 $n)
     {
         return $this->powModOuter($e, $n);
     }
@@ -276,7 +276,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $max
      * @return false|PHP32
      */
-    public static function randomRangePrime(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $min, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $max)
+    public static function randomRangePrime(PHP32 $min, PHP32 $max)
     {
         return self::randomRangePrimeOuter($min, $max);
     }
@@ -293,7 +293,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $max
      * @return PHP32
      */
-    public static function randomRange(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $min, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $max)
+    public static function randomRange(PHP32 $min, PHP32 $max)
     {
         return self::randomRangeHelper($min, $max);
     }
@@ -303,7 +303,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $n
      * @return PHP32
      */
-    public function pow(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $n)
+    public function pow(PHP32 $n)
     {
         return $this->powHelper($n);
     }
@@ -313,7 +313,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 ...$nums
      * @return PHP32
      */
-    public static function min(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 ...$nums)
+    public static function min(PHP32 ...$nums)
     {
         return self::minHelper($nums);
     }
@@ -323,7 +323,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 ...$nums
      * @return PHP32
      */
-    public static function max(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 ...$nums)
+    public static function max(PHP32 ...$nums)
     {
         return self::maxHelper($nums);
     }
@@ -334,7 +334,7 @@ class PHP32 extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
      * @param PHP32 $max
      * @return bool
      */
-    public function between(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $min, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP32 $max)
+    public function between(PHP32 $min, PHP32 $max)
     {
         return $this->compare($min) >= 0 && $this->compare($max) <= 0;
     }

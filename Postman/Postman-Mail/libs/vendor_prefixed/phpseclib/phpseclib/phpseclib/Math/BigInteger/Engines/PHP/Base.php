@@ -18,7 +18,7 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class Base extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP
+abstract class Base extends PHP
 {
     /**
      * Cache constants
@@ -70,7 +70,7 @@ abstract class Base extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\
      * @param string $class
      * @return PHP
      */
-    protected static function powModHelper(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP $x, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP $n, $class)
+    protected static function powModHelper(PHP $x, PHP $e, PHP $n, $class)
     {
         if (empty($e->value)) {
             $temp = new $class();

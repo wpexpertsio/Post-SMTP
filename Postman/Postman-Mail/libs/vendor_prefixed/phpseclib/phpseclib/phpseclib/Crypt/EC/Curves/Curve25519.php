@@ -14,16 +14,17 @@ namespace PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves;
 
 use PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgomery;
 use PostSMTP\Vendor\phpseclib3\Math\BigInteger;
-class Curve25519 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgomery
+class Curve25519 extends Montgomery
 {
+    const SIZE = 32;
     public function __construct()
     {
         // 2^255 - 19
-        $this->setModulo(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFED', 16));
-        $this->a24 = $this->factory->newInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('121666'));
-        $this->p = [$this->factory->newInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(9))];
+        $this->setModulo(new BigInteger('7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFED', 16));
+        $this->a24 = $this->factory->newInteger(new BigInteger('121666'));
+        $this->p = [$this->factory->newInteger(new BigInteger(9))];
         // 2^252 + 0x14def9dea2f79cd65812631a5cf5d3ed
-        $this->setOrder(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('1000000000000000000000000000000014DEF9DEA2F79CD65812631A5CF5D3ED', 16));
+        $this->setOrder(new BigInteger('1000000000000000000000000000000014DEF9DEA2F79CD65812631A5CF5D3ED', 16));
         /*
         $this->setCoefficients(
             new BigInteger('486662'), // a
@@ -41,15 +42,16 @@ class Curve25519 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgom
      *
      * @return array
      */
-    public function multiplyPoint(array $p, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $d)
+    public function multiplyPoint(array $p, BigInteger $d)
     {
-        //$r = strrev(sodium_crypto_scalarmult($d->toBytes(), strrev($p[0]->toBytes())));
-        //return [$this->factory->newInteger(new BigInteger($r, 256))];
         $d = $d->toBytes();
-        $d &= "�" . \str_repeat("�", 30) . "";
+        $d = \str_pad($d, 32, "\x00", \STR_PAD_LEFT);
+        //$r = strrev(sodium_crypto_scalarmult($d, strrev($p[0]->toBytes())));
+        //return [$this->factory->newInteger(new BigInteger($r, 256))];
+        $d &= "\xf8" . \str_repeat("\xff", 30) . "";
         $d = \strrev($d);
         $d |= "@";
-        $d = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($d, -256);
+        $d = new BigInteger($d, -256);
         return parent::multiplyPoint($p, $d);
     }
     /**
@@ -59,12 +61,12 @@ class Curve25519 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgom
      */
     public function createRandomMultiplier()
     {
-        return \PostSMTP\Vendor\phpseclib3\Math\BigInteger::random(256);
+        return BigInteger::random(256);
     }
     /**
      * Performs range check
      */
-    public function rangeCheck(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $x)
+    public function rangeCheck(BigInteger $x)
     {
         if ($x->getLength() > 256 || $x->isNegative()) {
             throw new \RangeException('x must be a positive integer less than 256 bytes in length');

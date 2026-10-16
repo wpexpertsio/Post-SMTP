@@ -18,7 +18,7 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP\Montgomery as Progeni
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class Montgomery extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP\Montgomery
+abstract class Montgomery extends Progenitor
 {
     /**
      * Prepare a number for use in Montgomery Modular Reductions

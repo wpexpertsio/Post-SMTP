@@ -58,117 +58,117 @@ abstract class SymmetricKey
      * Set to -1 since that's what Crypt/Random.php uses to index the CTR mode.
      *
      * @link http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation#Counter_.28CTR.29
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::encrypt()
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::decrypt()
+     * SymmetricKey::encrypt()
+     * SymmetricKey::decrypt()
      */
     const MODE_CTR = -1;
     /**
      * Encrypt / decrypt using the Electronic Code Book mode.
      *
      * @link http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation#Electronic_codebook_.28ECB.29
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::encrypt()
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::decrypt()
+     * SymmetricKey::encrypt()
+     * SymmetricKey::decrypt()
      */
     const MODE_ECB = 1;
     /**
      * Encrypt / decrypt using the Code Book Chaining mode.
      *
      * @link http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation#Cipher-block_chaining_.28CBC.29
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::encrypt()
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::decrypt()
+     * SymmetricKey::encrypt()
+     * SymmetricKey::decrypt()
      */
     const MODE_CBC = 2;
     /**
      * Encrypt / decrypt using the Cipher Feedback mode.
      *
      * @link http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation#Cipher_feedback_.28CFB.29
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::encrypt()
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::decrypt()
+     * SymmetricKey::encrypt()
+     * SymmetricKey::decrypt()
      */
     const MODE_CFB = 3;
     /**
      * Encrypt / decrypt using the Cipher Feedback mode (8bit)
      *
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::encrypt()
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::decrypt()
+     * SymmetricKey::encrypt()
+     * SymmetricKey::decrypt()
      */
     const MODE_CFB8 = 7;
     /**
      * Encrypt / decrypt using the Output Feedback mode (8bit)
      *
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::encrypt()
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::decrypt()
+     * SymmetricKey::encrypt()
+     * SymmetricKey::decrypt()
      */
     const MODE_OFB8 = 8;
     /**
      * Encrypt / decrypt using the Output Feedback mode.
      *
      * @link http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation#Output_feedback_.28OFB.29
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::encrypt()
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::decrypt()
+     * SymmetricKey::encrypt()
+     * SymmetricKey::decrypt()
      */
     const MODE_OFB = 4;
     /**
      * Encrypt / decrypt using Galois/Counter mode.
      *
      * @link https://en.wikipedia.org/wiki/Galois/Counter_Mode
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::encrypt()
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::decrypt()
+     * SymmetricKey::encrypt()
+     * SymmetricKey::decrypt()
      */
     const MODE_GCM = 5;
     /**
      * Encrypt / decrypt using streaming mode.
      *
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::encrypt()
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::decrypt()
+     * SymmetricKey::encrypt()
+     * SymmetricKey::decrypt()
      */
     const MODE_STREAM = 6;
     /**
      * Mode Map
      *
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::__construct()
+     * SymmetricKey::__construct()
      */
     const MODE_MAP = ['ctr' => self::MODE_CTR, 'ecb' => self::MODE_ECB, 'cbc' => self::MODE_CBC, 'cfb' => self::MODE_CFB, 'cfb8' => self::MODE_CFB8, 'ofb' => self::MODE_OFB, 'ofb8' => self::MODE_OFB8, 'gcm' => self::MODE_GCM, 'stream' => self::MODE_STREAM];
     /**
      * Base value for the internal implementation $engine switch
      *
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::__construct()
+     * SymmetricKey::__construct()
      */
     const ENGINE_INTERNAL = 1;
     /**
      * Base value for the eval() implementation $engine switch
      *
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::__construct()
+     * SymmetricKey::__construct()
      */
     const ENGINE_EVAL = 2;
     /**
      * Base value for the mcrypt implementation $engine switch
      *
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::__construct()
+     * SymmetricKey::__construct()
      */
     const ENGINE_MCRYPT = 3;
     /**
      * Base value for the openssl implementation $engine switch
      *
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::__construct()
+     * SymmetricKey::__construct()
      */
     const ENGINE_OPENSSL = 4;
     /**
      * Base value for the libsodium implementation $engine switch
      *
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::__construct()
+     * SymmetricKey::__construct()
      */
     const ENGINE_LIBSODIUM = 5;
     /**
      * Base value for the openssl / gcm implementation $engine switch
      *
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::__construct()
+     * SymmetricKey::__construct()
      */
     const ENGINE_OPENSSL_GCM = 6;
     /**
      * Engine Reverse Map
      *
-     * @see \phpseclib3\Crypt\Common\SymmetricKey::getEngine()
+     * SymmetricKey::getEngine()
      */
     const ENGINE_MAP = [self::ENGINE_INTERNAL => 'PHP', self::ENGINE_EVAL => 'Eval', self::ENGINE_MCRYPT => 'mcrypt', self::ENGINE_OPENSSL => 'OpenSSL', self::ENGINE_LIBSODIUM => 'libsodium', self::ENGINE_OPENSSL_GCM => 'OpenSSL (GCM)'];
     /**
@@ -558,7 +558,7 @@ abstract class SymmetricKey
         // necessary because of 5.6 compatibility; we can't do isset(self::MODE_MAP[$mode]) in 5.6
         $map = self::MODE_MAP;
         if (!isset($map[$mode])) {
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\BadModeException('No valid mode has been specified');
+            throw new BadModeException('No valid mode has been specified');
         }
         $mode = self::MODE_MAP[$mode];
         // $mode dependent settings
@@ -577,15 +577,15 @@ abstract class SymmetricKey
                 break;
             case self::MODE_GCM:
                 if ($this->block_size != 16) {
-                    throw new \PostSMTP\Vendor\phpseclib3\Exception\BadModeException('GCM is only valid for block ciphers with a block size of 128 bits');
+                    throw new BadModeException('GCM is only valid for block ciphers with a block size of 128 bits');
                 }
                 if (!isset(self::$gcmField)) {
-                    self::$gcmField = new \PostSMTP\Vendor\phpseclib3\Math\BinaryField(128, 7, 2, 1, 0);
+                    self::$gcmField = new BinaryField(128, 7, 2, 1, 0);
                 }
                 $this->paddable = \false;
                 break;
             default:
-                throw new \PostSMTP\Vendor\phpseclib3\Exception\BadModeException('No valid mode has been specified');
+                throw new BadModeException('No valid mode has been specified');
         }
         $this->mode = $mode;
         static::initialize_static_variables();
@@ -597,13 +597,20 @@ abstract class SymmetricKey
     {
         if (!isset(self::$use_reg_intval)) {
             switch (\true) {
+                // PHP 8.5, per https://www.php.net/manual/en/migration85.incompatible.php, now emits a warning
+                // "when casting floats (or strings that look like floats) to int if they cannot be represented as one"
+                case \PHP_VERSION_ID >= 80500 && \PHP_INT_SIZE == 4:
+                    self::$use_reg_intval = \false;
+                    break;
                 // PHP_OS & "\xDF\xDF\xDF" == strtoupper(substr(PHP_OS, 0, 3)), but a lot faster
-                case (\PHP_OS & "���") === 'WIN':
-                case (\php_uname('m') & "���") != 'ARM':
+                case (\PHP_OS & "\xdf\xdf\xdf") === 'WIN':
+                case !\function_exists('php_uname'):
+                case !\is_string(\php_uname('m')):
+                case (\php_uname('m') & "\xdf\xdf\xdf") != 'ARM':
                 case \defined('PHP_INT_SIZE') && \PHP_INT_SIZE == 8:
                     self::$use_reg_intval = \true;
                     break;
-                case (\php_uname('m') & "���") == 'ARM':
+                case (\php_uname('m') & "\xdf\xdf\xdf") == 'ARM':
                     switch (\true) {
                         /* PHP 7.0.0 introduced a bug that affected 32-bit ARM processors:
                         
@@ -686,7 +693,7 @@ abstract class SymmetricKey
         }
         if (!isset(self::$poly1305Field)) {
             // 2^130-5
-            self::$poly1305Field = new \PostSMTP\Vendor\phpseclib3\Math\PrimeField(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('3fffffffffffffffffffffffffffffffb', 16));
+            self::$poly1305Field = new PrimeField(new BigInteger('3fffffffffffffffffffffffffffffffb', 16));
         }
         $this->poly1305Key = $key;
         $this->usePoly1305 = \true;
@@ -779,7 +786,7 @@ abstract class SymmetricKey
         $this->explicit_key_length = $length >> 3;
         if (\is_string($this->key) && \strlen($this->key) != $this->explicit_key_length) {
             $this->key = \false;
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\InconsistentSetupException('Key has already been set and is not ' . $this->explicit_key_length . ' bytes long');
+            throw new InconsistentSetupException('Key has already been set and is not ' . $this->explicit_key_length . ' bytes long');
         }
     }
     /**
@@ -799,7 +806,7 @@ abstract class SymmetricKey
     public function setKey($key)
     {
         if ($this->explicit_key_length !== \false && \strlen($key) != $this->explicit_key_length) {
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\InconsistentSetupException('Key length has already been set to ' . $this->explicit_key_length . ' bytes and this key is ' . \strlen($key) . ' bytes');
+            throw new InconsistentSetupException('Key length has already been set to ' . $this->explicit_key_length . ' bytes and this key is ' . \strlen($key) . ' bytes');
         }
         $this->key = $key;
         $this->key_length = \strlen($key);
@@ -823,7 +830,7 @@ abstract class SymmetricKey
      * @see Crypt/Hash.php
      * @param string $password
      * @param string $method
-     * @param string[] ...$func_args
+     * @param int|string ...$func_args
      * @throws \LengthException if pbkdf1 is being used and the derived key length exceeds the hash length
      * @throws \RuntimeException if bcrypt is being used and a salt isn't provided
      * @return bool
@@ -840,7 +847,7 @@ abstract class SymmetricKey
                 $salt = $func_args[0];
                 $rounds = isset($func_args[1]) ? $func_args[1] : 16;
                 $keylen = isset($func_args[2]) ? $func_args[2] : $this->key_length;
-                $key = \PostSMTP\Vendor\phpseclib3\Crypt\Blowfish::bcrypt_pbkdf($password, $salt, $keylen + $this->block_size, $rounds);
+                $key = Blowfish::bcrypt_pbkdf($password, $salt, $keylen + $this->block_size, $rounds);
                 $this->setKey(\substr($key, 0, $keylen));
                 $this->setIV(\substr($key, $keylen));
                 return \true;
@@ -850,7 +857,7 @@ abstract class SymmetricKey
             case 'pbkdf2':
                 // Hash function
                 $hash = isset($func_args[0]) ? \strtolower($func_args[0]) : 'sha1';
-                $hashObj = new \PostSMTP\Vendor\phpseclib3\Crypt\Hash();
+                $hashObj = new Hash();
                 $hashObj->setHash($hash);
                 // WPA and WPA2 use the SSID as the salt
                 $salt = isset($func_args[1]) ? $func_args[1] : $this->password_default_salt;
@@ -879,7 +886,7 @@ abstract class SymmetricKey
                         
                         -- https://tools.ietf.org/html/rfc7292#appendix-B.1
                         */
-                        $password = "\0" . \chunk_split($password, 1, "\0") . "\0";
+                        $password = "\x00" . \chunk_split($password, 1, "\x00") . "\x00";
                         /*
                         This standard specifies 3 different values for the ID byte mentioned
                         above:
@@ -950,7 +957,7 @@ abstract class SymmetricKey
                 }
                 break;
             default:
-                throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedAlgorithmException($method . ' is not a supported password hashing method');
+                throw new UnsupportedAlgorithmException($method . ' is not a supported password hashing method');
         }
         $this->setKey($key);
         return \true;
@@ -964,7 +971,7 @@ abstract class SymmetricKey
      *
      * @see self::setPassword()
      * @param int $n
-     * @param \phpseclib3\Crypt\Hash $hashObj
+     * @param Hash $hashObj
      * @param string $i
      * @param string $d
      * @param int $count
@@ -974,7 +981,7 @@ abstract class SymmetricKey
     {
         static $one;
         if (!isset($one)) {
-            $one = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(1);
+            $one = new BigInteger(1);
         }
         $blockLength = $hashObj->getBlockLength() >> 3;
         $c = \ceil($n / $hashObj->getLengthInBytes());
@@ -989,11 +996,11 @@ abstract class SymmetricKey
                 $b .= $ai;
             }
             $b = \substr($b, 0, $blockLength);
-            $b = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($b, 256);
+            $b = new BigInteger($b, 256);
             $newi = '';
             for ($k = 0; $k < \strlen($i); $k += $blockLength) {
                 $temp = \substr($i, $k, $blockLength);
-                $temp = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($temp, 256);
+                $temp = new BigInteger($temp, 256);
                 $temp->setPrecision($blockLength << 3);
                 $temp = $temp->add($b);
                 $temp = $temp->add($one);
@@ -1032,7 +1039,7 @@ abstract class SymmetricKey
         $this->setup();
         if ($this->mode == self::MODE_GCM) {
             $oldIV = $this->iv;
-            \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::increment_str($this->iv);
+            Strings::increment_str($this->iv);
             $cipher = new static('ctr');
             $cipher->setKey($this->key);
             $cipher->setIV($this->iv);
@@ -1096,8 +1103,8 @@ abstract class SymmetricKey
                     }
                     $overflow = $len % $this->block_size;
                     if ($overflow) {
-                        $ciphertext .= \openssl_encrypt(\substr($plaintext, 0, -$overflow) . \str_repeat("\0", $this->block_size), $this->cipher_name_openssl, $this->key, \OPENSSL_RAW_DATA | \OPENSSL_ZERO_PADDING, $iv);
-                        $iv = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::pop($ciphertext, $this->block_size);
+                        $ciphertext .= \openssl_encrypt(\substr($plaintext, 0, -$overflow) . \str_repeat("\x00", $this->block_size), $this->cipher_name_openssl, $this->key, \OPENSSL_RAW_DATA | \OPENSSL_ZERO_PADDING, $iv);
+                        $iv = Strings::pop($ciphertext, $this->block_size);
                         $size = $len - $overflow;
                         $block = $iv ^ \substr($plaintext, -$overflow);
                         $iv = \substr_replace($iv, $block, 0, $overflow);
@@ -1130,7 +1137,7 @@ abstract class SymmetricKey
                     if ($this->continuousBuffer) {
                         $this->encryptIV = $iv;
                     }
-                    break;
+                    return $ciphertext;
                 case self::MODE_OFB:
                     return $this->openssl_ofb_process($plaintext, $this->encryptIV, $this->enbuffer);
             }
@@ -1235,16 +1242,16 @@ abstract class SymmetricKey
                         $block = \substr($plaintext, $i, $block_size);
                         if (\strlen($block) > \strlen($buffer['ciphertext'])) {
                             $buffer['ciphertext'] .= $this->encryptBlock($xor);
-                            \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::increment_str($xor);
+                            Strings::increment_str($xor);
                         }
-                        $key = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::shift($buffer['ciphertext'], $block_size);
+                        $key = Strings::shift($buffer['ciphertext'], $block_size);
                         $ciphertext .= $block ^ $key;
                     }
                 } else {
                     for ($i = 0; $i < \strlen($plaintext); $i += $block_size) {
                         $block = \substr($plaintext, $i, $block_size);
                         $key = $this->encryptBlock($xor);
-                        \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::increment_str($xor);
+                        Strings::increment_str($xor);
                         $ciphertext .= $block ^ $key;
                     }
                 }
@@ -1335,7 +1342,7 @@ abstract class SymmetricKey
                             $xor = $this->encryptBlock($xor);
                             $buffer['xor'] .= $xor;
                         }
-                        $key = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::shift($buffer['xor'], $block_size);
+                        $key = Strings::shift($buffer['xor'], $block_size);
                         $ciphertext .= $block ^ $key;
                     }
                 } else {
@@ -1379,13 +1386,13 @@ abstract class SymmetricKey
         $this->setup();
         if ($this->mode == self::MODE_GCM || isset($this->poly1305Key)) {
             if ($this->oldtag === \false) {
-                throw new \PostSMTP\Vendor\phpseclib3\Exception\InsufficientSetupException('Authentication Tag has not been set');
+                throw new InsufficientSetupException('Authentication Tag has not been set');
             }
             if (isset($this->poly1305Key)) {
                 $newtag = $this->poly1305($ciphertext);
             } else {
                 $oldIV = $this->iv;
-                \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::increment_str($this->iv);
+                Strings::increment_str($this->iv);
                 $cipher = new static('ctr');
                 $cipher->setKey($this->key);
                 $cipher->setIV($this->iv);
@@ -1400,7 +1407,7 @@ abstract class SymmetricKey
                 $this->usePoly1305 = \false;
                 $plaintext = $cipher->decrypt($ciphertext);
                 $this->oldtag = \false;
-                throw new \PostSMTP\Vendor\phpseclib3\Exception\BadDecryptionException('Derived authentication tag and supplied authentication tag do not match');
+                throw new BadDecryptionException('Derived authentication tag and supplied authentication tag do not match');
             }
             $this->oldtag = \false;
             return $plaintext;
@@ -1459,7 +1466,7 @@ abstract class SymmetricKey
                         if ($len - $overflow) {
                             $iv = \substr($ciphertext, -$overflow - $this->block_size, -$overflow);
                         }
-                        $iv = \openssl_encrypt(\str_repeat("\0", $this->block_size), $this->cipher_name_openssl, $this->key, \OPENSSL_RAW_DATA | \OPENSSL_ZERO_PADDING, $iv);
+                        $iv = \openssl_encrypt(\str_repeat("\x00", $this->block_size), $this->cipher_name_openssl, $this->key, \OPENSSL_RAW_DATA | \OPENSSL_ZERO_PADDING, $iv);
                         $plaintext .= $iv ^ \substr($ciphertext, -$overflow);
                         $iv = \substr_replace($iv, \substr($ciphertext, -$overflow), 0, $overflow);
                         $pos = $overflow;
@@ -1579,16 +1586,16 @@ abstract class SymmetricKey
                         $block = \substr($ciphertext, $i, $block_size);
                         if (\strlen($block) > \strlen($buffer['ciphertext'])) {
                             $buffer['ciphertext'] .= $this->encryptBlock($xor);
-                            \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::increment_str($xor);
+                            Strings::increment_str($xor);
                         }
-                        $key = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::shift($buffer['ciphertext'], $block_size);
+                        $key = Strings::shift($buffer['ciphertext'], $block_size);
                         $plaintext .= $block ^ $key;
                     }
                 } else {
                     for ($i = 0; $i < \strlen($ciphertext); $i += $block_size) {
                         $block = \substr($ciphertext, $i, $block_size);
                         $key = $this->encryptBlock($xor);
-                        \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::increment_str($xor);
+                        Strings::increment_str($xor);
                         $plaintext .= $block ^ $key;
                     }
                 }
@@ -1678,7 +1685,7 @@ abstract class SymmetricKey
                             $xor = $this->encryptBlock($xor);
                             $buffer['xor'] .= $xor;
                         }
-                        $key = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::shift($buffer['xor'], $block_size);
+                        $key = Strings::shift($buffer['xor'], $block_size);
                         $plaintext .= $block ^ $key;
                     }
                 } else {
@@ -1766,7 +1773,7 @@ abstract class SymmetricKey
      */
     protected function getIV($iv)
     {
-        return $this->mode == self::MODE_ECB ? \str_repeat("\0", $this->block_size) : $iv;
+        return $this->mode == self::MODE_ECB ? \str_repeat("\x00", $this->block_size) : $iv;
     }
     /**
      * OpenSSL CTR Processor
@@ -1796,15 +1803,15 @@ abstract class SymmetricKey
                     if (\strlen($block) > \strlen($buffer['ciphertext'])) {
                         $buffer['ciphertext'] .= \openssl_encrypt($xor, $this->cipher_name_openssl_ecb, $key, \OPENSSL_RAW_DATA | \OPENSSL_ZERO_PADDING);
                     }
-                    \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::increment_str($xor);
-                    $otp = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::shift($buffer['ciphertext'], $block_size);
+                    Strings::increment_str($xor);
+                    $otp = Strings::shift($buffer['ciphertext'], $block_size);
                     $ciphertext .= $block ^ $otp;
                 }
             } else {
                 for ($i = 0; $i < \strlen($plaintext); $i += $block_size) {
                     $block = \substr($plaintext, $i, $block_size);
                     $otp = \openssl_encrypt($xor, $this->cipher_name_openssl_ecb, $key, \OPENSSL_RAW_DATA | \OPENSSL_ZERO_PADDING);
-                    \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::increment_str($xor);
+                    Strings::increment_str($xor);
                     $ciphertext .= $block ^ $otp;
                 }
             }
@@ -1817,7 +1824,7 @@ abstract class SymmetricKey
             return $ciphertext;
         }
         if (\strlen($buffer['ciphertext'])) {
-            $ciphertext = $plaintext ^ \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::shift($buffer['ciphertext'], \strlen($plaintext));
+            $ciphertext = $plaintext ^ Strings::shift($buffer['ciphertext'], \strlen($plaintext));
             $plaintext = \substr($plaintext, \strlen($ciphertext));
             if (!\strlen($plaintext)) {
                 return $ciphertext;
@@ -1825,18 +1832,18 @@ abstract class SymmetricKey
         }
         $overflow = \strlen($plaintext) % $block_size;
         if ($overflow) {
-            $plaintext2 = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::pop($plaintext, $overflow);
+            $plaintext2 = Strings::pop($plaintext, $overflow);
             // ie. trim $plaintext to a multiple of $block_size and put rest of $plaintext in $plaintext2
-            $encrypted = \openssl_encrypt($plaintext . \str_repeat("\0", $block_size), $this->cipher_name_openssl, $key, \OPENSSL_RAW_DATA | \OPENSSL_ZERO_PADDING, $encryptIV);
-            $temp = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::pop($encrypted, $block_size);
+            $encrypted = \openssl_encrypt($plaintext . \str_repeat("\x00", $block_size), $this->cipher_name_openssl, $key, \OPENSSL_RAW_DATA | \OPENSSL_ZERO_PADDING, $encryptIV);
+            $temp = Strings::pop($encrypted, $block_size);
             $ciphertext .= $encrypted . ($plaintext2 ^ $temp);
             if ($this->continuousBuffer) {
                 $buffer['ciphertext'] = \substr($temp, $overflow);
                 $encryptIV = $temp;
             }
         } elseif (!\strlen($buffer['ciphertext'])) {
-            $ciphertext .= \openssl_encrypt($plaintext . \str_repeat("\0", $block_size), $this->cipher_name_openssl, $key, \OPENSSL_RAW_DATA | \OPENSSL_ZERO_PADDING, $encryptIV);
-            $temp = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::pop($ciphertext, $block_size);
+            $ciphertext .= \openssl_encrypt($plaintext . \str_repeat("\x00", $block_size), $this->cipher_name_openssl, $key, \OPENSSL_RAW_DATA | \OPENSSL_ZERO_PADDING, $encryptIV);
+            $temp = Strings::pop($ciphertext, $block_size);
             if ($this->continuousBuffer) {
                 $encryptIV = $temp;
             }
@@ -1844,7 +1851,7 @@ abstract class SymmetricKey
         if ($this->continuousBuffer) {
             $encryptIV = \openssl_decrypt($encryptIV, $this->cipher_name_openssl_ecb, $key, \OPENSSL_RAW_DATA | \OPENSSL_ZERO_PADDING);
             if ($overflow) {
-                \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::increment_str($encryptIV);
+                Strings::increment_str($encryptIV);
             }
         }
         return $ciphertext;
@@ -1878,12 +1885,12 @@ abstract class SymmetricKey
         $overflow = $len % $block_size;
         if (\strlen($plaintext)) {
             if ($overflow) {
-                $ciphertext .= \openssl_encrypt(\substr($plaintext, 0, -$overflow) . \str_repeat("\0", $block_size), $this->cipher_name_openssl, $key, \OPENSSL_RAW_DATA | \OPENSSL_ZERO_PADDING, $encryptIV);
-                $xor = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::pop($ciphertext, $block_size);
+                $ciphertext .= \openssl_encrypt(\substr($plaintext, 0, -$overflow) . \str_repeat("\x00", $block_size), $this->cipher_name_openssl, $key, \OPENSSL_RAW_DATA | \OPENSSL_ZERO_PADDING, $encryptIV);
+                $xor = Strings::pop($ciphertext, $block_size);
                 if ($this->continuousBuffer) {
                     $encryptIV = $xor;
                 }
-                $ciphertext .= \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::shift($xor, $overflow) ^ \substr($plaintext, -$overflow);
+                $ciphertext .= Strings::shift($xor, $overflow) ^ \substr($plaintext, -$overflow);
                 if ($this->continuousBuffer) {
                     $buffer['xor'] = $xor;
                 }
@@ -2225,7 +2232,7 @@ abstract class SymmetricKey
         //$this->newtag = $this->oldtag = false;
         if ($this->usesNonce()) {
             if ($this->nonce === \false) {
-                throw new \PostSMTP\Vendor\phpseclib3\Exception\InsufficientSetupException('No nonce has been defined');
+                throw new InsufficientSetupException('No nonce has been defined');
             }
             if ($this->mode == self::MODE_GCM && !\in_array($this->engine, [self::ENGINE_LIBSODIUM, self::ENGINE_OPENSSL_GCM])) {
                 $this->setupGCM();
@@ -2235,11 +2242,11 @@ abstract class SymmetricKey
         }
         if ($this->iv === \false && !\in_array($this->mode, [self::MODE_STREAM, self::MODE_ECB])) {
             if ($this->mode != self::MODE_GCM || !\in_array($this->engine, [self::ENGINE_LIBSODIUM, self::ENGINE_OPENSSL_GCM])) {
-                throw new \PostSMTP\Vendor\phpseclib3\Exception\InsufficientSetupException('No IV has been defined');
+                throw new InsufficientSetupException('No IV has been defined');
             }
         }
         if ($this->key === \false) {
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\InsufficientSetupException('No key has been defined');
+            throw new InsufficientSetupException('No key has been defined');
         }
         $this->encryptIV = $this->decryptIV = $this->iv;
         switch ($this->engine) {
@@ -2260,7 +2267,7 @@ abstract class SymmetricKey
                 }
                 // else should mcrypt_generic_deinit be called?
                 if ($this->mode == self::MODE_CFB) {
-                    \mcrypt_generic_init($this->ecb, $this->key, \str_repeat("\0", $this->block_size));
+                    \mcrypt_generic_init($this->ecb, $this->key, \str_repeat("\x00", $this->block_size));
                 }
                 \restore_error_handler();
                 break;
@@ -2320,8 +2327,8 @@ abstract class SymmetricKey
             return $text;
         }
         $length = \ord($text[\strlen($text) - 1]);
-        if (!$length || $length > $this->block_size) {
-            throw new \PostSMTP\Vendor\phpseclib3\Exception\BadDecryptionException("The ciphertext has an invalid padding length ({$length}) compared to the block size ({$this->block_size})");
+        if (!$length | $length > $this->block_size) {
+            throw new BadDecryptionException("The ciphertext has an invalid padding length ({$length}) compared to the block size ({$this->block_size})");
         }
         return \substr($text, 0, -$length);
     }
@@ -2546,10 +2553,10 @@ abstract class SymmetricKey
                             if (strlen($_block) > strlen($_buffer["ciphertext"])) {
                                 $in = $_xor;
                                 ' . $encrypt_block . '
-                                \\PostSMTP\\Vendor\\phpseclib3\\Common\\Functions\\Strings::increment_str($_xor);
+                                \\phpseclib3\\Common\\Functions\\Strings::increment_str($_xor);
                                 $_buffer["ciphertext"].= $in;
                             }
-                            $_key = \\PostSMTP\\Vendor\\phpseclib3\\Common\\Functions\\Strings::shift($_buffer["ciphertext"], ' . $block_size . ');
+                            $_key = \\phpseclib3\\Common\\Functions\\Strings::shift($_buffer["ciphertext"], ' . $block_size . ');
                             $_ciphertext.= $_block ^ $_key;
                         }
                     } else {
@@ -2557,7 +2564,7 @@ abstract class SymmetricKey
                             $_block = substr($_text, $_i, ' . $block_size . ');
                             $in = $_xor;
                             ' . $encrypt_block . '
-                            \\PostSMTP\\Vendor\\phpseclib3\\Common\\Functions\\Strings::increment_str($_xor);
+                            \\phpseclib3\\Common\\Functions\\Strings::increment_str($_xor);
                             $_key = $in;
                             $_ciphertext.= $_block ^ $_key;
                         }
@@ -2583,10 +2590,10 @@ abstract class SymmetricKey
                             if (strlen($_block) > strlen($_buffer["ciphertext"])) {
                                 $in = $_xor;
                                 ' . $encrypt_block . '
-                                \\PostSMTP\\Vendor\\phpseclib3\\Common\\Functions\\Strings::increment_str($_xor);
+                                \\phpseclib3\\Common\\Functions\\Strings::increment_str($_xor);
                                 $_buffer["ciphertext"].= $in;
                             }
-                            $_key = \\PostSMTP\\Vendor\\phpseclib3\\Common\\Functions\\Strings::shift($_buffer["ciphertext"], ' . $block_size . ');
+                            $_key = \\phpseclib3\\Common\\Functions\\Strings::shift($_buffer["ciphertext"], ' . $block_size . ');
                             $_plaintext.= $_block ^ $_key;
                         }
                     } else {
@@ -2594,7 +2601,7 @@ abstract class SymmetricKey
                             $_block = substr($_text, $_i, ' . $block_size . ');
                             $in = $_xor;
                             ' . $encrypt_block . '
-                            \\PostSMTP\\Vendor\\phpseclib3\\Common\\Functions\\Strings::increment_str($_xor);
+                            \\phpseclib3\\Common\\Functions\\Strings::increment_str($_xor);
                             $_key = $in;
                             $_plaintext.= $_block ^ $_key;
                         }
@@ -2807,7 +2814,7 @@ abstract class SymmetricKey
                                 $_xor = $in;
                                 $_buffer["xor"].= $_xor;
                             }
-                            $_key = \\PostSMTP\\Vendor\\phpseclib3\\Common\\Functions\\Strings::shift($_buffer["xor"], ' . $block_size . ');
+                            $_key = \\phpseclib3\\Common\\Functions\\Strings::shift($_buffer["xor"], ' . $block_size . ');
                             $_ciphertext.= $_block ^ $_key;
                         }
                     } else {
@@ -2842,7 +2849,7 @@ abstract class SymmetricKey
                                 $_xor = $in;
                                 $_buffer["xor"].= $_xor;
                             }
-                            $_key = \\PostSMTP\\Vendor\\phpseclib3\\Common\\Functions\\Strings::shift($_buffer["xor"], ' . $block_size . ');
+                            $_key = \\phpseclib3\\Common\\Functions\\Strings::shift($_buffer["xor"], ' . $block_size . ');
                             $_plaintext.= $_block ^ $_key;
                         }
                     } else {
@@ -2968,13 +2975,13 @@ abstract class SymmetricKey
             $cipher = new static('ecb');
             $cipher->setKey($this->key);
             $cipher->disablePadding();
-            $this->h = self::$gcmField->newInteger(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::switchEndianness($cipher->encrypt("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0")));
+            $this->h = self::$gcmField->newInteger(Strings::switchEndianness($cipher->encrypt("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00")));
             $this->hKey = $this->key;
         }
         if (\strlen($this->nonce) == 12) {
-            $this->iv = $this->nonce . "\0\0\0\1";
+            $this->iv = $this->nonce . "\x00\x00\x00\x01";
         } else {
-            $this->iv = $this->ghash(self::nullPad128($this->nonce) . \str_repeat("\0", 8) . self::len64($this->nonce));
+            $this->iv = $this->ghash(self::nullPad128($this->nonce) . \str_repeat("\x00", 8) . self::len64($this->nonce));
         }
     }
     /**
@@ -2991,7 +2998,7 @@ abstract class SymmetricKey
     private function ghash($x)
     {
         $h = $this->h;
-        $y = ["\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"];
+        $y = ["\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"];
         $x = \str_split($x, 16);
         $n = 0;
         // the switchEndianness calls are necessary because the multiplication algorithm in BinaryField/Integer
@@ -3002,13 +3009,13 @@ abstract class SymmetricKey
         // might be slightly more performant
         //$x = Strings::switchEndianness($x);
         foreach ($x as $xn) {
-            $xn = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::switchEndianness($xn);
+            $xn = Strings::switchEndianness($xn);
             $t = $y[$n] ^ $xn;
             $temp = self::$gcmField->newInteger($t);
             $y[++$n] = $temp->multiply($h)->toBytes();
             $y[$n] = \substr($y[$n], 1);
         }
-        $y[$n] = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::switchEndianness($y[$n]);
+        $y[$n] = Strings::switchEndianness($y[$n]);
         return $y[$n];
     }
     /**
@@ -3022,7 +3029,7 @@ abstract class SymmetricKey
      */
     private static function len64($str)
     {
-        return "\0\0\0\0" . \pack('N', 8 * \strlen($str));
+        return "\x00\x00\x00\x00" . \pack('N', 8 * \strlen($str));
     }
     /**
      * NULL pads a string to be a multiple of 128
@@ -3036,7 +3043,7 @@ abstract class SymmetricKey
     protected static function nullPad128($str)
     {
         $len = \strlen($str);
-        return $str . \str_repeat("\0", 16 * \ceil($len / 16) - $len);
+        return $str . \str_repeat("\x00", 16 * \ceil($len / 16) - $len);
     }
     /**
      * Calculates Poly1305 MAC
@@ -3053,22 +3060,22 @@ abstract class SymmetricKey
     {
         $s = $this->poly1305Key;
         // strlen($this->poly1305Key) == 32
-        $r = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::shift($s, 16);
+        $r = Strings::shift($s, 16);
         $r = \strrev($r);
-        $r &= "\17���\17���\17���\17���";
+        $r &= "\x0f\xff\xff\xfc\x0f\xff\xff\xfc\x0f\xff\xff\xfc\x0f\xff\xff\xff";
         $s = \strrev($s);
-        $r = self::$poly1305Field->newInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($r, 256));
-        $s = self::$poly1305Field->newInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($s, 256));
-        $a = self::$poly1305Field->newInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger());
+        $r = self::$poly1305Field->newInteger(new BigInteger($r, 256));
+        $s = self::$poly1305Field->newInteger(new BigInteger($s, 256));
+        $a = self::$poly1305Field->newInteger(new BigInteger());
         $blocks = \str_split($text, 16);
         foreach ($blocks as $block) {
             $n = \strrev($block . \chr(1));
-            $n = self::$poly1305Field->newInteger(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($n, 256));
+            $n = self::$poly1305Field->newInteger(new BigInteger($n, 256));
             $a = $a->add($n);
             $a = $a->multiply($r);
         }
         $r = $a->toBigInteger()->add($s->toBigInteger());
-        $mask = "����������������";
+        $mask = "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
         return \strrev($r->toBytes()) & $mask;
     }
     /**
@@ -3081,5 +3088,14 @@ abstract class SymmetricKey
     public function getMode()
     {
         return \array_flip(self::MODE_MAP)[$this->mode];
+    }
+    /**
+     * Is the continuous buffer enabled?
+     *
+     * @return boolean
+     */
+    public function continuousBufferEnabled()
+    {
+        return $this->continuousBuffer;
     }
 }

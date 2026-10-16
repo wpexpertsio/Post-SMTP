@@ -9,7 +9,7 @@ namespace PostSMTP\Vendor\GuzzleHttp\Promise;
  *
  * @final
  */
-class EachPromise implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromisorInterface
+class EachPromise implements PromisorInterface
 {
     private $pending = [];
     private $nextPendingIndex = 0;
@@ -25,6 +25,8 @@ class EachPromise implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromisorInterfa
     private $aggregate;
     /** @var bool|null */
     private $mutex;
+    /** @var bool */
+    private $stepWhileLocked = \false;
     /**
      * Configuration hash can include the following key value pairs:
      *
@@ -48,7 +50,11 @@ class EachPromise implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromisorInterfa
      */
     public function __construct($iterable, array $config = [])
     {
-        $this->iterable = \PostSMTP\Vendor\GuzzleHttp\Promise\Create::iterFor($iterable);
+        if (!\is_iterable($iterable)) {
+            \trigger_deprecation('guzzlehttp/promises', '2.5', 'Passing a non-iterable to %s::%s() is deprecated; guzzlehttp/promises 3.0 will require an iterable.', __CLASS__, __FUNCTION__);
+            $iterable = [$iterable];
+        }
+        $this->iterable = Create::iterFor($iterable);
         if (isset($config['concurrency'])) {
             $this->concurrency = $config['concurrency'];
         }
@@ -60,7 +66,7 @@ class EachPromise implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromisorInterfa
         }
     }
     /** @psalm-suppress InvalidNullableReturnType */
-    public function promise() : \PostSMTP\Vendor\GuzzleHttp\Promise\PromiseInterface
+    public function promise() : PromiseInterface
     {
         if ($this->aggregate) {
             return $this->aggregate;
@@ -70,6 +76,18 @@ class EachPromise implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromisorInterfa
             /** @psalm-assert Promise $this->aggregate */
             $this->iterable->rewind();
             $this->refillPending();
+            if (!$this->pending) {
+                Utils::queue()->add(function () : void {
+                    if (!$this->aggregate || Is::settled($this->aggregate)) {
+                        return;
+                    }
+                    try {
+                        $this->checkIfFinished();
+                    } catch (\Throwable $e) {
+                        $this->aggregate->reject($e);
+                    }
+                });
+            }
         } catch (\Throwable $e) {
             $this->aggregate->reject($e);
         }
@@ -81,17 +99,24 @@ class EachPromise implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromisorInterfa
     private function createPromise() : void
     {
         $this->mutex = \false;
-        $this->aggregate = new \PostSMTP\Vendor\GuzzleHttp\Promise\Promise(function () : void {
-            if ($this->checkIfFinished()) {
-                return;
-            }
-            \reset($this->pending);
-            // Consume a potentially fluctuating list of promises while
-            // ensuring that indexes are maintained (precluding array_shift).
-            while ($promise = \current($this->pending)) {
-                \next($this->pending);
-                $promise->wait();
-                if (\PostSMTP\Vendor\GuzzleHttp\Promise\Is::settled($this->aggregate)) {
+        $this->aggregate = new Promise(function () : void {
+            while (\true) {
+                if ($this->checkIfFinished()) {
+                    return;
+                }
+                \reset($this->pending);
+                // Consume a potentially fluctuating list of promises while
+                // ensuring that indexes are maintained (precluding array_shift).
+                while ($promise = \current($this->pending)) {
+                    \next($this->pending);
+                    $promise->wait();
+                    if (Is::settled($this->aggregate)) {
+                        return;
+                    }
+                }
+                // Refill and re-sweep; give up only when nothing remains.
+                $this->refillPending();
+                if (Is::settled($this->aggregate) || !$this->pending) {
                     return;
                 }
             }
@@ -114,6 +139,10 @@ class EachPromise implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromisorInterfa
         }
         // Add only up to N pending promises.
         $concurrency = \is_callable($this->concurrency) ? ($this->concurrency)(\count($this->pending)) : $this->concurrency;
+        // The callable can settle the aggregate; admit nothing more.
+        if (Is::settled($this->aggregate)) {
+            return;
+        }
         $concurrency = \max($concurrency - \count($this->pending), 0);
         // Concurrency may be set to 0 to disallow new promises.
         if (!$concurrency) {
@@ -133,7 +162,7 @@ class EachPromise implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromisorInterfa
         if (!$this->iterable || !$this->iterable->valid()) {
             return \false;
         }
-        $promise = \PostSMTP\Vendor\GuzzleHttp\Promise\Create::promiseFor($this->iterable->current());
+        $promise = Create::promiseFor($this->iterable->current());
         $key = $this->iterable->key();
         // Iterable keys may not be unique, so we use a counter to
         // guarantee uniqueness
@@ -156,23 +185,31 @@ class EachPromise implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromisorInterfa
         // Place a lock on the iterator so that we ensure to not recurse,
         // preventing fatal generator errors.
         if ($this->mutex) {
+            $this->stepWhileLocked = \true;
             return \false;
         }
         $this->mutex = \true;
         try {
             $this->iterable->next();
             $this->mutex = \false;
-            return \true;
         } catch (\Throwable $e) {
             $this->aggregate->reject($e);
             $this->mutex = \false;
             return \false;
         }
+        // Run the completion check that locked steps skipped.
+        if ($this->stepWhileLocked) {
+            $this->stepWhileLocked = \false;
+            if (!Is::settled($this->aggregate)) {
+                $this->checkIfFinished();
+            }
+        }
+        return \true;
     }
     private function step(int $idx) : void
     {
         // If the promise was already resolved, then ignore this step.
-        if (\PostSMTP\Vendor\GuzzleHttp\Promise\Is::settled($this->aggregate)) {
+        if (Is::settled($this->aggregate)) {
             return;
         }
         unset($this->pending[$idx]);
@@ -184,6 +221,7 @@ class EachPromise implements \PostSMTP\Vendor\GuzzleHttp\Promise\PromisorInterfa
             $this->refillPending();
         }
     }
+    /** @phpstan-impure */
     private function checkIfFinished() : bool
     {
         if (!$this->pending && !$this->iterable->valid()) {

@@ -5,7 +5,7 @@ namespace PostSMTP\Vendor\GuzzleHttp\Cookie;
 /**
  * Persists cookies in the client session
  */
-class SessionCookieJar extends \PostSMTP\Vendor\GuzzleHttp\Cookie\CookieJar
+class SessionCookieJar extends CookieJar
 {
     /**
      * @var string session key
@@ -45,11 +45,17 @@ class SessionCookieJar extends \PostSMTP\Vendor\GuzzleHttp\Cookie\CookieJar
         $json = [];
         /** @var SetCookie $cookie */
         foreach ($this as $cookie) {
-            if (\PostSMTP\Vendor\GuzzleHttp\Cookie\CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {
-                $json[] = $cookie->toArray();
+            if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {
+                $data = $cookie->toArray();
+                $data['HostOnly'] = $cookie->getHostOnly();
+                $json[] = $data;
             }
         }
-        $_SESSION[$this->sessionKey] = \json_encode($json);
+        $json = \json_encode($json);
+        if (\false === $json) {
+            throw new \RuntimeException('Unable to encode cookie data');
+        }
+        $_SESSION[$this->sessionKey] = $json;
     }
     /**
      * Load the contents of the client session into the data array
@@ -59,12 +65,23 @@ class SessionCookieJar extends \PostSMTP\Vendor\GuzzleHttp\Cookie\CookieJar
         if (!isset($_SESSION[$this->sessionKey])) {
             return;
         }
-        $data = \json_decode($_SESSION[$this->sessionKey], \true);
+        $json = $_SESSION[$this->sessionKey];
+        if (!\is_string($json)) {
+            throw new \RuntimeException('Invalid cookie data');
+        }
+        $data = \json_decode($json, \true);
         if (\is_array($data)) {
+            $cookies = [];
             foreach ($data as $cookie) {
-                $this->setCookie(new \PostSMTP\Vendor\GuzzleHttp\Cookie\SetCookie($cookie));
+                if (!\is_array($cookie) || !\array_key_exists('HostOnly', $cookie) || !\is_bool($cookie['HostOnly'])) {
+                    throw new \RuntimeException('Invalid cookie data');
+                }
+                $cookies[] = new SetCookie($cookie);
             }
-        } elseif (\strlen($data)) {
+            foreach ($cookies as $cookie) {
+                $this->setCookie($cookie);
+            }
+        } elseif (\is_scalar($data) && \strlen((string) $data)) {
             throw new \RuntimeException('Invalid cookie data');
         }
     }

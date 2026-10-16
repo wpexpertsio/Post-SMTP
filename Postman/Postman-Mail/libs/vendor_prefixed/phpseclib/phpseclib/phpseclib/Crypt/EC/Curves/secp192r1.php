@@ -16,11 +16,11 @@ namespace PostSMTP\Vendor\phpseclib3\Crypt\EC\Curves;
 
 use PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Prime;
 use PostSMTP\Vendor\phpseclib3\Math\BigInteger;
-class secp192r1 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Prime
+class secp192r1 extends Prime
 {
     public function __construct()
     {
-        $modulo = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFF', 16);
+        $modulo = new BigInteger('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFF', 16);
         $this->setModulo($modulo);
         // algorithm 2.27 from http://diamond.boisestate.edu/~liljanab/MATH308/GuideToECC.pdf#page=66
         /* in theory this should be faster than regular modular reductions save for one small issue.
@@ -61,8 +61,8 @@ class secp192r1 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Prime
             return $r;
         });
         */
-        $this->setCoefficients(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFC', 16), new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('64210519E59C80E70FA7E9AB72243049FEB8DEECC146B9B1', 16));
-        $this->setBasePoint(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('188DA80EB03090F67CBF20EB43A18800F4FF0AFD82FF1012', 16), new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('07192B95FFC8DA78631011ED6B24CDD573F977A11E794811', 16));
-        $this->setOrder(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('FFFFFFFFFFFFFFFFFFFFFFFF99DEF836146BC9B1B4D22831', 16));
+        $this->setCoefficients(new BigInteger('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFC', 16), new BigInteger('64210519E59C80E70FA7E9AB72243049FEB8DEECC146B9B1', 16));
+        $this->setBasePoint(new BigInteger('188DA80EB03090F67CBF20EB43A18800F4FF0AFD82FF1012', 16), new BigInteger('07192B95FFC8DA78631011ED6B24CDD573F977A11E794811', 16));
+        $this->setOrder(new BigInteger('FFFFFFFFFFFFFFFFFFFFFFFF99DEF836146BC9B1B4D22831', 16));
     }
 }

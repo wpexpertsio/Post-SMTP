@@ -43,7 +43,7 @@ trait Fingerprint
         }
         switch ($algorithm) {
             case 'sha256':
-                $hash = new \PostSMTP\Vendor\phpseclib3\Crypt\Hash('sha256');
+                $hash = new Hash('sha256');
                 $base = \base64_encode($hash->hash($key));
                 return \substr($base, 0, \strlen($base) - 1);
             case 'md5':

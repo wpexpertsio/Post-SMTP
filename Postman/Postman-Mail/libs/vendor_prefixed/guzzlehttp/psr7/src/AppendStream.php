@@ -9,7 +9,7 @@ use PostSMTP\Vendor\Psr\Http\Message\StreamInterface;
  *
  * This is a read-only stream decorator.
  */
-final class AppendStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInterface
+final class AppendStream implements StreamInterface
 {
     /** @var StreamInterface[] Streams being decorated */
     private $streams = [];
@@ -49,7 +49,7 @@ final class AppendStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInte
      *
      * @throws \InvalidArgumentException if the stream is not readable
      */
-    public function addStream(\PostSMTP\Vendor\Psr\Http\Message\StreamInterface $stream) : void
+    public function addStream(StreamInterface $stream) : void
     {
         if (!$stream->isReadable()) {
             throw new \InvalidArgumentException('Each stream must be readable');
@@ -62,7 +62,7 @@ final class AppendStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInte
     }
     public function getContents() : string
     {
-        return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::copyToString($this);
+        return Utils::copyToString($this);
     }
     /**
      * Closes each attached stream.
@@ -126,6 +126,12 @@ final class AppendStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInte
      */
     public function seek($offset, $whence = \SEEK_SET) : void
     {
+        if (!\is_int($offset)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing %s to StreamInterface::seek() is deprecated; guzzlehttp/psr7 3.0 requires int for $offset.', \get_debug_type($offset));
+        }
+        if (!\is_int($whence)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing %s to StreamInterface::seek() is deprecated; guzzlehttp/psr7 3.0 requires int for $whence.', \get_debug_type($whence));
+        }
         if (!$this->seekable) {
             throw new \RuntimeException('This AppendStream is not seekable');
         } elseif ($whence !== \SEEK_SET) {
@@ -153,6 +159,12 @@ final class AppendStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInte
      */
     public function read($length) : string
     {
+        if (!\is_int($length)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing %s to StreamInterface::read() is deprecated; guzzlehttp/psr7 3.0 requires int for $length.', \get_debug_type($length));
+        }
+        if ($this->streams === []) {
+            return '';
+        }
         $buffer = '';
         $total = \count($this->streams) - 1;
         $remaining = $length;
@@ -191,6 +203,9 @@ final class AppendStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInte
     }
     public function write($string) : int
     {
+        if (!\is_string($string)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing %s to StreamInterface::write() is deprecated; guzzlehttp/psr7 3.0 requires string for $string.', \get_debug_type($string));
+        }
         throw new \RuntimeException('Cannot write to an AppendStream');
     }
     /**
@@ -198,6 +213,9 @@ final class AppendStream implements \PostSMTP\Vendor\Psr\Http\Message\StreamInte
      */
     public function getMetadata($key = null)
     {
+        if ($key !== null && !\is_string($key)) {
+            \trigger_deprecation('guzzlehttp/psr7', '2.11', 'Passing %s to StreamInterface::getMetadata() is deprecated; guzzlehttp/psr7 3.0 requires string|null for $key.', \get_debug_type($key));
+        }
         return $key ? null : [];
     }
 }

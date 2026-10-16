@@ -24,7 +24,7 @@ use PostSMTP\Vendor\phpseclib3\File\ASN1;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class PKCS1 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Keys\PKCS
+abstract class PKCS1 extends PKCS
 {
     /**
      * Default encryption algorithm
@@ -72,15 +72,15 @@ abstract class PKCS1 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
         $modes = '(CBC|ECB|CFB|OFB|CTR)';
         switch (\true) {
             case \preg_match("#^AES-(128|192|256)-{$modes}\$#", $algo, $matches):
-                $cipher = new \PostSMTP\Vendor\phpseclib3\Crypt\AES(self::getEncryptionMode($matches[2]));
+                $cipher = new AES(self::getEncryptionMode($matches[2]));
                 $cipher->setKeyLength($matches[1]);
                 return $cipher;
             case \preg_match("#^DES-EDE3-{$modes}\$#", $algo, $matches):
-                return new \PostSMTP\Vendor\phpseclib3\Crypt\TripleDES(self::getEncryptionMode($matches[1]));
+                return new TripleDES(self::getEncryptionMode($matches[1]));
             case \preg_match("#^DES-{$modes}\$#", $algo, $matches):
-                return new \PostSMTP\Vendor\phpseclib3\Crypt\DES(self::getEncryptionMode($matches[1]));
+                return new DES(self::getEncryptionMode($matches[1]));
             default:
-                throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedAlgorithmException($algo . ' is not a supported algorithm');
+                throw new UnsupportedAlgorithmException($algo . ' is not a supported algorithm');
         }
     }
     /**
@@ -109,7 +109,7 @@ abstract class PKCS1 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
      */
     protected static function load($key, $password)
     {
-        if (!\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::is_stringable($key)) {
+        if (!Strings::is_stringable($key)) {
             throw new \UnexpectedValueException('Key should be a string - not a ' . \gettype($key));
         }
         /* Although PKCS#1 proposes a format that public and private keys can use, encrypting them is
@@ -128,10 +128,10 @@ abstract class PKCS1 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
         
                    * OpenSSL is the de facto standard.  It's utilized by OpenSSH and other projects */
         if (\preg_match('#DEK-Info: (.+),(.+)#', $key, $matches)) {
-            $iv = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::hex2bin(\trim($matches[2]));
+            $iv = Strings::hex2bin(\trim($matches[2]));
             // remove the Proc-Type / DEK-Info sections as they're no longer needed
             $key = \preg_replace('#^(?:Proc-Type|DEK-Info): .*#m', '', $key);
-            $ciphertext = \PostSMTP\Vendor\phpseclib3\File\ASN1::extractBER($key);
+            $ciphertext = ASN1::extractBER($key);
             if ($ciphertext === \false) {
                 $ciphertext = $key;
             }
@@ -141,7 +141,7 @@ abstract class PKCS1 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
             $key = $crypto->decrypt($ciphertext);
         } else {
             if (self::$format != self::MODE_DER) {
-                $decoded = \PostSMTP\Vendor\phpseclib3\File\ASN1::extractBER($key);
+                $decoded = ASN1::extractBER($key);
                 if ($decoded !== \false) {
                     $key = $decoded;
                 } elseif (self::$format == self::MODE_PEM) {
@@ -163,15 +163,15 @@ abstract class PKCS1 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
     protected static function wrapPrivateKey($key, $type, $password, array $options = [])
     {
         if (empty($password) || !\is_string($password)) {
-            return "-----BEGIN {$type} PRIVATE KEY-----\r\n" . \chunk_split(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($key), 64) . "-----END {$type} PRIVATE KEY-----";
+            return "-----BEGIN {$type} PRIVATE KEY-----\r\n" . \chunk_split(Strings::base64_encode($key), 64) . "-----END {$type} PRIVATE KEY-----";
         }
         $encryptionAlgorithm = isset($options['encryptionAlgorithm']) ? $options['encryptionAlgorithm'] : self::$defaultEncryptionAlgorithm;
         $cipher = self::getEncryptionObject($encryptionAlgorithm);
-        $iv = \PostSMTP\Vendor\phpseclib3\Crypt\Random::string($cipher->getBlockLength() >> 3);
+        $iv = Random::string($cipher->getBlockLength() >> 3);
         $cipher->setKey(self::generateSymmetricKey($password, $iv, $cipher->getKeyLength() >> 3));
         $cipher->setIV($iv);
-        $iv = \strtoupper(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::bin2hex($iv));
-        return "-----BEGIN {$type} PRIVATE KEY-----\r\n" . "Proc-Type: 4,ENCRYPTED\r\n" . "DEK-Info: " . $encryptionAlgorithm . ",{$iv}\r\n" . "\r\n" . \chunk_split(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($cipher->encrypt($key)), 64) . "-----END {$type} PRIVATE KEY-----";
+        $iv = \strtoupper(Strings::bin2hex($iv));
+        return "-----BEGIN {$type} PRIVATE KEY-----\r\n" . "Proc-Type: 4,ENCRYPTED\r\n" . "DEK-Info: " . $encryptionAlgorithm . ",{$iv}\r\n" . "\r\n" . \chunk_split(Strings::base64_encode($cipher->encrypt($key)), 64) . "-----END {$type} PRIVATE KEY-----";
     }
     /**
      * Wrap a public key appropriately
@@ -182,6 +182,6 @@ abstract class PKCS1 extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Ke
      */
     protected static function wrapPublicKey($key, $type)
     {
-        return "-----BEGIN {$type} PUBLIC KEY-----\r\n" . \chunk_split(\PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::base64_encode($key), 64) . "-----END {$type} PUBLIC KEY-----";
+        return "-----BEGIN {$type} PUBLIC KEY-----\r\n" . \chunk_split(Strings::base64_encode($key), 64) . "-----END {$type} PUBLIC KEY-----";
     }
 }

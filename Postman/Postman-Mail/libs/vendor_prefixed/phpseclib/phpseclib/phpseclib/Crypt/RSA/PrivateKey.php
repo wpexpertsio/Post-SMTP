@@ -21,7 +21,7 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\RSA implements \PostSMTP\Vendor\phpseclib3\Crypt\Common\PrivateKey
+final class PrivateKey extends RSA implements Common\PrivateKey
 {
     use Common\Traits\PasswordProtected;
     /**
@@ -45,7 +45,7 @@ class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\RSA implements \PostS
     /**
      * Private Exponent
      *
-     * @var \phpseclib3\Math\BigInteger
+     * @var BigInteger
      */
     protected $privateExponent;
     /**
@@ -53,9 +53,9 @@ class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\RSA implements \PostS
      *
      * See {@link http://tools.ietf.org/html/rfc3447#section-5.1.2 RFC3447#section-5.1.2}.
      *
-     * @return bool|\phpseclib3\Math\BigInteger
+     * @return bool|BigInteger
      */
-    private function rsadp(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $c)
+    private function rsadp(BigInteger $c)
     {
         if ($c->compare(self::$zero) < 0 || $c->compare($this->modulus) > 0) {
             throw new \OutOfRangeException('Ciphertext representative out of range');
@@ -67,9 +67,9 @@ class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\RSA implements \PostS
      *
      * See {@link http://tools.ietf.org/html/rfc3447#section-5.2.1 RFC3447#section-5.2.1}.
      *
-     * @return bool|\phpseclib3\Math\BigInteger
+     * @return bool|BigInteger
      */
-    private function rsasp1(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $m)
+    private function rsasp1(BigInteger $m)
     {
         if ($m->compare(self::$zero) < 0 || $m->compare($this->modulus) > 0) {
             throw new \OutOfRangeException('Signature representative out of range');
@@ -79,10 +79,10 @@ class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\RSA implements \PostS
     /**
      * Exponentiate
      *
-     * @param \phpseclib3\Math\BigInteger $x
-     * @return \phpseclib3\Math\BigInteger
+     * @param BigInteger $x
+     * @return BigInteger
      */
-    protected function exponentiate(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $x)
+    protected function exponentiate(BigInteger $x)
     {
         switch (\true) {
             case empty($this->primes):
@@ -116,7 +116,7 @@ class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\RSA implements \PostS
                     $smallest = $this->primes[$i];
                 }
             }
-            $r = \PostSMTP\Vendor\phpseclib3\Math\BigInteger::randomRange(self::$one, $smallest->subtract(self::$one));
+            $r = BigInteger::randomRange(self::$one, $smallest->subtract(self::$one));
             $m_i = [1 => $this->blind($x, $r, 1), 2 => $this->blind($x, $r, 2)];
             $h = $m_i[1]->subtract($m_i[2]);
             $h = $h->multiply($this->coefficients[2]);
@@ -140,12 +140,12 @@ class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\RSA implements \PostS
      * Protects against timing attacks by employing RSA Blinding.
      * Returns $x->modPow($this->exponents[$i], $this->primes[$i])
      *
-     * @param \phpseclib3\Math\BigInteger $x
-     * @param \phpseclib3\Math\BigInteger $r
+     * @param BigInteger $x
+     * @param BigInteger $r
      * @param int $i
-     * @return \phpseclib3\Math\BigInteger
+     * @return BigInteger
      */
-    private function blind(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $x, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $r, $i)
+    private function blind(BigInteger $x, BigInteger $r, $i)
     {
         $x = $x->multiply($r->modPow($this->publicExponent, $this->primes[$i]));
         $x = $x->modPow($this->exponents[$i], $this->primes[$i]);
@@ -175,15 +175,15 @@ class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\RSA implements \PostS
         if ($emLen < $this->hLen + $sLen + 2) {
             throw new \LengthException('RSA modulus too short');
         }
-        $salt = \PostSMTP\Vendor\phpseclib3\Crypt\Random::string($sLen);
-        $m2 = "\0\0\0\0\0\0\0\0" . $mHash . $salt;
+        $salt = Random::string($sLen);
+        $m2 = "\x00\x00\x00\x00\x00\x00\x00\x00" . $mHash . $salt;
         $h = $this->hash->hash($m2);
         $ps = \str_repeat(\chr(0), $emLen - $sLen - $this->hLen - 2);
         $db = $ps . \chr(1) . $salt;
         $dbMask = $this->mgf1($h, $emLen - $this->hLen - 1);
         // ie. stlren($db)
         $maskedDB = $db ^ $dbMask;
-        $maskedDB[0] = ~\chr(0xff << ($emBits & 7)) & $maskedDB[0];
+        $maskedDB[0] = ~\chr(256 - (1 << ($emBits & 7))) & $maskedDB[0];
         $em = $maskedDB . $h . \chr(0xbc);
         return $em;
     }
@@ -241,6 +241,10 @@ class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\RSA implements \PostS
      */
     public function sign($message)
     {
+        $result = $this->handleOpenSSL('openssl_sign', $message);
+        if ($result !== null) {
+            return $result;
+        }
         switch ($this->signaturePadding) {
             case self::SIGNATURE_PKCS1:
             case self::SIGNATURE_RELAXED_PKCS1:
@@ -326,8 +330,8 @@ class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\RSA implements \PostS
         $patternMatch = 0;
         $offset = 0;
         for ($i = 0; $i < \strlen($m); $i++) {
-            $patternMatch |= $leadingZeros & $m[$i] === "\1";
-            $leadingZeros &= $m[$i] === "\0";
+            $patternMatch |= $leadingZeros & $m[$i] === "\x01";
+            $leadingZeros &= $m[$i] === "\x00";
             $offset += $patternMatch ? 0 : 1;
         }
         // we do | instead of || to avoid https://en.wikipedia.org/wiki/Short-circuit_evaluation
@@ -365,6 +369,10 @@ class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\RSA implements \PostS
      */
     public function decrypt($ciphertext)
     {
+        $result = $this->handleOpenSSL('openssl_private_decrypt', $ciphertext);
+        if ($result !== null) {
+            return $result;
+        }
         switch ($this->encryptionPadding) {
             case self::ENCRYPTION_NONE:
                 return $this->raw_encrypt($ciphertext);
@@ -387,7 +395,7 @@ class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\RSA implements \PostS
             throw new \RuntimeException('Public key components not found');
         }
         $key = $type::savePublicKey($this->modulus, $this->publicExponent);
-        return \PostSMTP\Vendor\phpseclib3\Crypt\RSA::loadFormat('PKCS8', $key)->withHash($this->hash->getHash())->withMGFHash($this->mgfHash->getHash())->withSaltLength($this->sLen)->withLabel($this->label)->withPadding($this->signaturePadding | $this->encryptionPadding);
+        return RSA::loadFormat('PKCS8', $key)->withHash($this->hash->getHash())->withMGFHash($this->mgfHash->getHash())->withSaltLength($this->sLen)->withLabel($this->label)->withPadding($this->signaturePadding | $this->encryptionPadding);
     }
     /**
      * Returns the private key
@@ -399,11 +407,11 @@ class PrivateKey extends \PostSMTP\Vendor\phpseclib3\Crypt\RSA implements \PostS
     public function toString($type, array $options = [])
     {
         $type = self::validatePlugin('Keys', $type, empty($this->primes) ? 'savePublicKey' : 'savePrivateKey');
-        if ($type == \PostSMTP\Vendor\phpseclib3\Crypt\RSA\Formats\Keys\PSS::class) {
+        if ($type == PSS::class) {
             if ($this->signaturePadding == self::SIGNATURE_PSS) {
                 $options += ['hash' => $this->hash->getHash(), 'MGFHash' => $this->mgfHash->getHash(), 'saltLength' => $this->getSaltLength()];
             } else {
-                throw new \PostSMTP\Vendor\phpseclib3\Exception\UnsupportedFormatException('The PSS format can only be used when the signature method has been explicitly set to PSS');
+                throw new UnsupportedFormatException('The PSS format can only be used when the signature method has been explicitly set to PSS');
             }
         }
         if (empty($this->primes)) {

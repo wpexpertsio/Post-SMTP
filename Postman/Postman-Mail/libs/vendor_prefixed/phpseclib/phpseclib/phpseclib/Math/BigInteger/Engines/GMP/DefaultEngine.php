@@ -18,7 +18,7 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class DefaultEngine extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP
+abstract class DefaultEngine extends GMP
 {
     /**
      * Performs modular exponentiation.
@@ -28,9 +28,9 @@ abstract class DefaultEngine extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger
      * @param GMP $n
      * @return GMP
      */
-    protected static function powModHelper(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $x, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $e, \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $n)
+    protected static function powModHelper(GMP $x, GMP $e, GMP $n)
     {
-        $temp = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\GMP();
+        $temp = new GMP();
         $temp->value = \gmp_powm($x->value, $e->value, $n->value);
         return $x->normalize($temp);
     }

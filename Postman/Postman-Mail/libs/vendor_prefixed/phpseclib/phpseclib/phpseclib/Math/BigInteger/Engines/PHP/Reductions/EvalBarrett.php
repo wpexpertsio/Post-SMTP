@@ -19,7 +19,7 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP\Base;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class EvalBarrett extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP\Base
+abstract class EvalBarrett extends Base
 {
     /**
      * Custom Reduction Function
@@ -50,7 +50,7 @@ abstract class EvalBarrett extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\E
      * @param string $class
      * @return callable
      */
-    protected static function generateCustomReduction(\PostSMTP\Vendor\phpseclib3\Math\BigInteger\Engines\PHP $m, $class)
+    protected static function generateCustomReduction(PHP $m, $class)
     {
         $m_length = \count($m->value);
         if ($m_length < 5) {
@@ -66,6 +66,13 @@ abstract class EvalBarrett extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\E
             self::$custom_reduction = $func;
             //self::$custom_reduction = \Closure::bind($func, $m, $class);
             return $func;
+        }
+        $correctionNeeded = \false;
+        if ($m_length & 1) {
+            $correctionNeeded = \true;
+            $m = clone $m;
+            \array_unshift($m->value, 0);
+            $m_length++;
         }
         $lhs = new $class();
         $lhs_value =& $lhs->value;
@@ -85,12 +92,13 @@ abstract class EvalBarrett extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\E
         $m = $m->value;
         $m1 = $m1->value;
         $cutoff = \count($m) + (\count($m) >> 1);
-        $code = '
+        $code = $correctionNeeded ? 'array_unshift($n, 0);' : '';
+        $code .= '
             if (count($n) > ' . 2 * \count($m) . ') {
                 $lhs = new ' . $class . '();
                 $rhs = new ' . $class . '();
                 $lhs->value = $n;
-                $rhs->value = [' . \implode(',', \array_map('self::float2string', $m)) . '];
+                $rhs->value = [' . \implode(',', \array_map(self::class . '::float2string', $m)) . '];
                 list(, $temp) = $lhs->divide($rhs);
                 return $temp->value;
             }
@@ -116,6 +124,9 @@ abstract class EvalBarrett extends \PostSMTP\Vendor\phpseclib3\Math\BigInteger\E
         $subcode = self::generateInlineSubtract1('temp', $m, 'temp2', $class);
         $subcode .= '$temp = $temp2;';
         $code .= self::generateInlineCompare($m, 'temp', $subcode);
+        if ($correctionNeeded) {
+            $code .= 'array_shift($temp);';
+        }
         $code .= 'return $temp;';
         eval('$func = function ($n) { ' . $code . '};');
         self::$custom_reduction = $func;

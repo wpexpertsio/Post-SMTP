@@ -88,7 +88,7 @@ abstract class Random
             \ini_set('session.use_cookies', 0);
             \session_cache_limiter('');
             \session_start();
-            $v = (isset($_SERVER) ? self::safe_serialize($_SERVER) : '') . (isset($_POST) ? self::safe_serialize($_POST) : '') . (isset($_GET) ? self::safe_serialize($_GET) : '') . (isset($_COOKIE) ? self::safe_serialize($_COOKIE) : '') . self::safe_serialize($GLOBALS) . self::safe_serialize($_SESSION) . self::safe_serialize($_OLD_SESSION);
+            $v = (isset($_SERVER) ? self::safe_serialize($_SERVER) : '') . (isset($_POST) ? self::safe_serialize($_POST) : '') . (isset($_GET) ? self::safe_serialize($_GET) : '') . (isset($_COOKIE) ? self::safe_serialize($_COOKIE) : '') . (\version_compare(\PHP_VERSION, '8.1.0', '>=') ? \serialize($GLOBALS) : self::safe_serialize($GLOBALS)) . self::safe_serialize($_SESSION) . self::safe_serialize($_OLD_SESSION);
             $v = $seed = $_SESSION['seed'] = \sha1($v, \true);
             if (!isset($_SESSION['count'])) {
                 $_SESSION['count'] = 0;
@@ -124,22 +124,22 @@ abstract class Random
             // http://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator#Designs_based_on_cryptographic_primitives
             switch (\true) {
                 case \class_exists('PostSMTP\\Vendor\\phpseclib3\\Crypt\\AES'):
-                    $crypto = new \PostSMTP\Vendor\phpseclib3\Crypt\AES('ctr');
+                    $crypto = new AES('ctr');
                     break;
                 case \class_exists('PostSMTP\\Vendor\\phpseclib3\\Crypt\\Twofish'):
-                    $crypto = new \PostSMTP\Vendor\phpseclib3\Crypt\Twofish('ctr');
+                    $crypto = new Twofish('ctr');
                     break;
                 case \class_exists('PostSMTP\\Vendor\\phpseclib3\\Crypt\\Blowfish'):
-                    $crypto = new \PostSMTP\Vendor\phpseclib3\Crypt\Blowfish('ctr');
+                    $crypto = new Blowfish('ctr');
                     break;
                 case \class_exists('PostSMTP\\Vendor\\phpseclib3\\Crypt\\TripleDES'):
-                    $crypto = new \PostSMTP\Vendor\phpseclib3\Crypt\TripleDES('ctr');
+                    $crypto = new TripleDES('ctr');
                     break;
                 case \class_exists('PostSMTP\\Vendor\\phpseclib3\\Crypt\\DES'):
-                    $crypto = new \PostSMTP\Vendor\phpseclib3\Crypt\DES('ctr');
+                    $crypto = new DES('ctr');
                     break;
                 case \class_exists('PostSMTP\\Vendor\\phpseclib3\\Crypt\\RC4'):
-                    $crypto = new \PostSMTP\Vendor\phpseclib3\Crypt\RC4();
+                    $crypto = new RC4();
                     break;
                 default:
                     throw new \RuntimeException(__CLASS__ . ' requires at least one symmetric cipher be loaded');

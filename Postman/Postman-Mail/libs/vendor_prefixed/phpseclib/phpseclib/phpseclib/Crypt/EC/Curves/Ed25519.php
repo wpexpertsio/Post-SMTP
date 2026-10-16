@@ -15,7 +15,7 @@ use PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards;
 use PostSMTP\Vendor\phpseclib3\Crypt\Hash;
 use PostSMTP\Vendor\phpseclib3\Crypt\Random;
 use PostSMTP\Vendor\phpseclib3\Math\BigInteger;
-class Ed25519 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards
+class Ed25519 extends TwistedEdwards
 {
     const HASH = 'sha512';
     /*
@@ -32,16 +32,16 @@ class Ed25519 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\TwistedEdw
     public function __construct()
     {
         // 2^255 - 19
-        $this->setModulo(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFED', 16));
+        $this->setModulo(new BigInteger('7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFED', 16));
         $this->setCoefficients(
             // -1
-            new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEC', 16),
+            new BigInteger('7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEC', 16),
             // a
             // -121665/121666
-            new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('52036CEE2B6FFE738CC740797779E89800700A4D4141D8AB75EB4DCA135978A3', 16)
+            new BigInteger('52036CEE2B6FFE738CC740797779E89800700A4D4141D8AB75EB4DCA135978A3', 16)
         );
-        $this->setBasePoint(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('216936D3CD6E53FEC0A4E231FDD6DC5C692CC7609525A7B2C9562D608F25D51A', 16), new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('6666666666666666666666666666666666666666666666666666666666666658', 16));
-        $this->setOrder(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger('1000000000000000000000000000000014DEF9DEA2F79CD65812631A5CF5D3ED', 16));
+        $this->setBasePoint(new BigInteger('216936D3CD6E53FEC0A4E231FDD6DC5C692CC7609525A7B2C9562D608F25D51A', 16), new BigInteger('6666666666666666666666666666666666666666666666666666666666666658', 16));
+        $this->setOrder(new BigInteger('1000000000000000000000000000000014DEF9DEA2F79CD65812631A5CF5D3ED', 16));
         // algorithm 14.47 from http://cacr.uwaterloo.ca/hac/about/chap14.pdf#page=16
         /*
         $this->setReduction(function($x) {
@@ -98,7 +98,7 @@ class Ed25519 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\TwistedEdw
      * @param boolean $sign
      * @return object[]
      */
-    public function recoverX(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $y, $sign)
+    public function recoverX(BigInteger $y, $sign)
     {
         $y = $this->factory->newInteger($y);
         $y2 = $y->multiply($y);
@@ -120,12 +120,12 @@ class Ed25519 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\TwistedEdw
                     the special case for p = 5 (mod 8).  To find a square root of a,
                     first compute the candidate root x = a^((p+3)/8) (mod p)."
                  */
-        $exp = $this->getModulo()->add(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(3));
+        $exp = $this->getModulo()->add(new BigInteger(3));
         $exp = $exp->bitwise_rightShift(3);
         $x = $x2->pow($exp);
         // If v x^2 = -u (mod p), set x <-- x * 2^((p-1)/4), which is a square root.
         if (!$x->multiply($x)->subtract($x2)->equals($this->zero)) {
-            $temp = $this->getModulo()->subtract(new \PostSMTP\Vendor\phpseclib3\Math\BigInteger(1));
+            $temp = $this->getModulo()->subtract(new BigInteger(1));
             $temp = $temp->bitwise_rightShift(2);
             $temp = $this->two->pow($temp);
             $x = $x->multiply($temp);
@@ -156,7 +156,7 @@ class Ed25519 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\TwistedEdw
         // 1.  Hash the 32-byte private key using SHA-512, storing the digest in
         //     a 64-octet large buffer, denoted h.  Only the lower 32 bytes are
         //     used for generating the public key.
-        $hash = new \PostSMTP\Vendor\phpseclib3\Crypt\Hash('sha512');
+        $hash = new Hash('sha512');
         $h = $hash->hash($str);
         $h = \substr($h, 0, 32);
         // 2.  Prune the buffer: The lowest three bits of the first octet are
@@ -167,7 +167,7 @@ class Ed25519 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\TwistedEdw
         $h[0] = $h[0] & \chr(0x3f) | \chr(0x40);
         // 3.  Interpret the buffer as the little-endian integer, forming a
         //     secret scalar s.
-        $dA = new \PostSMTP\Vendor\phpseclib3\Math\BigInteger($h, 256);
+        $dA = new BigInteger($h, 256);
         return ['dA' => $dA, 'secret' => $str];
     }
     /**
@@ -194,7 +194,7 @@ class Ed25519 extends \PostSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\TwistedEdw
      */
     public function createRandomMultiplier()
     {
-        return $this->extractSecret(\PostSMTP\Vendor\phpseclib3\Crypt\Random::string(32))['dA'];
+        return $this->extractSecret(Random::string(32))['dA'];
     }
     /**
      * Converts an affine point to an extended homogeneous coordinate

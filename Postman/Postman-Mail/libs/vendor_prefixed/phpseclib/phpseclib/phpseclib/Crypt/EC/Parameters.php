@@ -16,7 +16,7 @@ use PostSMTP\Vendor\phpseclib3\Crypt\EC;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class Parameters extends \PostSMTP\Vendor\phpseclib3\Crypt\EC
+final class Parameters extends EC
 {
     /**
      * Returns the parameters

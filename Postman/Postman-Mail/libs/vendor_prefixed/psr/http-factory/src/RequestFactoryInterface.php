@@ -14,5 +14,5 @@ interface RequestFactoryInterface
      *
      * @return RequestInterface
      */
-    public function createRequest(string $method, $uri) : \PostSMTP\Vendor\Psr\Http\Message\RequestInterface;
+    public function createRequest(string $method, $uri) : RequestInterface;
 }

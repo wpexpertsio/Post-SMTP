@@ -16,7 +16,7 @@ use PostSMTP\Vendor\phpseclib3\Crypt\DH;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class Parameters extends \PostSMTP\Vendor\phpseclib3\Crypt\DH
+final class Parameters extends DH
 {
     /**
      * Returns the parameters

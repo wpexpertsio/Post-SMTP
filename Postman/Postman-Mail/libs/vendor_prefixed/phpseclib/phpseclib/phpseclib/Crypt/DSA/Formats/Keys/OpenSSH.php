@@ -22,7 +22,7 @@ use PostSMTP\Vendor\phpseclib3\Math\BigInteger;
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-abstract class OpenSSH extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\Keys\OpenSSH
+abstract class OpenSSH extends Progenitor
 {
     /**
      * Supported Key Types
@@ -41,28 +41,28 @@ abstract class OpenSSH extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\
     {
         $parsed = parent::load($key, $password);
         if (isset($parsed['paddedKey'])) {
-            list($type) = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::unpackSSH2('s', $parsed['paddedKey']);
+            list($type) = Strings::unpackSSH2('s', $parsed['paddedKey']);
             if ($type != $parsed['type']) {
                 throw new \RuntimeException("The public and private keys are not of the same type ({$type} vs {$parsed['type']})");
             }
-            list($p, $q, $g, $y, $x, $comment) = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::unpackSSH2('i5s', $parsed['paddedKey']);
+            list($p, $q, $g, $y, $x, $comment) = Strings::unpackSSH2('i5s', $parsed['paddedKey']);
             return \compact('p', 'q', 'g', 'y', 'x', 'comment');
         }
-        list($p, $q, $g, $y) = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::unpackSSH2('iiii', $parsed['publicKey']);
+        list($p, $q, $g, $y) = Strings::unpackSSH2('iiii', $parsed['publicKey']);
         $comment = $parsed['comment'];
         return \compact('p', 'q', 'g', 'y', 'comment');
     }
     /**
      * Convert a public key to the appropriate format
      *
-     * @param \phpseclib3\Math\BigInteger $p
-     * @param \phpseclib3\Math\BigInteger $q
-     * @param \phpseclib3\Math\BigInteger $g
-     * @param \phpseclib3\Math\BigInteger $y
+     * @param BigInteger $p
+     * @param BigInteger $q
+     * @param BigInteger $g
+     * @param BigInteger $y
      * @param array $options optional
      * @return string
      */
-    public static function savePublicKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $p, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $q, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $g, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $y, array $options = [])
+    public static function savePublicKey(BigInteger $p, BigInteger $q, BigInteger $g, BigInteger $y, array $options = [])
     {
         if ($q->getLength() != 160) {
             throw new \InvalidArgumentException('SSH only supports keys with an N (length of Group Order q) of 160');
@@ -73,7 +73,7 @@ abstract class OpenSSH extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\
         // mpint     q
         // mpint     g
         // mpint     y
-        $DSAPublicKey = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('siiii', 'ssh-dss', $p, $q, $g, $y);
+        $DSAPublicKey = Strings::packSSH2('siiii', 'ssh-dss', $p, $q, $g, $y);
         if (isset($options['binary']) ? $options['binary'] : self::$binary) {
             return $DSAPublicKey;
         }
@@ -84,19 +84,19 @@ abstract class OpenSSH extends \PostSMTP\Vendor\phpseclib3\Crypt\Common\Formats\
     /**
      * Convert a private key to the appropriate format.
      *
-     * @param \phpseclib3\Math\BigInteger $p
-     * @param \phpseclib3\Math\BigInteger $q
-     * @param \phpseclib3\Math\BigInteger $g
-     * @param \phpseclib3\Math\BigInteger $y
-     * @param \phpseclib3\Math\BigInteger $x
+     * @param BigInteger $p
+     * @param BigInteger $q
+     * @param BigInteger $g
+     * @param BigInteger $y
+     * @param BigInteger $x
      * @param string $password optional
      * @param array $options optional
      * @return string
      */
-    public static function savePrivateKey(\PostSMTP\Vendor\phpseclib3\Math\BigInteger $p, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $q, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $g, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $y, \PostSMTP\Vendor\phpseclib3\Math\BigInteger $x, $password = '', array $options = [])
+    public static function savePrivateKey(BigInteger $p, BigInteger $q, BigInteger $g, BigInteger $y, BigInteger $x, $password = '', array $options = [])
     {
         $publicKey = self::savePublicKey($p, $q, $g, $y, ['binary' => \true]);
-        $privateKey = \PostSMTP\Vendor\phpseclib3\Common\Functions\Strings::packSSH2('si5', 'ssh-dss', $p, $q, $g, $y, $x);
+        $privateKey = Strings::packSSH2('si5', 'ssh-dss', $p, $q, $g, $y, $x);
         return self::wrapPrivateKey($publicKey, $privateKey, $password, $options);
     }
 }

@@ -1,0 +1,17 @@
+<?php
+
+declare (strict_types=1);
+namespace PostSMTP\Vendor\GuzzleHttp\Promise\Tests;
+
+class Thing1
+{
+    private $message;
+    public function __construct($message)
+    {
+        $this->message = $message;
+    }
+    public function __toString()
+    {
+        return $this->message;
+    }
+}

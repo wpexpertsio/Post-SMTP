@@ -21,36 +21,36 @@ use PostSMTP\Vendor\Psr\Http\Message\UriInterface;
  * Note: in consuming code it is recommended to require the implemented interfaces
  * and inject the instance of this class multiple times.
  */
-final class HttpFactory implements \PostSMTP\Vendor\Psr\Http\Message\RequestFactoryInterface, \PostSMTP\Vendor\Psr\Http\Message\ResponseFactoryInterface, \PostSMTP\Vendor\Psr\Http\Message\ServerRequestFactoryInterface, \PostSMTP\Vendor\Psr\Http\Message\StreamFactoryInterface, \PostSMTP\Vendor\Psr\Http\Message\UploadedFileFactoryInterface, \PostSMTP\Vendor\Psr\Http\Message\UriFactoryInterface
+final class HttpFactory implements RequestFactoryInterface, ResponseFactoryInterface, ServerRequestFactoryInterface, StreamFactoryInterface, UploadedFileFactoryInterface, UriFactoryInterface
 {
-    public function createUploadedFile(\PostSMTP\Vendor\Psr\Http\Message\StreamInterface $stream, int $size = null, int $error = \UPLOAD_ERR_OK, string $clientFilename = null, string $clientMediaType = null) : \PostSMTP\Vendor\Psr\Http\Message\UploadedFileInterface
+    public function createUploadedFile(StreamInterface $stream, ?int $size = null, int $error = \UPLOAD_ERR_OK, ?string $clientFilename = null, ?string $clientMediaType = null) : UploadedFileInterface
     {
         if ($size === null) {
             $size = $stream->getSize();
         }
-        return new \PostSMTP\Vendor\GuzzleHttp\Psr7\UploadedFile($stream, $size, $error, $clientFilename, $clientMediaType);
+        return new UploadedFile($stream, $size, $error, $clientFilename, $clientMediaType);
     }
-    public function createStream(string $content = '') : \PostSMTP\Vendor\Psr\Http\Message\StreamInterface
+    public function createStream(string $content = '') : StreamInterface
     {
-        return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::streamFor($content);
+        return Utils::streamFor($content);
     }
-    public function createStreamFromFile(string $file, string $mode = 'r') : \PostSMTP\Vendor\Psr\Http\Message\StreamInterface
+    public function createStreamFromFile(string $file, string $mode = 'r') : StreamInterface
     {
         try {
-            $resource = \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::tryFopen($file, $mode);
+            $resource = Utils::tryFopen($file, $mode);
         } catch (\RuntimeException $e) {
             if ('' === $mode || \false === \in_array($mode[0], ['r', 'w', 'a', 'x', 'c'], \true)) {
                 throw new \InvalidArgumentException(\sprintf('Invalid file opening mode "%s"', $mode), 0, $e);
             }
             throw $e;
         }
-        return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::streamFor($resource);
+        return Utils::streamFor($resource);
     }
-    public function createStreamFromResource($resource) : \PostSMTP\Vendor\Psr\Http\Message\StreamInterface
+    public function createStreamFromResource($resource) : StreamInterface
     {
-        return \PostSMTP\Vendor\GuzzleHttp\Psr7\Utils::streamFor($resource);
+        return Utils::streamFor($resource);
     }
-    public function createServerRequest(string $method, $uri, array $serverParams = []) : \PostSMTP\Vendor\Psr\Http\Message\ServerRequestInterface
+    public function createServerRequest(string $method, $uri, array $serverParams = []) : ServerRequestInterface
     {
         if (empty($method)) {
             if (!empty($serverParams['REQUEST_METHOD'])) {
@@ -59,18 +59,18 @@ final class HttpFactory implements \PostSMTP\Vendor\Psr\Http\Message\RequestFact
                 throw new \InvalidArgumentException('Cannot determine HTTP method');
             }
         }
-        return new \PostSMTP\Vendor\GuzzleHttp\Psr7\ServerRequest($method, $uri, [], null, '1.1', $serverParams);
+        return new ServerRequest($method, $uri, [], null, '1.1', $serverParams);
     }
-    public function createResponse(int $code = 200, string $reasonPhrase = '') : \PostSMTP\Vendor\Psr\Http\Message\ResponseInterface
+    public function createResponse(int $code = 200, string $reasonPhrase = '') : ResponseInterface
     {
-        return new \PostSMTP\Vendor\GuzzleHttp\Psr7\Response($code, [], null, '1.1', $reasonPhrase);
+        return new Response($code, [], null, '1.1', $reasonPhrase);
     }
-    public function createRequest(string $method, $uri) : \PostSMTP\Vendor\Psr\Http\Message\RequestInterface
+    public function createRequest(string $method, $uri) : RequestInterface
     {
-        return new \PostSMTP\Vendor\GuzzleHttp\Psr7\Request($method, $uri);
+        return new Request($method, $uri);
     }
-    public function createUri(string $uri = '') : \PostSMTP\Vendor\Psr\Http\Message\UriInterface
+    public function createUri(string $uri = '') : UriInterface
     {
-        return new \PostSMTP\Vendor\GuzzleHttp\Psr7\Uri($uri);
+        return new Uri($uri);
     }
 }
