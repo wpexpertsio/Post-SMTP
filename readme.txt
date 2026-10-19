@@ -253,7 +253,135 @@ In short, our Expert Assistance is your one-stop destination for all your WordPr
 * Ensure your email service provider allows SMTP connection through 3rd party applications, if not you can have it enabled.(Other SMTP)
 * For reliable email deliverability, valid credentials are required.
 
+== External Services ==
 
+This plugin connects to external services only when a site administrator configures a feature or runs an action that requires it. Each service below explains what is sent, when it is sent, and where the data goes.
+
+=== Post SMTP Email Tester ===
+
+Purpose: Deliverability and authentication checks when you use the in-plugin email tester.
+
+When contacted: Only when an administrator runs the email tester from Post SMTP settings.
+
+Information transmitted: Test email address, site URL, server IP address, mailer-related request data, and diagnostic results needed to perform the test.
+
+User action/consent: Administrator-initiated; no data is sent until you run the test.
+
+Service website: https://smtper.postmansmtp.com/
+
+Terms of Use: https://postmansmtp.com/terms-of-service/
+
+Privacy Policy: https://postmansmtp.com/privacy-policy/
+
+=== Post SMTP Chrome extension notifications ===
+
+Purpose: Push failure alerts to the Post SMTP Chrome extension when email delivery fails.
+
+When contacted: When Chrome extension notifications are enabled and a qualifying email failure occurs, or when an administrator sends a test notification.
+
+Information transmitted: Failure message text, site URL, and the extension UID you configure in settings.
+
+User action/consent: Administrator must enable the feature and save the extension UID.
+
+Service website: https://chrome.postmansmtp.com/
+
+Terms of Use: https://postmansmtp.com/terms-of-service/
+
+Privacy Policy: https://postmansmtp.com/privacy-policy/
+
+=== Post SMTP mobile application ===
+
+Purpose: Connect the Post SMTP mobile app for monitoring and optional failure push notifications.
+
+When contacted: When you pair the mobile app with your site or when configured mobile failure notifications are sent.
+
+Information transmitted: Device identifiers, authentication keys, FCM token, plugin version, notification title/body, and API requests to the mobile backend URL provided during pairing.
+
+User action/consent: Administrator-initiated pairing via QR code or connection flow in plugin settings.
+
+Service website: https://postmansmtp.com/
+
+Terms of Use: https://postmansmtp.com/terms-of-service/
+
+Privacy Policy: https://postmansmtp.com/privacy-policy/
+
+=== Slack (optional notifications) ===
+
+Purpose: Send email failure alerts to a Slack workspace webhook you provide.
+
+When contacted: When Slack notifications are enabled and a qualifying email failure occurs.
+
+Information transmitted: Notification message content to your configured Slack incoming webhook URL.
+
+User action/consent: Administrator must add a Slack webhook URL and enable notifications.
+
+Service website: https://slack.com/
+
+Terms of Use: https://slack.com/terms-of-service/user
+
+Privacy Policy: https://slack.com/trust/privacy/privacy-policy
+
+=== Pushover (optional notifications) ===
+
+Purpose: Send email failure alerts through Pushover.
+
+When contacted: When Pushover notifications are enabled and a qualifying email failure occurs.
+
+Information transmitted: Notification message and Pushover API credentials you configure.
+
+User action/consent: Administrator must enter Pushover user key and application token.
+
+Service website: https://pushover.net/
+
+Terms of Use: https://pushover.net/terms
+
+Privacy Policy: https://pushover.net/privacy
+
+=== User-defined webhooks (optional notifications) ===
+
+Purpose: POST failure alert payloads to HTTPS endpoints you specify.
+
+When contacted: When webhook alerts are enabled and a qualifying email failure occurs.
+
+Information transmitted: JSON notification payload to URLs you configure.
+
+User action/consent: Administrator must add webhook URLs and enable the feature.
+
+Service website: Determined by the URL you enter.
+
+Terms of Use: Determined by the service operating your webhook endpoint.
+
+Privacy Policy: Determined by the service operating your webhook endpoint.
+
+=== Email service providers (SMTP and API mailers) ===
+
+Purpose: Send WordPress email through the mailer you choose (for example Gmail, Microsoft 365, Amazon SES, SendGrid, Mailgun, Brevo, or other supported providers).
+
+When contacted: When WordPress sends email through Post SMTP using your configured mailer.
+
+Information transmitted: Email content, headers, and authentication data required by the provider you selected.
+
+User action/consent: Administrator must configure and save mailer credentials or OAuth authorization.
+
+Service website: The provider you configure (for example https://google.com/, https://microsoft.com/, https://aws.amazon.com/ses/).
+
+Terms of Use and Privacy Policy: Governed by the provider you choose.
+
+=== Post SMTP product feedback (optional) ===
+
+Purpose: Submit voluntary feedback from the WordPress admin when you choose to send it.
+
+When contacted: Only when an administrator submits feedback through the plugin UI.
+
+Information transmitted: Feedback text and related context you submit.
+
+User action/consent: Explicit administrator submission.
+
+Service website: https://postmansmtp.com/
+
+Terms of Use: https://postmansmtp.com/terms-of-service/
+
+Privacy Policy: https://postmansmtp.com/privacy-policy/
 
 == Frequently Asked Questions ==
 

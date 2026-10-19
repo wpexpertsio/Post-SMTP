@@ -107,7 +107,7 @@ define( 'POST_SMTP_DB_VERSION', '1.0.1' );
 define( 'POST_SMTP_ASSETS', plugin_dir_url( __FILE__ ) . 'assets/' );
 
 $postman_smtp_exist = in_array( 'postman-smtp/postman-smtp.php', (array) get_option( 'active_plugins', array() ) );
-$required_php_version = version_compare( PHP_VERSION, '5.6.0', '<' );
+$required_php_version = version_compare( PHP_VERSION, '7.1.0', '<' );
 
 if( ! function_exists( 'post_smtp_load_textdomain' ) ):
 function post_smtp_load_textdomain() {
@@ -151,7 +151,7 @@ function post_smtp_plugin_deactivate() {
 function post_smtp_plugin_admin_notice_version() {
 	echo '<div class="error">
 				<p>
-				<strong>Post SMTP</strong> plugin require at least PHP version 5.6, contact to your web hostig support to upgrade.
+				<strong>Post SMTP</strong> requires PHP 7.1 or newer. Contact your hosting provider to upgrade PHP.
 				</p>
 				<p>
 				<a href="https://secure.php.net/supported-versions.php">See supported versions on PHP.net</a>

@@ -2026,6 +2026,15 @@ class Post_SMTP_New_Wizard {
      */
     public function save_wizard() {
 
+        if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
+            wp_send_json_error(
+                array(
+                    'message' => __( 'You do not have permission to save Post SMTP settings.', 'post-smtp' ),
+                ),
+                403
+            );
+        }
+
         $form_data = array();
         if ( isset( $_POST['FormData'] ) ) {
             parse_str( wp_unslash( $_POST['FormData'] ), $form_data );

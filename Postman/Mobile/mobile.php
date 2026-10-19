@@ -363,10 +363,12 @@ class Post_SMTP_Mobile {
      */
 	public function disconnect_app() {
 
-		if( !isset( $_GET['ps_disconnect_app_nonce'] ) || !wp_verify_nonce( $_GET['ps_disconnect_app_nonce'], 'ps-disconnect-app-nonce' ) ) {
-			
-			die( 'Security Check' );
-			
+		if ( ! current_user_can( Postman::MANAGE_POSTMAN_CAPABILITY_NAME ) ) {
+			wp_die( esc_html__( 'You do not have permission to disconnect the mobile app.', 'post-smtp' ), esc_html__( 'Unauthorized', 'post-smtp' ), array( 'response' => 403 ) );
+		}
+
+		if( !isset( $_GET['ps_disconnect_app_nonce'] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['ps_disconnect_app_nonce'] ) ), 'ps-disconnect-app-nonce' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'post-smtp' ), esc_html__( 'Security check', 'post-smtp' ), array( 'response' => 403 ) );
 		}
 
 		if( isset( $_GET['action'] ) && $_GET['action'] == 'post_smtp_disconnect_app' ) {

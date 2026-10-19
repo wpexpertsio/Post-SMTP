@@ -92,6 +92,10 @@ class PostmanSuggestProSocket {
      */
     public function admin_enqueue_scripts( $hook ) {
 
+        if ( 'toplevel_page_postman' !== $hook && false === strpos( $hook, 'postman' ) && false === strpos( $hook, 'post-smtp' ) ) {
+            return;
+        }
+
         $pluginData = apply_filters( 'postman_get_plugin_metadata', null );
 
         wp_register_script( 'postman-suggest-pro-sockets', POST_SMTP_ASSETS . 'js/postman-admin.js', array( 'jquery' ),  $pluginData['version'] , true );
@@ -105,10 +109,9 @@ class PostmanSuggestProSocket {
             'postmanPro', 
             $this->data
         );
-        
-        wp_register_style( 'extension-ui-fonts', 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap', array(), $pluginData['version'], 'all' );
 
         if ( 'post-smtp_page_extensions' === $hook ) {
+            wp_register_style( 'extension-ui-fonts', 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap', array(), $pluginData['version'], 'all' );
             wp_enqueue_style( 'extensions-ui', plugin_dir_url( __FILE__ ) . 'assets/css/extensions-ui.css', array( 'extension-ui-fonts' ), $pluginData['version'], 'all' );
             wp_enqueue_script( 'extensions-ui', plugin_dir_url( __FILE__ ) . 'assets/js/extensions-ui.js', array( 'jquery' ), $pluginData['version'], true );
         }
