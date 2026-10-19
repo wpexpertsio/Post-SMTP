@@ -35,7 +35,7 @@
 				$senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
 				$senderName = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
 
-				$content['sender'] = $senderName . '<' . $senderEmail . '>';
+				$content['sender'] = $this->format_address( $senderName, $senderEmail );
 				
 				$sender->log( $this->logger, 'From' );
 
@@ -45,7 +45,7 @@
 					if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 						$name  = $recipient->getName();
 						$email = $recipient->getEmail();
-						$content['to'][] = $name . '<' . $email . '>';
+						$content['to'][] = $this->format_address( $name, $email );
 					}
 
 					$duplicates[] = $recipient->getEmail();
@@ -84,16 +84,16 @@
 					if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 						$name  = $recipient->getName();
 						$email = $recipient->getEmail();
-						$content['cc'][] = $name . '<' . $email . '>';
+						$content['cc'][] = $this->format_address( $name, $email );
 					}
 					$duplicates[] = $recipient->getEmail();
 				}
 
-				foreach ( (array) $message->getCcRecipients() as $recipient ) {
+				foreach ( (array) $message->getBccRecipients() as $recipient ) {
 					if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 						$name  = $recipient->getName();
 						$email = $recipient->getEmail();
-						$content['bcc'][] = $name . '<' . $email . '>';
+						$content['bcc'][] = $this->format_address( $name, $email );
 					}
 					$duplicates[] = $recipient->getEmail();
 				}
@@ -116,7 +116,7 @@
 							$email = $reply->getEmail();
 
 							if ( ! empty( $email ) ) {
-								$formatted = $name ? "$name <$email>" : $email;
+								$formatted = $this->format_address( $name, $email );
 
 								$customHeaders[] = array(
 									'header' => 'Reply-To',
@@ -191,6 +191,13 @@
 
 			public function getTranscript() {
 				return $this->transcript;
+			}
+
+			/**
+			 * RFC 5322 address: the display name quoted, so commas or parentheses in it don't break the address.
+			 */
+			private function format_address( $name, $email ) {
+				return '' === (string) $name ? $email : '"' . addcslashes( $name, '"\\' ) . '" <' . $email . '>';
 			}
 		}
 	}
