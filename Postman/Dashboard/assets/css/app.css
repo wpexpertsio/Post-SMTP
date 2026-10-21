@@ -1,5 +1,3 @@
-@import url(https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap);
-
 .post-smtp__wrapper[data-v-3112b8ca] {
 	background: #F9FBFF;
 }
@@ -87,7 +85,7 @@
 	line-height: 52px;
 
 	color: #231F20;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-style: normal;
 	font-weight: 400;
@@ -137,7 +135,7 @@
 }
 .post-smtp-notification-title[data-v-1d82fd54] {
 	color: #8B8F9A;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-style: normal;
 	font-weight: 500;
@@ -148,7 +146,7 @@
 }
 .post-smtp-notification-content[data-v-1d82fd54] {
 	color: #8B8F9A;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 12px;
 	font-style: normal;
 	font-weight: 400;
@@ -165,7 +163,7 @@
 .notification-timeline[data-v-1d82fd54] {
 	color: #8B8F9A;
 	text-align: right;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 11px;
 	font-style: normal;
 	font-weight: 400;
@@ -214,7 +212,7 @@
 	background: #EFF4FD;
 	padding: 16px 24px;
 
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 16px;
 	font-weight: 600;
 	line-height: 20px;
@@ -239,7 +237,7 @@
 	list-style: url(../9fdeee5472f16554c9e9.svg) inside;
 }
 .troubleshoot a[data-v-981174a6] {
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-weight: 400;
 	line-height: 20px;
@@ -284,7 +282,7 @@
 }
 .gmail-one-click-banner__unlock[data-v-3571051b] {
 	margin: 0;
-	font-family: Poppins, system-ui, sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 10px;
 	font-weight: 700;
 	line-height: 1.2;
@@ -292,7 +290,7 @@
 }
 .gmail-one-click-banner__title[data-v-3571051b] {
 	margin: 0;
-	font-family: Poppins, system-ui, sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 15px;
 	font-weight: 700;
 	line-height: 1.25;
@@ -317,7 +315,7 @@
 	height: 8px;
 }
 .gmail-one-click-banner__badge-text[data-v-3571051b] {
-	font-family: Poppins, system-ui, sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 8px;
 	font-weight: 700;
 	line-height: 1;
@@ -326,7 +324,7 @@
 }
 .gmail-one-click-banner__description[data-v-3571051b] {
 	margin: 0;
-	font-family: Poppins, system-ui, sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 12px;
 	font-weight: 500;
 	line-height: 1.45;
@@ -344,7 +342,7 @@
 	display: flex;
 	align-items: flex-start;
 	gap: 8px;
-	font-family: Poppins, system-ui, sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 11px;
 	font-weight: 500;
 	line-height: 1.35;
@@ -367,7 +365,7 @@
 	border-radius: 8px;
 	background: #3a5eaf;
 	color: #ffffff;
-	font-family: Poppins, system-ui, sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-weight: 600;
 	line-height: 1.2;
@@ -408,7 +406,7 @@
 	margin: 0;
 }
 .mobile-header[data-v-2975379f] {
-	font-family: Montserrat;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-weight: 500;
 	line-height: 17.5px;
@@ -416,7 +414,7 @@
 	color: #375CAF;
 }
 .mobile-header strong[data-v-2975379f] {
-	font-family: Montserrat;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-weight: 700;
 	line-height: 17.5px;
@@ -425,7 +423,7 @@
 }
 .post-smtp-main-wp-wrapper .main-wp-header h3[data-v-2975379f] {
 	color: #231F20;
-	font-family: Montserrat;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-style: normal;
 	font-weight: 500;
@@ -436,14 +434,14 @@
 	background-clip: text;
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
-	font-family: Montserrat;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-style: normal;
 	font-weight: 700;
 	line-height: 130%;
 }
 .mobile-unstyles-list li[data-v-2975379f] {
-	font-family: Montserrat;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 11px;
 	font-weight: 500;
 	line-height: 13.75px;
@@ -480,7 +478,7 @@
 }
 .main-wp-unstyled-list li[data-v-2975379f] {
 	color: #646464;
-	font-family: Montserrat;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 11px;
 	font-style: normal;
 	font-weight: 500;
@@ -496,7 +494,7 @@
 	gap: 4px;
 
 	color: #FFF;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-style: normal;
 	font-weight: 600;
@@ -516,7 +514,7 @@
 }
 .post-smtp-spam-score-header h2[data-v-2975379f] {
 	color: #231F20;
-	font-family: Montserrat;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 16px;
 	font-style: normal;
 	font-weight: 500;
@@ -529,7 +527,7 @@
 	padding: 10px 20px;
 
 	color: #FFF;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-style: normal;
 	font-weight: 500;
@@ -550,7 +548,7 @@
 }
 .post-smtp-spam-score-list-unstyled li[data-v-2975379f] {
 	color: #646464;
-	font-family: Montserrat;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 11px;
 	font-style: normal;
 	font-weight: 500;
@@ -570,7 +568,7 @@
 	text-decoration: none;
 }
 .btn-secondary[data-v-e27b9696] {
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-weight: 500;
 	line-height: 20px;
@@ -579,7 +577,7 @@
 }
 .btn-get-pro[data-v-e27b9696] {
 	background: linear-gradient(270deg, #F9AA39 0%, #FFDAA5 100%);
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-weight: 600;
 	line-height: 20px;
@@ -602,7 +600,7 @@
 	background: #f3f7ff;
 	border: 1px solid #e2ebff;
 	color: #375CAF;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 12px;
 	font-weight: 600;
 	line-height: 18px;
@@ -634,7 +632,7 @@
 	height: 24px;
 	display: inline-block;
 
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 12px;
 	font-weight: 500;
 	line-height: 12px;
@@ -675,7 +673,7 @@
 }
 .post-smtp-content-lighter[data-v-2dc01e40] {
 	color: #231F20;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 10px;
 	font-style: normal;
 	font-weight: 500;
@@ -684,7 +682,7 @@
 .pro-content-header[data-v-2dc01e40] {
 	color: #5A3F17;
 	text-align: center;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-style: normal;
 	font-weight: 600;
@@ -693,7 +691,7 @@
 .pro-content[data-v-2dc01e40] {
 	color: #5A3F17;
 	text-align: center;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 11px;
 	font-style: normal;
 	font-weight: 500;
@@ -798,7 +796,7 @@
 }
 .post-smtp-count[data-v-3753d82c] {
 	color: #231F20;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 20px;
 	font-style: normal;
 	font-weight: 600;
@@ -806,7 +804,7 @@
 }
 .post-smtp-content[data-v-3753d82c] {
 	color: #231F20;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 11px;
 	font-style: normal;
 	font-weight: 500;
@@ -844,7 +842,7 @@
 
 	text-decoration: none;
 
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 12px;
 	font-style: normal;
 	font-weight: 600;
@@ -876,7 +874,7 @@
 }
 .post-smtp-notice-content[data-v-d473dc1c] {
 	color: #263E30;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 12px;
 	font-style: normal;
 	font-weight: 400;
@@ -939,7 +937,7 @@
 .post-smtp-logs-header h2[data-v-82c3bb58] {
 	color: #231F20;
 	text-align: center;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 16px;
 	font-style: normal;
 	font-weight: 600;
@@ -948,7 +946,7 @@
 .post-smtp-logs-header a[data-v-82c3bb58] {
 	color: #375CAF;
 	text-align: center;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 12px;
 	font-style: normal;
 	font-weight: 500;
@@ -961,7 +959,7 @@
 .post-smtp-logs-body table thead th[data-v-82c3bb58] {
 	color: #231F20;
 	text-align: center;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-style: normal;
 	font-weight: 500;
@@ -969,7 +967,7 @@
 }
 .post-smtp-logs-body table tbody td[data-v-82c3bb58] {
 	color: #646464;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 12px;
 	font-style: normal;
 	font-weight: 400;
@@ -989,7 +987,7 @@
 	flex-direction: column;
 	align-items: center;
 	text-align: center;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 10px;
 	font-style: normal;
 	font-weight: 500;
@@ -1028,7 +1026,7 @@
 .post-smtp-logs-empty .post-smtp-logs-content h3[data-v-82c3bb58] {
 	color: #646464;
 	text-align: center;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-style: normal;
 	font-weight: 500;
@@ -1038,7 +1036,7 @@
 .post-smtp-logs-empty .post-smtp-logs-content p[data-v-82c3bb58] {
 	color: #646464;
 	text-align: center;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 12px;
 	font-style: normal;
 	font-weight: 400;
@@ -1047,7 +1045,7 @@
 .post-smtp-logs-empty .post-smtp-logs-footer a[data-v-82c3bb58] {
 	display: block;
 	color: #FFF;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 12px;
 	font-style: normal;
 	font-weight: 600;
@@ -1087,7 +1085,7 @@
 }
 .post-smtp-log-action-menu-wrapper a[data-v-1121e3a1] {
 	color: #231F20;
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 12px;
 	font-style: normal;
 	font-weight: 400;
@@ -1403,7 +1401,7 @@
 .highlight-tile__text[data-v-08b0e406] p {
 	margin: 0;
 	padding: 0;
-	font-family: Poppins, system-ui, sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-weight: 500;
 	line-height: 1.35;
@@ -1570,7 +1568,7 @@
 	background: #FFFFFF;
 }
 .header h3[data-v-7fb6e671] {
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 16px;
 	font-weight: 600;
 	line-height: 20px;
@@ -1630,7 +1628,7 @@
 	margin: 0 24px 24px 0;
 }
 .documentation h3[data-v-7ae3eba2] {
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	font-weight: 500;
 	line-height: 14px;
@@ -1646,14 +1644,14 @@
 	margin: 10px 0;
 }
 .doc-unstyled-list li a[data-v-7ae3eba2] {
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 12px;
 	font-weight: 400;
 	text-align: left;
 	color: #375CAF;
 }
 .view-more-button[data-v-7ae3eba2] {
-	font-family: Poppins;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 12px;
 	font-weight: 500;
 	line-height: 18px;
