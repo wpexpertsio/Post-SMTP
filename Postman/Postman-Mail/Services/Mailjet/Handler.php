@@ -27,7 +27,7 @@ class PostmanMailjet extends PostmanServiceRequest {
      * @since 2.7
      * @version 1.0
      */
-    private $base_url = 'https://api.mailjet.com/v3';
+    private $base_url = 'https://api.mailjet.com/v3.1';
 
     /**
      * constructor PostmanMailjet
@@ -83,7 +83,11 @@ class PostmanMailjet extends PostmanServiceRequest {
      */
     public function send( $content ) {
 
-        $content = json_encode( $content );
+        $content = wp_json_encode( $content );
+
+        if ( false === $content ) {
+            throw new Exception( 'Unable to encode Mailjet request payload as JSON.' );
+        }
 
         return $this->request(
             'POST',

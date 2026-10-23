@@ -16,6 +16,23 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
     private $api_key;
     private $secret_key;
 
+    /**
+     * Headers that Mailjet Send API v3.1 rejects in the Headers collection (send-0011).
+     *
+     * @see https://dev.mailjet.com/docs/email-api/send-api-v31/add-email-headers
+     */
+    private static $mailjet_forbidden_headers = array(
+        'from', 'sender', 'subject', 'to', 'cc', 'bcc', 'return-path', 'delivered-to',
+        'dkim-signature', 'domainkey-status', 'received-spf', 'authentication-results',
+        'received', 'x-mailjet-prio', 'x-mailjet-debug', 'user-agent', 'x-mailer',
+        'x-mj-customid', 'x-mj-eventpayload', 'x-mj-vars', 'x-mj-templateerrordeliver',
+        'x-mj-templateerrorreporting', 'x-mj-templatelanguage', 'x-mailjet-trackopen',
+        'x-mailjet-trackclick', 'x-mj-templateid', 'x-mj-workflowid', 'x-feedback-id',
+        'x-mailjet-segmentation', 'list-id', 'x-mj-mid', 'x-mj-errormessage', 'date',
+        'x-csa-complaints', 'message-id', 'x-mailjet-campaign', 'x-mj-statisticscontactslistid',
+        'reply-to', 'content-type', 'content-transfer-encoding',
+    );
+
 
     /**
      * @since 2.7
@@ -55,14 +72,11 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
                 $this->logger->debug( 'Adding attachment: ' . $file );
 
                 $file_name = basename( $file );
-                $file_parts = explode( '.', $file_name );
                 $file_type = wp_check_filetype( $file );
                 $attachments[] = array(
-                    'content' => base64_encode( file_get_contents( $file ) ),
-                    'type' => $file_type['type'],
-                    'file_name' => $file_name,
-                    'disposition' => 'attachment',
-                    'id' => $file_parts[0],
+                    'Base64Content' => base64_encode( file_get_contents( $file ) ),
+                    'ContentType' => $file_type['type'],
+                    'Filename' => $file_name,
                 );
             }
         }
@@ -75,202 +89,176 @@ class PostmanMailjetMailEngine implements PostmanMailEngine {
      * @since 2.7
      * @version 1.0
      */
-    public function send( PostmanMessage $message ) { 
+    public function send( PostmanMessage $message ) {
 
         $options = PostmanOptions::getInstance();
 
-        //Mailjet preparation
         if ( $this->logger->isDebug() ) {
-
-            $this->logger->debug( 'Creating Mailjet service with apiKey=' . $this->apiKey );
-
+            $this->logger->debug( 'Creating Mailjet service with apiKey=' . $this->api_key );
         }
 
         $mailjet = new PostmanMailjet( $this->api_key, $this->secret_key );
         $sender = $message->getFromAddress();
-        $senderEmail = !empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
-        $senderName = !empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
+        $senderEmail = ! empty( $sender->getEmail() ) ? $sender->getEmail() : $options->getMessageSenderEmail();
+        $senderName = ! empty( $sender->getName() ) ? $sender->getName() : $options->getMessageSenderName();
         $headers = array();
-        
+
         $sender->log( $this->logger, 'From' );
 
-        //Add FromEmail and Name
-        $sendSmtpEmail['FromEmail'] = $senderEmail;
-        $sendSmtpEmail['FromName'] = $senderName;
+        $mailjet_message = array(
+            'From' => array(
+                'Email' => $senderEmail,
+                'Name'  => $senderName,
+            ),
+            'Subject' => $message->getSubject(),
+            'To'      => $this->formatMailjetRecipients( $message->getToRecipients() ),
+        );
 
-        //Add subject
-        $sendSmtpEmail['Subject'] = $message->getSubject();
-        
-        
-        //add the To recipients  
-        $tos = array();
-        foreach ( (array)$message->getToRecipients() as $key => $recipient ) {
-
-                $tos[] = !empty( $recipient->getName() ) ? $recipient->getName() . ' <' . $recipient->getEmail() . '>' : $recipient->getEmail();
-        }
-
-        if( !empty( $tos ) ){
-
-			$sendSmtpEmail['To'] = $tos[0];
-
-            if( sizeof($tos)>1 ){
-
-                for( $i=1 ; $i<sizeof($tos) ; $i++ ){
-
-                    $sendSmtpEmail['To'] = $sendSmtpEmail['To'] . ',' . $tos[$i];
-        
-                }
-
-            }					
-       	} 
-
-        //Add text part if any
         $textPart = $message->getBodyTextPart();
         if ( ! empty( $textPart ) ) {
             $this->logger->debug( 'Adding body as text' );
-            $sendSmtpEmail['Text-part'] = $textPart;
+            $mailjet_message['TextPart'] = $textPart;
         }
-        
-        //Add html part if any
+
         $htmlPart = $message->getBodyHtmlPart();
         if ( ! empty( $htmlPart ) ) {
             $this->logger->debug( 'Adding body as html' );
-            $sendSmtpEmail['Html-part'] = $htmlPart;
+            $mailjet_message['HTMLPart'] = $htmlPart;
         }
-        
-        // add the reply-to
+
         $get_reply_to = $message->getReplyTo();
-
-        $reply_to = '';
-
-        if ( !empty( $get_reply_to ) ) {
-
-            $reply_to = !empty( $get_reply_to->getName() ) ? $get_reply_to->getName() . ' <' . $get_reply_to->getEmail() . '>' : $get_reply_to->getEmail();
-
-            $headers['Reply-To'] = $reply_to;
-             
+        if ( ! empty( $get_reply_to ) ) {
+            $mailjet_message['ReplyTo'] = array(
+                'Email' => $get_reply_to->getEmail(),
+                'Name'  => $get_reply_to->getName() ? $get_reply_to->getName() : '',
+            );
         }
 
-        // add the Postman signature - append it to whatever the user may have set
-        if ( ! $options->isStealthModeEnabled() ) {
-            $pluginData = apply_filters( 'postman_get_plugin_metadata', null );
-            $headers['X-Mailer'] = sprintf( 'Postman SMTP %s for WordPress (%s)', $pluginData ['version'], 'https://wordpress.org/plugins/post-smtp/' );
+        foreach ( (array) $message->getHeaders() as $header ) {
+            $header_name = $header['name'];
+            if ( $this->isMailjetForbiddenHeader( $header_name ) ) {
+                $this->logger->debug( sprintf( 'Skipping header not allowed in Mailjet Headers collection: %s', $header_name ) );
+                continue;
+            }
+            $this->logger->debug( sprintf( 'Adding user header %s=%s', $header_name, $header['content'] ) );
+            $headers[ $header_name ] = $header['content'];
         }
 
-        foreach ( ( array ) $message->getHeaders() as $header ) {
-            $this->logger->debug( sprintf( 'Adding user header %s=%s', $header ['name'], $header ['content'] ) );
-            $headers[$header['name']] = $header ['content'];
-        }
-
-        // add the messageId
         $messageId = $message->getMessageId();
         if ( ! empty( $messageId ) ) {
-            $headers['message-id'] = $messageId;
+            $mailjet_message['CustomID'] = trim( $messageId, '<>' );
         }
 
-        $sendSmtpEmail['Headers'] = $headers;
+        if ( ! empty( $headers ) ) {
+            $mailjet_message['Headers'] = $headers;
+        }
 
-        // if the caller set a Content-Type header, use it
         $contentType = $message->getContentType();
         if ( ! empty( $contentType ) ) {
-            $this->logger->debug( 'Some header keys are reserved. You may not include any of the following reserved headers: x-sg-id, x-sg-eid, received, dkim-signature, Content-Type, Content-Transfer-Encoding, To, From, Subject, Reply-To, CC, BCC.' );
+            $this->logger->debug( 'Mailjet Send API v3.1 does not allow Content-Type in the Headers collection; body parts define content.' );
         }
 
-        //Add CC
-        $cc = array();
-    
-        foreach ( ( array ) $message->getCcRecipients() as $recipient ) {
-
-        	$cc[]  = !empty( $recipient->getName() ) ? $recipient->getName() . '<' . $recipient->getEmail() .'>' :   $recipient->getEmail() ;
-
-            }
-		
-        if( !empty( $cc ) ){
-
-			$sendSmtpEmail['CC'] = $cc[0];
-
-            if( sizeof($cc)>1 ){
-
-                for( $i=1 ; $i<sizeof($cc) ; $i++ ){
-
-                    $sendSmtpEmail['CC'] = $sendSmtpEmail['CC'] . ',' . $cc[$i];
-        
-                }
-
-            }					
-       	}  
-    
-    //Add BCC
-    $bcc = array();
-
-    foreach ( ( array ) $message->getBccRecipients() as $recipient ) {
-
-        $bcc[]  = !empty( $recipient->getName() ) ? $recipient->getName() . '<' . $recipient->getEmail() .'>' :   $recipient->getEmail() ;
-
+        $cc_recipients = $this->formatMailjetRecipients( $message->getCcRecipients() );
+        if ( ! empty( $cc_recipients ) ) {
+            $mailjet_message['Cc'] = $cc_recipients;
         }
 
-    if( !empty( $bcc ) ){
+        $bcc_recipients = $this->formatMailjetRecipients( $message->getBccRecipients() );
+        if ( ! empty( $bcc_recipients ) ) {
+            $mailjet_message['Bcc'] = $bcc_recipients;
+        }
 
-        $sendSmtpEmail['Bcc'] = $bcc[0];
-
-            if( sizeof($bcc)>1 ){
-
-                for( $i=1 ; $i<sizeof($bcc) ; $i++ ){
-
-                    $sendSmtpEmail['Bcc'] = $sendSmtpEmail['Bcc'] . ',' . $bcc[$i];
-            
-                }
-
-            }      
-        }  
-
-        // add attachments
         $this->logger->debug( 'Adding attachments' );
-
         $attachments = $this->addAttachmentsToMail( $message );
-
-        $email_attachments = array();
-        
-        if( !empty( $attachments ) ) {
-        
-            foreach ( $attachments as $index => $attachment ) {
-
-                $email_attachments[] = array(
-                    'Filename'      =>  $attachment['file_name'],
-                    'Content-type' => $attachment['type'],
-                    'Content'   =>  $attachment['content']
-                );
-            }
-
-            $sendSmtpEmail['Attachments'] = $email_attachments;
-        
+        if ( ! empty( $attachments ) ) {
+            $mailjet_message['Attachments'] = $attachments;
         }
-         
-        try {
 
-            // send the message
+        $payload = array(
+            'Messages' => array( $mailjet_message ),
+        );
+
+        try {
             if ( $this->logger->isDebug() ) {
                 $this->logger->debug( 'Sending mail' );
             }
 
-            $response = $mailjet->send( $sendSmtpEmail );
-            
+            $response = $mailjet->send( $payload );
+            $this->validateMailjetResponse( $mailjet );
+
             $this->transcript = print_r( $response, true );
             $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-            $this->transcript .= print_r( $sendSmtpEmail, true );
+            $this->transcript .= print_r( $payload, true );
             $this->logger->debug( 'Transcript=' . $this->transcript );
-            
-        } catch (Exception $e) {
+
+        } catch ( Exception $e ) {
 
             $this->transcript = $e->getMessage();
             $this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-            $this->transcript .= print_r( $sendSmtpEmail, true );
+            $this->transcript .= print_r( $payload, true );
             $this->logger->debug( 'Transcript=' . $this->transcript );
 
             throw $e;
-    
+
         }
 
+    }
+
+    /**
+     * @param string $header_name
+     * @return bool
+     */
+    private function isMailjetForbiddenHeader( $header_name ) {
+        return in_array( strtolower( trim( $header_name ) ), self::$mailjet_forbidden_headers, true );
+    }
+
+    /**
+     * @param PostmanEmailAddress[]|array $recipients
+     * @return array
+     */
+    private function formatMailjetRecipients( $recipients ) {
+        $formatted = array();
+        $seen = array();
+
+        foreach ( (array) $recipients as $recipient ) {
+            $email = $recipient->getEmail();
+            if ( empty( $email ) || isset( $seen[ $email ] ) ) {
+                continue;
+            }
+            $formatted[] = array(
+                'Email' => $email,
+                'Name'  => $recipient->getName() ? $recipient->getName() : '',
+            );
+            $seen[ $email ] = true;
+        }
+
+        return $formatted;
+    }
+
+    /**
+     * @param PostmanMailjet $mailjet
+     */
+    private function validateMailjetResponse( PostmanMailjet $mailjet ) {
+        $body = $mailjet->get_response_body();
+        if ( empty( $body ) ) {
+            return;
+        }
+
+        $data = json_decode( $body, true );
+        if ( ! is_array( $data ) || empty( $data['Messages'] ) ) {
+            return;
+        }
+
+        foreach ( $data['Messages'] as $mailjet_message ) {
+            if ( empty( $mailjet_message['Status'] ) ) {
+                continue;
+            }
+            if ( 'success' === strtolower( $mailjet_message['Status'] ) ) {
+                continue;
+            }
+            $error_details = ! empty( $mailjet_message['Errors'] ) ? wp_json_encode( $mailjet_message['Errors'] ) : $body;
+            throw new Exception( sprintf( 'Mailjet API error: %s', $error_details ) );
+        }
     }
 }
 endif;
