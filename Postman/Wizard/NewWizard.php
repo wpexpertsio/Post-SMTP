@@ -643,7 +643,12 @@ class Post_SMTP_New_Wizard {
      * @since 2.7.0
      * @version 1.0.0
      */
-    public function enqueue_scripts() {
+    public function enqueue_scripts( $hook ) {
+
+        $wizard_screen = 'postman_page_' . str_replace( '/', '-', PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG );
+        if ( $hook !== $wizard_screen ) {
+            return;
+        }
 
         $localized = array(
             'Step1E1'           => __( 'Select a socket type to continue.', 'post-smtp' ),
