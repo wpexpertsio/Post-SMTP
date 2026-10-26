@@ -70,7 +70,8 @@ class PostmanServiceRequest {
         $args = array(
             'method'    =>  $method,
             'headers'   =>  $headers,
-            'body'      =>  $body
+            'body'      =>  $body,
+            'timeout'   =>  PostmanOptions::getInstance()->getConnectionTimeout(),
         );
 
         //Set Additional Args (If Set)
@@ -84,6 +85,10 @@ class PostmanServiceRequest {
             $url,
             $args
         );
+
+        if ( is_wp_error( $this->response ) ) {
+            throw new Exception( 'Error executing wp_remote_post: ' . $this->response->get_error_message() );
+        }
 
         $response_code = $this->get_response_code();
 
@@ -145,7 +150,34 @@ class PostmanServiceRequest {
      */
     public function exception() {
 
-        $message = "Code: {$this->get_response_code()}, Message: {$this->get_response_message()}, Body: {$this->get_response_body()}";
+        $code = $this->get_response_code();
+        $status_message = $this->get_response_message();
+        $body = $this->get_response_body();
+
+        if ( is_array( $body ) || is_object( $body ) ) {
+            $body = wp_json_encode( $body );
+        }
+
+        $parsed = json_decode( $body, true );
+        if ( is_array( $parsed ) ) {
+            if ( ! empty( $parsed['ErrorMessage'] ) ) {
+                throw new Exception( sprintf( 'Code: %s, Message: %s, Body: %s', $code, $parsed['ErrorMessage'], $body ) );
+            }
+            if ( ! empty( $parsed['Messages'] ) && is_array( $parsed['Messages'] ) ) {
+                foreach ( $parsed['Messages'] as $mailjet_message ) {
+                    if ( ! empty( $mailjet_message['Errors'] ) ) {
+                        $error_details = wp_json_encode( $mailjet_message['Errors'] );
+                        throw new Exception( sprintf( 'Code: %s, Message: %s, Body: %s', $code, $error_details, $body ) );
+                    }
+                }
+            }
+        }
+
+        if ( '' === (string) $code && '' === (string) $status_message && '' === (string) $body ) {
+            throw new Exception( 'Error executing wp_remote_post: empty HTTP response (request may have been blocked by a security plugin or server firewall).' );
+        }
+
+        $message = "Code: {$code}, Message: {$status_message}, Body: {$body}";
 
         throw new Exception( $message );
 
