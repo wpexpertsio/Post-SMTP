@@ -145,7 +145,7 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
             );
             
             if( !empty( $replyTo->getName() ) ) {
-                 $sendSmtpEmail['name'] = $replyTo->getName();
+                 $sendSmtpEmail['replyTo']['name'] = $replyTo->getName();
             }
         }
 
@@ -181,13 +181,13 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
             if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 
                 $recipient->log($this->logger, 'Cc');
-                $cc[] = array(
-                    'email' =>  $recipient->getEmail()
+                $cc_recipient = array(
+                    'email' => $recipient->getEmail(),
                 );
-                
-                if( !empty( $recipient->getName() ) ) {
-                    $cc['name'] = $recipient->getName();
+                if ( ! empty( $recipient->getName() ) ) {
+                    $cc_recipient['name'] = $recipient->getName();
                 }
+                $cc[] = $cc_recipient;
                 
                 $duplicates[] = $recipient->getEmail();
 
@@ -204,13 +204,13 @@ class PostmanSendinblueMailEngine implements PostmanMailEngine {
             if ( ! in_array( $recipient->getEmail(), $duplicates ) ) {
 
                 $recipient->log($this->logger, 'Bcc');
-                $bcc[] = array(
-                    'email'  =>  $recipient->getEmail()
+                $bcc_recipient = array(
+                    'email' => $recipient->getEmail(),
                 );
-                
-                if( !empty( $recipient->getName() ) ) {
-                    $bcc['name'] = $recipient->getName();
+                if ( ! empty( $recipient->getName() ) ) {
+                    $bcc_recipient['name'] = $recipient->getName();
                 }
+                $bcc[] = $bcc_recipient;
 
                 $duplicates[] = $recipient->getEmail();
 
