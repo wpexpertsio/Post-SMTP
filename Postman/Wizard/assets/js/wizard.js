@@ -542,18 +542,22 @@ jQuery(document).ready(function () {
     });
 
 
-    // Prevent implicit form submission from navigating away from the current step.
-    jQuery('#ps-wizard-form').on('submit', function (e) {
-        e.preventDefault();
-    });
-
-    // Pressing Enter in the recipient field should send the test email, not submit the wizard form.
-    jQuery(document).on('keydown', '#ps-wizard-form .ps-test-to', function (e) {
-        if (e.key === 'Enter' || e.keyCode === 13) {
+    var $wizardForm = jQuery('#ps-wizard-form');
+    if ($wizardForm.length) {
+        // Prevent implicit form submission from navigating away from the current step.
+        $wizardForm.on('submit', function (e) {
             e.preventDefault();
-            jQuery('.ps-wizard-send-test-email:visible').trigger('click');
-        }
-    });
+        });
+
+        // Pressing Enter in the recipient field should send the test email, not submit the wizard form.
+        $wizardForm.on('keydown', 'input.ps-test-to', function (e) {
+            if (e.key !== 'Enter' && e.keyCode !== 13) {
+                return;
+            }
+            e.preventDefault();
+            $wizardForm.find('.ps-wizard-send-test-email:visible').trigger('click');
+        });
+    }
 
     //Send test email
     jQuery(document).on('click', '.ps-wizard-send-test-email', function (e) {
