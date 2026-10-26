@@ -75,7 +75,7 @@ class Postman_Zend_Validate implements Postman_Zend_Validate_Interface
     {
         $this->_validators[] = array(
             'instance' => $validator,
-            'breakChainOnFailure' => (boolean) $breakChainOnFailure
+            'breakChainOnFailure' => (bool) $breakChainOnFailure
             );
         return $this;
     }

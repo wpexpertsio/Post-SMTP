@@ -124,7 +124,7 @@ class Postman_Zend_Validate_Identical extends Postman_Zend_Validate_Abstract
      */
     public function setStrict($strict)
     {
-        $this->_strict = (boolean) $strict;
+        $this->_strict = (bool) $strict;
         return $this;
     }
 

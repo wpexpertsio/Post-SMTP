@@ -81,7 +81,7 @@ class Postman_Zend_Validate_Alpha extends Postman_Zend_Validate_Abstract
             }
         }
 
-        $this->allowWhiteSpace = (boolean) $allowWhiteSpace;
+        $this->allowWhiteSpace = (bool) $allowWhiteSpace;
     }
 
     /**
@@ -102,7 +102,7 @@ class Postman_Zend_Validate_Alpha extends Postman_Zend_Validate_Abstract
      */
     public function setAllowWhiteSpace($allowWhiteSpace)
     {
-        $this->allowWhiteSpace = (boolean) $allowWhiteSpace;
+        $this->allowWhiteSpace = (bool) $allowWhiteSpace;
         return $this;
     }
 
