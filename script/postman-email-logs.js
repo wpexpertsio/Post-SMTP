@@ -708,11 +708,7 @@ jQuery(document).ready(function($) {
 
 		e.preventDefault();
 		var _details = jQuery( this ).siblings( 'span' ).attr( 'title' );
-		var $container = jQuery( '.ps-popup-container' );
-
-		$container.empty();
-		$container.append( jQuery( '<h1>', { style: 'margin: 0; padding: 0;' } ) );
-		$container.append( document.createTextNode( _details ) );
+		jQuery( '.ps-popup-container' ).html( `<h1 style="margin: 0; padding: 0;"></h1>${_details}` );
 
 	} );
 

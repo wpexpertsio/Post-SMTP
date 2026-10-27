@@ -1,0 +1,720 @@
+/* Email Log — Figma 672:6333 */
+
+.ps-app__main--email-logs {
+	background: #f8fafe;
+	padding: 20px;
+	max-width: none;
+}
+
+.ps-el-page {
+	font-family: Satoshi, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	max-width: 1280px;
+	margin: 0 auto;
+}
+
+.ps-el-panel {
+	background: #fff;
+	border-radius: 6px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	padding: 15px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.ps-el-panel__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.ps-el-panel__title {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 700;
+	color: #2d3340;
+	line-height: normal;
+}
+
+.ps-el-panel__meta {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.ps-el-panel__count {
+	font-size: 12px;
+	font-weight: 400;
+	color: #6c6c6c;
+	white-space: nowrap;
+}
+
+.ps-el-panel__clear {
+	border: none;
+	background: none;
+	padding: 0;
+	font-size: 12px;
+	font-weight: 500;
+	color: #5279cc;
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+/* Toolbar */
+.ps-el-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	align-items: flex-start;
+	width: 100%;
+}
+
+.ps-el-search {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 400px;
+	max-width: 100%;
+	min-height: 38px;
+	padding: 9px 10px;
+	border: none;
+	border-radius: 6px;
+	background: #fff;
+	flex-shrink: 0;
+	box-shadow: 0 0 0 1px #e5e5e5;
+	overflow: visible;
+	box-sizing: border-box;
+}
+
+#post-smtp-admin-root .ps-el-search {
+	border: none !important;
+	background: #fff !important;
+	box-shadow: 0 0 0 1px #e5e5e5 !important;
+}
+
+#post-smtp-admin-root .ps-el-search:focus-within {
+	border: none !important;
+	box-shadow: 0 0 0 1px #e5e5e5 !important;
+	outline: none;
+}
+
+.ps-el-search__icon {
+	flex-shrink: 0;
+	opacity: 1;
+}
+
+.ps-el-search__input {
+	flex: 1;
+	border: 0 !important;
+	outline: none;
+	box-shadow: none !important;
+	-webkit-appearance: none;
+	appearance: none;
+	font-family: inherit;
+	font-size: 12px;
+	color: #2d3340;
+	background: transparent;
+	min-width: 0;
+	padding: 0;
+	margin: 0;
+	height: auto;
+	line-height: normal;
+}
+
+#post-smtp-admin-root .ps-el-search__input:focus {
+	border: 0 !important;
+	outline: none;
+	box-shadow: none !important;
+}
+
+.ps-el-search__input::-webkit-search-decoration,
+.ps-el-search__input::-webkit-search-cancel-button,
+.ps-el-search__input::-webkit-search-results-button,
+.ps-el-search__input::-webkit-search-results-decoration {
+	-webkit-appearance: none;
+	appearance: none;
+	display: none;
+}
+
+.ps-el-search__input::placeholder {
+	color: #6c6c6c;
+	opacity: 1;
+}
+
+#post-smtp-admin-root .ps-el-search__input {
+	color: #2d3340;
+	min-height: 0 !important;
+	height: 18px !important;
+	line-height: 18px !important;
+	max-height: none;
+	width: 100%;
+}
+
+#post-smtp-admin-root .ps-el-search__input::placeholder {
+	color: #6c6c6c;
+}
+
+.ps-el-toolbar__filters {
+	display: flex;
+	flex: 1 1 480px;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: center;
+	min-width: 0;
+}
+
+.ps-el-filter {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex: 1 1 120px;
+	min-width: 0;
+	height: 38px;
+	padding: 10px;
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	background: #fff;
+	cursor: pointer;
+}
+
+.ps-el-filter--compact {
+	flex: 0 1 72px;
+	min-width: 64px;
+}
+
+.ps-el-filter__face {
+	flex: 1;
+	font-size: 12px;
+	color: #2d3340;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	pointer-events: none;
+}
+
+.ps-el-filter__chevron {
+	flex-shrink: 0;
+	pointer-events: none;
+}
+
+.ps-el-filter__select {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.ps-el-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	height: 38px;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 6px;
+	font-family: inherit;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: normal;
+	cursor: pointer;
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.ps-el-btn:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.ps-el-btn--export {
+	background: #5279cc;
+	color: #fff;
+}
+
+.ps-el-btn--export-json {
+	background: #eef2fa;
+	color: #5279cc;
+	padding: 10px 12px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.ps-el-btn--delete {
+	background: #ab3936;
+	color: #fff;
+}
+
+.ps-el-btn--apply {
+	background: #5279cc;
+	color: #fff;
+	height: 38px;
+}
+
+.ps-el-btn--ghost {
+	background: transparent;
+	color: #5279cc;
+	border: 1px solid #e5e5e5;
+}
+
+.ps-el-btn--danger {
+	background: #ab3936;
+	color: #fff;
+}
+
+.ps-el-btn--primary {
+	background: #5279cc;
+	color: #fff;
+}
+
+/* Table */
+.ps-el-table {
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	overflow: hidden;
+	width: 100%;
+}
+
+.ps-el-table__row {
+	display: grid;
+	grid-template-columns: 15px minmax(220px, 2.2fr) minmax(180px, 1.8fr) 100px minmax(130px, 170px) 110px 130px;
+	align-items: center;
+	gap: 12px;
+	padding: 15px;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.ps-el-table--with-opened .ps-el-table__row {
+	grid-template-columns: 15px minmax(180px, 1.8fr) minmax(150px, 1.4fr) 90px minmax(120px, 150px) 90px 72px 120px;
+}
+
+.ps-el-table__row--head {
+	background: #f5f5f5;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.ps-el-table__row--body {
+	background: #fff;
+	cursor: pointer;
+}
+
+.ps-el-table__row--body:hover {
+	background: #fafafa;
+}
+
+.ps-el-table__row--body:last-child {
+	border-bottom: none;
+}
+
+.ps-el-table__cell {
+	font-size: 14px;
+	color: #2d3340;
+	min-width: 0;
+}
+
+.ps-el-table__row--head .ps-el-table__cell {
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.ps-el-table__subject {
+	font-weight: 500;
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ps-el-table__cell--recipient {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-weight: 400;
+}
+
+.ps-el-table__recipient-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ps-el-table__recipient-icon {
+	flex-shrink: 0;
+}
+
+.ps-el-check {
+	width: 15px;
+	height: 15px;
+	margin: 0;
+	border: 1px solid #e5e5e5;
+	border-radius: 3px;
+	accent-color: #5279cc;
+}
+
+.ps-el-chip {
+	margin-left: 6px;
+	font-size: 11px;
+	padding: 2px 8px;
+	border-radius: 20px;
+	background: #eef2fa;
+	color: #5279cc;
+	font-weight: 600;
+}
+
+/* Status */
+.ps-el-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 5px 10px;
+	border-radius: 20px;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.ps-el-status--success {
+	background: #e0fae4;
+	color: #287441;
+}
+
+.ps-el-status--failed {
+	background: #fdf0ed;
+	color: #ab3936;
+}
+
+.ps-el-status--queued {
+	background: #fdf5dc;
+	color: #b06224;
+}
+
+.ps-el-status__icon {
+	flex-shrink: 0;
+}
+
+/* Mailer */
+.ps-el-mailer {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.ps-el-mailer__icon-wrap {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 25px;
+	height: 25px;
+	border-radius: 3.333px;
+	background: #f5f5f5;
+	overflow: hidden;
+	flex-shrink: 0;
+}
+
+.ps-el-mailer__icon {
+	display: block;
+	object-fit: contain;
+}
+
+.ps-el-mailer__route {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 15px;
+	height: 15px;
+	border-radius: 4px;
+	background: #fff;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1;
+	flex-shrink: 0;
+}
+
+.ps-el-mailer__route--primary {
+	border: 1px solid #5279cc;
+	color: #5279cc;
+}
+
+.ps-el-mailer__route--fallback {
+	border: 1px solid #b06224;
+	color: #b06224;
+}
+
+/* Row actions */
+.ps-el-row-actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.ps-el-row-actions__btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	padding: 6px;
+	border: 0.733px solid #e5e5e5;
+	border-radius: 2.514px;
+	background: #fff;
+	cursor: pointer;
+}
+
+.ps-el-row-actions__btn--resend {
+	border: none;
+	padding: 0;
+	width: 22px;
+	height: 22px;
+}
+
+.ps-el-row-actions__btn:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+/* Pagination */
+.ps-el-pagination {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	width: 100%;
+}
+
+.ps-el-pagination__left {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.ps-el-pagination__show-label {
+	font-size: 12px;
+	font-weight: 500;
+	color: #2d3340;
+	white-space: nowrap;
+}
+
+.ps-el-pagination__right {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.ps-el-pager {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 38px;
+	height: 38px;
+	padding: 10px;
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	background: #fff;
+	font-family: inherit;
+	font-size: 12px;
+	color: #6c6c6c;
+	cursor: pointer;
+}
+
+.ps-el-pager--num {
+	font-weight: 700;
+	color: #6c6c6c;
+}
+
+.ps-el-pager.is-active {
+	background: #e5e5e5;
+	border-color: #e5e5e5;
+	color: #2d3340;
+}
+
+.ps-el-pager:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+/* Empty */
+.ps-el-empty {
+	text-align: center;
+	padding: 48px 24px;
+	border: 1px dashed #e5e5e5;
+	border-radius: 6px;
+	color: #6c6c6c;
+}
+
+.ps-el-empty h3 {
+	margin: 0 0 8px;
+	color: #2d3340;
+	font-size: 16px;
+}
+
+/* Drawer / dialog (unchanged structure, Figma-aligned tokens) */
+.ps-el-drawer-backdrop,
+.ps-el-dialog-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(45, 51, 64, 0.35);
+	backdrop-filter: blur(2px);
+	z-index: 1000;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.ps-el-dialog-backdrop {
+	align-items: center;
+	justify-content: center;
+}
+
+.ps-el-drawer {
+	width: min(520px, 100%);
+	height: 100%;
+	background: #fff;
+	box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+	display: flex;
+	flex-direction: column;
+}
+
+.ps-el-drawer__header {
+	padding: 20px;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.ps-el-drawer__header h2 {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 700;
+	color: #2d3340;
+}
+
+.ps-el-drawer__close {
+	float: right;
+	border: none;
+	background: transparent;
+	font-size: 24px;
+	cursor: pointer;
+	color: #6c6c6c;
+}
+
+.ps-el-drawer__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: center;
+	margin-top: 8px;
+}
+
+.ps-el-drawer__actions {
+	display: flex;
+	gap: 8px;
+	margin-top: 12px;
+}
+
+.ps-el-drawer__body {
+	padding: 12px 20px 24px;
+	overflow: auto;
+}
+
+.ps-el-accordion {
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	margin-bottom: 10px;
+}
+
+.ps-el-accordion__trigger {
+	width: 100%;
+	text-align: left;
+	padding: 12px 14px;
+	border: none;
+	background: #f5f5f5;
+	font-weight: 700;
+	font-size: 14px;
+	color: #2d3340;
+	cursor: pointer;
+}
+
+.ps-el-accordion__panel {
+	padding: 12px 14px;
+	font-size: 14px;
+	color: #2d3340;
+}
+
+.ps-el-code {
+	white-space: pre-wrap;
+	word-break: break-word;
+	font-size: 12px;
+	background: #f5f5f5;
+	padding: 10px;
+	border-radius: 6px;
+	max-height: 240px;
+	overflow: auto;
+}
+
+.ps-el-code--dark {
+	background: #2d3340;
+	color: #f5f5f5;
+}
+
+.ps-el-preview {
+	width: 100%;
+	min-height: 200px;
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	background: #fff;
+}
+
+.ps-el-dialog {
+	background: #fff;
+	border-radius: 6px;
+	padding: 24px;
+	max-width: 420px;
+	width: calc(100% - 32px);
+	box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+}
+
+.ps-el-dialog h3 {
+	margin: 0 0 8px;
+	color: #2d3340;
+}
+
+.ps-el-dialog__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 16px;
+}
+
+@media (max-width: 1100px) {
+	.ps-el-toolbar {
+		flex-direction: column;
+	}
+
+	.ps-el-search {
+		width: 100%;
+	}
+
+	.ps-el-table__row {
+		grid-template-columns: 15px 1fr 1fr;
+		grid-template-areas:
+			'check subject subject'
+			'. recipient mailer'
+			'. date status'
+			'. actions actions';
+	}
+
+	.ps-el-table__cell--check { grid-area: check; }
+	.ps-el-table__cell--subject { grid-area: subject; }
+	.ps-el-table__cell--recipient { grid-area: recipient; }
+	.ps-el-table__cell--mailer { grid-area: mailer; }
+	.ps-el-table__cell--date { grid-area: date; }
+	.ps-el-table__cell--status { grid-area: status; }
+	.ps-el-table__cell--actions { grid-area: actions; }
+
+	.ps-el-table__row--head {
+		display: none;
+	}
+}

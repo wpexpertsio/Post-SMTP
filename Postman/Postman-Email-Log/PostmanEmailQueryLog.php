@@ -150,11 +150,14 @@ class PostmanEmailQueryLog {
             
             if( $args['status'] == 'success' ) {
                 // Include both regular success (success = 1) and fallback success entries
-                $this->query .= "{$clause_for_status} (`success` = 1 OR `success` = 'Sent ( ** Fallback ** )') ";
+                $this->query .= "{$clause_for_status} (`success` = 1 OR `success` = 'Sent ( ** Fallback ** )' OR `success` LIKE '( ** Fallback ** )%') ";
             }
             elseif ( $args['status'] == 'failed' ) {    
-                // Any entry that is not successful (including primary failures and fallback failures)
-                $this->query .= "{$clause_for_status} (`success` != 1 AND `success` != 'Sent ( ** Fallback ** )') ";
+                // Exclude successful entries (both regular and fallback)
+                $this->query .= "{$clause_for_status} (`success` != 1 AND `success` != 'Sent ( ** Fallback ** )' AND `success` NOT LIKE '( ** Fallback ** )%' AND `success` != 'In Queue') ";
+            }
+            elseif ( $args['status'] == 'queued' ) {
+                $this->query .= "{$clause_for_status} `success` = 'In Queue' ";
             }
             else {
     
@@ -162,6 +165,22 @@ class PostmanEmailQueryLog {
     
             }
 
+        }
+
+        if ( isset( $args['mailer'] ) && ! empty( $args['mailer'] ) && 'all' !== $args['mailer'] ) {
+            $clause_for_mailer = strpos( $this->query, 'WHERE' ) !== false ? ' AND' : ' WHERE';
+            $this->query      .= $this->db->prepare(
+                " {$clause_for_mailer} pl.`transport_uri` LIKE %s",
+                '%' . $this->db->esc_like( $args['mailer'] ) . '%'
+            );
+        }
+
+        if ( isset( $args['form'] ) && ! empty( $args['form'] ) && 'all' !== $args['form'] ) {
+            $clause_for_form = strpos( $this->query, 'WHERE' ) !== false ? ' AND' : ' WHERE';
+            $this->query    .= $this->db->prepare(
+                " {$clause_for_form} pl.`event_type` = %s",
+                $args['form']
+            );
         }
 		
 		if( isset( $args['site_id'] ) && $args['site_id'] != -1 ) {

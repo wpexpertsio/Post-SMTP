@@ -169,17 +169,16 @@ class PostmanConfigurationController {
 	 * Register the Setup Wizard screen
 	 */
 	public function addSetupWizardSubmenu() {
-		$page = add_submenu_page(
-			' ',
-			sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ),
-			__( 'Postman SMTP', 'post-smtp' ),
-			'manage_options',
-			PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG,
+		$page = add_submenu_page( 
+			PostmanViewController::POSTMAN_MENU_SLUG, 
+			sprintf( __( '%s Setup', 'post-smtp' ), __( 'Postman SMTP', 'post-smtp' ) ), 
+			__( 'Postman SMTP', 'post-smtp' ), 
+			Postman::MANAGE_POSTMAN_CAPABILITY_NAME, 
+			PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG, 
 			array(
 				$this,
 				'outputWizardContent',
-			)
-		);
+		) );
 		// When the plugin options page is loaded, also load the stylesheet
 		add_action( 'admin_print_styles-' . $page, array(
 				$this,
@@ -191,7 +190,18 @@ class PostmanConfigurationController {
 	 * Hides submenu 
 	 */
 	public function hide_submenu_item( $submenu_file ) {
+
+		$hidden_submenus = array(
+			PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG => true,
+		);
+
+		// Hide the submenu.
+		foreach ( $hidden_submenus as $submenu => $unused ) {
+			remove_submenu_page( PostmanViewController::POSTMAN_MENU_SLUG, $submenu );
+		}
+
 		return $submenu_file;
+
 	}
 
 	/**
@@ -306,12 +316,6 @@ class PostmanConfigurationController {
         print '<div id="resend_settings" class="authentication_setting non-basic non-oauth2">';
         do_settings_sections( PostmanResendTransport::RESEND_AUTH_OPTIONS );
         print '</div>';
-		print '<div id="cloudflare_settings" class="authentication_setting non-basic non-oauth2">';
-		do_settings_sections( PostmanCloudflareTransport::CLOUDFLARE_AUTH_OPTIONS );
-		print '</div>';
-		print '<div id="smtpcom_settings" class="authentication_setting non-basic non-oauth2">';
-		do_settings_sections( PostmanSmtpcomTransport::SMTPCOM_AUTH_OPTIONS );
-		print '</div>';
 		print '<div id="mailjet_settings" class="authentication_setting non-basic non-oauth2">';
         do_settings_sections( PostmanMailjetTransport::MAILJET_AUTH_OPTIONS );
 		print '</div>';
@@ -341,7 +345,7 @@ class PostmanConfigurationController {
         <!-- Fallback Start -->
         <section id="fallback">
             <h2><?php esc_html_e( 'Failed emails fallback', 'post-smtp' ); ?></h2>
-            <p><?php esc_html_e( 'By enabling this option, if your email has failed to send, Post SMTP will try to use the SMTP service you define here.', 'post-smtp' ); ?></p>
+            <p><?php esc_html_e( 'By enable this option, if your email is fail to send Post SMTP will try to use the SMTP service you define here.', 'post-smtp' ); ?></p>
             <table class="form-table">
                 <tr valign="">
                     <th scope="row"><?php esc_html_e( 'Use Fallback?', 'post-smtp' ); ?></th>

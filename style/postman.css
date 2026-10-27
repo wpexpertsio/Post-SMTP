@@ -1575,6 +1575,9 @@ div#ps-email-log_length{
 .ps-refresh-logs span:hover {
     cursor: pointer;
 }
+#toplevel_page_postman ul li:nth-last-child(3) a {
+    color: #adff2f!important;
+}
 
 .ps-dashboard-pro {
     background: #eef2f4;
@@ -1738,14 +1741,4 @@ label.ps-switch-1.ps-gmail-one-click:hover:before {
     top: -40px;
     background-size: 100%;
 
-}
-
-a.ps-referral-link,
-a.ps-referral-link:link,
-a.ps-referral-link:visited,
-a.ps-referral-link:hover,
-a.ps-referral-link:focus,
-a.ps-referral-link:active {
-    color: #214A72 !important;
-    text-decoration: none !important;
 }

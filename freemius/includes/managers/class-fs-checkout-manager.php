@@ -12,36 +12,7 @@
 
 	class FS_Checkout_Manager {
 
-        /**
-         * Allowlist of query parameters for checkout.
-         */
-        private $_allowed_custom_params = array(
-            // currency
-            'currency'                      => true,
-            'default_currency'              => true,
-            // cart
-            'always_show_renewals_amount'   => true,
-            'annual_discount'               => true,
-            'billing_cycle'                 => true,
-            'billing_cycle_selector'        => true,
-            'bundle_discount'               => true,
-            'maximize_discounts'            => true,
-            'multisite_discount'            => true,
-            'show_inline_currency_selector' => true,
-            'show_monthly'                  => true,
-            // appearance
-            'form_position'                 => true,
-            'is_bundle_collapsed'           => true,
-            'layout'                        => true,
-            'refund_policy_position'        => true,
-            'show_refund_badge'             => true,
-            'show_reviews'                  => true,
-            'show_upsells'                  => true,
-            'title'                         => true,
-        );
-
-
-        # region Singleton
+		# region Singleton
 
 		/**
 		 * @var FS_Checkout_Manager
@@ -109,15 +80,6 @@
 				} else {
 					// If add-on isn't activated assume the premium version isn't installed.
 					$is_premium = false;
-				}
-
-                // Override the checkout context with the add-on's purchase details so the checkout flow is initialized for the selected add-on instead of the parent product.
-				$context_params['plugin_id'] = $plugin_id;
-
-				foreach ( array( 'plan_id', 'pricing_id', 'billing_cycle', 'is_trial' ) as $param ) {
-					if ( fs_request_has( $param ) ) {
-						$context_params[ $param ] = fs_request_get( $param );
-					}
 				}
 			}
 
@@ -191,12 +153,7 @@
 				( $fs->is_theme() && current_user_can( 'install_themes' ) )
 			);
 
-            $filtered_params = $fs->apply_filters('checkout/parameters', $context_params);
-
-            // Allowlist only allowed query params.
-            $filtered_params = array_intersect_key($filtered_params, $this->_allowed_custom_params);
-
-			return array_merge( $_GET, $context_params, $filtered_params, array(
+			return array_merge( $context_params, $_GET, array(
 				// Current plugin version.
 				'plugin_version' => $fs->get_plugin_version(),
 				'sdk_version'    => WP_FS__SDK_VERSION,

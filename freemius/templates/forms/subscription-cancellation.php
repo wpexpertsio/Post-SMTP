@@ -34,17 +34,11 @@ if ( $VARS['is_license_deactivation'] ) {
     $subscription_cancellation_text = '';
 } else {
     $subscription_cancellation_text = sprintf(
-        ( $fs->is_theme() ?
-            fs_text_inline(
-                "Deactivating or uninstalling the %s will automatically disable the license, which you'll be able to use on another site.",
-                'deactivation-or-uninstall-message',
-                $slug
-            ) :
-            fs_text_inline(
-                "Uninstalling the %s will automatically disable the license, which you'll be able to use on another site.",
-                'uninstall-message',
-                $slug
-            ) ),
+        fs_text_inline(
+            "Deactivating or uninstalling the %s will automatically disable the license, which you'll be able to use on another site.",
+            'deactivation-or-uninstall-message',
+            $slug
+        ),
         $module_label
     ) . ' ';
 }

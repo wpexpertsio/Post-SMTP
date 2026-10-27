@@ -408,7 +408,7 @@
 				$pWPRemoteArgs = array(
 					'method'           => strtoupper( $pMethod ),
 					'connect_timeout'  => 10,
-					'timeout'          => WP_FS__API_TIMEOUT,
+					'timeout'          => 60,
 					'follow_redirects' => true,
 					'redirection'      => 5,
 					'user-agent'       => $user_agent,

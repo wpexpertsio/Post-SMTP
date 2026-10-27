@@ -60,7 +60,6 @@ if ( ! class_exists( 'PostmanSweegoMailEngine' ) ) {
 
 		// Prepare content for Sweego API
 		$content = [
-			'channel'       => 'email',
 			'provider'      => 'string',
 			'campaign-type' => 'market',
 			'from'          => [
@@ -105,16 +104,14 @@ if ( ! class_exists( 'PostmanSweegoMailEngine' ) ) {
 			}
 		}
 
-		// Add Reply-To if set (Sweego payload uses hyphenated keys).
+		// Add Reply-To if set
 		$replyTo = $message->getReplyTo();
 		if ( $replyTo ) {
-			$content['reply-to'] = [
+			$content['replyTo'] = [
 				'email' => $replyTo->getEmail(),
 				'name'  => $replyTo->getName() ?: '',
 			];
-		}
-
-		// Attachments.
+		}			// Attachments.
 			$attachments = $this->addAttachmentsToMail( $message );
 			if ( ! empty( $attachments ) ) {
 				$content['attachments'] = $attachments;

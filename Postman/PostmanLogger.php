@@ -54,19 +54,10 @@ if (! class_exists ( "PostmanLogger" )) {
 		private function printLog($text, $intLogLevel, $logLevelName) {
 			if ($this->wpDebug && $intLogLevel >= $this->logLevel) {
 				if (is_array ( $text ) || is_object ( $text )) {
-					$this->writeLog ( $logLevelName . ' ' . $this->name . ': ' . print_r ( $text, true ) );
+					error_log ( $logLevelName . ' ' . $this->name . ': ' . print_r ( $text, true ) );
 				} else {
-					$this->writeLog ( $logLevelName . ' ' . $this->name . ': ' . $text );
+					error_log ( $logLevelName . ' ' . $this->name . ': ' . $text );
 				}
-			}
-		}
-		private function writeLog($message) {
-			if (function_exists ( 'error_log' )) {
-				error_log ( $message );
-				return;
-			}
-			if (function_exists ( 'wp_debug_log' )) {
-				wp_debug_log ( $message );
 			}
 		}
 		public function isDebug() {

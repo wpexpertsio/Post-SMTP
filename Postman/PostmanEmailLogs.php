@@ -4,9 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require 'Postman-Email-Log/PostmanEmailQueryLog.php';
-$purifier = dirname(__DIR__) . '/includes/libs/HTMLPurifier/HTMLPurifier.auto.php';
-if ( file_exists( $purifier ) ) {
-    require_once $purifier;
+
+if ( ! class_exists( 'HTMLPurifier_Bootstrap', false ) && class_exists( '\PostSMTP\Kernel\Libraries\LibraryLoader' ) ) {
+	\PostSMTP\Kernel\Libraries\LibraryLoader::init();
 }
 
 class PostmanEmailLogs {
@@ -49,6 +49,21 @@ class PostmanEmailLogs {
 
         $this->db = $wpdb;
 		$this->logger = new PostmanLogger( get_class( $this ) );
+
+        if (
+            isset( $_GET['page'] ) && 'postman_email_log' === $_GET['page']
+            && empty( $_GET['view'] )
+            && class_exists( '\PostSMTP\Rollout\CohortResolver' )
+        ) {
+            $cohort = get_option( 'post_smtp_cohort', \PostSMTP\Rollout\CohortResolver::COHORT_LEGACY );
+            if (
+                \PostSMTP\Rollout\CohortResolver::COHORT_MIGRATED === $cohort
+                || \PostSMTP\Rollout\CohortResolver::COHORT_NEW_INSTALL === $cohort
+            ) {
+                wp_safe_redirect( admin_url( 'admin.php?page=postman#/email-logs' ) );
+                exit;
+            }
+        }
 
         //Render Message body in iframe
         if( 
@@ -501,11 +516,23 @@ class PostmanEmailLogs {
             //WordPress Date, Time Format
             $date_format = get_option( 'date_format' );
 		    $time_format = get_option( 'time_format' );
+            $search = array(
+                '<',
+                '>',
+                '"',
+                "'"
+            );
+            $replace = array(
+                '&lt;',
+                '&gt;',
+                '&quot;',
+                '&#039;'
+            );
    
             //Lets manage the Date format :)
             foreach( $data as $row ) {
 
-                $row->time = date_i18n( "{$date_format} {$time_format}", $row->time );
+                $row->time = date( "{$date_format} {$time_format}", $row->time );
 
                 if( $row->success == 1 ) {
 
@@ -523,7 +550,7 @@ class PostmanEmailLogs {
                 }
                 else {
 
-                    $row->success = '<span title="' . esc_attr( $row->success ) . '">Failed</span><a href="#" class="ps-status-log ps-popup-btn">View details</a>';
+                    $row->success = '<span title="'.str_replace( $search, $replace, $row->success ).'">Failed</span><a href="#" class="ps-status-log ps-popup-btn">View details</a>';
                     
                 }
                 
@@ -727,7 +754,7 @@ class PostmanEmailLogs {
                 $data[10] = $log->original_message;
                 $data[11] = $log->original_headers;
                 $data[12] = $log->session_transcript;
-                $data[13] = date_i18n( "$date_format $time_format", $log->time );
+                $data[13] = date( "$date_format $time_format", $log->time );
                 
                 fputcsv($fp, $data);
 
@@ -809,7 +836,7 @@ class PostmanEmailLogs {
 				$date_format = get_option( 'date_format' );
 				$time_format = get_option( 'time_format' );
 				
-				$log['time'] = date_i18n( "{$date_format} {$time_format}", $log['time'] );
+				$log['time'] = date( "{$date_format} {$time_format}", $log['time'] );
 
 			}
 

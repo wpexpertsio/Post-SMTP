@@ -542,19 +542,6 @@ jQuery(document).ready(function () {
     });
 
 
-    // Prevent implicit form submission from navigating away from the current step.
-    jQuery('#ps-wizard-form').on('submit', function (e) {
-        e.preventDefault();
-    });
-
-    // Pressing Enter in the recipient field should send the test email, not submit the wizard form.
-    jQuery(document).on('keydown', '#ps-wizard-form .ps-test-to', function (e) {
-        if (e.key === 'Enter' || e.keyCode === 13) {
-            e.preventDefault();
-            jQuery('.ps-wizard-send-test-email:visible').trigger('click');
-        }
-    });
-
     //Send test email
     jQuery(document).on('click', '.ps-wizard-send-test-email', function (e) {
 
@@ -1374,6 +1361,10 @@ jQuery(document).ready(function ($) {
         jQuery(".ps-form-ui.ps-wizard-socket.aws_ses_api h3")
             .first()
             .text("Amazon (AWS) SES API");
+
+        jQuery(".ps-form-ui.ps-wizard-socket.postmark_api h3")
+            .first()
+            .text("PostMark API");
 
         jQuery(".ps-form-ui.ps-wizard-socket.mailtrap_api h3")
             .first()

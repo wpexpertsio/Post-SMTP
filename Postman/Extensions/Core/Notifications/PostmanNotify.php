@@ -302,11 +302,6 @@ class PostmanNotify {
 	 * @param string           $errorMessage
 	 */
 	public function notify( $log, $postmanMessage, $transcript, $transport, $errorMessage ) {
-
-		if ( ! self::should_send_failure_notification( $postmanMessage ) ) {
-			return;
-		}
-
 		$message  = __( 'You getting this message because an error detected while delivered your email.', 'post-smtp' );
 		$message .= "\r\n" . sprintf( __( 'For the domain: %1$s', 'post-smtp' ), get_bloginfo( 'url' ) );
 		$message .= "\r\n" . __( 'The log to paste when you open a support issue:', 'post-smtp' ) . "\r\n";
@@ -343,48 +338,6 @@ class PostmanNotify {
 			}
 			$this->push_to_chrome( $errorMessage );
 		}
-	}
-
-	/**
-	 * Whether a failed delivery should trigger user notifications.
-	 *
-	 * Fires once per mailer attempt: primary failure sends one notification, and a
-	 * separate notification is sent if the fallback mailer also fails. Invalid
-	 * recipient failures are included. Internal notification emails are excluded.
-	 *
-	 * @param PostmanMessage|null $postmanMessage
-	 * @return bool
-	 */
-	public static function should_send_failure_notification( $postmanMessage ) {
-		if ( class_exists( 'PostmanMailNotify' ) && PostmanMailNotify::is_sending() ) {
-			return false;
-		}
-
-		if ( self::is_notification_delivery( $postmanMessage ) ) {
-			return false;
-		}
-
-		return (bool) apply_filters( 'post_smtp_should_send_failure_notification', true, $postmanMessage );
-	}
-
-	/**
-	 * Detect whether a failed delivery was itself a Post SMTP notification email.
-	 *
-	 * @param PostmanMessage|null $postmanMessage
-	 * @return bool
-	 */
-	private static function is_notification_delivery( $postmanMessage ) {
-		if ( ! $postmanMessage instanceof PostmanMessage ) {
-			return false;
-		}
-
-		foreach ( (array) $postmanMessage->getHeaders() as $header ) {
-			if ( isset( $header['name'] ) && 0 === strcasecmp( $header['name'], PostmanMailNotify::NOTIFICATION_HEADER ) ) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	public function push_to_chrome( $message ) {

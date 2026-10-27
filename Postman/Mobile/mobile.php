@@ -158,11 +158,8 @@ class Post_SMTP_Mobile {
     /**
      * Generate QR code
      *
-     * Safely loads the bundled PHPQRCode library and avoids fatals if another
-     * plugin/theme has defined an incompatible QRcode class.
-     *
      * @since 2.7.0
-     * @version 1.1.0
+     * @version 1.0.0
      */
     public function generate_qr_code() {
 
@@ -172,23 +169,18 @@ class Post_SMTP_Mobile {
             return;
         }
 
-        $nonce      = get_transient( 'post_smtp_auth_nonce' );
-        $authkey    = $nonce ? $nonce : $this->generate_auth_key();
-        $site_title = get_bloginfo( 'name' );
-
+        $nonce = get_transient( 'post_smtp_auth_nonce' );
+		$authkey = $nonce ? $nonce : $this->generate_auth_key();
+		$site_title = get_bloginfo( 'name' );
         set_transient( 'post_smtp_auth_nonce', $authkey, 1800 );
-
         $endpoint = site_url( "?authkey={$authkey}&site_title={$site_title}" );
-
         ob_start();
         $qr_class::png( urlencode_deep( $endpoint ) );
         $result_qr_content_in_png = ob_get_contents();
         ob_end_clean();
-
-        // PHPQRCode changes the content-type to image/png; restore HTML.
-        header( 'Content-type: text/html' );
-
-        $this->qr_code = base64_encode( $result_qr_content_in_png );
+        // PHPQRCode change the content-type into image/png... we change it again into html
+        header("Content-type: text/html");
+        $this->qr_code =  base64_encode( $result_qr_content_in_png );
 
     }
 

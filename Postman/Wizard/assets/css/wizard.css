@@ -274,16 +274,6 @@
   color: #000;
 }
 
-a.ps-referral-link,
-a.ps-referral-link:link,
-a.ps-referral-link:visited,
-a.ps-referral-link:hover,
-a.ps-referral-link:focus,
-a.ps-referral-link:active {
-  color: #214A72 !important;
-  text-decoration: none !important;
-}
-
 .smtp-outer .ps-wizard-footer-left .ps-in-active-nav .ps-wizard-line:after {
   height: 870px !important;
 }
@@ -403,20 +393,6 @@ a.ps-referral-link:active {
   transition: transform 1s;
   object-fit: cover;
   padding: 8px 20px 3px 20px;
-}
-
-.ps-wizard-socket-radio img[src*="cloudflare"] {
-  width: 70px;
-  height: auto;
-  object-fit: contain;
-  padding: 8px 0 3px 0;
-}
-
-.ps-wizard-socket-radio img[src*="smtpcom"] {
-  width: 40px;
-  height: auto;
-  object-fit: contain;
-  padding: 8px 0 3px 0;
 }
 
 .ps-wizard-socket-tick-container {
@@ -1249,13 +1225,6 @@ div#ps-pro-code-copy-notification {
   color: #666666;
   cursor: not-allowed;
   opacity: 0.6;
-}
-
-.ps-wizard-footer-right .ps-finish-wizard {
-  width: auto;
-  min-width: 184px;
-  padding-left: 16px;
-  padding-right: 16px;
 }
 
 .ps-disable-office365-setup b {

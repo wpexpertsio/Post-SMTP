@@ -95,21 +95,18 @@ if ( ! class_exists( 'PostsmtpMailer', false ) && class_exists( 'PHPMailer', fal
 			$mail->isSMTP();
 			$mail->Host = $this->options->getHostname();
 			$mail->Hostname = $this->options->getHostname();
-			$mail->Port = $this->options->getPort();
-
-			if ( $this->options->getEncryptionType() !== 'none' ) {
-				$mail->SMTPSecure = $this->options->getEncryptionType();
-				// When using SSL (SMTPS) on port 465, disable AutoTLS so PHPMailer doesn't try STARTTLS on top of the SSL connection (matches WP Mail SMTP behavior; some servers like mail.nic.ru fail otherwise).
-				if ( $this->options->getEncryptionType() === PostmanOptions::SECURITY_TYPE_SMTPS ) {
-					$mail->SMTPAutoTLS = false;
-				}
-			}
 
 			if ( $this->options->getAuthenticationType() !== 'none' ) {
 				$mail->SMTPAuth   = true;
 				$mail->Username   = $this->options->getUsername();
 				$mail->Password   = $this->options->getPassword();
 			}
+
+			if ( $this->options->getEncryptionType() !== 'none' ) {
+				$mail->SMTPSecure = $this->options->getEncryptionType();
+			}
+
+			$mail->Port = $this->options->getPort();
 
 			if ( $this->options->isPluginSenderEmailEnforced() ) {
 				$mail->setFrom( $this->options->getMessageSenderEmail(), $this->options->getMessageSenderName() );
@@ -149,9 +146,10 @@ if ( ! class_exists( 'PostsmtpMailer', false ) && class_exists( 'PHPMailer', fal
 					} else {
 						$response = $this->sendSmtp();
 						$result = $response;
-						if ( $response ) {
-							do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport );
-						}
+					}
+
+					if ( $response ) {
+						do_action( 'post_smtp_on_success', $log, $postmanMessage, $this->transcript, $transport );
 					}
 				}
 
@@ -162,10 +160,7 @@ if ( ! class_exists( 'PostsmtpMailer', false ) && class_exists( 'PHPMailer', fal
 				$this->mailHeader = '';
 				$this->setError( $exc->getMessage() );
 
-				// Only fire post_smtp_on_failed if we handled SMTP directly (otherwise PostmanWpMail already fired it)
-				if ( $this->options->getTransportType() === 'smtp' ) {
-					do_action( 'post_smtp_on_failed', $log, $postmanMessage, $this->transcript, $transport, $exc->getMessage() );
-				}
+				do_action( 'post_smtp_on_failed', $log, $postmanMessage, $this->transcript, $transport, $exc->getMessage() );
 
 				if ( $this->exceptions ) {
 					throw $exc;
