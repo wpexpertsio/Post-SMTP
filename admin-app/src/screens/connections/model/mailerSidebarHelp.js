@@ -59,6 +59,11 @@ const MAILER_SETUP = {
 		'Developer-friendly API delivery and logs.',
 		'https://postmansmtp.com/documentation/sockets-addons/how-to-configure-post-smtp-with-mail-gun/'
 	),
+	cloudflare_email_api: setupCard(
+		'What is Cloudflare Email?',
+		'Send from addresses on domains you manage in Cloudflare.',
+		DOCS_MAILER_GUIDE
+	),
 	smtp: setupCard(
 		'What is Other SMTP?',
 		'Use any SMTP host, port, and credentials you already have.',

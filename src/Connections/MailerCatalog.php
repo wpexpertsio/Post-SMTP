@@ -59,6 +59,14 @@ final class MailerCatalog {
 				'sort'             => 50,
 			),
 			array(
+				'slug'             => 'cloudflare_email_api',
+				'label'            => __( 'Cloudflare Email', 'post-smtp' ),
+				'requires_pro'     => false,
+				'initial_visible'  => false,
+				'icon'             => 'email.svg',
+				'sort'             => 55,
+			),
+			array(
 				'slug'             => 'smtp',
 				'label'            => __( 'Other SMTP', 'post-smtp' ),
 				'requires_pro'     => false,

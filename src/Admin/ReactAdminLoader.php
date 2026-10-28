@@ -104,7 +104,7 @@ final class ReactAdminLoader {
 		$has_pro = defined( 'POST_SMTP_PRO_VERSION' )
 			|| ( function_exists( 'pspro_fs' ) && pspro_fs()->is_registered() );
 
-		return array(
+		$config = array(
 			'apiRoot'        => esc_url_raw( rest_url( 'post-smtp/v2/' ) ),
 			'dashboardApi'   => esc_url_raw( rest_url( 'psd/v1/' ) ),
 			'nonce'          => wp_create_nonce( 'wp_rest' ),
@@ -119,6 +119,7 @@ final class ReactAdminLoader {
 			'version'        => defined( 'POST_SMTP_VER' ) ? POST_SMTP_VER : '4.0.0',
 			'assetsUrl'      => esc_url_raw( POST_SMTP_URL . '/Postman/Dashboard/assets/images/' ),
 			'migrationOnly'  => $migration_only,
+			'gmailConfigure' => GmailConfigureBootstrap::defaults(),
 			'adminUrls'      => array(
 				'dashboard'   => admin_url( 'admin.php?page=postman' ),
 				'connections' => admin_url( 'admin.php?page=postman#/connections' ),
@@ -135,6 +136,15 @@ final class ReactAdminLoader {
 				'review'      => 'https://wordpress.org/support/plugin/post-smtp/reviews/#new-post',
 			),
 		);
+
+		/**
+		 * Filter localized admin bootstrap (React `postSmtpAdmin`).
+		 *
+		 * Pro plugins should extend `gmailConfigure.oneClick` and other keys here.
+		 *
+		 * @param array<string,mixed> $config Admin bootstrap config.
+		 */
+		return apply_filters( 'post_smtp_admin_config', $config );
 	}
 
 	public static function renderRoot(): void {

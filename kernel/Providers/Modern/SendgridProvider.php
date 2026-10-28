@@ -30,7 +30,7 @@ final class SendgridProvider extends AbstractApiProvider implements ProviderInte
 			'provider_sequence' => 40,
 			'configure_title'   => __( 'Configure SendGrid', 'post-smtp' ),
 			'doc_url'           => 'https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendgrid-with-post-smtp/',
-			'doc_label'         => __( 'View documentation', 'post-smtp' ),
+			'doc_label'         => __( 'Get credentials', 'post-smtp' ),
 			'field_sequence'    => array(
 				'connection_title',
 				'from_name',
@@ -45,12 +45,14 @@ final class SendgridProvider extends AbstractApiProvider implements ProviderInte
 					'label'       => __( 'Connection title', 'post-smtp' ),
 					'description' => __( 'Use a unique title, such as “Website emails” or “Backup delivery”, even when both connections use the same mailer.', 'post-smtp' ),
 					'input_type'  => 'text',
+					'placeholder' => __( 'e.g Website email', 'post-smtp' ),
 				),
 				'from_name'        => array(
 					'required'    => false,
 					'label'       => __( 'From name', 'post-smtp' ),
 					'description' => __( 'The name people see in their inbox.', 'post-smtp' ),
 					'input_type'  => 'text',
+					'placeholder' => __( 'Placeholder', 'post-smtp' ),
 				),
 				'prevent_sender_name_override' => array(
 					'required'    => false,
@@ -63,6 +65,7 @@ final class SendgridProvider extends AbstractApiProvider implements ProviderInte
 					'label'       => __( 'From email address', 'post-smtp' ),
 					'description' => __( 'Use an email on your own domain.', 'post-smtp' ),
 					'input_type'  => 'email',
+					'placeholder' => __( 'Placeholder', 'post-smtp' ),
 				),
 				'prevent_sender_email_override' => array(
 					'required'    => false,
@@ -75,6 +78,7 @@ final class SendgridProvider extends AbstractApiProvider implements ProviderInte
 					'label'       => __( 'API key', 'post-smtp' ),
 					'input_type'  => 'password',
 					'encrypt'     => true,
+					'placeholder' => __( 'Enter your API key', 'post-smtp' ),
 					'section'       => 'api_credentials',
 				),
 			),

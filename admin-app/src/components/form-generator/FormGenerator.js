@@ -40,7 +40,7 @@ const FieldInput = ( { field, fieldKey, values, onChange } ) => {
 			className="ps-v2-field-input"
 			type={ inputType }
 			value={ value }
-			placeholder={ field.placeholder || ( field.encrypt ? '••••••••' : '' ) }
+			placeholder={ field.placeholder ?? '' }
 			autoComplete={ field.encrypt ? 'off' : undefined }
 			onChange={ ( e ) => onChange( { ...values, [ fieldKey ]: e.target.value } ) }
 		/>
@@ -57,7 +57,7 @@ const FormFieldBlock = ( { fieldKey, field, values, onChange } ) => {
 			<div className="ps-v2-form-field ps-v2-form-field--inline-check" key={ fieldKey }>
 				<label className="ps-v2-form-field__check" htmlFor={ `field-${ fieldKey }` }>
 					<FieldInput field={ field } fieldKey={ fieldKey } values={ values } onChange={ onChange } />
-					<span>{ field.label || fieldKey }</span>
+					<span className="ps-v2-form-field__check-label">{ field.label || fieldKey }</span>
 				</label>
 			</div>
 		);
@@ -65,13 +65,15 @@ const FormFieldBlock = ( { fieldKey, field, values, onChange } ) => {
 
 	return (
 		<div className="ps-v2-form-field" key={ fieldKey }>
-			<label htmlFor={ `field-${ fieldKey }` } className="ps-v2-form-field__label">
-				{ field.label || fieldKey }
-				{ field.required && <span className="ps-v2-required">*</span> }
-			</label>
-			{ field.description && (
-				<p className="ps-v2-form-field__hint">{ field.description }</p>
-			) }
+			<div className="ps-v2-form-field__head">
+				<label htmlFor={ `field-${ fieldKey }` } className="ps-v2-form-field__label">
+					{ field.label || fieldKey }
+					{ field.required && <span className="ps-v2-required">*</span> }
+				</label>
+				{ field.description && (
+					<p className="ps-v2-form-field__hint">{ field.description }</p>
+				) }
+			</div>
 			<FieldInput field={ field } fieldKey={ fieldKey } values={ values } onChange={ onChange } />
 		</div>
 	);

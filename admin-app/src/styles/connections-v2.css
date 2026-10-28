@@ -464,10 +464,25 @@
 }
 
 /* —— Choose mailer (Figma 672:5745) —— */
-.ps-v2-conn-panel--choose {
+.ps-v2-conn-choose__main {
 	flex: 1 1 auto;
 	max-width: 920px;
 	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.ps-v2-conn-panel--choose {
+	flex: none;
+	width: 100%;
+	max-width: none;
+}
+
+.ps-v2-conn-panel--configure {
+	flex: none;
+	width: 100%;
+	max-width: none;
 }
 
 .ps-v2-conn-choose__head {
@@ -749,7 +764,7 @@
 
 .ps-v2-conn-choose__configure--figma {
 	border-top: none;
-	margin-top: 24px;
+	margin-top: 0;
 	padding-top: 0;
 }
 
@@ -804,6 +819,9 @@
 }
 
 .ps-v2-configure-form__group {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 	margin-bottom: 15px;
 }
 
@@ -813,6 +831,10 @@
 	justify-content: space-between;
 	gap: 16px;
 	margin-bottom: 20px;
+}
+
+.ps-v2-configure-form__api .ps-v2-form-field + .ps-v2-form-field {
+	margin-top: 15px;
 }
 
 .ps-v2-configure-form__section-title {
@@ -832,19 +854,37 @@
 
 .ps-v2-configure-form__doc-link {
 	flex-shrink: 0;
-	padding: 5px 12px;
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	padding: 7px;
 	border-radius: 6px;
-	border: 1px solid #e5e5e5;
+	border: none;
 	background: #fff;
-	font-size: 13px;
+	font-size: 14px;
 	font-weight: 500;
-	color: #2d3340;
+	color: #5279cc;
 	text-decoration: none;
-	line-height: 1.4;
+	line-height: 1;
+}
+
+.ps-v2-configure-form__doc-link span {
+	border-bottom: 1px solid transparent;
+}
+
+.ps-v2-configure-form__doc-link img {
+	display: block;
+	flex-shrink: 0;
 }
 
 .ps-v2-form-field {
 	margin-bottom: 0;
+}
+
+.ps-v2-form-field__head {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
 }
 
 .ps-v2-form-field__label {
@@ -869,16 +909,16 @@
 
 .ps-v2-form-field__check {
 	display: inline-flex;
-	align-items: flex-start;
+	align-items: center;
 	gap: 10px;
 	font-size: 12px;
-	line-height: 1.35;
+	line-height: 1.5;
 	color: #2d3340;
 	cursor: pointer;
 }
 
 .ps-v2-form-field__check input {
-	margin-top: 2px;
+	margin: 0;
 	flex-shrink: 0;
 }
 
@@ -896,11 +936,215 @@
 	background: #fff;
 }
 
+/* Configure mailer form — Figma 1310:17091 */
+.ps-v2-configure-form .ps-v2-form-field {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.ps-v2-configure-form .ps-v2-form-field__label {
+	margin-bottom: 0;
+	font-weight: 500;
+	line-height: normal;
+}
+
+.ps-v2-configure-form .ps-v2-form-field__hint {
+	margin: 0;
+	color: #6c6c6c;
+	line-height: normal;
+}
+
+.ps-v2-configure-form .ps-v2-field-input,
+#post-smtp-admin-root .ps-v2-configure-form .ps-v2-form-field input:not([type='checkbox']),
+#post-smtp-admin-root .ps-v2-configure-form .ps-v2-form-field select {
+	min-height: 38px;
+	height: 38px;
+	padding: 10px;
+	border: 1px solid #e5e5e5 !important;
+	border-radius: 6px;
+	font-family: inherit;
+	font-size: 12px;
+	line-height: normal;
+	color: #2d3340;
+	background: #fff !important;
+	box-shadow: none !important;
+	outline: none;
+}
+
+#post-smtp-admin-root .ps-v2-configure-form .ps-v2-field-input:focus,
+#post-smtp-admin-root .ps-v2-configure-form .ps-v2-form-field input:not([type='checkbox']):focus {
+	border-color: #e5e5e5 !important;
+	box-shadow: none !important;
+	outline: none;
+}
+
+.ps-v2-configure-form .ps-v2-field-input::placeholder,
+#post-smtp-admin-root .ps-v2-configure-form .ps-v2-form-field input:not([type='checkbox'])::placeholder {
+	color: #6c6c6c;
+	opacity: 1;
+}
+
+.ps-v2-configure-form__group .ps-v2-form-field--inline-check {
+	margin-top: 0;
+}
+
+.ps-v2-configure-form .ps-v2-form-field__check {
+	align-items: center;
+	color: #6c6c6c;
+}
+
+.ps-v2-configure-form .ps-v2-form-field__check-label {
+	line-height: 1.5;
+}
+
+#post-smtp-admin-root .ps-v2-configure-form .ps-v2-form-field__check input[type='checkbox'] {
+	width: 16px;
+	height: 16px;
+	min-height: 16px;
+	margin: 0;
+	padding: 0;
+	border: 1px solid #e5e5e5 !important;
+	border-radius: 3.2px;
+	background: #fff !important;
+	box-shadow: none !important;
+	appearance: none;
+	-webkit-appearance: none;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+#post-smtp-admin-root .ps-v2-configure-form .ps-v2-form-field__check input[type='checkbox']:checked {
+	background-color: #5279cc !important;
+	border-color: #5279cc !important;
+	background-image: url("data:image/svg+xml,%3Csvg width='10' height='8' viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4L3.5 6.5L9 1' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 10px 8px;
+}
+
 .ps-v2-configure-form__sections .ps-v2-form-field + .ps-v2-form-field--inline-check {
-	margin-top: 8px;
+	margin-top: 0;
 }
 
 .ps-v2-configure-form__sections > div + div {
+	margin-top: 15px;
+}
+
+/* Gmail configure (Figma 1310:15740) */
+.ps-v2-gmail-configure__readonly-row {
+	display: flex;
+	gap: 10px;
+	align-items: stretch;
+	width: 100%;
+}
+
+.ps-v2-gmail-configure__readonly-input {
+	flex: 1 1 auto;
+	min-width: 0;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 13px;
+}
+
+.ps-v2-gmail-configure__copy-btn {
+	flex-shrink: 0;
+	min-height: 39px;
+	padding: 6px 16px;
+	font-weight: 500;
+}
+
+.ps-v2-gmail-configure__manual-auth {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 8px;
+	margin-top: 16px;
+}
+
+.ps-v2-gmail-configure__connect-api {
+	background: #5279cc;
+	color: #fff;
+	font-weight: 700;
+}
+
+.ps-v2-gmail-configure__manual-auth-hint {
+	font-size: 13px;
+	line-height: 1.5;
+	color: #6b7280;
+}
+
+.ps-v2-gmail-configure__one-click {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 16px;
+	border-radius: 6px;
+	background: #f8f9fc;
+	border: 1px solid #eef1f6;
+}
+
+.ps-v2-gmail-configure__one-click-head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.ps-v2-gmail-configure__pro-tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 2px 8px;
+	border-radius: 4px;
+	background: #f3e8ff;
+	font-size: 11px;
+	font-weight: 700;
+	color: #7c3aed;
+	text-transform: uppercase;
+}
+
+.ps-v2-gmail-configure__google-btn {
+	background: #fff;
+	color: #2d3340;
+	border: 1px solid #e5e5e5;
+	font-weight: 600;
+	min-height: 40px;
+	padding: 8px 20px;
+}
+
+.ps-v2-gmail-configure__upgrade-cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	padding: 10px 20px;
+	border-radius: 6px;
+	background: #5279cc;
+	color: #fff;
+	font-size: 14px;
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.ps-v2-gmail-configure__connected {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+	width: 100%;
+}
+
+.ps-v2-gmail-configure__connected-email {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: #287441;
+}
+
+.ps-v2-gmail-configure .ps-v2-configure-form__api .ps-v2-gmail-configure__readonly + .ps-v2-gmail-configure__readonly,
+.ps-v2-gmail-configure .ps-v2-configure-form__api .ps-v2-gmail-configure__readonly + .ps-v2-form-field {
 	margin-top: 15px;
 }
 
@@ -1070,8 +1314,26 @@
 
 .ps-v2-conn-form-actions {
 	display: flex;
-	gap: 12px;
+	gap: 10px;
 	margin-top: 20px;
+	align-items: flex-start;
+}
+
+.ps-v2-conn-form-actions .ps-v2-btn--ghost {
+	min-height: 39px;
+	padding: 6px 20px;
+	background: #fff;
+	font-weight: 400;
+	color: #4a4a4a;
+	border: 1px solid #e5e5e5;
+}
+
+.ps-v2-conn-form-actions .ps-v2-btn--primary {
+	min-height: 39px;
+	padding: 10px 20px;
+	background: #5279cc;
+	color: #fff;
+	font-weight: 700;
 }
 
 .ps-v2-btn {
@@ -1132,7 +1394,8 @@
 	}
 
 	.ps-v2-conn-panel--main,
-	.ps-v2-conn-panel--choose {
+	.ps-v2-conn-panel--choose,
+	.ps-v2-conn-choose__main {
 		max-width: none;
 		width: 100%;
 	}

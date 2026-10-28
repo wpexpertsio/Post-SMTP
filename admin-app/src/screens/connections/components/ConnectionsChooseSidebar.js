@@ -23,7 +23,7 @@ const ConnectionsChooseSidebar = ( { selectedProvider = null } ) => {
 			className="ps-v2-conn-choose__aside"
 			data-figma-node="672:5901"
 		>
-			<ConnectionsGmailPromoCard />
+			{ selectedProvider !== 'gmail_api' && <ConnectionsGmailPromoCard /> }
 			<ActiveMailersSidebar
 				connections={ connections }
 				connectionsQuery={ connectionsQuery }

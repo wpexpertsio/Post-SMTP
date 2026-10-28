@@ -120,6 +120,7 @@ final class CatalogProviderSchema {
 		$map = array(
 			'sendgrid_api'      => 'sendgrid_api_key',
 			'mailgun_api'       => 'mailgun_api_key',
+			'cloudflare_email_api' => 'cloudflare_email_api_key',
 			'amazon_ses_api'    => 'ses_access_key',
 			'postmark_api'      => 'postmark_api_key',
 			'sendinblue_api'    => 'sendinblue_api_key',

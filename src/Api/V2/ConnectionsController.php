@@ -236,6 +236,15 @@ final class ConnectionsController extends BaseController {
 				$schemas[ $slug ] = CatalogProviderSchema::forSlug( $slug );
 			}
 		}
+		foreach ( $schemas as $slug => $schema ) {
+			/**
+			 * Filter a provider schema exposed to the Connections configure UI.
+			 *
+			 * @param array<string,mixed> $schema Provider schema.
+			 * @param string              $slug   Provider slug.
+			 */
+			$schemas[ $slug ] = apply_filters( 'post_smtp_provider_schema', $schema, $slug );
+		}
 		return rest_ensure_response( $schemas );
 	}
 }

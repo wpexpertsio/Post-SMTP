@@ -19,6 +19,7 @@ export const MAILER_GRID_ROWS = [
  * @type {string[]}
  */
 export const MAILER_MORE_SLUGS = [
+	'cloudflare_email_api',
 	'mailgun_api',
 	'smtp',
 	'mailtrap_api',

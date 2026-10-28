@@ -14,6 +14,7 @@ import emailit from '../../../assets/dashboard/connections/mailers/emailit.svg';
 import sweego from '../../../assets/dashboard/connections/mailers/sweego.svg';
 import resend from '../../../assets/dashboard/connections/mailers/resend.svg';
 import mailgun from '../../../assets/dashboard/connections/mailers/mailgun.svg';
+import mailersend from '../../../assets/dashboard/connections/mailers/mailersend.svg';
 import smtp from '../../../assets/dashboard/connections/mailers/other_smtp.svg';
 import mailtrap from '../../../assets/dashboard/connections/mailers/mailtrap.svg';
 import elasticemail from '../../../assets/dashboard/connections/mailers/elastic_email.svg';
@@ -21,11 +22,13 @@ import smtp2go from '../../../assets/dashboard/connections/mailers/smtp2go.svg';
 import sparkpost from '../../../assets/dashboard/connections/mailers/sparkpost.svg';
 import sendpulse from '../../../assets/dashboard/connections/mailers/sendpulse.svg';
 import mandrill from '../../../assets/dashboard/connections/mailers/mandril.svg';
+import cloudflare from '../../../assets/dashboard/connections/mailers/cloudflare.svg';
 
 /** @type {Record<string, string>} */
 const PROVIDER_SLUG_ALIASES = {
 	default: 'smtp',
 	dafault: 'smtp',
+	mandrill: 'mandrill_api',
 };
 
 /**
@@ -55,6 +58,7 @@ export const MAILER_CONNECTION_ICONS = {
 	sweego_api: sweego,
 	resend_api: resend,
 	mailgun_api: mailgun,
+	mailersend_api: mailersend,
 	smtp,
 	mailtrap_api: mailtrap,
 	elasticemail_api: elasticemail,
@@ -62,6 +66,8 @@ export const MAILER_CONNECTION_ICONS = {
 	sparkpost_api: sparkpost,
 	sendpulse_api: sendpulse,
 	mandrill_api: mandrill,
+	mandrill,
+	cloudflare_email_api: cloudflare,
 };
 
 /**
