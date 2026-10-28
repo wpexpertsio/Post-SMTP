@@ -5,6 +5,7 @@ import DashboardScreen from './screens/dashboard/DashboardScreen';
 import ConnectionsRoutes from './screens/connections/ConnectionsRoutes';
 import EmailLogsRoutes from './screens/email-logs/EmailLogsRoutes';
 import NotificationsRoutes from './screens/notifications/NotificationsRoutes';
+import ToolsRoutes from './screens/tools/ToolsRoutes';
 import MigrationScreen from './screens/migration/MigrationScreen';
 import './styles.css';
 
@@ -55,6 +56,14 @@ const FullApp = () => (
 			element={
 				<AppShell title="Notifications" hideTitle mainClassName="ps-app__main--notifications">
 					<NotificationsRoutes />
+				</AppShell>
+			}
+		/>
+		<Route
+			path="/tools/*"
+			element={
+				<AppShell title="Tools" hideTitle mainClassName="ps-app__main--tools">
+					<ToolsRoutes />
 				</AppShell>
 			}
 		/>

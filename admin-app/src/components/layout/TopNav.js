@@ -13,7 +13,7 @@ const NAV = [
 	{ to: '/email-logs', label: 'Email Logs' },
 	{ to: '/notifications/admin_email', label: 'Notifications' },
 	{ href: urls.reports || urls.emailLog, label: 'Reports' },
-	{ href: urls.diagnostics, label: 'Tools' },
+	{ to: '/tools/send-test-email', label: 'Tools' },
 ];
 
 const TopNav = () => (

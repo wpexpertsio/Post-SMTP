@@ -407,6 +407,10 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 		private function fallback( $log, $postMessage, $options ) {
 
+			if ( apply_filters( 'post_smtp_test_email_skip_fallback', false ) ) {
+				return false;
+			}
+
 			if ( $options->is_fallback ) {
 				return false;
 			}
