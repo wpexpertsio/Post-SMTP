@@ -93,6 +93,16 @@ const FIGMA_CONFIGURE_MAILERS = {
 		credentialsSection: 'api_credentials',
 		credentialKeys: [ 'sweego_api_key' ],
 	},
+	resend_api: {
+		figmaNode: '1339:17669',
+		credentialsSection: 'api_credentials',
+		credentialKeys: [ 'resend_api_key' ],
+	},
+	mandrill_api: {
+		figmaNode: '1339:18062',
+		credentialsSection: 'api_credentials',
+		credentialKeys: [ 'mandrill_api_key' ],
+	},
 };
 
 const buildFigmaConfigureBlocks = ( config ) => [
@@ -108,7 +118,7 @@ const buildFigmaConfigureBlocks = ( config ) => [
 	},
 ];
 
-const ConfigureMailerForm = ( { schema, values, onChange, provider } ) => {
+const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId } ) => {
 	const urls = getAdminUrls();
 	const catalogQuery = useMailerCatalog();
 	const catalogItem = catalogQuery.data?.items?.find( ( item ) => item.slug === provider );
@@ -204,6 +214,7 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider } ) => {
 					values={ values }
 					onChange={ onChange }
 					renderField={ renderField }
+					connectionId={ connectionId }
 				/>
 			) : useFigmaLayout ? (
 				<div className="ps-v2-configure-form__sections">

@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from '@wordpress/element';
 import FormNotice from '../../connections/components/FormNotice';
 import useNotifications, { useNotificationMutations } from '../hooks/useNotifications';
+import { iconTestSend } from '../notificationChannelAssets';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const AdminEmailChannelPanel = ( { adminEmail, wpAdminEmail, onSaved } ) => {
 	const [ enabled, setEnabled ] = useState( false );
+	const [ notifyRetryLimit, setNotifyRetryLimit ] = useState( true );
 	const [ email, setEmail ] = useState( '' );
 	const [ notice, setNotice ] = useState( null );
 	const { saveAdminEmail, testAdminEmail } = useNotificationMutations();
@@ -55,68 +57,75 @@ const AdminEmailChannelPanel = ( { adminEmail, wpAdminEmail, onSaved } ) => {
 	};
 
 	return (
-		<div className="ps-v2-notify-panel" data-figma-node="672:7890">
+		<div className="ps-v2-notify-settings-card" data-figma-node="1065:43857">
 			<FormNotice type={ notice?.type } message={ notice?.message } onDismiss={ () => setNotice( null ) } />
-			<header className="ps-v2-notify-panel__head">
-				<h2 className="ps-v2-notify-panel__title">Admin Email</h2>
-				<p className="ps-v2-notify-panel__sub">
-					Receive failure alerts in your administrator inbox when WordPress email stops delivering.
-				</p>
-			</header>
 
-			<div className="ps-v2-notify-form">
-				<label className="ps-v2-notify-toggle">
-					<span className="ps-v2-notify-toggle__label">Send alerts to admin email</span>
-					<span className="ps-v2-notify-switch">
-						<input
-							type="checkbox"
-							checked={ enabled }
-							onChange={ ( e ) => setEnabled( e.target.checked ) }
-						/>
-						<span className="ps-v2-notify-switch__track" aria-hidden="true" />
-					</span>
-				</label>
-
-				<div className="ps-v2-form-field">
-					<div className="ps-v2-form-field__head">
-						<label htmlFor="ps-notify-admin-email" className="ps-v2-form-field__label">
-							Admin Email
-						</label>
-						<p className="ps-v2-form-field__hint">
-							Leave blank to use your WordPress administrator email address.
-						</p>
-					</div>
+			<div className="ps-v2-notify-toggle-row">
+				<label className="ps-v2-notify-switch">
 					<input
-						id="ps-notify-admin-email"
-						className="ps-v2-field-input"
-						type="email"
-						value={ email }
-						placeholder="Enter admin email address"
-						onChange={ ( e ) => setEmail( e.target.value ) }
+						type="checkbox"
+						checked={ enabled }
+						onChange={ ( e ) => setEnabled( e.target.checked ) }
 					/>
-				</div>
+					<span className="ps-v2-notify-switch__track" aria-hidden="true" />
+				</label>
+				<span className="ps-v2-notify-toggle-row__label">Send alerts to admin email</span>
+			</div>
 
-				<div className="ps-v2-notify-form__actions-row">
-					<button
-						type="button"
-						className="ps-v2-btn ps-v2-btn--ghost"
-						disabled={ ! canTest || testAdminEmail.isPending }
-						onClick={ handleTest }
-					>
-						{ testAdminEmail.isPending ? 'Sending…' : 'Send Test Notification' }
-					</button>
+			<div className="ps-v2-form-field ps-v2-notify-field">
+				<div className="ps-v2-notify-field__labels">
+					<label htmlFor="ps-notify-admin-email" className="ps-v2-notify-field__label">
+						Admin email
+					</label>
+					<p className="ps-v2-notify-field__hint">Leave blank to use your WordPress admin email.</p>
 				</div>
+				<input
+					id="ps-notify-admin-email"
+					className="ps-v2-notify-field__input"
+					type="email"
+					value={ email }
+					placeholder="Placeholder"
+					onChange={ ( e ) => setEmail( e.target.value ) }
+				/>
+			</div>
 
-				<div className="ps-v2-notify-form__save-row">
-					<button
-						type="button"
-						className="ps-v2-btn ps-v2-btn--primary"
-						disabled={ saveAdminEmail.isPending || ! canSave }
-						onClick={ handleSave }
-					>
-						{ saveAdminEmail.isPending ? 'Saving…' : 'Save Changes' }
-					</button>
+			<div className="ps-v2-notify-toggle-row ps-v2-notify-toggle-row--stacked">
+				<label className="ps-v2-notify-switch">
+					<input
+						type="checkbox"
+						checked={ notifyRetryLimit }
+						onChange={ ( e ) => setNotifyRetryLimit( e.target.checked ) }
+					/>
+					<span className="ps-v2-notify-switch__track" aria-hidden="true" />
+				</label>
+				<div className="ps-v2-notify-toggle-row__copy">
+					<span className="ps-v2-notify-toggle-row__label">Notify when retry limit is reached</span>
+					<p className="ps-v2-notify-toggle-row__desc">
+						Receive an alert through Admin Email when an email delivery reaches the Maximum Retry
+						Attempts and can no longer be delivered. Sent once per failed email.
+					</p>
 				</div>
+			</div>
+
+			<button
+				type="button"
+				className="ps-v2-notify-test-btn"
+				disabled={ ! canTest || testAdminEmail.isPending }
+				onClick={ handleTest }
+			>
+				<img src={ iconTestSend } alt="" width="13" height="12" />
+				<span>{ testAdminEmail.isPending ? 'Sending…' : 'Send test notification' }</span>
+			</button>
+
+			<div className="ps-v2-notify-settings-card__save">
+				<button
+					type="button"
+					className="ps-v2-btn ps-v2-btn--primary ps-v2-notify-save-btn"
+					disabled={ saveAdminEmail.isPending || ! canSave }
+					onClick={ handleSave }
+				>
+					{ saveAdminEmail.isPending ? 'Saving…' : 'Save Changes' }
+				</button>
 			</div>
 		</div>
 	);

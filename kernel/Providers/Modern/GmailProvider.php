@@ -28,7 +28,7 @@ final class GmailProvider extends AbstractApiProvider implements ProviderInterfa
 			'provider_sequence'   => 10,
 			'configure_title'     => __( 'Configure Gmail', 'post-smtp' ),
 			'configure_layout'    => 'gmail_oauth',
-			'configure_figma_node' => '1310:15740',
+			'configure_figma_node' => '1329:15620',
 			'doc_url'             => 'https://postmansmtp.com/docs/mailers/how-to-setup-gmail-with-post-smtp/',
 			'doc_label'           => __( 'Get credentials', 'post-smtp' ),
 			'field_sequence'      => array(

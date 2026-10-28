@@ -1031,7 +1031,7 @@
 	margin-top: 15px;
 }
 
-/* Gmail configure (Figma 1310:15740) */
+/* Gmail configure (Figma 1329:15620) */
 .ps-v2-gmail-configure__readonly-row {
 	display: flex;
 	gap: 10px;
@@ -1043,34 +1043,76 @@
 	flex: 1 1 auto;
 	min-width: 0;
 	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-	font-size: 13px;
+	font-size: 12px;
+	background: #f8f8f8;
 }
 
-.ps-v2-gmail-configure__copy-btn {
+.ps-v2-gmail-configure__copy-icon-btn {
 	flex-shrink: 0;
-	min-height: 39px;
-	padding: 6px 16px;
-	font-weight: 500;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 38px;
+	height: 38px;
+	padding: 0;
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	background: #fff;
+	cursor: pointer;
 }
 
-.ps-v2-gmail-configure__manual-auth {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: 8px;
-	margin-top: 16px;
+.ps-v2-gmail-configure__copy-icon-btn:hover {
+	background: #f8f9fc;
 }
 
 .ps-v2-gmail-configure__connect-api {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	margin-top: 20px;
 	background: #5279cc;
 	color: #fff;
 	font-weight: 700;
+	font-size: 14px;
+	text-decoration: none;
+	min-height: 39px;
+	padding: 10px 20px;
+	border-radius: 6px;
+	box-sizing: border-box;
 }
 
-.ps-v2-gmail-configure__manual-auth-hint {
-	font-size: 13px;
+.ps-v2-gmail-configure__connect-api:hover {
+	background: #4568b5;
+	color: #fff;
+}
+
+.ps-v2-gmail-configure__connect-success {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	margin-top: 20px;
+	min-height: 39px;
+}
+
+.ps-v2-gmail-configure__connect-success-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: #5279cc;
+	color: #fff;
+	flex-shrink: 0;
+}
+
+.ps-v2-gmail-configure__connect-success-label {
+	font-size: 14px;
+	font-weight: 700;
 	line-height: 1.5;
-	color: #6b7280;
+	color: #2d3340;
 }
 
 .ps-v2-gmail-configure__one-click {
@@ -1078,10 +1120,22 @@
 	flex-direction: column;
 	align-items: flex-start;
 	gap: 12px;
-	padding: 16px;
-	border-radius: 6px;
-	background: #f8f9fc;
-	border: 1px solid #eef1f6;
+	width: 100%;
+}
+
+.ps-v2-gmail-configure__one-click-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 15px;
+	width: 100%;
+}
+
+.ps-v2-gmail-configure__one-click-copy {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
 }
 
 .ps-v2-gmail-configure__one-click-head {
@@ -1091,17 +1145,10 @@
 	flex-wrap: wrap;
 }
 
-.ps-v2-gmail-configure__pro-tag {
-	display: inline-flex;
-	align-items: center;
-	gap: 4px;
-	padding: 2px 8px;
-	border-radius: 4px;
-	background: #f3e8ff;
-	font-size: 11px;
+.ps-v2-gmail-configure__one-click-head .ps-v2-configure-form__section-title {
+	margin: 0;
+	font-size: 16px;
 	font-weight: 700;
-	color: #7c3aed;
-	text-transform: uppercase;
 }
 
 .ps-v2-gmail-configure__google-btn {
@@ -1114,18 +1161,7 @@
 }
 
 .ps-v2-gmail-configure__upgrade-cta {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 8px;
-	width: 100%;
-	padding: 10px 20px;
-	border-radius: 6px;
-	background: #5279cc;
-	color: #fff;
-	font-size: 14px;
-	font-weight: 700;
-	text-decoration: none;
+	display: none;
 }
 
 .ps-v2-gmail-configure__connected {
@@ -1350,8 +1386,8 @@
 }
 
 .ps-v2-btn--primary {
-	background: #fbbc1f;
-	color: #000;
+	background: #5279cc;
+	color: #fff;
 }
 
 .ps-v2-btn--ghost {

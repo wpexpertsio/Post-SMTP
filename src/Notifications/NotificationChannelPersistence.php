@@ -34,6 +34,10 @@ trait NotificationChannelPersistence {
 				return $this->getPushoverSettingsForApi();
 			case NotificationChannelRegistry::SLUG_WEBHOOK:
 				return $this->getWebhookSettingsForApi();
+			case NotificationChannelRegistry::SLUG_TEAMS:
+				return NotificationTeamsPanelHooks::getPanelSettingsForApi();
+			case NotificationChannelRegistry::SLUG_TWILIO:
+				return NotificationTwilioPanelHooks::getPanelSettingsForApi();
 			default:
 				$schema = apply_filters( 'post_smtp_notification_channel_schema', array(), $slug );
 				return is_array( $schema ) ? $schema : array();
@@ -45,6 +49,14 @@ trait NotificationChannelPersistence {
 	 * @return array{success:bool,message:string,settings?:array<string,mixed>}
 	 */
 	public function saveChannelSettings( string $slug, array $payload ): array {
+		if ( NotificationChannelRegistry::SLUG_TEAMS === $slug && NotificationTeamsPanelHooks::isPanelLocked() ) {
+			return NotificationTeamsPanelHooks::blockedSaveResponse( $payload );
+		}
+
+		if ( NotificationChannelRegistry::SLUG_TWILIO === $slug && NotificationTwilioPanelHooks::isPanelLocked() ) {
+			return NotificationTwilioPanelHooks::blockedSaveResponse( $payload );
+		}
+
 		/**
 		 * Short-circuit channel save (Pro Teams/Twilio).
 		 *
@@ -101,7 +113,7 @@ trait NotificationChannelPersistence {
 	 */
 	private function getChromeSettingsForApi(): array {
 		$enabled = $this->isChannelEnabled( NotificationChannelRegistry::SLUG_CHROME );
-		$uid     = (string) PostmanNotifyOptions::getInstance()->getNotificationChromeUid();
+		$uid     = NotificationLegacyOptions::getChromeUid();
 		return array(
 			'enabled'   => $enabled,
 			'has_uid'   => '' !== $uid,
@@ -144,7 +156,7 @@ trait NotificationChannelPersistence {
 	 * @return array<string,mixed>
 	 */
 	private function getSlackSettingsForApi(): array {
-		$token = (string) PostmanNotifyOptions::getInstance()->getSlackToken();
+		$token = NotificationLegacyOptions::getSlackWebhookUrl();
 		return array(
 			'enabled'        => $this->isChannelEnabled( NotificationChannelRegistry::SLUG_SLACK ),
 			'has_webhook'    => '' !== $token,
@@ -187,9 +199,8 @@ trait NotificationChannelPersistence {
 	 * @return array<string,mixed>
 	 */
 	private function getPushoverSettingsForApi(): array {
-		$opts = PostmanNotifyOptions::getInstance();
-		$user = (string) $opts->getPushoverUser();
-		$token = (string) $opts->getPushoverToken();
+		$user  = NotificationLegacyOptions::getPushoverUser();
+		$token = NotificationLegacyOptions::getPushoverToken();
 		return array(
 			'enabled'       => $this->isChannelEnabled( NotificationChannelRegistry::SLUG_PUSHOVER ),
 			'has_user'      => '' !== $user,
@@ -237,8 +248,7 @@ trait NotificationChannelPersistence {
 	 * @return array<string,mixed>
 	 */
 	private function getWebhookSettingsForApi(): array {
-		$urls = get_option( PostmanWebhookAlertsNotify::WEBHOOK_OPTION, array() );
-		$urls = is_array( $urls ) ? array_values( array_filter( array_map( 'esc_url_raw', $urls ) ) ) : array();
+		$urls = array_values( array_filter( array_map( 'esc_url_raw', NotificationLegacyOptions::getWebhookUrls() ) ) );
 		if ( empty( $urls ) ) {
 			$urls = array( '' );
 		}
@@ -270,7 +280,7 @@ trait NotificationChannelPersistence {
 			array( 'enabled' => $enabled )
 		);
 
-		update_option( PostmanWebhookAlertsNotify::WEBHOOK_OPTION, $clean, false );
+		update_option( NotificationLegacyOptions::WEBHOOK_URLS_OPTION, $clean, false );
 
 		$this->updateLegacyOptions(
 			function ( array &$options ) use ( $enabled ) {

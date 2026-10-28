@@ -70,6 +70,7 @@ const EditConnectionView = () => {
 									values={ formValues }
 									onChange={ setFormValues }
 									provider={ connection.provider }
+									connectionId={ index }
 								/>
 								<div className="ps-v2-conn-form-actions">
 									<Link to="/connections" className="ps-v2-btn ps-v2-btn--ghost">Cancel</Link>

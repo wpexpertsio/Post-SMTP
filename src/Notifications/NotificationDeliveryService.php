@@ -46,27 +46,26 @@ final class NotificationDeliveryService {
 				if ( ! $repo->isChannelEnabled( $slug ) ) {
 					return array( 'valid' => false, 'message' => __( 'Enable Chrome extension alerts first.', 'post-smtp' ) );
 				}
-				if ( empty( PostmanNotifyOptions::getInstance()->getNotificationChromeUid() ) ) {
+				if ( '' === NotificationLegacyOptions::getChromeUid() ) {
 					return array( 'valid' => false, 'message' => __( 'Please configure Chrome Extension UID.', 'post-smtp' ) );
 				}
 				return array( 'valid' => true, 'message' => '' );
 
 			case NotificationChannelRegistry::SLUG_SLACK:
-				if ( empty( PostmanNotifyOptions::getInstance()->getSlackToken() ) ) {
+				if ( '' === NotificationLegacyOptions::getSlackWebhookUrl() ) {
 					return array( 'valid' => false, 'message' => __( 'Please configure Slack Webhook URL.', 'post-smtp' ) );
 				}
 				return array( 'valid' => true, 'message' => '' );
 
 			case NotificationChannelRegistry::SLUG_PUSHOVER:
-				$opts = PostmanNotifyOptions::getInstance();
-				if ( empty( $opts->getPushoverUser() ) || empty( $opts->getPushoverToken() ) ) {
+				if ( '' === NotificationLegacyOptions::getPushoverUser() || '' === NotificationLegacyOptions::getPushoverToken() ) {
 					return array( 'valid' => false, 'message' => __( 'Please configure Pushover User Key and App Token.', 'post-smtp' ) );
 				}
 				return array( 'valid' => true, 'message' => '' );
 
 			case NotificationChannelRegistry::SLUG_WEBHOOK:
-				$urls = get_option( PostmanWebhookAlertsNotify::WEBHOOK_OPTION, array() );
-				if ( empty( $urls ) || ! is_array( $urls ) || 0 === count( array_filter( $urls ) ) ) {
+				$urls = NotificationLegacyOptions::getWebhookUrls();
+				if ( 0 === count( array_filter( $urls ) ) ) {
 					return array( 'valid' => false, 'message' => __( 'Please configure at least one Webhook URL.', 'post-smtp' ) );
 				}
 				return array( 'valid' => true, 'message' => '' );
@@ -154,6 +153,123 @@ final class NotificationDeliveryService {
 	}
 
 	/**
+	 * Deliver a message on a channel (failure alerts).
+	 */
+	public function deliverMessage( string $slug, string $message ): void {
+		switch ( $slug ) {
+			case NotificationChannelRegistry::SLUG_ADMIN_EMAIL:
+				$this->deliverAdminEmail( $message );
+				return;
+			case NotificationChannelRegistry::SLUG_SLACK:
+				$this->postSlack( $message );
+				return;
+			case NotificationChannelRegistry::SLUG_PUSHOVER:
+				$this->postPushover( $message );
+				return;
+			case NotificationChannelRegistry::SLUG_WEBHOOK:
+				$this->postWebhookUrls( $message );
+				return;
+			case NotificationChannelRegistry::SLUG_CHROME:
+				$this->postChrome( $message );
+				return;
+			case NotificationChannelRegistry::SLUG_TWILIO:
+				if ( class_exists( '\PostSMTPTwilio\Notify' ) ) {
+					( new \PostSMTPTwilio\Notify() )->send_message( $message );
+				}
+				return;
+			case NotificationChannelRegistry::SLUG_TEAMS:
+				if ( class_exists( 'PSP_MSTeam_Notification' ) ) {
+					( new \PSP_MSTeam_Notification() )->send_message( $message );
+				}
+				return;
+		}
+	}
+
+	private function deliverAdminEmail( string $message ): void {
+		$repo                = new NotificationSettingsRepository();
+		$config              = $repo->getAdminEmailSettings();
+		$notification_emails = $repo->resolveEffectiveAdminEmail( (string) ( $config['email'] ?? '' ) );
+		/**
+		 * Filters the notification email recipients (legacy parity).
+		 *
+		 * @param string $notification_emails Comma-separated emails.
+		 */
+		$notification_emails = apply_filters( 'post_smtp_notify_email', $notification_emails );
+		$domain              = get_bloginfo( 'url' );
+		$subject             = "{$domain}: " . __( 'Post SMTP email error', 'post-smtp' );
+
+		foreach ( explode( ',', (string) $notification_emails ) as $to_email ) {
+			$to_email = trim( $to_email );
+			if ( '' === $to_email || ! is_email( $to_email ) ) {
+				continue;
+			}
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- legacy mail() behavior for failure alerts.
+			@mail( $to_email, $subject, $message, '', "-f{$to_email}" );
+		}
+	}
+
+	private function postChrome( string $message ): void {
+		$uid = NotificationLegacyOptions::getChromeUid();
+		if ( '' === $uid ) {
+			return;
+		}
+		wp_remote_post(
+			'https://chrome.postmansmtp.com/' . $uid,
+			array(
+				'body' => array(
+					'message'  => $message,
+					'site_url' => get_bloginfo( 'url' ),
+				),
+			)
+		);
+	}
+
+	private function postSlack( string $message ): void {
+		$url = NotificationLegacyOptions::getSlackWebhookUrl();
+		if ( '' === $url ) {
+			return;
+		}
+		wp_remote_post(
+			$url,
+			array(
+				'headers' => array( 'content-type' => 'application/json' ),
+				'body'    => wp_json_encode( array( 'text' => $message ) ),
+				'timeout' => 10,
+			)
+		);
+	}
+
+	private function postPushover( string $message ): void {
+		wp_remote_post(
+			'https://api.pushover.net/1/messages.json',
+			array(
+				'body'    => array(
+					'token'   => NotificationLegacyOptions::getPushoverToken(),
+					'user'    => NotificationLegacyOptions::getPushoverUser(),
+					'message' => $message,
+				),
+				'timeout' => 10,
+			)
+		);
+	}
+
+	private function postWebhookUrls( string $message ): void {
+		foreach ( NotificationLegacyOptions::getWebhookUrls() as $url ) {
+			if ( '' === $url ) {
+				continue;
+			}
+			wp_remote_post(
+				$url,
+				array(
+					'body'    => wp_json_encode( array( 'message' => $message ) ),
+					'headers' => array( 'Content-Type' => 'application/json' ),
+					'timeout' => 10,
+				)
+			);
+		}
+	}
+
+	/**
 	 * @return array{success:bool,message:string}
 	 */
 	private function dispatchTest( string $slug, string $message ): array {
@@ -180,7 +296,7 @@ final class NotificationDeliveryService {
 	 * @return array{success:bool,message:string}
 	 */
 	private function testSlack( string $message ): array {
-		$url = PostmanNotifyOptions::getInstance()->getSlackToken();
+		$url = NotificationLegacyOptions::getSlackWebhookUrl();
 		if ( empty( $url ) ) {
 			return array( 'success' => false, 'message' => __( 'Slack Webhook URL is not configured.', 'post-smtp' ) );
 		}
@@ -205,13 +321,12 @@ final class NotificationDeliveryService {
 	 * @return array{success:bool,message:string}
 	 */
 	private function testPushover( string $message ): array {
-		$opts = PostmanNotifyOptions::getInstance();
 		$result = wp_remote_post(
 			'https://api.pushover.net/1/messages.json',
 			array(
 				'body'    => array(
-					'token'   => $opts->getPushoverToken(),
-					'user'    => $opts->getPushoverUser(),
+					'token'   => NotificationLegacyOptions::getPushoverToken(),
+					'user'    => NotificationLegacyOptions::getPushoverUser(),
 					'message' => $message,
 				),
 				'timeout' => 10,
@@ -232,8 +347,8 @@ final class NotificationDeliveryService {
 	 * @return array{success:bool,message:string}
 	 */
 	private function testWebhook( string $message ): array {
-		$urls = get_option( PostmanWebhookAlertsNotify::WEBHOOK_OPTION, array() );
-		if ( ! is_array( $urls ) ) {
+		$urls = NotificationLegacyOptions::getWebhookUrls();
+		if ( 0 === count( array_filter( $urls ) ) ) {
 			return array( 'success' => false, 'message' => __( 'Webhook URLs are not configured.', 'post-smtp' ) );
 		}
 		$ok = 0;

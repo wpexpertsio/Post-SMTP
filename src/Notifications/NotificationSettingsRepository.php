@@ -146,24 +146,24 @@ final class NotificationSettingsRepository {
 				if ( ! $this->isChannelEnabled( $slug ) ) {
 					return false;
 				}
-				return ! empty( PostmanNotifyOptions::getInstance()->getNotificationChromeUid() );
+				return ! empty( NotificationLegacyOptions::getChromeUid() );
 			case NotificationChannelRegistry::SLUG_SLACK:
 				if ( ! $this->isChannelEnabled( $slug ) ) {
 					return false;
 				}
-				return ! empty( PostmanNotifyOptions::getInstance()->getSlackToken() );
+				return '' !== NotificationLegacyOptions::getSlackWebhookUrl();
 			case NotificationChannelRegistry::SLUG_PUSHOVER:
 				if ( ! $this->isChannelEnabled( $slug ) ) {
 					return false;
 				}
-				$opts = PostmanNotifyOptions::getInstance();
-				return ! empty( $opts->getPushoverUser() ) && ! empty( $opts->getPushoverToken() );
+				return '' !== NotificationLegacyOptions::getPushoverUser()
+					&& '' !== NotificationLegacyOptions::getPushoverToken();
 			case NotificationChannelRegistry::SLUG_WEBHOOK:
 				if ( ! $this->isChannelEnabled( $slug ) ) {
 					return false;
 				}
-				$urls = get_option( PostmanWebhookAlertsNotify::WEBHOOK_OPTION, array() );
-				return is_array( $urls ) && count( array_filter( $urls ) ) > 0;
+				$urls = NotificationLegacyOptions::getWebhookUrls();
+				return count( array_filter( $urls ) ) > 0;
 			case NotificationChannelRegistry::SLUG_TEAMS:
 				if ( ! $this->isChannelEnabled( $slug ) || ! NotificationChannelRegistry::isTeamsAvailable() ) {
 					return false;
@@ -223,7 +223,7 @@ final class NotificationSettingsRepository {
 
 		$service = isset( $legacy['notification_service'] )
 			? (string) $legacy['notification_service']
-			: PostmanNotifyOptions::DEFAULT_NOTIFICATION_SERVICE;
+			: NotificationLegacyOptions::DEFAULT_NOTIFICATION_SERVICE;
 
 		if ( 'none' === $service ) {
 			return false;
@@ -246,8 +246,7 @@ final class NotificationSettingsRepository {
 	 * @return array<string,mixed>
 	 */
 	private function getLegacyOptions(): array {
-		$options = get_option( 'postman_options', array() );
-		return is_array( $options ) ? $options : array();
+		return NotificationLegacyOptions::getLegacyOptions();
 	}
 
 	private function syncLegacyAdminEmail( bool $enabled, string $email ): void {

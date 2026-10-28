@@ -243,6 +243,9 @@ final class ConnectionService {
 		}
 
 		$sanitized = ConnectionSchema::sanitizeRow( $row );
+		if ( '' === trim( (string) ( $sanitized['provider'] ?? '' ) ) && ! empty( $row['provider'] ) ) {
+			$sanitized['provider'] = sanitize_key( (string) $row['provider'] );
+		}
 		$validate  = $this->validateRow( $sanitized, $connections, null );
 		if ( ! $validate['success'] ) {
 			return $validate;
@@ -295,6 +298,9 @@ final class ConnectionService {
 
 		$merged = array_merge( $connections[ $index ], $row );
 		$merged = $this->preserveMaskedSecrets( $connections[ $index ], $merged );
+		if ( '' === trim( (string) ( $merged['provider'] ?? '' ) ) ) {
+			$merged['provider'] = (string) ( $connections[ $index ]['provider'] ?? $connections[ $index ]['transport_type'] ?? '' );
+		}
 		$sanitized = ConnectionSchema::sanitizeRow( $merged );
 		$validate  = $this->validateRow( $sanitized, $connections, $index );
 		if ( ! $validate['success'] ) {

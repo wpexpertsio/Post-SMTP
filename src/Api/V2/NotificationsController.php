@@ -77,19 +77,50 @@ final class NotificationsController extends BaseController {
 	}
 
 	public function getNotifications() {
+		$summaries        = $this->settings->getChannelSummaries();
 		$channel_settings = array();
-		foreach ( self::ALLOWED_SLUGS as $slug ) {
+		foreach ( $summaries as $channel ) {
+			$slug = (string) ( $channel['slug'] ?? '' );
+			if ( '' === $slug ) {
+				continue;
+			}
 			$channel_settings[ $slug ] = $this->settings->getChannelSettings( $slug );
 		}
 
+		/**
+		 * Pro channel upsell cards shown in the notifications aside (free sites only in the admin UI).
+		 *
+		 * @param list<array<string,mixed>> $promos Each item: slug, title, description, upgrade_url, upgrade_label.
+		 */
+		$pro_channel_promos = apply_filters(
+			'post_smtp_notification_pro_channel_promos',
+			array(
+				array(
+					'slug'          => NotificationChannelRegistry::SLUG_TEAMS,
+					'title'         => __( 'Microsoft Teams', 'post-smtp' ),
+					'description'   => __( 'Send failure alerts into a Microsoft Teams channel.', 'post-smtp' ),
+					'upgrade_url'   => 'https://postmansmtp.com/pricing/',
+					'upgrade_label' => __( 'Upgrade to Pro', 'post-smtp' ),
+				),
+				array(
+					'slug'          => NotificationChannelRegistry::SLUG_TWILIO,
+					'title'         => __( 'Twilio (SMS)', 'post-smtp' ),
+					'description'   => __( 'Text failure alerts to a mobile number over SMS.', 'post-smtp' ),
+					'upgrade_url'   => 'https://postmansmtp.com/pricing/',
+					'upgrade_label' => __( 'Upgrade to Pro', 'post-smtp' ),
+				),
+			)
+		);
+
 		return rest_ensure_response(
 			array(
-				'channels'         => $this->settings->getChannelSummaries(),
-				'channel_settings' => $channel_settings,
-				'admin_email'      => $channel_settings[ NotificationChannelRegistry::SLUG_ADMIN_EMAIL ] ?? array(),
-				'is_pro'           => $this->isPro(),
-				'default_channel'  => NotificationChannelRegistry::SLUG_ADMIN_EMAIL,
-				'docs'             => array(
+				'channels'           => $summaries,
+				'channel_settings'   => $channel_settings,
+				'admin_email'        => $channel_settings[ NotificationChannelRegistry::SLUG_ADMIN_EMAIL ] ?? array(),
+				'is_pro'             => $this->isPro(),
+				'default_channel'    => NotificationChannelRegistry::SLUG_ADMIN_EMAIL,
+				'pro_channel_promos' => is_array( $pro_channel_promos ) ? $pro_channel_promos : array(),
+				'docs'               => array(
 					'admin_email' => 'https://postmansmtp.com/docs/alerts/admin-email-failure-alerts/',
 					'chrome'      => 'https://postmansmtp.com/docs/alerts/chrome-extension/',
 					'slack'       => 'https://postmansmtp.com/docs/alerts/slack/',

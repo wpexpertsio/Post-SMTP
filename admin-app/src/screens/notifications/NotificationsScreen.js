@@ -1,20 +1,18 @@
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import { getAdminConfig } from '../../config/admin';
 import useNotifications from './hooks/useNotifications';
 import NotificationsChannelNav from './components/NotificationsChannelNav';
+import NotificationsChannelPageHeader from './components/NotificationsChannelPageHeader';
 import AdminEmailChannelPanel from './components/AdminEmailChannelPanel';
 import NotificationsSetupSidebar from './components/NotificationsSetupSidebar';
-import NotificationsProSidebar from './components/NotificationsProSidebar';
-import {
-	ChromeChannelPanel,
-	PushoverChannelPanel,
-	SlackChannelPanel,
-	TeamsChannelPanel,
-	TwilioChannelPanel,
-	WebhookChannelPanel,
-} from './components/NotificationChannelPanels';
+import NotificationsProChannelsAside from './components/NotificationsProChannelsAside';
+import ChromeChannelPanel from './components/ChromeChannelPanel';
+import WebhookChannelPanel from './components/WebhookChannelPanel';
+import PushoverChannelPanel from './components/PushoverChannelPanel';
+import SlackChannelPanel from './components/SlackChannelPanel';
 
 const DEFAULT_SLUG = 'admin_email';
+const REMOVED_CORE_SLUGS = new Set( [ 'teams', 'twilio' ] );
 
 const NotificationsScreen = () => {
 	const config = getAdminConfig();
@@ -26,7 +24,6 @@ const NotificationsScreen = () => {
 	const activeSlug = channelSlug || DEFAULT_SLUG;
 	const isPro = Boolean( data?.is_pro || config.isPro );
 	const docUrl = data?.docs?.[ activeSlug ] || data?.docs?.admin_email;
-	const channelMeta = channels.find( ( item ) => item.slug === activeSlug );
 
 	const onSaved = () => query.refetch();
 
@@ -36,6 +33,10 @@ const NotificationsScreen = () => {
 
 	if ( query.isError ) {
 		return <p className="ps-v2-notify-loading">Could not load notification settings.</p>;
+	}
+
+	if ( REMOVED_CORE_SLUGS.has( activeSlug ) && ! channels.some( ( c ) => c.slug === activeSlug ) ) {
+		return <Navigate to="/notifications/admin_email" replace />;
 	}
 
 	const renderPanel = () => {
@@ -57,26 +58,31 @@ const NotificationsScreen = () => {
 				return <PushoverChannelPanel settings={ settings } onSaved={ onSaved } />;
 			case 'webhook':
 				return <WebhookChannelPanel settings={ settings } onSaved={ onSaved } />;
-			case 'teams':
-				return <TeamsChannelPanel settings={ settings } channel={ channelMeta } onSaved={ onSaved } />;
-			case 'twilio':
-				return <TwilioChannelPanel settings={ settings } channel={ channelMeta } onSaved={ onSaved } />;
 			default:
 				return null;
 		}
 	};
 
+	const showProChannelPromos = ! isPro;
+
 	return (
-		<div className="ps-v2-notify-page" data-figma-node="672:7890">
+		<div className="ps-v2-notify-page" data-figma-node="672:7917">
 			<div className="ps-v2-notify-layout">
 				<aside className="ps-v2-notify-layout__nav">
 					<NotificationsChannelNav channels={ channels } activeSlug={ activeSlug } />
 				</aside>
-				<div className="ps-v2-notify-layout__main">{ renderPanel() }</div>
-				<aside className="ps-v2-notify-layout__aside">
-					<NotificationsSetupSidebar slug={ activeSlug } docUrl={ docUrl } />
-					{ ! isPro && activeSlug === 'admin_email' && <NotificationsProSidebar /> }
-				</aside>
+				<div className="ps-v2-notify-layout__content">
+					<NotificationsChannelPageHeader slug={ activeSlug } />
+					<div className="ps-v2-notify-content-row">
+						<div className="ps-v2-notify-layout__main">{ renderPanel() }</div>
+						<aside className="ps-v2-notify-layout__aside">
+							{ showProChannelPromos && (
+								<NotificationsProChannelsAside promos={ data?.pro_channel_promos } />
+							) }
+							<NotificationsSetupSidebar slug={ activeSlug } docUrl={ docUrl } />
+						</aside>
+					</div>
+				</div>
 			</div>
 		</div>
 	);

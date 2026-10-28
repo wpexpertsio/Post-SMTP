@@ -21,7 +21,7 @@ import elasticemail from '../../../assets/dashboard/connections/mailers/elastic_
 import smtp2go from '../../../assets/dashboard/connections/mailers/smtp2go.svg';
 import sparkpost from '../../../assets/dashboard/connections/mailers/sparkpost.svg';
 import sendpulse from '../../../assets/dashboard/connections/mailers/sendpulse.svg';
-import mandrill from '../../../assets/dashboard/connections/mailers/mandril.svg';
+import mandrill from '../../../assets/dashboard/connections/mailers/mandrill.svg';
 import cloudflare from '../../../assets/dashboard/connections/mailers/cloudflare.svg';
 
 /** @type {Record<string, string>} */

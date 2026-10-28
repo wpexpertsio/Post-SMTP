@@ -372,6 +372,7 @@ class PostmanUtils {
 		if ( PostmanOptions::getInstance()->isEmailValidationDisabled() ) {
 			return true;
 		}
+		$email = null === $email ? '' : (string) $email;
 		require_once 'Postman-Mail/Zend-1.12.10/Exception.php';
 		require_once 'Postman-Mail/Zend-1.12.10/Registry.php';
 		require_once 'Postman-Mail/Zend-1.12.10/Validate/Exception.php';

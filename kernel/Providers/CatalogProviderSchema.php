@@ -134,6 +134,8 @@ final class CatalogProviderSchema {
 			'emailit_api'       => 'emailit_api_key',
 			'mailtrap_api'      => 'mailtrap_api_key',
 			'sweego_api'        => 'sweego_api_key',
+			'resend_api'        => 'resend_api_key',
+			'mandrill_api'      => 'mandrill_api_key',
 		);
 		return $map[ $slug ] ?? 'api_key';
 	}

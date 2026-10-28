@@ -61,24 +61,12 @@ final class NotificationChannelRegistry {
 				'pro_locked' => false,
 				'ui_ready'   => true,
 			),
-			array(
-				'slug'       => self::SLUG_TEAMS,
-				'label'      => __( 'Microsoft Teams', 'post-smtp' ),
-				'legacy_key' => 'microsoft-teams',
-				'pro_locked' => ! self::isTeamsAvailable(),
-				'ui_ready'   => true,
-			),
-			array(
-				'slug'       => self::SLUG_TWILIO,
-				'label'      => __( 'Twilio (SMS)', 'post-smtp' ),
-				'legacy_key' => 'twilio',
-				'pro_locked' => ! self::isTwilioAvailable(),
-				'ui_ready'   => true,
-			),
 		);
 
 		/**
 		 * Filter notification channel definitions for the revamp UI.
+		 *
+		 * Post SMTP Pro adds Microsoft Teams and Twilio channels here when the revamp panels are registered.
 		 *
 		 * @param list<array<string,mixed>> $channels Channel metadata.
 		 */

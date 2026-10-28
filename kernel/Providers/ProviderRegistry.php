@@ -24,6 +24,8 @@ use PostSMTP\Kernel\Providers\Modern\SparkpostProvider;
 use PostSMTP\Kernel\Providers\Modern\SmtpComProvider;
 use PostSMTP\Kernel\Providers\Modern\SmtpProvider;
 use PostSMTP\Kernel\Providers\Modern\Smtp2goProvider;
+use PostSMTP\Kernel\Providers\Modern\MandrillProvider;
+use PostSMTP\Kernel\Providers\Modern\ResendProvider;
 use PostSMTP\Kernel\Providers\Modern\SweegoProvider;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -54,6 +56,8 @@ final class ProviderRegistry {
 			EmailitProvider::slug()    => EmailitProvider::class,
 			MailtrapProvider::slug()   => MailtrapProvider::class,
 			SweegoProvider::slug()     => SweegoProvider::class,
+			ResendProvider::slug()     => ResendProvider::class,
+			MandrillProvider::slug()   => MandrillProvider::class,
 		);
 
 		$this->providers = apply_filters( 'post_smtp_register_providers', $this->providers );
