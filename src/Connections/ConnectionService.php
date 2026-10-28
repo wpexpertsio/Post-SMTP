@@ -23,6 +23,7 @@ final class ConnectionService {
 	public function listForAdmin(): array {
 		$repo        = ConnectionRepositoryFactory::make();
 		$connections = $this->normalizeOnRead( $repo->getConnections(), $repo->getOptions() );
+		$limits      = ConnectionLimits::get();
 		$enriched    = array();
 
 		foreach ( $connections as $index => $row ) {
@@ -31,10 +32,14 @@ final class ConnectionService {
 			}
 			$masked     = ConnectionSchema::maskSecrets( $row );
 			$role_meta  = self::deriveRole( (int) $index, $connections );
+			$can_toggle = self::isFallbackSlotIndex( (int) $index, $limits );
 			$enriched[] = array_merge(
 				$masked,
 				$role_meta,
-				array( 'id' => (int) $index )
+				array(
+					'id'                  => (int) $index,
+					'can_toggle_fallback' => $can_toggle,
+				)
 			);
 		}
 
@@ -94,7 +99,40 @@ final class ConnectionService {
 		}
 		unset( $row );
 
+		return self::enforceFallbackSlots( $connections, ConnectionLimits::get() );
+	}
+
+	/**
+	 * Rows below the fallback slot band stay inactive until dragged up (Figma manage list).
+	 *
+	 * @param array<int,array<string,mixed>> $connections Rows.
+	 * @param array<string,mixed>            $limits      From ConnectionLimits::get().
+	 * @return array<int,array<string,mixed>>
+	 */
+	private static function enforceFallbackSlots( array $connections, array $limits ): array {
+		$max_slot = (int) ( $limits['max_fallback_slot_index'] ?? $limits['max_enabled_fallbacks'] ?? 1 );
+		foreach ( $connections as $index => &$row ) {
+			if ( ! is_array( $row ) || $index <= 0 ) {
+				continue;
+			}
+			if ( $index > $max_slot ) {
+				$row['fallback_enabled'] = false;
+			}
+		}
+		unset( $row );
 		return $connections;
+	}
+
+	/**
+	 * @param int $index Connection index.
+	 */
+	public static function isFallbackSlotIndex( int $index, ?array $limits = null ): bool {
+		if ( $index <= 0 ) {
+			return false;
+		}
+		$limits   = $limits ?? ConnectionLimits::get();
+		$max_slot = (int) ( $limits['max_fallback_slot_index'] ?? $limits['max_enabled_fallbacks'] ?? 1 );
+		return $index <= $max_slot;
 	}
 
 	/**
@@ -163,6 +201,12 @@ final class ConnectionService {
 
 		if ( $enabled ) {
 			$limits = ConnectionLimits::get();
+			if ( ! self::isFallbackSlotIndex( $index, $limits ) ) {
+				return array(
+					'success' => false,
+					'message' => __( 'Drag this connection up in the list before enabling it as a fallback.', 'post-smtp' ),
+				);
+			}
 			$active = self::countEnabledFallbacks( $connections );
 			if ( $active >= $limits['max_enabled_fallbacks'] ) {
 				return array(
@@ -173,6 +217,7 @@ final class ConnectionService {
 		}
 
 		$connections[ $index ]['fallback_enabled'] = $enabled;
+		$connections = self::enforceFallbackSlots( $connections, ConnectionLimits::get() );
 		$repo->saveConnections( $connections );
 
 		return array(
@@ -204,11 +249,10 @@ final class ConnectionService {
 		}
 
 		if ( count( $connections ) > 0 ) {
-			$default_fallback = true;
-			if ( $default_fallback && self::countEnabledFallbacks( $connections ) >= $limits['max_enabled_fallbacks'] ) {
-				$default_fallback = false;
-			}
-			$sanitized['fallback_enabled'] = $default_fallback;
+			$new_index = count( $connections );
+			$in_slot   = self::isFallbackSlotIndex( $new_index, $limits );
+			$sanitized['fallback_enabled'] = $in_slot
+				&& self::countEnabledFallbacks( $connections ) < $limits['max_enabled_fallbacks'];
 		}
 
 		$auth = $this->authenticateRow( $sanitized );
@@ -217,6 +261,7 @@ final class ConnectionService {
 		}
 
 		$connections[] = $sanitized;
+		$connections   = self::enforceFallbackSlots( $connections, $limits );
 		$repo->saveConnections( $connections );
 
 		if ( count( $connections ) === 1 ) {

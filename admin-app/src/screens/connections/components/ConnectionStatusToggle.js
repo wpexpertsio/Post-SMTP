@@ -9,13 +9,14 @@ const ConnectionStatusToggle = ( {
 	checked,
 	disabled,
 	onChange,
+	title,
 } ) => {
 	const badge = ROLE_BADGE[ role ] || role?.toUpperCase() || '';
 	const isOn = Boolean( checked );
 	const interactive = role !== 'primary' && ! disabled;
 
 	return (
-		<div className={ `ps-v2-conn-status ${ isOn ? 'is-on' : 'is-off' }` }>
+		<div className={ `ps-v2-conn-status ${ isOn ? 'is-on' : 'is-off' }` } title={ title }>
 			<span className={ `ps-v2-conn-status__badge ps-v2-conn-status__badge--${ role }` }>
 				{ badge }
 			</span>

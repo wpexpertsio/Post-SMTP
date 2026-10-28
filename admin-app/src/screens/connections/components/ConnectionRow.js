@@ -28,7 +28,7 @@ const ConnectionRow = ( {
 				<img src={ iconDrag } alt="" width="8" height="15" />
 			</button>
 			<div className="ps-v2-conn-row__avatar">
-				<MailerAvatar provider={ connection.provider } />
+				<MailerAvatar provider={ connection.provider || connection.transport_type } />
 			</div>
 			<div className="ps-v2-conn-row__meta">
 				<strong className="ps-v2-conn-row__title">{ connectionLabel( connection ) }</strong>
@@ -38,7 +38,12 @@ const ConnectionRow = ( {
 				<ConnectionStatusToggle
 					role={ role }
 					checked={ isPrimary ? true : Boolean( connection.fallback_enabled ) }
-					disabled={ togglePending }
+					disabled={ togglePending || ( ! isPrimary && connection.can_toggle_fallback === false ) }
+					title={
+						! isPrimary && connection.can_toggle_fallback === false
+							? 'Drag this connection up to enable it as a fallback'
+							: undefined
+					}
 					onChange={ ( enabled ) => onToggleFallback( index, enabled ) }
 				/>
 				<Link

@@ -23,6 +23,24 @@ import sendpulse from '../../../assets/dashboard/connections/mailers/sendpulse.s
 import mandrill from '../../../assets/dashboard/connections/mailers/mandril.svg';
 
 /** @type {Record<string, string>} */
+const PROVIDER_SLUG_ALIASES = {
+	default: 'smtp',
+	dafault: 'smtp',
+};
+
+/**
+ * @param {string|null|undefined} slug Raw provider slug from API / legacy transport.
+ * @return {string}
+ */
+export function normalizeMailerSlug( slug ) {
+	if ( ! slug ) {
+		return '';
+	}
+	const key = String( slug ).trim();
+	return PROVIDER_SLUG_ALIASES[ key ] || key;
+}
+
+/** @type {Record<string, string>} */
 export const MAILER_CONNECTION_ICONS = {
 	office365_api: office365,
 	amazon_ses_api: amazonSes,
@@ -51,5 +69,6 @@ export const MAILER_CONNECTION_ICONS = {
  * @return {string|null}
  */
 export function mailerConnectionIcon( slug ) {
-	return MAILER_CONNECTION_ICONS[ slug ] || null;
+	const normalized = normalizeMailerSlug( slug );
+	return MAILER_CONNECTION_ICONS[ normalized ] || null;
 }

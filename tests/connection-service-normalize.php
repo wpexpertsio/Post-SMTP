@@ -19,6 +19,17 @@ if ( ! function_exists( '__' ) ) {
 	}
 }
 
+if ( ! function_exists( 'apply_filters' ) ) {
+	/**
+	 * @param string $hook  Hook name.
+	 * @param mixed  $value Value.
+	 * @return mixed
+	 */
+	function apply_filters( $hook, $value ) {
+		return $value;
+	}
+}
+
 require dirname( __DIR__ ) . '/vendor/autoload.php';
 
 use PostSMTP\Connections\ConnectionService;
