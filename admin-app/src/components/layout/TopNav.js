@@ -11,7 +11,7 @@ const NAV = [
 	{ to: '/connections', label: 'Connections' },
 	{ href: urls.settings, label: 'Settings' },
 	{ to: '/email-logs', label: 'Email Logs' },
-	{ href: urls.settings + '#notifications', label: 'Notifications' },
+	{ to: '/notifications/admin_email', label: 'Notifications' },
 	{ href: urls.reports || urls.emailLog, label: 'Reports' },
 	{ href: urls.diagnostics, label: 'Tools' },
 ];

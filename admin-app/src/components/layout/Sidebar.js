@@ -8,7 +8,7 @@ const NAV_ITEMS = [
 	{ to: '/connections', label: 'Connections' },
 	{ href: urls.settings, label: 'Settings', external: true },
 	{ to: '/email-logs', label: 'Email Log' },
-	{ href: urls.settings + '#notifications', label: 'Notifications', external: true },
+	{ to: '/notifications/admin_email', label: 'Notifications' },
 	{ href: urls.diagnostics, label: 'Troubleshooting', external: true },
 	{ href: urls.pro, label: 'Reports', external: true, pro: true },
 	{ href: urls.settings + '#mobile-app', label: 'Mobile App', external: true, pro: true },

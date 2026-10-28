@@ -4,6 +4,7 @@ import AppShell from './components/layout/AppShell';
 import DashboardScreen from './screens/dashboard/DashboardScreen';
 import ConnectionsRoutes from './screens/connections/ConnectionsRoutes';
 import EmailLogsRoutes from './screens/email-logs/EmailLogsRoutes';
+import NotificationsRoutes from './screens/notifications/NotificationsRoutes';
 import MigrationScreen from './screens/migration/MigrationScreen';
 import './styles.css';
 
@@ -46,6 +47,14 @@ const FullApp = () => (
 			element={
 				<AppShell title="Email Log" hideTitle mainClassName="ps-app__main--email-logs">
 					<EmailLogsRoutes />
+				</AppShell>
+			}
+		/>
+		<Route
+			path="/notifications/*"
+			element={
+				<AppShell title="Notifications" hideTitle mainClassName="ps-app__main--notifications">
+					<NotificationsRoutes />
 				</AppShell>
 			}
 		/>

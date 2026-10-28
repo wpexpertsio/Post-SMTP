@@ -302,6 +302,10 @@ class PostmanNotify {
 	 * @param string           $errorMessage
 	 */
 	public function notify( $log, $postmanMessage, $transcript, $transport, $errorMessage ) {
+		if ( class_exists( '\PostSMTP\Rollout\CohortResolver' ) && \PostSMTP\Rollout\CohortResolver::usesReactAdmin() ) {
+			return;
+		}
+
 		$message  = __( 'You getting this message because an error detected while delivered your email.', 'post-smtp' );
 		$message .= "\r\n" . sprintf( __( 'For the domain: %1$s', 'post-smtp' ), get_bloginfo( 'url' ) );
 		$message .= "\r\n" . __( 'The log to paste when you open a support issue:', 'post-smtp' ) . "\r\n";

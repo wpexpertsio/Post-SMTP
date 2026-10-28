@@ -1,0 +1,271 @@
+/* Notifications revamp — Figma 672:7890 */
+
+.ps-app__main--notifications {
+	max-width: 1280px;
+	padding: 20px 24px 40px;
+}
+
+.ps-v2-notify-page {
+	width: 100%;
+}
+
+.ps-v2-notify-layout {
+	display: flex;
+	align-items: flex-start;
+	gap: 20px;
+}
+
+.ps-v2-notify-layout__nav {
+	flex: 0 0 220px;
+}
+
+.ps-v2-notify-layout__main {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.ps-v2-notify-layout__aside {
+	flex: 0 0 300px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.ps-v2-notify-nav__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.ps-v2-notify-nav__link {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 12px;
+	border-radius: 6px;
+	text-decoration: none;
+	color: #2d3340;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1.4;
+	transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ps-v2-notify-nav__link:hover {
+	background: #f3f4f6;
+}
+
+.ps-v2-notify-nav__link.is-active {
+	background: #eef3ff;
+	color: #5279cc;
+	font-weight: 600;
+}
+
+.ps-v2-notify-nav__dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: #c4c9d4;
+	flex-shrink: 0;
+}
+
+.ps-v2-notify-nav__dot.is-on {
+	background: #287441;
+}
+
+.ps-v2-notify-nav__label {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.ps-v2-notify-nav__pro {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 10px;
+	font-weight: 700;
+	color: #7c3aed;
+	text-transform: uppercase;
+}
+
+.ps-v2-notify-panel {
+	background: #fff;
+	border-radius: 6px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	padding: 20px;
+}
+
+.ps-v2-notify-panel__head {
+	margin-bottom: 20px;
+}
+
+.ps-v2-notify-panel__title {
+	margin: 0 0 6px;
+	font-size: 20px;
+	font-weight: 700;
+	line-height: 1.4;
+	color: #2d3340;
+}
+
+.ps-v2-notify-panel__sub {
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.5;
+	color: #6b7280;
+}
+
+.ps-v2-notify-form {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.ps-v2-notify-toggle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 14px 0;
+	border-bottom: 1px solid #eef1f6;
+}
+
+.ps-v2-notify-toggle__label {
+	font-size: 14px;
+	font-weight: 600;
+	color: #2d3340;
+}
+
+.ps-v2-notify-switch {
+	position: relative;
+	display: inline-flex;
+	flex-shrink: 0;
+}
+
+.ps-v2-notify-switch input {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.ps-v2-notify-switch__track {
+	display: block;
+	width: 44px;
+	height: 24px;
+	border-radius: 999px;
+	background: #d1d5db;
+	position: relative;
+	transition: background 0.15s ease;
+	cursor: pointer;
+}
+
+.ps-v2-notify-switch__track::after {
+	content: '';
+	position: absolute;
+	top: 3px;
+	left: 3px;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: #fff;
+	transition: transform 0.15s ease;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.ps-v2-notify-switch input:checked + .ps-v2-notify-switch__track {
+	background: #5279cc;
+}
+
+.ps-v2-notify-switch input:checked + .ps-v2-notify-switch__track::after {
+	transform: translateX(20px);
+}
+
+.ps-v2-notify-switch input:focus-visible + .ps-v2-notify-switch__track {
+	outline: 2px solid #5279cc;
+	outline-offset: 2px;
+}
+
+.ps-v2-notify-form__actions-row {
+	padding-top: 4px;
+}
+
+.ps-v2-notify-form__save-row {
+	padding-top: 8px;
+	border-top: 1px solid #eef1f6;
+}
+
+.ps-v2-notify-form__save-row .ps-v2-btn--primary {
+	background: #5279cc;
+	color: #fff;
+	font-weight: 700;
+	min-height: 39px;
+	padding: 10px 20px;
+}
+
+.ps-v2-notify-form__actions-row .ps-v2-btn--ghost {
+	min-height: 39px;
+	padding: 8px 16px;
+	border: 1px solid #e5e5e5;
+	font-weight: 500;
+}
+
+.ps-v2-notify-form__actions-row .ps-v2-btn--ghost:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.ps-v2-notify-webhook-row {
+	display: flex;
+	gap: 10px;
+	align-items: flex-end;
+}
+
+.ps-v2-notify-webhook-row .ps-v2-form-field {
+	flex: 1 1 auto;
+}
+
+.ps-v2-notify-webhook-remove {
+	margin-bottom: 4px;
+}
+
+.ps-v2-notify-aside__stack {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.ps-v2-notify-aside__pro .ps-v2-pro-banner {
+	margin: 0;
+}
+
+.ps-v2-notify-placeholder {
+	background: #fff;
+	border-radius: 6px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	padding: 20px;
+}
+
+.ps-v2-notify-loading {
+	padding: 24px;
+	color: #6b7280;
+}
+
+@media (max-width: 1100px) {
+	.ps-v2-notify-layout {
+		flex-direction: column;
+	}
+
+	.ps-v2-notify-layout__nav,
+	.ps-v2-notify-layout__aside {
+		width: 100%;
+		flex: none;
+	}
+
+	.ps-v2-notify-nav__list {
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+}

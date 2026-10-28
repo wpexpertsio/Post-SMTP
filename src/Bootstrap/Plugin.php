@@ -9,6 +9,7 @@ namespace PostSMTP\Bootstrap;
 
 use PostSMTP\Api\V2\ApiRegistrar;
 use PostSMTP\Kernel\Libraries\LibraryLoader;
+use PostSMTP\Notifications\FailureNotificationBridge;
 use PostSMTP\Rollout\CohortResolver;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -29,6 +30,7 @@ final class Plugin {
 			'plugins_loaded',
 			static function () {
 				ApiRegistrar::init();
+				FailureNotificationBridge::init();
 			},
 			20
 		);

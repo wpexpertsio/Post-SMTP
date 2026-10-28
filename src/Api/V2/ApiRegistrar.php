@@ -20,6 +20,7 @@ final class ApiRegistrar {
 				( new ConnectionsController() )->register_routes();
 				( new EmailLogsController() )->register_routes();
 				( new MigrationController() )->register_routes();
+				( new NotificationsController() )->register_routes();
 			}
 		);
 	}
