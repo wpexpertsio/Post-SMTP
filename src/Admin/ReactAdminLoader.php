@@ -109,6 +109,7 @@ final class ReactAdminLoader {
 			'dashboardApi'   => esc_url_raw( rest_url( 'psd/v1/' ) ),
 			'nonce'          => wp_create_nonce( 'wp_rest' ),
 			'cohort'         => get_option( 'post_smtp_cohort', 'legacy' ),
+			'usesReactAdmin' => CohortResolver::usesReactAdmin(),
 			'isLegacy'       => \PostSMTP\Kernel\Data\ConnectionRepositoryFactory::isLegacyMode(),
 			'isPro'          => (bool) $has_pro,
 			'isConfigured'   => (bool) $configured,
@@ -133,6 +134,7 @@ final class ReactAdminLoader {
 				'revertLegacy' => admin_url( 'admin.php?page=' . \PostSMTP\Admin\LegacyRevertPage::PAGE_SLUG ),
 				'pro'         => 'https://postmansmtp.com/pricing/',
 				'docs'        => 'https://postmansmtp.com/documentation/',
+				'mobileApp'   => ReactAdminSubmenu::mobileAppDashboardUrl(),
 				'review'      => 'https://wordpress.org/support/plugin/post-smtp/reviews/#new-post',
 			),
 		);

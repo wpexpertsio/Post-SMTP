@@ -84,7 +84,14 @@ class Post_SMTP_Mobile {
      * @since 2.7.0
      * @version 1.0.0
      */
-    public function add_menu() {
+	public function add_menu() {
+
+		if (
+			class_exists( '\PostSMTP\Rollout\CohortResolver' )
+			&& \PostSMTP\Rollout\CohortResolver::usesReactAdmin()
+		) {
+			return;
+		}
 
         if( postman_is_bfcm() ) {
 

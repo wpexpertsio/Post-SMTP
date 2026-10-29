@@ -28,12 +28,19 @@ class PostmanSuggestProSocket {
         $this->fs->add_action( 'addons/after_addons', array( $this, 'promote_bundles_fs' ) );
         
         
-        if( !post_smtp_has_pro() ) {
+        if ( ! post_smtp_has_pro() ) {
+			$show_upgrade_submenu = ! (
+				class_exists( '\PostSMTP\Rollout\CohortResolver' )
+				&& \PostSMTP\Rollout\CohortResolver::usesReactAdmin()
+			);
+
+			if ( apply_filters( 'post_smtp_show_upgrade_submenu', $show_upgrade_submenu ) ) {
 
             add_action( 'admin_menu', array( $this, 'add_menu' ), 10000000000 );
             add_action( 'admin_head', array( $this, 'add_upgrade_to_pro_menu_styles' ) );
             add_action( 'admin_head', array( $this, 'add_upgrade_to_pro_menu_script' ) );
         
+			}
         }
         if( !post_smtp_has_pro() && !$hide_notice ){
 

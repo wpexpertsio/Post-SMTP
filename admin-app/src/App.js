@@ -1,11 +1,13 @@
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AppShell from './components/layout/AppShell';
+import AdminRouteSync from './components/layout/AdminRouteSync';
 import DashboardScreen from './screens/dashboard/DashboardScreen';
 import ConnectionsRoutes from './screens/connections/ConnectionsRoutes';
 import EmailLogsRoutes from './screens/email-logs/EmailLogsRoutes';
 import NotificationsRoutes from './screens/notifications/NotificationsRoutes';
 import ToolsRoutes from './screens/tools/ToolsRoutes';
+import MobileAppScreen from './screens/mobile-app/MobileAppScreen';
 import MigrationScreen from './screens/migration/MigrationScreen';
 import './styles.css';
 
@@ -26,7 +28,9 @@ const MigrationOnlyApp = () => (
 );
 
 const FullApp = () => (
-	<Routes>
+	<>
+		<AdminRouteSync />
+		<Routes>
 		<Route
 			path="/"
 			element={
@@ -67,9 +71,18 @@ const FullApp = () => (
 				</AppShell>
 			}
 		/>
+		<Route
+			path="/mobile-app"
+			element={
+				<AppShell title="Mobile App" hideTitle mainClassName="ps-app__main--mobile-app">
+					<MobileAppScreen />
+				</AppShell>
+			}
+		/>
 		<Route path="/migration" element={ <Navigate to="/" replace /> } />
 		<Route path="*" element={ <Navigate to="/" replace /> } />
-	</Routes>
+		</Routes>
+	</>
 );
 
 const App = () => (

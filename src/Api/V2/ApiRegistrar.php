@@ -22,6 +22,7 @@ final class ApiRegistrar {
 				( new MigrationController() )->register_routes();
 				( new NotificationsController() )->register_routes();
 				( new ToolsController() )->register_routes();
+				( new MobileAppController() )->register_routes();
 			}
 		);
 	}

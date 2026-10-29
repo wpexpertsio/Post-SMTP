@@ -7,10 +7,12 @@
 
 namespace PostSMTP\Bootstrap;
 
+use PostSMTP\Admin\AdminExperienceGuard;
 use PostSMTP\Admin\LegacyAdminLoader;
 use PostSMTP\Admin\LegacyRevertPage;
 use PostSMTP\Admin\MigrationNotice;
 use PostSMTP\Admin\ReactAdminLoader;
+use PostSMTP\Admin\ReactAdminSubmenu;
 use PostSMTP\Mail\MailPipeline;
 use PostSMTP\Rollout\CohortResolver;
 use PostSMTP\Rollout\FeatureFlags;
@@ -24,6 +26,8 @@ final class Router {
 	public static function boot(): void {
 		ReactAdminLoader::init();
 		LegacyRevertPage::init();
+		ReactAdminSubmenu::init();
+		AdminExperienceGuard::init();
 
 		if ( CohortResolver::needsMigration() ) {
 			MigrationNotice::init();

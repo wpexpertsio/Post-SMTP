@@ -133,6 +133,13 @@ class PostmanConfigurationController {
 	 */
 	public function add_submenu_page() {
 
+		if (
+			class_exists( '\PostSMTP\Rollout\CohortResolver' )
+			&& \PostSMTP\Rollout\CohortResolver::usesReactAdmin()
+		) {
+			return;
+		}
+
 		// only do this for administrators
 		if ( PostmanUtils::isAdmin() ) {
 

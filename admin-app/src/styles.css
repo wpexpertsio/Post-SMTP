@@ -3,6 +3,7 @@
 @import './styles/email-logs-v2.css';
 @import './styles/notifications-v2.css';
 @import './styles/tools-v2.css';
+@import './styles/mobile-app-v2.css';
 
 :root {
 	--ps-bg: #f8f9fc;

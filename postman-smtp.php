@@ -233,7 +233,7 @@ function post_setupPostman() {
 }
 
 /**
- * Hide the "Addons" submenu in the Freemius-powered menu.
+ * Hide Freemius submenus under Post SMTP (addons on all cohorts; others revamp-only).
  *
  * @param bool   $is_visible Current visibility state.
  * @param string $id         Submenu ID.
@@ -241,10 +241,19 @@ function post_setupPostman() {
  * @return bool Updated visibility state.
  */
 function ps_fs_submenu_addon_visibility_handler( $is_visible, $id ) {
-    if ( 'addons' === $id ) {
-        $is_visible = false;
-    }
-    return $is_visible;
+	if ( 'addons' === $id ) {
+		return false;
+	}
+
+	if (
+		class_exists( '\PostSMTP\Rollout\CohortResolver' )
+		&& \PostSMTP\Rollout\CohortResolver::usesReactAdmin()
+		&& in_array( $id, array( 'contact', 'support', 'pricing' ), true )
+	) {
+		return false;
+	}
+
+	return $is_visible;
 }
 ps_fs()->add_filter( 'is_submenu_visible', 'ps_fs_submenu_addon_visibility_handler', 10, 2 );
 

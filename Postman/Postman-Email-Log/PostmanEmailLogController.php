@@ -423,6 +423,12 @@ class PostmanEmailLogController {
 	 * Register the page
 	 */
 	function postmanAddMenuItem() {
+		if (
+			class_exists( '\PostSMTP\Rollout\CohortResolver' )
+			&& \PostSMTP\Rollout\CohortResolver::usesReactAdmin()
+		) {
+			return;
+		}
 		// only do this for administrators
 		if ( PostmanUtils::isAdmin() ) {
 			$this->logger->trace( 'created PostmanEmailLog admin menu item' );

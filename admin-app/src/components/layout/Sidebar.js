@@ -11,7 +11,6 @@ const NAV_ITEMS = [
 	{ to: '/notifications/admin_email', label: 'Notifications' },
 	{ to: '/tools/send-test-email', label: 'Tools' },
 	{ href: urls.pro, label: 'Reports', external: true, pro: true },
-	{ href: urls.settings + '#mobile-app', label: 'Mobile App', external: true, pro: true },
 ];
 
 const Sidebar = () => (

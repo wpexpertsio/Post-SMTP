@@ -50,20 +50,15 @@ class PostmanEmailLogs {
         $this->db = $wpdb;
 		$this->logger = new PostmanLogger( get_class( $this ) );
 
-        if (
-            isset( $_GET['page'] ) && 'postman_email_log' === $_GET['page']
-            && empty( $_GET['view'] )
-            && class_exists( '\PostSMTP\Rollout\CohortResolver' )
-        ) {
-            $cohort = get_option( 'post_smtp_cohort', \PostSMTP\Rollout\CohortResolver::COHORT_LEGACY );
-            if (
-                \PostSMTP\Rollout\CohortResolver::COHORT_MIGRATED === $cohort
-                || \PostSMTP\Rollout\CohortResolver::COHORT_NEW_INSTALL === $cohort
-            ) {
-                wp_safe_redirect( admin_url( 'admin.php?page=postman#/email-logs' ) );
-                exit;
-            }
-        }
+		if (
+			isset( $_GET['page'] ) && 'postman_email_log' === $_GET['page']
+			&& empty( $_GET['view'] )
+			&& class_exists( '\PostSMTP\Rollout\CohortResolver' )
+			&& \PostSMTP\Rollout\CohortResolver::usesReactAdmin()
+		) {
+			wp_safe_redirect( admin_url( 'admin.php?page=postman#/email-logs' ) );
+			exit;
+		}
 
         //Render Message body in iframe
         if( 
