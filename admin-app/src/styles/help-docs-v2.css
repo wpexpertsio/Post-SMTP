@@ -1,0 +1,386 @@
+/* Help & Docs — Figma 672:8978 */
+
+.ps-app__main--help-docs {
+	max-width: none;
+	padding: 0;
+	background: #f8fafe;
+}
+
+.ps-v2-help-page {
+	width: 100%;
+	min-height: 100%;
+	background: #f8fafe;
+	font-family: Satoshi, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	padding: 20px;
+	box-sizing: border-box;
+}
+
+.ps-v2-help-layout {
+	display: flex;
+	align-items: flex-start;
+	gap: 20px;
+	max-width: 1240px;
+	width: 100%;
+}
+
+.ps-v2-help-main {
+	flex: 0 0 920px;
+	max-width: 920px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	min-width: 0;
+}
+
+.ps-v2-help-aside {
+	flex: 0 0 300px;
+	max-width: 300px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	min-width: 0;
+}
+
+.ps-v2-help-card {
+	background: #fff;
+	border-radius: 6px;
+	box-sizing: border-box;
+}
+
+.ps-v2-help-card--quick {
+	padding: 15px;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.ps-v2-help-card--guides {
+	padding: 15px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ps-v2-help-section-title {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: normal;
+	color: #2d3340;
+}
+
+.ps-v2-help-quick-grid {
+	display: flex;
+	gap: 15px;
+	width: 100%;
+}
+
+.ps-v2-help-quick-card {
+	flex: 1 1 0;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+	padding: 15px;
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	text-decoration: none;
+	color: inherit;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ps-v2-help-quick-card:hover {
+	border-color: #c5d4ef;
+	box-shadow: 0 1px 3px rgba(82, 121, 204, 0.12);
+}
+
+.ps-v2-help-quick-card__icon {
+	display: block;
+	line-height: 0;
+}
+
+.ps-v2-help-quick-card__copy {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.ps-v2-help-quick-card__title {
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 1;
+	color: #2d3340;
+}
+
+.ps-v2-help-quick-card__desc {
+	font-size: 12px;
+	font-weight: 400;
+	line-height: normal;
+	color: #6c6c6c;
+}
+
+.ps-v2-help-guides-head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.ps-v2-help-pill {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 5px 10px;
+	border-radius: 20px;
+	background: #efefef;
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1;
+	color: #5d646f;
+	white-space: nowrap;
+}
+
+.ps-v2-help-pill--subtle {
+	font-weight: 500;
+}
+
+.ps-v2-help-guide-list {
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	overflow: hidden;
+	width: 100%;
+}
+
+.ps-v2-help-guide-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 15px;
+	background: #fff;
+	border-bottom: 1px solid #e5e5e5;
+	text-decoration: none;
+	color: inherit;
+	transition: background 0.12s ease;
+}
+
+.ps-v2-help-guide-row:hover {
+	background: #fafbfd;
+}
+
+.ps-v2-help-guide-row--last {
+	border-bottom: none;
+}
+
+.ps-v2-help-guide-row__copy {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.ps-v2-help-guide-row__title {
+	font-size: 14px;
+	font-weight: 500;
+	line-height: normal;
+	color: #2d3340;
+}
+
+.ps-v2-help-guide-row__desc {
+	font-size: 12px;
+	font-weight: 400;
+	line-height: normal;
+	color: #4c5664;
+}
+
+.ps-v2-help-guide-row__meta {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.ps-v2-help-guide-row__chevron {
+	flex: 0 0 auto;
+	display: block;
+}
+
+.ps-v2-help-footnote {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #2d3340;
+}
+
+.ps-v2-help-footnote a {
+	font-weight: 500;
+	color: #5279cc;
+	text-decoration: underline;
+	text-underline-position: from-font;
+}
+
+.ps-v2-help-footnote a:hover {
+	color: #3d5ee6;
+}
+
+/* Sidebar — Gmail promo (672:9103) */
+.ps-v2-help-gmail-promo {
+	padding: 15px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ps-v2-help-gmail-promo__head {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	width: 100%;
+}
+
+.ps-v2-help-gmail-promo__logo {
+	flex: 0 0 50px;
+	width: 50px;
+	height: 50px;
+	border-radius: 6.667px;
+	background: #f5f5f5;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.ps-v2-help-gmail-promo__tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 5px 10px;
+	border-radius: 20px;
+	background: #efe9ff;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1;
+	color: #6e50de;
+	white-space: nowrap;
+}
+
+.ps-v2-help-gmail-promo__copy strong {
+	display: block;
+	margin: 0 0 4px;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.5;
+	color: #2d3340;
+}
+
+.ps-v2-help-gmail-promo__copy p {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #2d3340;
+}
+
+.ps-v2-help-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	width: 100%;
+	padding: 10px 16px;
+	border-radius: 6px;
+	border: none;
+	box-sizing: border-box;
+	font-family: inherit;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: normal;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.ps-v2-help-btn--pro {
+	background: #fbbc1f;
+	color: #000;
+}
+
+.ps-v2-help-btn--pro:hover {
+	background: #f4b400;
+	color: #000;
+}
+
+.ps-v2-help-btn--primary {
+	background: #5279cc;
+	color: #fff;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+.ps-v2-help-btn--primary:hover {
+	background: #4568b8;
+	color: #fff;
+}
+
+/* Expert card (672:9132) */
+.ps-v2-help-expert {
+	padding: 15px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ps-v2-help-expert__tag {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.ps-v2-help-expert__tag span {
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1.5;
+	color: #2d3340;
+	text-transform: uppercase;
+}
+
+.ps-v2-help-expert__copy strong {
+	display: block;
+	margin: 0 0 4px;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.5;
+	color: #2d3340;
+}
+
+.ps-v2-help-expert__copy p {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #2d3340;
+}
+
+@media (max-width: 1200px) {
+	.ps-v2-help-layout {
+		flex-direction: column;
+	}
+
+	.ps-v2-help-main,
+	.ps-v2-help-aside {
+		flex: 1 1 auto;
+		max-width: none;
+		width: 100%;
+	}
+
+	.ps-v2-help-quick-grid {
+		flex-direction: column;
+	}
+}

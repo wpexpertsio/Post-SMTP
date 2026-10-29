@@ -150,6 +150,10 @@ final class ReactAdminSubmenu {
 			return self::SLUG_MOBILE_APP;
 		}
 
+		if ( 'help-docs' === $route ) {
+			return self::SLUG_HELP;
+		}
+
 		return $submenu_file;
 	}
 
@@ -158,11 +162,23 @@ final class ReactAdminSubmenu {
 		echo '<div class="wrap"><p>' . esc_html__( 'Redirecting…', 'post-smtp' ) . '</p></div>';
 	}
 
+	public static function helpDocsDashboardUrl(): string {
+		return admin_url( 'admin.php?page=postman&ps-route=help-docs' );
+	}
+
 	public static function helpDocsUrl(): string {
-		return 'https://postmansmtp.com/documentation/?utm_source=plugin&utm_medium=admin_menu';
+		return self::helpDocsDashboardUrl();
 	}
 
 	public static function mobileAppDashboardUrl(): string {
 		return admin_url( 'admin.php?page=postman&ps-route=mobile-app' );
+	}
+
+	public static function reportsDashboardUrl(): string {
+		return admin_url( 'admin.php?page=postman&ps-route=reports' );
+	}
+
+	public static function settingsDashboardUrl(): string {
+		return admin_url( 'admin.php?page=postman&ps-route=settings/general' );
 	}
 }

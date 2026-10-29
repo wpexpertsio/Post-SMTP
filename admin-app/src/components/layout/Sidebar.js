@@ -1,19 +1,21 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 const config = window.postSmtpAdmin || {};
-const urls = config.adminUrls || {};
 
 const NAV_ITEMS = [
 	{ to: '/', label: 'Dashboard', end: true },
 	{ to: '/connections', label: 'Connections' },
-	{ href: urls.settings, label: 'Settings', external: true },
+	{ to: '/settings/general', label: 'Settings' },
 	{ to: '/email-logs', label: 'Email Log' },
 	{ to: '/notifications/admin_email', label: 'Notifications' },
 	{ to: '/tools/send-test-email', label: 'Tools' },
-	{ href: urls.pro, label: 'Reports', external: true, pro: true },
+	{ to: '/reports', label: 'Reports', pro: true },
 ];
 
-const Sidebar = () => (
+const Sidebar = () => {
+	const { pathname } = useLocation();
+
+	return (
 	<aside className="ps-sidebar">
 		<div className="ps-sidebar__brand">
 			<div className="ps-sidebar__logo" aria-hidden="true">✉</div>
@@ -47,11 +49,16 @@ const Sidebar = () => (
 						key={ item.label }
 						to={ item.to }
 						end={ item.end }
-						className={ ( { isActive } ) =>
-							`ps-sidebar__link${ isActive ? ' is-active' : '' }`
-						}
+						className={ ( { isActive } ) => {
+							const active =
+								isActive ||
+								( item.to?.startsWith( '/settings' ) &&
+									pathname.startsWith( '/settings' ) );
+							return `ps-sidebar__link${ active ? ' is-active' : '' }`;
+						} }
 					>
 						{ item.label }
+						{ item.pro && ! config.isPro && <span className="ps-pro-pill">Pro</span> }
 					</NavLink>
 				);
 			} ) }
@@ -69,11 +76,17 @@ const Sidebar = () => (
 		</nav>
 
 		<div className="ps-sidebar__footer">
-			<a href={ urls.docs || '#' } className="ps-sidebar__link" target="_blank" rel="noreferrer">
+			<NavLink
+				to="/help-docs"
+				className={ ( { isActive } ) =>
+					`ps-sidebar__link${ isActive ? ' is-active' : '' }`
+				}
+			>
 				Help &amp; Docs
-			</a>
+			</NavLink>
 		</div>
 	</aside>
-);
+	);
+};
 
 export default Sidebar;

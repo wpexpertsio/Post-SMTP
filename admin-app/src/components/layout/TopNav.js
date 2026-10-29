@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import postSmtpLogo from '../../assets/brand/post-smtp-logo.svg';
 import iconBell from '../../assets/brand/icon-bell.svg';
 import iconMegaphone from '../../assets/brand/icon-megaphone.svg';
@@ -9,14 +9,17 @@ const urls = getAdminUrls();
 const NAV = [
 	{ to: '/', label: 'Dashboard', end: true },
 	{ to: '/connections', label: 'Connections' },
-	{ href: urls.settings, label: 'Settings' },
+	{ to: '/settings/general', label: 'Settings' },
 	{ to: '/email-logs', label: 'Email Logs' },
 	{ to: '/notifications/admin_email', label: 'Notifications' },
-	{ href: urls.reports || urls.emailLog, label: 'Reports' },
+	{ to: '/reports', label: 'Reports' },
 	{ to: '/tools/send-test-email', label: 'Tools' },
 ];
 
-const TopNav = () => (
+const TopNav = () => {
+	const { pathname } = useLocation();
+
+	return (
 	<header className="ps-topnav ps-topnav--v2" data-figma-node="672:5209">
 		<div className="ps-topnav__inner ps-topnav__inner--v2">
 			<div className="ps-topnav__start">
@@ -47,9 +50,13 @@ const TopNav = () => (
 								key={ item.label }
 								to={ item.to }
 								end={ item.end }
-								className={ ( { isActive } ) =>
-									`ps-topnav__link ps-topnav__link--v2${ isActive ? ' is-active' : '' }`
-								}
+								className={ ( { isActive } ) => {
+									const active =
+										isActive ||
+										( item.to?.startsWith( '/settings' ) &&
+											pathname.startsWith( '/settings' ) );
+									return `ps-topnav__link ps-topnav__link--v2${ active ? ' is-active' : '' }`;
+								} }
 							>
 								{ item.label }
 							</NavLink>
@@ -68,6 +75,7 @@ const TopNav = () => (
 			</div>
 		</div>
 	</header>
-);
+	);
+};
 
 export default TopNav;

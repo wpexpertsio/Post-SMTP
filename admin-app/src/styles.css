@@ -4,6 +4,9 @@
 @import './styles/notifications-v2.css';
 @import './styles/tools-v2.css';
 @import './styles/mobile-app-v2.css';
+@import './styles/help-docs-v2.css';
+@import './styles/reports-v2.css';
+@import './styles/settings-v2.css';
 
 :root {
 	--ps-bg: #f8f9fc;

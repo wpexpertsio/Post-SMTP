@@ -13,6 +13,7 @@ use PostSMTP\Kernel\Libraries\LibraryLoader;
 use PostSMTP\Notifications\FailureNotificationBridge;
 use PostSMTP\Notifications\NotificationTeamsPanelHooks;
 use PostSMTP\Notifications\NotificationTwilioPanelHooks;
+use PostSMTP\Settings\SettingsEmailReportingPanelHooks;
 use PostSMTP\Rollout\CohortResolver;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -37,6 +38,7 @@ final class Plugin {
 				GmailConfigurePanelHooks::init();
 				NotificationTeamsPanelHooks::init();
 				NotificationTwilioPanelHooks::init();
+				SettingsEmailReportingPanelHooks::init();
 			},
 			20
 		);

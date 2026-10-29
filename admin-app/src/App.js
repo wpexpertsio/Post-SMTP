@@ -8,6 +8,9 @@ import EmailLogsRoutes from './screens/email-logs/EmailLogsRoutes';
 import NotificationsRoutes from './screens/notifications/NotificationsRoutes';
 import ToolsRoutes from './screens/tools/ToolsRoutes';
 import MobileAppScreen from './screens/mobile-app/MobileAppScreen';
+import HelpDocsScreen from './screens/help-docs/HelpDocsScreen';
+import ReportsScreen from './screens/reports/ReportsScreen';
+import SettingsRoutes from './screens/settings/SettingsRoutes';
 import MigrationScreen from './screens/migration/MigrationScreen';
 import './styles.css';
 
@@ -76,6 +79,30 @@ const FullApp = () => (
 			element={
 				<AppShell title="Mobile App" hideTitle mainClassName="ps-app__main--mobile-app">
 					<MobileAppScreen />
+				</AppShell>
+			}
+		/>
+		<Route
+			path="/help-docs"
+			element={
+				<AppShell title="Help and Docs" hideTitle mainClassName="ps-app__main--help-docs">
+					<HelpDocsScreen />
+				</AppShell>
+			}
+		/>
+		<Route
+			path="/reports"
+			element={
+				<AppShell title="Reports" hideTitle mainClassName="ps-app__main--reports">
+					<ReportsScreen />
+				</AppShell>
+			}
+		/>
+		<Route
+			path="/settings/*"
+			element={
+				<AppShell title="Settings" hideTitle mainClassName="ps-app__main--settings">
+					<SettingsRoutes />
 				</AppShell>
 			}
 		/>

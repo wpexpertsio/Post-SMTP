@@ -226,6 +226,8 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 			    $data['original_headers'] = is_array( $log->originalHeaders ) ? serialize( $log->originalHeaders ) : $log->originalHeaders;
 				$data['session_transcript'] = $log->sessionTranscript;
 
+				$data = apply_filters( 'post_smtp_email_log_save_data', $data, $log );
+
 				$email_logs = new PostmanEmailLogs();
 
 				/**

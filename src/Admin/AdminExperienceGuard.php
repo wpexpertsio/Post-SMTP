@@ -52,7 +52,7 @@ final class AdminExperienceGuard {
 		}
 
 		$legacy_pages = array(
-			'postman/configuration'       => 'connections',
+			'postman/configuration'        => 'settings/general',
 			'postman/configuration_wizard' => 'connections',
 		);
 
@@ -88,7 +88,7 @@ final class AdminExperienceGuard {
 
 		wp_add_inline_script(
 			'post-smtp-dashboard',
-			"(function(){var h=window.location.hash||'';if(/^#\\/(connections|email-logs|notifications|tools|mobile-app)/.test(h)){window.location.replace(window.location.pathname+window.location.search);}})();",
+			"(function(){var h=window.location.hash||'';if(/^#\\/(connections|email-logs|notifications|tools|mobile-app|help-docs|reports|settings)/.test(h)){window.location.replace(window.location.pathname+window.location.search);}})();",
 			'before'
 		);
 	}

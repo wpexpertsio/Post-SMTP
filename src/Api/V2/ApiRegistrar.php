@@ -7,6 +7,8 @@
 
 namespace PostSMTP\Api\V2;
 
+use PostSMTP\Settings\SettingsEmailLogsService;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -14,6 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class ApiRegistrar {
 
 	public static function init(): void {
+		SettingsEmailLogsService::init();
+
 		add_action(
 			'rest_api_init',
 			static function () {
@@ -23,6 +27,7 @@ final class ApiRegistrar {
 				( new NotificationsController() )->register_routes();
 				( new ToolsController() )->register_routes();
 				( new MobileAppController() )->register_routes();
+				( new SettingsController() )->register_routes();
 			}
 		);
 	}
