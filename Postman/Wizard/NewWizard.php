@@ -645,8 +645,7 @@ class Post_SMTP_New_Wizard {
      */
     public function enqueue_scripts( $hook ) {
 
-        $wizard_screen = 'postman_page_' . str_replace( '/', '-', PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG );
-        if ( $hook !== $wizard_screen ) {
+        if ( ! $this->should_enqueue_wizard_assets( $hook ) ) {
             return;
         }
 
@@ -718,6 +717,29 @@ class Post_SMTP_New_Wizard {
         );
         wp_localize_script( 'post-smtp-wizard', 'PostSMTPWizard', $localized );
 
+    }
+
+    /**
+     * Whether new-wizard CSS/JS should load on this admin request.
+     *
+     * The setup wizard is registered with a hidden parent menu slug (space), so WordPress
+     * uses the admin_page_* hook suffix — not postman_page_* — and a strict hook match
+     * skips wizard.css entirely (unstyled layout).
+     *
+     * @param string $hook Admin screen hook suffix from admin_enqueue_scripts.
+     * @return bool
+     */
+    private function should_enqueue_wizard_assets( $hook ) {
+        $page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+        if ( PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG !== $page ) {
+            return false;
+        }
+
+        if ( apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+            return false;
+        }
+
+        return true;
     }
 
 
