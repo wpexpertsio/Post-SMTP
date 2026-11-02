@@ -208,16 +208,16 @@ if ( ! class_exists( 'PostmanMailerSendMailEngine' ) ) {
 
 				$response = $mailersend->send( $content );
 				
-				$this->transcript = print_r( $response, true );
+				$this->transcript = PostmanUtils::format_for_transcript( $response );
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-				$this->transcript .= print_r( $content, true );
+				$this->transcript .= PostmanUtils::format_for_transcript( $content );
 				$this->logger->debug( 'Transcript=' . $this->transcript );
 			
 			} catch ( Exception $e ) {
 				
 				$this->transcript = $e->getMessage();
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-				$this->transcript .= print_r( $content, true );
+				$this->transcript .= PostmanUtils::format_for_transcript( $content );
 				$this->logger->debug( 'Transcript=' . $this->transcript );
 
 				throw $e;

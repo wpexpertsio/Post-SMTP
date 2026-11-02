@@ -65,7 +65,7 @@ class PostmanEmailLogView extends WP_List_Table {
 			case 'status' :
 				return $item [ $column_name ];
 			default :
-				return print_r( $item, true ); // Show the whole array for troubleshooting purposes
+				return isset( $item[ $column_name ] ) ? esc_html( (string) $item[ $column_name ] ) : '';
 		}
 	}
 
@@ -274,8 +274,16 @@ class PostmanEmailLogView extends WP_List_Table {
 
 	    /**
 		 * First, lets decide how many records per page to show
+		 *
+		 * Read-only admin list filters; access is gated by capability check above.
 		 */
-		$per_page = isset( $_GET['postman_page_records'] ) ? absint( $_GET['postman_page_records'] ) : 10;
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		$per_page = isset( $_GET['postman_page_records'] ) ? absint( wp_unslash( $_GET['postman_page_records'] ) ) : 10;
+		$from_date_filter = isset( $_GET['from_date'] ) ? sanitize_text_field( wp_unslash( $_GET['from_date'] ) ) : '';
+		$to_date_filter   = isset( $_GET['to_date'] ) ? sanitize_text_field( wp_unslash( $_GET['to_date'] ) ) : '';
+		$search_filter    = isset( $_GET['search'] ) ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '';
+		$trash_all        = isset( $_GET['postman_trash_all'] );
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		/**
 		 * REQUIRED.
@@ -330,31 +338,27 @@ class PostmanEmailLogView extends WP_List_Table {
 				'suppress_filters' => true,
 		);
 
-		if ( isset( $_GET['from_date'] ) && ! empty( $_GET['from_date'] ) ) {
-			$from_date = sanitize_text_field( $_GET['from_date'] );
-
-		    $args['date_query']['after'] = $from_date;
+		if ( ! empty( $from_date_filter ) ) {
+			$args['date_query']['after'] = $from_date_filter;
 		    $args['date_query']['column']  = 'post_date';
 		    $args['date_query']['inclusive'] = false;
 		}
 
-		if ( isset( $_GET['to_date'] ) && ! empty( $_GET['to_date'] ) ) {
-			$to_date = sanitize_text_field( $_GET['to_date'] );
-
-		    $args['date_query']['before'] = $to_date;
+		if ( ! empty( $to_date_filter ) ) {
+		    $args['date_query']['before'] = $to_date_filter;
 			$args['date_query']['column']  = 'post_date';
 		    $args['date_query']['inclusive'] = true;
 		}
 
-		if ( ! empty( $_GET['search'] ) ) {
+		if ( ! empty( $search_filter ) ) {
 
 			if ( isset( $args['date_query'] ) ) {
 				unset( $args['date_query'] ); }
 
-			$args['s'] = sanitize_text_field( $_GET['search'] );
+			$args['s'] = $search_filter;
 		}
 
-		if ( isset( $_GET['postman_trash_all'] ) ) {
+		if ( $trash_all ) {
 			$args['posts_per_page'] = -1;
 		}
 		$posts = new WP_query( $args );
@@ -387,7 +391,7 @@ class PostmanEmailLogView extends WP_List_Table {
 					'solution' => $solution,
 					// the post status must be escaped as they are displayed in the HTML output
 					'status' => ($post->post_excerpt != null ? esc_html( $post->post_excerpt ) : __( 'Sent', 'post-smtp' )),
-					'date' => date( "$date_format $time_format", strtotime( $post->post_date ) ),
+					'date' => wp_date( $date_format . ' ' . $time_format, strtotime( $post->post_date ) ),
 					'ID' => $post->ID,
 			);
 			array_push( $data, $flattenedPost );

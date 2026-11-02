@@ -698,6 +698,8 @@ a.ps-referral-link:active {
 }
 
 .ps-form-control-info {
+  display: block;
+  margin-top: 5px;
   color: #979797;
   font-size: 10px;
 }

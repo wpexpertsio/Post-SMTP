@@ -92,6 +92,23 @@ class PostmanUtils {
 		return menu_page_url( self::POSTMAN_CONFIGURATION_PAGE_STUB, self::NO_ECHO );
 	}
 
+	/**
+	 * Format API response or payload for mail session transcripts (email log).
+	 *
+	 * @param mixed $data Response body, array payload, or string message.
+	 * @return string
+	 */
+	public static function format_for_transcript( $data ) {
+		if ( is_string( $data ) ) {
+			return $data;
+		}
+		if ( is_scalar( $data ) || null === $data ) {
+			return (string) $data;
+		}
+		$json = wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+		return false !== $json ? $json : '';
+	}
+
 	public static function isCurrentPagePostmanAdmin( $page = 'postman' ) {
 		$result = (isset( $_REQUEST ['page'] ) && substr( $_REQUEST ['page'], 0, strlen( $page ) ) == $page);
 		return $result;

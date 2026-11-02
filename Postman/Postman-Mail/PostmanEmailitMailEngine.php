@@ -105,7 +105,7 @@ if ( ! class_exists( 'PostmanEmailItMailEngine' ) ) {
 				if ( $responseCode >= 200 && $responseCode < 300 ) {
 					$this->transcript  = 'Email sent successfully.' . PHP_EOL;
 					$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS . PHP_EOL;
-					$this->transcript .= print_r( $content, true );
+					$this->transcript .= PostmanUtils::format_for_transcript( $content );
 					$this->logger->debug( 'Transcript=' . $this->transcript );
 				} else {
 					$decodedBody  = json_decode( $responseBody, true );
@@ -115,7 +115,7 @@ if ( ! class_exists( 'PostmanEmailItMailEngine' ) ) {
 			} catch ( Exception $e ) {
 				$this->transcript  = $e->getMessage() . PHP_EOL;
 				$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS . PHP_EOL;
-				$this->transcript .= print_r( $content, true );
+				$this->transcript .= PostmanUtils::format_for_transcript( $content );
 				$this->logger->debug( 'Transcript=' . $this->transcript );
 				throw $e;
 			}

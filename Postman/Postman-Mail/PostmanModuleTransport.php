@@ -677,7 +677,7 @@ abstract class PostmanAbstractZendModuleTransport extends PostmanAbstractModuleT
 		$scribe = $this->createScribe ( $hostname );
 		// checks to see if the host is an IP address and sticks the result in the response
 		// IP addresses are not allowed in the Redirect URL
-		$urlParts = parse_url ( $scribe->getCallbackUrl () );
+		$urlParts = wp_parse_url( $scribe->getCallbackUrl() );
 		$response ['dot_notation_url'] = false;
 		if (isset ( $urlParts ['host'] )) {
 			if (PostmanUtils::isHostAddressNotADomainName ( $urlParts ['host'] )) {

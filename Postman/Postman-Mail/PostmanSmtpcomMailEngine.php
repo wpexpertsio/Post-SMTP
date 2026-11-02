@@ -187,14 +187,14 @@ class PostmanSmtpcomMailEngine implements PostmanMailEngine {
 
 			$response = $smtpcom->send( $sendEmail );
 
-			$this->transcript  = print_r( $response, true );
+			$this->transcript  = PostmanUtils::format_for_transcript( $response );
 			$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-			$this->transcript .= print_r( $sendEmail, true );
+			$this->transcript .= PostmanUtils::format_for_transcript( $sendEmail );
 			$this->logger->debug( 'Transcript=' . $this->transcript );
 		} catch ( Exception $e ) {
 			$this->transcript  = $e->getMessage();
 			$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-			$this->transcript .= print_r( $sendEmail, true );
+			$this->transcript .= PostmanUtils::format_for_transcript( $sendEmail );
 			$this->logger->debug( 'Transcript=' . $this->transcript );
 
 			throw $e;

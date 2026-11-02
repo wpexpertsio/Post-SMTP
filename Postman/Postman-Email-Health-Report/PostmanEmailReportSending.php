@@ -131,14 +131,9 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 			}
 			$ps_query = new PostmanEmailQueryLog();
 
-			$where_clauses = array();
-			if ( ! empty( $from ) && ! empty( $to ) ) {
-				$where_clauses[] = "pl.time >= {$from} AND pl.time <= {$to}";
-			}
-			$where_clauses[] = "( pl.original_subject NOT LIKE '%Post SMTP email error%' )";
-			$where = ' WHERE ' . implode( ' AND ', $where_clauses );
+			global $wpdb;
 
-			$query = "SELECT pl.original_subject AS subject, COUNT( pl.original_subject ) AS total, 
+			$query_select = "SELECT pl.original_subject AS subject, COUNT( pl.original_subject ) AS total, 
 				SUM( pl.success = 1 OR pl.success = 'Sent ( ** Fallback ** )' ) As sent, 
 				SUM( pl.success != 1 AND pl.success != 'Sent ( ** Fallback ** )' ) As failed 
 				FROM {$ps_query->table} AS pl";
@@ -149,13 +144,27 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 			 * @since 2.9.0
 			 * @version 1.0.0
 			 */
-			$query = apply_filters( 'postman_health_count', $query );
+			$query_select = apply_filters( 'postman_health_count', $query_select );
 
-			$query .= "{$where} GROUP BY pl.original_subject ORDER BY total DESC";
-			$query .= ! empty( $limit ) ? " LIMIT {$limit}" : '';
+			$query_sql    = $query_select . ' WHERE ( pl.original_subject NOT LIKE %s )';
+			$prepare_args = array( '%Post SMTP email error%' );
 
-			global $wpdb;
-			$response = $wpdb->get_results( $query );
+			if ( ! empty( $from ) && ! empty( $to ) ) {
+				$query_sql     .= ' AND pl.time >= %d AND pl.time <= %d';
+				$prepare_args[] = (int) $from;
+				$prepare_args[] = (int) $to;
+			}
+
+			$query_sql .= ' GROUP BY pl.original_subject ORDER BY total DESC';
+
+			if ( ! empty( $limit ) ) {
+				$query_sql     .= ' LIMIT %d';
+				$prepare_args[] = (int) $limit;
+			}
+
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Placeholders are filled via prepare() on the next line.
+			$prepared_query = $wpdb->prepare( $query_sql, ...$prepare_args );
+			$response       = $wpdb->get_results( $prepared_query );
 
 			return $response ? $response : false;
 		}

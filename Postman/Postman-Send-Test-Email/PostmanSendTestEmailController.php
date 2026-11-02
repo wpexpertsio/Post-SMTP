@@ -205,9 +205,9 @@ class PostmanSendTestEmailController {
 											<input id="postman_test_options_test_email" type="text" class="ps-test-to" required="" data-error="Enter Recipient Email Address" name="postman_test_options[test_email]" value="' . esc_attr( $user_email ) . '" placeholder="Recipient Email Address">
 											' . $nonce_field . '
 
-											<span class="ps-form-control-info">
+											<div class="ps-form-control-info">
 												' . esc_html__( 'Enter the email address where you want to send the test email.', 'post-smtp' ) . '
-											</span>
+											</div>
 											
 											<p class="ps-form-control-info">
 												' . esc_html__( 'Are your WordPress emails getting broken? Check out our guide on', 'post-smtp' ) . '

@@ -186,6 +186,35 @@
 	content: '';
 }
 
+.send-test-email .ps-form-ui label {
+	font-weight: 600;
+	color: #214A72;
+}
+
+.send-test-email .ps-form-ui input[type="text"] {
+	width: 100%;
+	max-width: 100%;
+	height: 37px;
+	margin-top: 5px;
+	display: block;
+	box-sizing: border-box;
+	border: 1px solid #DCDFE5;
+	background: #FDFDFE;
+	border-radius: 0;
+}
+
+.send-test-email .ps-form-control {
+	margin-bottom: 25px;
+}
+
+.send-test-email .ps-form-control-info {
+	display: block;
+	color: #979797;
+	font-size: 10px;
+	line-height: 1.4;
+	margin-top: 5px;
+}
+
 
 /*# This is auto generated css by webpack please don't change anything */
 /*# sourceMappingURL=app.css.map*/

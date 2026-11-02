@@ -198,14 +198,14 @@ class PostmanCloudflareMailEngine implements PostmanMailEngine {
 				throw new Exception( $this->extractErrorMessage( $body, wp_remote_retrieve_response_code( $response ) ) );
 			}
 
-			$this->transcript  = print_r( $response, true );
+			$this->transcript  = PostmanUtils::format_for_transcript( $response );
 			$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-			$this->transcript .= print_r( $payload, true );
+			$this->transcript .= PostmanUtils::format_for_transcript( $payload );
 			$this->logger->debug( 'Transcript=' . $this->transcript );
 		} catch ( Exception $e ) {
 			$this->transcript  = $e->getMessage();
 			$this->transcript .= PostmanModuleTransport::RAW_MESSAGE_FOLLOWS;
-			$this->transcript .= print_r( $payload, true );
+			$this->transcript .= PostmanUtils::format_for_transcript( $payload );
 			$this->logger->debug( 'Transcript=' . $this->transcript );
 			throw $e;
 		}

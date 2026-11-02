@@ -77,7 +77,7 @@ class PostmanMailGun extends PostmanServiceRequest {
 
             //Let's create the boundary string. It must be unique
             //so we use the MD5 algorithm to generate a random hash
-            $boundary = md5( date( 'r', time() ) );
+            $boundary = md5( gmdate( 'r' ) );
             $headers['Content-Type'] = 'multipart/form-data; boundary=' . $boundary;
             $payload = '';
 
