@@ -40,7 +40,7 @@
                         </div>
                     </div>
                     <div>
-                        <a href="<?php echo postman_is_bfcm() ? 'https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024' : 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin'; ?>" target="_blank" class="button button-primary ps-yellow-btn ps-pro-product-url">CLAIM 25% OFF NOW <span class="dashicons dashicons-arrow-right-alt2"></span></a>
+                        <a href="<?php echo esc_url( post_smtp_utm_pricing_url( 'wizard', 'upgrade' ) ); ?>" target="_blank" class="button button-primary ps-yellow-btn ps-pro-product-url">CLAIM 25% OFF NOW <span class="dashicons dashicons-arrow-right-alt2"></span></a>
                     </div>
                     
                     <div>

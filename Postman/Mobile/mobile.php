@@ -230,8 +230,8 @@ class Post_SMTP_Mobile {
                     <h3>Download Post SMTP Mobile Application</h3>
                 </div>
                 <div style="float: right; margin: 19px 0;">
-                    <a href="https://play.google.com/store/apps/details?id=com.postsmtp&referrer=utm_source%3Dplugin%26utm_medium%3Dsettings%26anid%3Dadmob" target="_blank" /><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/google-play.png' ) ?>" class="google-logo" /></a>
-                    <a href="https://apps.apple.com/us/app/post-smtp/id6473368559?utm_source=plugin&utm_medium=dashboard&utm_campaign=plugin" target="_blank" /><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/apple-store.png' ) ?>" class="apple-logo" /></a>
+                    <a href="<?php echo esc_url( post_smtp_android_store_url( 'settings_mobile-app', 'upgrade' ) ); ?>" target="_blank" /><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/google-play.png' ) ?>" class="google-logo" /></a>
+                    <a href="<?php echo esc_url( post_smtp_ios_store_url( 'settings_mobile-app', 'upgrade' ) ); ?>" target="_blank" /><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/apple-store.png' ) ?>" class="apple-logo" /></a>
                 </div>
                 <div style="clear: both;"></div>
             </div>
@@ -246,7 +246,7 @@ class Post_SMTP_Mobile {
                         And you are done👍.
                     </p>
                     <p>
-                        Want more details? Check out our complete guide <a href="https://postmansmtp.com/documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/?utm_source=plugin&utm_medium=settings" target="_blank">Post SMTP Plugin with Mobile App</a>
+                        Want more details? Check out our complete guide <a href="<?php echo esc_url( post_smtp_utm_url( 'documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/', 'docs', 'settings_mobile-app-docs' ) ); ?>" target="_blank">Post SMTP Plugin with Mobile App</a>
                     </p>
                 </div>
                 <div class="mobile-app-internal-box ps-qr-box" style="line-height: 30px;">

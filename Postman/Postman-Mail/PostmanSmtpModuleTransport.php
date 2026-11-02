@@ -521,7 +521,7 @@ class PostmanSmtpModuleTransport extends PostmanAbstractZendModuleTransport impl
 		$url = POST_SMTP_URL . '/Postman/Wizard/assets/images/wizard-google.png';
 		$data = array(
 			'transport_name' => '<strong>1-Click</strong> Google Mailer Setup?',
-			'product_url'    => 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wizard_gmail_one_click&utm_campaign=plugin',
+			'product_url'    => post_smtp_utm_pricing_url( 'wizard_gmail_one_click', 'gmail-one-click' ),
 		);
 		$json_data   = htmlspecialchars( json_encode( $data ), ENT_QUOTES, 'UTF-8' );
 		$post_smtp_pro_options = get_option( 'post_smtp_pro', [] );

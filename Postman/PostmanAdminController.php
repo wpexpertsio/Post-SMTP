@@ -331,7 +331,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 						$mylinks,
 						sprintf(
 							'<a href="%s" target="_blank" rel="noopener noreferrer" class="post-smtp-pro-link">%s</a>',
-							esc_url( 'https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=plugins_page' ),
+							esc_url( post_smtp_utm_pricing_url( 'plugins_page', 'upgrade' ) ),
 							esc_html__( 'Get Post SMTP Pro', 'post-smtp' )
 						)
 					);

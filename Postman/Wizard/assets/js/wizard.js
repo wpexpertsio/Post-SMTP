@@ -706,7 +706,7 @@ jQuery(document).ready(function () {
                                                 <b>DMARC record status: <span class="${dmarcStatus}">${dmarc}</span></b>
                                                 <p>DMARC record description: ${dmarcDescription}</p>
                                             </div>
-                                            <b class="ps-dns-footer">To check and improve your email spam score! <a href="https://postmansmtp.com/domain-health-checker/?utm_source=plugin&utm_medium=test_email_dns_check&utm_campaign=plugin" target="_blank">Click Here</a><span class="dashicons dashicons-external"></span></b>
+                                            <b class="ps-dns-footer">To check and improve your email spam score! <a href="${PostSMTPWizard.dnsCheckUrl}" target="_blank">Click Here</a><span class="dashicons dashicons-external"></span></b>
                                         </div>`;
                                 if (jQuery('#ps-dns-results__el_id').length) {
                                     jQuery('#ps-dns-results__el_id').remove();
@@ -731,7 +731,7 @@ jQuery(document).ready(function () {
 
                                 jQuery('.ps-wizard-success:nth(0)').after(
                                     `<div id="ps-dns-results__el_id">
-                                            <b class="ps-dns-footer" style="padding-left: 12px;">Limit Exceed! To check and improve your email spam score! <a href="https://postmansmtp.com/domain-health-checker/?utm_source=plugin&utm_medium=test_email_dns_check&utm_campaign=plugin" target="_blank">Click Here</a><span class="dashicons dashicons-external"></span></b>
+                                            <b class="ps-dns-footer" style="padding-left: 12px;">Limit Exceed! To check and improve your email spam score! <a href="${PostSMTPWizard.dnsCheckUrl}" target="_blank">Click Here</a><span class="dashicons dashicons-external"></span></b>
                                         </div>`
                                 );
 
@@ -749,7 +749,7 @@ jQuery(document).ready(function () {
                                 jQuery('.ps-wizard-health-report').after(
                                     `<div id="ps-dns-results__el_id">
                                             <b class="ps-dns-footer" style="padding-left: 12px;">Limit Exceed! Please try again later. 
-                                            <a href="https://postmansmtp.com/domain-health-checker/?utm_source=plugin&utm_medium=test_email_dns_check&utm_campaign=plugin" target="_blank">Click Here</a>
+                                            <a href="${PostSMTPWizard.dnsCheckUrl}" target="_blank">Click Here</a>
                                             <span class="dashicons dashicons-external"></span></b>
                                         </div>`
                                 );

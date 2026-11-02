@@ -40,6 +40,7 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
 						'admin_url'      => admin_url( 'admin.php' ),
 						'page_hook'      => $hook,
 						'is_bfcm'        => postman_is_bfcm(),
+						'marketingUrls'  => post_smtp_dashboard_marketing_urls(),
 						'i18n'           => $i18n,
 					)
 				);

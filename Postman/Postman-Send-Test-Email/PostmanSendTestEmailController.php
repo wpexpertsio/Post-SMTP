@@ -211,7 +211,7 @@ class PostmanSendTestEmailController {
 											
 											<p class="ps-form-control-info">
 												' . esc_html__( 'Are your WordPress emails getting broken? Check out our guide on', 'post-smtp' ) . '
-												<a href="https://postmansmtp.com/fix-for-broken-emails/?utm_source=plugin&utm_medium=wizard&utm_campaign=plugin" target="_blank">' . esc_html__( 'how to Fix Broken Emails', 'post-smtp' ) . '</a>
+												<a href="' . esc_url( post_smtp_utm_url( 'fix-for-broken-emails/', 'setup-wizard', 'wizard' ) ) . '" target="_blank">' . esc_html__( 'how to Fix Broken Emails', 'post-smtp' ) . '</a>
 												.
 											</p>
 										</div>

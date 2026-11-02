@@ -44,7 +44,7 @@
             if( postman_is_bfcm() ) {
 
             ?>
-            <a href="https://postmansmtp.com/cyber-monday-sale?utm_source=plugin&utm_medium=section_name&utm_campaign=BFCM&utm_id=BFCM_2024" target="_blank">
+            <a href="<?php echo esc_url( post_smtp_utm_promo_url( 'cyber-monday-sale', 'email-log_promo-banner' ) ); ?>" target="_blank">
                 <img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/bfcm-2024/dashboard.png' ) ?>" style="width: 100%;" />
             </a>
             <a href="<?php echo admin_url( 'admin.php?action=ps-skip-bfcm' ); ?>" style="font-size: 10px;">Not interested, Hide for now.</a>

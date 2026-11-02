@@ -96,96 +96,96 @@ return array(
 				'links'     => array(
 					array(
 						'title' => __( 'Installation and Activation Guide', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/postman-smtp-documentation/activation-and-installation/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/postman-smtp-documentation/activation-and-installation/' ),
 					),
 					array(
 						'title' => __( 'Email Logs', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/postman-smtp-documentation/email-logs/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/postman-smtp-documentation/email-logs/' ),
 					),
 				),
-				'viewMore' => 'https://postmansmtp.com/documentation/postman-smtp-documentation/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+				'viewMore' => post_smtp_utm_dashboard_documentation_url( 'documentation/postman-smtp-documentation/' ),
 			),
 			array(
 				'title'     => __( 'Socket', 'post-smtp' ),
 				'links'     => array(
 					array(
 						'title' => __( 'Complete Mailer Guide', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/sockets-addons/post-smtp-complete-mailer-guide/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/sockets-addons/post-smtp-complete-mailer-guide/' ),
 					),
 					array(
 						'title' => __( 'Gmail /Google Workspace With Post SMTP', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/sockets-addons/gmail/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/sockets-addons/gmail/' ),
 					),
 					array(
 						'title' => __( 'Office/Microsoft 365(PRO) with Post SMTP', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/sockets-addons/how-to-configure-post-smtp-with-office-365/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/sockets-addons/how-to-configure-post-smtp-with-office-365/' ),
 					),
 				),
-				'viewMore' => 'https://postmansmtp.com/documentation/sockets-addons/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+				'viewMore' => post_smtp_utm_dashboard_documentation_url( 'documentation/sockets-addons/' ),
 			),
 			array(
 				'title'     => __( 'Advance Functionality', 'post-smtp' ),
 				'links'     => array(
 					array(
 						'title' => __( 'Email Report and Tracking', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/advance-functionality/report-and-tracking-extension/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/advance-functionality/report-and-tracking-extension/' ),
 					),
 					array(
 						'title' => __( 'Advance Delivery and Logs', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/advance-functionality/advance-delivery-logs/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/advance-functionality/advance-delivery-logs/' ),
 					),
 					array(
 						'title' => __( 'Email Log Attachment', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/advance-functionality/email-log-attachment/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/advance-functionality/email-log-attachment/' ),
 					),
 				),
-				'viewMore' => 'https://postmansmtp.com/documentation/advance-functionality/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+				'viewMore' => post_smtp_utm_dashboard_documentation_url( 'documentation/advance-functionality/' ),
 			),
 			array(
 				'title'     => __( 'Post SMTP Mobile App', 'post-smtp' ),
 				'links'     => array(
 					array(
 						'title' => __( 'Download the app and connect with plugin', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/' ),
 					),
 					array(
 						'title' => __( 'Connect and Monitor Multiple WordPress Sites', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/post-smtp-mobile-app/connect-and-monitor-wordpress-multiple-sites-88137/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/post-smtp-mobile-app/connect-and-monitor-wordpress-multiple-sites-88137/' ),
 					),
 					array(
 						'title' => __( 'Resend Failed Email from Mobile App', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/post-smtp-mobile-app/resend-failed-emails-88130/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/post-smtp-mobile-app/resend-failed-emails-88130/' ),
 					),
 				),
-				'viewMore' => 'https://postmansmtp.com/documentation/post-smtp-mobile-app/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+				'viewMore' => post_smtp_utm_dashboard_documentation_url( 'documentation/post-smtp-mobile-app/' ),
 			),
 			array(
 				'title'     => __( 'MainWP Extension', 'post-smtp' ),
 				'links'     => array(
 					array(
 						'title' => __( 'Configure MainWP Post SMTP Extension', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/mainwp-extension/configure-mainwp-post-smtp-extension/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/mainwp-extension/configure-mainwp-post-smtp-extension/' ),
 					),
 					array(
 						'title' => __( 'Configure MainWP Dashboard for MainWP Post SMTP Extension', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/mainwp-extension/configure-mainwp-dashboard-for-mainwp-post-smtp-extension/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/mainwp-extension/configure-mainwp-dashboard-for-mainwp-post-smtp-extension/' ),
 					),
 				),
-				'viewMore' => 'https://postmansmtp.com/documentation/mainwp-extension/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+				'viewMore' => post_smtp_utm_dashboard_documentation_url( 'documentation/mainwp-extension/' ),
 			),
 			array(
 				'title'     => __( 'Tools and Troubleshooting', 'post-smtp' ),
 				'links'     => array(
 					array(
 						'title' => __( 'How to get Diagnostic test report?', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/tools-and-troubleshooting/how-to-get-diagnostic-test-report/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/tools-and-troubleshooting/how-to-get-diagnostic-test-report/' ),
 					),
 					array(
 						'title' => __( 'How to get a Connectivity test report?', 'post-smtp' ),
-						'href'  => 'https://postmansmtp.com/documentation/tools-and-troubleshooting/how-to-get-a-connectivity-test-report/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+						'href'  => post_smtp_utm_dashboard_documentation_url( 'documentation/tools-and-troubleshooting/how-to-get-a-connectivity-test-report/' ),
 					),
 				),
-				'viewMore' => 'https://postmansmtp.com/documentation/tools-and-troubleshooting/?utm_source=dashboard&utm_medium=documentation&utm_campaign=plugin',
+				'viewMore' => post_smtp_utm_dashboard_documentation_url( 'documentation/tools-and-troubleshooting/' ),
 			),
 		),
 	),

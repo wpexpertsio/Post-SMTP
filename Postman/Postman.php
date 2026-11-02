@@ -54,6 +54,7 @@ class Postman {
 		require_once POST_SMTP_PATH . '/Postman/Postman-Suggest-Pro/PostmanPromotionManager.php';
 		//Load helper functions file :D
 		require_once POST_SMTP_PATH . '/includes/postman-functions.php';
+		require_once POST_SMTP_PATH . '/includes/postman-utm.php';
 
 		// load the dependencies
 		require_once 'PostmanOptions.php';
