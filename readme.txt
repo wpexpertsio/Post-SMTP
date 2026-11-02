@@ -248,7 +248,7 @@ In short, our Expert Assistance is your one-stop destination for all your WordPr
 * **[WPExperts WooCommerce Store](https://store.wpexperts.io/woocommerce/)** – Explore premium WooCommerce plugins and professional solutions by WPExperts.
 == Requirements == 
 * WordPress v6.2 and above is recommended
-* PHP v7.1 and above is recommended.
+* PHP v7.1 and above is required; PHP 8.0+ is strongly recommended for Gmail/OAuth API mailers and current vendor libraries.
 * Memory should be at least 800KiB per processing at idle.
 * Ensure your email service provider allows SMTP connection through 3rd party applications, if not you can have it enabled.(Other SMTP)
 * For reliable email deliverability, valid credentials are required.
@@ -353,6 +353,54 @@ Terms of Use: Determined by the service operating your webhook endpoint.
 
 Privacy Policy: Determined by the service operating your webhook endpoint.
 
+=== Freemius (optional plugin analytics and licensing) ===
+
+Purpose: Optional usage insights, licensing, and in-plugin upgrade flows when you opt in to Freemius.
+
+When contacted: During optional Freemius opt-in, license activation, or when the SDK performs configured telemetry (for example after you connect your account or when diagnostic tracking is enabled).
+
+Information transmitted: Site URL, plugin version, administrator email (when provided during opt-in), license identifiers, and non-sensitive diagnostic events as described in the Freemius opt-in screen. No Freemius connection is made until you interact with the opt-in or licensing UI.
+
+User action/consent: Optional; you can skip or dismiss Freemius prompts. Diagnostic tracking is described on the opt-in screen and is not enabled without your choice.
+
+Service website: https://freemius.com/
+
+Terms of Use: https://freemius.com/terms/
+
+Privacy Policy: https://freemius.com/privacy/freemius-wordpress-plugin/
+
+=== Gmail One-Click relay (optional Pro extension) ===
+
+Purpose: Send mail through Google's Gmail API using Post SMTP's connect.postmansmtp.com middleware when Gmail One-Click is enabled.
+
+When contacted: Only when Gmail One-Click is active and WordPress sends email through that transport.
+
+Information transmitted: Base64url-encoded RFC822 message (headers and body), message headers as sent, and your site URL to https://connect.postmansmtp.com/wp-json/gmail-oauth/v1/send-email for relay to Google.
+
+User action/consent: Administrator must enable the Gmail One-Click extension and complete OAuth/setup in Post SMTP settings.
+
+Service website: https://connect.postmansmtp.com/
+
+Terms of Use: https://postmansmtp.com/terms-of-service/
+
+Privacy Policy: https://postmansmtp.com/privacy-policy/
+
+=== MainWP Child email forwarding (optional) ===
+
+Purpose: When Post SMTP runs on a MainWP Child site configured for centralized mail, forward outbound email data to your MainWP Dashboard parent site for sending.
+
+When contacted: When MainWP Child integration is configured and WordPress sends mail through the MainWP forwarding path on the child site.
+
+Information transmitted: Recipients, subject, message body, headers, attachment file contents, MainWP site ID, and API key hash headers to the parent URL configured in MainWP (not a fixed Post SMTP host).
+
+User action/consent: Administrator must install and configure MainWP Child/Dashboard and enable Post SMTP forwarding on the child site.
+
+Service website: Your configured MainWP Dashboard URL (https://mainwp.com/ for the MainWP product).
+
+Terms of Use: https://mainwp.com/terms-of-service/
+
+Privacy Policy: https://mainwp.com/privacy-policy/
+
 === Email service providers (SMTP and API mailers) ===
 
 Purpose: Send WordPress email through the mailer you choose (for example Gmail, Microsoft 365, Amazon SES, SendGrid, Mailgun, Brevo, or other supported providers).
@@ -363,9 +411,21 @@ Information transmitted: Email content, headers, and authentication data require
 
 User action/consent: Administrator must configure and save mailer credentials or OAuth authorization.
 
-Service website: The provider you configure (for example https://google.com/, https://microsoft.com/, https://aws.amazon.com/ses/).
+Service website, Terms of Use, and Privacy Policy: Governed by the provider you configure. Examples for built-in API mailers:
 
-Terms of Use and Privacy Policy: Governed by the provider you choose.
+* Brevo (Sendinblue) — https://www.brevo.com/legal/privacypolicy/ | https://www.brevo.com/legal/termsofuse/
+* SendGrid — https://www.twilio.com/en-us/legal/privacy | https://www.twilio.com/en-us/legal/twilio-services-agreement
+* Mailgun — https://www.mailgun.com/legal/privacy-policy/ | https://www.mailgun.com/legal/terms/
+* Amazon SES — https://aws.amazon.com/privacy/ | https://aws.amazon.com/service-terms/
+* Google Gmail API — https://policies.google.com/privacy | https://policies.google.com/terms
+* Microsoft 365 / Outlook — https://privacy.microsoft.com/ | https://www.microsoft.com/servicesagreement
+* Mailjet — https://www.mailjet.com/legal/privacy-policy/ | https://www.mailjet.com/legal/terms-of-use/
+* Postmark — https://postmarkapp.com/privacy-policy | https://postmarkapp.com/terms-of-service
+* SparkPost — https://www.sparkpost.com/policies/privacy/ | https://www.sparkpost.com/policies/tos/
+* Elastic Email — https://elasticemail.com/legal/privacy | https://elasticemail.com/legal/terms
+* SMTP and other providers you enter — use that provider's published policies.
+
+User-supplied SMTP hostnames, API endpoints, and webhook URLs are administrator-defined destinations; Post SMTP sends only what you configure to those endpoints.
 
 === Post SMTP product feedback (optional) ===
 
@@ -506,7 +566,10 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 * Improvement - Limited setup wizard JavaScript to the wizard screen and scoped Enter-key handling.
 * Improvement - Wizard admin assets load only on relevant Post SMTP admin screens.
 * Security - Updated vendored dependencies.
-* Tweak - Aligned documented minimum PHP version with plugin requirements; removed deprecated development artifacts.
+* Tweak - Aligned documented minimum PHP version (7.1) with plugin requirements; PHP 8.0+ recommended for OAuth/API mail paths.
+* Tweak - Use WordPress core Moment.js on the dashboard stats widget instead of a bundled copy.
+* Tweak - Load global Post SMTP admin scripts only on Post SMTP admin screens.
+* Tweak - Expanded readme External Services disclosures (Freemius, Gmail One-Click relay, MainWP forwarding, API mailer policy links).
 
 = 4.0.2 - Sep 24, 2026 =
 * Security - Resolved Stored DOM-Based Cross-Site Scripting (XSS) vulnerability in failed email logs on WordPress Multisite.

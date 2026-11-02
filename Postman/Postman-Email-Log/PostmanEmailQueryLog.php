@@ -26,6 +26,24 @@ class PostmanEmailQueryLog {
         
     }
 
+    /**
+     * Escaped logs table name for SQL fragments (WP 5.6-compatible; no %i placeholder).
+     *
+     * @return string
+     */
+    private function get_logs_table_sql() {
+        return '`' . esc_sql( $this->table ) . '`';
+    }
+
+    /**
+     * Escaped log meta table name for SQL fragments.
+     *
+     * @return string
+     */
+    private function get_logmeta_table_sql() {
+        return '`' . esc_sql( $this->meta_table ) . '`';
+    }
+
 
     /**
      * Get Logs
@@ -87,10 +105,7 @@ class PostmanEmailQueryLog {
          */
         $this->columns = apply_filters( 'post_smtp_get_logs_query_cols', $this->columns, $args );
 
-        $this->query = $this->db->prepare(
-            "SELECT {$this->columns} FROM %i AS pl",
-            $this->table
-        );
+        $this->query = "SELECT {$this->columns} FROM {$this->get_logs_table_sql()} AS pl";
 
         /**
          * Filter the query after the table name
@@ -236,10 +251,7 @@ class PostmanEmailQueryLog {
     public function get_total_row_count() {
 
         return $this->db->get_results(
-            $this->db->prepare(
-                "SELECT COUNT(*) as count FROM %i;",
-                $this->table
-            )
+            "SELECT COUNT(*) as count FROM {$this->get_logs_table_sql()};"
         );
 
     }
@@ -254,10 +266,7 @@ class PostmanEmailQueryLog {
     public function get_last_log_id() {
 
         $result = $this->db->get_results(
-            $this->db->prepare(
-                "SELECT id FROM %i ORDER BY id DESC LIMIT 1;",
-                $this->table
-            )
+            "SELECT id FROM {$this->get_logs_table_sql()} ORDER BY id DESC LIMIT 1;"
         );
 
         return empty( $result ) ? false : $result[0]->id;
@@ -278,18 +287,12 @@ class PostmanEmailQueryLog {
 		$ids_log = $ids == -1 ? '' : "WHERE id IN ({$ids});";
 		$ids_meta_logs = $ids == -1 ? '' : "WHERE log_id IN ({$ids});";
 
-		$this->db->query( 
-			$this->db->prepare(
-			   "DELETE FROM %i {$ids_meta_logs}",
-				$this->meta_table
-			)
+		$this->db->query(
+			"DELETE FROM {$this->get_logmeta_table_sql()} {$ids_meta_logs}"
 		);
 		
         return $this->db->query(
-            $this->db->prepare(
-                "DELETE FROM %i {$ids_log}",
-                $this->table
-            )
+            "DELETE FROM {$this->get_logs_table_sql()} {$ids_log}"
         );
     }
 
@@ -307,10 +310,7 @@ class PostmanEmailQueryLog {
         $ids = $ids == -1 ? '' : "WHERE id IN ({$ids});";
 
         return $this->db->get_results(
-            $this->db->prepare(
-                "SELECT * FROM %i {$ids}",
-                $this->table
-            )
+            "SELECT * FROM {$this->get_logs_table_sql()} {$ids}"
         );
 
 
@@ -353,13 +353,10 @@ class PostmanEmailQueryLog {
 			$columns_sql  = ! empty( $safe_columns ) ? implode( ', ', array_map( 'esc_sql', $safe_columns ) ) : '*';
 		}
 
-		// Sanitize table name.
-		$table = esc_sql( $this->table );
+		$table = $this->get_logs_table_sql();
 
-		// Prepare and execute the query securely.
 		$query = $this->db->prepare(
-			"SELECT {$columns_sql} FROM %i WHERE id = %d",
-            $table,
+			"SELECT {$columns_sql} FROM {$table} WHERE id = %d",
 			$id
 		);
 

@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Author URI: https://profiles.wordpress.org/saadiqbal/
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ * Requires PHP: 7.1
  */
 
 /*
@@ -196,7 +197,10 @@ function post_dismiss_not_configured() {
 }
 add_action( 'admin_footer', 'post_dismiss_not_configured' );
 
-function post_smtp_general_scripts() {
+function post_smtp_general_scripts( $hook ) {
+	if ( false === strpos( $hook, 'postman' ) ) {
+		return;
+	}
     $localize = include( POST_SMTP_PATH . '/Postman/Localize.php' );
     wp_register_script( 'post-smtp-localize', POST_SMTP_URL . '/script/localize.js', [], false );
     wp_localize_script( 'post-smtp-localize', 'post_smtp_localize', $localize );

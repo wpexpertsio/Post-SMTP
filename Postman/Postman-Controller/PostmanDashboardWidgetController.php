@@ -171,10 +171,8 @@ if (! class_exists ( "PostmanDashboardWidgetController" )) {
 				// Enqueue Chart.js (with the built-in Luxon adapter).
 				wp_enqueue_script( 'chart-js', POST_SMTP_URL . '/Postman/Postman-Controller/assets/js/chart.min.js', array(), '', true );
 
-				// Enqueue Moment.js Adapter (chartjs-adapter-moment).
-				wp_enqueue_script( 'moment-js', POST_SMTP_URL . '/Postman/Postman-Controller/assets/js/moment.min.js', array( 'chart-js' ), '1.0.0', true );
-				// Enqueue your custom script that depends on both Chart.js and Luxon.
-				wp_enqueue_script( 'post-smtp-wp-dashboard-widget', POST_SMTP_URL . '/Postman/Postman-Controller/assets/js/post-smtp-wp-dashboard.js', array( 'jquery', 'chart-js', 'moment-js' ), POST_SMTP_VER, true );
+				wp_enqueue_script( 'moment' );
+				wp_enqueue_script( 'post-smtp-wp-dashboard-widget', POST_SMTP_URL . '/Postman/Postman-Controller/assets/js/post-smtp-wp-dashboard.js', array( 'jquery', 'chart-js', 'moment' ), POST_SMTP_VER, true );
 				wp_localize_script(
 					'post-smtp-wp-dashboard-widget',
 					'post_smtp_dashboard_widget',
