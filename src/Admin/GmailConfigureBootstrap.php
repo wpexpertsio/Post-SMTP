@@ -36,7 +36,12 @@ final class GmailConfigureBootstrap {
 			'redirectHint'           => __( 'Copy this into your Google app settings.', 'post-smtp' ),
 			'jsOriginLabel'          => __( 'JavaScript origin', 'post-smtp' ),
 			'jsOriginHint'           => __( 'Copy this into your app\'s allowed origins.', 'post-smtp' ),
-			'configureFigmaNode'     => '1329:15620',
+			'configureFigmaNode'     => '1350:18576',
+			'tabOneClickLabel'       => __( 'Connect in just one click', 'post-smtp' ),
+			'tabManualLabel'         => __( 'Connect manually', 'post-smtp' ),
+			'oneClickSectionTitle'   => __( 'Google Workspace (Gmail) one click', 'post-smtp' ),
+			'oneClickSectionHint'    => __( 'Post SMTP offers two ways to connect Gmail API with WordPress: One-Click Setup (fastest).', 'post-smtp' ),
+			'defaultConnectTab'      => 'manual',
 			'oneClick'               => array(
 				'title'         => __( 'Connect Gmail in one click', 'post-smtp' ),
 				'description'   => __( 'Sign in with Gmail and Post SMTP does the rest.', 'post-smtp' ),
@@ -44,8 +49,10 @@ final class GmailConfigureBootstrap {
 				'signInLabel'   => __( 'Sign in with Google', 'post-smtp' ),
 				'removeLabel'   => __( 'Remove authorization', 'post-smtp' ),
 				'connectApiLabel' => __( 'Connect to Gmail API', 'post-smtp' ),
-				'hasPro'        => false,
-				'extensionEnabled' => false,
+				'hasPro'             => false,
+				'extensionEnabled'   => false,
+				'showProTag'         => true,
+				'googleSignInLocked' => true,
 			),
 		);
 

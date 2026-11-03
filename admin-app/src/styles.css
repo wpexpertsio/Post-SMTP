@@ -7,6 +7,7 @@
 @import './styles/help-docs-v2.css';
 @import './styles/reports-v2.css';
 @import './styles/settings-v2.css';
+@import './styles/migration-v2.css';
 
 :root {
 	--ps-bg: #f8f9fc;
@@ -37,6 +38,21 @@
 	font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 	color: var(--ps-text);
 	background: var(--ps-bg);
+}
+
+.ps-v2-wp-admin-notices {
+	max-width: 1280px;
+	margin: 0 auto;
+	padding: 12px 24px 0;
+	box-sizing: border-box;
+}
+
+.ps-v2-wp-admin-notices .notice,
+.ps-v2-wp-admin-notices .update-nag,
+.ps-v2-wp-admin-notices .updated,
+.ps-v2-wp-admin-notices .error,
+.ps-v2-wp-admin-notices .fs-notice {
+	margin: 0 0 12px;
 }
 
 .ps-app { min-height: calc(100vh - 32px); }

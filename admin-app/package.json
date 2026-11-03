@@ -1,6 +1,6 @@
 {
   "name": "post-smtp-admin-app",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "private": true,
   "description": "Post SMTP React admin SPA",
   "scripts": {

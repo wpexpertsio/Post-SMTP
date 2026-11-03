@@ -38,21 +38,63 @@ final class ReactAdminLoader {
 
 		add_action( 'admin_menu', array( self::class, 'registerMigrationPage' ) );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueueMigrationWizard' ) );
+		add_action( 'in_admin_header', array( self::class, 'renderMigrationRoot' ), 99 );
+		add_action( 'admin_head', array( self::class, 'hideMigrationPageLegacyChrome' ) );
 	}
 
 	public static function registerMigrationPage(): void {
-		add_submenu_page(
-			null,
-			__( 'Post SMTP Migration', 'post-smtp' ),
+		$page_title = __( 'Post SMTP Migration', 'post-smtp' );
+
+		$hook = add_submenu_page(
+			'postman',
+			$page_title,
 			__( 'Migration', 'post-smtp' ),
 			'manage_options',
 			self::MIGRATION_PAGE_SLUG,
 			array( self::class, 'renderMigrationPage' )
 		);
+
+		remove_submenu_page( 'postman', self::MIGRATION_PAGE_SLUG );
+
+		if ( is_string( $hook ) && '' !== $hook ) {
+			add_action(
+				"load-{$hook}",
+				static function () use ( $page_title ) {
+					global $title;
+					$title = $page_title;
+				}
+			);
+		}
 	}
 
 	public static function renderMigrationPage(): void {
-		echo '<div class="wrap"><div id="post-smtp-admin-root"></div></div>';
+		// Root is rendered in in_admin_header (see renderMigrationRoot).
+	}
+
+	public static function renderMigrationRoot(): void {
+		if ( ! self::isMigrationWizardPage() ) {
+			return;
+		}
+		echo '<div id="post-smtp-admin-root"></div>';
+	}
+
+	public static function isMigrationWizardPage(): bool {
+		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+		return self::MIGRATION_PAGE_SLUG === $page;
+	}
+
+	public static function hideMigrationPageLegacyChrome(): void {
+		if ( ! self::isMigrationWizardPage() ) {
+			return;
+		}
+		echo '<style>
+			#post-smtp-admin-root {
+				min-height: calc(100vh - 32px);
+				margin: -10px -20px 0 -2px;
+			}
+			#wpbody-content { padding-bottom: 0; }
+			#wpbody-content > .wrap { display: none !important; }
+		</style>';
 	}
 
 	public static function enqueueMigrationWizard( string $hook ): void {
@@ -88,7 +130,7 @@ final class ReactAdminLoader {
 		</style>';
 	}
 
-	public static function getAdminConfig( bool $migration_only = false ): array {
+	public static function getAdminConfig( bool $migration_wizard = false ): array {
 		$configured = false;
 		$transport  = 'default';
 		$sender     = '';
@@ -118,9 +160,11 @@ final class ReactAdminLoader {
 			'senderEmail'    => sanitize_email( (string) $sender ),
 			'siteName'       => sanitize_text_field( get_bloginfo( 'name' ) ),
 			'siteUrl'        => esc_url_raw( home_url( '/' ) ),
-			'version'        => defined( 'POST_SMTP_VER' ) ? POST_SMTP_VER : '4.0.0',
+			'version'        => defined( 'POST_SMTP_VER' ) ? POST_SMTP_VER : '5.0.0',
 			'assetsUrl'      => esc_url_raw( POST_SMTP_URL . '/Postman/Dashboard/assets/images/' ),
-			'migrationOnly'  => $migration_only,
+			'migrationWizard' => $migration_wizard,
+			'needsMigration'  => CohortResolver::needsMigration(),
+			'migrationOnly'   => false,
 			'gmailConfigure' => GmailConfigureBootstrap::defaults(),
 			'adminUrls'      => array(
 				'dashboard'   => admin_url( 'admin.php?page=postman' ),
@@ -167,7 +211,7 @@ final class ReactAdminLoader {
 		self::enqueueAssets( false );
 	}
 
-	private static function enqueueAssets( bool $migration_only ): void {
+	private static function enqueueAssets( bool $migration_wizard = false ): void {
 		$asset_file = POST_SMTP_PATH . '/admin-app/build/index.asset.php';
 		$script     = POST_SMTP_URL . '/admin-app/build/index.js';
 		$style      = POST_SMTP_URL . '/admin-app/build/index.css';
@@ -210,7 +254,7 @@ final class ReactAdminLoader {
 		wp_localize_script(
 			'post-smtp-admin-app',
 			'postSmtpAdmin',
-			self::getAdminConfig( $migration_only )
+			self::getAdminConfig( $migration_wizard )
 		);
 
 		if ( function_exists( 'wp_set_script_translations' ) ) {

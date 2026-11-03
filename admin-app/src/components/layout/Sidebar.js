@@ -63,15 +63,13 @@ const Sidebar = () => {
 				);
 			} ) }
 
-			{ config.isLegacy && (
-				<NavLink
-					to="/migration"
-					className={ ( { isActive } ) =>
-						`ps-sidebar__link ps-sidebar__link--migration${ isActive ? ' is-active' : '' }`
-					}
+			{ config.needsMigration && config.adminUrls?.migration && (
+				<a
+					href={ config.adminUrls.migration }
+					className="ps-sidebar__link ps-sidebar__link--migration"
 				>
 					Migration
-				</NavLink>
+				</a>
 			) }
 		</nav>
 

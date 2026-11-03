@@ -11,24 +11,12 @@ import MobileAppScreen from './screens/mobile-app/MobileAppScreen';
 import HelpDocsScreen from './screens/help-docs/HelpDocsScreen';
 import ReportsScreen from './screens/reports/ReportsScreen';
 import SettingsRoutes from './screens/settings/SettingsRoutes';
-import MigrationScreen from './screens/migration/MigrationScreen';
+import MigrationWizardShell from './screens/migration/MigrationWizardShell';
 import './styles.css';
 
 const queryClient = new QueryClient();
 const config = window.postSmtpAdmin || {};
 const dashboardUrl = config.adminUrls?.dashboard || '/wp-admin/admin.php?page=postman';
-
-const MigrationOnlyApp = () => (
-	<div className="ps-app ps-app--migration-only">
-		<main className="ps-app__main">
-			<div className="ps-page-title">
-				<span className="ps-page-title__eyebrow">Post SMTP</span>
-				<h1>Guided migration</h1>
-			</div>
-			<MigrationScreen />
-		</main>
-	</div>
-);
 
 const FullApp = () => (
 	<>
@@ -115,7 +103,7 @@ const FullApp = () => (
 const App = () => (
 	<QueryClientProvider client={ queryClient }>
 		<Router>
-			{ config.migrationOnly ? <MigrationOnlyApp /> : <FullApp /> }
+			{ config.migrationWizard ? <MigrationWizardShell /> : <FullApp /> }
 		</Router>
 	</QueryClientProvider>
 );

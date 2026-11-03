@@ -29,6 +29,7 @@ final class GmailConfigurePanelHooks {
 
 	public static function init(): void {
 		add_filter( 'post_smtp_gmail_configure_one_click', array( self::class, 'defaultOneClick' ), 5, 2 );
+		add_filter( 'post_smtp_gmail_configure_defaults', array( self::class, 'defaultConnectTab' ), 5 );
 		ConnectionOAuthGrantBridge::init();
 	}
 
@@ -48,9 +49,24 @@ final class GmailConfigurePanelHooks {
 				'toggleDisabled'      => ! $has_pro,
 				'toggleChecked'       => false,
 				'openUpgradeOnToggle' => ! $has_pro,
+				'showProTag'          => ! $has_pro,
+				'googleSignInLocked'  => ! $has_pro,
 			),
 			$one_click
 		);
+	}
+
+	/**
+	 * @param array<string,mixed> $defaults
+	 * @return array<string,mixed>
+	 */
+	public static function defaultConnectTab( array $defaults ): array {
+		$has_pro = defined( 'POST_SMTP_PRO_VERSION' )
+			|| ( function_exists( 'pspro_fs' ) && pspro_fs()->is_registered() );
+
+		$defaults['defaultConnectTab'] = $has_pro ? 'one_click' : 'manual';
+
+		return $defaults;
 	}
 
 	/**

@@ -84,6 +84,7 @@ if ( ! class_exists( 'Post_SMTP_New_Dashboard' ) ) {
             }
 
 	        $ad_position = get_option('postman_dashboard_ad', 'maximize' );
+            \PostSMTP\Admin\MigrationPromoBanner::renderLegacyDashboardPlacement();
             echo '<div id="post-smtp-app">
                 <post-smtp-app-wrapper
                     :post-smtp-configured="' . esc_attr( $configured ) . '"
