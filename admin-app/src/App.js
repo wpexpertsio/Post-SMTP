@@ -12,6 +12,7 @@ import HelpDocsScreen from './screens/help-docs/HelpDocsScreen';
 import ReportsScreen from './screens/reports/ReportsScreen';
 import SettingsRoutes from './screens/settings/SettingsRoutes';
 import MigrationWizardShell from './screens/migration/MigrationWizardShell';
+import { HeaderNotificationsProvider } from './context/HeaderNotificationsContext';
 import './styles.css';
 
 const queryClient = new QueryClient();
@@ -19,7 +20,7 @@ const config = window.postSmtpAdmin || {};
 const dashboardUrl = config.adminUrls?.dashboard || '/wp-admin/admin.php?page=postman';
 
 const FullApp = () => (
-	<>
+	<HeaderNotificationsProvider>
 		<AdminRouteSync />
 		<Routes>
 		<Route
@@ -97,7 +98,7 @@ const FullApp = () => (
 		<Route path="/migration" element={ <Navigate to="/" replace /> } />
 		<Route path="*" element={ <Navigate to="/" replace /> } />
 		</Routes>
-	</>
+	</HeaderNotificationsProvider>
 );
 
 const App = () => (

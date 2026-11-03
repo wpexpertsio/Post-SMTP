@@ -5,6 +5,7 @@ import ActiveMailersSidebar from './components/v2/ActiveMailersSidebar';
 import DomainAuthSidebar from './components/v2/DomainAuthSidebar';
 import GmailPromoBar from './components/v2/GmailPromoBar';
 import OverviewSection from './components/v2/OverviewSection';
+import DashboardReportsTrackingSlot from './components/DashboardReportsTrackingSlot';
 import ProUpgradeBanner from './components/v2/ProUpgradeBanner';
 import RecentEmailsTable from './components/v2/RecentEmailsTable';
 import SetupWizardBanner from './components/v2/SetupWizardBanner';
@@ -32,6 +33,7 @@ const DashboardScreen = () => {
 					/>
 					<GmailPromoBar />
 					<RecentEmailsTable logs={ logs } logsQuery={ queries.logs } />
+					<DashboardReportsTrackingSlot />
 					{ ! config.isPro && <ProUpgradeBanner /> }
 				</div>
 

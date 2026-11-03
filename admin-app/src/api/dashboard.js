@@ -32,4 +32,22 @@ export function fetchRecentLogs() {
 	return dashboardFetch( 'get-logs' );
 }
 
+export function fetchFailedNotificationLogs() {
+	return dashboardFetch( 'get-failed-logs' );
+}
+
+export function markNotificationOpened( id ) {
+	return dashboardFetch( 'open-notification', {
+		method: 'POST',
+		body: { id },
+	} );
+}
+
+export function removeNotification( id ) {
+	return dashboardFetch( 'remove-notification', {
+		method: 'POST',
+		body: { id },
+	} );
+}
+
 export default dashboardFetch;

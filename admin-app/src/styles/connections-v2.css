@@ -111,6 +111,21 @@
 	border: none;
 	cursor: pointer;
 	white-space: nowrap;
+	transition: background 0.15s ease;
+}
+
+.ps-v2-conn-add-btn:hover,
+.ps-v2-conn-add-btn:focus,
+.ps-v2-conn-add-btn:active {
+	background: #4669b8;
+	color: #fff;
+	text-decoration: none;
+}
+
+#post-smtp-admin-root a.ps-v2-conn-add-btn:hover,
+#post-smtp-admin-root a.ps-v2-conn-add-btn:focus,
+#post-smtp-admin-root a.ps-v2-conn-add-btn:active {
+	color: #fff;
 }
 
 .ps-v2-conn-add-btn--center {
@@ -209,11 +224,11 @@
 	flex-shrink: 0;
 }
 
-/* Status badge + ON/OFF (Figma 1247:14879) */
+/* Status badge + pill toggle (Figma 1381:15201) */
 .ps-v2-conn-status {
 	display: flex;
 	align-items: center;
-	width: 146px;
+	gap: 13px;
 	flex-shrink: 0;
 }
 
@@ -221,9 +236,10 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	height: 26px;
-	width: 79px;
-	border-radius: 6px;
+	box-sizing: border-box;
+	width: 80px;
+	padding: 4px 8px;
+	border-radius: 4px;
 	font-size: 12px;
 	font-weight: 700;
 	line-height: 1;
@@ -250,18 +266,22 @@
 
 .ps-v2-conn-status__switch {
 	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	width: 54px;
-	height: 26px;
-	margin-left: 13px;
-	padding: 2px;
-	border-radius: 6px;
-	border: 1px solid #2d3340;
-	background: #2d3340;
+	display: block;
+	box-sizing: border-box;
+	width: 40px;
+	height: 20px;
+	min-height: 20px;
+	max-height: 20px;
+	padding: 0;
+	border-radius: 30px;
+	border: 1px solid #ebebeb;
+	background: #ebebeb;
 	cursor: pointer;
 	flex-shrink: 0;
+	overflow: hidden;
+	appearance: none;
+	line-height: 1;
+	box-shadow: none;
 }
 
 .ps-v2-conn-status.is-on .ps-v2-conn-status__switch {
@@ -275,58 +295,57 @@
 }
 
 .ps-v2-conn-status__knob {
-	width: 20px;
-	height: 20px;
-	border-radius: 4px;
+	position: absolute;
+	top: 1.5px;
+	left: 1.5px;
+	width: 15px;
+	height: 15px;
+	border-radius: 50%;
 	background: #fff;
-	flex-shrink: 0;
-}
-
-.ps-v2-conn-status.is-off .ps-v2-conn-status__knob {
-	order: 0;
-}
-
-.ps-v2-conn-status.is-off .ps-v2-conn-status__label {
-	order: 1;
-	margin-left: auto;
-	padding-right: 2px;
+	box-shadow: 0 0 3px rgba(0, 0, 0, 0.25);
+	transition: left 0.15s ease;
 }
 
 .ps-v2-conn-status.is-on .ps-v2-conn-status__knob {
-	order: 2;
-}
-
-.ps-v2-conn-status.is-on .ps-v2-conn-status__label {
-	order: 1;
-	flex: 1;
-	text-align: center;
-}
-
-.ps-v2-conn-status__label {
-	font-size: 12px;
-	font-weight: 700;
-	color: #fff;
-	line-height: 1;
+	left: 21.5px;
 }
 
 .ps-v2-conn-row__icon-btn {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	box-sizing: border-box;
 	width: 35px;
 	height: 35px;
+	min-height: 35px;
+	max-height: 35px;
 	padding: 0;
 	border: none;
-	border-radius: 4px;
-	background: transparent;
+	border-radius: 6px;
+	background: #f0f5ff;
 	cursor: pointer;
 	text-decoration: none;
 	flex-shrink: 0;
+	overflow: hidden;
+	line-height: 1;
+	box-shadow: none;
 }
 
 .ps-v2-conn-row__icon-btn img {
 	display: block;
 	max-width: none;
+	border-radius: 6px;
+}
+
+/* Override wp-admin default button sizing so pill toggle stays 40×20. */
+#post-smtp-admin-root .ps-v2-conn-status__switch {
+	min-height: 20px;
+	border-radius: 30px;
+}
+
+#post-smtp-admin-root .ps-v2-conn-row__icon-btn {
+	min-height: 35px;
+	border-radius: 6px;
 }
 
 .ps-v2-conn-row__icon-btn--danger {

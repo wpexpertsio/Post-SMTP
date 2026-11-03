@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import iconChevronDown from '../../../assets/tools/icon-chevron-down.svg';
 import iconGeneral from '../../../assets/settings/nav-general.svg';
 import FormNotice from '../../connections/components/FormNotice';
+import { useHeaderNotifications } from '../../../context/HeaderNotificationsContext';
 import useSettingsGeneral from '../hooks/useSettingsGeneral';
 import SettingsSectionCard from './SettingsSectionCard';
 import SettingsSectionHeader from './SettingsSectionHeader';
@@ -32,6 +33,7 @@ const SettingsCheckbox = ( { id, label, checked, onChange } ) => (
 
 const GeneralSettingsPanel = ( { onSaved } ) => {
 	const { query, saveMutation } = useSettingsGeneral();
+	const { notifySettingsSaved } = useHeaderNotifications();
 	const [ form, setForm ] = useState( null );
 	const [ notice, setNotice ] = useState( null );
 
@@ -53,6 +55,7 @@ const GeneralSettingsPanel = ( { onSaved } ) => {
 				setForm( { ...result.values } );
 			}
 			setNotice( { type: 'success', message: result?.message || 'Settings saved.' } );
+			notifySettingsSaved( { settingsPath: '/settings/general' } );
 			onSaved?.();
 		} catch ( err ) {
 			setNotice( {

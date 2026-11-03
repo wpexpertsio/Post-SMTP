@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Filters:
  * - post_smtp_gmail_configure_defaults — full `gmailConfigure` array for React admin bootstrap
  * - post_smtp_gmail_configure_one_click — `gmailConfigure.oneClick` block (second arg: full defaults)
+ *   Pro may set `dashboardEnableLabel`, `dashboardEnablePath`, `showProTag`, etc.
  * - post_smtp_gmail_configure_manual_oauth — manual OAuth connected state / labels (second arg: full defaults)
  * - post_smtp_gmail_provider_schema — Gmail connection form schema (GmailProvider)
  * - post_smtp_gmail_authenticate — short-circuit connection save validation

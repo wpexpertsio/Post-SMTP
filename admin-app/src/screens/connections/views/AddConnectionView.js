@@ -1,5 +1,5 @@
 import { useState, useEffect } from '@wordpress/element';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import apiFetch from '../../../api/client';
 import { getAdminUrls } from '../../../config/admin';
@@ -15,6 +15,7 @@ const urls = getAdminUrls();
 
 const AddConnectionView = () => {
 	const navigate = useNavigate();
+	const [ searchParams ] = useSearchParams();
 	const [ selectedProvider, setSelectedProvider ] = useState( null );
 	const [ formValues, setFormValues ] = useState( {} );
 	const [ notice, setNotice ] = useState( null );
@@ -31,6 +32,13 @@ const AddConnectionView = () => {
 	const items = catalogQuery.data?.items || [];
 	const schema = selectedProvider ? providersQuery.data?.[ selectedProvider ] : null;
 	const guideUrl = urls.docs || 'https://postmansmtp.com/documentation/';
+
+	useEffect( () => {
+		const preset = searchParams.get( 'provider' );
+		if ( preset ) {
+			setSelectedProvider( preset );
+		}
+	}, [ searchParams ] );
 
 	useEffect( () => {
 		if ( selectedProvider ) {

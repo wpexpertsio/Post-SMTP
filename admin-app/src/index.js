@@ -1,4 +1,5 @@
 import { createRoot, StrictMode } from '@wordpress/element';
+import './dashboard/registerDashboardSlot';
 import App from './App';
 import { relocateWpAdminNotices } from './utils/relocateWpAdminNotices';
 import './styles.css';

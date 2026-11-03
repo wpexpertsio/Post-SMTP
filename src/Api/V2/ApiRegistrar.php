@@ -28,6 +28,7 @@ final class ApiRegistrar {
 				( new ToolsController() )->register_routes();
 				( new MobileAppController() )->register_routes();
 				( new SettingsController() )->register_routes();
+				( new DashboardReportsTrackingController() )->register_routes();
 			}
 		);
 	}

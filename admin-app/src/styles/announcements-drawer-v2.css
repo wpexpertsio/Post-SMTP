@@ -1,0 +1,135 @@
+/* What's New drawer — Figma 985:16316 (artboard 985:15809) */
+
+.ps-v2-whats-new-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 100050;
+	background: rgba(45, 51, 64, 0.35);
+	display: flex;
+	justify-content: flex-end;
+}
+
+.ps-v2-whats-new-drawer {
+	display: flex;
+	flex-direction: column;
+	width: min(400px, 100%);
+	height: 100%;
+	background: #fff;
+	box-shadow: -6px 0 100px rgba(0, 0, 0, 0.25);
+}
+
+.ps-v2-whats-new-drawer__head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 20px;
+	border-bottom: 1px solid #e5e5e5;
+	background: #fff;
+	flex-shrink: 0;
+}
+
+.ps-v2-whats-new-drawer__title {
+	flex: 1;
+	margin: 0;
+	font-family: Satoshi, Inter, system-ui, sans-serif;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: normal;
+	color: #2d3340;
+}
+
+.ps-v2-whats-new-drawer__close {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 4px;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	border-radius: 4px;
+}
+
+.ps-v2-whats-new-drawer__close:hover,
+.ps-v2-whats-new-drawer__close:focus-visible {
+	background: rgba(45, 51, 64, 0.06);
+	outline: none;
+}
+
+.ps-v2-whats-new-drawer__scroll {
+	flex: 1;
+	overflow-y: auto;
+	min-height: 0;
+}
+
+.ps-v2-whats-new-entry {
+	padding: 20px;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.ps-v2-whats-new-entry:last-child {
+	border-bottom: none;
+}
+
+.ps-v2-whats-new-entry__date {
+	margin: 0 0 10px;
+	font-family: Satoshi, Inter, system-ui, sans-serif;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: normal;
+	color: #6c6c6c;
+}
+
+.ps-v2-whats-new-entry__title {
+	margin: 0 0 10px;
+	font-family: Satoshi, Inter, system-ui, sans-serif;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: normal;
+	color: #2d3340;
+}
+
+.ps-v2-whats-new-entry__body {
+	font-family: Satoshi, Inter, system-ui, sans-serif;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: normal;
+	color: #2d3340;
+	word-break: break-word;
+}
+
+.ps-v2-whats-new-entry__body p {
+	margin: 0 0 10px;
+}
+
+.ps-v2-whats-new-entry__body p:last-child {
+	margin-bottom: 0;
+}
+
+.ps-v2-whats-new-entry__body ul {
+	margin: 0 0 10px;
+	padding-left: 1.25em;
+}
+
+.ps-v2-whats-new-entry__body li {
+	margin-bottom: 6px;
+}
+
+.ps-v2-whats-new-entry__body strong {
+	font-weight: 700;
+}
+
+.ps-v2-whats-new-entry__more {
+	margin: 10px 0 0;
+	font-size: 12px;
+	color: #2d3340;
+}
+
+.ps-v2-whats-new-entry__more a {
+	color: #5279cc;
+	text-decoration: underline;
+	text-underline-position: from-font;
+}
+
+.ps-topnav.ps-topnav--v2 .ps-icon-btn--v2.is-active {
+	background: rgba(82, 121, 204, 0.1);
+}

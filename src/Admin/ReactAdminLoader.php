@@ -260,5 +260,12 @@ final class ReactAdminLoader {
 		if ( function_exists( 'wp_set_script_translations' ) ) {
 			wp_set_script_translations( 'post-smtp-admin-app', 'post-smtp', POST_SMTP_PATH . '/Postman/languages' );
 		}
+
+		if ( ! $migration_wizard && self::isDashboardShellPage() ) {
+			/**
+			 * Fires after the revamp dashboard SPA scripts are enqueued (Pro panels).
+			 */
+			do_action( 'post_smtp_admin_dashboard_enqueue' );
+		}
 	}
 }

@@ -1,0 +1,150 @@
+/* Figma 985:17939 — header notifications popup */
+.ps-topnav__notify-anchor {
+	position: relative;
+}
+
+.ps-v2-notify-popup {
+	position: absolute;
+	top: calc(100% + 10px);
+	right: 0;
+	z-index: 100020;
+	width: min(360px, calc(100vw - 24px));
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	border-radius: 10px;
+	box-shadow: -6px 0 100px rgba(0, 0, 0, 0.25);
+	overflow: hidden;
+}
+
+.ps-v2-notify-popup__head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px;
+	background: #f8fafe;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.ps-v2-notify-popup__title {
+	flex: 1;
+	margin: 0;
+	font-family: Satoshi, Inter, system-ui, sans-serif;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: normal;
+	color: #2d3340;
+}
+
+.ps-v2-notify-popup__settings {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 4px;
+	border-radius: 4px;
+	text-decoration: none;
+	color: inherit;
+}
+
+.ps-v2-notify-popup__settings:hover,
+.ps-v2-notify-popup__settings:focus-visible {
+	background: rgba(45, 51, 64, 0.06);
+	outline: none;
+}
+
+.ps-v2-notify-popup__body {
+	max-height: min(420px, 70vh);
+	overflow-y: auto;
+}
+
+.ps-v2-notify-popup__item {
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.ps-v2-notify-popup__item:last-child {
+	border-bottom: none;
+}
+
+.ps-v2-notify-popup__item-inner {
+	display: flex;
+	gap: 12px;
+	align-items: flex-start;
+	padding: 20px 15px;
+}
+
+.ps-v2-notify-popup__icon {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	transform: rotate(180deg);
+}
+
+.ps-v2-notify-popup__content {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 14px;
+	min-width: 0;
+}
+
+.ps-v2-notify-popup__text {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.ps-v2-notify-popup__item-title {
+	margin: 0;
+	font-family: Inter, system-ui, sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: normal;
+	color: #2d3340;
+}
+
+.ps-v2-notify-popup__item-desc {
+	margin: 0;
+	font-family: Inter, system-ui, sans-serif;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: normal;
+	color: #2d3340;
+	word-break: break-word;
+}
+
+.ps-v2-notify-popup__action {
+	align-self: flex-start;
+	font-family: Inter, system-ui, sans-serif;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: normal;
+	color: #2d3340;
+	text-decoration: underline;
+	text-underline-position: from-font;
+}
+
+.ps-v2-notify-popup__action:hover,
+.ps-v2-notify-popup__action:focus-visible {
+	color: #1a56db;
+}
+
+.ps-v2-notify-popup__status,
+.ps-v2-notify-popup__empty {
+	margin: 0;
+	padding: 20px 15px;
+	font-size: 12px;
+	line-height: 1.45;
+	color: #2d3340;
+}
+
+.ps-v2-notify-popup__status--error {
+	color: #b42318;
+}
+
+.ps-topnav.ps-topnav--v2 .ps-icon-btn--alert.has-unread::after {
+	opacity: 1;
+}
+
+.ps-topnav.ps-topnav--v2 .ps-icon-btn--alert:not(.has-unread)::after {
+	opacity: 0;
+}

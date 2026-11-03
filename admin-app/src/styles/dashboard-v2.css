@@ -240,6 +240,15 @@
 	min-width: 0;
 }
 
+.ps-dashboard-reports-tracking-slot {
+	width: 100%;
+	min-width: 0;
+}
+
+.ps-dashboard-reports-tracking-slot--loading {
+	min-height: 120px;
+}
+
 .ps-dashboard-v2__sidebar {
 	display: flex;
 	flex-direction: column;
@@ -788,6 +797,24 @@
 .ps-v2-gmail-bar__cta:hover {
 	filter: brightness(0.97);
 	color: #000;
+}
+
+.ps-v2-gmail-bar__cta--enable {
+	flex: 1 1 0;
+	width: auto;
+	min-width: 0;
+	max-width: none;
+	background: #5279cc;
+	color: #fff;
+	filter: none;
+}
+
+.ps-v2-gmail-bar__cta--enable:hover,
+#post-smtp-admin-root a.ps-v2-gmail-bar__cta--enable:hover {
+	background: #4669b8;
+	color: #fff;
+	text-decoration: none;
+	filter: none;
 }
 
 .ps-v2-gmail-bar__cta img {

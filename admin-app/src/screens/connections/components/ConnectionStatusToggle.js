@@ -25,11 +25,11 @@ const ConnectionStatusToggle = ( {
 				className="ps-v2-conn-status__switch"
 				role="switch"
 				aria-checked={ isOn }
+				aria-label={ isOn ? 'On' : 'Off' }
 				disabled={ ! interactive }
 				onClick={ () => interactive && onChange( ! isOn ) }
 			>
 				<span className="ps-v2-conn-status__knob" aria-hidden="true" />
-				<span className="ps-v2-conn-status__label">{ isOn ? 'ON' : 'OFF' }</span>
 			</button>
 		</div>
 	);

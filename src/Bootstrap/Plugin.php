@@ -9,6 +9,7 @@ namespace PostSMTP\Bootstrap;
 
 use PostSMTP\Api\V2\ApiRegistrar;
 use PostSMTP\Connections\GmailConfigurePanelHooks;
+use PostSMTP\Dashboard\DashboardReportsTrackingHooks;
 use PostSMTP\Kernel\Libraries\LibraryLoader;
 use PostSMTP\Notifications\FailureNotificationBridge;
 use PostSMTP\Notifications\NotificationTeamsPanelHooks;
@@ -39,6 +40,7 @@ final class Plugin {
 				NotificationTeamsPanelHooks::init();
 				NotificationTwilioPanelHooks::init();
 				SettingsEmailReportingPanelHooks::init();
+				DashboardReportsTrackingHooks::init();
 			},
 			20
 		);
