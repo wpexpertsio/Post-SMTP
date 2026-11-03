@@ -20,7 +20,7 @@ const config = window.postSmtpAdmin || {};
 const dashboardUrl = config.adminUrls?.dashboard || '/wp-admin/admin.php?page=postman';
 
 const FullApp = () => (
-	<HeaderNotificationsProvider>
+	<>
 		<AdminRouteSync />
 		<Routes>
 		<Route
@@ -98,14 +98,16 @@ const FullApp = () => (
 		<Route path="/migration" element={ <Navigate to="/" replace /> } />
 		<Route path="*" element={ <Navigate to="/" replace /> } />
 		</Routes>
-	</HeaderNotificationsProvider>
+	</>
 );
 
 const App = () => (
 	<QueryClientProvider client={ queryClient }>
-		<Router>
-			{ config.migrationWizard ? <MigrationWizardShell /> : <FullApp /> }
-		</Router>
+		<HeaderNotificationsProvider>
+			<Router>
+				{ config.migrationWizard ? <MigrationWizardShell /> : <FullApp /> }
+			</Router>
+		</HeaderNotificationsProvider>
 	</QueryClientProvider>
 );
 

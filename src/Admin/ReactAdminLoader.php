@@ -98,7 +98,9 @@ final class ReactAdminLoader {
 	}
 
 	public static function enqueueMigrationWizard( string $hook ): void {
-		if ( 'admin_page_' . self::MIGRATION_PAGE_SLUG !== $hook ) {
+		unset( $hook );
+
+		if ( ! self::isMigrationWizardPage() ) {
 			return;
 		}
 
