@@ -1,7 +1,7 @@
 import { useEffect, useState } from '@wordpress/element';
-import { Link } from 'react-router-dom';
 import iconChevronDown from '../../../assets/tools/icon-chevron-down.svg';
 import iconGeneral from '../../../assets/settings/nav-general.svg';
+import iconFromDetailsInfo from '../../../assets/settings/icon-general-from-info.svg';
 import FormNotice from '../../connections/components/FormNotice';
 import { useHeaderNotifications } from '../../../context/HeaderNotificationsContext';
 import useSettingsGeneral from '../hooks/useSettingsGeneral';
@@ -74,7 +74,6 @@ const GeneralSettingsPanel = ( { onSaved } ) => {
 	}
 
 	const handlers = query.data?.mail_handlers || [];
-	const primaryLabel = query.data?.primary_label || '';
 	const handlerLabel =
 		handlers.find( ( h ) => h.value === form.mail_handler )?.label || 'Post SMTP';
 
@@ -136,17 +135,17 @@ const GeneralSettingsPanel = ( { onSaved } ) => {
 					figmaNode="1096:45095"
 				/>
 				<div className="ps-v2-settings-panel">
-					<div className="ps-v2-settings-callout" data-figma-node="1096:45105">
-						<p>
-							{ primaryLabel ? (
-								<>
-									These values apply to your Primary connection{ ' ' }
-									<strong>{ primaryLabel }</strong>.
-								</>
-							) : (
-								<>These values apply to your Primary connection.</>
-							) }{ ' ' }
-							<Link to="/connections">Manage in Connections</Link>.
+					<div className="ps-v2-settings-callout ps-v2-settings-callout--from-details" data-figma-node="1096:45105">
+						<img
+							className="ps-v2-settings-callout__icon"
+							src={ iconFromDetailsInfo }
+							alt=""
+							width="20"
+							height="20"
+						/>
+						<p className="ps-v2-settings-callout__text">
+							These are the global From details. They are mapped to your Primary connection only —
+							fallback connections keep their own sender settings.
 						</p>
 					</div>
 

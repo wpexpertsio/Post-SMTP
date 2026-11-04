@@ -1,5 +1,4 @@
 import { useEffect, useState } from '@wordpress/element';
-import iconForceFrom from '../../../assets/settings/icon-security-force-from.svg';
 import iconValidation from '../../../assets/settings/icon-security-validation.svg';
 import iconDelivery from '../../../assets/settings/icon-security-delivery.svg';
 import iconStealth from '../../../assets/settings/icon-security-stealth.svg';
@@ -92,31 +91,6 @@ const SecuritySettingsPanel = () => {
 					onDismiss={ () => setNotice( null ) }
 				/>
 			) }
-
-			<div className="ps-v2-settings-security__block" data-figma-node="672:7328">
-				<SettingsSectionHeader
-					icon={ <SectionIcon src={ iconForceFrom } /> }
-					title="Force From"
-					description="Stop other plugins from changing your From address."
-					figmaNode="672:7332"
-				/>
-				<SettingsSectionCard figmaNode="672:7336" className="ps-v2-settings-section--flat">
-					<SettingsToggleRow
-						id="force-from-email"
-						label="Force form email"
-						description="Always use force email from general."
-						checked={ form.force_from_email }
-						onChange={ ( v ) => patch( 'force_from_email', v ) }
-					/>
-					<SettingsToggleRow
-						id="force-from-name"
-						label="Force form name"
-						description="Always use force name from general."
-						checked={ form.force_from_name }
-						onChange={ ( v ) => patch( 'force_from_name', v ) }
-					/>
-				</SettingsSectionCard>
-			</div>
 
 			<div className="ps-v2-settings-security__block" data-figma-node="672:7349">
 				<SettingsSectionHeader

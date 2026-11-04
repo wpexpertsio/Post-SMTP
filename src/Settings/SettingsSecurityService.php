@@ -71,8 +71,6 @@ final class SettingsSecurityService {
 		$envelope = $options->getEnvelopeSender();
 
 		return array(
-			'force_from_email'          => (bool) $options->isPluginSenderEmailEnforced(),
-			'force_from_name'             => (bool) $options->isPluginSenderNameEnforced(),
 			'disable_email_validation'    => (bool) $options->isEmailValidationDisabled(),
 			'mail_delivery'               => (string) $options->getRunMode(),
 			'stealth_mode'                => (bool) $options->isStealthModeEnabled(),
@@ -86,14 +84,6 @@ final class SettingsSecurityService {
 	 */
 	private function mapPayloadToOptions( array $payload ): array {
 		$patch = array();
-
-		if ( array_key_exists( 'force_from_email', $payload ) ) {
-			$patch[ PostmanOptions::PREVENT_MESSAGE_SENDER_EMAIL_OVERRIDE ] = ! empty( $payload['force_from_email'] ) ? 'true' : '';
-		}
-
-		if ( array_key_exists( 'force_from_name', $payload ) ) {
-			$patch[ PostmanOptions::PREVENT_MESSAGE_SENDER_NAME_OVERRIDE ] = ! empty( $payload['force_from_name'] ) ? 'true' : '';
-		}
 
 		if ( array_key_exists( 'disable_email_validation', $payload ) ) {
 			$patch[ PostmanOptions::DISABLE_EMAIL_VALIDAITON ] = ! empty( $payload['disable_email_validation'] ) ? 'true' : '';

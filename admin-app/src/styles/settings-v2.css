@@ -192,13 +192,30 @@
 
 .ps-v2-settings-callout {
 	box-sizing: border-box;
-	padding: 10px 12px;
-	border-radius: 6px;
-	border: 1px solid #c9dff5;
-	background: #e5f3fe;
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 16px;
+	border-radius: 8px;
+	border: 1px solid #b2ddff;
+	background: #eff8ff;
 	font-size: 12px;
-	line-height: 1.5;
-	color: #2d3340;
+	line-height: normal;
+	color: #175cd3;
+}
+
+.ps-v2-settings-callout__icon {
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+}
+
+.ps-v2-settings-callout__text {
+	margin: 0;
+	flex: 1;
+	min-width: 0;
+	font-weight: 500;
+	word-break: break-word;
 }
 
 .ps-v2-settings-callout p {
