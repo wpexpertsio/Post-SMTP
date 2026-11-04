@@ -571,7 +571,15 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
     protected function _normalizeRecipientList($email, $name = '')
     {
         if (is_array($email)) {
-            return $email;
+            $normalized = array();
+            foreach ($email as $n => $recipient) {
+                if (null === $n || is_int($n)) {
+                    $normalized[] = $recipient;
+                } else {
+                    $normalized[ (string) $n ] = $recipient;
+                }
+            }
+            return $normalized;
         }
         if (null === $name || '' === $name) {
             return array($email);
@@ -591,7 +599,7 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
         $email = $this->_normalizeRecipientList($email, $name);
 
         foreach ($email as $n => $recipient) {
-            $this->_addRecipientAndHeader('To', $recipient, is_int($n) ? '' : $n);
+            $this->_addRecipientAndHeader('To', $recipient, ( is_int( $n ) || null === $n ) ? '' : (string) $n);
             $this->_to[] = $recipient;
         }
 
@@ -610,7 +618,7 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
         $email = $this->_normalizeRecipientList($email, $name);
 
         foreach ($email as $n => $recipient) {
-            $this->_addRecipientAndHeader('Cc', $recipient, is_int($n) ? '' : $n);
+            $this->_addRecipientAndHeader('Cc', $recipient, ( is_int( $n ) || null === $n ) ? '' : (string) $n);
         }
 
         return $this;
