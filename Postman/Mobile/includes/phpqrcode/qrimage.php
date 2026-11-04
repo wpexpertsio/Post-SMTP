@@ -25,6 +25,15 @@
     define('QR_IMAGE', true);
 
     class QRimage {
+
+        /**
+         * imagedestroy() is deprecated in PHP 8.5 (no-op since 8.0).
+         */
+        private static function destroyImage( $image ) {
+            if ( version_compare( PHP_VERSION, '8.5.0', '<' ) ) {
+                imagedestroy( $image );
+            }
+        }
     
         //----------------------------------------------------------------------
         public static function png($frame, $filename = false, $pixelPerPoint = 4, $outerFrame = 4,$saveandprint=FALSE) 
@@ -44,7 +53,7 @@
                 }
             }
             
-            ImageDestroy($image);
+            self::destroyImage( $image );
         }
     
         //----------------------------------------------------------------------
@@ -59,7 +68,7 @@
                 ImageJpeg($image, $filename, $q);            
             }
             
-            ImageDestroy($image);
+            self::destroyImage( $image );
         }
     
         //----------------------------------------------------------------------
@@ -88,7 +97,7 @@
             
             $target_image =ImageCreate($imgW * $pixelPerPoint, $imgH * $pixelPerPoint);
             ImageCopyResized($target_image, $base_image, 0, 0, 0, 0, $imgW * $pixelPerPoint, $imgH * $pixelPerPoint, $imgW, $imgH);
-            ImageDestroy($base_image);
+            self::destroyImage( $base_image );
             
             return $target_image;
         }
