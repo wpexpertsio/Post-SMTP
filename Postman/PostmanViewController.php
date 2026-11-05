@@ -628,10 +628,10 @@ if ( ! class_exists( 'PostmanViewController' ) ) {
                             </div>
                             <div style="display: flex;">
                                 <div class="ps-app-download-button">
-                                    <a href="<?php echo esc_url( post_smtp_android_store_url( 'dashboard_mobile-app', 'upgrade' ) ); ?>" target="_blank">Download on Android</a>
+                                    <a href="<?php echo esc_url( post_smtp_android_store_url( 'dashboard_google-play', 'mobile-app' ) ); ?>" target="_blank">Download on Android</a>
                                 </div>
                                 <div class="ps-app-download-button">
-                                    <a href="<?php echo esc_url( post_smtp_ios_store_url( 'dashboard_mobile-app', 'upgrade' ) ); ?>" target="_blank">Download on iOS</a>
+                                    <a href="<?php echo esc_url( post_smtp_ios_store_url( 'dashboard_app-store', 'mobile-app' ) ); ?>" target="_blank">Download on iOS</a>
                                 </div>
                             </div>
                         </div>

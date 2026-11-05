@@ -230,8 +230,8 @@ class Post_SMTP_Mobile {
                     <h3>Download Post SMTP Mobile Application</h3>
                 </div>
                 <div style="float: right; margin: 19px 0;">
-                    <a href="<?php echo esc_url( post_smtp_android_store_url( 'settings_mobile-app', 'upgrade' ) ); ?>" target="_blank" /><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/google-play.png' ) ?>" class="google-logo" /></a>
-                    <a href="<?php echo esc_url( post_smtp_ios_store_url( 'settings_mobile-app', 'upgrade' ) ); ?>" target="_blank" /><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/apple-store.png' ) ?>" class="apple-logo" /></a>
+                    <a href="<?php echo esc_url( post_smtp_android_store_url( 'settings_google-play', 'mobile-app' ) ); ?>" target="_blank" /><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/google-play.png' ) ?>" class="google-logo" /></a>
+                    <a href="<?php echo esc_url( post_smtp_ios_store_url( 'settings_app-store', 'mobile-app' ) ); ?>" target="_blank" /><img src="<?php echo esc_url( POST_SMTP_ASSETS . 'images/icons/apple-store.png' ) ?>" class="apple-logo" /></a>
                 </div>
                 <div style="clear: both;"></div>
             </div>

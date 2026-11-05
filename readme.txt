@@ -13,7 +13,7 @@ Install Post SMTP (WordPress SMTP Plugin) to fix WordPress email delivery. Conne
 
 == Description ==
 
-[👑 Go Pro](https://postmansmtp.com/pricing/?utm_source=wp_org&utm_medium=read_me) | [💻Live Demo](https://www.tastewp.com/plugins/post-smtp) | [🔌Extensions](https://postmansmtp.com/extension/?utm_source=wp_org&utm_medium=readme_top) | [📱Mobile Application](https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=wp_org&utm_medium=readme_top)
+[👑 Go Pro](https://postmansmtp.com/pricing/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_top) | [💻Live Demo](https://www.tastewp.com/plugins/post-smtp) | [🔌Extensions](https://postmansmtp.com/extension/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_top) | [📱Mobile Application](https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_top)
 
 ###  WordPress SMTP Plugin 
 
@@ -38,15 +38,15 @@ On top of that, most email clients, such as Outlook (Office 365 / Microsoft365),
 That's why you need to install the Post SMTP plugin on your WordPress site to configure the SMTP mailer of your choice with one-click SMTP setup for Gmail, Microsoft 365, and more.
 
 == How Does Post SMTP Work? ==
-Post SMTP allows you to easily replace the default PHP mail function (wp_mail) of your WordPress site with the SMTP mailer of your choice, like [Microsoft 365](https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/?utm_source=wp_org&utm_medium=read_me)(Office 365), Brevo, Zoho, [SendGrid](https://postmansmtp.com/configure-wordpress-with-sendgrid/), [Mailgun SMTP](https://postmansmtp.com/setup-mailgun-for-wordpress/), Gmail [(Gmail SMTP Server)](https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/), Post Mark, Amazon SES etc., which in turn improves WordPress email deliverability.
+Post SMTP allows you to easily replace the default PHP mail function (wp_mail) of your WordPress site with the SMTP mailer of your choice, like [Microsoft 365](https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)(Office 365), Brevo, Zoho, [SendGrid](https://postmansmtp.com/configure-wordpress-with-sendgrid/), [Mailgun SMTP](https://postmansmtp.com/setup-mailgun-for-wordpress/), Gmail [(Gmail SMTP Server)](https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/), Post Mark, Amazon SES etc., which in turn improves WordPress email deliverability.
 
 **This WordPress mail SMTP plugin provides detailed email logs, email open tracking, email alerts, and a mobile app to monitor WordPress email deliverability.**
 
-Additionally, with a [3-step setup wizard](https://postmansmtp.com/introducing-the-new-3-step-setup-wizard-for-post-smtp/?utm_source=wp_org&utm_medium=read_me) you can configure any SMTP mailer (e.g., Gmail SMTP (Gmail one-click setup), Microsoft Office 365, Mailgun, Brevo, etc.) securely via API Keys in seconds without providing your SMTP account credentials.
+Additionally, with a [3-step setup wizard](https://postmansmtp.com/introducing-the-new-3-step-setup-wizard-for-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) you can configure any SMTP mailer (e.g., Gmail SMTP (Gmail one-click setup), Microsoft Office 365, Mailgun, Brevo, etc.) securely via API Keys in seconds without providing your SMTP account credentials.
 
 **NOTE:**  If you want to set up a Gmail SMTP server for WordPress, check out our detailed guide on [how to configure Gmail SMTP server](https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/) to send WordPress emails reliably.
 
-Ultimately, this WordPress SMTP plugin helps you fix all your issues related to [WordPress not sending emails.](https://postmansmtp.com/wordpress-not-sending-emails/?utm_source=wp_org&utm_medium=read_me)
+Ultimately, this WordPress SMTP plugin helps you fix all your issues related to [WordPress not sending emails.](https://postmansmtp.com/wordpress-not-sending-emails/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
 == ⚡ Features That Make Post SMTP Stand Out ==
 ✅ **Quick Setup Wizard:** Easy-to-use and powerful 3-Step Setup Wizard for quick WordPress SMTP configuration with One-click SMTP setup for Gmail SMTP and Microsoft 365 SMTP. 
@@ -72,7 +72,7 @@ Ultimately, this WordPress SMTP plugin helps you fix all your issues related to 
 
 ✅ **Weekly Email Summary:** Get a snapshot of your WordPress email deliverability report right in your inbox every week, which reveals the total number of emails, the number of failed emails, total successful email deliveries, and your recent email logs.
 
-✅ **Unparalleled Customer Support:** We offer multiple support options, including email, a WordPress forum, and even one-on-one expert assistance for [WordPress SMTP Configuration](https://postmansmtp.com/configuration-request/?utm_source=wp_org&utm_medium=read_me) and all your email delivery issues. 
+✅ **Unparalleled Customer Support:** We offer multiple support options, including email, a WordPress forum, and even one-on-one expert assistance for [WordPress SMTP Configuration](https://postmansmtp.com/configuration-request/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) and all your email delivery issues. 
 
 https://www.youtube.com/watch?v=Oxs3qintyLU
 
@@ -95,61 +95,61 @@ With Post SMTP, you get many SMTP mailer options, such as:
 
 * [CloudFlare SMTP](https://developers.cloudflare.com/email-service/api/send-emails/smtp/) - **Newly Added**
 
-* [Sweego SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-sweego-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) - **Newly Added**
+* [Sweego SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-sweego-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) - **Newly Added**
 
-* [Mailtrap SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-mailtrap-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) - **Newly Added**
+* [Mailtrap SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-mailtrap-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) - **Newly Added**
 
-* [Emailit SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-emailit-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) 
+* [Emailit SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-emailit-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) 
 
-* [Resend SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-resend-with-post-smtp/?utm_source=wp_org&utm_medium=read_me) 
+* [Resend SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-resend-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) 
 
-* [MailerSend SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mailersend-with-post-smtp/?utm_source=wp_org&utm_medium=read_me)
+* [MailerSend SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mailersend-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
-* [Brevo (formerly Sendinblue) SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendinblue-aka-brevo-with-post-smtp/?utm_source=wp_org&utm_medium=read_me)
+* [Brevo (formerly Sendinblue) SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendinblue-aka-brevo-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
-* [Microsoft 365 SMTP (Formerly Office 365 and Outlook)](https://postmansmtp.com/office-365-for-wordpress/?utm_source=wp_org&utm_medium=read_me) 
+* [Microsoft 365 SMTP (Formerly Office 365 and Outlook)](https://postmansmtp.com/office-365-for-wordpress/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) 
 
-* [Gmail SMTP (Gmail API, G Suite, Google Workspace)](https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/?utm_source=wp_org&utm_medium=read_me)
+* [Gmail SMTP (Gmail API, G Suite, Google Workspace)](https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
-* [Amazon SES SMTP](https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/?utm_source=wp_org&utm_medium=read_me)
+* [Amazon SES SMTP](https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
-* [Zoho Mail SMTP](https://postmansmtp.com/extensions/zoho-mail-pro-extension/?utm_source=wp_org&utm_medium=read_me)
+* [Zoho Mail SMTP](https://postmansmtp.com/extensions/zoho-mail-pro-extension/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
-* [Mandrill SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mandrill-with-post-smtp/?utm_source=wp_org&utm_medium=read_me)
+* [Mandrill SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mandrill-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
-* [Mailgun SMTP](https://postmansmtp.com/setup-mailgun-for-wordpress/?utm_source=wp_org&utm_medium=read_me)
+* [Mailgun SMTP](https://postmansmtp.com/setup-mailgun-for-wordpress/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
-* [SendGrid SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendgrid-with-post-smtp/?utm_source=wp_org&utm_medium=read_me)
+* [SendGrid SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendgrid-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
-* [Mailjet SMTP](https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-mailjet/?utm_source=wp_org&utm_medium=read_me)
+* [Mailjet SMTP](https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-mailjet/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
-* [SparkPost SMTP](https://postmansmtp.com/documentation/sockets-addons/sparkpost/?utm_source=wp_org&utm_medium=read_me)
+* [SparkPost SMTP](https://postmansmtp.com/documentation/sockets-addons/sparkpost/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
-* [Postmark SMTP](https://postmansmtp.com/documentation/sockets-addons/postmark/?utm_source=wp_org&utm_medium=read_me)
+* [Postmark SMTP](https://postmansmtp.com/documentation/sockets-addons/postmark/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
-* [Elastic Email SMTP](https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-elastic-email/?utm_source=wp_org&utm_medium=read_me)
+* [Elastic Email SMTP](https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-elastic-email/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
-* [Other SMTP](https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-other-smtp/?utm_source=wp_org&utm_medium=read_me) (To connect any SMTP server)
+* [Other SMTP](https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-other-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) (To connect any SMTP server)
 
 You often need to install a different WordPress mail smtp plugin for each SMTP mailer setup. However, with Post SMTP, you can set up all popular SMTP providers, such as Gmail one-click setup, Microsoft Office 365, Mailgun, Amazon SES, Zoho Mail, etc.
 
 ==  Microsoft 365 SMTP ==
-Millions of businesses around the world use Microsoft 365 (formerly Office 365) or Outlook for their email communications. With Post SMTP Pro, you can easily connect your existing [Outlook or Microsoft 365 (formerly Office365) account with WordPress](https://postmansmtp.com/connect-microsoft-outlook-to-wordpress/?utm_source=wp_org&utm_medium=read_me) via **one-click SMTP setup** to improve email deliverability.
+Millions of businesses around the world use Microsoft 365 (formerly Office 365) or Outlook for their email communications. With Post SMTP Pro, you can easily connect your existing [Outlook or Microsoft 365 (formerly Office365) account with WordPress](https://postmansmtp.com/connect-microsoft-outlook-to-wordpress/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) via **one-click SMTP setup** to improve email deliverability.
 
 
-👉 For more details, check out our guide on [how to set up Microsoft 365 for WordPress emails.](https://postmansmtp.com/office-365-for-wordpress/?utm_source=wp_org&utm_medium=read_me) 
+👉 For more details, check out our guide on [how to set up Microsoft 365 for WordPress emails.](https://postmansmtp.com/office-365-for-wordpress/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) 
 
 ==  Amazon SES SMTP ==
 Amazon SES (Simple Email Service) is a cloud-based email service that can send transactional and mass emails. SES is cost-effective, reliable, and scalable. Using the Post SMTP Pro, you can securely integrate your Amazon SES account with WordPress via APIs so that you can send large numbers of emails on a budget.
 
-👉 For more details, check out our [Amazon SES documentation.](https://postmansmtp.com/documentation/sockets-addons/amazon-ses-pro/?utm_source=wp_org&utm_medium=read_me)
+👉 For more details, check out our [Amazon SES documentation.](https://postmansmtp.com/documentation/sockets-addons/amazon-ses-pro/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
 ==  Zoho Mail SMTP ==
 Connect your Zoho mail personal or business account with WordPress via Post SMTP Pro to improve email deliverability. It has a 99.9% server uptime and offers a free option.
 
-👉 For more details, check out our [Zoho Mail documentation](https://postmansmtp.com/documentation/sockets-addons/zoho-with-post-smtp/?utm_source=wp_org&utm_medium=read_me).
+👉 For more details, check out our [Zoho Mail documentation](https://postmansmtp.com/documentation/sockets-addons/zoho-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body).
 
-👉 To learn about all the supported SMTP mailers, check out our [Complete SMTP Mailer Guide.](https://postmansmtp.com/documentation/sockets-addons/post-smtp-complete-mailer-guide/?utm_source=wp_org&utm_medium=read_me)
+👉 To learn about all the supported SMTP mailers, check out our [Complete SMTP Mailer Guide.](https://postmansmtp.com/documentation/sockets-addons/post-smtp-complete-mailer-guide/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
 == ⚡ Added Benefits of Getting Post SMTP Pro ==
 The Post SMTP Pro gives you an edge that makes your WordPress email management and performance reporting a breeze! With Post SMTP Pro, you get the following additional perks:
@@ -192,7 +192,7 @@ With MainWP Post SMTP Extension, you can:
 == ⛑ Need Help? Get Expert Assistance on Demand!!! ==
 With our Expert Assistance, you can get help with email deliverability and SMTP plugin configuration for Gmail, Microsoft Office 365, and any SMTP setup for WordPress.
 
-All you need is to [click here](https://postmansmtp.com/configuration-request/?utm_source=wp_org&utm_medium=read_me), fill out the form, sit back, and relax while our WordPress expert sets up your SMTP configuration. Also, you can request us to configure all your [DNS records](https://postmansmtp.com/dmarc-spf-dkim/?utm_source=wp_org&utm_medium=read_me) for proper email authentication.
+All you need is to [click here](https://postmansmtp.com/configuration-request/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body), fill out the form, sit back, and relax while our WordPress expert sets up your SMTP configuration. Also, you can request us to configure all your [DNS records](https://postmansmtp.com/dmarc-spf-dkim/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) for proper email authentication.
 
 In short, our Expert Assistance is your one-stop destination for all your WordPress email delivery issues.
 
@@ -507,7 +507,7 @@ There are many reasons why OAuth 2.0 is better than any password-based mechanism
 > **[NEVER give out your Gmail, Microsoft or Yahoo password](http://blog.varonis.com/giving-away-your-passwords/)** to a 3rd-party or 3rd-party program that you don't fully trust.
 
 = Can I use this plugin to send via Outlook, Microsoft 365, Gmail SMTP, Zoho, Yahoo, or SendGrid SMTP? =
-Yes! With the Post SMTP Plugin, you can configure any SMTP mailer account, including Brevo, Mailgun, and SendGrid on your WordPress site. Check out our [detailed SMTP configuration documentation](https://postmansmtp.com/documentation/sockets-addons/?utm_source=wp_org&utm_medium=read_me) for all major SMTP service providers.
+Yes! With the Post SMTP Plugin, you can configure any SMTP mailer account, including Brevo, Mailgun, and SendGrid on your WordPress site. Check out our [detailed SMTP configuration documentation](https://postmansmtp.com/documentation/sockets-addons/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) for all major SMTP service providers.
 
 = What is a Client ID? =
 To use OAuth, your website needs its own Client ID. The Client ID is used to control authentication and authorization and is tied to the specific URL of your website. If you manage several websites, you will need a different Client ID for each one.
@@ -784,7 +784,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 * Fix - Mailjet - Reply-To email was not working properly.
 
 = 2.9.7 - July 01, 2024 =
-* Fix: Logs filter was not working in [Post SMTP Mobile Application](https://postmansmtp.com/post-smtp-mobile-app/?utm_source=wp_org&utm_medium=changelog)
+* Fix: Logs filter was not working in [Post SMTP Mobile Application](https://postmansmtp.com/post-smtp-mobile-app/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=changelog&utm_content=link_body)
 
 = 2.9.6 2024-06-27 =
 * Tweak - Some strings were not translatable.
@@ -836,7 +836,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 = 2.8.8 - 2024-01-01 =
 
-* Improvement: Added sanitization and escape functions in [POST SMTP Mobile App](https://postmansmtp.com/post-smtp-app/?utm_source=wp_org&utm_medium=changelog) QR code scanning window.
+* Improvement: Added sanitization and escape functions in [POST SMTP Mobile App](https://postmansmtp.com/post-smtp-app/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=changelog&utm_content=link_body) QR code scanning window.
 
 = 2.8.7 - 2023-12-20 =
 
@@ -860,7 +860,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 = 2.8.3 - 2023-11-17 =
 
 * Fix - Getting error when saving settings in some scenarios.
-* Improvement - Optimized QR code scanning module for [Post SMTP mobile app](https://postmansmtp.com/documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/?utm_source=wp_org&utm_medium=changelog) to avoid any scanning delays
+* Improvement - Optimized QR code scanning module for [Post SMTP mobile app](https://postmansmtp.com/documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=changelog&utm_content=link_body) to avoid any scanning delays
 
 = 2.8.2 - 2023-11-14 =
 
@@ -890,7 +890,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 = 2.7.0 - 2023-10-26 =
 
-* NEW - Added support for POST SMTP app. [Visit documentation for more information](https://postmansmtp.com/documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/?utm_source=wp_org&utm_medium=changelog)
+* NEW - Added support for POST SMTP app. [Visit documentation for more information](https://postmansmtp.com/documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=changelog&utm_content=link_body)
 * Fix - Raw HTML was sent when using ElasticEmail service.
 * Fix - Raw HTML was sent when resending emails from the log section.
 

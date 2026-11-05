@@ -567,10 +567,10 @@ class Post_SMTP_New_Wizard {
                                                 </div>
                                                 <div style="display: flex;">
                                                     <div class="ps-app-download-button">
-                                                        <a href="<?php echo esc_url( post_smtp_android_store_url( 'wizard', 'setup-wizard' ) ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/androidicon.png' ); ?>"><div><p style="font-size: 8px;">Get it On</p><p style="font-size: 9px; font-weight: 750">Google Play</p></div></a>
+                                                        <a href="<?php echo esc_url( post_smtp_android_store_url( 'wizard_google-play', 'mobile-app' ) ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/androidicon.png' ); ?>"><div><p style="font-size: 8px;">Get it On</p><p style="font-size: 9px; font-weight: 750">Google Play</p></div></a>
                                                     </div>
                                                     <div class="ps-app-download-button">
-                                                        <a href="<?php echo esc_url( post_smtp_ios_store_url( 'wizard', 'setup-wizard' ) ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/apple-icon.png' ); ?>"><div><p style="font-size: 8px;">Download on the</p><p style="font-size: 9px; font-weight: 750;">App Store</p></div></a>
+                                                        <a href="<?php echo esc_url( post_smtp_ios_store_url( 'wizard_app-store', 'mobile-app' ) ); ?>" target="_blank"><img src="<?php echo esc_url( POST_SMTP_URL . '/Postman/Wizard/assets/images/apple-icon.png' ); ?>"><div><p style="font-size: 8px;">Download on the</p><p style="font-size: 9px; font-weight: 750;">App Store</p></div></a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -674,7 +674,7 @@ class Post_SMTP_New_Wizard {
             // Nonce and messages for Gmail One-Click auth AJAX
             'gmail_auth_nonce' => wp_create_nonce( 'ps_get_gmail_auth_url' ),
             'gmailAuthErrorText' => __( 'Failed to start Google authentication. Please reload the page and try again.', 'post-smtp' ),
-            'dnsCheckUrl'        => post_smtp_utm_url( 'domain-health-checker/', 'dns-check', 'test_email_dns_check' ),
+            'dnsCheckUrl'        => post_smtp_utm_url( 'domain-health-checker/', 'domain-health-checker', 'test_email_dns_check' ),
         );
 
         if( class_exists( 'Post_Smtp_Office365' ) ) {
