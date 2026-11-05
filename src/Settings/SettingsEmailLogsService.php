@@ -18,8 +18,6 @@ final class SettingsEmailLogsService {
 
 	public const SAVE_MESSAGE_OPTION = 'mail_log_save_message';
 
-	private const PRO_OPTION = 'ps_aedl_option';
-
 	public static function init(): void {
 		add_filter( 'post_smtp_email_log_save_data', array( self::class, 'filterLogSaveData' ), 10, 1 );
 	}
@@ -43,19 +41,31 @@ final class SettingsEmailLogsService {
 	 */
 	public function getEmailLogs(): array {
 		$options = PostmanOptions::getInstance();
-		$pro     = $this->readProValues();
+		$pro     = AedlOptions::autoRetryForLogsApi( SettingsEmailLogsPanelHooks::isProForApi() );
 
-		return array(
-			'values'              => $this->readValues( $options, $pro ),
-			'max_entries_choices' => $this->maxEntriesChoices(),
-			'transcript_choices'  => $this->transcriptChoices(),
+		$payload = array(
+			'values'                => $this->readValues( $options, $pro ),
+			'max_entries_choices'   => $this->maxEntriesChoices(),
+			'transcript_choices'    => $this->transcriptChoices(),
 			'retry_attempt_choices' => $this->retryAttemptChoices(),
-			'is_pro'              => $this->isProActive(),
-			'logging_allowed'     => $options->isMailLoggingAllowed(),
-			'copy'                => array(
+			'is_pro'                => SettingsEmailLogsPanelHooks::isProForApi(),
+			'auto_retry_locked'     => SettingsEmailLogsPanelHooks::isAutoRetryLocked(),
+			'panel_config'          => SettingsEmailLogsPanelHooks::panelConfig(),
+			'logging_allowed'       => $options->isMailLoggingAllowed(),
+			'copy'                  => array(
 				'saved' => __( 'Settings saved.', 'post-smtp' ),
 			),
 		);
+
+		/**
+		 * Full Email Logs settings GET payload.
+		 *
+		 * @param array<string,mixed>     $payload REST response body.
+		 * @param SettingsEmailLogsService $service Service instance.
+		 */
+		$filtered = apply_filters( 'post_smtp_settings_email_logs_get', $payload, $this );
+
+		return is_array( $filtered ) ? $filtered : $payload;
 	}
 
 	/**
@@ -89,17 +99,43 @@ final class SettingsEmailLogsService {
 		update_option( PostmanOptions::POSTMAN_OPTIONS, $merged );
 		PostmanOptions::getInstance()->reload();
 
-		if ( $this->isProActive() && $this->mapPayloadHasAutoRetry( $payload ) ) {
-			$this->saveProAutoRetry( $payload );
+		if ( $this->mapPayloadHasAutoRetry( $payload ) && SettingsEmailLogsPanelHooks::isAutoRetryLocked() ) {
+			/**
+			 * Fires when the client POST includes auto-retry fields while that block is locked.
+			 *
+			 * @param array<string,mixed> $payload Save payload.
+			 */
+			do_action( 'post_smtp_settings_email_logs_auto_retry_locked_save_attempt', $payload );
+		} elseif ( SettingsEmailLogsPanelHooks::isProForApi() && $this->mapPayloadHasAutoRetry( $payload ) ) {
+			$validation = AedlOptions::validateAndBuildPatch( $payload );
+			if ( empty( $validation['success'] ) ) {
+				return array(
+					'success' => false,
+					'message' => $validation['message'] ?? __( 'Could not save settings.', 'post-smtp' ),
+				);
+			}
+			if ( ! empty( $validation['patch'] ) ) {
+				AedlOptions::savePatch( $validation['patch'] );
+			}
 		}
 
-		$pro = $this->readProValues();
+		$pro = AedlOptions::autoRetryForLogsApi( SettingsEmailLogsPanelHooks::isProForApi() );
 
-		return array(
+		$result = array(
 			'success' => true,
 			'message' => __( 'Settings saved.', 'post-smtp' ),
 			'values'  => $this->readValues( PostmanOptions::getInstance(), $pro ),
 		);
+
+		/**
+		 * After core log options are saved (Pro may extend the response).
+		 *
+		 * @param array{success:bool,message:string,values?:array<string,mixed>} $result  Save response.
+		 * @param array<string,mixed>                                             $payload Client payload.
+		 */
+		$filtered = apply_filters( 'post_smtp_settings_email_logs_save_result', $result, $payload );
+
+		return is_array( $filtered ) ? $filtered : $result;
 	}
 
 	/**
@@ -117,7 +153,7 @@ final class SettingsEmailLogsService {
 			'max_log_entries'        => (int) $options->getMailLoggingMaxEntries(),
 			'transcript_size_kb'     => (int) $options->getTranscriptSize(),
 			'auto_retry_enabled'     => ! empty( $pro['enable_auto_retry'] ),
-			'auto_retry_max_attempts' => isset( $pro['times_to_retry'] ) ? (int) $pro['times_to_retry'] : 5,
+			'auto_retry_max_attempts' => (int) $pro['times_to_retry'],
 		);
 	}
 
@@ -154,58 +190,6 @@ final class SettingsEmailLogsService {
 			|| array_key_exists( 'auto_retry_max_attempts', $payload );
 	}
 
-	/**
-	 * @param array<string,mixed> $payload
-	 */
-	private function saveProAutoRetry( array $payload ): void {
-		$settings = get_option( self::PRO_OPTION, array() );
-		if ( ! is_array( $settings ) ) {
-			$settings = array();
-		}
-
-		if ( array_key_exists( 'auto_retry_enabled', $payload ) ) {
-			$settings['enable_auto_retry'] = ! empty( $payload['auto_retry_enabled'] ) ? 1 : 0;
-		}
-
-		if ( array_key_exists( 'auto_retry_max_attempts', $payload ) ) {
-			$attempts = absint( $payload['auto_retry_max_attempts'] );
-			if ( $attempts < 1 ) {
-				$attempts = 1;
-			}
-			if ( $attempts > 20 ) {
-				$attempts = 20;
-			}
-			$settings['times_to_retry'] = $attempts;
-		}
-
-		update_option( self::PRO_OPTION, $settings );
-	}
-
-	/**
-	 * @return array<string,int>
-	 */
-	private function readProValues(): array {
-		if ( ! $this->isProActive() ) {
-			return array(
-				'enable_auto_retry' => 0,
-				'times_to_retry'    => 5,
-			);
-		}
-
-		$settings = get_option( self::PRO_OPTION, array() );
-		if ( ! is_array( $settings ) ) {
-			return array(
-				'enable_auto_retry' => 0,
-				'times_to_retry'    => 5,
-			);
-		}
-
-		return array(
-			'enable_auto_retry' => isset( $settings['enable_auto_retry'] ) ? (int) $settings['enable_auto_retry'] : 0,
-			'times_to_retry'    => isset( $settings['times_to_retry'] ) ? (int) $settings['times_to_retry'] : 5,
-		);
-	}
-
 	public static function isSaveMessageBodyEnabled(): bool {
 		$raw = get_option( PostmanOptions::POSTMAN_OPTIONS, array() );
 		if ( ! is_array( $raw ) ) {
@@ -217,11 +201,6 @@ final class SettingsEmailLogsService {
 		}
 
 		return 'true' === $raw[ self::SAVE_MESSAGE_OPTION ];
-	}
-
-	private function isProActive(): bool {
-		return defined( 'POST_SMTP_PRO_VERSION' )
-			|| ( function_exists( 'pspro_fs' ) && pspro_fs()->is_registered() );
 	}
 
 	/**

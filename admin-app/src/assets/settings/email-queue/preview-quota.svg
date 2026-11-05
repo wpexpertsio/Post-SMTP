@@ -1,0 +1,11 @@
+<svg width="560" height="160" viewBox="0 0 560 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="560" height="160" rx="6" fill="#F8F9FC" stroke="#E5E8EF"/>
+<text x="20" y="32" fill="#214A72" font-family="Arial,sans-serif" font-size="13" font-weight="700">Enable quota</text>
+<rect x="20" y="42" width="44" height="24" rx="12" fill="#C2CDD9"/>
+<text x="20" y="88" fill="#214A72" font-family="Arial,sans-serif" font-size="13" font-weight="700">Email quota value</text>
+<rect x="20" y="98" width="80" height="32" rx="2" fill="#fff" stroke="#DCDFE5"/>
+<text x="28" y="118" fill="#2D3340" font-family="Arial,sans-serif" font-size="14">500</text>
+<text x="140" y="88" fill="#214A72" font-family="Arial,sans-serif" font-size="13" font-weight="700">Email quota duration</text>
+<rect x="140" y="98" width="120" height="32" rx="2" fill="#fff" stroke="#DCDFE5"/>
+<text x="148" y="118" fill="#2D3340" font-family="Arial,sans-serif" font-size="12">Per day</text>
+</svg>

@@ -65,6 +65,20 @@ final class Writer {
 			return;
 		}
 
+		if ( ! empty( $GLOBALS['post_smtp_aedl_batch_log_id'] ) ) {
+			$batch_log_id = (int) $GLOBALS['post_smtp_aedl_batch_log_id'];
+			if ( $batch_log_id > 0 ) {
+				add_filter(
+					'post_smtp_update_email_log_id',
+					static function () use ( $batch_log_id ) {
+						return $batch_log_id;
+					},
+					1
+				);
+				return;
+			}
+		}
+
 		if ( null !== $primary_log_id && $primary_log_id > 0 ) {
 			add_filter(
 				'post_smtp_update_email_log_id',
@@ -91,5 +105,43 @@ final class Writer {
 	 */
 	public static function detachSharedLogUpdateFilters(): void {
 		remove_all_filters( 'post_smtp_update_email_log_id' );
+	}
+
+	/**
+	 * Persist a queued row (success column = In Queue).
+	 */
+	public static function persistQueued( \PostmanEmailLog $log, \PostmanMessage $message, string $status_message ): void {
+		if ( ! class_exists( '\PostmanEmailLogService', false ) ) {
+			require_once POST_SMTP_PATH . '/Postman/Postman-Email-Log/PostmanEmailLogService.php';
+		}
+		if ( ! class_exists( '\PostmanOptions', false ) ) {
+			require_once POST_SMTP_PATH . '/Postman/PostmanOptions.php';
+		}
+
+		\PostmanEmailLogService::getInstance();
+
+		if ( ! \PostmanOptions::getInstance()->isMailLoggingEnabled() ) {
+			return;
+		}
+
+		add_filter(
+			'post_smtp_log_status',
+			static function () use ( $status_message ) {
+				return $status_message;
+			},
+			12,
+			3
+		);
+
+		$service = \PostmanEmailLogService::getInstance();
+		$service->writeFailureLog(
+			$log,
+			__( 'Queued for background delivery.', 'post-smtp' ),
+			$status_message,
+			null,
+			$message
+		);
+
+		remove_all_filters( 'post_smtp_log_status' );
 	}
 }

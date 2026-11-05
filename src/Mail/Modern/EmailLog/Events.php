@@ -172,4 +172,26 @@ final class Events {
 		$title    = (string) ( $connection['connection_title'] ?? $connection['title'] ?? '' );
 		return $title ? sprintf( '%s (%s)', $provider, $title ) : $provider;
 	}
+
+	/**
+	 * Log wp_mail payload as queued (Advanced Delivery) without provider send.
+	 *
+	 * @param array<string,mixed> $atts           wp_mail arguments.
+	 * @param array<string,mixed> $connection     Primary connection row.
+	 * @param array<string,mixed> $processed_data Envelope processed data.
+	 */
+	public static function persistQueued( array $atts, array $connection, array $processed_data = array() ): void {
+		self::ensurePostmanClasses();
+
+		$log     = self::buildLog( $atts, $connection, $processed_data );
+		$message = self::buildMessage( $atts, $connection, $processed_data );
+
+		/**
+		 * @param string              $status Default log status for queued mail.
+		 * @param array<string,mixed> $atts   wp_mail arguments.
+		 */
+		$status = apply_filters( 'post_smtp_revamp_queue_log_status', 'In Queue', $atts );
+
+		Writer::persistQueued( $log, $message, (string) $status );
+	}
 }

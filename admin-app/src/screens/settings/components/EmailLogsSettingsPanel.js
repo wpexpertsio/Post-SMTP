@@ -72,7 +72,7 @@ const EmailLogsSettingsPanel = () => {
 	const retryChoices = query.data?.retry_attempt_choices || [];
 	const isPro = query.data?.is_pro ?? config.isPro;
 	const loggingAllowed = query.data?.logging_allowed !== false;
-	const autoRetryLocked = ! isPro;
+	const autoRetryLocked = query.data?.auto_retry_locked ?? ! isPro;
 
 	return (
 		<div className="ps-v2-settings-email-logs" data-figma-node="672:7641">

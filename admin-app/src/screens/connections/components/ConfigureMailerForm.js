@@ -1,6 +1,7 @@
 import { getAdminUrls } from '../../../config/admin';
 import FormGenerator from '../../../components/form-generator/FormGenerator';
 import GmailConfigurePanel from './GmailConfigurePanel';
+import Office365ConfigurePanel from './Office365ConfigurePanel';
 import ZohoConfigurePanel from './ZohoConfigurePanel';
 import { mailerConnectionIcon } from '../model/mailerConnectionIcons';
 import useMailerCatalog from '../hooks/useMailerCatalog';
@@ -129,10 +130,12 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 	const catalogQuery = useMailerCatalog();
 	const catalogItem = catalogQuery.data?.items?.find( ( item ) => item.slug === provider );
 	const isGmailOAuthLayout = schema?.configure_layout === 'gmail_oauth' || provider === 'gmail_api';
+	const isOffice365OAuthLayout =
+		schema?.configure_layout === 'office365_oauth' || provider === 'office365_api';
 	const isZohoOAuthLayout = schema?.configure_layout === 'zoho_oauth' || provider === 'zohomail_api';
 	const oauthSlug = OAUTH_PROVIDERS[ provider ];
 	const oauthUrl =
-		! isGmailOAuthLayout && ! isZohoOAuthLayout && oauthSlug
+		! isGmailOAuthLayout && ! isOffice365OAuthLayout && ! isZohoOAuthLayout && oauthSlug
 			? `${ urls.wizard }&socket=${ oauthSlug }&step=2`
 			: null;
 
@@ -189,9 +192,11 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 			data-figma-node={
 				isGmailOAuthLayout
 					? schema?.configure_figma_node || '1310:15740'
-					: isZohoOAuthLayout
-						? schema?.configure_figma_node || '1339:17259'
-						: figmaMailer?.figmaNode || '672:5588'
+					: isOffice365OAuthLayout
+						? schema?.configure_figma_node || '1329:16097'
+						: isZohoOAuthLayout
+							? schema?.configure_figma_node || '1339:17259'
+							: figmaMailer?.figmaNode || '672:5588'
 			}
 		>
 			<header className="ps-v2-configure-form__hero">
@@ -222,6 +227,12 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 					schema={ schema }
 					values={ values }
 					onChange={ onChange }
+					renderField={ renderField }
+					connectionId={ connectionId }
+				/>
+			) : isOffice365OAuthLayout ? (
+				<Office365ConfigurePanel
+					schema={ schema }
 					renderField={ renderField }
 					connectionId={ connectionId }
 				/>

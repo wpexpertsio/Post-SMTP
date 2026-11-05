@@ -25,7 +25,7 @@ const ConnectionRow = ( {
 				aria-label="Drag to reorder"
 				{ ...dragHandleProps }
 			>
-				<img src={ iconDrag } alt="" width="8" height="15" />
+				<img src={ iconDrag } alt="" width="8" height="15" aria-hidden="true" />
 			</button>
 			<div className="ps-v2-conn-row__avatar">
 				<MailerAvatar provider={ connection.provider || connection.transport_type } />

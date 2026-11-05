@@ -68,15 +68,29 @@
 .ps-wizard-nav {
   /* width: 32%; */
   float: left;
+  flex: 0 0 32%;
+  max-width: 32%;
+  box-sizing: border-box;
 }
 
 .ps-wizard-pages {
   width: 67%;
   float: right;
+  flex: 1 1 67%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .ps-wizard-section {
   margin: 25px 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.ps-wizard-section::after {
+  content: '';
+  display: table;
+  clear: both;
 }
 
 .ps-wizard-footer {
@@ -93,68 +107,10 @@
   padding-left: 20px;
 }
 
+/* Step timeline height is handled via footer pseudo-lines; keep section nav natural height. */
 .ps-wizard-section .ps-wizard-nav {
-  height: 484px;
-}
-
-.smtp-outer .ps-wizard-section .ps-wizard-nav {
-  height: 978px;
-}
-
-.gmail_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 1087px;
-}
-
-.mandrill_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
-}
-
-.sendgrid_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
-}
-
-.mailersend_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
-}
-
-.mailgun_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 904px;
-}
-
-.sendinblue_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 724px;
-}
-
-.postmark_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
-}
-
-.sparkpost_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
-}
-
-.elasticemail_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 676px;
-}
-
-.office365_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 978px;
-}
-
-.zohomail_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 1087px;
-}
-
-.aws_ses_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 887px;
-}
-
-.mailjet_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 778px;
-}
-
-.sendpulse_api-outer .ps-wizard-section .ps-wizard-nav {
-  height: 775px;
+  height: auto;
+  min-height: 0;
 }
 
 .ps-wizard-footer .ps-wizard-nav {
@@ -614,7 +570,7 @@
 }
 
 .ps-wizard-pages {
-  min-height: 351px;
+  min-height: 0;
 }
 
 .ps-wizard-edit .dashicons-edit {

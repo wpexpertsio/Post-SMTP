@@ -1,0 +1,9 @@
+<svg width="560" height="120" viewBox="0 0 560 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="560" height="120" rx="6" fill="#F8F9FC" stroke="#E5E8EF"/>
+<text x="20" y="36" fill="#214A72" font-family="Arial,sans-serif" font-size="14" font-weight="700">Enable Auto Retry</text>
+<rect x="20" y="52" width="44" height="24" rx="12" fill="#214A72"/>
+<circle cx="56" cy="64" r="9" fill="#fff"/>
+<text x="20" y="98" fill="#214A72" font-family="Arial,sans-serif" font-size="13" font-weight="700">Times to Retry</text>
+<rect x="140" y="82" width="60" height="32" rx="2" fill="#fff" stroke="#DCDFE5"/>
+<text x="152" y="102" fill="#2D3340" font-family="Arial,sans-serif" font-size="14">3</text>
+</svg>

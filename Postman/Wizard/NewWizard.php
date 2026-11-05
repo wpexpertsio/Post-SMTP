@@ -182,8 +182,8 @@ class Post_SMTP_New_Wizard {
                                 <?php wp_nonce_field( 'post-smtp', 'security' );  ?>
                                 <div class="ps-wizard-screens-container">
                                     <div class="ps-wizard-step ps-wizard-step-1">
-                                        <p style="width: 100%; margin-bottom: 10px;color:#707070"><?php echo esc_html__( 'Choose a mailer from the following options.', 'post-smtp' ); ?></p>
-                                        <div class="ps-wizard-sockets">      
+                                        <p class="ps-wizard-step-intro" style="width: 100%; margin-bottom: 10px;color:#707070"><?php echo esc_html__( 'Choose a mailer from the following options.', 'post-smtp' ); ?></p>
+                                        <div class="ps-wizard-sockets">
                                         <?php
 
                                         $row  = 0;
@@ -356,15 +356,13 @@ class Post_SMTP_New_Wizard {
                                                     ); ?>
                                             </div>
                                             <div class="box">
-                                                <div class="ps-wizard-step ps-wizard-step-1">
+                                                <div class="ps-wizard-step1-actions">
                                                     <p class="ps-wizard-error"></p>
                                                     <button class="button button-primary ps-blue-btn ps-wizard-next-btn" data-step="1"><?php _e( 'Continue', 'post-smtp' ) ?> <span class="dashicons dashicons-arrow-right-alt"></span></button>
                                                     <div style="clear: both"></div>
                                                 </div>         
                                             </div>
                                         </div>
-                                        
-                                        </p>
                                     </div>
                                     <div class="ps-wizard-step ps-wizard-step-2">
                                         <?php
@@ -609,6 +607,11 @@ class Post_SMTP_New_Wizard {
      * @version 1.0.0
      */
     public function enqueue_scripts() {
+
+        $page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+        if ( 'postman/configuration_wizard' !== $page || apply_filters( 'post_smtp_legacy_wizard', true ) ) {
+            return;
+        }
 
         $localized = array(
             'Step1E1'           => __( 'Select a socket type to continue.', 'post-smtp' ),

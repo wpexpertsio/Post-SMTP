@@ -11,11 +11,14 @@ use PostSMTP\Api\V2\ApiRegistrar;
 use PostSMTP\Connections\ConnectionLegacySendBridge;
 use PostSMTP\Mail\Modern\Register as ModernMailRegister;
 use PostSMTP\Connections\GmailConfigurePanelHooks;
+use PostSMTP\Connections\Office365ConfigurePanelHooks;
 use PostSMTP\Dashboard\DashboardReportsTrackingHooks;
 use PostSMTP\Kernel\Libraries\LibraryLoader;
 use PostSMTP\Notifications\FailureNotificationBridge;
 use PostSMTP\Notifications\NotificationTeamsPanelHooks;
 use PostSMTP\Notifications\NotificationTwilioPanelHooks;
+use PostSMTP\Settings\SettingsEmailLogsPanelHooks;
+use PostSMTP\Settings\SettingsEmailQueuePanelHooks;
 use PostSMTP\Settings\SettingsEmailReportingPanelHooks;
 use PostSMTP\Rollout\CohortResolver;
 
@@ -39,6 +42,7 @@ final class Plugin {
 				ApiRegistrar::init();
 				FailureNotificationBridge::init();
 				GmailConfigurePanelHooks::init();
+				Office365ConfigurePanelHooks::init();
 				ModernMailRegister::init();
 				if ( ! CohortResolver::usesRevampMailPipeline() ) {
 					ConnectionLegacySendBridge::init();
@@ -46,6 +50,8 @@ final class Plugin {
 				NotificationTeamsPanelHooks::init();
 				NotificationTwilioPanelHooks::init();
 				SettingsEmailReportingPanelHooks::init();
+				SettingsEmailLogsPanelHooks::init();
+				SettingsEmailQueuePanelHooks::init();
 				DashboardReportsTrackingHooks::init();
 			},
 			20

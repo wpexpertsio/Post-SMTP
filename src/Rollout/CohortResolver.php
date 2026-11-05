@@ -78,7 +78,7 @@ final class CohortResolver {
 	}
 
 	/**
-	 * Connections UI sites send through ProviderInterface + Modern\Delivery\Orchestrator (not PostmanMailEngine).
+	 * Revamp sites send through ProviderInterface + DeliveryOrchestrator (not PostmanMailEngine).
 	 */
 	public static function usesRevampMailPipeline(): bool {
 		if ( ConnectionRepositoryFactory::isLegacyMode() ) {

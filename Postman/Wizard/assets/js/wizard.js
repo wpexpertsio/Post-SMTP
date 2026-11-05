@@ -170,22 +170,39 @@ jQuery(document).ready(function () {
      * @since 2.0.0
      * @version 1.0.0
      */
-    const refreshWizard = function () {
+    const $wizardContentSteps = function () {
+        return jQuery('.ps-wizard-screens-container > .ps-wizard-step');
+    };
 
-        var tableRow = jQuery('.ps-wizard-nav table tr.ps-active-nav');
-        var activeTab = jQuery(tableRow).hasClass('ps-active-nav');
+    const $wizardFooterSteps = function () {
+        return jQuery('.ps-wizard-footer-right > .ps-wizard-step');
+    };
+
+    const refreshWizard = function ( animate ) {
+
+        var tableRow = jQuery('.ps-wizard-section .ps-wizard-nav table tr.ps-active-nav').first();
+        var activeTab = tableRow.length && jQuery(tableRow).hasClass('ps-active-nav');
 
         if (activeTab) {
 
             var stepID = jQuery(tableRow).find('.dashicons-edit').data('step');
-            jQuery('.ps-wizard-step').hide();
-            jQuery(`.ps-wizard-step-${stepID}`).fadeIn('slow');
+            $wizardContentSteps().hide();
+            $wizardFooterSteps().hide();
+            var $contentStep = jQuery(`.ps-wizard-screens-container > .ps-wizard-step-${stepID}`);
+            var $footerStep = jQuery(`.ps-wizard-footer-right > .ps-wizard-step-${stepID}`);
+            if ( animate ) {
+                $contentStep.fadeIn('slow');
+                $footerStep.fadeIn('slow');
+            } else {
+                $contentStep.show();
+                $footerStep.show();
+            }
 
             // When we arrive on the final step for the first time,
             // trigger a short confetti animation on the mobile app banner.
             if (stepID === 4 && !finalStepConfettiShown && typeof party !== 'undefined') {
 
-                const target = jQuery('.ps-home-middle-right')[0] || jQuery(`.ps-wizard-step-${stepID}`)[0];
+                const target = jQuery('.ps-home-middle-right')[0] || jQuery(`.ps-wizard-screens-container > .ps-wizard-step-${stepID}`)[0];
 
                 if (target) {
                     party.confetti(target, {
@@ -381,7 +398,7 @@ jQuery(document).ready(function () {
         jQuery(`*[data-step="${stepID}"]`).closest('tr').removeClass('ps-active-nav ps-in-active-nav');
         jQuery(`*[data-step="${nextStep}"]`).closest('tr').removeClass('ps-active-nav ps-in-active-nav');
         jQuery(`*[data-step="${nextStep}"]`).closest('tr').addClass('ps-active-nav');
-        refreshWizard();
+        refreshWizard( true );
 
     }
 
@@ -402,7 +419,7 @@ jQuery(document).ready(function () {
         jQuery('.ps-wizard-success').html('');
         jQuery('.ps-wizard-error').html('');
         jQuery('.ps-wizard-connectivity-information').remove();
-        refreshWizard();
+        refreshWizard( true );
 
     }
 
@@ -956,12 +973,15 @@ jQuery(document).ready(function () {
 
     });
 
-    refreshWizard();
+    refreshWizard( false );
 
-    if (getUrlParameter('socket')) {
-
-        jQuery(document).scrollTop(jQuery(document).height());
-
+    if ( getUrlParameter( 'msg' ) || getUrlParameter( 'success' ) ) {
+        var $notice = jQuery( '.ps-wizard-footer-right .ps-wizard-error, .ps-wizard-footer-right .ps-wizard-success' ).filter( function () {
+            return jQuery( this ).text().trim().length > 0;
+        } ).first();
+        if ( $notice.length ) {
+            $notice[0].scrollIntoView( { behavior: 'smooth', block: 'nearest' } );
+        }
     }
 
     jQuery(document).on('click', '.ps-pro-extension-outer', function () {

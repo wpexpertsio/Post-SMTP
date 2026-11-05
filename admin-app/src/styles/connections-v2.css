@@ -179,6 +179,9 @@
 
 .ps-v2-conn-row__handle img {
 	display: block;
+	width: 8px;
+	height: 15px;
+	flex-shrink: 0;
 }
 
 .ps-v2-conn-row__avatar {
@@ -1494,6 +1497,71 @@
 .ps-v2-gmail-configure .ps-v2-configure-form__api .ps-v2-gmail-configure__readonly + .ps-v2-gmail-configure__readonly,
 .ps-v2-gmail-configure .ps-v2-configure-form__api .ps-v2-gmail-configure__readonly + .ps-v2-form-field {
 	margin-top: 15px;
+}
+
+/* Microsoft 365 configure (Figma 1329:16097) — reuses Gmail connect layout tokens */
+.ps-v2-notify-business-tag {
+	display: inline-flex;
+	align-items: center;
+	padding: 2px 8px;
+	border-radius: 4px;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: 0.02em;
+	color: #5b21b6;
+	background: #f3e8ff;
+}
+
+.ps-v2-office365-configure__microsoft-btn {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	min-width: 220px;
+	height: 44px;
+	padding: 0 20px;
+	border: 1px solid #8c8c8c;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 600;
+	text-decoration: none;
+	color: #1f2937;
+	background: #fff;
+	cursor: pointer;
+}
+
+.ps-v2-office365-configure__microsoft-btn--brand {
+	border-color: #d1d5db;
+	box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+.ps-v2-office365-configure__microsoft-btn--brand:hover,
+.ps-v2-office365-configure__microsoft-btn--brand:focus-visible {
+	border-color: #9ca3af;
+	background: #f9fafb;
+	color: #111827;
+}
+
+.ps-v2-office365-configure__microsoft-btn--locked {
+	opacity: 0.55;
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
+.ps-v2-office365-configure__microsoft-btn img {
+	flex-shrink: 0;
+}
+
+button.ps-v2-office365-configure__microsoft-btn {
+	font-family: inherit;
+	cursor: pointer;
+}
+
+button.ps-v2-office365-configure__microsoft-btn:disabled {
+	opacity: 0.7;
+	cursor: wait;
 }
 
 /* Sidebar helper cards (672:5689, 672:5704) */

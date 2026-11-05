@@ -796,3 +796,140 @@
 	min-width: 176px;
 	justify-content: center;
 }
+
+/* Email Queue — Free Pro feature previews */
+.ps-v2-settings-queue-previews {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	max-width: 620px;
+}
+
+.ps-v2-settings-queue-previews__head {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+}
+
+.ps-v2-settings-queue-previews__title-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.ps-v2-settings-queue-previews__list {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.ps-v2-settings-queue-preview-card {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 15px;
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+}
+
+.ps-v2-settings-queue-preview-card__shot-wrap {
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: 0;
+	border: none;
+	background: transparent;
+	cursor: zoom-in;
+	text-align: left;
+}
+
+.ps-v2-settings-queue-preview-card__shot {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 4px;
+	border: 1px solid #e5e8ef;
+}
+
+.ps-v2-settings-queue-preview-card__magnify {
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(255, 255, 255, 0.95);
+	border-radius: 50%;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.ps-v2-settings-queue-preview-card__title {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 700;
+	color: #214a72;
+}
+
+.ps-v2-settings-queue-preview-card__desc {
+	margin: 0;
+	font-size: 12px;
+	line-height: 1.5;
+	color: #707070;
+}
+
+.ps-v2-settings-queue-preview-card__cta {
+	margin-top: 4px;
+	align-self: flex-start;
+}
+
+.ps-v2-image-lightbox {
+	position: fixed;
+	inset: 0;
+	z-index: 100000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+}
+
+.ps-v2-image-lightbox__backdrop {
+	position: absolute;
+	inset: 0;
+	border: none;
+	background: rgba(0, 0, 0, 0.55);
+	cursor: pointer;
+}
+
+.ps-v2-image-lightbox__panel {
+	position: relative;
+	z-index: 1;
+	max-width: min(960px, 100%);
+	max-height: 90vh;
+	background: #fff;
+	border-radius: 8px;
+	padding: 16px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.ps-v2-image-lightbox__close {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	border: none;
+	background: #f5f5f5;
+	border-radius: 4px;
+	padding: 6px 10px;
+	cursor: pointer;
+	font-size: 12px;
+}
+
+.ps-v2-image-lightbox__img {
+	display: block;
+	max-width: 100%;
+	max-height: calc(90vh - 48px);
+	height: auto;
+}

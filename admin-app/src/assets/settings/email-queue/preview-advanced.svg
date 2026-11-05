@@ -1,0 +1,7 @@
+<svg width="560" height="120" viewBox="0 0 560 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="560" height="120" rx="6" fill="#F8F9FC" stroke="#E5E8EF"/>
+<text x="20" y="36" fill="#214A72" font-family="Arial,sans-serif" font-size="14" font-weight="700">Enable Advanced Delivery</text>
+<rect x="20" y="52" width="44" height="24" rx="12" fill="#214A72"/>
+<circle cx="56" cy="64" r="9" fill="#fff"/>
+<text x="80" y="68" fill="#707070" font-family="Arial,sans-serif" font-size="11">Queues email and sends in the background.</text>
+</svg>

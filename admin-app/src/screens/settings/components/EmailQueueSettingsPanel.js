@@ -1,21 +1,50 @@
 import { useEffect, useState } from '@wordpress/element';
 import iconEmailQueue from '../../../assets/settings/nav-email-queue.svg';
 import iconEmailQueueHeader from '../../../assets/settings/icon-email-queue-header.svg';
-import checkIcon from '../../../assets/dashboard/pro-banner/check.svg';
-import iconUpgradeArrow from '../../../assets/help-docs/icon-upgrade-arrow.svg';
+import previewAdvanced from '../../../assets/settings/email-queue/preview-advanced.svg';
+import previewBatch from '../../../assets/settings/email-queue/preview-batch.svg';
+import previewQuota from '../../../assets/settings/email-queue/preview-quota.svg';
+import previewRetry from '../../../assets/settings/email-queue/preview-retry.svg';
 import { getAdminConfig, getAdminUrls } from '../../../config/admin';
 import { proCrownIcon } from '../../dashboard/components/v2/gmailBarAssets';
 import FormNotice from '../../connections/components/FormNotice';
 import useSettingsEmailQueue from '../hooks/useSettingsEmailQueue';
+import ImageLightbox from './ImageLightbox';
+import ProFeaturePreviewCard from './ProFeaturePreviewCard';
 import SettingsSectionCard from './SettingsSectionCard';
 import SettingsSectionHeader from './SettingsSectionHeader';
 import SettingsSelectField from './SettingsSelectField';
 import SettingsToggleRow from './SettingsToggleRow';
 
-const PRO_QUEUE_FEATURES = [
-	'Advanced Delivery',
-	'Batch settings',
-	'Quota settings',
+const PREVIEW_META = [
+	{
+		id: 'advanced_delivery',
+		imageSrc: previewAdvanced,
+		title: 'Advanced Delivery',
+		description:
+			'Queue outgoing emails and send them automatically in the background to support higher email volumes.',
+	},
+	{
+		id: 'batch_settings',
+		imageSrc: previewBatch,
+		title: 'Batch Settings',
+		description:
+			'Control how many emails are sent in each batch and the waiting time between batches to manage server load.',
+	},
+	{
+		id: 'quota_settings',
+		imageSrc: previewQuota,
+		title: 'Quota Settings',
+		description:
+			'Set email sending limits for an hour, day, week, or month. Additional queued emails wait until the next available quota period.',
+	},
+	{
+		id: 'auto_retry',
+		imageSrc: previewRetry,
+		title: 'Auto Retry',
+		description:
+			'Automatically retry failed email sends using a configurable retry limit to improve delivery reliability.',
+	},
 ];
 
 const SectionIcon = ( { src } ) => (
@@ -31,7 +60,7 @@ const ProTag = () => (
 	</span>
 );
 
-const SettingsNumberField = ( { label, hint, value, onChange, min = 0, disabled = false } ) => (
+const SettingsNumberField = ( { label, hint, value, onChange, min = 1, disabled = false } ) => (
 	<div className="ps-v2-settings-field">
 		<div className="ps-v2-settings-field__head">
 			<span className="ps-v2-settings-field__label">{ label }</span>
@@ -43,56 +72,36 @@ const SettingsNumberField = ( { label, hint, value, onChange, min = 0, disabled 
 			value={ value }
 			min={ min }
 			disabled={ disabled }
-			onChange={ ( e ) => onChange( parseInt( e.target.value, 10 ) || 0 ) }
+			onChange={ ( e ) => onChange( parseInt( e.target.value, 10 ) || min ) }
 		/>
 	</div>
 );
 
-const EmailQueueFreeUpsell = ( { urls } ) => (
-	<div className="ps-v2-settings-email-queue ps-v2-settings-queue-upsell" data-figma-node="672:7812">
-		<div className="ps-v2-settings-queue-upsell__main" data-figma-node="672:7813">
-			<header className="ps-v2-settings-queue-upsell__head" data-figma-node="672:7814">
-				<span
-					className="ps-v2-settings-section-head__icon-box ps-v2-settings-section-head__icon-box--lg ps-v2-settings-section-head__icon-box--white"
-					aria-hidden="true"
-				>
-					<img src={ iconEmailQueueHeader } alt="" width="24" height="24" />
-				</span>
-				<div className="ps-v2-settings-queue-upsell__title-row" data-figma-node="672:7818">
-					<h2 className="ps-v2-settings-section-head__title">Email Queue</h2>
-					<ProTag />
-				</div>
-			</header>
-
-			<SettingsSectionCard
-				className="ps-v2-settings-section--flat ps-v2-settings-queue-upsell__card"
-				figmaNode="672:7821"
+const EmailQueueFreePreviews = ( { upgradeUrl } ) => (
+	<div className="ps-v2-settings-email-queue ps-v2-settings-queue-previews" data-figma-node="672:7812">
+		<header className="ps-v2-settings-queue-previews__head">
+			<span
+				className="ps-v2-settings-section-head__icon-box ps-v2-settings-section-head__icon-box--lg ps-v2-settings-section-head__icon-box--white"
+				aria-hidden="true"
 			>
-				<p className="ps-v2-settings-queue-upsell__lead" data-figma-node="1065:43465">
-					Unlock these awesome logging features:
-				</p>
-				<ul className="ps-v2-settings-queue-upsell__features" data-figma-node="1065:43453">
-					{ PRO_QUEUE_FEATURES.map( ( label ) => (
-						<li key={ label }>
-							<img src={ checkIcon } alt="" width="14" height="14" aria-hidden="true" />
-							<span>{ label }</span>
-						</li>
-					) ) }
-				</ul>
-			</SettingsSectionCard>
-
-			<div className="ps-v2-settings-queue-upsell__previews" data-figma-node="1065:43483" aria-hidden="true">
-				<div className="ps-v2-settings-queue-upsell__preview" data-figma-node="1065:43468" />
-				<div className="ps-v2-settings-queue-upsell__preview" data-figma-node="1065:43484" />
-				<div className="ps-v2-settings-queue-upsell__preview" data-figma-node="1065:43486" />
+				<img src={ iconEmailQueueHeader } alt="" width="24" height="24" />
+			</span>
+			<div className="ps-v2-settings-queue-previews__title-row">
+				<h2 className="ps-v2-settings-section-head__title">Email Queue</h2>
+				<ProTag />
 			</div>
-		</div>
+		</header>
 
-		<div className="ps-v2-settings-queue-upsell__cta-wrap" data-figma-node="672:7886">
-			<a href={ urls.pro } className="ps-v2-reports-cta ps-v2-settings-queue-upsell__cta" target="_blank" rel="noreferrer">
-				Upgrade to Pro
-				<img src={ iconUpgradeArrow } alt="" width="14" height="10" />
-			</a>
+		<div className="ps-v2-settings-queue-previews__list">
+			{ PREVIEW_META.map( ( item ) => (
+				<ProFeaturePreviewCard
+					key={ item.id }
+					title={ item.title }
+					description={ item.description }
+					imageSrc={ item.imageSrc }
+					upgradeUrl={ upgradeUrl }
+				/>
+			) ) }
 		</div>
 	</div>
 );
@@ -110,7 +119,10 @@ const EmailQueueSettingsPanel = () => {
 		}
 	}, [ query.data ] );
 
+	const panelConfig = query.data?.panel_config || {};
+	const upgradeUrl = panelConfig.upgrade_url || urls.pro || 'https://postmansmtp.com/pricing/';
 	const isPro = query.data?.is_pro ?? config.isPro;
+	const panelLocked = query.data?.panel_locked ?? ! isPro;
 
 	if ( query.isLoading ) {
 		return <p className="ps-v2-settings-loading">Loading settings…</p>;
@@ -120,8 +132,8 @@ const EmailQueueSettingsPanel = () => {
 		return <p className="ps-v2-settings-loading">Could not load settings.</p>;
 	}
 
-	if ( ! isPro ) {
-		return <EmailQueueFreeUpsell urls={ urls } />;
+	if ( panelLocked ) {
+		return <EmailQueueFreePreviews upgradeUrl={ upgradeUrl } />;
 	}
 
 	if ( ! form ) {
@@ -129,6 +141,7 @@ const EmailQueueSettingsPanel = () => {
 	}
 
 	const quotaChoices = query.data?.quota_duration_choices || [];
+	const retryChoices = query.data?.retry_attempt_choices || [];
 
 	const patch = ( key, value ) => {
 		setForm( ( prev ) => ( { ...prev, [ key ]: value } ) );
@@ -197,7 +210,7 @@ const EmailQueueSettingsPanel = () => {
 						label="Duration between batches (seconds)"
 						hint="Wait time between batches."
 						value={ form.batch_duration }
-						min={ 0 }
+						min={ 1 }
 						onChange={ ( v ) => patch( 'batch_duration', v ) }
 					/>
 				</SettingsSectionCard>
@@ -235,11 +248,36 @@ const EmailQueueSettingsPanel = () => {
 					/>
 					<SettingsSelectField
 						label="Email quota duration"
-						hint="Day, week or month."
+						hint="Hour, day, week, or month."
 						value={ form.quota_duration }
 						options={ quotaChoices }
 						disabled={ ! form.enable_quota }
 						onChange={ ( v ) => patch( 'quota_duration', v ) }
+					/>
+				</SettingsSectionCard>
+			</div>
+
+			<div className="ps-v2-settings-email-queue__block">
+				<SettingsSectionHeader
+					icon={ <SectionIcon src={ iconEmailQueue } /> }
+					title="Auto Retry"
+					description="Try failed emails again automatically."
+				/>
+				<SettingsSectionCard className="ps-v2-settings-section--flat">
+					<SettingsToggleRow
+						id="auto-retry-enabled-queue"
+						label="Enable Auto Retry"
+						description="Automatically retry failed email sends."
+						checked={ form.auto_retry_enabled }
+						onChange={ ( v ) => patch( 'auto_retry_enabled', v ) }
+					/>
+					<SettingsSelectField
+						label="Times to Retry"
+						hint="Maximum automatic retries after the initial failure."
+						value={ form.auto_retry_max_attempts }
+						options={ retryChoices }
+						disabled={ ! form.auto_retry_enabled }
+						onChange={ ( v ) => patch( 'auto_retry_max_attempts', parseInt( v, 10 ) ) }
 					/>
 				</SettingsSectionCard>
 			</div>
@@ -259,3 +297,4 @@ const EmailQueueSettingsPanel = () => {
 };
 
 export default EmailQueueSettingsPanel;
+export { ImageLightbox };

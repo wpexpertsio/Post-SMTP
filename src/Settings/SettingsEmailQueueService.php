@@ -13,22 +13,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class SettingsEmailQueueService {
 
-	private const PRO_OPTION = 'ps_aedl_option';
-
 	/**
 	 * @return array<string,mixed>
 	 */
 	public function getEmailQueue(): array {
-		$pro = $this->readProSettings();
-
-		return array(
-			'is_pro'                 => $this->isProActive(),
-			'values'                 => $this->readValues( $pro ),
+		$payload = array(
+			'is_pro'                 => SettingsEmailQueuePanelHooks::isProForApi(),
+			'panel_locked'           => SettingsEmailQueuePanelHooks::isPanelLocked(),
+			'panel_config'           => SettingsEmailQueuePanelHooks::panelConfig(),
+			'values'                 => AedlOptions::valuesForQueueApi(),
+			'preview_sections'       => SettingsEmailQueuePanelHooks::isPanelLocked() ? AedlOptions::previewSections() : array(),
 			'quota_duration_choices' => $this->quotaDurationChoices(),
+			'retry_attempt_choices'  => $this->retryAttemptChoices(),
 			'copy'                   => array(
 				'saved' => __( 'Settings saved.', 'post-smtp' ),
 			),
 		);
+
+		/**
+		 * Full Email Queue settings GET payload.
+		 *
+		 * @param array<string,mixed>       $payload REST response body.
+		 * @param SettingsEmailQueueService $service Service instance.
+		 */
+		$filtered = apply_filters( 'post_smtp_settings_email_queue_get', $payload, $this );
+
+		return is_array( $filtered ) ? $filtered : $payload;
 	}
 
 	/**
@@ -36,103 +46,42 @@ final class SettingsEmailQueueService {
 	 * @return array{success:bool,message:string,values?:array<string,mixed>}
 	 */
 	public function saveEmailQueue( array $payload ): array {
-		if ( ! $this->isProActive() ) {
+		if ( SettingsEmailQueuePanelHooks::isPanelLocked() ) {
+			do_action( 'post_smtp_settings_email_queue_locked_save_attempt', $payload );
+
 			return array(
 				'success' => false,
 				'message' => __( 'Email Queue requires Post SMTP Pro.', 'post-smtp' ),
 			);
 		}
 
-		$settings = get_option( self::PRO_OPTION, array() );
-		if ( ! is_array( $settings ) ) {
-			$settings = array();
+		$was_enabled = AedlOptions::wasAdvanceDeliveryEnabled();
+
+		$validation = AedlOptions::validateAndBuildPatch( $payload );
+		if ( empty( $validation['success'] ) ) {
+			return array(
+				'success' => false,
+				'message' => $validation['message'] ?? __( 'Could not save settings.', 'post-smtp' ),
+			);
 		}
 
-		$patch = $this->mapPayloadToProSettings( $payload );
-		$merged = array_merge( $settings, $patch );
+		$patch  = $validation['patch'] ?? array();
+		$merged = AedlOptions::savePatch( $patch );
 
-		if ( empty( $merged['quota_duration'] ) ) {
-			$merged['quota_duration'] = 'd';
+		$now_enabled = ! empty( $merged['enable_advance_delivery'] );
+		if ( $was_enabled && ! $now_enabled ) {
+			do_action( 'post_smtp_aedl_advance_delivery_disabled' );
 		}
 
-		update_option( self::PRO_OPTION, $merged );
-
-		return array(
+		$result = array(
 			'success' => true,
 			'message' => __( 'Settings saved.', 'post-smtp' ),
-			'values'  => $this->readValues( $merged ),
+			'values'  => AedlOptions::valuesForQueueApi(),
 		);
-	}
 
-	/**
-	 * @param array<string,mixed> $pro
-	 * @return array<string,mixed>
-	 */
-	private function readValues( array $pro ): array {
-		return array(
-			'enable_advance_delivery'  => ! empty( $pro['enable_advance_delivery'] ),
-			'emails_per_batch'         => isset( $pro['emails_per_batch'] ) ? absint( $pro['emails_per_batch'] ) : 20,
-			'batch_duration'           => isset( $pro['batch_duration'] ) ? absint( $pro['batch_duration'] ) : 60,
-			'enable_quota'             => ! empty( $pro['enable_quota'] ),
-			'advanced_quota_settings'  => ! empty( $pro['advanced_quota_settings'] ),
-			'quota_value'              => isset( $pro['quota_value'] ) ? absint( $pro['quota_value'] ) : 100,
-			'quota_duration'           => isset( $pro['quota_duration'] ) ? sanitize_key( (string) $pro['quota_duration'] ) : 'd',
-		);
-	}
+		$filtered = apply_filters( 'post_smtp_settings_email_queue_save_result', $result, $payload );
 
-	/**
-	 * @return array<string,mixed>
-	 */
-	private function readProSettings(): array {
-		$settings = get_option( self::PRO_OPTION, array() );
-		return is_array( $settings ) ? $settings : array();
-	}
-
-	/**
-	 * @param array<string,mixed> $payload
-	 * @return array<string,mixed>
-	 */
-	private function mapPayloadToProSettings( array $payload ): array {
-		$patch = array();
-
-		if ( array_key_exists( 'enable_advance_delivery', $payload ) ) {
-			$patch['enable_advance_delivery'] = ! empty( $payload['enable_advance_delivery'] ) ? 1 : 0;
-		}
-
-		if ( array_key_exists( 'emails_per_batch', $payload ) ) {
-			$patch['emails_per_batch'] = max( 1, absint( $payload['emails_per_batch'] ) );
-		}
-
-		if ( array_key_exists( 'batch_duration', $payload ) ) {
-			$patch['batch_duration'] = max( 0, absint( $payload['batch_duration'] ) );
-		}
-
-		if ( array_key_exists( 'enable_quota', $payload ) ) {
-			$patch['enable_quota'] = ! empty( $payload['enable_quota'] ) ? 1 : 0;
-		}
-
-		if ( array_key_exists( 'advanced_quota_settings', $payload ) ) {
-			$patch['advanced_quota_settings'] = ! empty( $payload['advanced_quota_settings'] ) ? 1 : 0;
-		}
-
-		if ( array_key_exists( 'quota_value', $payload ) ) {
-			$patch['quota_value'] = max( 1, absint( $payload['quota_value'] ) );
-		}
-
-		if ( array_key_exists( 'quota_duration', $payload ) ) {
-			$duration = sanitize_key( (string) $payload['quota_duration'] );
-			$allowed  = array( 'h', 'd', 'w', 'm' );
-			if ( in_array( $duration, $allowed, true ) ) {
-				$patch['quota_duration'] = $duration;
-			}
-		}
-
-		return $patch;
-	}
-
-	private function isProActive(): bool {
-		return defined( 'POST_SMTP_PRO_VERSION' )
-			|| ( function_exists( 'pspro_fs' ) && pspro_fs()->is_registered() );
+		return is_array( $filtered ) ? $filtered : $result;
 	}
 
 	/**
@@ -157,5 +106,20 @@ final class SettingsEmailQueueService {
 				'label' => __( 'Per Month', 'post-smtp' ),
 			),
 		);
+	}
+
+	/**
+	 * @return list<array{value:int,label:string}>
+	 */
+	private function retryAttemptChoices(): array {
+		$out = array();
+		for ( $i = 1; $i <= 10; $i++ ) {
+			$out[] = array(
+				'value' => $i,
+				'label' => (string) $i,
+			);
+		}
+
+		return $out;
 	}
 }

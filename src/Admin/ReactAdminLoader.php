@@ -170,8 +170,9 @@ final class ReactAdminLoader {
 			'migrationWizard' => $migration_wizard,
 			'needsMigration'  => CohortResolver::needsMigration(),
 			'migrationOnly'   => false,
-			'gmailConfigure' => GmailConfigureBootstrap::defaults(),
-			'zohoConfigure'  => ZohoConfigureBootstrap::defaults(),
+			'gmailConfigure'     => GmailConfigureBootstrap::defaults(),
+			'zohoConfigure'        => ZohoConfigureBootstrap::defaults(),
+			'office365Configure'   => Office365ConfigureBootstrap::defaults(),
 			'adminUrls'      => array(
 				'dashboard'   => admin_url( 'admin.php?page=postman' ),
 				'connections' => admin_url( 'admin.php?page=postman#/connections' ),
