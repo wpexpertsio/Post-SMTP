@@ -21,36 +21,85 @@ if ( ! function_exists( 'post_smtp_utm_sanitize_token' ) ) :
 	}
 endif;
 
+if ( ! function_exists( 'post_smtp_utm_in_plugin_source' ) ) :
+	/**
+	 * utm_source for links from this plugin to postmansmtp.com.
+	 *
+	 * @return string
+	 */
+	function post_smtp_utm_in_plugin_source() {
+		return 'plugin';
+	}
+endif;
+
+if ( ! function_exists( 'post_smtp_utm_in_plugin_medium' ) ) :
+	/**
+	 * utm_medium for in-plugin marketing links.
+	 *
+	 * @return string
+	 */
+	function post_smtp_utm_in_plugin_medium() {
+		return 'in-plugin';
+	}
+endif;
+
 if ( ! function_exists( 'post_smtp_utm_placements' ) ) :
 	/**
-	 * Registered utm_content placement slugs.
+	 * Registered utm_content placement slugs (legacy + guide names).
 	 *
 	 * @return string[]
 	 */
 	function post_smtp_utm_placements() {
 		$placements = array(
+			// Legacy (frozen in GA4 — keep registering for debug).
 			'sub_menu',
 			'plugins_page',
 			'dashboard_pro_banner',
 			'dashboard_pro_grid',
 			'dashboard_side_banner',
-			'dashboard_documentation',
 			'dashboard_gmail_one_click',
 			'wp_dashboard_widget',
 			'extension_screen_pop_up',
 			'test_email_dns_check',
+			'wizard_gmail_one_click',
+			'mainwp_banner',
+			'admin-notice_pro-bar',
+			// Guide placements.
+			'dashboard_mainwp-banner',
+			'dashboard_spam-score-banner',
+			'dashboard_documentation',
+			'dashboard_troubleshooting-dns-check',
+			'dashboard_office-one-click',
+			'dashboard_pro-list-microsoft-365',
+			'dashboard_pro-list-amazon-ses',
+			'dashboard_pro-list-email-log-attachment',
+			'dashboard_pro-list-report-and-tracking',
+			'dashboard_pro-list-advanced-email-delivery',
+			'dashboard_pro-list-twilio',
+			'dashboard_pro-list-zoho-mail',
+			'settings_mobile-app-guide',
+			'settings_google-play',
+			'settings_app-store',
+			'dashboard_google-play',
+			'dashboard_app-store',
+			'wizard_google-play',
+			'wizard_app-store',
+			'popup_claim-offer',
+			'admin_bundles-banner-headline',
+			'admin_bundles-banner-learn-more',
+			'extensions_popup-cta',
+			'test-email_fix-broken-emails',
 			'wizard',
 			'wizard_microsoft',
-			'wizard_gmail_one_click',
+			'wizard_microsoft-one-click',
 			'wizard_zoho',
 			'wizard_amazonses',
 			'wizard_fix-broken-emails',
+			'wizard_sendpulse',
 			'wizard_sendpulse-docs',
 			'mailer_card',
-			'mainwp_banner',
 			'settings_mobile-app-docs',
 			'email-log_promo-banner',
-			'admin-notice_pro-bar',
 			'dashboard_mobile-app',
 			'settings_mobile-app',
 		);
@@ -86,7 +135,7 @@ if ( ! function_exists( 'post_smtp_utm_validate_placement' ) ) :
 					__( 'Unknown UTM placement "%s". Register it via post_smtp_utm_placements filter.', 'post-smtp' ),
 					esc_html( $placement )
 				),
-				'3.0.0'
+				'4.0.3'
 			);
 		}
 	}
@@ -104,7 +153,157 @@ if ( ! function_exists( 'post_smtp_utm_normalize_campaign' ) ) :
 		if ( '' === $campaign || 'plugin' === $campaign ) {
 			$campaign = 'upgrade';
 		}
+		if ( 'dns-check' === $campaign ) {
+			$campaign = 'domain-health-checker';
+		}
 		return $campaign;
+	}
+endif;
+
+if ( ! function_exists( 'post_smtp_utm_resolve_in_plugin_tags' ) ) :
+	/**
+	 * Map legacy placement/campaign inputs to utm_campaign + utm_content.
+	 *
+	 * @param string $campaign  Requested campaign.
+	 * @param string $placement Requested placement (legacy slug).
+	 * @param string $path      Marketing site path (for extension list links).
+	 * @return array{campaign:string,content:string}
+	 */
+	function post_smtp_utm_resolve_in_plugin_tags( $campaign, $placement, $path = '' ) {
+		$campaign  = post_smtp_utm_normalize_campaign( $campaign );
+		$placement = post_smtp_utm_sanitize_token( $placement );
+		$path      = strtolower( ltrim( (string) $path, '/' ) );
+
+		$composite = $campaign . '::' . $placement;
+		$by_composite = array(
+			'upgrade::wizard'           => array(
+				'campaign' => 'upgrade',
+				'content'  => 'popup_claim-offer',
+			),
+			'setup-wizard::wizard'      => array(
+				'campaign' => 'docs',
+				'content'  => 'test-email_fix-broken-emails',
+			),
+		);
+		if ( isset( $by_composite[ $composite ] ) ) {
+			return $by_composite[ $composite ];
+		}
+
+		if ( 'dashboard_pro_grid' === $placement && '' !== $path ) {
+			$extension_map = array(
+				'office-365-extension-for-post-smtp' => 'dashboard_pro-list-microsoft-365',
+				'post-smtp-extension-for-amazon-ses' => 'dashboard_pro-list-amazon-ses',
+				'email-log-attachment'             => 'dashboard_pro-list-email-log-attachment',
+				'reporting-and-tracking-extension' => 'dashboard_pro-list-report-and-tracking',
+				'advanced-email-delivery'          => 'dashboard_pro-list-advanced-email-delivery',
+				'twilio-extension-pro'             => 'dashboard_pro-list-twilio',
+				'zoho-mail-pro-extension'          => 'dashboard_pro-list-zoho-mail',
+			);
+			foreach ( $extension_map as $needle => $content ) {
+				if ( false !== strpos( $path, $needle ) ) {
+					return array(
+						'campaign' => 'upgrade',
+						'content'  => $content,
+					);
+				}
+			}
+		}
+
+		$by_placement = array(
+			'mainwp_banner'              => array(
+				'campaign' => 'mainwp',
+				'content'  => 'dashboard_mainwp-banner',
+			),
+			'dashboard_side_banner'      => array(
+				'campaign' => 'domain-health-checker',
+				'content'  => 'dashboard_spam-score-banner',
+			),
+			'settings_mobile-app-docs'   => array(
+				'campaign' => 'docs',
+				'content'  => 'settings_mobile-app-guide',
+			),
+			'wizard_fix-broken-emails'   => array(
+				'campaign' => 'docs',
+				'content'  => 'wizard_fix-broken-emails',
+			),
+			'wizard_sendpulse-docs'      => array(
+				'campaign' => 'docs',
+				'content'  => 'wizard_sendpulse',
+			),
+			'test_email_dns_check'       => array(
+				'campaign' => 'domain-health-checker',
+				'content'  => 'test_email_dns_check',
+			),
+			'extension_screen_pop_up'    => array(
+				'campaign' => 'upgrade',
+				'content'  => 'extensions_popup-cta',
+			),
+			'admin-notice_pro-bar'       => array(
+				'campaign' => 'upgrade',
+				'content'  => 'admin_bundles-banner-headline',
+			),
+			'admin_bundles-banner-headline' => array(
+				'campaign' => 'upgrade',
+				'content'  => 'admin_bundles-banner-headline',
+			),
+			'admin_bundles-banner-learn-more' => array(
+				'campaign' => 'upgrade',
+				'content'  => 'admin_bundles-banner-learn-more',
+			),
+			'popup_claim-offer'          => array(
+				'campaign' => 'upgrade',
+				'content'  => 'popup_claim-offer',
+			),
+			'test-email_fix-broken-emails' => array(
+				'campaign' => 'docs',
+				'content'  => 'test-email_fix-broken-emails',
+			),
+			'settings_google-play'       => array(
+				'campaign' => 'mobile-app',
+				'content'  => 'settings_google-play',
+			),
+			'settings_app-store'         => array(
+				'campaign' => 'mobile-app',
+				'content'  => 'settings_app-store',
+			),
+			'dashboard_google-play'      => array(
+				'campaign' => 'mobile-app',
+				'content'  => 'dashboard_google-play',
+			),
+			'dashboard_app-store'        => array(
+				'campaign' => 'mobile-app',
+				'content'  => 'dashboard_app-store',
+			),
+			'wizard_google-play'         => array(
+				'campaign' => 'mobile-app',
+				'content'  => 'wizard_google-play',
+			),
+			'wizard_app-store'           => array(
+				'campaign' => 'mobile-app',
+				'content'  => 'wizard_app-store',
+			),
+			'settings_mobile-app'        => array(
+				'campaign' => 'mobile-app',
+				'content'  => 'settings_google-play',
+			),
+			'dashboard_mobile-app'       => array(
+				'campaign' => 'mobile-app',
+				'content'  => 'dashboard_google-play',
+			),
+		);
+
+		if ( isset( $by_placement[ $placement ] ) ) {
+			$resolved = $by_placement[ $placement ];
+			if ( ! isset( $resolved['campaign'] ) || '' === $resolved['campaign'] ) {
+				$resolved['campaign'] = $campaign;
+			}
+			return $resolved;
+		}
+
+		return array(
+			'campaign' => $campaign,
+			'content'  => $placement,
+		);
 	}
 endif;
 
@@ -135,15 +334,14 @@ if ( ! function_exists( 'post_smtp_utm_url' ) ) :
 	 * Build a tagged URL to postmansmtp.com from inside the plugin.
 	 *
 	 * @param string $path      Path on postmansmtp.com, e.g. 'pricing'.
-	 * @param string $campaign  Purpose: upgrade|docs|setup-wizard|dns-check|gmail-one-click|promo slug.
-	 * @param string $placement utm_content placement slug.
+	 * @param string $campaign  Purpose: upgrade|docs|setup-wizard|gmail-one-click|promo slug.
+	 * @param string $placement utm_content placement slug (legacy or guide).
 	 * @return string Escaped URL.
 	 */
 	function post_smtp_utm_url( $path, $campaign, $placement ) {
-		$campaign  = post_smtp_utm_normalize_campaign( $campaign );
-		$placement = post_smtp_utm_sanitize_token( $placement );
+		$resolved = post_smtp_utm_resolve_in_plugin_tags( $campaign, $placement, $path );
 
-		post_smtp_utm_validate_placement( $placement );
+		post_smtp_utm_validate_placement( $resolved['content'] );
 
 		/**
 		 * Filter in-plugin UTM campaign before the URL is built.
@@ -152,14 +350,14 @@ if ( ! function_exists( 'post_smtp_utm_url' ) ) :
 		 * @param string $placement utm_content.
 		 * @param string $path      Marketing site path.
 		 */
-		$campaign = apply_filters( 'post_smtp_utm_campaign', $campaign, $placement, $path );
+		$campaign = apply_filters( 'post_smtp_utm_campaign', $resolved['campaign'], $resolved['content'], $path );
 		$campaign = post_smtp_utm_normalize_campaign( $campaign );
 
 		$args = array(
-			'utm_source'   => 'post-smtp',
-			'utm_medium'   => 'in-plugin',
+			'utm_source'   => post_smtp_utm_in_plugin_source(),
+			'utm_medium'   => post_smtp_utm_in_plugin_medium(),
 			'utm_campaign' => $campaign,
-			'utm_content'  => $placement,
+			'utm_content'  => $resolved['content'],
 		);
 
 		$base = 'https://postmansmtp.com/' . ltrim( (string) $path, '/' );
@@ -243,7 +441,7 @@ if ( ! function_exists( 'post_smtp_utm_email_url' ) ) :
 		$args = array(
 			'utm_source'   => 'email',
 			'utm_medium'   => 'email',
-			'utm_campaign' => 'product-update_post-smtp_email-report',
+			'utm_campaign' => 'product-update_email-report',
 			'utm_content'  => 'text-link_' . $section,
 			'utm_term'     => $audience,
 		);
@@ -258,24 +456,54 @@ if ( ! function_exists( 'post_smtp_wporg_readme_url' ) ) :
 	/**
 	 * Build a WordPress.org readme link (reference / release tooling; not runtime in readme.txt).
 	 *
-	 * @param string $path   Path on postmansmtp.com.
-	 * @param string $medium utm_medium token, e.g. read_me.
+	 * @param string $path    Path on postmansmtp.com.
+	 * @param string $content utm_content, e.g. link_top|link_body.
 	 * @return string Escaped URL.
 	 */
-	function post_smtp_wporg_readme_url( $path, $medium ) {
-		$medium = post_smtp_utm_sanitize_token( $medium );
-		if ( '' === $medium ) {
-			$medium = 'read_me';
+	function post_smtp_wporg_readme_url( $path, $content = 'link_body' ) {
+		$content = post_smtp_utm_sanitize_token( $content );
+		if ( '' === $content ) {
+			$content = 'link_body';
 		}
 
 		$args = array(
-			'utm_source' => 'wp_org',
-			'utm_medium' => $medium,
+			'utm_source'   => 'wordpress.org',
+			'utm_medium'   => 'wp-org-listing',
+			'utm_campaign' => 'readme',
+			'utm_content'  => $content,
 		);
 
 		$base = 'https://postmansmtp.com/' . ltrim( (string) $path, '/' );
 
 		return esc_url( add_query_arg( $args, $base ) );
+	}
+endif;
+
+if ( ! function_exists( 'post_smtp_utm_build_in_plugin_query_args' ) ) :
+	/**
+	 * Build utm query args for store / external URLs.
+	 *
+	 * @param string $campaign  Campaign slug.
+	 * @param string $placement Placement slug.
+	 * @param string $path      Optional path for resolution.
+	 * @return array<string, string>
+	 */
+	function post_smtp_utm_build_in_plugin_query_args( $campaign, $placement, $path = '' ) {
+		if ( function_exists( 'postman_is_bfcm' ) && postman_is_bfcm() ) {
+			$campaign = post_smtp_utm_promo_campaign();
+		} else {
+			$resolved = post_smtp_utm_resolve_in_plugin_tags( $campaign, $placement, $path );
+			$campaign = apply_filters( 'post_smtp_utm_campaign', $resolved['campaign'], $resolved['content'], $path );
+			$campaign = post_smtp_utm_normalize_campaign( $campaign );
+			$placement = $resolved['content'];
+		}
+
+		return array(
+			'utm_source'   => post_smtp_utm_in_plugin_source(),
+			'utm_medium'   => post_smtp_utm_in_plugin_medium(),
+			'utm_campaign' => $campaign,
+			'utm_content'  => post_smtp_utm_sanitize_token( $placement ),
+		);
 	}
 endif;
 
@@ -288,26 +516,8 @@ if ( ! function_exists( 'post_smtp_android_store_referrer' ) ) :
 	 * @return string URL-encoded referrer string.
 	 */
 	function post_smtp_android_store_referrer( $placement, $campaign = 'upgrade' ) {
-		if ( function_exists( 'postman_is_bfcm' ) && postman_is_bfcm() ) {
-			$campaign = post_smtp_utm_promo_campaign();
-		} else {
-			$campaign = post_smtp_utm_normalize_campaign( $campaign );
-			$campaign = apply_filters( 'post_smtp_utm_campaign', $campaign, $placement, 'mobile-app' );
-			$campaign = post_smtp_utm_normalize_campaign( $campaign );
-		}
-
-		$placement = post_smtp_utm_sanitize_token( $placement );
-
-		$query = build_query(
-			array(
-				'utm_source'   => 'post-smtp',
-				'utm_medium'   => 'in-plugin',
-				'utm_campaign' => $campaign,
-				'utm_content'  => $placement,
-			)
-		);
-
-		return rawurlencode( $query );
+		$args = post_smtp_utm_build_in_plugin_query_args( $campaign, $placement, 'mobile-app' );
+		return rawurlencode( build_query( $args ) );
 	}
 endif;
 
@@ -320,22 +530,7 @@ if ( ! function_exists( 'post_smtp_ios_store_url' ) ) :
 	 * @return string Escaped URL.
 	 */
 	function post_smtp_ios_store_url( $placement, $campaign = 'upgrade' ) {
-		if ( function_exists( 'postman_is_bfcm' ) && postman_is_bfcm() ) {
-			$campaign = post_smtp_utm_promo_campaign();
-		} else {
-			$campaign = post_smtp_utm_normalize_campaign( $campaign );
-			$campaign = apply_filters( 'post_smtp_utm_campaign', $campaign, $placement, 'mobile-app' );
-			$campaign = post_smtp_utm_normalize_campaign( $campaign );
-		}
-
-		$placement = post_smtp_utm_sanitize_token( $placement );
-
-		$args = array(
-			'utm_source'   => 'post-smtp',
-			'utm_medium'   => 'in-plugin',
-			'utm_campaign' => $campaign,
-			'utm_content'  => $placement,
-		);
+		$args = post_smtp_utm_build_in_plugin_query_args( $campaign, $placement, 'mobile-app' );
 
 		return esc_url(
 			add_query_arg(
@@ -383,12 +578,15 @@ if ( ! function_exists( 'post_smtp_dashboard_marketing_urls' ) ) :
 	 */
 	function post_smtp_dashboard_marketing_urls() {
 		return array(
-			'proBanner'      => post_smtp_utm_pricing_url( 'dashboard_pro_banner', 'upgrade' ),
-			'proGrid'        => post_smtp_utm_pricing_url( 'dashboard_pro_grid', 'upgrade' ),
-			'gmailOneClick'  => post_smtp_utm_url( 'pricing', 'gmail-one-click', 'dashboard_gmail_one_click' ),
-			'mainwp'         => post_smtp_utm_url( 'mainwp-post-smtp/', 'upgrade', 'mainwp_banner' ),
-			'spamScore'      => post_smtp_utm_url( 'domain-health-checker/', 'dns-check', 'dashboard_side_banner' ),
-			'headerDocs'     => post_smtp_utm_url( 'documentation/', 'docs', 'dashboard_documentation' ),
+			'proBanner'          => post_smtp_utm_pricing_url( 'dashboard_pro_banner', 'upgrade' ),
+			'proBannerPromo'     => post_smtp_utm_promo_url( 'cyber-monday-sale', 'dashboard_pro_banner' ),
+			'proGrid'            => post_smtp_utm_pricing_url( 'dashboard_pro_grid', 'upgrade' ),
+			'gmailOneClick'      => post_smtp_utm_url( 'pricing', 'gmail-one-click', 'dashboard_gmail_one_click' ),
+			'officeOneClick'     => post_smtp_utm_url( 'pricing', 'setup-wizard', 'wizard_microsoft-one-click' ),
+			'mainwp'             => post_smtp_utm_url( 'mainwp-post-smtp/', 'mainwp', 'mainwp_banner' ),
+			'spamScore'          => post_smtp_utm_url( 'domain-health-checker/', 'domain-health-checker', 'dashboard_side_banner' ),
+			'troubleshootingDns' => post_smtp_utm_url( 'domain-health-checker/', 'domain-health-checker', 'dashboard_troubleshooting-dns-check' ),
+			'headerDocs'         => post_smtp_utm_url( 'documentation/', 'docs', 'dashboard_documentation' ),
 		);
 	}
 endif;
