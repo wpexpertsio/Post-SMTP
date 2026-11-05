@@ -15,7 +15,7 @@ export default function useDiagnosticReport() {
 		mutationFn: () =>
 			apiFetch( 'tools/diagnostic-report', {
 				method: 'POST',
-				data: {},
+				body: {},
 			} ),
 		onSuccess: () => {
 			queryClient.invalidateQueries( { queryKey: QUERY_KEY } );
@@ -26,7 +26,7 @@ export default function useDiagnosticReport() {
 		mutationFn: ( payload ) =>
 			apiFetch( 'tools/diagnostic-report/send', {
 				method: 'POST',
-				data: payload,
+				body: payload,
 			} ),
 	} );
 

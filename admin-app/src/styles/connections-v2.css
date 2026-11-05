@@ -3,24 +3,34 @@
 .ps-app__main--connections {
 	background: #f8fafe;
 	padding: 20px;
-	max-width: none;
+	max-width: 100%;
+	width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+	overflow-x: clip;
 }
 
 .ps-v2-conn-page {
 	font-family: 'Satoshi', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-	max-width: 1280px;
+	max-width: min(1280px, 100%);
+	width: 100%;
+	min-width: 0;
 	margin: 0 auto;
+	box-sizing: border-box;
 }
 
 .ps-v2-conn-layout {
 	display: flex;
 	gap: 20px;
 	align-items: flex-start;
+	flex-wrap: wrap;
+	min-width: 0;
+	max-width: 100%;
 }
 
 .ps-v2-conn-panel--main {
-	flex: 1 1 auto;
-	max-width: 920px;
+	flex: 1 1 520px;
+	max-width: 100%;
 	min-width: 0;
 }
 
@@ -484,8 +494,8 @@
 
 /* —— Choose mailer (Figma 672:5745) —— */
 .ps-v2-conn-choose__main {
-	flex: 1 1 auto;
-	max-width: 920px;
+	flex: 1 1 520px;
+	max-width: 100%;
 	min-width: 0;
 	display: flex;
 	flex-direction: column;
@@ -493,15 +503,19 @@
 }
 
 .ps-v2-conn-panel--choose {
-	flex: none;
+	flex: 1 1 520px;
+	min-width: 0;
 	width: 100%;
-	max-width: none;
+	max-width: 100%;
+	box-sizing: border-box;
 }
 
 .ps-v2-conn-panel--configure {
 	flex: none;
 	width: 100%;
-	max-width: none;
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
 }
 
 .ps-v2-conn-choose__head {
@@ -547,8 +561,9 @@
 }
 
 .ps-v2-conn-choose__aside {
-	flex: 0 0 300px;
-	max-width: 300px;
+	flex: 1 1 280px;
+	max-width: min(300px, 100%);
+	min-width: 0;
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
@@ -557,6 +572,7 @@
 	align-self: flex-start;
 	max-height: calc(100vh - 40px);
 	overflow-y: auto;
+	overflow-x: clip;
 	overflow-anchor: none;
 	overscroll-behavior: contain;
 	scroll-behavior: smooth;
@@ -792,6 +808,8 @@
 	margin-top: 0;
 	padding-top: 0;
 	border-top: none;
+	max-width: 100%;
+	min-width: 0;
 }
 
 .ps-v2-configure-form__hero {
@@ -844,16 +862,22 @@
 	margin-bottom: 15px;
 }
 
+.ps-v2-configure-form__api {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
 .ps-v2-configure-form__api-head {
 	display: flex;
 	align-items: flex-start;
 	justify-content: space-between;
 	gap: 16px;
-	margin-bottom: 20px;
+	margin-bottom: 0;
 }
 
 .ps-v2-configure-form__api .ps-v2-form-field + .ps-v2-form-field {
-	margin-top: 15px;
+	margin-top: 0;
 }
 
 .ps-v2-configure-form__section-title {
@@ -960,6 +984,26 @@
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
+}
+
+.ps-v2-configure-form__api .ps-v2-form-field,
+.ps-v2-zoho-configure__credentials .ps-v2-form-field,
+.ps-v2-zoho-configure__credentials .ps-v2-zoho-configure__readonly {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.ps-v2-configure-form__api .ps-v2-form-field__head,
+.ps-v2-zoho-configure__credentials .ps-v2-form-field__head,
+.ps-v2-zoho-configure__credentials .ps-v2-zoho-configure__readonly .ps-v2-form-field__head {
+	gap: 4px;
+	margin-bottom: 0;
+}
+
+.ps-v2-configure-form__api .ps-v2-form-field__label,
+.ps-v2-zoho-configure__credentials .ps-v2-form-field__label {
+	margin-bottom: 0;
 }
 
 .ps-v2-configure-form .ps-v2-form-field__label {
@@ -1700,15 +1744,19 @@
 	.ps-v2-conn-panel--main,
 	.ps-v2-conn-panel--choose,
 	.ps-v2-conn-choose__main {
-		max-width: none;
+		flex: 1 1 auto;
+		max-width: 100%;
 		width: 100%;
 	}
 
 	.ps-v2-conn-promo,
 	.ps-v2-conn-choose__aside {
-		max-width: none;
+		flex: 1 1 auto;
+		max-width: 100%;
 		width: 100%;
-		flex: none;
+		position: static;
+		max-height: none;
+		overflow-y: visible;
 	}
 
 	.ps-v2-mailer-choose__row {
@@ -1735,4 +1783,89 @@
 		justify-content: flex-end;
 		flex-wrap: wrap;
 	}
+}
+
+/* Zoho configure (Figma 1339:17259) */
+.ps-v2-zoho-configure__readonly-row {
+	display: flex;
+	gap: 10px;
+	align-items: stretch;
+	width: 100%;
+}
+
+.ps-v2-zoho-configure__readonly-input {
+	flex: 1 1 auto;
+	min-width: 0;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 12px;
+	background: #f8f8f8;
+}
+
+.ps-v2-zoho-configure__copy-icon-btn {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 38px;
+	height: 38px;
+	padding: 0;
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	background: #fff;
+	cursor: pointer;
+}
+
+.ps-v2-zoho-configure__connect-api {
+	display: inline-flex;
+	align-self: flex-start;
+	align-items: center;
+	justify-content: center;
+	margin-top: 0;
+	background: #fff;
+	color: #000;
+	font-weight: 700;
+	font-size: 14px;
+	font-family: inherit;
+	line-height: normal;
+	text-decoration: none;
+	min-height: 39px;
+	padding: 10px 20px;
+	border: 1px solid #000;
+	border-radius: 6px;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+.ps-v2-zoho-configure__connect-api--disabled,
+.ps-v2-zoho-configure__connect-api:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.ps-v2-zoho-configure__connect-success {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 0;
+}
+
+.ps-v2-zoho-configure__connect-success-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: #e8f5e9;
+	color: #2e7d32;
+}
+
+.ps-v2-zoho-configure__credentials .ps-v2-zoho-configure__readonly {
+	margin-top: 0;
+}
+
+.ps-v2-zoho-configure__credentials .ps-v2-form-field + .ps-v2-zoho-configure__readonly,
+.ps-v2-zoho-configure__credentials .ps-v2-zoho-configure__readonly + .ps-v2-form-field,
+.ps-v2-zoho-configure__credentials .ps-v2-zoho-configure__readonly + .ps-v2-zoho-configure__readonly {
+	margin-top: 0;
 }

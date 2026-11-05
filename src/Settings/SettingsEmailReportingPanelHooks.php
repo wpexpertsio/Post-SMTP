@@ -70,7 +70,7 @@ final class SettingsEmailReportingPanelHooks {
 			'locked'             => $locked,
 			'title'              => __( 'Open Email Tracking', 'post-smtp' ),
 			'description'        => __( 'See who opened your emails.', 'post-smtp' ),
-			'show_pro_tag'       => true,
+			'show_pro_tag'       => $locked,
 			'show_upgrade_cta'   => $locked,
 			'toggle'             => array(
 				'label'    => __( 'Track email opens', 'post-smtp' ),
@@ -103,7 +103,7 @@ final class SettingsEmailReportingPanelHooks {
 			'locked'             => $locked,
 			'title'              => __( 'Open Email Tracking', 'post-smtp' ),
 			'description'        => __( 'See who opened your emails.', 'post-smtp' ),
-			'show_pro_tag'       => true,
+			'show_pro_tag'       => $locked,
 			'show_upgrade_cta'   => $locked,
 			'toggle'             => array(
 				'label'    => __( 'Track email opens', 'post-smtp' ),

@@ -11,7 +11,7 @@ export default function useSendTestEmail() {
 		mutationFn: ( payload ) =>
 			apiFetch( 'tools/send-test-email', {
 				method: 'POST',
-				data: payload,
+				body: payload,
 			} ),
 	} );
 
@@ -19,7 +19,7 @@ export default function useSendTestEmail() {
 		mutationFn: ( payload ) =>
 			apiFetch( 'tools/send-test-email/preview', {
 				method: 'POST',
-				data: payload,
+				body: payload,
 			} ),
 	} );
 

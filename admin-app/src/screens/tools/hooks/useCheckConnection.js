@@ -15,7 +15,7 @@ export default function useCheckConnection() {
 		mutationFn: ( connectionId ) =>
 			apiFetch( `tools/check-connection/${ connectionId }/run`, {
 				method: 'POST',
-				data: {},
+				body: {},
 			} ),
 		onSuccess: () => {
 			queryClient.invalidateQueries( { queryKey: QUERY_KEY } );

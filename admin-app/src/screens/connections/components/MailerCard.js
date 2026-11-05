@@ -1,12 +1,14 @@
 import { providerIcon } from '../../../components/ui/Icons';
+import { getAdminConfig } from '../../../config/admin';
 import { mailerConnectionIcon } from '../model/mailerConnectionIcons';
 import MailerProTag from './MailerProTag';
 
 const MailerCard = ( { item, selected, onSelect } ) => {
 	const iconUrl = mailerConnectionIcon( item.slug ) || ( item.icon ? providerIcon( item.icon ) : null );
 	const locked = ! item.configurable;
-	/** PRO crown on grid (Gmail excluded via catalog `requires_pro`). */
-	const showProTag = Boolean( item.requires_pro );
+	const isPro = Boolean( getAdminConfig().isPro );
+	/** PRO crown only when mailer needs Pro and site is on free core. */
+	const showProTag = Boolean( item.requires_pro ) && ! isPro;
 
 	return (
 		<button

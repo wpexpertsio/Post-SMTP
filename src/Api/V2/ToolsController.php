@@ -203,7 +203,10 @@ final class ToolsController extends BaseController {
 	}
 
 	public function postSendTestEmail( WP_REST_Request $request ) {
-		$body   = $request->get_json_params();
+		$body = $request->get_json_params();
+		if ( ! is_array( $body ) || array() === $body ) {
+			$body = $request->get_body_params();
+		}
 		$result = $this->service->send( is_array( $body ) ? $body : array() );
 		$status = ! empty( $result['success'] ) ? 200 : 400;
 

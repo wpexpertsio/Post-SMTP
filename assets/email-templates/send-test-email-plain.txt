@@ -1,0 +1,5 @@
+Hello!
+
+This is a test email from Post SMTP on {{home_url}}.
+
+{{sent_by_line}}

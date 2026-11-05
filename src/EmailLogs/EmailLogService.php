@@ -16,6 +16,22 @@ final class EmailLogService {
 	/** @var bool|null */
 	private static $has_event_type_column = null;
 
+	public static function init(): void {
+		add_filter( 'post_smtp_get_logs_query_cols', array( self::class, 'filter_list_query_columns' ), 10, 2 );
+	}
+
+	/**
+	 * @param string              $columns SELECT column list.
+	 * @param array<string,mixed> $args    Query args.
+	 */
+	public static function filter_list_query_columns( string $columns, array $args ): string {
+		if ( empty( $args['include_stored_body_flag'] ) ) {
+			return $columns;
+		}
+
+		return $columns . ', (CASE WHEN pl.`original_message` IS NOT NULL AND pl.`original_message` <> \'\' THEN 1 ELSE 0 END) AS has_stored_body';
+	}
+
 	/**
 	 * @param array<string,mixed> $params Request params.
 	 * @return array<string,mixed>
@@ -30,12 +46,13 @@ final class EmailLogService {
 		$date     = isset( $params['date'] ) ? sanitize_text_field( (string) $params['date'] ) : 'all';
 
 		$query_args = array(
-			'start'    => ( $page - 1 ) * $per_page,
-			'end'      => $per_page,
-			'search'   => $search,
-			'order'    => 'desc',
-			'order_by' => 'id',
-			'columns'  => $this->list_columns(),
+			'start'                    => ( $page - 1 ) * $per_page,
+			'end'                      => $per_page,
+			'search'                   => $search,
+			'order'                    => 'desc',
+			'order_by'                 => 'id',
+			'columns'                  => $this->list_columns(),
+			'include_stored_body_flag' => true,
 		);
 
 		if ( 'all' !== $status ) {
@@ -205,16 +222,20 @@ final class EmailLogService {
 			$to = $log['to_header'];
 		}
 
-		$headers = array();
-		if ( ! empty( $log['original_headers'] ) ) {
-			$headers = is_serialized( $log['original_headers'] )
-				? (array) unserialize( $log['original_headers'], array( 'allowed_classes' => false ) )
-				: (array) $log['original_headers'];
-		}
+		$headers = EmailLogResendHeaders::for_wp_mail( $log['original_headers'] ?? '' );
 
 		$attachments = apply_filters( 'post_smtp_resend_attachments', array(), $id );
-		$success     = wp_mail( $to, $log['original_subject'], $log['original_message'], $headers, $attachments );
-		$result      = apply_filters( 'postman_wp_mail_result', null );
+
+		try {
+			$success = wp_mail( $to, $log['original_subject'], $log['original_message'], $headers, $attachments );
+		} catch ( \Throwable $exception ) {
+			return array(
+				'success' => false,
+				'message' => $exception->getMessage(),
+			);
+		}
+
+		$result = apply_filters( 'postman_wp_mail_result', null );
 
 		if ( $success ) {
 			return array(
@@ -244,7 +265,7 @@ final class EmailLogService {
 		$logging_enabled = true;
 		if ( class_exists( '\PostmanOptions' ) ) {
 			$opts            = \PostmanOptions::getInstance();
-			$logging_enabled = 'true' === $opts->getMailLogEnabled() || true === $opts->getMailLogEnabled();
+			$logging_enabled = $opts->isMailLoggingEnabled();
 		}
 
 		return array(

@@ -700,6 +700,266 @@
 	flex-shrink: 0;
 }
 
+/* —— Chrome tab aside: Install extension (1527:19011) —— */
+.ps-v2-notify-chrome-aside {
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	padding: 15px;
+	box-sizing: border-box;
+}
+
+.ps-v2-notify-chrome-aside__inner {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	align-items: stretch;
+}
+
+.ps-v2-notify-chrome-aside__head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.ps-v2-notify-chrome-aside__icon {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 50px;
+	height: 50px;
+	border-radius: 6px;
+	border: 1px solid #e5e5e5;
+	background: #f5f5f5;
+	box-sizing: border-box;
+}
+
+.ps-v2-notify-chrome-aside__icon img {
+	display: block;
+	object-fit: contain;
+}
+
+.ps-v2-notify-chrome-aside__copy {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.ps-v2-notify-chrome-aside__copy strong {
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.5;
+	color: #2d3340;
+}
+
+.ps-v2-notify-chrome-aside__copy p {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #2d3340;
+}
+
+.ps-v2-notify-chrome-aside__cta {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	padding: 10px 20px;
+	border-radius: 6px;
+	background: #5279cc;
+	color: #fff;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: normal;
+	text-decoration: none;
+	box-sizing: border-box;
+}
+
+.ps-v2-notify-chrome-aside__cta:hover,
+.ps-v2-notify-chrome-aside__cta:focus {
+	background: #456bb8;
+	color: #fff;
+}
+
+/* —— Chrome tab aside: Gmail Pro (1273:18312) —— */
+.ps-v2-notify-gmail-aside {
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	padding: 15px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	align-items: center;
+	box-sizing: border-box;
+}
+
+.ps-v2-notify-gmail-aside__icons {
+	position: relative;
+	width: 50px;
+	height: 50px;
+	align-self: flex-start;
+}
+
+.ps-v2-notify-gmail-aside__icon {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 50px;
+	height: 50px;
+	border-radius: 10px;
+	background: #f5f5f5;
+	box-shadow: 4px 0 2px rgba(0, 0, 0, 0.15);
+}
+
+.ps-v2-notify-gmail-aside__icon img {
+	display: block;
+	object-fit: contain;
+}
+
+.ps-v2-notify-gmail-aside__copy {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	align-items: flex-start;
+}
+
+.ps-v2-notify-gmail-aside__title-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.ps-v2-notify-gmail-aside__title-row strong {
+	font-size: 15px;
+	font-weight: 700;
+	line-height: 1.5;
+	color: #2d3340;
+}
+
+.ps-v2-notify-gmail-aside__copy p {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #2d3340;
+}
+
+.ps-v2-notify-gmail-aside__cta {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	width: 100%;
+	padding: 10px 16px;
+	border-radius: 6px;
+	background: #fbbc1f;
+	color: #000;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: normal;
+	text-decoration: none;
+	box-sizing: border-box;
+}
+
+.ps-v2-notify-gmail-aside__cta img {
+	flex-shrink: 0;
+}
+
+/* —— Pushover tab aside: Get Post SMTP App (1527:19035) —— */
+.ps-v2-notify-mobile-aside {
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	padding: 15px;
+	box-sizing: border-box;
+}
+
+.ps-v2-notify-mobile-aside__inner {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	align-items: stretch;
+}
+
+.ps-v2-notify-mobile-aside__head {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.ps-v2-notify-mobile-aside__title-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+}
+
+.ps-v2-notify-mobile-aside__title-row strong {
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.5;
+	color: #2d3340;
+}
+
+.ps-v2-notify-mobile-aside__badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	flex-shrink: 0;
+	padding: 5px 10px;
+	border-radius: 20px;
+	border: 0.5px solid #c0a8ff;
+	background: #efe9ff;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1;
+	text-transform: uppercase;
+	color: #6141d5;
+}
+
+.ps-v2-notify-mobile-aside__badge img {
+	display: block;
+	flex-shrink: 0;
+}
+
+.ps-v2-notify-mobile-aside__head p {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #2d3340;
+}
+
+.ps-v2-notify-mobile-aside__stores {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	align-items: flex-start;
+}
+
+.ps-v2-notify-mobile-aside__store {
+	display: block;
+	line-height: 0;
+	text-decoration: none;
+}
+
+.ps-v2-notify-mobile-aside__store img {
+	display: block;
+	width: 120px;
+	height: 40px;
+	object-fit: contain;
+}
+
 /* —— Setup helper card overrides (1273:18215) —— */
 .ps-v2-notify-layout__aside .ps-v2-notify-helper-card {
 	border: 1px solid #e5e5e5;

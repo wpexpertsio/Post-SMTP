@@ -2,6 +2,8 @@ import { NavLink, useLocation } from 'react-router-dom';
 
 const config = window.postSmtpAdmin || {};
 
+const reportsUnlocked = Boolean( config.dashboardReportsTracking?.enabled );
+
 const NAV_ITEMS = [
 	{ to: '/', label: 'Dashboard', end: true },
 	{ to: '/connections', label: 'Connections' },
@@ -58,7 +60,9 @@ const Sidebar = () => {
 						} }
 					>
 						{ item.label }
-						{ item.pro && ! config.isPro && <span className="ps-pro-pill">Pro</span> }
+						{ item.pro && ! config.isPro && ! ( item.to === '/reports' && reportsUnlocked ) && (
+							<span className="ps-pro-pill">Pro</span>
+						) }
 					</NavLink>
 				);
 			} ) }

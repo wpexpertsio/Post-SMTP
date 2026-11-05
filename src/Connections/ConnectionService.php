@@ -263,7 +263,7 @@ final class ConnectionService {
 			return $auth;
 		}
 
-		$connections[] = $sanitized;
+		$connections[] = self::stripAdminOnlyFields( $sanitized );
 		$connections   = self::enforceFallbackSlots( $connections, $limits );
 		$repo->saveConnections( $connections );
 
@@ -273,6 +273,9 @@ final class ConnectionService {
 			$options['selected_primary']   = 0;
 			$repo->saveOptions( $options );
 		}
+
+		$new_index = count( $connections ) - 1;
+		self::maybe_sync_primary_legacy_options( $new_index, $repo );
 
 		return array(
 			'success'     => true,
@@ -316,8 +319,9 @@ final class ConnectionService {
 			return $auth;
 		}
 
-		$connections[ $index ] = $sanitized;
+		$connections[ $index ] = self::stripAdminOnlyFields( $sanitized );
 		$repo->saveConnections( $connections );
+		self::maybe_sync_primary_legacy_options( $index, $repo );
 
 		return array(
 			'success'     => true,
@@ -492,5 +496,36 @@ final class ConnectionService {
 			return in_array( strtolower( $value ), array( '1', 'true', 'yes', 'on' ), true );
 		}
 		return (bool) $value;
+	}
+
+	/**
+	 * @param int $index Saved connection index.
+	 */
+	private static function maybe_sync_primary_legacy_options( int $index, $repo ): void {
+		if ( 0 !== $index ) {
+			return;
+		}
+		$options = $repo->getOptions();
+		$options['selected_primary']   = 0;
+		$options['primary_connection'] = 0;
+		$repo->saveOptions( $options );
+		ConnectionLegacySendBridge::sync_primary_from_connection_index( 0 );
+	}
+
+	/**
+	 * UI-only keys must not be persisted on connection rows.
+	 *
+	 * @param array<string,mixed> $row Connection row.
+	 * @return array<string,mixed>
+	 */
+	private static function stripAdminOnlyFields( array $row ): array {
+		unset(
+			$row['role'],
+			$row['role_label'],
+			$row['fallback_priority'],
+			$row['id'],
+			$row['can_toggle_fallback']
+		);
+		return $row;
 	}
 }

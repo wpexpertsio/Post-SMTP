@@ -1,17 +1,17 @@
 <?php
 /**
- * Delegates mail sending to legacy PostmanWpMail.
+ * Programmatic send when the site still uses PostmanWpMail (classic settings UI).
  *
- * @package PostSMTP\Mail
+ * @package PostSMTP\Mail\Classic
  */
 
-namespace PostSMTP\Mail;
+namespace PostSMTP\Mail\Classic;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class LegacyMailAdapter {
+final class WpMailAdapter {
 
 	/**
 	 * @param array<string,mixed> $atts wp_mail arguments.
@@ -28,7 +28,7 @@ final class LegacyMailAdapter {
 
 		return array(
 			'success' => (bool) $result,
-			'message' => $result ? __( 'Sent via legacy mail adapter.', 'post-smtp' ) : __( 'Legacy send failed.', 'post-smtp' ),
+			'message' => $result ? __( 'Sent via wp_mail.', 'post-smtp' ) : __( 'Send failed.', 'post-smtp' ),
 			'send'    => (bool) $result,
 		);
 	}

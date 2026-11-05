@@ -10,19 +10,26 @@ export async function apiFetch( path, options = {} ) {
 		...( options.headers || {} ),
 	};
 
-	const { method = 'GET', body, ...rest } = options;
+	const { method = 'GET', body, data: requestData, ...rest } = options;
+	const payload = body !== undefined ? body : requestData;
 	const response = await fetch( url, {
 		...rest,
 		method,
 		headers,
-		body: body !== undefined ? JSON.stringify( body ) : undefined,
+		body: payload !== undefined ? JSON.stringify( payload ) : undefined,
 	} );
 
-	const data = await response.json().catch( () => ( {} ) );
+	const responseData = await response.json().catch( () => ( {} ) );
 	if ( ! response.ok ) {
-		throw new Error( data.message || 'Request failed' );
+		const errMessage =
+			( typeof responseData.message === 'string' && responseData.message ) ||
+			( responseData.success === false && typeof responseData.message === 'string'
+				? responseData.message
+				: '' ) ||
+			'Request failed';
+		throw new Error( errMessage );
 	}
-	return data;
+	return responseData;
 }
 
 export default apiFetch;

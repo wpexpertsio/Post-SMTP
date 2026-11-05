@@ -35,7 +35,7 @@ final class EmailLogNormalizer {
 			'status_label'    => self::status_label( self::parse_status( $success_raw ) ),
 			'opened'          => self::parse_opened( $row ),
 			'has_attachments' => self::has_attachments( $row ),
-			'has_body'        => ! empty( $row['original_message'] ),
+			'has_body'        => self::row_has_stored_body( $row ),
 			'form'            => isset( $row['event_type'] ) ? (string) $row['event_type'] : '',
 		);
 	}
@@ -66,14 +66,55 @@ final class EmailLogNormalizer {
 		);
 	}
 
+	/**
+	 * Whether the log row has a stored message body (resend / preview).
+	 *
+	 * @param object|array<string,mixed> $row Row.
+	 */
+	public static function row_has_stored_body( $row ): bool {
+		$row = (array) $row;
+		if ( array_key_exists( 'has_stored_body', $row ) ) {
+			return (bool) (int) $row['has_stored_body'];
+		}
+		return ! empty( $row['original_message'] );
+	}
+
 	public static function parse_status( string $success_raw ): string {
-		if ( '1' === $success_raw || 1 === $success_raw || 'Sent ( ** Fallback ** )' === $success_raw || str_starts_with( $success_raw, '( ** Fallback ** )' ) ) {
+		if ( self::is_success_raw( $success_raw ) ) {
 			return 'success';
 		}
 		if ( 'In Queue' === $success_raw ) {
 			return 'queued';
 		}
 		return 'failed';
+	}
+
+	/**
+	 * @param mixed $success_raw Raw DB success column.
+	 */
+	public static function is_success_raw( $success_raw ): bool {
+		if ( '1' === $success_raw || 1 === $success_raw ) {
+			return true;
+		}
+		if ( ! is_string( $success_raw ) || '' === $success_raw ) {
+			return false;
+		}
+		if ( 'Sent ( ** Fallback ** )' === $success_raw || str_starts_with( $success_raw, '( ** Fallback ** )' ) ) {
+			return true;
+		}
+		if ( 0 === strpos( $success_raw, 'Sent ( ** Fallback ** )' ) ) {
+			return true;
+		}
+		if ( false !== stripos( $success_raw, 'delivered' ) ) {
+			return true;
+		}
+		if ( str_starts_with( $success_raw, 'Warning:' ) ) {
+			return true;
+		}
+		if ( str_starts_with( $success_raw, 'Sent' ) ) {
+			return true;
+		}
+		return false;
 	}
 
 	public static function status_label( string $status ): string {

@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { proCrownIcon } from '../../dashboard/components/v2/gmailBarAssets';
 import { CHANNEL_NAV_ICONS } from '../notificationChannelAssets';
 
-const NotificationsChannelNav = ( { channels = [], activeSlug } ) => (
+const NotificationsChannelNav = ( { channels = [], activeSlug, isPro = false } ) => (
 	<nav className="ps-v2-notify-nav" aria-label="Notification channels" data-figma-node="672:7918">
 		<ul className="ps-v2-notify-nav__list">
 			{ channels.map( ( channel ) => {
@@ -22,7 +22,7 @@ const NotificationsChannelNav = ( { channels = [], activeSlug } ) => (
 									</span>
 								) }
 								<span className="ps-v2-notify-nav__label">{ channel.label }</span>
-								{ channel.pro_locked && (
+								{ channel.pro_locked && ! isPro && (
 									<span className="ps-v2-notify-pro-tag">
 										<img src={ proCrownIcon } alt="" width="12" height="10" />
 										PRO

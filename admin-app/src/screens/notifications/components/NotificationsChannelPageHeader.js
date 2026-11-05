@@ -1,8 +1,9 @@
 import { CHANNEL_PAGE_HEADERS } from '../notificationChannelAssets';
 import { proCrownIcon } from '../../dashboard/components/v2/gmailBarAssets';
 
-const NotificationsChannelPageHeader = ( { slug } ) => {
+const NotificationsChannelPageHeader = ( { slug, isPro = false, panelLocked = false } ) => {
 	const meta = CHANNEL_PAGE_HEADERS[ slug ] || CHANNEL_PAGE_HEADERS.admin_email;
+	const showProBadge = Boolean( meta.showProBadge ) && ! isPro && panelLocked;
 
 	return (
 		<header className="ps-v2-notify-page-header" data-figma-node="672:7985">
@@ -21,7 +22,7 @@ const NotificationsChannelPageHeader = ( { slug } ) => {
 			<div className="ps-v2-notify-page-header__copy">
 				<div className="ps-v2-notify-page-header__title-row">
 					<h1 className="ps-v2-notify-page-header__title">{ meta.title }</h1>
-					{ meta.showProBadge && (
+					{ showProBadge && (
 						<span className="ps-v2-notify-pro-tag">
 							<img src={ proCrownIcon } alt="" width="12" height="10" />
 							PRO

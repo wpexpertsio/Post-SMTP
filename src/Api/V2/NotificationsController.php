@@ -112,6 +112,10 @@ final class NotificationsController extends BaseController {
 			)
 		);
 
+		if ( $this->isPro() ) {
+			$pro_channel_promos = array();
+		}
+
 		return rest_ensure_response(
 			array(
 				'channels'           => $summaries,

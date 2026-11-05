@@ -2,7 +2,7 @@ import { useEffect, useState } from '@wordpress/element';
 import iconOpenTracking from '../../../assets/settings/icon-reporting-open-tracking.svg';
 import iconWeekly from '../../../assets/settings/icon-reporting-weekly.svg';
 import iconUpgradeArrow from '../../../assets/help-docs/icon-upgrade-arrow.svg';
-import { getAdminUrls } from '../../../config/admin';
+import { getAdminConfig, getAdminUrls } from '../../../config/admin';
 import { proCrownIcon } from '../../dashboard/components/v2/gmailBarAssets';
 import FormNotice from '../../connections/components/FormNotice';
 import useSettingsEmailReporting from '../hooks/useSettingsEmailReporting';
@@ -24,7 +24,7 @@ const ProTag = () => (
 	</span>
 );
 
-const OpenTrackingSectionHeader = ( { panel } ) => (
+const OpenTrackingSectionHeader = ( { panel, showProTag } ) => (
 	<header className="ps-v2-settings-section-head" data-figma-node="672:7481">
 		<span className="ps-v2-settings-section-head__icon" aria-hidden="true">
 			<SectionIcon src={ iconOpenTracking } />
@@ -32,7 +32,7 @@ const OpenTrackingSectionHeader = ( { panel } ) => (
 		<div className="ps-v2-settings-section-head__copy">
 			<div className="ps-v2-settings-title-with-pro">
 				<h2 className="ps-v2-settings-section-head__title">{ panel.title }</h2>
-				{ panel.show_pro_tag && <ProTag /> }
+				{ showProTag && <ProTag /> }
 			</div>
 			{ panel.description && (
 				<p className="ps-v2-settings-section-head__desc">{ panel.description }</p>
@@ -42,6 +42,7 @@ const OpenTrackingSectionHeader = ( { panel } ) => (
 );
 
 const EmailReportingSettingsPanel = () => {
+	const config = getAdminConfig();
 	const urls = getAdminUrls();
 	const { query, saveMutation } = useSettingsEmailReporting();
 	const [ form, setForm ] = useState( null );
@@ -79,11 +80,13 @@ const EmailReportingSettingsPanel = () => {
 	const handleSave = async () => {
 		setNotice( null );
 		const openTracking = query.data?.open_tracking || {};
+		const isProUser = Boolean( getAdminConfig().isPro );
+		const openTrackingLocked = Boolean( openTracking.locked ) && ! isProUser;
 		const body = {
 			enable_weekly_report: form.enable_weekly_report,
 			reporting_interval: form.reporting_interval,
 		};
-		if ( ! openTracking.locked ) {
+		if ( ! openTrackingLocked ) {
 			body.track_email_opens = form.track_email_opens;
 		}
 
@@ -111,9 +114,12 @@ const EmailReportingSettingsPanel = () => {
 	const openTracking = query.data?.open_tracking || {};
 	const toggleMeta = openTracking.toggle || {};
 	const panelConfig = query.data?.panel_config || {};
+	const isPro = Boolean( config.isPro );
+	const trackingLocked = Boolean( openTracking.locked ) && ! isPro;
+	const showOpenTrackingProTag = Boolean( openTracking.show_pro_tag ) && ! isPro;
+	const showUpgradeCta = Boolean( openTracking.show_upgrade_cta ) && ! isPro;
 	const upgradeUrl = panelConfig.upgrade_url || urls.pro;
 	const upgradeLabel = panelConfig.upgrade_label || 'Upgrade to Pro';
-	const trackingLocked = Boolean( openTracking.locked );
 
 	return (
 		<div className="ps-v2-settings-email-reporting" data-figma-node="672:7450">
@@ -152,7 +158,7 @@ const EmailReportingSettingsPanel = () => {
 			</div>
 
 			<div className="ps-v2-settings-email-reporting__block" data-figma-node="672:7475">
-				<OpenTrackingSectionHeader panel={ openTracking } />
+				<OpenTrackingSectionHeader panel={ openTracking } showProTag={ showOpenTrackingProTag } />
 				<SettingsSectionCard figmaNode="672:7485" className="ps-v2-settings-section--flat">
 					<SettingsToggleRow
 						id="track-email-opens"
@@ -160,12 +166,12 @@ const EmailReportingSettingsPanel = () => {
 						description={ toggleMeta.hint || 'Add a small hidden image to your emails.' }
 						checked={ trackingLocked ? false : form.track_email_opens }
 						onChange={ ( v ) => patch( 'track_email_opens', v ) }
-						disabled={ trackingLocked || toggleMeta.disabled }
+						disabled={ trackingLocked || ( ! isPro && Boolean( toggleMeta.disabled ) ) }
 					/>
 				</SettingsSectionCard>
 			</div>
 
-			{ openTracking.show_upgrade_cta && (
+			{ showUpgradeCta && (
 				<div className="ps-v2-settings-email-reporting__upgrade" data-figma-node="1007:24774">
 					<a
 						href={ upgradeUrl }

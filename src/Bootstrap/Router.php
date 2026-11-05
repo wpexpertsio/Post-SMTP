@@ -15,7 +15,6 @@ use PostSMTP\Admin\ReactAdminLoader;
 use PostSMTP\Admin\ReactAdminSubmenu;
 use PostSMTP\Mail\MailPipeline;
 use PostSMTP\Rollout\CohortResolver;
-use PostSMTP\Rollout\FeatureFlags;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -51,7 +50,7 @@ final class Router {
 	}
 
 	public static function usesLegacyMailPipeline(): bool {
-		return ! FeatureFlags::enabled( 'new_mail_pipeline' );
+		return ! CohortResolver::usesRevampMailPipeline();
 	}
 
 	/**

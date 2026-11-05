@@ -189,6 +189,20 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 			$this->load();
 		}
 
+		/**
+		 * Merge runtime values for the in-flight send without persisting to the database.
+		 *
+		 * @param array<string,mixed> $patch Keys matching postman_options field names.
+		 */
+		public function apply_runtime_patch( array $patch ): void {
+			if ( ! is_array( $this->options ) ) {
+				$this->options = array();
+			}
+			foreach ( $patch as $key => $value ) {
+				$this->options[ $key ] = $value;
+			}
+		}
+
 		public function load() {
 
 			$options = get_option( self::POSTMAN_OPTIONS );

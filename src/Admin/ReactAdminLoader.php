@@ -127,8 +127,11 @@ final class ReactAdminLoader {
 			#post-smtp-admin-root {
 				min-height: calc(100vh - 32px);
 				margin: -10px -20px 0 -2px;
+				max-width: 100%;
+				overflow-x: clip;
+				box-sizing: border-box;
 			}
-			#wpbody-content { padding-bottom: 0; }
+			#wpbody-content { padding-bottom: 0; overflow-x: clip; }
 		</style>';
 	}
 
@@ -168,6 +171,7 @@ final class ReactAdminLoader {
 			'needsMigration'  => CohortResolver::needsMigration(),
 			'migrationOnly'   => false,
 			'gmailConfigure' => GmailConfigureBootstrap::defaults(),
+			'zohoConfigure'  => ZohoConfigureBootstrap::defaults(),
 			'adminUrls'      => array(
 				'dashboard'   => admin_url( 'admin.php?page=postman' ),
 				'connections' => admin_url( 'admin.php?page=postman#/connections' ),

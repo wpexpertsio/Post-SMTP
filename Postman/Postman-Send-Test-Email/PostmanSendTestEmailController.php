@@ -436,73 +436,10 @@ class PostmanSendTestEmailAjaxController extends PostmanAbstractAjaxHandler {
 	 * @return string
 	 */
 	private function createMessageContent() {
-		// Postman API: Get the plugin metadata
-		$pluginData = apply_filters( 'postman_get_plugin_metadata', null );
-		
-		/*
-		translators: where %s is the Postman plugin version number (e.g. 1.4) */
-		// English - Mandarin - French - Hindi - Spanish - Portuguese - Russian - Japanese
-		// http://www.pinyin.info/tools/converter/chars2uninumbers.html
-		$greeting = 'Hello! - &#20320;&#22909; - Bonjour! - &#2344;&#2350;&#2360;&#2381;&#2340;&#2375; - ¡Hola! - Ol&#225; - &#1055;&#1088;&#1080;&#1074;&#1077;&#1090;! - &#20170;&#26085;&#12399;';
-		$sentBy = sprintf( _x( 'Sent by Postman %s', 'Test Email Tagline', 'post-smtp' ), $pluginData ['version'] );
-		$imageSource = __( 'Image source', 'post-smtp' );
-		$withPermission = __( 'Used with permission', 'post-smtp' );
-		$emailBody = '
-		<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-		<table style="width: 600px;margin:50px auto;color:#7D98B2;font-size:12px;padding:30px 0;">
-        <thead>
-            <tr>
-                <th>
-                    <a href="https://postmansmtp.com/"><img style="width: 160px;" src="'.esc_attr( POST_SMTP_ASSETS ).'/images/logos/postman-logo-email.png"/></a>
-                </th>
-            </tr>
-           
-        </thead>
-        <tbody> 
-            <tr>
-                <td style="padding: 0 20px;">Hey there 👋,</td>
-            </tr>
-            <tr>
-               <td style="padding: 0 20px;"><h3 style="color:#214A72;font-size:16px;font-weight:600;display: inline-block;margin:0; font-size: 20px;">Congrats! Your test email was sent successfully</h3></td>
-            </tr>
-            <tr>
-                <td style="padding:0 20px;line-height: 20px;">Thank you for using Post SMTP. Our mission is to enhance you email deliverability.</td>
-            </tr>
-            <tr>
-                <td>
-					<a href="https://postmansmtp.com/post-smtp-mobile-app/" target="_blank">
-						<img style=" margin: 20px 0; width:100%" src="'.esc_attr( POST_SMTP_ASSETS ).'/images/logos/post-man-banner.png"/>
-					</a>
-				</td>
-            </tr>
-            <tr>
-                <td style="padding:0 20px;font-size: 12px;text-align: center;">
-                    This email was sent from your website <a href="'.home_url().'" target="_blank"><strong>'.get_bloginfo().'</strong></a> to test your email functionality.
-                </td>
-            </tr>
-        </tbod';
-		$messageArray = array(
-			'Content-Type: text/plain; charset = "UTF-8"',
-			'Content-Transfer-Encoding: 8bit',
-			'',
-			'Hello!', 
-			'',
-			sprintf( '%s - https://wordpress.org/plugins/post-smtp/', $sentBy ),
-			'',
-			'Content-Type: text/html; charset=UTF-8',
-			'Content-Transfer-Encoding: quoted-printable',
-			'',
-			'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
-			'<html xmlns="http://www.w3.org/1999/xhtml">',
-			'<head>',
-			'<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />',
-			'</head>',
-			'<body class="wporg-notification">',
-			'	<div style="style=" width: 600px; margin: 0 auto;">',
-			$emailBody,
-			'</body>',
-			'</html>',
-		);
-		return implode( PostmanMessage::EOL, $messageArray );
+		if ( class_exists( '\PostSMTP\Tools\TestEmailMessageBuilder' ) ) {
+			return \PostSMTP\Tools\TestEmailMessageBuilder::buildMultipartBody( '' );
+		}
+
+		return '';
 	}
 }

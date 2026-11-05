@@ -65,7 +65,8 @@ final class TestEmailService {
 	 */
 	public function send( array $payload ): array {
 		$connection_id = isset( $payload['connection_id'] ) ? (int) $payload['connection_id'] : 0;
-		$recipient     = sanitize_email( (string) ( $payload['recipient'] ?? '' ) );
+		$recipient_raw = $payload['recipient'] ?? $payload['email'] ?? '';
+		$recipient     = sanitize_email( (string) $recipient_raw );
 		$subject       = trim( (string) ( $payload['subject'] ?? '' ) );
 		$message       = (string) ( $payload['message'] ?? '' );
 
@@ -96,9 +97,8 @@ final class TestEmailService {
 			return $validate;
 		}
 
-		$header  = 'Content-Type: multipart/alternative;' . "\r\n";
-		$header .= 'MIME-Version: 1.0' . "\r\n";
-		$body    = TestEmailMessageBuilder::buildMultipartBody( $message );
+		$header = 'Content-Type: text/html; charset=UTF-8';
+		$body   = TestEmailMessageBuilder::buildHtmlEmail( $message );
 
 		$skip_fallback = static function () {
 			return true;

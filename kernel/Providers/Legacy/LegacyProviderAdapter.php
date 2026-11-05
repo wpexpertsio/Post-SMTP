@@ -37,6 +37,18 @@ final class LegacyProviderAdapter implements ProviderInterface {
 	}
 
 	public function send( array $atts, ?int $log_id, array $connection, array $processed_data ): array {
+		if ( ! empty( $GLOBALS['post_smtp_revamp_mail_in_progress'] ) ) {
+			return array(
+				'success' => false,
+				'message' => sprintf(
+					/* translators: %s: provider slug */
+					__( 'Revamp mail has no native provider for "%s". Register a ProviderInterface implementation.', 'post-smtp' ),
+					$this->slug
+				),
+				'send'    => false,
+			);
+		}
+
 		if ( ! class_exists( '\PostmanWpMail' ) && function_exists( 'post_setupPostman' ) ) {
 			post_setupPostman();
 		}

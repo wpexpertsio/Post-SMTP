@@ -14,6 +14,8 @@ export const CHANNEL_NAV_ICONS = {
 	slack: navSlack,
 	pushover: navPushover,
 	webhook: navWebhook,
+	teams: navTeams,
+	twilio: navTwilio,
 };
 
 export const CHANNEL_PAGE_HEADERS = {
@@ -45,6 +47,20 @@ export const CHANNEL_PAGE_HEADERS = {
 		iconFramed: true,
 		title: 'Webhook',
 		subtitle: 'Send alerts to any URL (Zapier, Make, or your app).',
+	},
+	teams: {
+		icon: navTeams,
+		iconFramed: true,
+		title: 'Microsoft Teams',
+		subtitle: 'Send failure alerts into a Microsoft Teams channel.',
+		showProBadge: true,
+	},
+	twilio: {
+		icon: navTwilio,
+		iconFramed: true,
+		title: 'Twilio (SMS)',
+		subtitle: 'Text failure alerts to a mobile number over SMS.',
+		showProBadge: true,
 	},
 };
 

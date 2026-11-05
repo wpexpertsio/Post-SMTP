@@ -139,6 +139,28 @@ final class GmailProvider extends AbstractApiProvider implements ProviderInterfa
 	}
 
 	public function send( array $atts, ?int $log_id, array $connection, array $processed_data ): array {
+		/**
+		 * Pro / extensions can implement native Gmail send for the revamp pipeline.
+		 *
+		 * @param array|null          $result         Short-circuit result.
+		 * @param array<string,mixed> $atts           wp_mail attributes.
+		 * @param int|null            $log_id         Email log ID.
+		 * @param array<string,mixed> $connection     Active connection.
+		 * @param array<string,mixed> $processed_data Normalized email data.
+		 */
+		$delegated = apply_filters( 'post_smtp_gmail_provider_send', null, $atts, $log_id, $connection, $processed_data );
+		if ( is_array( $delegated ) ) {
+			return $delegated;
+		}
+
+		if ( ! empty( $GLOBALS['post_smtp_revamp_mail_in_progress'] ) ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Gmail is not yet available on the revamp mail pipeline. Use an API mailer or disable revamp mail temporarily.', 'post-smtp' ),
+				'send'    => false,
+			);
+		}
+
 		$adapter = new \PostSMTP\Kernel\Providers\Legacy\LegacyProviderAdapter( self::slug() );
 		return $adapter->send( $atts, $log_id, $connection, $processed_data );
 	}

@@ -1,9 +1,10 @@
 import { useEffect } from '@wordpress/element';
 import { getAdminConfig, getAdminUrls } from '../../config/admin';
-import iconReportsChart from '../../assets/reports/icon-reports-chart.svg';
 import checkIcon from '../../assets/dashboard/pro-banner/check.svg';
 import iconUpgradeArrow from '../../assets/help-docs/icon-upgrade-arrow.svg';
+import iconReportsChart from '../../assets/reports/icon-reports-chart.svg';
 import { proCrownIcon } from '../dashboard/components/v2/gmailBarAssets';
+import ReportsPageTrackingSlot from './components/ReportsPageTrackingSlot';
 
 const FEATURES = [
 	'Email delivery',
@@ -16,18 +17,31 @@ const PREVIEW_SLOTS = [ 'delivery', 'quota', 'subjects' ];
 const ReportsScreen = () => {
 	const config = getAdminConfig();
 	const urls = getAdminUrls();
+	const trackingEnabled = Boolean( config.dashboardReportsTracking?.enabled );
+	const legacyAddon = Boolean( config.hasReportTracking );
 
 	useEffect( () => {
-		if ( config.hasReportTracking && urls.reportsLegacy ) {
-			window.location.assign( urls.reportsLegacy );
+		if ( trackingEnabled || ! legacyAddon || ! urls.reportsLegacy ) {
+			return;
 		}
-	}, [ config.hasReportTracking, urls.reportsLegacy ] );
+		window.location.assign( urls.reportsLegacy );
+	}, [ trackingEnabled, legacyAddon, urls.reportsLegacy ] );
 
-	if ( config.hasReportTracking ) {
+	if ( ! trackingEnabled && legacyAddon ) {
 		return (
 			<p className="ps-v2-reports-loading" data-figma-node="672:9240">
 				Opening reports…
 			</p>
+		);
+	}
+
+	if ( trackingEnabled ) {
+		return (
+			<div className="ps-v2-reports-page ps-v2-reports-page--pro" data-figma-node="601:13732">
+				<div className="ps-v2-reports-layout">
+					<ReportsPageTrackingSlot />
+				</div>
+			</div>
 		);
 	}
 

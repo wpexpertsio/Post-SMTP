@@ -133,7 +133,8 @@ final class SmtpProvider implements ProviderInterface {
 	}
 
 	public function send( array $atts, ?int $log_id, array $connection, array $processed_data ): array {
-		$adapter = new \PostSMTP\Kernel\Providers\Legacy\LegacyProviderAdapter( self::slug() );
-		return $adapter->send( $atts, $log_id, $connection, $processed_data );
+		unset( $log_id, $atts );
+		$transport = new \PostSMTP\Kernel\Providers\Modern\Transport\WordPressSmtpTransport();
+		return $transport->send( $connection, $processed_data );
 	}
 }

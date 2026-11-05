@@ -163,12 +163,7 @@ const EmailQueueSettingsPanel = () => {
 			<div className="ps-v2-settings-email-queue__block" data-figma-node="1065:43424">
 				<SettingsSectionHeader
 					icon={ <SectionIcon src={ iconEmailQueue } /> }
-					title={
-						<span className="ps-v2-settings-title-with-pro">
-							Advanced Delivery
-							<ProTag />
-						</span>
-					}
+					title="Advanced Delivery"
 					description="Send in the background with quotas and retries."
 					figmaNode="1065:43428"
 				/>
@@ -186,12 +181,7 @@ const EmailQueueSettingsPanel = () => {
 			<div className="ps-v2-settings-email-queue__block" data-figma-node="672:7828">
 				<SettingsSectionHeader
 					icon={ <SectionIcon src={ iconEmailQueue } /> }
-					title={
-						<span className="ps-v2-settings-title-with-pro">
-							Batch settings
-							<ProTag />
-						</span>
-					}
+					title="Batch settings"
 					description="How many emails go out at once."
 					figmaNode="672:7835"
 				/>
@@ -216,12 +206,7 @@ const EmailQueueSettingsPanel = () => {
 			<div className="ps-v2-settings-email-queue__block" data-figma-node="672:7851">
 				<SettingsSectionHeader
 					icon={ <SectionIcon src={ iconEmailQueue } /> }
-					title={
-						<span className="ps-v2-settings-title-with-pro">
-							Quota settings
-							<ProTag />
-						</span>
-					}
+					title="Quota settings"
 					description="Limit how many emails this site sends."
 					figmaNode="672:7855"
 				/>

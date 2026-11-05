@@ -1,6 +1,7 @@
 import { getAdminUrls } from '../../../config/admin';
 import FormGenerator from '../../../components/form-generator/FormGenerator';
 import GmailConfigurePanel from './GmailConfigurePanel';
+import ZohoConfigurePanel from './ZohoConfigurePanel';
 import { mailerConnectionIcon } from '../model/mailerConnectionIcons';
 import useMailerCatalog from '../hooks/useMailerCatalog';
 import iconExternalLink from '../../../assets/dashboard/connections/helper/icon-external-link.svg';
@@ -27,6 +28,11 @@ const FIGMA_CONFIGURE_MAILERS = {
 		figmaNode: '1310:16703',
 		credentialsSection: 'api_credentials',
 		credentialKeys: [ 'cloudflare_email_api_key' ],
+	},
+	amazon_ses_api: {
+		figmaNode: '1310:16232',
+		credentialsSection: 'api_credentials',
+		credentialKeys: [ 'ses_access_key_id', 'ses_secret_access_key', 'ses_region' ],
 	},
 	smtp: {
 		figmaNode: '1310:17869',
@@ -123,9 +129,10 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 	const catalogQuery = useMailerCatalog();
 	const catalogItem = catalogQuery.data?.items?.find( ( item ) => item.slug === provider );
 	const isGmailOAuthLayout = schema?.configure_layout === 'gmail_oauth' || provider === 'gmail_api';
+	const isZohoOAuthLayout = schema?.configure_layout === 'zoho_oauth' || provider === 'zohomail_api';
 	const oauthSlug = OAUTH_PROVIDERS[ provider ];
 	const oauthUrl =
-		! isGmailOAuthLayout && oauthSlug
+		! isGmailOAuthLayout && ! isZohoOAuthLayout && oauthSlug
 			? `${ urls.wizard }&socket=${ oauthSlug }&step=2`
 			: null;
 
@@ -182,7 +189,9 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 			data-figma-node={
 				isGmailOAuthLayout
 					? schema?.configure_figma_node || '1310:15740'
-					: figmaMailer?.figmaNode || '672:5588'
+					: isZohoOAuthLayout
+						? schema?.configure_figma_node || '1339:17259'
+						: figmaMailer?.figmaNode || '672:5588'
 			}
 		>
 			<header className="ps-v2-configure-form__hero">
@@ -213,6 +222,13 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 					schema={ schema }
 					values={ values }
 					onChange={ onChange }
+					renderField={ renderField }
+					connectionId={ connectionId }
+				/>
+			) : isZohoOAuthLayout ? (
+				<ZohoConfigurePanel
+					schema={ schema }
+					values={ values }
 					renderField={ renderField }
 					connectionId={ connectionId }
 				/>

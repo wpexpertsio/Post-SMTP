@@ -80,10 +80,18 @@ final class ConnectionOAuthGrantBridge {
 		$sender_email  = (string) ( $row['sender_email'] ?? $row['from_email'] ?? '' );
 		$sender_name   = (string) ( $row['sender_name'] ?? $row['from_name'] ?? '' );
 
+		if ( 'zohomail_api' === $provider ) {
+			$client_id     = (string) ( $row['zohomail_client_id'] ?? $client_id );
+			$client_secret = (string) ( $row['zohomail_client_secret'] ?? $client_secret );
+		}
+
 		if ( '' === $client_id || '' === $client_secret ) {
+			$message = 'zohomail_api' === $provider
+				? __( 'Save Region, Client ID, and Client Secret before connecting to the Zoho API.', 'post-smtp' )
+				: __( 'Save Client ID and Client secret before connecting to the Gmail API.', 'post-smtp' );
 			return array(
 				'success' => false,
-				'message' => __( 'Save Client ID and Client secret before connecting to the Gmail API.', 'post-smtp' ),
+				'message' => $message,
 			);
 		}
 
@@ -103,6 +111,12 @@ final class ConnectionOAuthGrantBridge {
 			$options['hostname'] = 'www.googleapis.com';
 			$options['port']     = 443;
 			$options['enc_type'] = \PostmanOptions::SECURITY_TYPE_SMTPS;
+		}
+
+		if ( 'zohomail_api' === $provider ) {
+			$options['zohomail_client_id']     = $client_id;
+			$options['zohomail_client_secret'] = $client_secret;
+			$options['zohomail_region']       = sanitize_key( (string) ( $row['zohomail_region'] ?? 'com' ) );
 		}
 
 		update_option( 'postman_options', $options, false );
@@ -192,7 +206,8 @@ final class ConnectionOAuthGrantBridge {
 				return '' !== (string) ( $row['oauth_client_id'] ?? '' )
 					&& '' !== (string) ( $row['oauth_client_secret'] ?? '' );
 			case 'zohomail_api':
-				return '' !== (string) ( $row['zohomail_client_id'] ?? $row['oauth_client_id'] ?? '' );
+				return '' !== (string) ( $row['zohomail_client_id'] ?? $row['oauth_client_id'] ?? '' )
+					&& '' !== (string) ( $row['zohomail_client_secret'] ?? $row['oauth_client_secret'] ?? '' );
 		}
 
 		return false;

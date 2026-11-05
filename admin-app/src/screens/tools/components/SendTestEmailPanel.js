@@ -28,6 +28,13 @@ const SendTestEmailPanel = () => {
 	}, [ data?.defaults?.subject, subject ] );
 
 	useEffect( () => {
+		const defaultEmail = data?.current_user_email;
+		if ( defaultEmail && ! recipient ) {
+			setRecipient( defaultEmail );
+		}
+	}, [ data?.current_user_email, recipient ] );
+
+	useEffect( () => {
 		if ( connections.length && connections.some( ( c ) => c.id === defaultConnectionId ) ) {
 			setConnectionId( defaultConnectionId );
 		} else if ( connections.length ) {

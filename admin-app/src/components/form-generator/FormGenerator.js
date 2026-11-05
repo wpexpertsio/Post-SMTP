@@ -3,6 +3,10 @@ const FieldInput = ( { field, fieldKey, values, onChange } ) => {
 	const value = values[ fieldKey ] ?? '';
 
 	if ( type === 'select' && field.options ) {
+		const selectOptions = Array.isArray( field.options )
+			? field.options.map( ( opt ) => [ String( opt.value ), opt.label ] )
+			: Object.entries( field.options );
+
 		return (
 			<select
 				id={ `field-${ fieldKey }` }
@@ -10,7 +14,7 @@ const FieldInput = ( { field, fieldKey, values, onChange } ) => {
 				value={ value }
 				onChange={ ( e ) => onChange( { ...values, [ fieldKey ]: e.target.value } ) }
 			>
-				{ Object.entries( field.options ).map( ( [ optValue, optLabel ] ) => (
+				{ selectOptions.map( ( [ optValue, optLabel ] ) => (
 					<option key={ optValue } value={ optValue }>{ optLabel }</option>
 				) ) }
 			</select>

@@ -9,8 +9,8 @@ import SettingsSectionCard from './SettingsSectionCard';
 import SettingsSectionHeader from './SettingsSectionHeader';
 
 const SectionIcon = ( { src } ) => (
-	<span className="ps-v2-settings-section-head__icon-box">
-		<img src={ src } alt="" width="20" height="20" />
+	<span className="ps-v2-settings-section-head__icon-box ps-v2-settings-section-head__icon-box--lg ps-v2-settings-section-head__icon-box--white">
+		<img src={ src } alt="" width="24" height="24" />
 	</span>
 );
 
@@ -87,54 +87,57 @@ const GeneralSettingsPanel = ( { onSaved } ) => {
 				/>
 			) }
 
-			<SettingsSectionCard figmaNode="1096:45075">
+			<div className="ps-v2-settings-general__block" data-figma-node="1096:45075">
 				<SettingsSectionHeader
 					icon={ <SectionIcon src={ iconGeneral } /> }
 					title="WordPress mail handler"
 					description="Who handles wp_mail on this site."
 					figmaNode="1096:45076"
 				/>
-				<div className="ps-v2-settings-panel">
-					<SettingsField
-						label="Mail handler"
-						hint="Mailer accounts are configured in Connections."
-					>
-						<div className="ps-v2-settings-select-wrap">
-							<label className="ps-v2-settings-select">
-								<span className="ps-v2-settings-select__face">{ handlerLabel }</span>
-								<img
-									className="ps-v2-settings-select__chevron"
-									src={ iconChevronDown }
-									alt=""
-									width="10"
-									height="6"
-								/>
-								<select
-									className="ps-v2-settings-select__native"
-									value={ form.mail_handler }
-									onChange={ ( e ) => patch( 'mail_handler', e.target.value ) }
-									aria-label="Mail handler"
-								>
-									{ handlers.map( ( opt ) => (
-										<option key={ opt.value } value={ opt.value }>
-											{ opt.label }
-										</option>
-									) ) }
-								</select>
-							</label>
-						</div>
-					</SettingsField>
-				</div>
-			</SettingsSectionCard>
+				<SettingsSectionCard figmaNode="1096:45075" className="ps-v2-settings-section--flat">
+					<div className="ps-v2-settings-panel">
+						<SettingsField
+							label="Mail handler"
+							hint="Mailer accounts are configured in Connections."
+						>
+							<div className="ps-v2-settings-select-wrap">
+								<label className="ps-v2-settings-select">
+									<span className="ps-v2-settings-select__face">{ handlerLabel }</span>
+									<img
+										className="ps-v2-settings-select__chevron"
+										src={ iconChevronDown }
+										alt=""
+										width="10"
+										height="6"
+									/>
+									<select
+										className="ps-v2-settings-select__native"
+										value={ form.mail_handler }
+										onChange={ ( e ) => patch( 'mail_handler', e.target.value ) }
+										aria-label="Mail handler"
+									>
+										{ handlers.map( ( opt ) => (
+											<option key={ opt.value } value={ opt.value }>
+												{ opt.label }
+											</option>
+										) ) }
+									</select>
+								</label>
+							</div>
+						</SettingsField>
+					</div>
+				</SettingsSectionCard>
+			</div>
 
-			<SettingsSectionCard figmaNode="1096:45094">
+			<div className="ps-v2-settings-general__block" data-figma-node="1096:45094">
 				<SettingsSectionHeader
 					icon={ <SectionIcon src={ iconGeneral } /> }
 					title="From details"
 					description="Global sender identity, mapped to your Primary connection."
 					figmaNode="1096:45095"
 				/>
-				<div className="ps-v2-settings-panel">
+				<SettingsSectionCard figmaNode="1096:45094" className="ps-v2-settings-section--flat">
+					<div className="ps-v2-settings-panel">
 					<div className="ps-v2-settings-callout ps-v2-settings-callout--from-details" data-figma-node="1096:45105">
 						<img
 							className="ps-v2-settings-callout__icon"
@@ -184,17 +187,19 @@ const GeneralSettingsPanel = ( { onSaved } ) => {
 							onChange={ ( v ) => patch( 'enforce_from_email', v ) }
 						/>
 					</SettingsField>
-				</div>
-			</SettingsSectionCard>
+					</div>
+				</SettingsSectionCard>
+			</div>
 
-			<SettingsSectionCard figmaNode="1096:45122">
+			<div className="ps-v2-settings-general__block" data-figma-node="1096:45122">
 				<SettingsSectionHeader
 					icon={ <SectionIcon src={ iconGeneral } /> }
 					title="Extra addresses"
 					description="Reply-To, CC and BCC for every email."
 					figmaNode="1096:45123"
 				/>
-				<div className="ps-v2-settings-panel">
+				<SettingsSectionCard figmaNode="1096:45122" className="ps-v2-settings-section--flat">
+					<div className="ps-v2-settings-panel">
 					<SettingsField label="Reply-To name">
 						<input
 							type="text"
@@ -239,8 +244,9 @@ const GeneralSettingsPanel = ( { onSaved } ) => {
 							onChange={ ( e ) => patch( 'forced_bcc', e.target.value ) }
 						/>
 					</SettingsField>
-				</div>
-			</SettingsSectionCard>
+					</div>
+				</SettingsSectionCard>
+			</div>
 
 			<div className="ps-v2-settings-save-wrap" data-figma-node="1096:45162">
 				<button

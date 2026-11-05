@@ -8,6 +8,8 @@
 namespace PostSMTP\Bootstrap;
 
 use PostSMTP\Api\V2\ApiRegistrar;
+use PostSMTP\Connections\ConnectionLegacySendBridge;
+use PostSMTP\Mail\Modern\Register as ModernMailRegister;
 use PostSMTP\Connections\GmailConfigurePanelHooks;
 use PostSMTP\Dashboard\DashboardReportsTrackingHooks;
 use PostSMTP\Kernel\Libraries\LibraryLoader;
@@ -37,6 +39,10 @@ final class Plugin {
 				ApiRegistrar::init();
 				FailureNotificationBridge::init();
 				GmailConfigurePanelHooks::init();
+				ModernMailRegister::init();
+				if ( ! CohortResolver::usesRevampMailPipeline() ) {
+					ConnectionLegacySendBridge::init();
+				}
 				NotificationTeamsPanelHooks::init();
 				NotificationTwilioPanelHooks::init();
 				SettingsEmailReportingPanelHooks::init();

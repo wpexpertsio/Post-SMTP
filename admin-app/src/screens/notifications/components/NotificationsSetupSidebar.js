@@ -26,6 +26,16 @@ const DOC_COPY = {
 		description: 'Reliable sending for busy sites.',
 		cta: 'View documentation',
 	},
+	teams: {
+		title: 'What is Microsoft Teams?',
+		description: 'Get failure alerts in a Teams channel using an incoming webhook.',
+		cta: 'View documentation',
+	},
+	twilio: {
+		title: 'What is Twilio (SMS)?',
+		description: 'Receive failure alerts as text messages on your phone.',
+		cta: 'View documentation',
+	},
 };
 
 const NotificationsSetupSidebar = ( { slug, docUrl } ) => {
@@ -35,8 +45,11 @@ const NotificationsSetupSidebar = ( { slug, docUrl } ) => {
 	const isWebhook = slug === 'webhook';
 	const isPushover = slug === 'pushover';
 	const isSlack = slug === 'slack';
+	const isTeams = slug === 'teams';
+	const isTwilio = slug === 'twilio';
 
-	const useFigmaHelperTitle = isAdminEmail || isChrome || isWebhook || isPushover || isSlack;
+	const useFigmaHelperTitle =
+		isAdminEmail || isChrome || isWebhook || isPushover || isSlack || isTeams || isTwilio;
 
 	return (
 		<aside className="ps-v2-conn-helper-card ps-v2-notify-helper-card" data-figma-node="1273:18215">

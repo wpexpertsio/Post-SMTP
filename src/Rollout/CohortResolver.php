@@ -76,4 +76,15 @@ final class CohortResolver {
 	public static function usesLegacyAdmin(): bool {
 		return ! self::usesReactAdmin();
 	}
+
+	/**
+	 * Connections UI sites send through ProviderInterface + Modern\Delivery\Orchestrator (not PostmanMailEngine).
+	 */
+	public static function usesRevampMailPipeline(): bool {
+		if ( ConnectionRepositoryFactory::isLegacyMode() ) {
+			return false;
+		}
+
+		return (bool) apply_filters( 'post_smtp_use_revamp_mail_pipeline', true );
+	}
 }

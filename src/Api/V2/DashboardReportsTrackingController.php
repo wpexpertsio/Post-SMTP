@@ -52,15 +52,31 @@ final class DashboardReportsTrackingController extends BaseController {
 			'enabled' => false,
 			'range'   => $range,
 			'totals'  => array(
+				'total'     => 0,
 				'delivered' => 0,
 				'opened'    => 0,
 				'failed'    => 0,
 			),
 			'chart'   => array(
 				'labels'    => array(),
+				'total'     => array(),
 				'delivered' => array(),
 				'opened'    => array(),
 				'failed'    => array(),
+			),
+			'by_subject' => array(
+				'tracking_available' => false,
+				'rows'               => array(),
+			),
+			'email_quota' => array(
+				'visible'        => false,
+				'emails_used'    => 0,
+				'limit'          => 0,
+				'duration_key'   => '',
+				'duration_label' => '',
+				'percent'        => 0,
+				'settings_url'   => '',
+				'helper_text'    => '',
 			),
 		);
 

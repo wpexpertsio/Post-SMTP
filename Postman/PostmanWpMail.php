@@ -265,6 +265,11 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$options = PostmanOptions::getInstance();
 			$authorizationToken = PostmanOAuthToken::getInstance();
 
+			/**
+			 * Hydrate legacy postman_options from the revamp connection row (primary or fallback).
+			 */
+			do_action( 'post_smtp_prepare_legacy_mail_send', (bool) $options->is_fallback );
+
 			// get the transport and create the transportConfig and engine
 			$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
 
@@ -422,6 +427,15 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 				foreach ( $indices as $index ) {
 					Postman_Connection_Resolver::set_fallback_index_override( $index );
 					$options->is_fallback = true;
+					/**
+					 * Fires before a fallback connection attempt (primary failure is already logged).
+					 * Extensions that force log updates via post_smtp_update_email_log_id should detach
+					 * so the fallback attempt inserts a new row instead of overwriting the failed primary log.
+					 *
+					 * @param PostmanEmailLog  $log
+					 * @param PostmanMessage   $postMessage
+					 */
+					do_action( 'post_smtp_before_fallback_delivery', $log, $postMessage );
 					if ( $this->sendMessage( $postMessage, $log ) ) {
 						$options->is_fallback = false;
 						Postman_Connection_Resolver::set_fallback_index_override( null );
@@ -435,6 +449,7 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 
 			if ( $legacy_global_on ) {
 				$options->is_fallback = true;
+				do_action( 'post_smtp_before_fallback_delivery', $log, $postMessage );
 				$status               = $this->sendMessage( $postMessage, $log );
 				$options->is_fallback = false;
 				return $status;
