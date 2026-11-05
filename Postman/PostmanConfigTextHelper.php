@@ -190,6 +190,7 @@ if ( ! class_exists( 'PostmanYahooOAuthScribe' ) ) {
 			return true;
 		}
 		public function getCallbackUrl() {
+			// see https://codex.wordpress.org/Function_Reference/admin_url#Related
 			return admin_url( 'options-general.php' ) . '?page=postman';
 		}
 		function getCallbackDomain() {

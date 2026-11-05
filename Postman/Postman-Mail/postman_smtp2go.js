@@ -7,7 +7,6 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 	PostmanSmtp2go.prototype.handleTransportChange = function( transportName ) {
-		console.log( transportName );
 		if ( transportName == 'smtp2go_api' ) {
 			hide( 'div.transport_setting' );
 			hide( 'div.authentication_setting' );

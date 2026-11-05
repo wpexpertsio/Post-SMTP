@@ -725,13 +725,20 @@ class Post_SMTP_New_Wizard {
      *
      * The setup wizard is registered with a hidden parent menu slug (space), so WordPress
      * uses the admin_page_* hook suffix — not postman_page_* — and a strict hook match
-     * skips wizard.css entirely (unstyled layout).
+     * skips wizard.css entirely (unstyled layout). Settings (postman/configuration) also
+     * needs wizard.css / wizard.js for the Gmail one-click PRO popup.
      *
      * @param string $hook Admin screen hook suffix from admin_enqueue_scripts.
      * @return bool
      */
     private function should_enqueue_wizard_assets( $hook ) {
         $page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+
+        // Settings → Connections (Gmail one-click PRO popup uses wizard.css / wizard.js).
+        if ( PostmanConfigurationController::CONFIGURATION_SLUG === $page ) {
+            return true;
+        }
+
         if ( PostmanConfigurationController::CONFIGURATION_WIZARD_SLUG !== $page ) {
             return false;
         }
