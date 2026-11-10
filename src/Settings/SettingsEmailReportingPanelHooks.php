@@ -7,6 +7,8 @@
 
 namespace PostSMTP\Settings;
 
+use PostSMTP\Rollout\CohortResolver;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -49,6 +51,16 @@ final class SettingsEmailReportingPanelHooks {
 	}
 
 	public static function isOpenTrackingLocked(): bool {
+		$default_locked = ! class_exists( 'Post_SMTP_Report_And_Tracking', false );
+		if (
+			$default_locked
+			&& defined( 'POST_SMTP_PRO_VERSION' )
+			&& class_exists( CohortResolver::class, false )
+			&& CohortResolver::usesReactAdmin()
+		) {
+			$default_locked = false;
+		}
+
 		/**
 		 * Whether the Open Email Tracking block is locked in the revamp settings UI.
 		 *
@@ -56,7 +68,7 @@ final class SettingsEmailReportingPanelHooks {
 		 */
 		return (bool) apply_filters(
 			'post_smtp_settings_email_reporting_open_tracking_locked',
-			! class_exists( 'Post_SMTP_Report_And_Tracking' )
+			$default_locked
 		);
 	}
 
@@ -91,7 +103,12 @@ final class SettingsEmailReportingPanelHooks {
 			$panel = $defaults;
 		}
 
-		return array_merge( $defaults, $panel );
+		$merged = array_merge( $defaults, $panel );
+		if ( isset( $panel['toggle'] ) && is_array( $panel['toggle'] ) ) {
+			$merged['toggle'] = array_merge( $defaults['toggle'], $panel['toggle'] );
+		}
+
+		return $merged;
 	}
 
 	/**

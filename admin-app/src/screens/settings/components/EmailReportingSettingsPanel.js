@@ -49,18 +49,15 @@ const EmailReportingSettingsPanel = () => {
 	const [ notice, setNotice ] = useState( null );
 
 	useEffect( () => {
-		if ( query.data?.values ) {
-			setForm( ( prev ) => {
-				if ( prev ) {
-					return prev;
-				}
-				const toggle = query.data?.open_tracking?.toggle;
-				return {
-					...query.data.values,
-					track_email_opens: toggle?.checked ?? false,
-				};
-			} );
+		if ( ! query.data?.values ) {
+			return;
 		}
+		const toggle = query.data?.open_tracking?.toggle;
+		setForm( ( prev ) => ( {
+			...( prev || query.data.values ),
+			...query.data.values,
+			track_email_opens: toggle?.checked ?? false,
+		} ) );
 	}, [ query.data ] );
 
 	const patch = ( key, value ) => {

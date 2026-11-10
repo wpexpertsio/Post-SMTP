@@ -313,10 +313,6 @@ final class EmailLogService {
 			return false;
 		}
 
-		if ( ! function_exists( 'pspro_fs' ) || ! pspro_fs()->can_use_premium_code() ) {
-			return false;
-		}
-
 		return (bool) apply_filters( 'post_smtp_track_email_opens', false );
 	}
 
