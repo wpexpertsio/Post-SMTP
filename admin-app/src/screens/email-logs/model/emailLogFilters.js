@@ -4,12 +4,13 @@ export const DEFAULT_FILTERS = {
 	mailer: 'all',
 	date: 'all',
 	form: 'all',
+	source: 'all',
 	page: '1',
 	perPage: '50',
 	logId: '',
 };
 
-const FILTER_KEYS = [ 'q', 'status', 'mailer', 'date', 'form', 'page', 'perPage', 'logId' ];
+const FILTER_KEYS = [ 'q', 'status', 'mailer', 'date', 'form', 'source', 'page', 'perPage', 'logId' ];
 
 export function parseFiltersFromSearchParams( searchParams ) {
 	const next = { ...DEFAULT_FILTERS };
@@ -49,6 +50,7 @@ export function filtersToApiParams( filters ) {
 		status: filters.status || 'all',
 		mailer: filters.mailer || 'all',
 		form: filters.form || 'all',
+		source: filters.source || 'all',
 		date: filters.date || 'all',
 		page: Number( filters.page ) || 1,
 		per_page: Number( filters.perPage ) || 50,

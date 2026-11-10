@@ -43,6 +43,7 @@ const EmailLogsScreen = () => {
 		...settings,
 		facetsMailers: data.facets?.mailers || [],
 		facetsForms: data.facets?.forms || [],
+		facetsSources: data.facets?.sources || [],
 	};
 
 	const patchFilters = useCallback(

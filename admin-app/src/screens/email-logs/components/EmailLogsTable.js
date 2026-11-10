@@ -78,7 +78,12 @@ const EmailLogsTable = ( {
 							<span className="ps-el-table__recipient-text">{ row.recipients_short }</span>
 						</span>
 						<span className="ps-el-table__cell ps-el-table__cell--mailer">
-							<EmailLogMailerCell mailer={ row.mailer } route={ row.route } />
+							<EmailLogMailerCell
+								mailer={ row.mailer }
+								mailerLabel={ row.mailer_label }
+								route={ row.route }
+								routeLabel={ row.route_label }
+							/>
 						</span>
 						<span className="ps-el-table__cell ps-el-table__cell--date">{ row.sent_at_display }</span>
 						<span className="ps-el-table__cell ps-el-table__cell--status">

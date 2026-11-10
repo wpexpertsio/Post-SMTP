@@ -18,6 +18,7 @@ final class EmailLogService {
 
 	public static function init(): void {
 		add_filter( 'post_smtp_get_logs_query_cols', array( self::class, 'filter_list_query_columns' ), 10, 2 );
+		EmailLogAdvanceSourceQuery::init();
 	}
 
 	/**
@@ -43,6 +44,7 @@ final class EmailLogService {
 		$status   = isset( $params['status'] ) ? sanitize_text_field( (string) $params['status'] ) : 'all';
 		$mailer   = isset( $params['mailer'] ) ? sanitize_text_field( (string) $params['mailer'] ) : 'all';
 		$form     = isset( $params['form'] ) ? sanitize_text_field( (string) $params['form'] ) : 'all';
+		$source   = isset( $params['source'] ) ? sanitize_text_field( (string) $params['source'] ) : 'all';
 		$date     = isset( $params['date'] ) ? sanitize_text_field( (string) $params['date'] ) : 'all';
 
 		$query_args = array(
@@ -65,6 +67,10 @@ final class EmailLogService {
 
 		if ( 'all' !== $form && $this->has_event_type_column() ) {
 			$query_args['form'] = $form;
+		}
+
+		if ( 'all' !== $source && EmailLogAdvanceSourceQuery::isEnabled() ) {
+			$query_args['filter_by'] = $source;
 		}
 
 		$range = EmailLogNormalizer::date_preset_to_range( $date );
@@ -91,6 +97,7 @@ final class EmailLogService {
 		}
 
 		$rows = $this->attachOpenTrackingEvents( $rows );
+		$rows = $this->attachStoredAttachmentFlags( $rows );
 
 		$items = array();
 		foreach ( $rows as $row ) {
@@ -282,17 +289,20 @@ final class EmailLogService {
 			$logging_enabled = $opts->isMailLoggingEnabled();
 		}
 
-		$open_tracking = self::openTrackingActive();
+		$open_tracking       = self::openTrackingActive();
+		$advanced_filters    = EmailLogAdvanceSourceQuery::isEnabled();
+		$source_filter_avail = $advanced_filters && $has_pro;
 
 		return array(
 			'logging_enabled'          => $logging_enabled,
 			'is_pro'                   => (bool) $has_pro,
 			'show_opened_column'       => $open_tracking,
 			'open_tracking_active'     => $open_tracking,
-			'show_attachments'         => (bool) $has_pro,
+			'show_attachments'         => $has_pro && EmailLogAttachmentResolver::isFeatureEnabled(),
 			'show_queued'              => (bool) $has_pro,
 			'form_filter_available'    => (bool) $has_pro && $this->has_event_type_column(),
-			'advanced_filters_enabled' => (bool) get_option( 'postman_advanced_log_filter', false ),
+			'advanced_filters_enabled' => $advanced_filters,
+			'source_filter_available'  => (bool) $source_filter_avail,
 		);
 	}
 
@@ -317,7 +327,7 @@ final class EmailLogService {
 	}
 
 	/**
-	 * @return array{mailers:list<string>,forms:list<string>}
+	 * @return array{mailers:list<string>,forms:list<string>,sources:list<array{source:string,count:int}>}
 	 */
 	private function get_facets(): array {
 		global $wpdb;
@@ -333,6 +343,10 @@ final class EmailLogService {
 			$forms = $wpdb->get_col( "SELECT DISTINCT event_type FROM {$table} WHERE event_type != '' LIMIT 50" );
 		}
 
+		$sources = EmailLogAdvanceSourceQuery::isEnabled()
+			? EmailLogAdvanceSourceQuery::getSourceFacets()
+			: array();
+
 		return array(
 			'mailers' => array_values( array_filter( $mailers ) ),
 			'forms'   => array_values(
@@ -345,6 +359,7 @@ final class EmailLogService {
 					)
 				)
 			),
+			'sources' => $sources,
 		);
 	}
 
@@ -372,6 +387,53 @@ final class EmailLogService {
 	 * @param list<object|array<string,mixed>> $rows Log rows from the query.
 	 * @return list<object|array<string,mixed>>
 	 */
+	/**
+	 * @param list<object|array<string,mixed>> $rows Log rows from the query.
+	 * @return list<object|array<string,mixed>>
+	 */
+	private function attachStoredAttachmentFlags( array $rows ): array {
+		if ( ! EmailLogAttachmentResolver::isFeatureEnabled() || empty( $rows ) ) {
+			return $rows;
+		}
+
+		$ids = array();
+		foreach ( $rows as $row ) {
+			$row = (array) $row;
+			if ( ! empty( $row['id'] ) ) {
+				$ids[] = (int) $row['id'];
+			}
+		}
+
+		$ids = array_values( array_unique( array_filter( $ids ) ) );
+		if ( empty( $ids ) ) {
+			return $rows;
+		}
+
+		$has_by_id = EmailLogAttachmentResolver::batchHasAttachments( $ids );
+
+		foreach ( $rows as $index => $row ) {
+			if ( is_object( $row ) ) {
+				$id = (int) ( $row->id ?? 0 );
+			} else {
+				$row_arr = (array) $row;
+				$id      = (int) ( $row_arr['id'] ?? 0 );
+			}
+
+			if ( $id <= 0 || empty( $has_by_id[ $id ] ) ) {
+				continue;
+			}
+
+			if ( is_object( $row ) ) {
+				$rows[ $index ]->has_attachments = true;
+			} else {
+				$row['has_attachments'] = true;
+				$rows[ $index ]         = $row;
+			}
+		}
+
+		return $rows;
+	}
+
 	private function attachOpenTrackingEvents( array $rows ): array {
 		if ( ! self::openTrackingActive() || ! class_exists( 'Post_SMTP_RAT_DB', false ) || empty( $rows ) ) {
 			return $rows;

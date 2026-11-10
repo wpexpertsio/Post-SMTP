@@ -27,9 +27,7 @@ const EmailLogDrawer = ( {
 		return null;
 	}
 
-	const showAttachments = Boolean(
-		settings?.show_attachments && log?.attachments?.length
-	);
+	const showAttachments = Boolean( log?.attachments?.length );
 
 	return (
 		<div className="ps-el-drawer-backdrop" role="presentation" onClick={ onClose }>
@@ -52,7 +50,12 @@ const EmailLogDrawer = ( {
 							<div className="ps-el-drawer__meta">
 								<EmailLogStatusBadge status={ log.status } />
 								<span>{ log.sent_at_display }</span>
-								<EmailLogMailerCell mailer={ log.mailer } route={ log.route } />
+								<EmailLogMailerCell
+									mailer={ log.mailer }
+									mailerLabel={ log.mailer_label }
+									route={ log.route }
+									routeLabel={ log.route_label }
+								/>
 							</div>
 							<div className="ps-el-drawer__actions">
 								<button
@@ -80,6 +83,13 @@ const EmailLogDrawer = ( {
 						<EmailLogAccordion title="Email details" defaultOpen>
 							{ listBlock( 'From', [ log.from ] ) }
 							{ listBlock( 'Message-ID', log.message_id ? [ log.message_id ] : [] ) }
+							{ log.initiator && (
+								<>
+									{ listBlock( 'Initiator', log.initiator.source ? [ log.initiator.source ] : [] ) }
+									{ listBlock( 'Source file', log.initiator.file ? [ log.initiator.file ] : [] ) }
+									{ listBlock( 'Source line', log.initiator.line ? [ log.initiator.line ] : [] ) }
+								</>
+							) }
 							{ settings?.show_opened_column && (
 								<div className="ps-el-drawer__field">
 									<span className="ps-el-drawer__label">Opened</span>
@@ -100,9 +110,21 @@ const EmailLogDrawer = ( {
 						{ showAttachments && (
 							<EmailLogAccordion title="Attachments">
 								<ul className="ps-el-list">
-									{ log.attachments.map( ( file, index ) => (
-										<li key={ index }>{ file.name || `Attachment ${ index + 1 }` }</li>
-									) ) }
+									{ log.attachments.map( ( file, index ) => {
+										const name = file?.name || ( typeof file === 'string' ? file : `Attachment ${ index + 1 }` );
+										const url = file?.url;
+										return (
+											<li key={ index }>
+												{ url ? (
+													<a href={ url } download target="_blank" rel="noopener noreferrer">
+														{ name }
+													</a>
+												) : (
+													name
+												) }
+											</li>
+										);
+									} ) }
 								</ul>
 							</EmailLogAccordion>
 						) }

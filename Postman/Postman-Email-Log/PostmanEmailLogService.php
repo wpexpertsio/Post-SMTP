@@ -363,8 +363,13 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 				$log->transportUri = PostmanTransportRegistry::getInstance()->getPublicTransportUri( $transport );
 				$log->sessionTranscript = $log->transportUri . "\n\n" . $transcript;
 			} else {
-				$log->transportUri = '';
-				$log->sessionTranscript = $transcript;
+				// Revamp delivery pre-fills transportUri (provider + connection title); do not wipe it.
+				if ( ! empty( $log->transportUri ) ) {
+					$log->sessionTranscript = $log->transportUri . "\n\n" . $transcript;
+				} else {
+					$log->transportUri      = '';
+					$log->sessionTranscript = $transcript;
+				}
 			}
 			return $log;
 		}

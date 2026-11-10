@@ -42,6 +42,16 @@ const EmailLogsToolbar = ( {
 		...( settings?.facetsForms || [] ).map( ( form ) => ( { value: form, label: form } ) ),
 	];
 
+	const sourceOptions = [
+		{ value: 'all', label: 'All' },
+		...( settings?.facetsSources || [] ).map( ( item ) => {
+			const name = item.source || item;
+			const count = item.count != null ? ` (${ item.count })` : '';
+			const label = typeof name === 'string' ? `${ name }${ count }` : String( name );
+			return { value: typeof name === 'string' ? name : item.source, label };
+		} ),
+	];
+
 	return (
 		<div className="ps-el-toolbar" data-figma-node="672:6339">
 			<div className="ps-el-search">
@@ -80,6 +90,14 @@ const EmailLogsToolbar = ( {
 						value={ filters.form }
 						options={ formOptions }
 						onChange={ ( form ) => onChange( { form, page: '1' } ) }
+					/>
+				) }
+				{ settings?.source_filter_available && (
+					<EmailLogsFilterSelect
+						label="Source"
+						value={ filters.source }
+						options={ sourceOptions }
+						onChange={ ( source ) => onChange( { source, page: '1' } ) }
 					/>
 				) }
 				<button

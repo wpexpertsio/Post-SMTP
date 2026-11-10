@@ -29,6 +29,7 @@ final class EmailLogNormalizer {
 			'mailer'          => self::parse_mailer_slug( $row ),
 			'mailer_label'    => self::parse_mailer_label( $row ),
 			'route'           => self::parse_route( $success_raw ),
+			'route_label'     => self::route_label( self::parse_route( $success_raw ) ),
 			'sent_at'         => isset( $row['time'] ) ? (int) $row['time'] : 0,
 			'sent_at_display' => self::format_timestamp( isset( $row['time'] ) ? (int) $row['time'] : 0 ),
 			'status'          => self::parse_status( $success_raw ),
@@ -50,6 +51,7 @@ final class EmailLogNormalizer {
 		return array_merge(
 			$list,
 			array(
+				'initiator'         => self::parse_initiator( $log ),
 				'from'              => isset( $log['from_header'] ) ? (string) $log['from_header'] : '',
 				'message_id'        => self::extract_message_id( $log ),
 				'to'                => self::split_emails( isset( $log['to_header'] ) ? (string) $log['to_header'] : '' ),
@@ -61,9 +63,22 @@ final class EmailLogNormalizer {
 				'preview_html'      => self::preview_html( $log ),
 				'preview_available' => ! empty( $log['original_message'] ),
 				'resend_available'  => ! empty( $log['original_message'] ),
-				'attachments'       => array(),
+				'attachments'       => self::resolve_detail_attachments( $log ),
 			)
 		);
+	}
+
+	/**
+	 * @param array<string,mixed> $log Log row.
+	 * @return list<array{name:string,url:string}>
+	 */
+	private static function resolve_detail_attachments( array $log ): array {
+		$log_id = isset( $log['id'] ) ? (int) $log['id'] : 0;
+		if ( $log_id <= 0 ) {
+			return array();
+		}
+
+		return EmailLogAttachmentResolver::listForLog( $log_id );
 	}
 
 	/**
@@ -132,7 +147,16 @@ final class EmailLogNormalizer {
 		if ( 'Sent ( ** Fallback ** )' === $success_raw || str_starts_with( $success_raw, '( ** Fallback ** )' ) ) {
 			return 'fallback';
 		}
+		if ( false !== stripos( $success_raw, '** Fallback **' ) ) {
+			return 'fallback';
+		}
 		return 'primary';
+	}
+
+	public static function route_label( string $route ): string {
+		return 'fallback' === $route
+			? __( 'Fallback', 'post-smtp' )
+			: __( 'Primary', 'post-smtp' );
 	}
 
 	/**
@@ -140,42 +164,246 @@ final class EmailLogNormalizer {
 	 */
 	public static function parse_mailer_slug( $row ): string {
 		$row = (array) $row;
-		$uri = isset( $row['transport_uri'] ) ? (string) $row['transport_uri'] : '';
+		$uri = isset( $row['transport_uri'] ) ? trim( (string) $row['transport_uri'] ) : '';
+		if ( '' === $uri ) {
+			$uri = self::transport_uri_from_transcript_prefix( $row );
+		}
+		if ( '' === $uri ) {
+			return 'smtp';
+		}
+
+		// Revamp logs store `provider_slug (Connection title)`.
+		if ( preg_match( '/^([a-z][a-z0-9_-]*)\s*\(/i', $uri, $m ) ) {
+			return self::normalize_mailer_slug_token( $m[1] );
+		}
+
+		// Legacy transport URI: `gmail_api:oauth2://host:port` or `smtp:tls:login://host:port`.
+		if ( preg_match( '/^([a-z][a-z0-9_-]+):[^:]*:\/\//i', $uri, $m ) ) {
+			$slug = self::normalize_mailer_slug_token( $m[1] );
+			if ( self::is_known_mailer_slug( $slug ) ) {
+				return $slug;
+			}
+		}
+
+		// Plain provider slug stored without a connection title.
+		if ( preg_match( '/^[a-z][a-z0-9_-]+$/i', $uri ) ) {
+			$slug = self::normalize_mailer_slug_token( $uri );
+			if ( self::is_known_mailer_slug( $slug ) ) {
+				return $slug;
+			}
+		}
+
+		$uri_lower = strtolower( $uri );
+
 		if ( preg_match( '#://([^:/]+)#', $uri, $m ) ) {
 			$host = strtolower( $m[1] );
-			if ( str_contains( $host, 'gmail' ) ) {
-				return 'gmail_api';
-			}
-			if ( str_contains( $host, 'sendgrid' ) ) {
-				return 'sendgrid_api';
-			}
-			if ( str_contains( $host, 'amazonaws' ) || str_contains( $host, 'ses' ) ) {
-				return 'amazon_ses_api';
+			$from_host = self::slug_from_delivery_host( $host );
+			if ( null !== $from_host ) {
+				return $from_host;
 			}
 			return 'smtp';
 		}
-		if ( str_contains( strtolower( $uri ), 'sendgrid' ) ) {
-			return 'sendgrid_api';
+
+		foreach ( self::mailer_host_needles() as $needle => $slug ) {
+			if ( str_contains( $uri_lower, $needle ) ) {
+				return $slug;
+			}
 		}
-		if ( str_contains( strtolower( $uri ), 'mailgun' ) ) {
-			return 'mailgun_api';
-		}
+
 		return 'smtp';
+	}
+
+	private static function normalize_mailer_slug_token( string $raw ): string {
+		$slug = strtolower( str_replace( '-', '_', trim( $raw ) ) );
+
+		$aliases = array(
+			'zoho_mail'       => 'zohomail_api',
+			'zohomail'        => 'zohomail_api',
+			'office365'       => 'office365_api',
+			'microsoft_365'   => 'office365_api',
+			'amazon_ses'      => 'amazon_ses_api',
+			'ses'             => 'amazon_ses_api',
+			'sendinblue'      => 'sendinblue_api',
+			'brevo'           => 'sendinblue_api',
+			'other_smtp'      => 'smtp',
+			'phpmailer'       => 'smtp',
+			'default'         => 'smtp',
+		);
+
+		return $aliases[ $slug ] ?? $slug;
+	}
+
+	/**
+	 * @return array<string,string> Needle => provider slug.
+	 */
+	private static function mailer_host_needles(): array {
+		return array(
+			'googleapis.com'  => 'gmail_api',
+			'sendgrid'        => 'sendgrid_api',
+			'mailgun'         => 'mailgun_api',
+			'amazonaws.com'   => 'amazon_ses_api',
+			'email-smtp'      => 'amazon_ses_api',
+			'office365'       => 'office365_api',
+			'outlook.com'     => 'office365_api',
+			'zoho'            => 'zohomail_api',
+			'postmark'        => 'postmark_api',
+			'mailersend'      => 'mailersend_api',
+			'maileroo'        => 'maileroo_api',
+			'smtp2go'         => 'smtp2go_api',
+			'sparkpost'       => 'sparkpost_api',
+			'mandrill'        => 'mandrill_api',
+			'elasticemail'    => 'elasticemail_api',
+			'resend'          => 'resend_api',
+		);
+	}
+
+	private static function slug_from_delivery_host( string $host ): ?string {
+		foreach ( self::mailer_host_needles() as $needle => $slug ) {
+			if ( str_contains( $host, $needle ) ) {
+				return $slug;
+			}
+		}
+		if ( str_contains( $host, 'gmail' ) ) {
+			return 'gmail_api';
+		}
+
+		return null;
+	}
+
+	private static function is_known_mailer_slug( string $slug ): bool {
+		$slug = self::normalize_mailer_slug_token( $slug );
+		if ( isset( self::mailer_slug_labels()[ $slug ] ) ) {
+			return true;
+		}
+
+		return (bool) preg_match( '/_api$/', $slug ) || 'smtp' === $slug;
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	private static function mailer_slug_labels(): array {
+		return array(
+			'gmail_api'            => 'Gmail',
+			'sendgrid_api'         => 'SendGrid',
+			'amazon_ses_api'       => 'Amazon SES',
+			'mailgun_api'          => 'Mailgun',
+			'office365_api'        => 'Microsoft 365',
+			'zohomail_api'         => 'Zoho Mail',
+			'postmark_api'         => 'Postmark',
+			'sendinblue_api'       => 'Brevo',
+			'smtp'                 => 'SMTP',
+			'default'              => 'SMTP',
+			'mailtrap_api'         => 'Mailtrap',
+			'elasticemail_api'     => 'Elastic Email',
+			'smtp2go_api'          => 'SMTP2GO',
+			'sparkpost_api'        => 'SparkPost',
+			'sendpulse_api'        => 'SendPulse',
+			'mandrill_api'         => 'Mandrill',
+			'resend_api'           => 'Resend',
+			'mailersend_api'       => 'MailerSend',
+			'maileroo_api'         => 'Maileroo',
+			'emailit_api'          => 'Emailit',
+			'sweego_api'           => 'Sweego',
+			'smtp_com_api'         => 'SMTP.com',
+			'cloudflare_email_api' => 'Cloudflare Email',
+		);
 	}
 
 	/**
 	 * @param object|array<string,mixed> $row Row.
 	 */
 	public static function parse_mailer_label( $row ): string {
-		$slug = self::parse_mailer_slug( $row );
-		$labels = array(
-			'gmail_api'      => 'Gmail',
-			'sendgrid_api'   => 'SendGrid',
-			'amazon_ses_api' => 'Amazon SES',
-			'mailgun_api'    => 'Mailgun',
-			'smtp'           => 'SMTP',
-		);
-		return $labels[ $slug ] ?? ucfirst( str_replace( '_', ' ', $slug ) );
+		$row = (array) $row;
+		$uri = isset( $row['transport_uri'] ) ? trim( (string) $row['transport_uri'] ) : '';
+		if ( '' === $uri ) {
+			$uri = self::transport_uri_from_transcript_prefix( $row );
+		}
+
+		if ( preg_match( '/^([a-z][a-z0-9_-]*)\s*\(([^)]+)\)\s*$/i', $uri, $m ) ) {
+			$connection_title = trim( $m[2] );
+			if ( function_exists( 'sanitize_text_field' ) ) {
+				$connection_title = sanitize_text_field( $connection_title );
+			}
+
+			return self::humanize_mailer_slug( self::normalize_mailer_slug_token( $m[1] ) ) . ' — ' . $connection_title;
+		}
+
+		if ( '' !== $uri && ! preg_match( '#^[a-z][a-z0-9+.-]*://#i', $uri ) ) {
+			return self::humanize_mailer_slug( self::normalize_mailer_slug_token( $uri ) );
+		}
+
+		return self::humanize_mailer_slug( self::parse_mailer_slug( $row ) );
+	}
+
+	private static function humanize_mailer_slug( string $slug ): string {
+		$slug = self::normalize_mailer_slug_token( $slug );
+		$labels = self::mailer_slug_labels();
+		if ( isset( $labels[ $slug ] ) ) {
+			return $labels[ $slug ];
+		}
+
+		return ucwords( str_replace( array( '_', '-' ), ' ', $slug ) );
+	}
+
+	/**
+	 * Logs written before transport_uri was persisted may still have a revamp label on line 1 of the transcript.
+	 *
+	 * @param array<string,mixed> $row Row.
+	 */
+	/**
+	 * @param array<string,mixed> $log Log row (must include id).
+	 * @return array{source?:string,file?:string,line?:string}|null
+	 */
+	private static function parse_initiator( array $log ): ?array {
+		if ( ! class_exists( EmailLogAdvanceSourceQuery::class, false ) || ! EmailLogAdvanceSourceQuery::isEnabled() ) {
+			return null;
+		}
+
+		$log_id = isset( $log['id'] ) ? (int) $log['id'] : 0;
+		if ( $log_id <= 0 || ! function_exists( 'postman_get_log_meta' ) ) {
+			return null;
+		}
+
+		$source = postman_get_log_meta( $log_id, EmailLogAdvanceSourceQuery::META_SOURCE );
+		$file   = postman_get_log_meta( $log_id, 'alf_file' );
+		$line   = postman_get_log_meta( $log_id, 'alf_line' );
+
+		if ( '' === (string) $source && '' === (string) $file ) {
+			return null;
+		}
+
+		$initiator = array();
+		if ( '' !== (string) $source ) {
+			$initiator['source'] = sanitize_text_field( (string) $source );
+		}
+		if ( '' !== (string) $file ) {
+			$initiator['file'] = sanitize_text_field( (string) $file );
+		}
+		if ( '' !== (string) $line ) {
+			$initiator['line'] = sanitize_text_field( (string) $line );
+		}
+
+		return $initiator;
+	}
+
+	private static function transport_uri_from_transcript_prefix( array $row ): string {
+		$transcript = isset( $row['session_transcript'] ) ? (string) $row['session_transcript'] : '';
+		if ( '' === $transcript ) {
+			return '';
+		}
+
+		$first_line = strtok( $transcript, "\n" );
+		if ( false === $first_line ) {
+			return '';
+		}
+
+		$first_line = trim( $first_line );
+		if ( preg_match( '/^([a-z][a-z0-9_-]*)\s*\([^)]+\)\s*$/i', $first_line ) ) {
+			return $first_line;
+		}
+
+		return '';
 	}
 
 	/**

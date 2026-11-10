@@ -37,8 +37,10 @@ final class SettingsEmailLogsPanelHooks {
 	}
 
 	public static function filterSaveAttachmentsEnabled( bool $enabled ): bool {
-		if ( $enabled || self::isProFeaturesLocked() ) {
-			return $enabled;
+		unset( $enabled );
+
+		if ( self::isProFeaturesLocked() ) {
+			return false;
 		}
 
 		$stored = get_option( self::SAVE_ATTACHMENTS_OPTION, null );
