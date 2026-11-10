@@ -1,4 +1,5 @@
 import EmailLogMailerCell from './EmailLogMailerCell';
+import EmailLogOpenedIndicator from './EmailLogOpenedIndicator';
 import EmailLogStatusBadge from './EmailLogStatusBadge';
 import EmailLogRowActions from './EmailLogRowActions';
 import { iconRecipients } from './emailLogAssets';
@@ -85,7 +86,7 @@ const EmailLogsTable = ( {
 						</span>
 						{ showOpened && (
 							<span className="ps-el-table__cell ps-el-table__cell--opened">
-								{ row.opened === true ? 'Yes' : row.opened === false ? 'No' : '—' }
+								<EmailLogOpenedIndicator opened={ row.opened } />
 							</span>
 						) }
 						<span className="ps-el-table__cell ps-el-table__cell--actions" onClick={ ( e ) => e.stopPropagation() }>

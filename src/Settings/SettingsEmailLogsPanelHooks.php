@@ -15,6 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Filters:
  * - post_smtp_settings_email_logs_is_pro — bool for REST `is_pro` (Pro unlocks auto-retry UI)
  * - post_smtp_settings_email_logs_auto_retry_locked — bool, default when not Pro
+ * - post_smtp_settings_email_logs_pro_features_locked — bool (attachments, filters, retention, export)
  * - post_smtp_settings_email_logs_panel_config — upgrade_url, upgrade_label (second arg: auto_retry_locked)
  * - post_smtp_settings_email_logs_get — full GET payload (second arg: service instance)
  * - post_smtp_settings_email_logs_save_result — after core save (second arg: payload)
@@ -41,6 +42,16 @@ final class SettingsEmailLogsPanelHooks {
 		 */
 		return (bool) apply_filters(
 			'post_smtp_settings_email_logs_auto_retry_locked',
+			! self::isProForApi()
+		);
+	}
+
+	public static function isProFeaturesLocked(): bool {
+		/**
+		 * @param bool $locked Pro-only log features (attachments, advanced filter, retention, export).
+		 */
+		return (bool) apply_filters(
+			'post_smtp_settings_email_logs_pro_features_locked',
 			! self::isProForApi()
 		);
 	}

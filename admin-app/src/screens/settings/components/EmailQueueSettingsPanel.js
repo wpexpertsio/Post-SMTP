@@ -4,6 +4,7 @@ import iconEmailQueueHeader from '../../../assets/settings/icon-email-queue-head
 import previewAdvanced from '../../../assets/settings/email-queue/preview-advanced.svg';
 import previewBatch from '../../../assets/settings/email-queue/preview-batch.svg';
 import previewQuota from '../../../assets/settings/email-queue/preview-quota.svg';
+import iconAutoRetry from '../../../assets/settings/icon-auto-retry.svg';
 import previewRetry from '../../../assets/settings/email-queue/preview-retry.svg';
 import { getAdminConfig, getAdminUrls } from '../../../config/admin';
 import { proCrownIcon } from '../../dashboard/components/v2/gmailBarAssets';
@@ -259,7 +260,7 @@ const EmailQueueSettingsPanel = () => {
 
 			<div className="ps-v2-settings-email-queue__block">
 				<SettingsSectionHeader
-					icon={ <SectionIcon src={ iconEmailQueue } /> }
+					icon={ <SectionIcon src={ iconAutoRetry } /> }
 					title="Auto Retry"
 					description="Try failed emails again automatically."
 				/>

@@ -91,6 +91,7 @@ final class ReactAdminSubmenu {
 			'postman/configuration',
 			'postman_email_log',
 			'post_smtp_extensions',
+			'post-smtp-email-reporting',
 			'contact',
 			'wp-support-forum',
 			'pricing',
@@ -105,6 +106,7 @@ final class ReactAdminSubmenu {
 			'Add-Ons',
 			'Upgrade to Pro',
 			'Pricing',
+			'Reports',
 		);
 
 		foreach ( $submenu['postman'] as $index => $item ) {

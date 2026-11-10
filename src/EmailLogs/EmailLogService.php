@@ -90,8 +90,11 @@ final class EmailLogService {
 			$total_count = (int) $total[0]->count;
 		}
 
+		$rows = $this->attachOpenTrackingEvents( $rows );
+
 		$items = array();
 		foreach ( $rows as $row ) {
+			$row     = apply_filters( 'ps_email_logs_row', $row );
 			$items[] = EmailLogNormalizer::normalize_list_row( $row );
 		}
 
@@ -114,6 +117,17 @@ final class EmailLogService {
 		if ( empty( $log ) ) {
 			return null;
 		}
+
+		/**
+		 * @param array<string,mixed> $log    Raw log row.
+		 * @param int                 $log_id Log ID.
+		 */
+		$log = apply_filters( 'post_smtp_email_log_detail_row', $log, $id );
+		$log = apply_filters( 'ps_email_logs_row', (object) $log );
+		if ( is_object( $log ) ) {
+			$log = (array) $log;
+		}
+
 		return EmailLogNormalizer::normalize_detail( $log );
 	}
 
@@ -268,15 +282,42 @@ final class EmailLogService {
 			$logging_enabled = $opts->isMailLoggingEnabled();
 		}
 
+		$open_tracking = self::openTrackingActive();
+
 		return array(
 			'logging_enabled'          => $logging_enabled,
 			'is_pro'                   => (bool) $has_pro,
-			'show_opened_column'       => (bool) $has_pro,
+			'show_opened_column'       => $open_tracking,
+			'open_tracking_active'     => $open_tracking,
 			'show_attachments'         => (bool) $has_pro,
 			'show_queued'              => (bool) $has_pro,
 			'form_filter_available'    => (bool) $has_pro && $this->has_event_type_column(),
 			'advanced_filters_enabled' => (bool) get_option( 'postman_advanced_log_filter', false ),
 		);
+	}
+
+	public static function openTrackingActive(): bool {
+		$active = self::shouldShowOpenTrackingColumn();
+
+		/**
+		 * @param bool $active Whether the email log UI should show open-tracking (Opened column, drawer row).
+		 */
+		return (bool) apply_filters( 'post_smtp_open_tracking_active', $active );
+	}
+
+	/**
+	 * Opened column / row: licensed Pro + Settings → Email Reporting → Track email opens enabled.
+	 */
+	private static function shouldShowOpenTrackingColumn(): bool {
+		if ( ! defined( 'POST_SMTP_PRO_VERSION' ) ) {
+			return false;
+		}
+
+		if ( ! function_exists( 'pspro_fs' ) || ! pspro_fs()->can_use_premium_code() ) {
+			return false;
+		}
+
+		return (bool) apply_filters( 'post_smtp_track_email_opens', false );
 	}
 
 	/**
@@ -320,6 +361,66 @@ final class EmailLogService {
 			$columns[] = 'event_type';
 		}
 		return $columns;
+	}
+
+	/**
+	 * @param list<object|array<string,mixed>> $rows Log rows from the query.
+	 * @return list<object|array<string,mixed>>
+	 */
+	private function attachOpenTrackingEvents( array $rows ): array {
+		if ( ! self::openTrackingActive() || ! class_exists( 'Post_SMTP_RAT_DB', false ) || empty( $rows ) ) {
+			return $rows;
+		}
+
+		$ids = array();
+		foreach ( $rows as $row ) {
+			$row = (array) $row;
+			if ( ! empty( $row['id'] ) ) {
+				$ids[] = (int) $row['id'];
+			}
+		}
+
+		$ids = array_values( array_unique( array_filter( $ids ) ) );
+		if ( empty( $ids ) ) {
+			return $rows;
+		}
+
+		global $wpdb;
+		$table        = ( new \Post_SMTP_RAT_DB() )->get_table_name();
+		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- placeholders only.
+		$query   = $wpdb->prepare(
+			"SELECT email_id, event_type FROM {$table} WHERE event_type = 'open-email' AND email_id IN ({$placeholders})",
+			...$ids
+		);
+		$matches = $wpdb->get_results( $query, OBJECT_K );
+		if ( empty( $matches ) ) {
+			return $rows;
+		}
+
+		$open_by_log = array();
+		foreach ( $matches as $email_id => $record ) {
+			$open_by_log[ (int) $email_id ] = 'open-email';
+		}
+
+		foreach ( $rows as $index => $row ) {
+			if ( is_object( $row ) ) {
+				$id = (int) ( $row->id ?? 0 );
+			} else {
+				$row_arr = (array) $row;
+				$id      = (int) ( $row_arr['id'] ?? 0 );
+			}
+			if ( $id > 0 && isset( $open_by_log[ $id ] ) ) {
+				if ( is_object( $row ) ) {
+					$row->event_type = $open_by_log[ $id ];
+				} else {
+					$row['event_type'] = $open_by_log[ $id ];
+				}
+				$rows[ $index ] = $row;
+			}
+		}
+
+		return $rows;
 	}
 
 	private function has_event_type_column(): bool {

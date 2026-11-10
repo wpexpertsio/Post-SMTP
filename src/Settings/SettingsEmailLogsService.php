@@ -7,7 +7,6 @@
 
 namespace PostSMTP\Settings;
 
-use PostmanInputSanitizer;
 use PostmanOptions;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -49,7 +48,10 @@ final class SettingsEmailLogsService {
 			'transcript_choices'    => $this->transcriptChoices(),
 			'retry_attempt_choices' => $this->retryAttemptChoices(),
 			'is_pro'                => SettingsEmailLogsPanelHooks::isProForApi(),
-			'auto_retry_locked'     => SettingsEmailLogsPanelHooks::isAutoRetryLocked(),
+			'auto_retry_locked'      => SettingsEmailLogsPanelHooks::isAutoRetryLocked(),
+			'pro_features_locked'    => SettingsEmailLogsPanelHooks::isProFeaturesLocked(),
+			'delete_logs_choices'    => $this->deleteLogsDayChoices(),
+			'export_duration_choices'=> $this->exportDurationChoices(),
 			'panel_config'          => SettingsEmailLogsPanelHooks::panelConfig(),
 			'logging_allowed'       => $options->isMailLoggingAllowed(),
 			'copy'                  => array(
@@ -79,25 +81,22 @@ final class SettingsEmailLogsService {
 		}
 
 		$patch = $this->mapPayloadToPostmanOptions( $payload );
-		$input = array_merge( $current, $patch );
-
-		$sanitizer = new PostmanInputSanitizer();
-		$sanitized = $sanitizer->sanitize( $input );
-		if ( ! is_array( $sanitized ) ) {
+		$sanitized_patch = $this->sanitizeEmailLogsPatch( $patch, PostmanOptions::getInstance() );
+		if ( null === $sanitized_patch ) {
 			return array(
 				'success' => false,
 				'message' => __( 'Could not save settings.', 'post-smtp' ),
 			);
 		}
 
-		$merged = array_merge( $current, $sanitized );
-
-		if ( array_key_exists( self::SAVE_MESSAGE_OPTION, $patch ) ) {
-			$merged[ self::SAVE_MESSAGE_OPTION ] = $patch[ self::SAVE_MESSAGE_OPTION ];
-		}
+		$merged = array_merge( $current, $sanitized_patch );
 
 		update_option( PostmanOptions::POSTMAN_OPTIONS, $merged );
 		PostmanOptions::getInstance()->reload();
+
+		if ( $this->mapPayloadHasProOnlyFields( $payload ) && SettingsEmailLogsPanelHooks::isProFeaturesLocked() ) {
+			do_action( 'post_smtp_settings_email_logs_pro_locked_save_attempt', $payload );
+		}
 
 		if ( $this->mapPayloadHasAutoRetry( $payload ) && SettingsEmailLogsPanelHooks::isAutoRetryLocked() ) {
 			/**
@@ -185,9 +184,100 @@ final class SettingsEmailLogsService {
 		return $patch;
 	}
 
+	/**
+	 * Patch only email-log keys — avoids legacy PostmanInputSanitizer (needs PostmanSession).
+	 *
+	 * @param array<string,mixed> $patch
+	 * @return array<string,mixed>|null
+	 */
+	private function sanitizeEmailLogsPatch( array $patch, PostmanOptions $options ) {
+		$out = array();
+
+		if ( array_key_exists( PostmanOptions::MAIL_LOG_ENABLED_OPTION, $patch ) ) {
+			$value = (string) $patch[ PostmanOptions::MAIL_LOG_ENABLED_OPTION ];
+			if ( PostmanOptions::MAIL_LOG_ENABLED_OPTION_YES !== $value
+				&& PostmanOptions::MAIL_LOG_ENABLED_OPTION_NO !== $value ) {
+				return null;
+			}
+			if ( PostmanOptions::MAIL_LOG_ENABLED_OPTION_YES === $value && ! $options->isMailLoggingAllowed() ) {
+				$value = PostmanOptions::MAIL_LOG_ENABLED_OPTION_NO;
+			}
+			$out[ PostmanOptions::MAIL_LOG_ENABLED_OPTION ] = $value;
+		}
+
+		if ( array_key_exists( self::SAVE_MESSAGE_OPTION, $patch ) ) {
+			$out[ self::SAVE_MESSAGE_OPTION ] = 'true' === (string) $patch[ self::SAVE_MESSAGE_OPTION ] ? 'true' : '';
+		}
+
+		if ( array_key_exists( PostmanOptions::MAIL_LOG_MAX_ENTRIES, $patch ) ) {
+			$max = absint( $patch[ PostmanOptions::MAIL_LOG_MAX_ENTRIES ] );
+			if ( $max <= 0 ) {
+				return null;
+			}
+			$out[ PostmanOptions::MAIL_LOG_MAX_ENTRIES ] = $max;
+		}
+
+		if ( array_key_exists( PostmanOptions::TRANSCRIPT_SIZE, $patch ) ) {
+			$out[ PostmanOptions::TRANSCRIPT_SIZE ] = absint( $patch[ PostmanOptions::TRANSCRIPT_SIZE ] );
+		}
+
+		return $out;
+	}
+
 	private function mapPayloadHasAutoRetry( array $payload ): bool {
 		return array_key_exists( 'auto_retry_enabled', $payload )
 			|| array_key_exists( 'auto_retry_max_attempts', $payload );
+	}
+
+	private function mapPayloadHasProOnlyFields( array $payload ): bool {
+		return array_key_exists( 'save_attachments', $payload )
+			|| array_key_exists( 'advanced_log_filter', $payload )
+			|| array_key_exists( 'delete_logs_days', $payload );
+	}
+
+	/**
+	 * @return list<array{value:int,label:string}>
+	 */
+	private function deleteLogsDayChoices(): array {
+		$values = array( 0, 7, 14, 30, 60, 90, 180, 365 );
+		$out    = array();
+		foreach ( $values as $value ) {
+			$out[] = array(
+				'value' => $value,
+				'label' => 0 === $value
+					? __( 'Never', 'post-smtp' )
+					: sprintf(
+						/* translators: %d: number of days */
+						__( '%d days', 'post-smtp' ),
+						$value
+					),
+			);
+		}
+		return $out;
+	}
+
+	/**
+	 * @return list<array{value:string,label:string}>
+	 */
+	private function exportDurationChoices(): array {
+		return array(
+			array(
+				'value' => '7',
+				'label' => __( 'Last 7 days', 'post-smtp' ),
+			),
+			array(
+				'value' => '30',
+				'label' => __( 'Last 30 days', 'post-smtp' ),
+			),
+			array(
+				'value' => '90',
+				'label' => __( 'Last 90 days', 'post-smtp' ),
+			),
+			array(
+				'value' => 'all',
+				'label' => __( 'All time', 'post-smtp' ),
+			),
+		);
 	}
 
 	public static function isSaveMessageBodyEnabled(): bool {

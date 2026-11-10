@@ -316,6 +316,44 @@
 	min-width: 0;
 }
 
+.ps-el-table__cell--opened {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+}
+
+.ps-el-opened {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+}
+
+.ps-el-opened--na {
+	color: #6c6c6c;
+	font-size: 14px;
+}
+
+.ps-el-opened__badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	box-sizing: border-box;
+	background: #f0f5ff;
+	border: 0.733px solid #5279cc;
+	border-radius: 2.514px;
+}
+
+.ps-el-opened__badge img {
+	display: block;
+}
+
+.ps-el-opened__not-opened {
+	display: block;
+}
+
 .ps-el-table__row--head .ps-el-table__cell {
 	font-size: 14px;
 	font-weight: 700;

@@ -7,7 +7,6 @@
 
 namespace PostSMTP\Settings;
 
-use PostmanInputSanitizer;
 use PostmanOptions;
 use PostSMTP\Connections\ConnectionService;
 
@@ -25,7 +24,7 @@ final class SettingsGeneralService {
 
 		return array(
 			'values'         => $this->readValues( $options ),
-			'mail_handlers'  => $this->mailHandlerChoices(),
+			'mailer_types'   => $this->mailerTypeChoices(),
 			'primary_label'  => $this->primaryConnectionLabel(),
 			'copy'           => array(
 				'saved' => __( 'Settings saved.', 'post-smtp' ),
@@ -44,18 +43,14 @@ final class SettingsGeneralService {
 		}
 
 		$patch = $this->mapPayloadToOptions( $payload );
-		$input = array_merge( $current, $patch );
-
-		$sanitizer = new PostmanInputSanitizer();
-		$sanitized = $sanitizer->sanitize( $input );
-		if ( ! is_array( $sanitized ) ) {
+		if ( empty( $patch ) ) {
 			return array(
 				'success' => false,
-				'message' => __( 'Could not save settings.', 'post-smtp' ),
+				'message' => __( 'No valid settings to save.', 'post-smtp' ),
 			);
 		}
 
-		$merged = array_merge( $current, $sanitized );
+		$merged = array_merge( $current, $patch );
 		update_option( PostmanOptions::POSTMAN_OPTIONS, $merged );
 		PostmanOptions::getInstance()->reload();
 
@@ -71,7 +66,7 @@ final class SettingsGeneralService {
 	 */
 	private function readValues( PostmanOptions $options ): array {
 		return array(
-			'mail_handler'              => (string) $options->getRunMode(),
+			'mailer_type'               => (string) $options->getSmtpMailer(),
 			'from_name'                 => (string) ( $options->getMessageSenderName() ?? '' ),
 			'from_email'                => (string) ( $options->getMessageSenderEmail() ?? '' ),
 			'enforce_from_name'         => (bool) $options->isPluginSenderNameEnforced(),
@@ -91,15 +86,11 @@ final class SettingsGeneralService {
 	private function mapPayloadToOptions( array $payload ): array {
 		$patch = array();
 
-		if ( isset( $payload['mail_handler'] ) ) {
-			$mode = sanitize_text_field( (string) $payload['mail_handler'] );
-			$allowed = array(
-				PostmanOptions::RUN_MODE_PRODUCTION,
-				PostmanOptions::RUN_MODE_LOG_ONLY,
-				PostmanOptions::RUN_MODE_IGNORE,
-			);
-			if ( in_array( $mode, $allowed, true ) ) {
-				$patch[ PostmanOptions::RUN_MODE ] = $mode;
+		if ( isset( $payload['mailer_type'] ) ) {
+			$type = sanitize_text_field( (string) $payload['mailer_type'] );
+			$allowed = array( 'postsmtp', 'phpmailer' );
+			if ( in_array( $type, $allowed, true ) ) {
+				$patch['smtp_mailers'] = $type;
 			}
 		}
 
@@ -139,21 +130,18 @@ final class SettingsGeneralService {
 	}
 
 	/**
-	 * @return list<array{value:string,label:string}>
+	 * @return list<array{value:string,label:string,recommended?:bool}>
 	 */
-	private function mailHandlerChoices(): array {
+	private function mailerTypeChoices(): array {
 		return array(
 			array(
-				'value' => PostmanOptions::RUN_MODE_PRODUCTION,
-				'label' => __( 'Post SMTP', 'post-smtp' ),
+				'value'       => 'postsmtp',
+				'label'       => __( 'Post SMTP', 'post-smtp' ),
+				'recommended' => true,
 			),
 			array(
-				'value' => PostmanOptions::RUN_MODE_LOG_ONLY,
-				'label' => __( 'Log emails only', 'post-smtp' ),
-			),
-			array(
-				'value' => PostmanOptions::RUN_MODE_IGNORE,
-				'label' => __( 'WordPress default', 'post-smtp' ),
+				'value' => 'phpmailer',
+				'label' => __( 'PHP Mailer', 'post-smtp' ),
 			),
 		);
 	}

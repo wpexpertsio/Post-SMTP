@@ -73,9 +73,12 @@ const GeneralSettingsPanel = ( { onSaved } ) => {
 		return <p className="ps-v2-settings-loading">Could not load settings.</p>;
 	}
 
-	const handlers = query.data?.mail_handlers || [];
-	const handlerLabel =
-		handlers.find( ( h ) => h.value === form.mail_handler )?.label || 'Post SMTP';
+	const mailerTypes = query.data?.mailer_types || [];
+	const selectedMailerType =
+		mailerTypes.find( ( h ) => h.value === ( form.mailer_type || 'postsmtp' ) ) ||
+		mailerTypes[ 0 ];
+	const mailerTypeLabel = selectedMailerType?.label || 'Post SMTP';
+	const showMailerRecommended = Boolean( selectedMailerType?.recommended );
 
 	return (
 		<div className="ps-v2-settings-general" data-figma-node="1096:45074">
@@ -90,19 +93,24 @@ const GeneralSettingsPanel = ( { onSaved } ) => {
 			<div className="ps-v2-settings-general__block" data-figma-node="1096:45075">
 				<SettingsSectionHeader
 					icon={ <SectionIcon src={ iconGeneral } /> }
-					title="WordPress mail handler"
-					description="Who handles wp_mail on this site."
+					title="Mailer type"
+					description="How Post SMTP hooks into wp_mail on this site."
 					figmaNode="1096:45076"
 				/>
 				<SettingsSectionCard figmaNode="1096:45075" className="ps-v2-settings-section--flat">
 					<div className="ps-v2-settings-panel">
 						<SettingsField
-							label="Mail handler"
-							hint="Mailer accounts are configured in Connections."
+							label="Mailer Type"
+							hint="Use PHP Mailer only if another plugin conflicts with wp_mail."
 						>
 							<div className="ps-v2-settings-select-wrap">
 								<label className="ps-v2-settings-select">
-									<span className="ps-v2-settings-select__face">{ handlerLabel }</span>
+									<span className="ps-v2-settings-select__face">
+										<span>{ mailerTypeLabel }</span>
+										{ showMailerRecommended && (
+											<span className="ps-v2-settings-recommended">Recommended</span>
+										) }
+									</span>
 									<img
 										className="ps-v2-settings-select__chevron"
 										src={ iconChevronDown }
@@ -112,13 +120,13 @@ const GeneralSettingsPanel = ( { onSaved } ) => {
 									/>
 									<select
 										className="ps-v2-settings-select__native"
-										value={ form.mail_handler }
-										onChange={ ( e ) => patch( 'mail_handler', e.target.value ) }
-										aria-label="Mail handler"
+										value={ form.mailer_type || 'postsmtp' }
+										onChange={ ( e ) => patch( 'mailer_type', e.target.value ) }
+										aria-label="Mailer Type"
 									>
-										{ handlers.map( ( opt ) => (
+										{ mailerTypes.map( ( opt ) => (
 											<option key={ opt.value } value={ opt.value }>
-												{ opt.label }
+												{ opt.recommended ? `${ opt.label } — Recommended` : opt.label }
 											</option>
 										) ) }
 									</select>

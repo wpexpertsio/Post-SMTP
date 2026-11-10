@@ -2,12 +2,14 @@ import { useEffect, useState } from '@wordpress/element';
 import { Link } from 'react-router-dom';
 import iconExternalLink from '../../../assets/dashboard/connections/helper/icon-external-link.svg';
 import iconEmailLogs from '../../../assets/settings/nav-email-logs.svg';
+import iconAutoRetry from '../../../assets/settings/icon-auto-retry.svg';
 import checkIcon from '../../../assets/dashboard/pro-banner/check.svg';
 import iconUpgradeArrow from '../../../assets/help-docs/icon-upgrade-arrow.svg';
 import { getAdminConfig, getAdminUrls } from '../../../config/admin';
 import { proCrownIcon } from '../../dashboard/components/v2/gmailBarAssets';
 import FormNotice from '../../connections/components/FormNotice';
 import useSettingsEmailLogs from '../hooks/useSettingsEmailLogs';
+import EmailLogsExportSection from './EmailLogsExportSection';
 import SettingsSectionCard from './SettingsSectionCard';
 import SettingsSectionHeader from './SettingsSectionHeader';
 import SettingsSelectField from './SettingsSelectField';
@@ -20,8 +22,14 @@ const PRO_LOG_FEATURES = [
 	'Export logs',
 ];
 
-const SectionIcon = ( { src } ) => (
-	<span className="ps-v2-settings-section-head__icon-box ps-v2-settings-section-head__icon-box--lg">
+const SectionIcon = ( { src, white = false } ) => (
+	<span
+		className={
+			white
+				? 'ps-v2-settings-section-head__icon-box ps-v2-settings-section-head__icon-box--lg ps-v2-settings-section-head__icon-box--white'
+				: 'ps-v2-settings-section-head__icon-box ps-v2-settings-section-head__icon-box--lg'
+		}
+	>
 		<img src={ src } alt="" width="24" height="24" />
 	</span>
 );
@@ -45,8 +53,29 @@ const EmailLogsSettingsPanel = () => {
 
 	const handleSave = async () => {
 		setNotice( null );
+		const proLocked = query.data?.pro_features_locked ?? ! ( query.data?.is_pro ?? config.isPro );
+		const autoRetryLocked = query.data?.auto_retry_locked ?? ! ( query.data?.is_pro ?? config.isPro );
+
+		const body = {
+			logging_enabled: form.logging_enabled,
+			save_message_body: form.save_message_body,
+			max_log_entries: form.max_log_entries,
+			transcript_size_kb: form.transcript_size_kb,
+		};
+
+		if ( ! proLocked ) {
+			body.save_attachments = form.save_attachments;
+			body.advanced_log_filter = form.advanced_log_filter;
+			body.delete_logs_days = form.delete_logs_days;
+		}
+
+		if ( ! autoRetryLocked ) {
+			body.auto_retry_enabled = form.auto_retry_enabled;
+			body.auto_retry_max_attempts = form.auto_retry_max_attempts;
+		}
+
 		try {
-			const result = await saveMutation.mutateAsync( form );
+			const result = await saveMutation.mutateAsync( body );
 			if ( result?.values ) {
 				setForm( { ...result.values } );
 			}
@@ -70,12 +99,17 @@ const EmailLogsSettingsPanel = () => {
 	const maxChoices = query.data?.max_entries_choices || [];
 	const transcriptChoices = query.data?.transcript_choices || [];
 	const retryChoices = query.data?.retry_attempt_choices || [];
+	const deleteLogsChoices = query.data?.delete_logs_choices || [];
+	const exportDurations = query.data?.export_duration_choices || [];
+	const exportColumns = query.data?.export_columns || [];
+
 	const isPro = query.data?.is_pro ?? config.isPro;
 	const loggingAllowed = query.data?.logging_allowed !== false;
 	const autoRetryLocked = query.data?.auto_retry_locked ?? ! isPro;
+	const proLocked = query.data?.pro_features_locked ?? ! isPro;
 
 	return (
-		<div className="ps-v2-settings-email-logs" data-figma-node="672:7641">
+		<div className="ps-v2-settings-email-logs" data-figma-node="486:6167">
 			{ notice && (
 				<FormNotice
 					type={ notice.type }
@@ -84,21 +118,21 @@ const EmailLogsSettingsPanel = () => {
 				/>
 			) }
 
-			<div className="ps-v2-settings-email-logs__block" data-figma-node="672:7642">
-				<div className="ps-v2-settings-page-head" data-figma-node="672:7643">
+			<div className="ps-v2-settings-email-logs__block" data-figma-node="486:6168">
+				<div className="ps-v2-settings-page-head" data-figma-node="486:6169">
 					<SettingsSectionHeader
 						icon={ <SectionIcon src={ iconEmailLogs } /> }
 						title="Email Log"
 						description="Save a copy of every email your site sends."
-						figmaNode="672:7647"
+						figmaNode="486:6173"
 					/>
-					<Link to="/email-logs" className="ps-v2-settings-view-log" data-figma-node="672:7651">
+					<Link to="/email-logs" className="ps-v2-settings-view-log" data-figma-node="529:4616">
 						<span>View email log</span>
 						<img src={ iconExternalLink } alt="" width="13" height="13" />
 					</Link>
 				</div>
 
-				<SettingsSectionCard figmaNode="672:7652" className="ps-v2-settings-section--flat">
+				<SettingsSectionCard figmaNode="486:6176" className="ps-v2-settings-section--flat">
 					<SettingsToggleRow
 						id="logging-enabled"
 						label="Enable email logging"
@@ -111,6 +145,22 @@ const EmailLogsSettingsPanel = () => {
 						label="Save message body (needed for resend and preview)"
 						checked={ form.save_message_body }
 						onChange={ ( v ) => patch( 'save_message_body', v ) }
+					/>
+					<SettingsToggleRow
+						id="save-attachments"
+						label="Save attachments"
+						description="Keep files sent with each email"
+						checked={ proLocked ? false : form.save_attachments }
+						disabled={ proLocked }
+						onChange={ ( v ) => patch( 'save_attachments', v ) }
+					/>
+					<SettingsToggleRow
+						id="advanced-log-filter"
+						label="Advance log filter"
+						description="Filter which email are stored, and show filter chips on the email log."
+						checked={ proLocked ? false : form.advanced_log_filter }
+						disabled={ proLocked }
+						onChange={ ( v ) => patch( 'advanced_log_filter', v ) }
 					/>
 					<SettingsSelectField
 						label="Maximum log entries"
@@ -126,21 +176,29 @@ const EmailLogsSettingsPanel = () => {
 						options={ transcriptChoices }
 						onChange={ ( v ) => patch( 'transcript_size_kb', parseInt( v, 10 ) ) }
 					/>
+					<SettingsSelectField
+						label="Delete logs after days"
+						hint="How long to keep each entry."
+						value={ form.delete_logs_days ?? 0 }
+						options={ deleteLogsChoices }
+						disabled={ proLocked }
+						onChange={ ( v ) => patch( 'delete_logs_days', parseInt( v, 10 ) ) }
+					/>
 				</SettingsSectionCard>
 			</div>
 
-			<div className="ps-v2-settings-email-logs__block" data-figma-node="672:7692">
+			<div className="ps-v2-settings-email-logs__block" data-figma-node="529:4625">
 				<SettingsSectionHeader
-					icon={ <SectionIcon src={ iconEmailLogs } /> }
+					icon={ <SectionIcon src={ iconAutoRetry } /> }
 					title="Auto Retry"
 					description="Try failed emails again automatically."
-					figmaNode="672:7696"
+					figmaNode="529:4631"
 				/>
-				<SettingsSectionCard figmaNode="672:7700" className="ps-v2-settings-section--flat">
+				<SettingsSectionCard figmaNode="529:4633" className="ps-v2-settings-section--flat">
 					<SettingsToggleRow
 						id="auto-retry-enabled"
 						label="Enable auto-retry for failed emails"
-						checked={ form.auto_retry_enabled }
+						checked={ autoRetryLocked ? false : form.auto_retry_enabled }
 						disabled={ autoRetryLocked }
 						onChange={ ( v ) => patch( 'auto_retry_enabled', v ) }
 					/>
@@ -151,6 +209,22 @@ const EmailLogsSettingsPanel = () => {
 						options={ retryChoices }
 						disabled={ autoRetryLocked || ! form.auto_retry_enabled }
 						onChange={ ( v ) => patch( 'auto_retry_max_attempts', parseInt( v, 10 ) ) }
+					/>
+				</SettingsSectionCard>
+			</div>
+
+			<div className="ps-v2-settings-email-logs__block" data-figma-node="486:6216">
+				<SettingsSectionHeader
+					icon={ <SectionIcon src={ iconEmailLogs } white /> }
+					title="Export logs"
+					description="Download the email log entries you need."
+					figmaNode="486:6224"
+				/>
+				<SettingsSectionCard figmaNode="486:6226" className="ps-v2-settings-section--flat">
+					<EmailLogsExportSection
+						disabled={ proLocked }
+						durationChoices={ exportDurations }
+						columnDefs={ exportColumns }
 					/>
 				</SettingsSectionCard>
 			</div>
@@ -182,12 +256,6 @@ const EmailLogsSettingsPanel = () => {
 						</ul>
 					</SettingsSectionCard>
 
-					<div className="ps-v2-settings-log-pro__previews" aria-hidden="true">
-						<div className="ps-v2-settings-log-pro__preview" />
-						<div className="ps-v2-settings-log-pro__preview" />
-						<div className="ps-v2-settings-log-pro__preview" />
-					</div>
-
 					<div className="ps-v2-settings-log-pro__cta-wrap" data-figma-node="672:7779">
 						<a
 							href={ urls.pro }
@@ -202,14 +270,14 @@ const EmailLogsSettingsPanel = () => {
 				</section>
 			) }
 
-			<div className="ps-v2-settings-save-wrap">
+			<div className="ps-v2-settings-save-wrap" data-figma-node="486:6237">
 				<button
 					type="button"
 					className="ps-v2-settings-save"
 					onClick={ handleSave }
 					disabled={ saveMutation.isPending }
 				>
-					{ saveMutation.isPending ? 'Saving…' : 'Save changes' }
+					{ saveMutation.isPending ? 'Saving…' : 'Save Changes' }
 				</button>
 			</div>
 		</div>

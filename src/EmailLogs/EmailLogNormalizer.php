@@ -272,11 +272,19 @@ final class EmailLogNormalizer {
 	private static function parse_opened( $row ): ?bool {
 		$row = (array) $row;
 		if ( ! isset( $row['event_type'] ) ) {
+			$success_raw = isset( $row['success'] ) ? (string) $row['success'] : '';
+			if ( self::is_success_raw( $success_raw ) ) {
+				return false;
+			}
 			return null;
 		}
 		$type = (string) $row['event_type'];
 		if ( 'open-email' === $type ) {
 			return true;
+		}
+		$success_raw = isset( $row['success'] ) ? (string) $row['success'] : '';
+		if ( self::is_success_raw( $success_raw ) ) {
+			return false;
 		}
 		return null;
 	}
@@ -351,10 +359,40 @@ final class EmailLogNormalizer {
 		if ( empty( $log['original_message'] ) ) {
 			return '';
 		}
-		$msg = (string) $log['original_message'];
+		$msg    = (string) $log['original_message'];
+		$log_id = isset( $log['id'] ) ? (int) $log['id'] : 0;
 		if ( strip_tags( $msg ) !== $msg ) {
-			return $msg;
+			$msg = self::strip_open_tracking_pixels( $msg, $log_id );
+			/**
+			 * HTML shown in the Email Log preview iframe (tracking pixels should be removed).
+			 *
+			 * @param string               $html   Sanitized preview HTML.
+			 * @param array<string,mixed>  $log    Raw log row.
+			 */
+			return (string) apply_filters( 'post_smtp_email_log_preview_html', $msg, $log );
 		}
 		return '<pre>' . esc_html( $msg ) . '</pre>';
+	}
+
+	/**
+	 * Admin preview must not request the open-tracking pixel (would mark the log as opened).
+	 */
+	private static function strip_open_tracking_pixels( string $html, int $log_id = 0 ): string {
+		$html = preg_replace(
+			'#<img\b[^>]*\bsrc\s*=\s*["\'][^"\']*post-smtp/v1/t/[^"\']*["\'][^>]*\/?>#i',
+			'',
+			$html
+		);
+
+		if ( $log_id > 0 && function_exists( 'postman_get_log_meta' ) ) {
+			$track_code = postman_get_log_meta( $log_id, 'track_code' );
+			if ( is_string( $track_code ) && '' !== $track_code ) {
+				$html = str_replace( $track_code, '', $html );
+			}
+		}
+
+		$html = str_replace( '<!-- HTML Ignored -->', '', $html );
+
+		return $html;
 	}
 }

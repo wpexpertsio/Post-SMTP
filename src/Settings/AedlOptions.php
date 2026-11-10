@@ -176,6 +176,14 @@ final class AedlOptions {
 			$patch['times_to_retry'] = $attempts;
 		}
 
+		if ( array_key_exists( 'delete_logs_days', $payload ) ) {
+			$days = absint( $payload['delete_logs_days'] );
+			if ( $days > 3650 ) {
+				$days = 3650;
+			}
+			$patch['delete_logs_days'] = $days;
+		}
+
 		return array(
 			'success' => true,
 			'patch'   => $patch,

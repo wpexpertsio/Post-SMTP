@@ -1,6 +1,7 @@
 import EmailLogAccordion from './drawer/EmailLogAccordion';
-import EmailLogStatusBadge from './EmailLogStatusBadge';
 import EmailLogMailerCell from './EmailLogMailerCell';
+import EmailLogOpenedIndicator from './EmailLogOpenedIndicator';
+import EmailLogStatusBadge from './EmailLogStatusBadge';
 
 const listBlock = ( label, values ) => (
 	<div className="ps-el-drawer__field">
@@ -79,6 +80,14 @@ const EmailLogDrawer = ( {
 						<EmailLogAccordion title="Email details" defaultOpen>
 							{ listBlock( 'From', [ log.from ] ) }
 							{ listBlock( 'Message-ID', log.message_id ? [ log.message_id ] : [] ) }
+							{ settings?.show_opened_column && (
+								<div className="ps-el-drawer__field">
+									<span className="ps-el-drawer__label">Opened</span>
+									<div className="ps-el-drawer__value">
+										<EmailLogOpenedIndicator opened={ log.opened } />
+									</div>
+								</div>
+							) }
 						</EmailLogAccordion>
 						<EmailLogAccordion title="Recipients">
 							{ listBlock( 'To', log.to ) }
