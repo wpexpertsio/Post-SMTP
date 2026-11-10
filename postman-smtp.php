@@ -132,9 +132,7 @@ if ( file_exists( $composer_autoload ) ) {
 	);
 }
 
-if ( class_exists( '\PostSMTP\Bootstrap\Plugin', false ) ) {
-	\PostSMTP\Bootstrap\Plugin::init( __FILE__ );
-}
+\PostSMTP\Bootstrap\Plugin::init( __FILE__ );
 
 $postman_smtp_exist = in_array( 'postman-smtp/postman-smtp.php', (array) get_option( 'active_plugins', array() ) );
 $required_php_version = version_compare( PHP_VERSION, '5.6.0', '<' );
