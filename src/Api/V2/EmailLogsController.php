@@ -97,13 +97,13 @@ final class EmailLogsController extends BaseController {
 
 	public function listLogs( WP_REST_Request $request ) {
 		$params = array(
-			'page'     => $request->get_param( 'page' ),
-			'per_page' => $request->get_param( 'per_page' ),
-			'search'   => $request->get_param( 'search' ) ?? $request->get_param( 'q' ),
-			'status'   => $request->get_param( 'status' ),
-			'mailer'   => $request->get_param( 'mailer' ),
-			'form'     => $request->get_param( 'form' ),
-			'date'     => $request->get_param( 'date' ),
+			'page'     => absint( $request->get_param( 'page' ) ),
+			'per_page' => absint( $request->get_param( 'per_page' ) ),
+			'search'   => sanitize_text_field( (string) ( $request->get_param( 'search' ) ?? $request->get_param( 'q' ) ?? '' ) ),
+			'status'   => sanitize_key( (string) ( $request->get_param( 'status' ) ?? '' ) ),
+			'mailer'   => sanitize_text_field( (string) ( $request->get_param( 'mailer' ) ?? '' ) ),
+			'form'     => sanitize_text_field( (string) ( $request->get_param( 'form' ) ?? '' ) ),
+			'date'     => sanitize_text_field( (string) ( $request->get_param( 'date' ) ?? '' ) ),
 		);
 
 		return rest_ensure_response( $this->service->list_logs( $params ) );
@@ -119,11 +119,17 @@ final class EmailLogsController extends BaseController {
 	}
 
 	public function deleteLogs( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$body = $request->get_json_params();
 		$ids  = is_array( $body ) && isset( $body['ids'] ) ? $body['ids'] : $request->get_param( 'ids' );
 		if ( ! is_array( $ids ) ) {
 			$ids = array();
 		}
+		$ids = array_values( array_filter( array_map( 'absint', $ids ) ) );
 		$result = $this->service->delete_logs( $ids );
 		if ( empty( $result['success'] ) ) {
 			return new \WP_Error( 'post_smtp_delete_failed', $result['message'] ?? __( 'Delete failed.', 'post-smtp' ), array( 'status' => 400 ) );
@@ -132,14 +138,19 @@ final class EmailLogsController extends BaseController {
 	}
 
 	public function exportLogs( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$params = array(
-			'format'   => $request->get_param( 'format' ),
+			'format'   => sanitize_key( (string) ( $request->get_param( 'format' ) ?? '' ) ),
 			'ids'      => $request->get_param( 'ids' ),
-			'search'   => $request->get_param( 'search' ) ?? $request->get_param( 'q' ),
-			'status'   => $request->get_param( 'status' ),
-			'mailer'   => $request->get_param( 'mailer' ),
-			'form'     => $request->get_param( 'form' ),
-			'date'     => $request->get_param( 'date' ),
+			'search'   => sanitize_text_field( (string) ( $request->get_param( 'search' ) ?? $request->get_param( 'q' ) ?? '' ) ),
+			'status'   => sanitize_key( (string) ( $request->get_param( 'status' ) ?? '' ) ),
+			'mailer'   => sanitize_text_field( (string) ( $request->get_param( 'mailer' ) ?? '' ) ),
+			'form'     => sanitize_text_field( (string) ( $request->get_param( 'form' ) ?? '' ) ),
+			'date'     => sanitize_text_field( (string) ( $request->get_param( 'date' ) ?? '' ) ),
 		);
 
 		$result = $this->service->export_logs( $params );
@@ -150,6 +161,11 @@ final class EmailLogsController extends BaseController {
 	}
 
 	public function resendLog( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$id     = (int) $request->get_param( 'id' );
 		$result = $this->service->resend( $id );
 		if ( empty( $result['success'] ) ) {

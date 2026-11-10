@@ -152,8 +152,9 @@ final class SettingsController extends BaseController {
 	}
 
 	public function saveGeneral( WP_REST_Request $request ) {
-		if ( ! $this->checkNonce( $request ) ) {
-			return new \WP_Error( 'rest_forbidden', __( 'Invalid nonce.', 'post-smtp' ), array( 'status' => 403 ) );
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
 		}
 
 		$body   = $request->get_json_params();
@@ -176,8 +177,9 @@ final class SettingsController extends BaseController {
 	}
 
 	public function saveEmailLogs( WP_REST_Request $request ) {
-		if ( ! $this->checkNonce( $request ) ) {
-			return new \WP_Error( 'rest_forbidden', __( 'Invalid nonce.', 'post-smtp' ), array( 'status' => 403 ) );
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
 		}
 
 		$body    = $request->get_json_params();
@@ -200,8 +202,9 @@ final class SettingsController extends BaseController {
 	}
 
 	public function saveEmailQueue( WP_REST_Request $request ) {
-		if ( ! $this->checkNonce( $request ) ) {
-			return new \WP_Error( 'rest_forbidden', __( 'Invalid nonce.', 'post-smtp' ), array( 'status' => 403 ) );
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
 		}
 
 		$body    = $request->get_json_params();
@@ -224,8 +227,9 @@ final class SettingsController extends BaseController {
 	}
 
 	public function saveSecurity( WP_REST_Request $request ) {
-		if ( ! $this->checkNonce( $request ) ) {
-			return new \WP_Error( 'rest_forbidden', __( 'Invalid nonce.', 'post-smtp' ), array( 'status' => 403 ) );
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
 		}
 
 		$body    = $request->get_json_params();
@@ -248,8 +252,9 @@ final class SettingsController extends BaseController {
 	}
 
 	public function saveAdvanced( WP_REST_Request $request ) {
-		if ( ! $this->checkNonce( $request ) ) {
-			return new \WP_Error( 'rest_forbidden', __( 'Invalid nonce.', 'post-smtp' ), array( 'status' => 403 ) );
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
 		}
 
 		$body    = $request->get_json_params();
@@ -272,8 +277,9 @@ final class SettingsController extends BaseController {
 	}
 
 	public function saveEmailReporting( WP_REST_Request $request ) {
-		if ( ! $this->checkNonce( $request ) ) {
-			return new \WP_Error( 'rest_forbidden', __( 'Invalid nonce.', 'post-smtp' ), array( 'status' => 403 ) );
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
 		}
 
 		$body    = $request->get_json_params();

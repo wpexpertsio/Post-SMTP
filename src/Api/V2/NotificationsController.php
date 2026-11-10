@@ -138,8 +138,9 @@ final class NotificationsController extends BaseController {
 	}
 
 	public function saveChannel( WP_REST_Request $request ) {
-		if ( ! $this->checkNonce( $request ) ) {
-			return new \WP_Error( 'rest_forbidden', __( 'Invalid nonce.', 'post-smtp' ), array( 'status' => 403 ) );
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
 		}
 
 		$slug = sanitize_key( (string) $request->get_param( 'slug' ) );
@@ -175,8 +176,9 @@ final class NotificationsController extends BaseController {
 	}
 
 	public function testChannel( WP_REST_Request $request ) {
-		if ( ! $this->checkNonce( $request ) ) {
-			return new \WP_Error( 'rest_forbidden', __( 'Invalid nonce.', 'post-smtp' ), array( 'status' => 403 ) );
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
 		}
 
 		$slug = sanitize_key( (string) $request->get_param( 'slug' ) );

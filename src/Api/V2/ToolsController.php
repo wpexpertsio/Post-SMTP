@@ -203,6 +203,11 @@ final class ToolsController extends BaseController {
 	}
 
 	public function postSendTestEmail( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$body = $request->get_json_params();
 		if ( ! is_array( $body ) || array() === $body ) {
 			$body = $request->get_body_params();
@@ -218,6 +223,11 @@ final class ToolsController extends BaseController {
 	}
 
 	public function postCheckConnectionRun( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$connection_id = (int) $request['connection_id'];
 		$result        = $this->checkService->runCheck( $connection_id );
 
@@ -233,11 +243,21 @@ final class ToolsController extends BaseController {
 		return rest_ensure_response( $this->diagnosticService->getBootstrap() );
 	}
 
-	public function postDiagnosticReportRun() {
+	public function postDiagnosticReportRun( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		return rest_ensure_response( $this->diagnosticService->runReport() );
 	}
 
 	public function postDiagnosticReportSend( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$body   = $request->get_json_params();
 		$result = $this->diagnosticService->sendReport( is_array( $body ) ? $body : array() );
 		$status = ! empty( $result['success'] ) ? 200 : 400;
@@ -246,6 +266,11 @@ final class ToolsController extends BaseController {
 	}
 
 	public function postPreview( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$body   = $request->get_json_params();
 		$result = $this->service->preview( is_array( $body ) ? $body : array() );
 
@@ -256,7 +281,12 @@ final class ToolsController extends BaseController {
 		return rest_ensure_response( $this->importExportService->getBootstrap() );
 	}
 
-	public function postImportExportExport() {
+	public function postImportExportExport( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$result = $this->importExportService->exportSettings();
 		$status = ! empty( $result['success'] ) ? 200 : 400;
 
@@ -264,6 +294,11 @@ final class ToolsController extends BaseController {
 	}
 
 	public function postImportExportImport( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$body   = $request->get_json_params();
 		$result = $this->importExportService->importSettings( is_array( $body ) ? $body : array() );
 		$status = ! empty( $result['success'] ) ? 200 : 400;
@@ -276,6 +311,11 @@ final class ToolsController extends BaseController {
 	}
 
 	public function postResetPlugin( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$body   = $request->get_json_params();
 		$result = $this->resetService->reset( is_array( $body ) ? $body : array() );
 		$status = ! empty( $result['success'] ) ? 200 : 400;

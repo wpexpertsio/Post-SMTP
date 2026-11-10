@@ -325,7 +325,7 @@ final class EmailLogService {
 		$uris  = $wpdb->get_col( "SELECT DISTINCT transport_uri FROM {$table} WHERE transport_uri != '' LIMIT 50" );
 		$mailers = array();
 		foreach ( $uris as $uri ) {
-			$mailers[] = (string) $uri;
+			$mailers[] = sanitize_text_field( (string) $uri );
 		}
 
 		$forms = array();
@@ -335,7 +335,16 @@ final class EmailLogService {
 
 		return array(
 			'mailers' => array_values( array_filter( $mailers ) ),
-			'forms'   => array_values( array_filter( array_map( 'strval', $forms ) ) ),
+			'forms'   => array_values(
+				array_filter(
+					array_map(
+						static function ( $form ) {
+							return sanitize_text_field( (string) $form );
+						},
+						$forms
+					)
+				)
+			),
 		);
 	}
 

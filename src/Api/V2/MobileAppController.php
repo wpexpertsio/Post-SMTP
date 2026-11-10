@@ -77,7 +77,12 @@ final class MobileAppController extends BaseController {
 		return rest_ensure_response( $this->service->getBootstrap() );
 	}
 
-	public function postRegenerate() {
+	public function postRegenerate( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$result = $this->service->regenerate();
 		$status = ! empty( $result['success'] ) ? 200 : 400;
 
@@ -85,6 +90,11 @@ final class MobileAppController extends BaseController {
 	}
 
 	public function postDisconnect( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$body   = $request->get_json_params();
 		$result = $this->service->disconnectDevice( is_array( $body ) ? $body : array() );
 		$status = ! empty( $result['success'] ) ? 200 : 400;
@@ -93,6 +103,11 @@ final class MobileAppController extends BaseController {
 	}
 
 	public function postNotifications( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$body   = $request->get_json_params();
 		$result = $this->service->updateNotifications( is_array( $body ) ? $body : array() );
 		$status = ! empty( $result['success'] ) ? 200 : 400;

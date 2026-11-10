@@ -139,6 +139,11 @@ final class ConnectionsController extends BaseController {
 	}
 
 	public function createConnection( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$row = $request->get_json_params();
 		if ( ! is_array( $row ) ) {
 			$row = array();
@@ -151,6 +156,11 @@ final class ConnectionsController extends BaseController {
 	}
 
 	public function updateConnection( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$index = (int) $request['index'];
 		$row   = $request->get_json_params();
 		if ( ! is_array( $row ) ) {
@@ -164,6 +174,11 @@ final class ConnectionsController extends BaseController {
 	}
 
 	public function deleteConnection( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$index  = (int) $request['index'];
 		$result = $this->service->delete( $index );
 		if ( empty( $result['success'] ) ) {
@@ -173,6 +188,11 @@ final class ConnectionsController extends BaseController {
 	}
 
 	public function reorderConnections( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$body  = $request->get_json_params();
 		$order = isset( $body['order'] ) && is_array( $body['order'] ) ? $body['order'] : array();
 		$result = $this->service->reorder( $order );
@@ -183,6 +203,11 @@ final class ConnectionsController extends BaseController {
 	}
 
 	public function patchFallback( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$index   = (int) $request['index'];
 		$body    = $request->get_json_params();
 		$enabled = ! empty( $body['enabled'] );
@@ -195,6 +220,11 @@ final class ConnectionsController extends BaseController {
 
 	/** @deprecated Bulk save — prefer granular endpoints. */
 	public function saveConnectionsBulk( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
 		$repo        = ConnectionRepositoryFactory::make();
 		$connections = $request->get_param( 'connections' );
 

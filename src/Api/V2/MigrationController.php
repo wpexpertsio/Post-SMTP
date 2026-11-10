@@ -17,18 +17,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class MigrationController extends BaseController {
 
-	public function register_routes(): void {
-		$migrator = new ConnectionMigrator();
+	private ConnectionMigrator $migrator;
 
+	public function __construct() {
+		$this->migrator = new ConnectionMigrator();
+	}
+
+	public function register_routes(): void {
 		register_rest_route(
 			$this->namespace,
 			'/migration/preview',
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => static function () use ( $migrator ) {
-						return rest_ensure_response( $migrator->preview() );
-					},
+					'callback'            => array( $this, 'preview' ),
 					'permission_callback' => array( $this, 'checkPermission' ),
 				),
 			)
@@ -40,9 +42,7 @@ final class MigrationController extends BaseController {
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => static function () use ( $migrator ) {
-						return rest_ensure_response( $migrator->migrate() );
-					},
+					'callback'            => array( $this, 'start' ),
 					'permission_callback' => array( $this, 'checkPermission' ),
 				),
 			)
@@ -54,9 +54,7 @@ final class MigrationController extends BaseController {
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => static function () use ( $migrator ) {
-						return rest_ensure_response( $migrator->rollback() );
-					},
+					'callback'            => array( $this, 'rollback' ),
 					'permission_callback' => array( $this, 'checkPermission' ),
 				),
 			)
@@ -68,9 +66,7 @@ final class MigrationController extends BaseController {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => static function () use ( $migrator ) {
-						return rest_ensure_response( $migrator->rollbackStatus() );
-					},
+					'callback'            => array( $this, 'rollbackStatus' ),
 					'permission_callback' => array( $this, 'checkPermission' ),
 				),
 			)
@@ -82,13 +78,47 @@ final class MigrationController extends BaseController {
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => static function ( WP_REST_Request $request ) use ( $migrator ) {
-						$force = (bool) $request->get_param( 'force_ui_only' );
-						return rest_ensure_response( $migrator->revertToLegacy( $force ) );
-					},
+					'callback'            => array( $this, 'revertLegacy' ),
 					'permission_callback' => array( $this, 'checkPermission' ),
 				),
 			)
 		);
+	}
+
+	public function preview() {
+		return rest_ensure_response( $this->migrator->preview() );
+	}
+
+	public function start( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
+		return rest_ensure_response( $this->migrator->migrate() );
+	}
+
+	public function rollback( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
+		return rest_ensure_response( $this->migrator->rollback() );
+	}
+
+	public function rollbackStatus() {
+		return rest_ensure_response( $this->migrator->rollbackStatus() );
+	}
+
+	public function revertLegacy( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
+		$force = (bool) $request->get_param( 'force_ui_only' );
+
+		return rest_ensure_response( $this->migrator->revertToLegacy( $force ) );
 	}
 }
