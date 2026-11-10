@@ -1248,8 +1248,10 @@ th#date {
     height: 0;
 }
 
-.ps-switch-1 input:checked + .slider {
-    background-color: #4db556;
+.ps-switch-1 input:checked + .slider,
+.ps-form-switch-control .ps-switch-1 input:checked + .slider {
+    background-color: #2271b1 !important;
+    border-color: #2271b1 !important;
 }
 
 .ps-switch-1 .slider.round {
@@ -1263,9 +1265,19 @@ th#date {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: #c3c4c7;
+    border: 1px solid #8c8f94;
+    box-sizing: border-box;
     -webkit-transition: 0.4s;
     transition: 0.4s;
+}
+
+.ps-form-switch-control {
+    display: inline-block;
+}
+
+.ps-form-switch-control .ps-switch-1 input:checked + .slider:before {
+    background-color: #fff !important;
 }
 
 .ps-switch-1 input:checked + .slider:before {

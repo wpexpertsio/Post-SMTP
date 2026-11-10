@@ -231,11 +231,10 @@ class PostmanNotify {
 
 	public function notification_use_chrome_callback() {
 
-		$value = $this->options->useChromeExtension() ? 'checked="checked"' : '';
-		$id    = PostmanNotifyOptions::NOTIFICATION_USE_CHROME;
+		$id = PostmanNotifyOptions::NOTIFICATION_USE_CHROME;
 		?>
 		<label class="ps-switch-1"> 
-			<input type="checkbox" name="<?php echo 'postman_options[' . esc_attr( $id ) . ']'; ?>" id="<?php echo 'input_' . esc_attr( $id ); ?>" class="<?php echo 'input_' . esc_attr( $id ); ?>" <?php echo esc_attr( $value ); ?> />
+			<input type="checkbox" name="<?php echo 'postman_options[' . esc_attr( $id ) . ']'; ?>" id="<?php echo 'input_' . esc_attr( $id ); ?>" class="<?php echo 'input_' . esc_attr( $id ); ?>" <?php checked( $this->options->useChromeExtension(), true ); ?> />
 			<span class="slider round"></span>
 		</label> 
 		<?php

@@ -681,13 +681,13 @@ a.ps-referral-link:active {
   border-radius: 0;
 }
 
-.ps-switch-1 .slider {
+.ps-switch-1 input:not(:checked) + .slider {
   background-color: #fff !important;
   border-radius: 20px;
   border: 0.5px solid #C2CDD9 !important;
 }
 
-.ps-switch-1 .slider:before {
+.ps-switch-1 input:not(:checked) + .slider:before {
   background-color: #C2CDD9 !important;
   left: 1px !important;
   bottom: 1px !important;
@@ -729,12 +729,12 @@ a.ps-referral-link:active {
 }
 
 .ps-form-switch-control .ps-switch-1 input:checked+.slider {
-  /* background-color: #214A72 !important; */
-  border-color: #214A72 !important;
+  background-color: #2271b1 !important;
+  border-color: #2271b1 !important;
 }
 
 .ps-form-switch-control .ps-switch-1 input:checked+.slider:before {
-  background-color: #214A72 !important;
+  background-color: #fff !important;
 }
 
 .ps-wizard-congrates {

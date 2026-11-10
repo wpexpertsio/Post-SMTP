@@ -37,8 +37,24 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 		 */
 		public function __construct() {
 			add_action( 'init', array( $this, 'schedule_email_reporting' ) );
+			add_action( 'init', array( $this, 'disable_legacy_extension_footer_reports' ), 100 );
 			add_action( 'postman_rat_email_report', array( $this,  'handle_email_reporting' ) );
 			add_filter( 'cron_schedules', array( $this, 'add_monthly_schedule' ) );
+		}
+
+		/**
+		 * The Report and Tracking extension still hooks wp_footer and sends a legacy HTML summary.
+		 * Lite/core reporting uses PostmanReportTemplate for daily, weekly, and monthly via cron.
+		 *
+		 * @since 4.0.3
+		 */
+		public function disable_legacy_extension_footer_reports() {
+			if ( ! class_exists( 'Post_SMTP_RAT_Email_Report' ) ) {
+				return;
+			}
+
+			$legacy_report = Post_SMTP_RAT_Email_Report::get_instance();
+			remove_action( 'wp_footer', array( $legacy_report, 'send_report' ) );
 		}
 
 
@@ -53,21 +69,38 @@ if ( ! class_exists( 'PostmanEmailReportSending' ) ) :
 		 * @version 3.0.1
 		 */
 		public function schedule_email_reporting() {
-			$options = get_option( 'postman_rat', array() );
-			if ( isset( $options['enable_email_reporting'] ) && $options['enable_email_reporting'] ) {
-				$schedules = array(
-					'd' => 'daily',
-					'w' => 'weekly',
-					'm' => 'monthly',
-				);
+			$options   = get_option( 'postman_rat', array() );
+			$timestamp = wp_next_scheduled( 'postman_rat_email_report' );
 
-				if ( isset( $options['reporting_interval'] ) && isset( $schedules[ $options['reporting_interval'] ] ) ) {
-					$schedule = $schedules[ $options['reporting_interval'] ];
-
-					if ( ! wp_next_scheduled( 'postman_rat_email_report' ) ) {
-						wp_schedule_event( current_time( 'timestamp' ), $schedule, 'postman_rat_email_report' );
-					}
+			if ( empty( $options['enable_email_reporting'] ) ) {
+				if ( $timestamp ) {
+					wp_clear_scheduled_hook( 'postman_rat_email_report' );
 				}
+				return;
+			}
+
+			$schedules = array(
+				'd' => 'daily',
+				'w' => 'weekly',
+				'm' => 'monthly',
+			);
+
+			if ( ! isset( $options['reporting_interval'] ) || ! isset( $schedules[ $options['reporting_interval'] ] ) ) {
+				return;
+			}
+
+			$schedule = $schedules[ $options['reporting_interval'] ];
+
+			if ( $timestamp ) {
+				$current_schedule = wp_get_schedule( 'postman_rat_email_report' );
+				if ( $current_schedule !== $schedule ) {
+					wp_clear_scheduled_hook( 'postman_rat_email_report' );
+					$timestamp = false;
+				}
+			}
+
+			if ( ! $timestamp ) {
+				wp_schedule_event( current_time( 'timestamp' ), $schedule, 'postman_rat_email_report' );
 			}
 		}
 

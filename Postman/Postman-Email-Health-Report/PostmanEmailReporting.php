@@ -90,7 +90,7 @@ if ( ! class_exists( 'PostmanEmailHealthReporting' ) ) :
 
 			$data = get_option( 'postman_rat' );
 			
-			$checked = ( isset( $data['enable_email_reporting'] ) && $data['enable_email_reporting'] === 1 ) ? 'checked' : '';
+			$email_reporting_enabled = isset( $data['enable_email_reporting'] ) && 1 === (int) $data['enable_email_reporting'];
 			$selected_interval = ( isset( $data['reporting_interval'] ) ) ? $data['reporting_interval'] : 'w';
 			$selection = array(
 				'd' => __( 'Daily', 'post-smtp' ),
@@ -106,7 +106,7 @@ if ( ! class_exists( 'PostmanEmailHealthReporting' ) ) :
 						<td><?php ( class_exists( 'Post_SMTP_Report_And_Tracking' ) ) ? esc_attr_e( 'Enable Email Reporting', 'psrat' ) : esc_attr_e( 'Enable Lite Email Reporting', 'psrat' ); ?></td>
 						<td>
 							<label class="ps-switch-1">
-								<input type="checkbox" name="enable_email_reporting" <?php echo esc_attr( $checked ); ?> />
+								<input type="checkbox" name="enable_email_reporting" <?php checked( $email_reporting_enabled, true ); ?> />
 								<span class="slider round"></span>
 							</label>
 						</td>
