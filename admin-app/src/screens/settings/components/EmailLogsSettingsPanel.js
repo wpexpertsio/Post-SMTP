@@ -77,7 +77,7 @@ const EmailLogsSettingsPanel = () => {
 		try {
 			const result = await saveMutation.mutateAsync( body );
 			if ( result?.values ) {
-				setForm( { ...result.values } );
+				setForm( ( prev ) => ( { ...prev, ...result.values } ) );
 			}
 			setNotice( { type: 'success', message: result?.message || 'Settings saved.' } );
 		} catch ( err ) {

@@ -109,6 +109,30 @@ define( 'POST_SMTP_ASSETS', plugin_dir_url( __FILE__ ) . 'assets/' );
 $composer_autoload = __DIR__ . '/vendor/autoload.php';
 if ( file_exists( $composer_autoload ) ) {
 	require_once $composer_autoload;
+} else {
+	spl_autoload_register(
+		static function ( $class ) {
+			$prefixes = array(
+				'PostSMTP\\Kernel\\' => __DIR__ . '/kernel/',
+				'PostSMTP\\'         => __DIR__ . '/src/',
+			);
+			foreach ( $prefixes as $prefix => $base_dir ) {
+				$len = strlen( $prefix );
+				if ( strncmp( $prefix, $class, $len ) !== 0 ) {
+					continue;
+				}
+				$relative = substr( $class, $len );
+				$file     = $base_dir . str_replace( '\\', '/', $relative ) . '.php';
+				if ( is_readable( $file ) ) {
+					require $file;
+					return;
+				}
+			}
+		}
+	);
+}
+
+if ( class_exists( '\PostSMTP\Bootstrap\Plugin', false ) ) {
 	\PostSMTP\Bootstrap\Plugin::init( __FILE__ );
 }
 

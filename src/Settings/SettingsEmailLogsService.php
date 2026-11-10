@@ -118,6 +118,8 @@ final class SettingsEmailLogsService {
 			}
 		}
 
+		SettingsEmailLogsPanelHooks::saveProFeatureFields( $payload );
+
 		$pro = AedlOptions::autoRetryForLogsApi( SettingsEmailLogsPanelHooks::isProForApi() );
 
 		$result = array(
@@ -146,14 +148,16 @@ final class SettingsEmailLogsService {
 			$raw = array();
 		}
 
-		return array(
-			'logging_enabled'        => (bool) $options->isMailLoggingEnabled(),
-			'save_message_body'      => self::isSaveMessageBodyEnabled(),
-			'max_log_entries'        => (int) $options->getMailLoggingMaxEntries(),
-			'transcript_size_kb'     => (int) $options->getTranscriptSize(),
-			'auto_retry_enabled'     => ! empty( $pro['enable_auto_retry'] ),
+		$values = array(
+			'logging_enabled'         => (bool) $options->isMailLoggingEnabled(),
+			'save_message_body'       => self::isSaveMessageBodyEnabled(),
+			'max_log_entries'         => (int) $options->getMailLoggingMaxEntries(),
+			'transcript_size_kb'      => (int) $options->getTranscriptSize(),
+			'auto_retry_enabled'      => ! empty( $pro['enable_auto_retry'] ),
 			'auto_retry_max_attempts' => (int) $pro['times_to_retry'],
 		);
+
+		return array_merge( $values, SettingsEmailLogsPanelHooks::proFeatureValuesForApi() );
 	}
 
 	/**
