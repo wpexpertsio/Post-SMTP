@@ -117,6 +117,13 @@ final class SettingsEmailReportingService {
 			}
 		}
 
+		if (
+			array_key_exists( 'track_email_opens', $payload )
+			&& ! SettingsEmailReportingPanelHooks::isOpenTrackingLocked()
+		) {
+			$patch['enable_open_tracking'] = ! empty( $payload['track_email_opens'] ) ? 1 : 0;
+		}
+
 		return $patch;
 	}
 

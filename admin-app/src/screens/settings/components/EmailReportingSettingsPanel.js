@@ -53,11 +53,15 @@ const EmailReportingSettingsPanel = () => {
 			return;
 		}
 		const toggle = query.data?.open_tracking?.toggle;
-		setForm( ( prev ) => ( {
-			...( prev || query.data.values ),
-			...query.data.values,
-			track_email_opens: toggle?.checked ?? false,
-		} ) );
+		setForm( ( prev ) => {
+			if ( prev ) {
+				return prev;
+			}
+			return {
+				...query.data.values,
+				track_email_opens: toggle?.checked ?? false,
+			};
+		} );
 	}, [ query.data ] );
 
 	const patch = ( key, value ) => {

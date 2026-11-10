@@ -33,6 +33,19 @@ final class SettingsEmailReportingPanelHooks {
 	public static function init(): void {
 		add_filter( 'post_smtp_settings_email_reporting_panel_config', array( self::class, 'defaultPanelConfig' ), 5, 2 );
 		add_filter( 'post_smtp_settings_email_reporting_open_tracking_panel', array( self::class, 'defaultOpenTrackingPanel' ), 5, 2 );
+		add_filter( 'post_smtp_track_email_opens', array( self::class, 'filterTrackEmailOpensFromDb' ), 5 );
+	}
+
+	public static function filterTrackEmailOpensFromDb( bool $enabled ): bool {
+		if ( $enabled ) {
+			return true;
+		}
+
+		if ( self::isOpenTrackingLocked() ) {
+			return false;
+		}
+
+		return self::isOpenTrackingEnabledInDb();
 	}
 
 	/**
@@ -48,6 +61,15 @@ final class SettingsEmailReportingPanelHooks {
 			),
 			$config
 		);
+	}
+
+	public static function isOpenTrackingEnabledInDb(): bool {
+		$rat = get_option( self::RAT_OPTION, array() );
+		if ( ! is_array( $rat ) ) {
+			return false;
+		}
+
+		return ! empty( $rat['enable_open_tracking'] );
 	}
 
 	public static function isOpenTrackingLocked(): bool {
@@ -76,7 +98,8 @@ final class SettingsEmailReportingPanelHooks {
 	 * @return array<string,mixed>
 	 */
 	public static function getOpenTrackingPanelForApi(): array {
-		$locked = self::isOpenTrackingLocked();
+		$locked  = self::isOpenTrackingLocked();
+		$checked = ! $locked && self::isOpenTrackingEnabledInDb();
 
 		$defaults = array(
 			'locked'             => $locked,
@@ -87,7 +110,7 @@ final class SettingsEmailReportingPanelHooks {
 			'toggle'             => array(
 				'label'    => __( 'Track email opens', 'post-smtp' ),
 				'hint'     => __( 'Add a small hidden image to your emails.', 'post-smtp' ),
-				'checked'  => false,
+				'checked'  => $checked,
 				'disabled' => $locked,
 			),
 		);
@@ -116,6 +139,8 @@ final class SettingsEmailReportingPanelHooks {
 	 * @return array<string,mixed>
 	 */
 	public static function defaultOpenTrackingPanel( array $panel, bool $locked ): array {
+		$checked = ! $locked && self::isOpenTrackingEnabledInDb();
+
 		$defaults = array(
 			'locked'             => $locked,
 			'title'              => __( 'Open Email Tracking', 'post-smtp' ),
@@ -125,11 +150,16 @@ final class SettingsEmailReportingPanelHooks {
 			'toggle'             => array(
 				'label'    => __( 'Track email opens', 'post-smtp' ),
 				'hint'     => __( 'Add a small hidden image to your emails.', 'post-smtp' ),
-				'checked'  => false,
+				'checked'  => $checked,
 				'disabled' => $locked,
 			),
 		);
 
-		return array_merge( $defaults, $panel );
+		$merged = array_merge( $defaults, $panel );
+		if ( isset( $panel['toggle'] ) && is_array( $panel['toggle'] ) ) {
+			$merged['toggle'] = array_merge( $defaults['toggle'], $panel['toggle'] );
+		}
+
+		return $merged;
 	}
 }
