@@ -23,9 +23,9 @@ final class SettingsGeneralService {
 		$options = PostmanOptions::getInstance();
 
 		return array(
-			'values'         => $this->readValues( $options ),
-			'mailer_types'   => $this->mailerTypeChoices(),
-			'primary_label'  => $this->primaryConnectionLabel(),
+			'values'        => $this->readValues( $options ),
+			'mailer_types'  => $this->mailerTypeChoices(),
+			'primary_label' => $this->primaryConnectionLabel(),
 			'copy'           => array(
 				'saved' => __( 'Settings saved.', 'post-smtp' ),
 			),
