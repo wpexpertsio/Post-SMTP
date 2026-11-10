@@ -3,7 +3,7 @@ Plugin URI: https://postmansmtp.com/
 Contributors: wpexpertsio
 Tags: smtp, wordpress smtp, email logs, gmail smtp, office 365
 Requires at least: 5.6.0
-Tested up to: 7.1.2
+Tested up to: 7.1.4
 Stable tag: 4.0.3
 Requires PHP: 7.1
 License: GPLv2 or later
@@ -15,7 +15,7 @@ Install Post SMTP (WordPress SMTP Plugin) to fix WordPress email delivery. Conne
 
 [👑 Go Pro](https://postmansmtp.com/pricing/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_top) | [💻Live Demo](https://www.tastewp.com/plugins/post-smtp) | [🔌Extensions](https://postmansmtp.com/extension/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_top) | [📱Mobile Application](https://postmansmtp.com/documentation/advance-functionality/postsmtp-mobile-app/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_top)
 
-###  WordPress SMTP Plugin 
+###  WordPress Mail SMTP Plugin 
 
 https://www.youtube.com/watch?v=KOWGLQ0MaX0
 
@@ -25,31 +25,25 @@ Are you dealing with the **WordPress not sending emails** problem? Post SMTP hel
 
 Beyond SMTP, Post SMTP gives you the tools to **monitor WordPress email delivery.** Track sent and failed emails with **email logs**, inspect delivery errors, and get failure alerts when something goes wrong. You can also configure **backup SMTP connections** to keep your site’s emails moving if your primary mailer becomes unavailable.
 
-With **[20+ SMTP and API mailer options,](https://postmansmtp.com/smtp-integrations/)** Post SMTP works with the email service you already use. Its monitoring and notification tools help you troubleshoot delivery problems faster and keep important WordPress emails on track.
-
-
-== What is SMTP, and Why Do You Need It? ==
-**SMTP**, short for Simple Mail Transfer Protocol, is the most widely used protocol for online email transmission. SMTP configuration with proper authentication for your WordPress site ensures that your WordPress emails do not end up in spam.
-
-**By default**, WordPress sends emails using the PHP mail function, which isn't ideal because most WordPress hosting servers don't support PHP email.
-
-On top of that, most email clients, such as Outlook (Office 365 / Microsoft365), Yahoo, Gmail, Brevo, Zoho, Amazon SES, Mailgun, etc., automatically block or mark spam emails that lack proper authentication.
-
-That's why you need to install the Post SMTP plugin on your WordPress site to configure the SMTP mailer of your choice with one-click SMTP setup for Gmail, Microsoft 365, and more.
+With **[20+ SMTP and API mailer options,](https://postmansmtp.com/smtp-integrations/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=description_body)** Post SMTP works with the email service you already use. Its monitoring and notification tools help you troubleshoot delivery problems faster and keep important WordPress emails on track.
 
 == How Does Post SMTP Work? ==
-Post SMTP allows you to easily replace the default PHP mail function (wp_mail) of your WordPress site with the SMTP mailer of your choice, like [Microsoft 365](https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)(Office 365), Brevo, Zoho, [SendGrid](https://postmansmtp.com/configure-wordpress-with-sendgrid/), [Mailgun SMTP](https://postmansmtp.com/setup-mailgun-for-wordpress/), Gmail [(Gmail SMTP Server)](https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/), Post Mark, Amazon SES etc., which in turn improves WordPress email deliverability.
+Post SMTP allows you to easily replace the default PHP mail function (wp_mail) of your WordPress site with the SMTP mailer of your choice, like [Microsoft 365](https://postmansmtp.com/extensions/office-365-extension-for-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=how-it-works_body)(Office 365), Brevo, Zoho, [SendGrid](https://postmansmtp.com/configure-wordpress-with-sendgrid/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=how-it-works_body), [Mailgun SMTP](https://postmansmtp.com/setup-mailgun-for-wordpress/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=how-it-works_body), Gmail [(Gmail SMTP Server)](https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=how-it-works_body), Post Mark, Amazon SES etc., which in turn improves WordPress email deliverability.
 
 **This WordPress mail SMTP plugin provides detailed email logs, email open tracking, email alerts, and a mobile app to monitor WordPress email deliverability.**
 
-Additionally, with a [3-step setup wizard](https://postmansmtp.com/introducing-the-new-3-step-setup-wizard-for-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) you can configure any SMTP mailer (e.g., Gmail SMTP (Gmail one-click setup), Microsoft Office 365, Mailgun, Brevo, etc.) securely via API Keys in seconds without providing your SMTP account credentials.
+Additionally, with a [3-step setup wizard](https://postmansmtp.com/introducing-the-new-3-step-setup-wizard-for-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=how-it-works_body) you can configure any SMTP mailer (e.g., Gmail SMTP (Gmail one-click setup), Microsoft Office 365, Mailgun, Brevo, etc.) securely via API Keys in seconds without providing your SMTP account credentials.
 
-**NOTE:**  If you want to set up a Gmail SMTP server for WordPress, check out our detailed guide on [how to configure Gmail SMTP server](https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/) to send WordPress emails reliably.
+**NOTE:**  If you want to set up a Gmail SMTP server for WordPress, check out our detailed guide on [how to configure Gmail SMTP server](https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=how-it-works_body) to send WordPress emails reliably.
 
-Ultimately, this WordPress SMTP plugin helps you fix all your issues related to [WordPress not sending emails.](https://postmansmtp.com/wordpress-not-sending-emails/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
+Ultimately, this WordPress SMTP plugin helps you fix all your issues related to [WordPress not sending emails.](https://postmansmtp.com/wordpress-not-sending-emails/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=how-it-works_body)
 
 == ⚡ Features That Make Post SMTP Stand Out ==
 ✅ **Quick Setup Wizard:** Easy-to-use and powerful 3-Step Setup Wizard for quick WordPress SMTP configuration with One-click SMTP setup for Gmail SMTP and Microsoft 365 SMTP. 
+
+✅ **Native SMTP Integration:** You can use this WordPress SMTP plugin to securely configure 15+ SMTP service provider accounts, such as Gmail SMTP, Mailgun, Postmark, etc., with WordPress using APIs.
+
+✅ **Secondary SMTP Connection:** Using the Post SMTP, you can set up secondary SMTP mailers so that for any reason, whenever an email fails to deliver, Post SMTP will automatically route that email through the secondary SMTP connection. In turn, this will improve your email delivery rate.
 
 ✅ **SPF, DKIM & DMARC Checks:** Keep an eye on domain’s reputation with out built-in Spam Score Checker that looks at your DNS records..
 
@@ -57,10 +51,7 @@ Ultimately, this WordPress SMTP plugin helps you fix all your issues related to 
 
 ✅ **Post SMTP Mobile App:** Get WordPress email alerts directly on your mobile phone so you can track email deliverability on the go.
 
-
-✅ **Extensive Email Reporting:** Get a thorough report at a glance regarding your WordPress email deliverability performance, including email open tracking and other important stats.
-
-✅ **Resend Email Attachments [PRO]:** With a single click, you can resend any email attachment right through your email log screen, maintaining a seamless record in your email logs.
+✅ **Weekly Email Health Report:** As a Post SMTP member, you get a weekly email report that reveals all your deliverability statistics at a glance, such as the total number of emails sent from your WordPress site, the number of failed emails, the total number of successful email deliveries, and the complete email logs report so you can identify any issues right away without login into your WordPress.
 
 ✅ **OAuth 2.0 Support:** Authenticate all major SMTP service providers' accounts (i.e., Microsoft Office 365/Microsoft365, Brevo, Gmail SMTP (Gmail one-click setup), Amazon SES, SendGrid, Mailgun, etc.) securely using APIs.
 
@@ -72,101 +63,34 @@ Ultimately, this WordPress SMTP plugin helps you fix all your issues related to 
 
 ✅ **Weekly Email Summary:** Get a snapshot of your WordPress email deliverability report right in your inbox every week, which reveals the total number of emails, the number of failed emails, total successful email deliveries, and your recent email logs.
 
-✅ **Unparalleled Customer Support:** We offer multiple support options, including email, a WordPress forum, and even one-on-one expert assistance for [WordPress SMTP Configuration](https://postmansmtp.com/configuration-request/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) and all your email delivery issues. 
+✅ **Unparalleled Customer Support:** We offer multiple support options, including email, a WordPress forum, and even one-on-one expert assistance for [WordPress SMTP Configuration](https://postmansmtp.com/configuration-request/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=features_body) and all your email delivery issues. 
 
 https://www.youtube.com/watch?v=Oxs3qintyLU
-
-== ⚡ Post SMTP Mobile App: Get an Instant Pulse of Your WordPress Emails ==
-✅ **Keep track of Your Emails:** You can monitor all the emails sent from your WordPress site and check the status of each email.
-
-✅ **Get Instant Alerts:** When an email fails to deliver, you will receive an instant notification on your phone.
-
-✅ **Resend Failed Emails [PRO]:** With one tap on your app, you can resend any failed email.
-Preview Any Email: You can preview your emails and see how it looks.
-
-✅ **Connect Multiple Sites [PRO]:** Monitor email logs and get email failure notifications (email alerts) for all your WordPress sites right from the app.
-
-✅ **Troubleshoot Errors:** Quickly fix email failure issues by viewing the error details with a single tap.
-
-== SMTP Mailer Options for Post SMTP ==
-With Post SMTP, you get many SMTP mailer options, such as:
-
-* [SMTP.com SMTP](https://www.smtp.com/resources/api-documentation/) - **Newly Added**
-
-* [CloudFlare SMTP](https://developers.cloudflare.com/email-service/api/send-emails/smtp/) - **Newly Added**
-
-* [Sweego SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-sweego-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) - **Newly Added**
-
-* [Mailtrap SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-mailtrap-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) - **Newly Added**
-
-* [Emailit SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-emailit-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) 
-
-* [Resend SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-resend-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) 
-
-* [MailerSend SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mailersend-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
-
-* [Brevo (formerly Sendinblue) SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendinblue-aka-brevo-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
-
-* [Microsoft 365 SMTP (Formerly Office 365 and Outlook)](https://postmansmtp.com/office-365-for-wordpress/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) 
-
-* [Gmail SMTP (Gmail API, G Suite, Google Workspace)](https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
-
-* [Amazon SES SMTP](https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
-
-* [Zoho Mail SMTP](https://postmansmtp.com/extensions/zoho-mail-pro-extension/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
-
-* [Mandrill SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mandrill-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
-
-* [Mailgun SMTP](https://postmansmtp.com/setup-mailgun-for-wordpress/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
-
-* [SendGrid SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendgrid-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
-
-* [Mailjet SMTP](https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-mailjet/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
-
-* [SparkPost SMTP](https://postmansmtp.com/documentation/sockets-addons/sparkpost/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
-
-* [Postmark SMTP](https://postmansmtp.com/documentation/sockets-addons/postmark/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
-
-* [Elastic Email SMTP](https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-elastic-email/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
-
-* [Other SMTP](https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-other-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) (To connect any SMTP server)
-
-You often need to install a different WordPress mail smtp plugin for each SMTP mailer setup. However, with Post SMTP, you can set up all popular SMTP providers, such as Gmail one-click setup, Microsoft Office 365, Mailgun, Amazon SES, Zoho Mail, etc.
-
-==  Microsoft 365 SMTP ==
-Millions of businesses around the world use Microsoft 365 (formerly Office 365) or Outlook for their email communications. With Post SMTP Pro, you can easily connect your existing [Outlook or Microsoft 365 (formerly Office365) account with WordPress](https://postmansmtp.com/connect-microsoft-outlook-to-wordpress/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) via **one-click SMTP setup** to improve email deliverability.
-
-
-👉 For more details, check out our guide on [how to set up Microsoft 365 for WordPress emails.](https://postmansmtp.com/office-365-for-wordpress/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) 
-
-==  Amazon SES SMTP ==
-Amazon SES (Simple Email Service) is a cloud-based email service that can send transactional and mass emails. SES is cost-effective, reliable, and scalable. Using the Post SMTP Pro, you can securely integrate your Amazon SES account with WordPress via APIs so that you can send large numbers of emails on a budget.
-
-👉 For more details, check out our [Amazon SES documentation.](https://postmansmtp.com/documentation/sockets-addons/amazon-ses-pro/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
-
-==  Zoho Mail SMTP ==
-Connect your Zoho mail personal or business account with WordPress via Post SMTP Pro to improve email deliverability. It has a 99.9% server uptime and offers a free option.
-
-👉 For more details, check out our [Zoho Mail documentation](https://postmansmtp.com/documentation/sockets-addons/zoho-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body).
-
-👉 To learn about all the supported SMTP mailers, check out our [Complete SMTP Mailer Guide.](https://postmansmtp.com/documentation/sockets-addons/post-smtp-complete-mailer-guide/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body)
 
 == ⚡ Added Benefits of Getting Post SMTP Pro ==
 The Post SMTP Pro gives you an edge that makes your WordPress email management and performance reporting a breeze! With Post SMTP Pro, you get the following additional perks:
 
 ✅ **Microsoft 365 One-Click:** Upgrade to unlock a smooth and effortless Microsoft email setup. Just enable Microsoft 365 One-Click Setup. With a single toggle, Post SMTP automatically configures everything needed for secure and reliable Outlook / Office 365 email delivery no manual settings required, no technical steps to worry about.
 
+Millions of businesses around the world use Microsoft 365 (formerly Office 365) or Outlook for their email communications. With Post SMTP Pro, you can easily connect your existing [Outlook or Microsoft 365 (formerly Office365) account with WordPress](https://postmansmtp.com/connect-microsoft-outlook-to-wordpress/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=microsoft-365_body) via **one-click SMTP setup** to improve email deliverability.
+
+👉 For more details, check out our guide on [how to set up Microsoft 365 for WordPress emails.](https://postmansmtp.com/office-365-for-wordpress/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=microsoft-365_body) 
+
 ✅ **Google (Gmail) SMTP One-Click:** Upgrade now for a worry-free Gmail SMTP integration. Activate Gmail One-Click Setup and let Post SMTP Setup Wizard handle all the API-related technicalities.
+
+✅ **Amazon SES SMTP:**
+Amazon SES (Simple Email Service) is a cloud-based email service that can send transactional and mass emails. SES is cost-effective, reliable, and scalable. Using the Post SMTP Pro, you can securely integrate your Amazon SES account with WordPress via APIs so that you can send large numbers of emails on a budget.
+
+👉 For more details, check out our [Amazon SES documentation.](https://postmansmtp.com/documentation/sockets-addons/amazon-ses-pro/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=amazon-ses_body)
+
+✅ **Zoho Mail SMTP:**
+Connect your Zoho mail personal or business account with WordPress via Post SMTP Pro to improve email deliverability. It has a 99.9% server uptime and offers a free option.
+
+👉 For more details, check out our [Zoho Mail documentation](https://postmansmtp.com/documentation/sockets-addons/zoho-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=zoho-mail_body).
 
 ✅ **Microsoft Teams Notifications:** This WordPress SMTP plugin enables you to receive real-time notifications for your emails on Microsoft Teams with a simple webhook.
 
-✅ **Native SMTP Integration:** You can use this WordPress SMTP plugin to securely configure 15+ SMTP service provider accounts, such as Microsoft 365 (Microsoft Office 365), Gmail SMTP, Amazon SES, Zoho Mail, Mailgun, Postmark, etc., with WordPress using APIs.
-
 ✅ **Twilio (SMS)** With this WordPress SMTP plugin, you can easily configure and receive all your WordPress email failure alerts through SMS by connecting your Twilio account.
-
-✅ **Secondary SMTP Connection:** Using the Post SMTP Pro, you can set up multiple SMTP mailers so that for any reason, whenever an email fails to deliver, Post SMTP will automatically route that email through the secondary SMTP connection. In turn, this will improve your email delivery rate.
-
-✅ **Weekly Email Health Report:** As a Post SMTP Pro member, you get a weekly email report that reveals all your deliverability statistics at a glance, such as the total number of emails sent from your WordPress site, the number of failed emails, the total number of successful email deliveries, and the complete email logs report so you can identify any issues right away without login into your WordPress.
 
 ✅ **Email Open Tracking:** Are you curious about which of your emails get opened? With Post SMTP Pro, you can easily view email open tracking right on your email log screen, which greatly enhances your ability to analyze the performance of your WordPress emails.
 
@@ -174,9 +98,70 @@ The Post SMTP Pro gives you an edge that makes your WordPress email management a
 
 ✅ **Email Batching and Quota Scheduling:** Avoid any spam detection and daily email limit exceeding issues with the Post SMTP email batching and quota scheduling feature. As a pro user, you can easily specify the duration and number of emails per batch and choose how often to send the emails (hourly, daily, weekly, or monthly) for optimal email delivery.
 
+✅ **Resend Email Attachments:** With a single click, you can resend any email attachment right through your email log screen, maintaining a seamless record in your email logs.
+
 ✅ **Priority Support:** We offer exceptional customer support to all the Post SMTP Pro users. You can access our team of WordPress experts on one-on-one email support 24/7 for any WordPress email-related issue. Also, we offer WordPress SMTP Configuration service on demand.
 
-== 🆕 MainWP Post SMTP Extension - NEW ==
+== ⚡ Post SMTP Mobile App: Get an Instant Pulse of Your WordPress Emails ==
+✅ **Keep track of Your Emails:** You can monitor all the emails sent from your WordPress site and check the status of each email.
+
+✅ **Get Instant Alerts:** When an email fails to deliver, you will receive an instant notification on your phone.
+
+✅ **Troubleshoot Errors:** Quickly fix email failure issues by viewing the error details with a single tap.
+
+✅ **Resend Failed Emails [PRO]:** With one tap on your app, you can resend any failed email.
+Preview Any Email: You can preview your emails and see how it looks.
+
+✅ **Connect Multiple Sites [PRO]:** Monitor email logs and get email failure notifications (email alerts) for all your WordPress sites right from the app.
+
+== SMTP Mailer Options for Post SMTP ==
+With Post SMTP, you get many SMTP mailer options, such as:
+
+* [SMTP.com SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-smtp-com-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body) - **Newly Added**
+
+* [CloudFlare SMTP](https://postmansmtp.com/docs/mailers/how-to-set-up-cloudflare-email-service-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body) - **Newly Added**
+
+* [Sweego SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-sweego-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body)
+
+* [Mailtrap SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-mailtrap-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body) 
+
+* [Emailit SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-emailit-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body) 
+
+* [Resend SMTP](https://postmansmtp.com/docs/mailers/how-to-setup-resend-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body) 
+
+* [MailerSend SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mailersend-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body)
+
+* [Brevo (formerly Sendinblue) SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendinblue-aka-brevo-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body)
+
+* [Microsoft 365 SMTP (Formerly Office 365 and Outlook)](https://postmansmtp.com/office-365-for-wordpress/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body) 
+
+* [Gmail SMTP (Gmail API, G Suite, Google Workspace)](https://postmansmtp.com/how-to-configure-post-smtp-with-gmailgsuite-using-oauth/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body)
+
+* [Amazon SES SMTP](https://postmansmtp.com/extensions/post-smtp-extension-for-amazon-ses/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body)
+
+* [Zoho Mail SMTP](https://postmansmtp.com/extensions/zoho-mail-pro-extension/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body)
+
+* [Mandrill SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-mandrill-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body)
+
+* [Mailgun SMTP](https://postmansmtp.com/setup-mailgun-for-wordpress/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body)
+
+* [SendGrid SMTP](https://postmansmtp.com/documentation/sockets-addons/how-to-setup-sendgrid-with-post-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body)
+
+* [Mailjet SMTP](https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-mailjet/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body)
+
+* [SparkPost SMTP](https://postmansmtp.com/documentation/sockets-addons/sparkpost/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body)
+
+* [Postmark SMTP](https://postmansmtp.com/documentation/sockets-addons/postmark/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body)
+
+* [Elastic Email SMTP](https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-elastic-email/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body)
+
+* [Other SMTP](https://postmansmtp.com/documentation/sockets-addons/configure-post-smtp-with-other-smtp/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body) (To connect any SMTP server)
+
+You often need to install a different WordPress mail smtp plugin for each SMTP mailer setup. However, with Post SMTP, you can set up all popular SMTP providers, such as Gmail one-click setup, Microsoft Office 365, Mailgun, Amazon SES, Zoho Mail, etc.
+
+👉 To learn about all the supported SMTP mailers, check out our [Complete SMTP Mailer Guide.](https://postmansmtp.com/documentation/sockets-addons/post-smtp-complete-mailer-guide/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=mailers_body)
+
+== 🆕 MainWP Post SMTP Extension ==
 **Manage WordPress SMTP Configuration Across All Your Sites From A Single Dashboard**
 
 With MainWP Post SMTP Extension, you can:
@@ -192,36 +177,9 @@ With MainWP Post SMTP Extension, you can:
 == ⛑ Need Help? Get Expert Assistance on Demand!!! ==
 With our Expert Assistance, you can get help with email deliverability and SMTP plugin configuration for Gmail, Microsoft Office 365, and any SMTP setup for WordPress.
 
-All you need is to [click here](https://postmansmtp.com/configuration-request/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body), fill out the form, sit back, and relax while our WordPress expert sets up your SMTP configuration. Also, you can request us to configure all your [DNS records](https://postmansmtp.com/dmarc-spf-dkim/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) for proper email authentication.
+All you need is to [click here](https://postmansmtp.com/configuration-request/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=need-help_body), fill out the form, sit back, and relax while our WordPress expert sets up your SMTP configuration. Also, you can request us to configure all your [DNS records](https://postmansmtp.com/dmarc-spf-dkim/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=need-help_body) for proper email authentication.
 
 In short, our Expert Assistance is your one-stop destination for all your WordPress email delivery issues.
-
-== Compatibility and Support ==
-* Contact Form 7
-
-* Woocommerce
-
-* New User Approve
-
-* Password Protected
-
-* Elementor Forms
-
-* Gravity Forms
-
-* Login Designer
-
-* Visual Forms Builder
-
-* Mailster Newsletter plugin
-
-* SendPress Newsletters
-
-* WP HTML Mail
-
-* Email Templates
-
-.. and every other plugin that uses the WordPress API wp_mail to send mail!
 
 == Try Our Other Awesome WordPress Plugins ==
 
@@ -241,11 +199,8 @@ In short, our Expert Assistance is your one-stop destination for all your WordPr
 
 * **[New User Approve](https://wordpress.org/plugins/new-user-approve/)** – Control user registrations by manually approving or denying new signups.
 
-* **[Bookify](https://wordpress.org/plugins/bookify/)** – Your go-to online bookings and appointment scheduling plugin for WordPress.
-
 * **[All In One Login](https://wordpress.org/plugins/all-in-one-login/)** – Secure your WordPress login page, change the wp-login.php URL, and add social logins like Google, Facebook, Microsoft, LINE, and more.
 
-* **[WPExperts WooCommerce Store](https://store.wpexperts.io/woocommerce/)** – Explore premium WooCommerce plugins and professional solutions by WPExperts.
 == Requirements == 
 * WordPress v6.2 and above is recommended
 * PHP v7.1 and above is required; PHP 8.0+ is strongly recommended for Gmail/OAuth API mailers and current vendor libraries.
@@ -255,193 +210,122 @@ In short, our Expert Assistance is your one-stop destination for all your WordPr
 
 == External Services ==
 
-This plugin connects to external services only when a site administrator configures a feature or runs an action that requires it. Each service below explains what is sent, when it is sent, and where the data goes.
+Post SMTP connects to external services only when you use a feature that needs them.
+
+=== Email Sending Providers ===
+
+Post SMTP sends WordPress emails through the SMTP or API provider configured by the administrator, such as Gmail, Microsoft 365, Amazon SES, Brevo, Mailgun, SendGrid, or other supported providers.
+
+**Data sent:** Recipient addresses, subject, email content, headers, attachments, and required authentication details.
+
+**When:** Whenever WordPress sends an email through the configured provider.
+
+**Terms and Privacy:** The terms and privacy policy of the selected email provider apply.
 
 === Post SMTP Email Tester ===
 
-Purpose: Deliverability and authentication checks when you use the in-plugin email tester.
+The Email Tester uses Post SMTP's testing service to check email authentication and delivery.
 
-When contacted: Only when an administrator runs the email tester from Post SMTP settings.
+**Data sent:** Site URL, server IP address, email address, mailer type & API key if provided.
 
-Information transmitted: Test email address, site URL, server IP address, mailer-related request data, and diagnostic results needed to perform the test.
+**When:** When an administrator runs the Email Tester.
 
-User action/consent: Administrator-initiated; no data is sent until you run the test.
-
-Service website: https://smtper.postmansmtp.com/
-
-Terms of Use: https://postmansmtp.com/terms-of-service/
-
+Terms of Service: https://postmansmtp.com/terms-of-service/
 Privacy Policy: https://postmansmtp.com/privacy-policy/
 
-=== Post SMTP Chrome extension notifications ===
+=== Post SMTP Mobile App ===
 
-Purpose: Push failure alerts to the Post SMTP Chrome extension when email delivery fails.
+The mobile app connects to your WordPress site to display email logs and send failure alerts.
 
-When contacted: When Chrome extension notifications are enabled and a qualifying email failure occurs, or when an administrator sends a test notification.
+Service: https://postmansmtp.com/
 
-Information transmitted: Failure message text, site URL, and the extension UID you configure in settings.
+**Data sent:** The connected mobile app can access email logs stored on your WordPress site, including recipients, subjects, message content, headers, and error details. For push notifications, your site sends the site name and email failure details to the configured push service.
 
-User action/consent: Administrator must enable the feature and save the extension UID.
+**When:** When the mobile app is connected and requests email logs. Push notifications are sent when enabled and an email fails.
 
-Service website: https://chrome.postmansmtp.com/
-
-Terms of Use: https://postmansmtp.com/terms-of-service/
-
+Terms of Service: https://postmansmtp.com/terms-of-service/
 Privacy Policy: https://postmansmtp.com/privacy-policy/
 
-=== Post SMTP mobile application ===
+=== Slack, Pushover and Custom Webhooks ===
 
-Purpose: Connect the Post SMTP mobile app for monitoring and optional failure push notifications.
+Post SMTP can send email failure notifications to Slack, Pushover, or a custom webhook URL configured by the administrator.
 
-When contacted: When you pair the mobile app with your site or when configured mobile failure notifications are sent.
+**Data sent:** Site URL, email failure message, error details, and required notification credentials.
 
-Information transmitted: Device identifiers, authentication keys, FCM token, plugin version, notification title/body, and API requests to the mobile backend URL provided during pairing.
+**When:** When a notification service is configured and an email fails or a test notification is sent.
 
-User action/consent: Administrator-initiated pairing via QR code or connection flow in plugin settings.
+Services:
+Slack: https://slack.com/
+Pushover: https://pushover.net/
+Custom Webhooks: The URL configured by the administrator.
 
-Service website: https://postmansmtp.com/
+Terms and Privacy:
+Slack: https://slack.com/trust/privacy/privacy-policy
+Pushover: https://pushover.net/privacy
+Custom Webhooks: Governed by the service receiving the webhook.
 
-Terms of Use: https://postmansmtp.com/terms-of-service/
+=== Chrome Extension ===
 
+Post SMTP can send email failure alerts to its Chrome extension service.
+
+**Data sent:** Site URL and email failure message.
+
+**When:** When Chrome notifications are enabled and an email fails.
+
+Terms of Service: https://postmansmtp.com/terms-of-service/
 Privacy Policy: https://postmansmtp.com/privacy-policy/
 
-=== Slack (optional notifications) ===
+=== MainWP Integration ===
 
-Purpose: Send email failure alerts to a Slack workspace webhook you provide.
+When MainWP email forwarding is configured, Post SMTP sends emails through the administrator's MainWP Dashboard.
 
-When contacted: When Slack notifications are enabled and a qualifying email failure occurs.
+Service: https://mainwp.com/
 
-Information transmitted: Notification message content to your configured Slack incoming webhook URL.
+**Data sent:** Recipient addresses, subject, email content, headers, attachments, and required MainWP authentication details.
 
-User action/consent: Administrator must add a Slack webhook URL and enable notifications.
+**When:** When an email is sent through the configured MainWP integration.
 
-Service website: https://slack.com/
-
-Terms of Use: https://slack.com/terms-of-service/user
-
-Privacy Policy: https://slack.com/trust/privacy/privacy-policy
-
-=== Pushover (optional notifications) ===
-
-Purpose: Send email failure alerts through Pushover.
-
-When contacted: When Pushover notifications are enabled and a qualifying email failure occurs.
-
-Information transmitted: Notification message and Pushover API credentials you configure.
-
-User action/consent: Administrator must enter Pushover user key and application token.
-
-Service website: https://pushover.net/
-
-Terms of Use: https://pushover.net/terms
-
-Privacy Policy: https://pushover.net/privacy
-
-=== User-defined webhooks (optional notifications) ===
-
-Purpose: POST failure alert payloads to HTTPS endpoints you specify.
-
-When contacted: When webhook alerts are enabled and a qualifying email failure occurs.
-
-Information transmitted: JSON notification payload to URLs you configure.
-
-User action/consent: Administrator must add webhook URLs and enable the feature.
-
-Service website: Determined by the URL you enter.
-
-Terms of Use: Determined by the service operating your webhook endpoint.
-
-Privacy Policy: Determined by the service operating your webhook endpoint.
-
-=== Freemius (optional plugin analytics and licensing) ===
-
-Purpose: Optional usage insights, licensing, and in-plugin upgrade flows when you opt in to Freemius.
-
-When contacted: During optional Freemius opt-in, license activation, or when the SDK performs configured telemetry (for example after you connect your account or when diagnostic tracking is enabled).
-
-Information transmitted: Site URL, plugin version, administrator email (when provided during opt-in), license identifiers, and non-sensitive diagnostic events as described in the Freemius opt-in screen. No Freemius connection is made until you interact with the opt-in or licensing UI.
-
-User action/consent: Optional; you can skip or dismiss Freemius prompts. Diagnostic tracking is described on the opt-in screen and is not enabled without your choice.
-
-Service website: https://freemius.com/
-
-Terms of Use: https://freemius.com/terms/
-
-Privacy Policy: https://freemius.com/privacy/freemius-wordpress-plugin/
-
-=== Gmail One-Click relay (optional Pro extension) ===
-
-Purpose: Send mail through Google's Gmail API using Post SMTP's connect.postmansmtp.com middleware when Gmail One-Click is enabled.
-
-When contacted: Only when Gmail One-Click is active and WordPress sends email through that transport.
-
-Information transmitted: Base64url-encoded RFC822 message (headers and body), message headers as sent, and your site URL to https://connect.postmansmtp.com/wp-json/gmail-oauth/v1/send-email for relay to Google.
-
-User action/consent: Administrator must enable the Gmail One-Click extension and complete OAuth/setup in Post SMTP settings.
-
-Service website: https://connect.postmansmtp.com/
-
-Terms of Use: https://postmansmtp.com/terms-of-service/
-
-Privacy Policy: https://postmansmtp.com/privacy-policy/
-
-=== MainWP Child email forwarding (optional) ===
-
-Purpose: When Post SMTP runs on a MainWP Child site configured for centralized mail, forward outbound email data to your MainWP Dashboard parent site for sending.
-
-When contacted: When MainWP Child integration is configured and WordPress sends mail through the MainWP forwarding path on the child site.
-
-Information transmitted: Recipients, subject, message body, headers, attachment file contents, MainWP site ID, and API key hash headers to the parent URL configured in MainWP (not a fixed Post SMTP host).
-
-User action/consent: Administrator must install and configure MainWP Child/Dashboard and enable Post SMTP forwarding on the child site.
-
-Service website: Your configured MainWP Dashboard URL (https://mainwp.com/ for the MainWP product).
-
-Terms of Use: https://mainwp.com/terms-of-service/
-
+Terms of Service: https://mainwp.com/terms-of-service/
 Privacy Policy: https://mainwp.com/privacy-policy/
 
-=== Email service providers (SMTP and API mailers) ===
+=== Freemius ===
 
-Purpose: Send WordPress email through the mailer you choose (for example Gmail, Microsoft 365, Amazon SES, SendGrid, Mailgun, Brevo, or other supported providers).
+Post SMTP uses Freemius for optional account connection, licensing, and diagnostic information.
 
-When contacted: When WordPress sends email through Post SMTP using your configured mailer.
+Service: https://freemius.com/
 
-Information transmitted: Email content, headers, and authentication data required by the provider you selected.
+**Data sent:** Site and plugin information, account and licensing details, and diagnostic information allowed by the selected permissions.
 
-User action/consent: Administrator must configure and save mailer credentials or OAuth authorization.
+**When:** When an administrator opts in or connects a Freemius account.
 
-Service website, Terms of Use, and Privacy Policy: Governed by the provider you configure. Examples for built-in API mailers:
+Terms of Service: https://freemius.com/terms/
+Privacy Policy: https://freemius.com/privacy/freemius-wordpress-plugin/
 
-* Brevo (Sendinblue) — https://www.brevo.com/legal/privacypolicy/ | https://www.brevo.com/legal/termsofuse/
-* SendGrid — https://www.twilio.com/en-us/legal/privacy | https://www.twilio.com/en-us/legal/twilio-services-agreement
-* Mailgun — https://www.mailgun.com/legal/privacy-policy/ | https://www.mailgun.com/legal/terms/
-* Amazon SES — https://aws.amazon.com/privacy/ | https://aws.amazon.com/service-terms/
-* Google Gmail API — https://policies.google.com/privacy | https://policies.google.com/terms
-* Microsoft 365 / Outlook — https://privacy.microsoft.com/ | https://www.microsoft.com/servicesagreement
-* Mailjet — https://www.mailjet.com/legal/privacy-policy/ | https://www.mailjet.com/legal/terms-of-use/
-* Postmark — https://postmarkapp.com/privacy-policy | https://postmarkapp.com/terms-of-service
-* SparkPost — https://www.sparkpost.com/policies/privacy/ | https://www.sparkpost.com/policies/tos/
-* Elastic Email — https://elasticemail.com/legal/privacy | https://elasticemail.com/legal/terms
-* SMTP and other providers you enter — use that provider's published policies.
+=== Post SMTP Feedback ===
 
-User-supplied SMTP hostnames, API endpoints, and webhook URLs are administrator-defined destinations; Post SMTP sends only what you configure to those endpoints.
+Post SMTP uses its website to receive feedback submitted by administrators.
 
-=== Post SMTP product feedback (optional) ===
+Service: https://postmansmtp.com/feedback
 
-Purpose: Submit voluntary feedback from the WordPress admin when you choose to send it.
+**Data sent:** Selected feedback reason, comments, and optional support contact details.
 
-When contacted: Only when an administrator submits feedback through the plugin UI.
+**When:** When an administrator submits feedback.
 
-Information transmitted: Feedback text and related context you submit.
-
-User action/consent: Explicit administrator submission.
-
-Service website: https://postmansmtp.com/
-
-Terms of Use: https://postmansmtp.com/terms-of-service/
-
+Terms of Service: https://postmansmtp.com/terms-of-service/
 Privacy Policy: https://postmansmtp.com/privacy-policy/
+
+=== Google Fonts ===
+
+Post SMTP loads the Inter and Poppins fonts from Google Fonts on the Extensions administration page.
+
+Service: https://fonts.googleapis.com/
+
+**Data sent:** Your browser shares normal connection information, such as IP address and browser details, when requesting fonts.
+
+**When:** When the relevant Post SMTP administration pages load, including the dashboard, setup wizard, Extensions page, and test email interface.
+
+Terms of Service: https://policies.google.com/terms
+Privacy Policy: https://policies.google.com/privacy
 
 == Frequently Asked Questions ==
 
@@ -507,7 +391,7 @@ There are many reasons why OAuth 2.0 is better than any password-based mechanism
 > **[NEVER give out your Gmail, Microsoft or Yahoo password](http://blog.varonis.com/giving-away-your-passwords/)** to a 3rd-party or 3rd-party program that you don't fully trust.
 
 = Can I use this plugin to send via Outlook, Microsoft 365, Gmail SMTP, Zoho, Yahoo, or SendGrid SMTP? =
-Yes! With the Post SMTP Plugin, you can configure any SMTP mailer account, including Brevo, Mailgun, and SendGrid on your WordPress site. Check out our [detailed SMTP configuration documentation](https://postmansmtp.com/documentation/sockets-addons/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=link_body) for all major SMTP service providers.
+Yes! With the Post SMTP Plugin, you can configure any SMTP mailer account, including Brevo, Mailgun, and SendGrid on your WordPress site. Check out our [detailed SMTP configuration documentation](https://postmansmtp.com/documentation/sockets-addons/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=readme&utm_content=faq_body) for all major SMTP service providers.
 
 = What is a Client ID? =
 To use OAuth, your website needs its own Client ID. The Client ID is used to control authentication and authorization and is tied to the specific URL of your website. If you manage several websites, you will need a different Client ID for each one.
@@ -553,23 +437,17 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 ### 2.8.11 ###
 Important: If you are using version 2.8.7 or lower of our plugin, please update to the latest version as soon as possible. This update contains an urgent security fix that prevents potential vulnerabilities and attacks. We apologize for any inconvenience this may cause you and we appreciate your cooperation. Thank you for using our plugin.
+# Changelog
 
-== Changelog ==
+All notable changes to this plugin are documented in this file.
 
-= 4.0.3 - Nov 2, 2026 =
-* Fix - Brevo API CC, BCC, and Reply-To recipient formatting that caused `cc is not valid` errors (e.g. Ninja Forms notifications).
-* Fix - Mailjet Send API v3.1 compatibility and clearer HTTP error reporting.
-* Fix - SMTP2GO API sender formatting and BCC recipients.
-* Fix - PHP 8.5 deprecation notices in bundled Zend Validate type casts.
-* Fix - Google mailer dependency loading for OAuth-related flows.
-* Improvement - Upgraded bundled HTML Purifier to 4.19.0.
-* Improvement - Limited setup wizard JavaScript to the wizard screen and scoped Enter-key handling.
-* Improvement - Wizard admin assets load only on relevant Post SMTP admin screens.
-* Security - Updated vendored dependencies.
-* Tweak - Aligned documented minimum PHP version (7.1) with plugin requirements; PHP 8.0+ recommended for OAuth/API mail paths.
-* Tweak - Use WordPress core Moment.js on the dashboard stats widget instead of a bundled copy.
-* Tweak - Load global Post SMTP admin scripts only on Post SMTP admin screens.
-* Tweak - Expanded readme External Services disclosures (Freemius, Gmail One-Click relay, MainWP forwarding, API mailer policy links).
+= 4.0.3 - Nov 10, 2026 =
+* FIX - Fixed SMTP2GO API email formatting that caused valid emails to be rejected by the API.
+* FIX - Fixed cases where Post SMTP reported an email as failed even though it was successfully sent.
+* UPDATED - Updated the Freemius SDK to the latest supported version.
+* FIX - Prevented `wizard.js` from blocking the Enter key in code editors, including the Enfold theme code view.
+* IMPROVEMENT - Added PHP 8.5 compatibility by resolving deprecated boolean casts in the bundled Zend library.
+* FIX - Resolved conflicts caused by the bundled HTMLPurifier 4.18 overriding newer HTMLPurifier versions used by other WordPress plugins
 
 = 4.0.2 - Sep 24, 2026 =
 * Security - Resolved Stored DOM-Based Cross-Site Scripting (XSS) vulnerability in failed email logs on WordPress Multisite.
@@ -784,7 +662,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 * Fix - Mailjet - Reply-To email was not working properly.
 
 = 2.9.7 - July 01, 2024 =
-* Fix: Logs filter was not working in [Post SMTP Mobile Application](https://postmansmtp.com/post-smtp-mobile-app/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=changelog&utm_content=link_body)
+* Fix: Logs filter was not working in [Post SMTP Mobile Application](https://postmansmtp.com/post-smtp-mobile-app/?utm_source=wp_org&utm_medium=changelog)
 
 = 2.9.6 2024-06-27 =
 * Tweak - Some strings were not translatable.
@@ -836,7 +714,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 = 2.8.8 - 2024-01-01 =
 
-* Improvement: Added sanitization and escape functions in [POST SMTP Mobile App](https://postmansmtp.com/post-smtp-app/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=changelog&utm_content=link_body) QR code scanning window.
+* Improvement: Added sanitization and escape functions in [POST SMTP Mobile App](https://postmansmtp.com/post-smtp-app/?utm_source=wp_org&utm_medium=changelog) QR code scanning window.
 
 = 2.8.7 - 2023-12-20 =
 
@@ -860,7 +738,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 = 2.8.3 - 2023-11-17 =
 
 * Fix - Getting error when saving settings in some scenarios.
-* Improvement - Optimized QR code scanning module for [Post SMTP mobile app](https://postmansmtp.com/documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=changelog&utm_content=link_body) to avoid any scanning delays
+* Improvement - Optimized QR code scanning module for [Post SMTP mobile app](https://postmansmtp.com/documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/?utm_source=wp_org&utm_medium=changelog) to avoid any scanning delays
 
 = 2.8.2 - 2023-11-14 =
 
@@ -890,7 +768,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 
 = 2.7.0 - 2023-10-26 =
 
-* NEW - Added support for POST SMTP app. [Visit documentation for more information](https://postmansmtp.com/documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/?utm_source=wordpress.org&utm_medium=wp-org-listing&utm_campaign=changelog&utm_content=link_body)
+* NEW - Added support for POST SMTP app. [Visit documentation for more information](https://postmansmtp.com/documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/?utm_source=wp_org&utm_medium=changelog)
 * Fix - Raw HTML was sent when using ElasticEmail service.
 * Fix - Raw HTML was sent when resending emails from the log section.
 
