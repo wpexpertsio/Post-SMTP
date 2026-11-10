@@ -23,7 +23,7 @@ final class ZohoConfigureBootstrap {
 			'redirectUri'          => esc_url_raw( $redirect_uri ),
 			'redirectLabel'        => __( 'Redirect URL', 'post-smtp' ),
 			'redirectHint'         => __( 'Please copy this URL into the “Redirect URL” field of your Zoho account settings.', 'post-smtp' ),
-			'configureFigmaNode'   => '1339:17259',
+			'configureFigmaNode'   => '1339:17258',
 			'connectLabel'         => __( 'Connect to Zoho API', 'post-smtp' ),
 			'connectedLabel'       => __( 'Connected to Zoho Mail API', 'post-smtp' ),
 			'oauthConnectBaseUrl'  => '',

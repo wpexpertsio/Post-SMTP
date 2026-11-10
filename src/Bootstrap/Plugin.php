@@ -9,6 +9,7 @@ namespace PostSMTP\Bootstrap;
 
 use PostSMTP\Api\V2\ApiRegistrar;
 use PostSMTP\Connections\ConnectionLegacySendBridge;
+use PostSMTP\Connections\RevampProMailerSchemas;
 use PostSMTP\Mail\Modern\Register as ModernMailRegister;
 use PostSMTP\Connections\GmailConfigurePanelHooks;
 use PostSMTP\Connections\Office365ConfigurePanelHooks;
@@ -40,6 +41,7 @@ final class Plugin {
 			'plugins_loaded',
 			static function () {
 				ApiRegistrar::init();
+				RevampProMailerSchemas::init();
 				FailureNotificationBridge::init();
 				GmailConfigurePanelHooks::init();
 				Office365ConfigurePanelHooks::init();

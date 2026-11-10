@@ -79,7 +79,17 @@ const zohoHasApiCredentials = ( values ) => {
 		return false;
 	}
 	const secretStr = String( secret ).trim();
-	return secretStr !== '';
+	if ( secretStr.includes( '•' ) ) {
+		return true;
+	}
+	return '' !== secretStr;
+};
+
+const zohoIsConnected = ( values, zohoDefaults ) => {
+	if ( values?.refresh_token || values?.access_token ) {
+		return true;
+	}
+	return Boolean( zohoDefaults?.oauth?.connected );
 };
 
 const ZohoConnectAction = ( { zoho, connectionId, hasCredentials } ) => {
@@ -145,7 +155,14 @@ const ZohoConnectAction = ( { zoho, connectionId, hasCredentials } ) => {
 
 const ZohoConfigurePanel = ( { schema, values, renderField, connectionId } ) => {
 	const admin = getAdminConfig();
-	const zoho = admin.zohoConfigure || {};
+	const zohoDefaults = admin.zohoConfigure || {};
+	const zoho = {
+		...zohoDefaults,
+		oauth: {
+			...( zohoDefaults.oauth || {} ),
+			connected: zohoIsConnected( values, zohoDefaults ),
+		},
+	};
 	const credSection = schema?.sections?.api_credentials || {};
 	const credentialKeys = [ 'zohomail_region', 'zohomail_client_id', 'zohomail_client_secret' ];
 
@@ -154,7 +171,7 @@ const ZohoConfigurePanel = ( { schema, values, renderField, connectionId } ) => 
 	return (
 		<div
 			className="ps-v2-zoho-configure"
-			data-figma-node={ zoho.configureFigmaNode || schema?.configure_figma_node || '1339:17259' }
+			data-figma-node={ zoho.configureFigmaNode || schema?.configure_figma_node || '1339:17258' }
 		>
 			<div className="ps-v2-configure-form__sections">
 				{ renderField( 'connection_title' ) }

@@ -495,6 +495,23 @@
 	display: block;
 }
 
+/* Pro — Figma 810:13801 */
+.ps-v2-conn-promo--pro .ps-v2-conn-promo__title-row strong {
+	font-size: 16px;
+}
+
+.ps-v2-conn-promo__cta--enable {
+	background: #5279cc;
+	color: #fff;
+}
+
+#post-smtp-admin-root a.ps-v2-conn-promo__cta--enable:hover,
+#post-smtp-admin-root a.ps-v2-conn-promo__cta--enable:focus {
+	background: #4368b8;
+	color: #fff;
+	text-decoration: none;
+}
+
 /* —— Choose mailer (Figma 672:5745) —— */
 .ps-v2-conn-choose__main {
 	flex: 1 1 520px;
@@ -806,6 +823,12 @@
 	padding-top: 0;
 }
 
+.ps-v2-conn-choose__configure--figma .ps-v2-conn-form-actions {
+	margin-top: 20px;
+	padding-top: 20px;
+	border-top: 1px solid #e5e5e5;
+}
+
 /* Configure mailer — SendGrid (Figma 672:5588) */
 .ps-v2-configure-form {
 	margin-top: 0;
@@ -1089,12 +1112,18 @@
 	background-size: 10px 8px;
 }
 
+.ps-v2-configure-form__sections {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
 .ps-v2-configure-form__sections .ps-v2-form-field + .ps-v2-form-field--inline-check {
 	margin-top: 0;
 }
 
 .ps-v2-configure-form__sections > div + div {
-	margin-top: 15px;
+	margin-top: 0;
 }
 
 /* Gmail configure (Figma 1329:15620) */

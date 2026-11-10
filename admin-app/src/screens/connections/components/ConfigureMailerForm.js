@@ -195,13 +195,13 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 					: isOffice365OAuthLayout
 						? schema?.configure_figma_node || '1329:16097'
 						: isZohoOAuthLayout
-							? schema?.configure_figma_node || '1339:17259'
+							? schema?.configure_figma_node || '1339:17258'
 							: figmaMailer?.figmaNode || '672:5588'
 			}
 		>
 			<header className="ps-v2-configure-form__hero">
 				<div className="ps-v2-configure-form__hero-icon" aria-hidden="true">
-					{ iconUrl ? <img src={ iconUrl } alt="" width="30" height="28" /> : null }
+					{ iconUrl ? <img src={ iconUrl } alt="" width="26" height="26" /> : null }
 				</div>
 				<div>
 					<h3 className="ps-v2-configure-form__hero-title">{ configureTitle }</h3>

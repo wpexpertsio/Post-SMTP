@@ -26,7 +26,9 @@ const EmailLogDrawer = ( {
 		return null;
 	}
 
-	const showAttachments = settings?.show_attachments && log?.attachments?.length;
+	const showAttachments = Boolean(
+		settings?.show_attachments && log?.attachments?.length
+	);
 
 	return (
 		<div className="ps-el-drawer-backdrop" role="presentation" onClick={ onClose }>

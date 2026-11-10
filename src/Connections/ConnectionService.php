@@ -30,7 +30,7 @@ final class ConnectionService {
 			if ( ! is_array( $row ) ) {
 				continue;
 			}
-			$masked     = ConnectionSchema::maskSecrets( $row );
+			$masked     = ConnectionSchema::maskSecrets( self::mapRowForConfigureForm( $row ) );
 			$role_meta  = self::deriveRole( (int) $index, $connections );
 			$can_toggle = self::isFallbackSlotIndex( (int) $index, $limits );
 			$enriched[] = array_merge(
@@ -75,6 +75,26 @@ final class ConnectionService {
 	 * @param array<string,mixed>            $options     postman_options control plane.
 	 * @return array<int,array<string,mixed>>
 	 */
+	/**
+	 * Map stored row keys to revamp configure form field names (Figma connections UI).
+	 *
+	 * @param array<string,mixed> $row Connection row.
+	 * @return array<string,mixed>
+	 */
+	public static function mapRowForConfigureForm( array $row ): array {
+		if ( ! empty( $row['title'] ) && empty( $row['connection_title'] ) ) {
+			$row['connection_title'] = $row['title'];
+		}
+		if ( ! empty( $row['sender_email'] ) && empty( $row['from_email'] ) ) {
+			$row['from_email'] = $row['sender_email'];
+		}
+		if ( ! empty( $row['sender_name'] ) && empty( $row['from_name'] ) ) {
+			$row['from_name'] = $row['sender_name'];
+		}
+
+		return $row;
+	}
+
 	public function normalizeOnRead( array $connections, array $options ): array {
 		$legacy_fallback_on = ( $options['fallback_smtp_enabled'] ?? 'no' ) === 'yes';
 		$selected_fallback  = isset( $options['selected_fallback'] ) ? (int) $options['selected_fallback'] : 1;

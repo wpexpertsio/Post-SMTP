@@ -13,6 +13,7 @@ use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
 use PostSMTP\Kernel\Data\ConnectionSchema;
 use PostSMTP\Kernel\Providers\CatalogProviderSchema;
 use PostSMTP\Kernel\Providers\ProviderRegistry;
+use PostSMTP\Rollout\CohortResolver;
 use WP_REST_Request;
 use WP_REST_Server;
 
@@ -236,14 +237,16 @@ final class ConnectionsController extends BaseController {
 				$schemas[ $slug ] = CatalogProviderSchema::forSlug( $slug );
 			}
 		}
-		foreach ( $schemas as $slug => $schema ) {
-			/**
-			 * Filter a provider schema exposed to the Connections configure UI.
-			 *
-			 * @param array<string,mixed> $schema Provider schema.
-			 * @param string              $slug   Provider slug.
-			 */
-			$schemas[ $slug ] = apply_filters( 'post_smtp_provider_schema', $schema, $slug );
+		if ( CohortResolver::usesReactAdmin() ) {
+			foreach ( $schemas as $slug => $schema ) {
+				/**
+				 * Revamp Connections configure UI only (not legacy wizard/settings).
+				 *
+				 * @param array<string,mixed> $schema Provider schema.
+				 * @param string              $slug   Provider slug.
+				 */
+				$schemas[ $slug ] = apply_filters( 'post_smtp_provider_schema', $schema, $slug );
+			}
 		}
 		return rest_ensure_response( $schemas );
 	}

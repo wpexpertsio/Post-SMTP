@@ -71,7 +71,7 @@ const MAILER_SETUP = {
 	),
 	zohomail_api: setupCard(
 		'What is Zoho Mail?',
-		'Send through your Zoho Mail account with OAuth.',
+		"Send your site's emails through Zoho Mail.",
 		'https://postmansmtp.com/documentation/sockets-addons/zoho-with-post-smtp/'
 	),
 	postmark_api: setupCard(
