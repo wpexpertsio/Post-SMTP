@@ -1,0 +1,927 @@
+# Changelog
+
+All notable changes to this plugin are documented in this file.
+
+= 4.0.3 - Nov 10, 2026 =
+* FIX - Fixed SMTP2GO API email formatting that caused valid emails to be rejected by the API.
+* FIX - Fixed cases where Post SMTP reported an email as failed even though it was successfully sent.
+* UPDATED - Updated the Freemius SDK to the latest supported version.
+* FIX - Prevented `wizard.js` from blocking the Enter key in code editors, including the Enfold theme code view.
+* IMPROVEMENT - Added PHP 8.5 compatibility by resolving deprecated boolean casts in the bundled Zend library.
+* FIX - Resolved conflicts caused by the bundled HTMLPurifier 4.18 overriding newer HTMLPurifier versions used by other WordPress plugins.
+
+= 4.0.2 - Sep 24, 2026 =
+* Security - Resolved Stored DOM-Based Cross-Site Scripting (XSS) vulnerability in failed email logs on WordPress Multisite.
+* Fix - Resolved fatal error during All-In-One Security (AIOS) unlock email requests.
+* Fix - Prevented redundant wp_posts database queries on AJAX requests to improve performance.
+* Fix - Resolved infinite and duplicate email log generation during mailer and fallback failures.
+* Fix - Corrected email tracking status assignment between primary and fallback mailer logs.
+* Fix - Fixed issue where attachments were missing from fallback mailer logs.
+* Fix - Prevented duplicate failed email log entries from being created on email failures.
+* Fix - Fixed button alignment and cut-off issues in the Bulk Resend popup modal.
+* Fix - Fixed numeric metric alignment and spacing in the Email Reporting section.
+
+= 4.0.1 - Aug 25, 2026 =
+* Rolled back from 4.0.0-beta.1
+
+= 3.10.0 - Aug 24, 2026 =
+* NEW - Added [SMTP.com](https://www.smtp.com/) as an email service provider.
+* NEW - Added [CloudFlare](https://developers.cloudflare.com/email-service/api/send-emails/smtp/) as an email service provider.
+* IMPROVEMENT - Updated Sweego API.
+* IMPROVEMENT - Verified compatibility with WordPress v 7.1.
+* FIX - Resolved issue where newsletter emails were rendered incorrectly via Microsoft 365 API.
+* FIX - Fixed critical error when sending Wordfence Admin Authentication emails.
+* FIX - Resolved PHP 8.3 depreciation warnings.
+* FIX - Fixed fatal error occurring on the configuration page for version 3.7.0.
+* FIX - Fixed issue where the Resend feature sent raw HTML instead of rendered emails.
+* FIX - Corrected delivery time in logs to match WordPress timezone settings.
+* FIX - Added missing angle brackets in Message-ID header to prevent Google Workspace bounces.
+* FIX - Resolved issue where Reply-to settings were not being honored.
+* FIX - Fixed Cyrillic domain support issues.
+* FIX - Addressed various PHP warnings and minor UI/UX improvements.
+
+= 3.9.5 – June 24, 2026 =
+* TWEAK – Updated dashboard banners and removed the Extensions screen from the plugin menu.
+
+= 3.9.4 – June 03, 2026 =
+* FIX – Resolved failed builds reported by Plugintests.com
+* FIX – Addressed PHP deprecation notices related to using null as an array offset
+* FIX – Fixed compatibility issues with the Google Site Kit plugin
+* FIX – Resolved Elastic Email API errors causing `Code: 400, Message: Bad Request` due to missing required parameters
+* FIX – Addressed PHP 8 deprecation warnings for improved compatibility
+* FIX – Resolved a fatal error occurring when accessing `Post SMTP → Settings`
+* FIX – Improved compatibility with WordPress 7.0 & resolve issues of 3.9.2 version
+
+= 3.9.3 – May 24, 2026 =
+* TWEAK – Rolled back to version 3.9.1 due to socket-related errors.
+
+= 3.9.2 – May 22, 2026 =
+* TWEAK – Added WordPress 7.0 compatibility.
+* FIX – Addressed PHP deprecation notices related to using null as an array offset.
+* FIX – Fixed compatibility issues with the Google Site Kit plugin.
+
+= 3.9.1 – April 01, 2026 =
+* TWEAK – Updated Emailit API to v2.
+* FIX – Added Header support in Maileroo.
+* FIX – Resolved qrstr class conflict.
+* FIX – Emailit API status handling (status code 201 was incorrectly marked as failed instead of pending/successful).
+* FIX – Resolved fatal error: Class "HTMLPurifier_Config" not found.
+* FIX – Fixed SMTP2GO false positive response.
+
+= 3.9.0 – Mar 17, 2026 =
+* TWEAK – Updated the Setup Wizard UI for Mailers and improved related content.
+* FIX – Resolved REST error: rest_cookie_invalid_nonce (Cookie check failed – 403).
+* FIX – Added support for the pre_wp_mail function for custom implementations via functions.php.
+* FIX – Corrected an issue where submitted notification URLs were passed through esc_url, which escaped HTML entities (such as &) intended only for display.
+* FIX – Resolved an issue where the Post SMTP email logger did not display all recipients.
+* FIX – Fixed missing line breaks in the mail log content.
+* FIX – Resolved the Initial Setup Wizard issue that allowed incorrect email acceptance on the wizard screen.
+* FIX – Addressed missing authorization for Authenticated (Subscriber+) Office 365 OAuth configuration overwrite.
+
+= 3.8.0 – Jan 20, 2026 =
+* NEW – Added [Sweego](https://www.sweego.io/) as an email service provider.
+* NEW – Introduced the "Send Test Notification" feature for Post SMTP failure alerts.
+* TWEAK – Added a hide option for wp_mail conflict notice.
+* FIX – PHPMailer with "Log Only" mode was sending emails.
+* FIX – Corrected improper call to the function _load_textdomain_just_in_time.
+* FIX – Fixed redirection issue that incorrectly navigated users to the Post SMTP settings page.
+
+= 3.7.0 - Dec 24, 2025 =
+* NEW – Added Mailtrap.io as an email service provider.
+* FIX – The PHPMailerException already exist.
+* FIX – Call to undefined method QRcode.
+* FIX – Emailit API Emails were going without From name
+
+= 3.6.3 - Dec 17, 2025 =
+* FIX - Escape email content. 
+= 3.6.2 - Nov 24, 2025 =
+* IMPROVEMENT - Added PHP 8+ compatibility.
+* FIX - Added authorization checks related to OAuth token updates for authenticated users.
+
+= 3.6.1 – Oct 29, 2025 =
+* IMPROVEMENT: Removed GIF from the plugin to enhance performance and reduce load time.
+* IMPROVEMENT: Increased the request timeout for email sending to improve reliability and prevent timeouts.
+* FIX: Resolved a missing authorization vulnerability.
+* FIX: Addressed a WordPress error triggered when accessing the plugin settings page due to conflict with another theme/ plugin.
+
+= 3.6.0 – Oct 14, 2025 =
+* NEW – Added [Maileroo](https://postmansmtp.com/docs/mailers/how-to-setup-maileroo-with-post-smtp/) as an email service provider.
+* TWEAK – Enhanced Setup Wizard content for better user guidance.
+* TWEAK – Added a “Notify” button on the WordPress dashboard.
+* IMPROVEMENT – Updated multiple recipient view in email logs for better clarity.
+* FIX – Resolved undefined property issue in Post SMTP report after update.
+* FIX – Fixed “Limit Exceeded” error during Email DNS test.
+* FIX – Corrected failed message entries in logs.
+* FIX – Resolved issue with “Save Password” reappearing unexpectedly.
+* FIX – Fixed changelog display issue in Post SMTP.
+* FIX – Addressed PHPMailer BCC and CC handling issues.
+* FIX – Fixed host impersonation domain name issue.
+* FIX – Removed unnecessary console logs from the admin dashboard.
+
+= 3.5.0 - Sept 17, 2025 =
+* NEW - Added [Emailit](https://postmansmtp.com/smtp-integrations/Emailit/) email service providers.
+* TWEAK - Wizard Send Test Email disble button till the email is being sent.
+* TWEAK - Limited the scope of Gmail.
+* IMPROVEMENT - PHP 8+ compatibility added.
+* IMPROVEMENT - Dashboard widget UI improvement.
+* FIX - Fallback mailer was not working.
+* FIX - SendGrid attachments were not working in some cases.
+* FIX - Resending emails to multiple recipients was not working in some cases.
+* FIX - PHP warning was appearing in some cases.
+* FIX - PHP error was appearing in some cases Uncaught Error: Call to a member function getFromEmailAddress().
+
+= 3.4.2 - Sept 01, 2025 =
+* Enhancement - Improved AJAX call security.
+* Improvement - PHP 8+ version compatibility.
+
+= 3.4.1 - Aug 20, 2025 =
+* TWEAK - Updated Plugin URI in header
+
+= 3.4.0 - Aug 18, 2025 =
+* NEW - Added [Resend](https://postmansmtp.com/smtp-integrations/resend/) email service providers.
+* UPDATED: Feedback SDK to the latest version.
+* TWEAK - Removed irrelevant notices from Post SMTP Wizard.
+* FIX - BCC/ CC fails with Sparkpost.
+* FIX - reply-to was not working with Gravit Forms notifications with SMTP2GO.
+
+= 3.3.0 - June 11, 2025 =
+* NEW - WP Dashboard Widget
+* NEW - Diagnostic Report Send Form
+* NEW - [Mailersend](https://postmansmtp.com/smtp-integrations/mailersend-smtp/) Mailer Integration
+* FIX - Added Validation In Domain Checker  DNS, SPF, DMARC
+* FIX - LOCO Translate Issue 
+* FIX - Email Summary Improvement 
+* FIX - Vulnerability Fix. 
+
+= 3.2.0 - May 19, 2025 =
+* New - Introducing Email Tester to test your email deliverability.
+* Fix - Removed id duplication in the Wizard.
+
+= 3.1.4 - Apr 08, 2025 =
+* FIX - To column in email logs was empty in some cases.
+
+= 3.1.3 - Mar 03, 2025 =
+* Enhancement: Email logs security enhancement.
+
+= 3.1.2 - Feb 24, 2025 =
+* Enhancement: Email logs security enhancement.
+
+= 3.1.1 - Feb 11, 2025 =
+* Fix: Raw HTML was sent when resending emails from the log section.
+* Fix: AJAX error with some Form plugins.
+
+= 3.1.0 - Feb 10, 2025 =
+* New: Added SendGrid EU support.
+* Optimization: Improved email reporting.
+* Fix: Translation warning was appearing in some cases.
+* Fix: Security enhancement.
+* Fix: Prevent From Name was not working, if Prevent From Email was not enabled.
+* Fix: Send Test was not appearing in Log Only mode.
+
+= 3.0.2 - Jan 27, 2025 =
+* Updated: Feedback SDK to the latest version.
+
+= 3.0.1 - Jan 14, 2025 =
+* Fix: Fixed the UI conflict.
+* Fix: Fixed MySQL warning. 
+* Fix: Translation warning fixed.
+
+= 3.0.0 - Jan 07, 2025 =
+* New: Introduced all New Post SMTP Dashboard for users' ease.
+* New: Introduced new SMTP socket SMTP2GO.
+* New: Introduced new Send Mail user interface.
+* New: Introduced Webhook, so you can add Webhook URL to get notified when an email is failed.
+
+= 2.9.14 - December 18, 2024 =
+* Tweak - WordPress 6.7 Transalation compatibility added.
+
+= 2.9.13 - December 10, 2024 =
+* Fix - Users were unable to regenerate [Mobile App](https://postmansmtp.com/post-smtp-mobile-app/) QR code in admin view.
+* Tweak - WordPress 6.7 Transalation compatibility added.
+
+= 2.9.12 - December 02, 2024 =
+* Enhancement - Regenerate QR Code Mobile Applicaion security enhancement in admin view reported by Patchstack.
+
+= 2.9.11 - November 21, 2024 =
+* Updated: Feedback SDK to the latest version.
+* Tweak: Failed email notification typo fixed.
+
+= 2.9.10 - November 19, 2024 =
+* Email logs search security enhancement in admin view reported by [Patchstack](https://patchstack.com/database/vulnerability/post-smtp/wordpress-post-smtp-plugin-2-9-9-sql-injection-vulnerability)
+
+= 2.9.9 - October 01, 2024 =
+* Tweak: Typo fixes.
+* Tweak: Improved user interface in wizard.
+* Fix: PHP deprecated warning on 8.x.
+* Fix: Emails count was not accurate in [Weekly email](https://postmansmtp.com/post-smtp-release-v2-9-0-smtp-mailer-and-email-health-report/) in some cases.
+
+= 2.9.8 - August 21, 2024 =
+* New: Added SendGrid EU support.
+* New: Added [pre_wp_mail](https://developer.wordpress.org/reference/hooks/pre_wp_mail/) filter.
+* Tweak: Sometimes Post SMTP was not detecting Post SMTP Pro.
+* Updated: Feedback SDK to the latest version.
+* Fix - Mailjet - Reply-To email was not working properly.
+
+= 2.9.7 - July 01, 2024 =
+* Fix: Logs filter was not working in [Post SMTP Mobile Application](https://postmansmtp.com/post-smtp-mobile-app/?utm_source=wp_org&utm_medium=changelog)
+
+= 2.9.6 2024-06-27 =
+* Tweak - Some strings were not translatable.
+* Fix - Compatibility added for old PHP Versions.
+* Fix - Notice: Only variables should be passed by reference.
+
+= 2.9.5 - 2024-06-25 =
+* Added: New Successful, Failed, and All email filter on email logs.
+* Added: Option to print email. 
+* Updated: The user interface of settings tabs
+
+= 2.9.4 - 2024-05-29 =
+* Security Improvement: Sanitized SQL queries suggested by Wordfence team.
+
+= 2.9.3 - 2024-05-22 =
+* IMPROVEMENT – Email health report settings and template UI
+* FIX – Remove false email delivery count from the WordPress dashboard.
+
+= 2.9.2 - 2024-05-13 =
+* NEW - Added new filter post_smtp_postmark_content for developers ease.
+* UPDATED - Google Client SDK to latest version.
+* IMPROVEMENT - Site URL was missing in [Post SMTP Chrome Extension](https://chromewebstore.google.com/detail/post-smtp-notifications/npklmbkpbknkmbohdbpikeidiaekjoch).
+
+= 2.9.1 - 2024-04-22 =
+* Bug Fix: error appearing "syntax error, unexpected ')'".
+
+= 2.9.0 - 2024-04-16 =
+* New - Added email health report
+* New - Added new socket/ email service SendPulse
+* Fix - AJAX call was being interrupted by register_setting when specific plugins were activated.
+
+= 2.8.13 - 2024-03-26 =
+* FIXED: Reverted last fix as it was conflicting in some cases.
+
+= 2.8.12 - 2024-03-26 =
+* FIXED: AJAX call was being interrupted by register_setting when specific plugins were activated. 
+
+= 2.8.11 - 2024-01-19 =
+
+* Added link to the [new POST SMTP app for iOS](https://apps.apple.com/us/app/post-smtp/id6473368559) released.
+
+= 2.8.10 - 2024-01-18 =
+
+* Security Improvement: Added check to automatically remove any connected device with incomplete information. 
+
+= 2.8.9 - 2024-01-11 =
+
+* Added compatibility for [InstaWP](https://www.instawp.com/)
+
+= 2.8.8 - 2024-01-01 =
+
+* Improvement: Added sanitization and escape functions in [POST SMTP Mobile App](https://postmansmtp.com/post-smtp-app/?utm_source=wp_org&utm_medium=changelog) QR code scanning window.
+
+= 2.8.7 - 2023-12-20 =
+
+* Improvement - added sanitization where missing to improve security
+* Improvement - added nonce where missing to improve security
+
+= 2.8.6 - 2023-12-07 =
+
+* Improvement - Changed banner placement for NEW mobile app for POST SMTP to improve UX.
+* Improvement - Tweaked dashboard UI for better usability.
+
+= 2.8.5 - 2023-11-23 =
+
+* Fix: In some cases, there was an issue disconnecting mobile application.
+
+= 2.8.4 - 2023-11-20 =
+
+* Fix: From name and emails, prevention settings were not being saved correctly in some cases in the new wizard.
+* Fix: In some sockets, the API keys getting saved were encoded in multiple layers.
+
+= 2.8.3 - 2023-11-17 =
+
+* Fix - Getting error when saving settings in some scenarios.
+* Improvement - Optimized QR code scanning module for [Post SMTP mobile app](https://postmansmtp.com/documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/?utm_source=wp_org&utm_medium=changelog) to avoid any scanning delays
+
+= 2.8.2 - 2023-11-14 =
+
+* Improvement - PHP < 7.3 compatibility added.
+
+= 2.8.1 - 2023-11-13 =
+
+* Fix - Other SMTP option in the wizard was not saving the settings correctly.
+
+= 2.8.0 - 2023-11-13 =
+
+* NEW - Introducing a NEW 3-step wizard to speed up the initial setup.
+* NEW - Added documentation within the wizard to ease out the setup
+* NEW - Added new socket/email service for [Mailjet](https://www.mailjet.com/)
+* NEW - Added support for default socket within wizard (you can use this option in case you want to use the logs functionality only)
+* Fix - Updated the error string as reported by @interaptivre
+
+= 2.7.2 - 2023-11-01 =
+
+* Improvement - Mobile App banner improvement.
+
+= 2.7.1 - 2023-11-01 =
+
+* NEW - Show Mobile App Notice on Post SMTP dashboard
+* Improvement - Improved SQL query to meet latest security standards
+* Improvement - Added patch to avoid script execution in log content.
+
+= 2.7.0 - 2023-10-26 =
+
+* NEW - Added support for POST SMTP app. [Visit documentation for more information](https://postmansmtp.com/documentation/post-smtp-mobile-app/download-the-app-and-connect-with-plugin/?utm_source=wp_org&utm_medium=changelog)
+* Fix - Raw HTML was sent when using ElasticEmail service.
+* Fix - Raw HTML was sent when resending emails from the log section.
+
+= 2.6.2 - 2023-10-19 =
+
+* Tested up to WordPress v6.3.2
+
+= 2.6.1 - 2023-10-03 =
+
+* Fix: Removed broken link from test email.
+* Improvement: Improved SQL query to meet latest security standards.
+* Improvement: Replaced sanitize_text_field() with intval() as suggested by WP Scan team.
+
+= 2.6.0 - 2023-09-12 =
+
+**NEW**
+
+* Elastic mail socket added
+* When resetting the plugin settings, the user can check to preserve logs from getting removed
+* MainWP integration added. How-to instructions will be available publicly soon.
+
+**FIX**
+
+* When using PHPMailer, the failed email log was not creating
+
+**IMPROVEMENT**
+
+* Now, users can skip the banner from the dashboard.
+
+= 2.5.9.4 - 2023-08-29 =
+
+* API endpoint "SendinBlue" has been updated to "Brevo"
+
+= 2.5.9.3 - 2023-08-17 =
+
+* Minor Tweaks
+
+= 2.5.9.2 - 2023-08-16 =
+* Compatible & Tested up to WordPress v6.3
+
+= 2.5.9.1 =
+**NEW**
+
+* Added option to refresh recent logs in the dashboard without loading the page.
+* Added new hooks in the code to make the functionality extendable.
+
+= 2.5.9 - 2023-07-18 =
+**IMPROVEMENTS**
+
+* Improved email log popup content
+
+**FIX**
+
+* Reverted support for HTML view in email content popup with proper checks to avoid CSS conflicts.
+
+**NEW**
+
+* Added new filter post_smtp_before_view_log to extend log section view.
+
+= 2.5.8 - 2023-07-11 =
+**IMPROVEMENTS**
+
+* Added function to escape backend email content popup HTML. 
+* Added Failed/success labels for better visibility. 
+* Displayed error message on hover and in the popup to simplify the interface and UX in the log section.
+* Updated Feedback SDK to the latest version
+
+**FIXES**
+
+* Fix: Pagination was getting reset on resending emails.
+
+= 2.5.7 - 2023-06-21 =
+**IMPROVEMENTS**
+
+* Enhance code quality and strengthen security measures.
+
+= 2.5.6 - 2023-06-08 =
+**FIXES**
+
+* Critical error was being thrown when reseting the plugin.
+
+= 2.5.5 - 2023-05-29 =
+**FIXES**
+
+* Some of logs were overriding log page CSS.
+
+**IMPROVEMENTS**
+
+* Added title on log status for better user experience.
+* Translation string improvement.
+
+= 2.5.4 - 2023-05-24 =
+**FIXES**
+
+* Logs were not created in some cases.
+
+= 2.5.3 2023-05-16 =
+**FIXES**
+
+* Fixed E_WARNING appearing on activation in some cases.
+
+= 2.5.2 - 2023-05-12 =
+**FIXES**
+
+* Fixed the issue where users were getting stuck in the initial migration stage.
+
+**IMPROVEMENTS** 
+
+* On completing the migration process, limit the notice to the logs section only to delete old logs.
+* Added an option to disable migration notifications for seven days on clicking the cross icon on notice.
+* Added a new feature that allows users to revert a migration. This way, they can retry the migration process or switch back to the old logs interface if required.
+* Added an option to skip the migration process for those who do not wish to transfer their old logs and want to switch to the new interface.
+* Added permission check before creating/writing error log during migration.
+
+= 2.5.1 - 2023-05-10 =
+**NEW**
+
+* Added a link to learn more about migration.
+* Added a condition to initiate the migration and logging only if the new custom table exists.
+
+**IMPROVEMENTS**
+
+* Improved database migration process to handle potential failures.
+
+= 2.5.0 - 2023-05-09 =
+**NEW**
+
+* Introducing a new log section that is both lightweight and optimized, capable of accommodating millions of entries.
+* Added a migration wizard to help move existing logs to new custom tables from the old version.
+
+= 2.4.9 - 2023-04-27 =
+**FIXES**
+
+* Uncaught Error: Cannot use object of type WP_Error as array
+* Fixed deprecation notice for PHP Version > 8.0
+
+**IMPROVEMENTS**
+
+* Added condition for notice on how to fix broken emails
+
+= 2.4.8 - 2023-04-17 =
+**Bug Fix**
+
+* Fixed deprecated functions on Php 8.x
+
+= 2.4.7 - 2023-04-10 =
+**Improvements**
+
+* Updated feedback SDK to latest version
+* Added PHP 8.1 compatibility
+
+= 2.4.6 - 2023-03-27 =
+**Bug Fixes**
+
+* Added new option in the settings to fix broken emails.
+
+= 2.4.5 - 2023-03-14 =
+**Bug Fixes**
+
+* Reverted the fix to support minor PHP versions, impacting some other PHP versions.
+* NEW Filter post_smtp_incompatible_php added to fix the compatibility of minor PHP versions.
+
+= 2.4.4 - 2023-03-08 =
+**Bug Fixes**
+
+* Resolved an issue where warnings were generated due to an array to string conversion.
+* Fixed a problem where CC and BCC recipients were not properly added when using SendInBlue.
+* Addressed an issue where multiple recipients using SendInBlue were receiving emails individually instead of as a group.
+* Fixed an email formatting issue that occurred in certain PHP versions.
+* Corrected an issue where the friendly name feature was not functioning properly with SendInBlue.
+
+= 2.4.3 - 2023-02-27 =
+**Bug Fixes**
+
+* Fix - Code 400 error appearing in some cases for SendGrid with cc headers
+
+= 2.4.2 - 2023-02-24 =
+**Bug Fixes**
+
+* Email header request issue fixed for MailGun
+* Email attachment issue is fixed in SendGrid
+
+= 2.4.1 - 2023-02-22 =
+**Bug Fixes**
+
+* Fixed parse error on Php 7.2
+
+= 2.4 - 2023-02-21 =
+**Improvements**
+
+* Replaced Mandrill SDK with Endpoints
+* Replaced SendGrid SDK with Endpoints
+
+= 2.3.2 - 2023-01-06 =
+**Bug Fixes**
+
+* Fixed error related to Reply-To appearing in some cases.
+
+= 2.3.1 - 2023-01-05 =
+**Bug Fixes**
+
+* Fixed issues appearing in PostmanLogFields.php
+* Emails were getting broken in some cases
+
+= 2.3 - 2023-01-03 =
+**Bug Fixes**
+
+* PHP errors appear in ajax requests in some cases.
+* Fixed comma breaking the From name in the log section
+* Reply-to Header not being added in some instances (Reported by @pierrehooker)
+
+**Improvements**
+
+* Updated sender header as per RFC-2822
+* Added PHP 8 Compatibility
+* Updated Google API SDK
+* Replaced MailGun SDK with endpoints
+* Replaced SendInBlue SDK with Endpoints
+
+= 2.2.3 - 2022-12-27 =
+**FIX**
+
+* Bug Fix - Support menu was disappearing in some cases
+
+= 2.2.2 - 2022-12-19 =
+**FIX**
+
+* SendGrid was missing on wizard
+* PHP Warnings  
+
+= 2.2.1 - 2022-12-13 =
+**FIX**
+
+* Email template HTML was broken
+
+= 2.2 - 2022-12-08 =
+* **NEW**
+* Added New Socket/ Email Service Postmark
+* Added New Socket/ Email Service SparkPost
+* **IMPROVEMENTS**
+* SSRF Prevention
+* SQL Warning Removed
+* MailGun SDK Updated to Latest Version
+* Compatibility with BackupBuddy added
+* **FIXES**
+* Multisite Plugin Update
+* Additional Headers were not saved properly in some cases
+* Import Button was not working in some cases
+
+= 2.1.10 - 2022-10-10 =
+* **FIXES**
+* Avoid redirection to wizard on activation
+* Issue in resend emails 
+* Made backend setting fields visible
+* **IMPROVEMENTS**
+* Email host message
+* Sendgrid message id to prevent spam emails
+
+= 2.1.9 - 2022-09-9 =
+* **FIX**
+* User Compatibility Fix
+* Unauthorized error on wizard
+
+= 2.1.8 - 2022-09-5 =
+* **FIX**
+* Php warnings
+
+= 2.1.7 - 2022-08-30 =
+* **FIX**
+* Server side request forgery
+
+= 2.1.6 - 2022-08-29 =
+* **FIX**
+* Server side request forgery
+
+= 2.1.5 - 2022-08-25 =
+* **FIX**
+* Updated email header to prevent email from being SPAM
+
+= 2.1.4 - 2022-08-18 =
+* **NEW**
+* Redirect the user to the setup wizard on activating the Plugin
+* Added action hook, "post_smtp_before_reset_plugin" to add an event before resetting plugin
+* Added action hook, "post_smtp_after_reset_plugin" to add an event after resetting plugin
+* Added notice to Grant Access after getting done with the wizard step to improve the UX
+
+* **FIXES**
+* Tweaks for PHP Version 8+ compatibility
+* Freemius Language FIX
+* Security Fix to avoid XSS from admin settings
+* Mailster support updated for the latest version (thanks to @evrpress)
+* Typo fix: defualt to default (thanks to @jsilvermist)
+* Updated email header to prevent email from being SPAM
+
+= 2.1.3- 2022-07-1 =
+* **FIX**
+* PHP Version Compatibility.
+
+= 2.1.2- 2022-06-30 =
+* **NEW**
+* Integrated SDK for Feedback and support.
+* Added "Start wizard" button in setup notification to optimize UX for the end-user.
+
+* **Improved**
+Removed unused code
+
+* **FIX**
+Less secure App Banner appearing in non-appropriate cases
+
+
+= 2.1.1.1 - 2022-06-15 =
+* **FIX**
+* Sendinblue email header
+
+= 2.1.1 - 2022-06-09 =
+* **FIX**
+* PHP Version Compatibility.
+
+= 2.1 - 2022-06-09 =
+* **NEW**
+* All New UI
+* Sendinblue API Integration
+
+= 2.0.27 - 2022-05-19 =
+Add notice about Google Less Secure App.
+
+= 2.0.26 - 2022-04-22 =
+* **Bug Fixes**
+* Email header was broken in some cases.
+
+* **Improvements**
+* Minor UI improvement.
+* `llc` Hostname added in ZendMail.
+
+= 2.0.25 - 2022-04-06 =
+* **Bug Fixes**
+* WP 5.9 Compatibility Ballon UI issue.
+* Uncaught Error: Class PostmanAdminController not found.
+* Ajax error appearing due to Google API depreciated function.
+
+* **Improvements**
+* Code Optimization.
+* MIME version added to test mails to prevent emails from spam.
+* NEW Filter `postman_test_email_args` added to modify test email arguments.
+* NEW Action `wp_mail_succeeded` added to exectue on every success email delivery.
+
+= 2.0.24 - 2022-02-13 =
+* Update: THE FUTURE OF Post SMTP - https://postmansmtp.com/the-future-of-post-smtp/
+
+= 2.0.23 - 2021-04-22 =
+* Fixed: `WP_Scripts::localize called incorrectly` message.
+
+= 2.0.22 - 2021-02-14 =
+* Update: Chrome extension URL change
+* Fixed: Double save when extension save to option
+
+= 2.0.21 - 2021-02-11 =
+* Fixed: Security issue - nonce validation.
+* Fixed: Class PostmanViewController not found
+* New: New wp-config.php constant to disable the email logger = `POST_SMTP_CORE_MAIL_LOG`.
+
+= 2.0.20 - 2021-01-19 =
+* Fixed: All reported office 365 issues.
+* New: Add link to Amazon SES Extension
+
+= 2.0.19 - 2021-01-19 =
+* Fixed: All reported office 365 issues.
+* New: Add link to Amazon SES Extension
+
+= 2.0.18 - 2021-01-17 =
+* New: Plugin Extensions
+
+= 2.0.16 - 2020-12-13 =
+* Update: General Info
+
+= 2.0.15 - 2020-08-12 =
+* Fixed: WordPress 5.5 compatibility (stable)
+
+= 2.0.14 - 2020-08-11 =
+* Removed: WordPress 5.5 compatibility (bug)
+
+= 2.0.13 - 2020-08-11 =
+* Fixed: WordPress 5.5 compatibility
+* Fixed: Email log filtering
+* Fixed: Pushover notifications
+* New: Suggest solution for email delivery errors
+
+= 2.0.12 - 2020-05-18 =
+* Updated: Readme file info
+
+= 2.0.11 - 2020-02-25 =
+* Fixed: Slack notifications
+
+= 2.0.10 - 2020-01-21 =
+* Fixed: HTML content type
+* Fixed: Sendgrid crash when has duplicates recipients (bypass, Sendgrid issue).
+* Fixed: Few OAuth undefined notifications
+* Fixed: Duplicate Emails - When you have notify and confirm (Ninja forms, etc..)
+* Fixed: Logs wp_error convert
+
+= 2.0.9 - 2020-01-13 =
+* Fixed: Notify on error bug - crash site
+* Fixed: From header
+
+= 2.0.8 - 2020-01-12 =
+* Updated: Reply-To header bug
+
+= 2.0.7 - 2020-01-12 =
+* Updated: Improve PHPMailer method.
+* Updated: Bug fixes.
+
+= 2.0.6 - 2019-10-08 =
+* Updated: Bug fixes.
+
+= 2.0.5 - 2019-09-26 =
+* New: You can now export logs to CSV.
+* Updated: Few notifications errors, and minor improvements.
+
+= 2.0.4 - 2019-08-27 =
+* Updated: More security.
+
+= 2.0.3 - 2019-08-21 =
+* Fixed: A few security issues.
+
+= 2.0.2 - 2019-05-19 =
+* Fixed: Sendgrid code fix.
+* Fixed: Default method (nothing configured) will use the default mail on the server and not SMTP.
+
+= 2.0.1 - 2019-05-15 =
+* New: Mailer Type - Added an option to send without overwrite the 'wp_mail' function, better compability to WordPress delivery. hopefully will be the default in the future.
+* Updated: Sendgrid API was upgraded and rewritten to the new version.
+* Fixed: Message-Id header was missing on SMTP
+* Fixed: Email logger optimization - better query for large amount of records.
+* Fixed: The localization was fixed to match translate.wordpress.org translation system ( Thanks to Niels de Blaauw from Level-Level ).
+* Fixed: Code and optimization ( Thanks to Niels de Blaauw from Level-Level ).
+
+= 1.9.8 - 2019-02-18 =
+* New: a new from field to the fallback - Can't trust the username as "from" value (email address).
+
+= 1.9.7 - 2019-02-17 =
+* New: Fallback Feature - Configure a backup SMTP when emails are failing.
+* New: WordPress Multisite compability - with global settings.
+* New: Email Log capability - give other user cheking the logs.
+* Fixed: compatibility with mailster plugin
+* Fixed: Mandrill exception bug - Thanks to Niels de Blaauw from Level-Level
+
+= 1.9.6 - 2019-01-29 =
+* Added support for our new chrome notification extension.
+* few fixes
+
+= 1.9.5 - 2018-10-02 =
+* Added support for Mailgun Europe region.
+* Replace "buggy" mime_content_type php function
+
+= 1.9.4 - 2018-08-03 =
+The most stupid idea ever remove (auto security select)
+
+= 1.9.3 - 2018-07-26 =
+Removed auto configure for port 25 (can be TLS)
+
+= 1.9.2 - 2018-07-23 =
+Removed deprecated functions from 7.2 + comment unready feature
+
+= 1.9.1 - 2018-07-22 =
+Syntx stupid mistake
+
+= 1.9.0 - 2018-07-22 =
+* Better support for secure delivery
+* Support for constants auth (inside wp-config), check the detailes our [Blog](https://postmansmtp.com/post-smtp-1-9-0-better-support-for-secure-delivery)
+* Automatic encryption select base on the port input - 25, 465, 587, 2525
+
+= 1.8.9 - 2018-04-24 =
+* Sendgrid bug
+
+= 1.8.8 - 2018-04-24 =
+* file added to svn - contactform7
+
+= 1.8.6 - 2018-04-24 =
+* Fix lockfile erros
+* Contact form 7 integration
+* PHP 5.6 requirement
+
+= 1.8.5 - 2018-04-19 =
+* Remove Beta Woocommerce integration
+* Better check for WPML less then version 3.9
+
+= 1.8.4 - 2018-04-18 =
+* New: Multiple notification options to failed emails
+* Upgrade: The Gmail code was upgraded and code change to support large attachments
+* Add: Fix release lock file error
+* Change: "Not configured..." message is now dismissible
+
+= 1.8.3 - 2018-03-21 =
+* Fix: SendGrid API Call Structure (The previous try didn't work)
+
+= 1.8.2 - 2018-03-21 =
+* Fix: SendGrid API Call Structure
+
+= 1.8.1 - 2018-03-20 =
+* New: Sendgrid API & Client Version 6
+* New: Add email log 'send to' column
+* Fix: fallback emails on hosting require the '-f' parameter
+* Fix: Using hostname insted of an IP
+* Fix: Remove mailgun test folder ( virustotal issue )
+* Fix: Additional bugs collected from support tickets.
+* Added: added filters to from_name and from_email filters (local connection)
+* change hostname extrect logic
+
+= 1.8 - 2017-12-24 =
+* New: Mailgun API integration
+* New: New filter controls
+* New: WPML conflict fix
+* Fix: Minor old bugs
+
+= 1.7.10 - 2017-11-21 =
+* Fixed: bug while detecting transcript error
+
+= 1.7.9 - 2017-11-20 =
+* Fixed: misspled false
+* Fixed: feedback form
+* Fixed: Some localization strings
+* Removed: deprecated function
+* New: Option to input emails when resend email
+* Added: explain message on email log filter
+
+= 1.7.8 - 2017-11-17 =
+* Menu Items grouping 
+* Fixed: IP detection error in some web hosts
+* Fixed: Link open in new page attribute = _blank
+* Fixed: Replace deprecated PHP 7 functions.
+* Updated: Validator TLD's list
+* Added: Email log date and search filter.
+* Added: Alert on sending error (Fallback to local mail)
+* Added: Email body preview (not raw)
+
+= 1.7.7 - 2017-10-17 =
+* Fixed: Error sending files with sendgrid
+* Fixed: Wrong attachments format in Mandrill
+* Fixed: Wrong Sender Header in Mandrill
+
+= 1.7.6 - 2017-10-17 =
+* Missing sendgrid files
+* Fixed: Localization slug
+
+= 1.7.5 - 2017-10-07 =
+* Fixed: security issue (XSS)
+* Fixed: Small bug with Google API
+
+= 1.7.2 - 2015-11-08 =
+* [[Ticket](https://wordpress.org/support/topic/having-troble-in-17-while-set-content-type-to-texthtml?replies=8)] - v1.7 ignores the content-type header set in the Additional Headers. Fixed.
+* [[Ticket](https://wordpress.org/support/topic/do-not-network-activate-17-on-multisite?replies=15)] - Fixed an issue where v1.7 admin screens crash for non-admin users when Post is not configured. Fixed a multiste issue where v1.7 site admins lose access to their Post settings screen. Special thank-you to Domi2015 for giving me access for testing! :)
+* Localized jQuery Validation messages
+* Localized MyMail messages
+* Put the local translation files back, as WordPress on-line translations do not work as advertised
+
+= 1.7.1 - 2015-11-05 =
+* [[Ticket](https://wordpress.org/support/topic/cant-send-an-email-using-optimizepress?replies=8)] - the Optimizepress plugin calls wp_mail before the WordPress init hook, before Post is fully initialized, so I made a change to accomodate this behavior
+* [[Ticket](https://wordpress.org/support/topic/v17?replies=13)] - v1.7 admin screen may become inaccessible after upgrading. Fixed.
+* [[Ticket](https://wordpress.org/support/topic/inboundnow-html-e-mail-templates-are-not-being-recognized-with-170?replies=3)] - v1.7 breaks compatibility with [WordPress Leads](https://wordpress.org/plugins/leads/). Fixed.
+
+= 1.7.0 "Iliana" - 2015-11-03 =
+* Happy Halowe'en! 30,000 installations! - 2015-10-31
+* Integrated Mandrill API
+* Integrated SendGrid API
+* Language files have been removed from the plugin as [translations are now performed on-line](https://translate.wordpress.org/projects/wp-plugins/Post-smtp). If you are a non-English speaker please constribute!
+* Post commandeers email when activated and sends using the WordPress default of localhost:25 - this is for people who want to use it to diagnose email problems without configuring SMTP
+* Re-send failed e-mails from the Email Log screen
+* Added an internal 'manage_Post_smtp' capability for advanced management with, for example, [User Role Editor](https://wordpress.org/plugins/user-role-editor/)
+* [[Ticket](https://wordpress.org/support/topic/exportimport-settings-4?replies=2)][[Ticket](https://wordpress.org/support/topic/export-import-configuration?replies=1)] Added an import/export tab to the Advanced Configuration screen for those who want to duplicate settings between sites.
+* [[Ticket](https://wordpress.org/support/topic/gateway-error-invalid-envelope-from-mail-address?replies=9#post-7528068)] Added option to disable e-mail address validation
+* [[Ticket](https://wordpress.org/support/topic/error-665?replies=7#post-7581776)] Fix for fatal error when using a non-administrator in the admin menu.
+
+= 1.6.24 - 2015-09-10 =
+* 20,000 installations! - 2015-09-09
+* Translated into Greek, thank-you Michael Kotsarinis!
+* Diagnostic Test displays all the wp_mail-related hooks of active plugins and themes
+* When validating e-mail addresses, Post will disclose which field has a validation issue in the error message
+* Default log entries bumped from 10 to 250
+* [[Ticket](https://wordpress.org/support/topic/for-your-consideration-backup-email-notification?replies=5)] Added nasty fake input field hack to prevent browsers from autofilling username/password fields.
+* [[Ticket](https://wordpress.org/support/topic/cf7-godaddy-emails-not-delivered?replies=5)] Added a warning to the Email Log for emails that have an empty subject line
+* [[Ticket](https://wordpress.org/support/topic/test-failed-but-meesage-is-sent?replies=12)] Test Email detects Ajax errors and displays them in the Status window
+* [[Ticket](https://wordpress.org/support/topic/missing-image-files-of-jquery-ui-1?replies=4)] Removed the references to images in Post's copy of jquery-ui.css causing HTTP 404
+* [[Ticket](https://wordpress.org/support/topic/test-email-keeps-on-failing?replies=17)] Fixed an Ajax name collision with the plugin [MemberPress](https://www.memberpress.com)
+* [[Ticket](https://wordpress.org/support/topic/message-body-not-send?replies=15)] Some sites can not handle International (UTF-8) characters in the Test Email. Fixed.
+* [[Ticket](https://wordpress.org/support/topic/notices-for-google-api-php-client?replies=10)] Fix for PHP Notice: Undefined offset: 1 in Post-smtp/Post/Post-Mail/google-api-php-client-1.1.2/autoload.php on line 22
+* [[Ticket](https://wordpress.org/support/topic/test-failed-but-meesage-is-sent?replies=13)] Silenced PHP warnings in Zend_Mail from ini_set
+
+= 1.6.23 - 2015-06-27 =
+* 10,000 installations! - 2015-06-27
+* 9,000 installations! - 2015-06-20
+* [[Ticket](https://wordpress.org/support/topic/conflict-with-bbpress-and-buddy-press-in-1622?replies=2)] Causes bbPress or Buddy Press to generate warning messages. Fixed.
+* [[Ticket](https://wordpress.org/support/topic/fatal-error-internal-zend-error-missing-class-information?replies=2#post-7092317)] User reported error "Fatal error: Internal Zend error - Missing class information" - Whoops, used 'require' PostState.php instead of 'require_once' PostState.php which was causing errors. Fixed.
+* [[Ticket](https://wordpress.org/support/topic/error-send-mymail-email-marketing?replies=5)] [[Ticket](https://wordpress.org/support/topic/how-configure-mymail-in-plugin?replies=6)] MyMail Newsletter Plugin for WordPress refuses to use wp_mail. I don't want to make this a habit, but I've integrated Post with MyMail's proprietary delivery mechanism.
+* [[Ticket](https://wordpress.org/support/topic/cant-send-error-500?replies=11#post-7103035)] Found an environment where the plugin's call to new Exception was creating PHP Fatal errors. Fixed.
+* [[Ticket](https://wordpress.org/support/topic/error-calling-post-400-invalid-to-header?replies=4)] Perform validation on all email headers before send
