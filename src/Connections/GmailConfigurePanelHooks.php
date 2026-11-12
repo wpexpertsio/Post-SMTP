@@ -31,7 +31,6 @@ final class GmailConfigurePanelHooks {
 	public static function init(): void {
 		add_filter( 'post_smtp_gmail_configure_one_click', array( self::class, 'defaultOneClick' ), 5, 2 );
 		add_filter( 'post_smtp_gmail_configure_defaults', array( self::class, 'defaultConnectTab' ), 5 );
-		ConnectionOAuthGrantBridge::init();
 	}
 
 	/**

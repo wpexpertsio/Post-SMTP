@@ -73,6 +73,11 @@ final class ConnectionSchema {
 			$sanitized['sender_name'] = $sanitized['from_name'];
 		}
 
+		if ( isset( $sanitized['office365_connect_tab'] ) ) {
+			$tab = sanitize_key( (string) $sanitized['office365_connect_tab'] );
+			$sanitized['office365_connect_tab'] = in_array( $tab, array( 'one_click', 'manual' ), true ) ? $tab : '';
+		}
+
 		return $sanitized;
 	}
 
@@ -84,7 +89,7 @@ final class ConnectionSchema {
 	 */
 	public static function maskSecrets( array $row ): array {
 		$masked = $row;
-		foreach ( SensitiveKeys::all() as $key ) {
+		foreach ( SensitiveKeys::maskKeys() as $key ) {
 			if ( ! empty( $masked[ $key ] ) ) {
 				$masked[ $key ] = '••••••••';
 			}

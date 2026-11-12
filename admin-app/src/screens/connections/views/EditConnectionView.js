@@ -31,9 +31,15 @@ const EditConnectionView = () => {
 	const schema = connection?.provider ? providersQuery.data?.[ connection.provider ] : null;
 
 	useEffect( () => {
-		if ( connection ) {
-			setFormValues( { ...connection } );
+		if ( ! connection ) {
+			return;
 		}
+		setFormValues( ( prev ) => ( {
+			...connection,
+			// Keep in-session tab choice until the saved connection row includes it.
+			office365_connect_tab:
+				connection.office365_connect_tab || prev?.office365_connect_tab,
+		} ) );
 	}, [ connection ] );
 
 	const handleSave = async () => {

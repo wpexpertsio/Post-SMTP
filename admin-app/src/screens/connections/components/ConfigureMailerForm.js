@@ -233,6 +233,8 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 			) : isOffice365OAuthLayout ? (
 				<Office365ConfigurePanel
 					schema={ schema }
+					values={ values }
+					onChange={ onChange }
 					renderField={ renderField }
 					connectionId={ connectionId }
 				/>

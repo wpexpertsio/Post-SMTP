@@ -137,7 +137,15 @@ if ( ! class_exists( 'Postman_Connection_Resolver' ) ) :
 				return array();
 			}
 			$connections = self::get_connections();
-			return ( isset( $connections[ $id ] ) && is_array( $connections[ $id ] ) ) ? $connections[ $id ] : array();
+			if ( ! isset( $connections[ $id ] ) || ! is_array( $connections[ $id ] ) ) {
+				return array();
+			}
+			$row = $connections[ $id ];
+			if ( class_exists( '\PostSMTP\Kernel\Data\SecretCodec' ) ) {
+				$row = \PostSMTP\Kernel\Data\SecretCodec::decodeConnectionRow( $row );
+			}
+
+			return $row;
 		}
 
 		/**

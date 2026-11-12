@@ -51,7 +51,12 @@ const AddConnectionView = () => {
 		try {
 			const result = await create.mutateAsync( { ...formValues, provider: selectedProvider } );
 			setNotice( { type: 'success', message: result?.message || 'Connection saved.' } );
-			setTimeout( () => navigate( '/connections' ), 600 );
+			const newId = typeof result?.id === 'number' ? result.id : parseInt( result?.id, 10 );
+			const dest =
+				! Number.isNaN( newId ) && newId >= 0
+					? `/connections/${ newId }/edit`
+					: '/connections';
+			setTimeout( () => navigate( dest ), 600 );
 		} catch ( err ) {
 			setNotice( { type: 'error', message: err?.message || 'Could not save connection.' } );
 		}

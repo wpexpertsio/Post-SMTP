@@ -118,8 +118,17 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				$session->unsetAction();
 			}
 
+			$office365_state    = get_transient( 'office365_oauth_state' );
+			$office365_callback = ( isset( $_GET['code'] ) || isset( $_GET['error'] ) )
+				&& is_string( $office365_state )
+				&& '' !== $office365_state;
+
+			if ( $office365_callback && $session->isSetOauthInProgress() ) {
+				$session->unsetOauthInProgress();
+			}
+
 			// test to see if an OAuth authentication is in progress
-			if ( $session->isSetOauthInProgress() ) {
+			if ( ! $office365_callback && $session->isSetOauthInProgress() ) {
 				// there is only a three minute window that Postman will expect a Grant Code, once Grant is clicked by the user
 				$this->logger->debug( 'Looking for grant code' );
 				$transactionId = $session->getOauthInProgress();

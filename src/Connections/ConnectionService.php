@@ -9,6 +9,7 @@ namespace PostSMTP\Connections;
 
 use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
 use PostSMTP\Kernel\Data\ConnectionSchema;
+use PostSMTP\Kernel\Data\SecretCodec;
 use PostSMTP\Kernel\Providers\ProviderRegistry;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -283,7 +284,8 @@ final class ConnectionService {
 			return $auth;
 		}
 
-		$connections[] = self::stripAdminOnlyFields( $sanitized );
+		$stored = SecretCodec::encodeConnectionRow( self::stripAdminOnlyFields( $sanitized ) );
+		$connections[] = $stored;
 		$connections   = self::enforceFallbackSlots( $connections, $limits );
 		$repo->saveConnections( $connections );
 
@@ -300,6 +302,7 @@ final class ConnectionService {
 		return array(
 			'success'     => true,
 			'message'     => __( 'Connection saved.', 'post-smtp' ),
+			'id'          => $new_index,
 			'connections' => $this->listForAdmin()['connections'],
 		);
 	}
@@ -339,7 +342,7 @@ final class ConnectionService {
 			return $auth;
 		}
 
-		$connections[ $index ] = self::stripAdminOnlyFields( $sanitized );
+		$connections[ $index ] = SecretCodec::encodeConnectionRow( self::stripAdminOnlyFields( $sanitized ) );
 		$repo->saveConnections( $connections );
 		self::maybe_sync_primary_legacy_options( $index, $repo );
 
@@ -475,6 +478,7 @@ final class ConnectionService {
 	 * @return array{success:bool,message?:string}
 	 */
 	private function authenticateRow( array $row ): array {
+		$row      = SecretCodec::decodeConnectionRow( $row );
 		$slug     = (string) ( $row['provider'] ?? '' );
 		$registry = new ProviderRegistry();
 		$provider = $registry->create( $slug );

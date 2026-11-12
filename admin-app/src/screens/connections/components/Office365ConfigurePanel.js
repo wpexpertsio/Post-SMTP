@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getAdminConfig } from '../../../config/admin';
 import iconExternalLink from '../../../assets/dashboard/connections/helper/icon-external-link.svg';
 import iconCopy from '../../../assets/dashboard/connections/helper/icon-copy.svg';
@@ -110,14 +110,24 @@ const postOneClickToggle = async ( ajax, enabled ) => {
 	body.append( 'enabled', enabled ? '1' : '0' );
 	if ( ajax.nonce ) {
 		body.append( '_ajax_nonce', ajax.nonce );
+		body.append( 'nonce', ajax.nonce );
 	}
-	const response = await fetch( ajax.url, {
-		method: 'POST',
-		body,
-		credentials: 'same-origin',
-	} );
-	const json = await response.json();
-	return { ok: response.ok && json?.success, data: json?.data, json };
+	let json = null;
+	try {
+		const response = await fetch( ajax.url, {
+			method: 'POST',
+			body,
+			credentials: 'same-origin',
+		} );
+		json = await response.json();
+		return {
+			ok: Boolean( json?.success ),
+			data: json?.data,
+			json,
+		};
+	} catch {
+		return { ok: false, data: null, json };
+	}
 };
 
 const fetchOffice365AuthUrl = async ( authUrlAjax ) => {
@@ -187,6 +197,7 @@ const Office365OneClickBlock = ( { office365 } ) => {
 	const [ toggleBusy, setToggleBusy ] = useState( false );
 	const [ liveSignInUrl, setLiveSignInUrl ] = useState( signInUrl );
 	const [ authFetchBusy, setAuthFetchBusy ] = useState( false );
+	const toggleRequestRef = useRef( 0 );
 
 	useEffect( () => {
 		setLiveSignInUrl( signInUrl );
@@ -233,22 +244,36 @@ const Office365OneClickBlock = ( { office365 } ) => {
 			return;
 		}
 		const next = ! toggleChecked;
+		const requestId = ++toggleRequestRef.current;
 		setToggleBusy( true );
 		try {
 			const result = await postOneClickToggle( toggleAjax, next );
+			if ( requestId !== toggleRequestRef.current ) {
+				return;
+			}
 			if ( result.ok ) {
-				setToggleChecked( next );
-				setExtensionEnabled( next );
-				if ( next && result.data?.sign_in_url ) {
+				const serverEnabled =
+					result.data?.enabled === 1 ||
+					result.data?.enabled === '1' ||
+					result.data?.enabled === true;
+				setToggleChecked( serverEnabled );
+				setExtensionEnabled( serverEnabled );
+				if ( serverEnabled && result.data?.sign_in_url ) {
 					setLiveSignInUrl( String( result.data.sign_in_url ) );
-				} else if ( ! next ) {
+				} else if ( ! serverEnabled ) {
 					setLiveSignInUrl( '' );
 				}
-			} else if ( result.json?.data?.upgrade_url ) {
-				window.open( result.json.data.upgrade_url, '_blank', 'noopener,noreferrer' );
+			} else {
+				setToggleChecked( toggleChecked );
+				setExtensionEnabled( extensionEnabled );
+				if ( result.json?.data?.upgrade_url ) {
+					window.open( result.json.data.upgrade_url, '_blank', 'noopener,noreferrer' );
+				}
 			}
 		} finally {
-			setToggleBusy( false );
+			if ( requestId === toggleRequestRef.current ) {
+				setToggleBusy( false );
+			}
 		}
 	}, [
 		bootstrapOneClick.openUpgradeOnToggle,
@@ -257,6 +282,7 @@ const Office365OneClickBlock = ( { office365 } ) => {
 		toggleChecked,
 		toggleDisabled,
 		upgradeUrl,
+		extensionEnabled,
 	] );
 
 	const handleMicrosoftSignIn = useCallback( async () => {
@@ -408,7 +434,22 @@ const buildManualAuthorizeUrl = ( baseUrl, connectionId, mailer = 'office365_api
 	}
 };
 
-const Office365ManualConnectAction = ( { office365, connectionId } ) => {
+const resolveOffice365ConnectTab = ( values = {}, office365 = {} ) => {
+	const saved = values?.office365_connect_tab;
+	if ( saved === 'one_click' || saved === 'manual' ) {
+		return saved;
+	}
+	return office365.defaultConnectTab === 'one_click' ? 'one_click' : 'manual';
+};
+
+const office365CredentialFieldsPresent = ( values = {} ) => {
+	const appId = values?.office365_app_id;
+	const secret = values?.office365_app_password;
+	const present = ( v ) => typeof v === 'string' && v.trim() !== '';
+	return present( appId ) && present( secret );
+};
+
+const Office365ManualConnectAction = ( { office365, connectionId, values } ) => {
 	const manual = office365.manualOAuth || {};
 	const connectLabel =
 		office365.connectApiLabel ||
@@ -440,6 +481,22 @@ const Office365ManualConnectAction = ( { office365, connectionId } ) => {
 		return null;
 	}
 
+	if ( ! office365CredentialFieldsPresent( values ) ) {
+		return (
+			<p className="ps-v2-configure-form__section-hint">
+				Enter your Application (client) ID and client secret, save the connection, then connect to the Microsoft API.
+			</p>
+		);
+	}
+
+	if ( connectionId === undefined || connectionId === null ) {
+		return (
+			<p className="ps-v2-configure-form__section-hint">
+				Save the connection first, then use Connect to Microsoft API on the edit screen.
+			</p>
+		);
+	}
+
 	const authorizeUrl = buildManualAuthorizeUrl( office365.manualAuthorizeUrl, connectionId );
 
 	return (
@@ -449,7 +506,7 @@ const Office365ManualConnectAction = ( { office365, connectionId } ) => {
 	);
 };
 
-const Office365ManualSection = ( { schema, office365, renderField, connectionId } ) => {
+const Office365ManualSection = ( { schema, office365, renderField, connectionId, values } ) => {
 	const manualKeys = [ 'office365_app_id', 'office365_app_password' ];
 	const manualSection = schema?.sections?.office365_manual || {};
 
@@ -496,7 +553,11 @@ const Office365ManualSection = ( { schema, office365, renderField, connectionId 
 					{ manualKeys.map( ( key ) => renderField( key ) ) }
 				</div>
 				<div className="ps-v2-gmail-configure__manual-actions">
-					<Office365ManualConnectAction office365={ office365 } connectionId={ connectionId } />
+					<Office365ManualConnectAction
+						office365={ office365 }
+						connectionId={ connectionId }
+						values={ values }
+					/>
 				</div>
 				<hr className="ps-v2-gmail-configure__panel-divider" />
 			</div>
@@ -504,11 +565,36 @@ const Office365ManualSection = ( { schema, office365, renderField, connectionId 
 	);
 };
 
-const Office365ConfigurePanel = ( { schema, renderField, connectionId } ) => {
+const Office365ConfigurePanel = ( { schema, renderField, connectionId, values = {}, onChange } ) => {
 	const admin = getAdminConfig();
 	const office365 = admin.office365Configure || {};
-	const defaultTab = office365.defaultConnectTab === 'one_click' ? 'one_click' : 'manual';
-	const [ connectTab, setConnectTab ] = useState( defaultTab );
+	const connectTab = resolveOffice365ConnectTab( values, office365 );
+
+	useEffect( () => {
+		if ( typeof onChange !== 'function' ) {
+			return;
+		}
+		const saved = values?.office365_connect_tab;
+		if ( saved === 'one_click' || saved === 'manual' ) {
+			return;
+		}
+		onChange( ( prev ) => ( {
+			...prev,
+			office365_connect_tab: resolveOffice365ConnectTab( prev, office365 ),
+		} ) );
+	}, [ values?.office365_connect_tab, onChange, office365 ] );
+
+	const handleConnectTabChange = useCallback(
+		( tab ) => {
+			if ( tab !== 'one_click' && tab !== 'manual' ) {
+				return;
+			}
+			if ( typeof onChange === 'function' ) {
+				onChange( { ...values, office365_connect_tab: tab } );
+			}
+		},
+		[ onChange, values ]
+	);
 
 	return (
 		<div
@@ -530,7 +616,7 @@ const Office365ConfigurePanel = ( { schema, renderField, connectionId } ) => {
 				<div className="ps-v2-gmail-configure__connect-mode">
 					<Office365ConnectModeTabs
 						activeTab={ connectTab }
-						onChange={ setConnectTab }
+						onChange={ handleConnectTabChange }
 						office365={ office365 }
 					/>
 					{ connectTab === 'one_click' ? (
@@ -541,6 +627,7 @@ const Office365ConfigurePanel = ( { schema, renderField, connectionId } ) => {
 							office365={ office365 }
 							renderField={ renderField }
 							connectionId={ connectionId }
+							values={ values }
 						/>
 					) }
 				</div>

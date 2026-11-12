@@ -103,6 +103,7 @@ final class EmailLogsController extends BaseController {
 			'status'   => sanitize_key( (string) ( $request->get_param( 'status' ) ?? '' ) ),
 			'mailer'   => sanitize_text_field( (string) ( $request->get_param( 'mailer' ) ?? '' ) ),
 			'form'     => sanitize_text_field( (string) ( $request->get_param( 'form' ) ?? '' ) ),
+			'source'   => sanitize_text_field( (string) ( $request->get_param( 'source' ) ?? '' ) ),
 			'date'     => sanitize_text_field( (string) ( $request->get_param( 'date' ) ?? '' ) ),
 		);
 
@@ -150,6 +151,7 @@ final class EmailLogsController extends BaseController {
 			'status'   => sanitize_key( (string) ( $request->get_param( 'status' ) ?? '' ) ),
 			'mailer'   => sanitize_text_field( (string) ( $request->get_param( 'mailer' ) ?? '' ) ),
 			'form'     => sanitize_text_field( (string) ( $request->get_param( 'form' ) ?? '' ) ),
+			'source'   => sanitize_text_field( (string) ( $request->get_param( 'source' ) ?? '' ) ),
 			'date'     => sanitize_text_field( (string) ( $request->get_param( 'date' ) ?? '' ) ),
 		);
 

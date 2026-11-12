@@ -168,9 +168,17 @@ final class Events {
 		if ( empty( $connection ) ) {
 			return '';
 		}
-		$provider = (string) ( $connection['provider'] ?? 'smtp' );
-		$title    = (string) ( $connection['connection_title'] ?? $connection['title'] ?? '' );
-		return $title ? sprintf( '%s (%s)', $provider, $title ) : $provider;
+
+		$provider = (string) ( $connection['provider'] ?? $connection['transport_type'] ?? 'smtp' );
+		$provider = sanitize_key( str_replace( '-', '_', $provider ) );
+		if ( '' === $provider ) {
+			$provider = 'smtp';
+		}
+
+		$title = (string) ( $connection['connection_title'] ?? $connection['title'] ?? '' );
+		$title = trim( $title );
+
+		return '' !== $title ? sprintf( '%s (%s)', $provider, $title ) : $provider;
 	}
 
 	/**

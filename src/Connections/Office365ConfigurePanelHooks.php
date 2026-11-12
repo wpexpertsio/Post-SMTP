@@ -7,6 +7,8 @@
 
 namespace PostSMTP\Connections;
 
+use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -28,6 +30,43 @@ final class Office365ConfigurePanelHooks {
 	public static function init(): void {
 		add_filter( 'post_smtp_office365_configure_one_click', array( self::class, 'defaultOneClick' ), 5, 2 );
 		add_filter( 'post_smtp_office365_configure_defaults', array( self::class, 'defaultConnectTab' ), 5 );
+		add_filter( 'post_smtp_legacy_wizard', array( self::class, 'useRevampOAuthReturn' ), 20 );
+		add_filter( 'post_smtp_office365_oauth_return_url', array( self::class, 'revampOAuthReturnUrl' ), 20 );
+	}
+
+	/**
+	 * After Microsoft manual OAuth, return to the revamp admin (not the old wizard/dashboard fallthrough).
+	 *
+	 * @param bool $legacy Whether the legacy configuration wizard handles OAuth return URLs.
+	 */
+	public static function useRevampOAuthReturn( bool $legacy ): bool {
+		if ( ConnectionRepositoryFactory::isLegacyMode() ) {
+			return $legacy;
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param string $url Default wizard return URL after manual Entra OAuth.
+	 */
+	public static function revampOAuthReturnUrl( string $url ): string {
+		if ( ConnectionRepositoryFactory::isLegacyMode() ) {
+			return $url;
+		}
+
+		$connection_id = get_transient( 'post_smtp_office365_oauth_connection_id' );
+		$route           = is_numeric( $connection_id ) && (int) $connection_id >= 0
+			? 'connections/' . (int) $connection_id . '/edit'
+			: 'connections';
+
+		return add_query_arg(
+			array(
+				'page'      => 'postman',
+				'ps-route'  => $route,
+			),
+			admin_url( 'admin.php' )
+		);
 	}
 
 	/**

@@ -8,6 +8,7 @@
 namespace PostSMTP\Admin;
 
 use PostSMTP\Connections\ConnectionOAuthGrantBridge;
+use PostSMTP\Connections\Office365OAuthRedirectUri;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -19,8 +20,9 @@ final class Office365ConfigureBootstrap {
 	 * @return array<string,mixed>
 	 */
 	public static function defaults(): array {
-		$redirect_uri = esc_url_raw( site_url( '/wp-admin/' ) );
-		$js_origin    = esc_url_raw( site_url() );
+		$redirect_uri   = Office365OAuthRedirectUri::resolve();
+		$redirect_scheme = wp_parse_url( $redirect_uri, PHP_URL_SCHEME );
+		$js_origin        = esc_url_raw( set_url_scheme( site_url(), is_string( $redirect_scheme ) ? $redirect_scheme : 'https' ) );
 
 		$defaults = array(
 			'redirectUri'            => $redirect_uri,

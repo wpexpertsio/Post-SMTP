@@ -11,6 +11,7 @@ use PostSMTP\Api\V2\ApiRegistrar;
 use PostSMTP\Connections\ConnectionLegacySendBridge;
 use PostSMTP\Connections\RevampProMailerSchemas;
 use PostSMTP\Mail\Modern\Register as ModernMailRegister;
+use PostSMTP\Connections\ConnectionOAuthGrantBridge;
 use PostSMTP\Connections\GmailConfigurePanelHooks;
 use PostSMTP\Connections\Office365ConfigurePanelHooks;
 use PostSMTP\Dashboard\DashboardReportsTrackingHooks;
@@ -43,6 +44,7 @@ final class Plugin {
 				ApiRegistrar::init();
 				RevampProMailerSchemas::init();
 				FailureNotificationBridge::init();
+				ConnectionOAuthGrantBridge::init();
 				GmailConfigurePanelHooks::init();
 				Office365ConfigurePanelHooks::init();
 				ModernMailRegister::init();

@@ -18,6 +18,41 @@ final class SensitiveKeys {
 	 *
 	 * @return string[]
 	 */
+	/**
+	 * Keys masked in admin API responses (client/application IDs stay visible).
+	 *
+	 * @return string[]
+	 */
+	public static function maskKeys(): array {
+		return array(
+			'basic_auth_password',
+			'mandrill_api_key',
+			'sendgrid_api_key',
+			'sendinblue_api_key',
+			'postmark_api_key',
+			'sendpulse_api_key',
+			'sendpulse_secret_key',
+			'sparkpost_api_key',
+			'elasticemail_api_key',
+			'smtp2go_api_key',
+			'mailersend_api_key',
+			'smtp_com_api_key',
+			'mailjet_api_key',
+			'mailjet_secret_key',
+			'emailit_api_key',
+			'maileroo_api_key',
+			'sweego_api_key',
+			'resend_api_key',
+			'mailtrap_api_key',
+			'mailgun_api_key',
+			'cloudflare_email_api_key',
+			'oauth_client_secret',
+			'office365_app_password',
+			'zohomail_client_secret',
+			'ses_secret_access_key',
+		);
+	}
+
 	public static function all(): array {
 		return array(
 			'basic_auth_password',

@@ -440,6 +440,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
+	cursor: help;
 }
 
 .ps-el-mailer__icon-wrap {

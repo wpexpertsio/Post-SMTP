@@ -157,7 +157,7 @@ const EmailLogsSettingsPanel = () => {
 					<SettingsToggleRow
 						id="advanced-log-filter"
 						label="Advance log filter"
-						description="Filter which email are stored, and show filter chips on the email log."
+						description="Record which plugin initiated each email and enable the Source filter on Email Logs."
 						checked={ proLocked ? false : form.advanced_log_filter }
 						disabled={ proLocked }
 						onChange={ ( v ) => patch( 'advanced_log_filter', v ) }
