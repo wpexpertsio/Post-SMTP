@@ -420,6 +420,9 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 		}
 
 		private function fallback( $log, $postMessage, $options ) {
+			if ( $this->exception instanceof PostmanMailChannelsDeliveryException && $this->exception->isDeliveryUncertain() ) {
+				return false; // The primary provider may already have accepted the message.
+			}
 
 			// Do not attempt fallback if this is an internal Post SMTP notification
 			if ( $this->is_notification_message( $postMessage ) ) {

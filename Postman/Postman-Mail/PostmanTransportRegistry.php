@@ -77,6 +77,7 @@ class PostmanTransportRegistry {
 			require_once $pluginPath . '/Postman/Postman-Mail/PostmanSparkPostTransport.php';
 			require_once $pluginPath . '/Postman/Postman-Mail/PostmanElasticEmailTransport.php';
 			require_once $pluginPath . '/Postman/Postman-Mail/PostmanSmtp2GoTransport.php';
+			require_once $pluginPath . '/Postman/Postman-Mail/PostmanMailChannelsTransport.php';
 			require_once $pluginPath . '/Postman/Postman-Mail/PostmanEmailitTransport.php';
 			require_once $pluginPath . '/Postman/Postman-Mail/PostmanMailerooTransport.php';
 			require_once $pluginPath . '/Postman/Postman-Mail/PostmanSweegoTransport.php';
@@ -100,6 +101,7 @@ class PostmanTransportRegistry {
 		$this->registerTransport( new PostmanSparkPostTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanElasticEmailTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanSmtp2GoTransport( $rootPluginFilenameAndPath ) );
+		$this->registerTransport( new PostmanMailChannelsTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanEmailitTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanMailerooTransport( $rootPluginFilenameAndPath ) );
 		$this->registerTransport( new PostmanSweegoTransport( $rootPluginFilenameAndPath ) );

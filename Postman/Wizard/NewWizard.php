@@ -81,6 +81,7 @@ class Post_SMTP_New_Wizard {
             'mandrill_api',
             'sparkpost_api',
             'mailjet_api',
+            'mailchannels_api',
             'sendpulse_api',
             
         );
@@ -215,6 +216,7 @@ class Post_SMTP_New_Wizard {
                                                 'aws_ses_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/amazon.png',
                                                 'zohomail_api'      =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/zoho.png',
                                                 'resend_api'        =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/resend.png',
+                                                'mailchannels_api'   =>  POST_SMTP_URL . '/assets/images/logos/mailchannels.svg',
                                                 'cloudflare_api'    =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/cloudflare-figma.svg',
                                                 'smtpcom_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/smtpcom.png',
                                                 'emailit_api'       =>  POST_SMTP_URL . '/Postman/Wizard/assets/images/emailit.png',
@@ -869,6 +871,9 @@ class Post_SMTP_New_Wizard {
             case 'zohomail_api':
                 echo wp_kses( $this->render_zoho_settings(), $this->allowed_tags );
             break;
+            case 'mailchannels_api':
+                echo wp_kses( $this->render_mailchannels_settings(), $this->allowed_tags );
+                break;
             case 'smtp2go_api':
                 echo wp_kses( $this->render_smtp2go_settings(), $this->allowed_tags );
                 break;
@@ -1996,6 +2001,16 @@ class Post_SMTP_New_Wizard {
 
         return $html;
 
+    }
+
+    public function render_mailchannels_settings() {
+        ob_start();
+        $transport = PostmanTransportRegistry::getInstance()->getTransport( 'mailchannels_api' );
+        $transport->printMailChannelsSectionInfo();
+        echo '<div class="ps-form-control"><div><label>' . esc_html__( 'API Key', 'post-smtp' ) . '</label></div>';
+        $transport->mailchannelsApiKeyCallback( false );
+        echo '</div>';
+        return ob_get_clean();
     }
 
     public function render_smtp2go_settings() {

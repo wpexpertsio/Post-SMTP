@@ -878,6 +878,11 @@ class PostmanEmailLogs {
 
             if( $log ) {
 
+                if ( class_exists( 'PostmanMailChannelsTransport' ) && ! PostmanMailChannelsTransport::canResendLog( $log ) ) {
+                    wp_send_json_error( array( 'message' => PostmanMailChannelsTransport::resendHoldMessage() ) );
+                    return;
+                }
+
                 if( isset( $_POST['to'] ) ) {
 
                     $emails = explode( ',', $_POST['to'] );
