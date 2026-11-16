@@ -125,7 +125,7 @@ const buildFigmaConfigureBlocks = ( config ) => [
 	},
 ];
 
-const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId } ) => {
+const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId, onGrantError } ) => {
 	const urls = getAdminUrls();
 	const catalogQuery = useMailerCatalog();
 	const catalogItem = catalogQuery.data?.items?.find( ( item ) => item.slug === provider );

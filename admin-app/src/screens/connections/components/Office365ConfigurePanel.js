@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getAdminConfig } from '../../../config/admin';
+import useConnectionMutations from '../hooks/useConnectionMutations';
 import iconExternalLink from '../../../assets/dashboard/connections/helper/icon-external-link.svg';
 import iconCopy from '../../../assets/dashboard/connections/helper/icon-copy.svg';
 import microsoftIcon from '../../../assets/dashboard/connections/mailers/microsoft.svg';
@@ -130,7 +131,7 @@ const postOneClickToggle = async ( ajax, enabled ) => {
 	}
 };
 
-const fetchOffice365AuthUrl = async ( authUrlAjax ) => {
+const fetchOffice365AuthUrl = async ( authUrlAjax, connectionId ) => {
 	if ( ! authUrlAjax?.url || ! authUrlAjax?.action ) {
 		return '';
 	}
@@ -138,6 +139,12 @@ const fetchOffice365AuthUrl = async ( authUrlAjax ) => {
 	body.append( 'action', authUrlAjax.action );
 	if ( authUrlAjax.nonce ) {
 		body.append( 'nonce', authUrlAjax.nonce );
+	}
+	if ( connectionId !== undefined && connectionId !== null ) {
+		const id = parseInt( connectionId, 10 );
+		if ( ! Number.isNaN( id ) && id >= 0 ) {
+			body.append( 'connection_id', String( id ) );
+		}
 	}
 	const response = await fetch( authUrlAjax.url, {
 		method: 'POST',
@@ -151,9 +158,10 @@ const fetchOffice365AuthUrl = async ( authUrlAjax ) => {
 	return '';
 };
 
-const Office365OneClickBlock = ( { office365 } ) => {
+const Office365OneClickBlock = ( { office365, connectionId, values = {}, onChange } ) => {
 	const admin = getAdminConfig();
 	const bootstrapOneClick = office365.oneClick || admin.office365Configure?.oneClick || {};
+	const { disconnectOffice365OAuth } = useConnectionMutations();
 	const {
 		title = 'Connect Microsoft 365 in one click',
 		description = '',
@@ -161,7 +169,7 @@ const Office365OneClickBlock = ( { office365 } ) => {
 		toggleDisabled: toggleDisabledProp,
 		toggleChecked: toggleCheckedProp,
 		signInUrl = '',
-		connectedEmail = '',
+		connectedEmail: bootstrapConnectedEmail = '',
 		removeAuthUrl = '',
 		signInLabel = 'Sign in with Microsoft',
 		removeLabel = 'Remove authorization',
@@ -199,17 +207,25 @@ const Office365OneClickBlock = ( { office365 } ) => {
 	const [ authFetchBusy, setAuthFetchBusy ] = useState( false );
 	const toggleRequestRef = useRef( 0 );
 
+	const rowEmail =
+		typeof values?.office365_oauth_user_email === 'string'
+			? values.office365_oauth_user_email.trim()
+			: '';
+	const connectedEmail = rowEmail || bootstrapConnectedEmail;
+	const rowConnected = Boolean( values?.office365_oauth_connected );
+	const isConnected = rowConnected || connectedEmail !== '';
+
 	useEffect( () => {
 		setLiveSignInUrl( signInUrl );
 	}, [ signInUrl ] );
 
 	useEffect( () => {
-		if ( ! canUseOneClick || ! extensionEnabled || connectedEmail || liveSignInUrl ) {
+		if ( ! canUseOneClick || ! extensionEnabled || isConnected || liveSignInUrl ) {
 			return;
 		}
 		let cancelled = false;
 		( async () => {
-			const url = await fetchOffice365AuthUrl( authUrlAjax );
+			const url = await fetchOffice365AuthUrl( authUrlAjax, connectionId );
 			if ( ! cancelled && url ) {
 				setLiveSignInUrl( url );
 			}
@@ -220,8 +236,9 @@ const Office365OneClickBlock = ( { office365 } ) => {
 	}, [
 		authUrlAjax,
 		canUseOneClick,
-		connectedEmail,
+		connectionId,
 		extensionEnabled,
+		isConnected,
 		liveSignInUrl,
 	] );
 
@@ -231,10 +248,28 @@ const Office365OneClickBlock = ( { office365 } ) => {
 
 	const signInLocked = ! canUseOneClick || ! extensionEnabled;
 	const showSignIn =
-		canUseOneClick && extensionEnabled && Boolean( liveSignInUrl ) && ! connectedEmail;
-	const showConnected = canUseOneClick && extensionEnabled && connectedEmail;
+		canUseOneClick && extensionEnabled && Boolean( liveSignInUrl ) && ! isConnected;
+	const showConnected = canUseOneClick && extensionEnabled && isConnected;
 	const showLockedMicrosoftBtn =
 		signInLocked && ! showSignIn && ! showConnected;
+
+	const handleOneClickDisconnect = async () => {
+		if ( connectionId === undefined || connectionId === null ) {
+			return;
+		}
+		try {
+			await disconnectOffice365OAuth.mutateAsync( connectionId );
+			if ( typeof onChange === 'function' ) {
+				onChange( ( prev ) => ( {
+					...prev,
+					office365_oauth_connected: false,
+					office365_oauth_user_email: '',
+				} ) );
+			}
+		} catch {
+			// Parent may surface errors.
+		}
+	};
 
 	const handleToggle = useCallback( async () => {
 		if ( toggleDisabled || toggleBusy ) {
@@ -286,7 +321,7 @@ const Office365OneClickBlock = ( { office365 } ) => {
 	] );
 
 	const handleMicrosoftSignIn = useCallback( async () => {
-		if ( signInLocked || connectedEmail || authFetchBusy ) {
+		if ( signInLocked || isConnected || authFetchBusy ) {
 			return;
 		}
 		if ( liveSignInUrl ) {
@@ -295,7 +330,7 @@ const Office365OneClickBlock = ( { office365 } ) => {
 		}
 		setAuthFetchBusy( true );
 		try {
-			const url = await fetchOffice365AuthUrl( authUrlAjax );
+			const url = await fetchOffice365AuthUrl( authUrlAjax, connectionId );
 			if ( url ) {
 				setLiveSignInUrl( url );
 				window.location.href = url;
@@ -306,7 +341,8 @@ const Office365OneClickBlock = ( { office365 } ) => {
 	}, [
 		authFetchBusy,
 		authUrlAjax,
-		connectedEmail,
+		connectionId,
+		isConnected,
 		liveSignInUrl,
 		signInLocked,
 	] );
@@ -328,7 +364,7 @@ const Office365OneClickBlock = ( { office365 } ) => {
 			<img src={ microsoftIcon } alt="" width="19" height="19" aria-hidden="true" />
 			<span>{ signInLabel }</span>
 		</span>
-	) : canUseOneClick && extensionEnabled && ! connectedEmail ? (
+	) : canUseOneClick && extensionEnabled && ! isConnected ? (
 		<button
 			type="button"
 			className="ps-v2-office365-configure__microsoft-btn ps-v2-office365-configure__microsoft-btn--brand"
@@ -392,10 +428,21 @@ const Office365OneClickBlock = ( { office365 } ) => {
 						<p className="ps-v2-gmail-configure__connected-email">
 							{ connectedLabel || `Connected with: ${ connectedEmail }` }
 						</p>
-						{ removeAuthUrl && (
-							<a href={ removeAuthUrl } className="ps-v2-btn ps-v2-btn--ghost">
-								{ removeLabel }
-							</a>
+						{ connectionId !== undefined && connectionId !== null ? (
+							<button
+								type="button"
+								className="ps-v2-btn ps-v2-btn--ghost"
+								disabled={ disconnectOffice365OAuth.isPending }
+								onClick={ handleOneClickDisconnect }
+							>
+								{ disconnectOffice365OAuth.isPending ? 'Removing…' : removeLabel }
+							</button>
+						) : (
+							removeAuthUrl && (
+								<a href={ removeAuthUrl } className="ps-v2-btn ps-v2-btn--ghost">
+									{ removeLabel }
+								</a>
+							)
 						) }
 					</div>
 				) }
@@ -449,30 +496,77 @@ const office365CredentialFieldsPresent = ( values = {} ) => {
 	return present( appId ) && present( secret );
 };
 
-const Office365ManualConnectAction = ( { office365, connectionId, values } ) => {
-	const manual = office365.manualOAuth || {};
+const resolveOffice365ManualConnected = ( values = {}, office365 = {} ) => {
+	const oneClickEnabled = Boolean( office365.oneClick?.extensionEnabled );
+	if ( oneClickEnabled ) {
+		return { connected: false, label: '' };
+	}
+	const email = typeof values?.office365_oauth_user_email === 'string' ? values.office365_oauth_user_email.trim() : '';
+	const connected = Boolean( values?.office365_oauth_connected ) || email !== '';
+	const label = email
+		? `Connected with: ${ email }`
+		: office365.manualOAuth?.connectedLabel || 'Connected to Microsoft 365 API';
+	return { connected, label };
+};
+
+const Office365ManualConnectAction = ( { office365, connectionId, values, onChange } ) => {
+	const { disconnectOffice365OAuth } = useConnectionMutations();
 	const connectLabel =
 		office365.connectApiLabel ||
 		office365.oneClick?.connectApiLabel ||
 		'Connect to Microsoft API';
+	const removeLabel =
+		office365.manualOAuth?.removeLabel ||
+		office365.removeMicrosoftConnectionLabel ||
+		'Remove Microsoft connection';
 
-	if ( manual.connected ) {
+	const { connected, label } = resolveOffice365ManualConnected( values, office365 );
+
+	const handleDisconnect = async () => {
+		if ( connectionId === undefined || connectionId === null ) {
+			return;
+		}
+		try {
+			await disconnectOffice365OAuth.mutateAsync( connectionId );
+			if ( typeof onChange === 'function' ) {
+				onChange( ( prev ) => ( {
+					...prev,
+					office365_oauth_connected: false,
+					office365_oauth_user_email: '',
+				} ) );
+			}
+		} catch {
+			// Parent can surface errors via global notice if needed.
+		}
+	};
+
+	if ( connected ) {
 		return (
-			<div className="ps-v2-gmail-configure__connect-success">
-				<span className="ps-v2-gmail-configure__connect-success-icon" aria-hidden="true">
-					<svg width="12" height="10" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<path
-							d="M1 5.2L4.2 8.4L11 1.4"
-							stroke="currentColor"
-							strokeWidth="2"
-							strokeLinecap="round"
-							strokeLinejoin="round"
-						/>
-					</svg>
-				</span>
-				<span className="ps-v2-gmail-configure__connect-success-label">
-					{ manual.connectedLabel || 'Connected to Microsoft 365 API' }
-				</span>
+			<div className="ps-v2-gmail-configure__manual-connected-row">
+				<div className="ps-v2-gmail-configure__connect-success">
+					<span className="ps-v2-gmail-configure__connect-success-icon" aria-hidden="true">
+						<svg width="12" height="10" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path
+								d="M1 5.2L4.2 8.4L11 1.4"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+						</svg>
+					</span>
+					<span className="ps-v2-gmail-configure__connect-success-label">
+						{ label }
+					</span>
+				</div>
+				<button
+					type="button"
+					className="ps-v2-gmail-configure__disconnect-api"
+					disabled={ disconnectOffice365OAuth.isPending }
+					onClick={ handleDisconnect }
+				>
+					{ disconnectOffice365OAuth.isPending ? 'Removing…' : removeLabel }
+				</button>
 			</div>
 		);
 	}
@@ -506,7 +600,7 @@ const Office365ManualConnectAction = ( { office365, connectionId, values } ) => 
 	);
 };
 
-const Office365ManualSection = ( { schema, office365, renderField, connectionId, values } ) => {
+const Office365ManualSection = ( { schema, office365, renderField, connectionId, values, onChange } ) => {
 	const manualKeys = [ 'office365_app_id', 'office365_app_password' ];
 	const manualSection = schema?.sections?.office365_manual || {};
 
@@ -557,6 +651,7 @@ const Office365ManualSection = ( { schema, office365, renderField, connectionId,
 						office365={ office365 }
 						connectionId={ connectionId }
 						values={ values }
+						onChange={ onChange }
 					/>
 				</div>
 				<hr className="ps-v2-gmail-configure__panel-divider" />
@@ -620,7 +715,12 @@ const Office365ConfigurePanel = ( { schema, renderField, connectionId, values = 
 						office365={ office365 }
 					/>
 					{ connectTab === 'one_click' ? (
-						<Office365OneClickBlock office365={ office365 } />
+						<Office365OneClickBlock
+							office365={ office365 }
+							connectionId={ connectionId }
+							values={ values }
+							onChange={ onChange }
+						/>
 					) : (
 						<Office365ManualSection
 							schema={ schema }
@@ -628,6 +728,7 @@ const Office365ConfigurePanel = ( { schema, renderField, connectionId, values = 
 							renderField={ renderField }
 							connectionId={ connectionId }
 							values={ values }
+							onChange={ onChange }
 						/>
 					) }
 				</div>

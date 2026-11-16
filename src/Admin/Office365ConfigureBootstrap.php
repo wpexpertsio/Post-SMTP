@@ -8,7 +8,8 @@
 namespace PostSMTP\Admin;
 
 use PostSMTP\Connections\ConnectionOAuthGrantBridge;
-use PostSMTP\Connections\Office365OAuthRedirectUri;
+use PostSMTP\Pro\Connections\Office365OAuthRedirectUri;
+use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -20,7 +21,9 @@ final class Office365ConfigureBootstrap {
 	 * @return array<string,mixed>
 	 */
 	public static function defaults(): array {
-		$redirect_uri   = Office365OAuthRedirectUri::resolve();
+		$redirect_uri = class_exists( Office365OAuthRedirectUri::class, false )
+			? Office365OAuthRedirectUri::resolve()
+			: esc_url_raw( admin_url( 'admin-post.php?action=postman/requestOauthGrant' ) );
 		$redirect_scheme = wp_parse_url( $redirect_uri, PHP_URL_SCHEME );
 		$js_origin        = esc_url_raw( set_url_scheme( site_url(), is_string( $redirect_scheme ) ? $redirect_scheme : 'https' ) );
 
@@ -80,6 +83,14 @@ final class Office365ConfigureBootstrap {
 	 * @return array<string,mixed>
 	 */
 	private static function manualOAuthState(): array {
+		if ( ! ConnectionRepositoryFactory::isLegacyMode() ) {
+			return array(
+				'connected'      => false,
+				'connectedEmail' => '',
+				'connectedLabel' => __( 'Connected to Microsoft 365 API', 'post-smtp' ),
+			);
+		}
+
 		$one_click_enabled = self::isOneClickExtensionEnabled();
 
 		$token = get_option( 'postman_office365_oauth', array() );

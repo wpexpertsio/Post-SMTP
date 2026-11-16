@@ -7,9 +7,12 @@
 
 namespace PostSMTP\Tools;
 
+use PostSMTP\Connections\ConnectionLegacySendBridge;
 use PostSMTP\Connections\ConnectionService;
 use PostSMTP\Connections\MailerCatalog;
+use PostSMTP\Pro\Connections\Office365ConnectionTokens;
 use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
+use PostSMTP\Kernel\Data\SecretCodec;
 use PostSMTP\Kernel\Providers\ProviderRegistry;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -106,35 +109,73 @@ final class TestEmailService {
 		$test_mode = static function () {
 			return true;
 		};
+		$block_revamp_fallback = static function ( $try_fallback ) {
+			return false;
+		};
 
 		add_filter( 'post_smtp_test_email_skip_fallback', $skip_fallback );
 		add_filter( 'postman_test_email', $test_mode );
+		add_filter( 'post_smtp_should_try_fallback', $block_revamp_fallback );
 
-		if ( ! ConnectionRepositoryFactory::isLegacyMode() && class_exists( 'Postman_Connection_Resolver' ) ) {
+		if ( class_exists( 'Postman_Connection_Resolver' ) && ! empty( \Postman_Connection_Resolver::get_connections() ) ) {
 			set_transient( \Postman_Connection_Resolver::ROUTE_TRANSIENT, $connection_id, 120 );
+			if ( class_exists( ConnectionLegacySendBridge::class ) ) {
+				$route_row = \Postman_Connection_Resolver::get_connection( $connection_id );
+				if ( ! empty( $route_row ) ) {
+					ConnectionLegacySendBridge::apply_runtime_patch_for_connection( $route_row, false );
+				}
+			}
 		}
+
+		$provider = (string) ( $connection['provider'] ?? $connection['transport_type'] ?? '' );
 
 		$email_args = apply_filters(
 			'postman_test_email_args',
 			array(
-				'email'   => $recipient,
-				'subject' => $subject,
-				'message' => $body,
-				'header'  => $header,
+				'email'               => $recipient,
+				'subject'             => $subject,
+				'message'             => $body,
+				'header'              => $header,
+				'connection_provider' => $provider,
+				'connection_id'       => $connection_id,
 			)
 		);
 
+		$mail_headers = $email_args['header'] ?? $header;
+		if ( is_array( $mail_headers ) ) {
+			$mail_headers = array_values(
+				array_filter(
+					array_map( 'trim', $mail_headers ),
+					static function ( $line ) {
+						return is_string( $line ) && '' !== $line;
+					}
+				)
+			);
+		} else {
+			$mail_headers = (string) $mail_headers;
+		}
+
+		$wp_mail_failed_message = '';
+		$capture_wp_mail_failed = static function ( $error ) use ( &$wp_mail_failed_message ) {
+			if ( $error instanceof \WP_Error && '' === $wp_mail_failed_message ) {
+				$wp_mail_failed_message = sanitize_text_field( (string) $error->get_error_message() );
+			}
+		};
+		add_action( 'wp_mail_failed', $capture_wp_mail_failed, 10, 1 );
+
 		$success = wp_mail(
-			$email_args['email'],
-			$email_args['subject'],
-			$email_args['message'],
-			$email_args['header']
+			(string) ( $email_args['email'] ?? $recipient ),
+			(string) ( $email_args['subject'] ?? $subject ),
+			(string) ( $email_args['message'] ?? $body ),
+			$mail_headers
 		);
 
+		remove_action( 'wp_mail_failed', $capture_wp_mail_failed, 10 );
 		remove_filter( 'post_smtp_test_email_skip_fallback', $skip_fallback );
 		remove_filter( 'postman_test_email', $test_mode );
+		remove_filter( 'post_smtp_should_try_fallback', $block_revamp_fallback );
 
-		if ( ! ConnectionRepositoryFactory::isLegacyMode() && class_exists( 'Postman_Connection_Resolver' ) ) {
+		if ( class_exists( 'Postman_Connection_Resolver' ) ) {
 			delete_transient( \Postman_Connection_Resolver::ROUTE_TRANSIENT );
 		}
 
@@ -154,6 +195,8 @@ final class TestEmailService {
 		$error_message = __( 'The test email could not be sent. Check your connection settings and try again.', 'post-smtp' );
 		if ( isset( $result['exception'] ) && $result['exception'] instanceof \Exception ) {
 			$error_message = sanitize_text_field( $result['exception']->getMessage() );
+		} elseif ( '' !== $wp_mail_failed_message ) {
+			$error_message = $wp_mail_failed_message;
 		}
 
 		return array(
@@ -259,12 +302,32 @@ final class TestEmailService {
 	 */
 	private function resolveConnection( int $connection_id ): array {
 		if ( ConnectionRepositoryFactory::isLegacyMode() ) {
-			return $connection_id === 0 ? array( 'provider' => 'legacy', 'id' => 0 ) : array();
+			if ( class_exists( 'Postman_Connection_Resolver' ) && ! empty( \Postman_Connection_Resolver::get_connections() ) ) {
+				$row = \Postman_Connection_Resolver::get_connection( $connection_id );
+				if ( ! empty( $row ) ) {
+					return $row;
+				}
+			}
+			if ( 0 === $connection_id ) {
+				return array( 'provider' => 'legacy', 'id' => 0 );
+			}
+			return array();
+		}
+
+		if ( class_exists( 'Postman_Connection_Resolver' ) ) {
+			$row = \Postman_Connection_Resolver::get_connection( $connection_id );
+			if ( ! empty( $row ) ) {
+				return $row;
+			}
 		}
 
 		$repo = ConnectionRepositoryFactory::make();
 		$row  = $repo->getConnection( $connection_id );
-		return is_array( $row ) ? $row : array();
+		if ( is_array( $row ) && ! empty( $row ) ) {
+			return SecretCodec::decodeConnectionRow( $row );
+		}
+
+		return array();
 	}
 
 	/**
@@ -301,6 +364,21 @@ final class TestEmailService {
 				'success' => false,
 				'message' => $result['message'] ?? __( 'This connection is not ready to send.', 'post-smtp' ),
 			);
+		}
+
+		if ( 'office365_api' === $slug && class_exists( Office365ConnectionTokens::class ) ) {
+			$decoded   = SecretCodec::decodeConnectionRow( $row );
+			$has_oauth = Office365ConnectionTokens::isConnectedStored( $decoded );
+			if ( ! $has_oauth && ! Office365ConnectionTokens::usesPerConnectionTokenStore() ) {
+				$oauth = get_option( 'postman_office365_oauth', array() );
+				$has_oauth = is_array( $oauth ) && '' !== (string) ( $oauth['refresh_token'] ?? '' );
+			}
+			if ( ! $has_oauth ) {
+				return array(
+					'success' => false,
+					'message' => __( 'Connect to Microsoft API on this connection before sending a test email.', 'post-smtp' ),
+				);
+			}
 		}
 
 		return array( 'success' => true, 'message' => '' );

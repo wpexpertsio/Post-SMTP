@@ -2,6 +2,15 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
+
+$ps_gmail_oneclick_guard = __DIR__ . '/includes/gmail-oneclick-request-guard.php';
+if ( is_readable( $ps_gmail_oneclick_guard ) ) {
+	require_once $ps_gmail_oneclick_guard;
+	if ( function_exists( 'post_smtp_gmail_oneclick_guard_strip_request' ) ) {
+		post_smtp_gmail_oneclick_guard_strip_request();
+	}
+}
+
 /*
  * Plugin Name: Post SMTP
  * Plugin URI: https://postmansmtp.com/
@@ -131,6 +140,31 @@ if ( file_exists( $composer_autoload ) ) {
 		}
 	);
 }
+
+if ( function_exists( 'post_smtp_gmail_oneclick_guard_strip_request' ) ) {
+	post_smtp_gmail_oneclick_guard_strip_request();
+}
+
+if ( ! function_exists( 'post_smtp_capture_gmail_oneclick_request_early' ) ) {
+	/**
+	 * Copy stripped one-click params into GmailRevampOAuth once autoload is available.
+	 */
+	function post_smtp_capture_gmail_oneclick_request_early() {
+		$has_incoming = ! empty( $GLOBALS['post_smtp_gmail_oneclick_incoming'] );
+		$is_callback  = function_exists( 'post_smtp_gmail_oneclick_guard_is_callback' )
+			&& post_smtp_gmail_oneclick_guard_is_callback();
+
+		if ( ! $has_incoming && ! $is_callback ) {
+			return;
+		}
+
+		if ( class_exists( '\PostSMTP\Connections\GmailRevampOAuth' ) ) {
+			\PostSMTP\Connections\GmailRevampOAuth::captureOneClickMiddlewarePayloadEarly();
+		}
+	}
+}
+
+post_smtp_capture_gmail_oneclick_request_early();
 
 \PostSMTP\Bootstrap\Plugin::init( __FILE__ );
 

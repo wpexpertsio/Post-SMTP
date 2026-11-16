@@ -1220,6 +1220,48 @@
 	color: #2d3340;
 }
 
+.ps-v2-gmail-configure__manual-connected-row {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 12px;
+	width: 100%;
+	margin-top: 20px;
+}
+
+.ps-v2-gmail-configure__disconnect-api {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	align-self: flex-start;
+	background: #fff;
+	color: #b42318;
+	font-family: inherit;
+	font-weight: 700;
+	font-size: 14px;
+	line-height: normal;
+	text-align: center;
+	min-height: 39px;
+	padding: 10px 20px;
+	border: 1px solid #f04438;
+	border-radius: 6px;
+	box-sizing: border-box;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.ps-v2-gmail-configure__disconnect-api:hover:not(:disabled),
+.ps-v2-gmail-configure__disconnect-api:focus-visible:not(:disabled) {
+	background: #fef3f2;
+	color: #912018;
+	border-color: #d92d20;
+}
+
+.ps-v2-gmail-configure__disconnect-api:disabled {
+	opacity: 0.65;
+	cursor: not-allowed;
+}
+
 .ps-v2-gmail-configure__one-click {
 	display: flex;
 	flex-direction: column;

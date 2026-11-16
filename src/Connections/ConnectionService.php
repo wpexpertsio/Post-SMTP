@@ -93,6 +93,19 @@ final class ConnectionService {
 			$row['from_name'] = $row['sender_name'];
 		}
 
+		$provider = (string) ( $row['provider'] ?? '' );
+		if ( 'office365_api' === $provider && class_exists( '\PostSMTP\Pro\Connections\Office365ConnectionTokens', false ) ) {
+			$row['office365_oauth_connected'] = \PostSMTP\Pro\Connections\Office365ConnectionTokens::isConnectedStored( $row );
+		}
+
+		if ( 'gmail_api' === $provider && class_exists( GmailConnectionTokens::class, false ) ) {
+			$row['gmail_oauth_connected'] = GmailConnectionTokens::isConnectedStored( $row );
+			$tokens                        = GmailConnectionTokens::readTokensFromRow( $row );
+			if ( '' !== $tokens['user_email'] ) {
+				$row['gmail_oauth_user_email'] = $tokens['user_email'];
+			}
+		}
+
 		return $row;
 	}
 
@@ -240,6 +253,76 @@ final class ConnectionService {
 		$connections[ $index ]['fallback_enabled'] = $enabled;
 		$connections = self::enforceFallbackSlots( $connections, ConnectionLimits::get() );
 		$repo->saveConnections( $connections );
+
+		return array(
+			'success'     => true,
+			'connections' => $this->listForAdmin()['connections'],
+		);
+	}
+
+	/**
+	 * Clear per-connection Microsoft manual OAuth tokens (revamp).
+	 *
+	 * @return array{success:bool,message?:string,connections?:array}
+	 */
+	public function disconnectGmailManualOAuth( int $index ): array {
+		$repo        = ConnectionRepositoryFactory::make();
+		$connections = $this->normalizeOnRead( $repo->getConnections(), $repo->getOptions() );
+
+		if ( ! isset( $connections[ $index ] ) ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Connection not found.', 'post-smtp' ),
+			);
+		}
+
+		$provider = isset( $connections[ $index ]['provider'] ) ? (string) $connections[ $index ]['provider'] : '';
+		if ( 'gmail_api' !== $provider ) {
+			return array(
+				'success' => false,
+				'message' => __( 'This connection is not Gmail.', 'post-smtp' ),
+			);
+		}
+
+		if ( ! GmailConnectionTokens::clearOnConnection( $index ) ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Could not remove Gmail authorization.', 'post-smtp' ),
+			);
+		}
+
+		return array(
+			'success'     => true,
+			'connections' => $this->listForAdmin()['connections'],
+		);
+	}
+
+	public function disconnectOffice365ManualOAuth( int $index ): array {
+		$repo        = ConnectionRepositoryFactory::make();
+		$connections = $this->normalizeOnRead( $repo->getConnections(), $repo->getOptions() );
+
+		if ( ! isset( $connections[ $index ] ) ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Connection not found.', 'post-smtp' ),
+			);
+		}
+
+		$provider = isset( $connections[ $index ]['provider'] ) ? (string) $connections[ $index ]['provider'] : '';
+		if ( 'office365_api' !== $provider ) {
+			return array(
+				'success' => false,
+				'message' => __( 'This connection is not Microsoft 365.', 'post-smtp' ),
+			);
+		}
+
+		if ( ! class_exists( '\PostSMTP\Pro\Connections\Office365ConnectionTokens', false )
+			|| ! \PostSMTP\Pro\Connections\Office365ConnectionTokens::clearOnConnection( $index ) ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Could not remove Microsoft connection.', 'post-smtp' ),
+			);
+		}
 
 		return array(
 			'success'     => true,

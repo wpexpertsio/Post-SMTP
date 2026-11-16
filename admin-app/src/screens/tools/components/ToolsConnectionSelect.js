@@ -57,7 +57,7 @@ const ToolsConnectionSelect = ( {
 				</select>
 			</label>
 			<p className="ps-v2-tools-field-foot" data-figma-node="985:17973">
-				Add a Fallback Connection in Connections to test your backup mailer here.{' '}
+				The test uses only the connection you pick here—not live primary/fallback routing.{' '}
 				<Link to="/connections">Open Connections</Link>
 			</p>
 		</div>

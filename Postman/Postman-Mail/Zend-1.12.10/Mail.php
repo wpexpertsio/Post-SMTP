@@ -571,7 +571,11 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
     public function addTo($email, $name='')
     {
         if (!is_array($email)) {
-            $email = array($name => $email);
+            if ( null === $name || '' === $name ) {
+                $email = array( $email );
+            } else {
+                $email = array( $name => $email );
+            }
         }
 
         foreach ($email as $n => $recipient) {
@@ -592,7 +596,11 @@ class Postman_Zend_Mail extends Postman_Zend_Mime_Message
     public function addCc($email, $name='')
     {
         if (!is_array($email)) {
-            $email = array($name => $email);
+            if ( null === $name || '' === $name ) {
+                $email = array( $email );
+            } else {
+                $email = array( $name => $email );
+            }
         }
 
         foreach ($email as $n => $recipient) {

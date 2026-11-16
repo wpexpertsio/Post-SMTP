@@ -142,8 +142,12 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 			$this->_host = $host;
 			$this->_config = $config;
 			$this->logger = new PostmanLogger ( get_class ( $this ) );
-			// Define API base URL for middleware.
-			$this->api_base_url = 'https://connect.postmansmtp.com/wp-json/gmail-oauth/v1/send-email';
+			// Gmail one-click send endpoint (middleware).
+			if ( function_exists( 'post_smtp_gmail_oneclick_api_base' ) ) {
+				$this->api_base_url = post_smtp_gmail_oneclick_api_base() . '/wp-json/gmail-oauth/v1/send-email';
+			} else {
+				$this->api_base_url = 'https://connect.postmansmtp.com/wp-json/gmail-oauth/v1/send-email';
+			}
 			// Check if Gmail One Click is enabled.
 			$this->gmail_oneclick_enabled = in_array(
 				'gmail-oneclick',
@@ -215,10 +219,19 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 				if ( $this->gmail_oneclick_enabled ) {
 				  // Prepare payload.
 					$payload = array(
-						'message' => $encodedMessage,
-						'headers' => $this->header,
+						'message'   => $encodedMessage,
+						'headers'   => $this->header,
 						'site_url'  => get_site_url(),
 					);
+					if ( ! empty( $this->_config['revamp'] ) ) {
+						$payload['revamp'] = 1;
+						if ( isset( $this->_config['connection_id'] ) && is_numeric( $this->_config['connection_id'] ) ) {
+							$payload['connection_id'] = (int) $this->_config['connection_id'];
+						}
+						if ( ! empty( $this->_config['gmail_email'] ) && is_email( $this->_config['gmail_email'] ) ) {
+							$payload['gmail_email'] = sanitize_email( (string) $this->_config['gmail_email'] );
+						}
+					}
 					
 					$response = wp_remote_post(
 						$this->api_base_url,

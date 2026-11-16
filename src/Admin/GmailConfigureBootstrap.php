@@ -7,6 +7,10 @@
 
 namespace PostSMTP\Admin;
 
+use PostSMTP\Connections\ConnectionOAuthGrantBridge;
+use PostSMTP\Connections\GmailRevampOAuth;
+use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -20,7 +24,10 @@ final class GmailConfigureBootstrap {
 		$redirect_uri = admin_url( 'options-general.php?page=postman' );
 		$js_origin    = site_url();
 
-		if ( class_exists( 'PostmanGoogleOAuthScribe', false ) ) {
+		if ( class_exists( GmailRevampOAuth::class, false ) && GmailRevampOAuth::usesReactConnectionsAdmin() ) {
+			$redirect_uri = GmailRevampOAuth::manualOAuthCallbackUri();
+			$js_origin    = site_url();
+		} elseif ( class_exists( 'PostmanGoogleOAuthScribe', false ) ) {
 			$scribe       = new \PostmanGoogleOAuthScribe();
 			$redirect_uri = $scribe->getCallbackUrl();
 			$js_origin    = $scribe->getCallbackDomain();
@@ -29,7 +36,9 @@ final class GmailConfigureBootstrap {
 		$defaults = array(
 			'redirectUri'          => esc_url_raw( $redirect_uri ),
 			'jsOrigin'             => esc_url_raw( $js_origin ),
-			'manualAuthorizeUrl'   => esc_url_raw( admin_url( 'admin-post.php?action=postman/requestOauthGrant' ) ),
+			'manualAuthorizeUrl'   => esc_url_raw(
+				ConnectionOAuthGrantBridge::manualAuthorizeUrl( 0, 'gmail_api' )
+			),
 			'manualSectionTitle'   => __( 'Connect it yourself', 'post-smtp' ),
 			'manualSectionHint'    => __( 'Create an app in your Google account, then paste the values below.', 'post-smtp' ),
 			'redirectLabel'          => __( 'Redirect URL', 'post-smtp' ),
@@ -53,6 +62,11 @@ final class GmailConfigureBootstrap {
 				'extensionEnabled'   => false,
 				'showProTag'         => true,
 				'googleSignInLocked' => true,
+				'toggleAjax'         => array(
+					'url'    => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+					'action' => 'save_gmail_oneclick_toggle',
+					'nonce'  => wp_create_nonce( 'gmail_oneclick_toggle' ),
+				),
 			),
 		);
 
@@ -75,6 +89,14 @@ final class GmailConfigureBootstrap {
 	 * @return array<string,mixed>
 	 */
 	private static function manualOAuthState(): array {
+		if ( ! ConnectionRepositoryFactory::isLegacyMode() ) {
+			return array(
+				'connected'      => false,
+				'connectedEmail' => '',
+				'connectedLabel' => __( 'Connected to Gmail API', 'post-smtp' ),
+			);
+		}
+
 		$one_click_enabled = class_exists( '\Postman_Connection_Resolver', false )
 			&& \Postman_Connection_Resolver::is_gmail_oneclick_extension_enabled();
 

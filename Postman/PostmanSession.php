@@ -46,7 +46,8 @@ if (! class_exists ( 'PostmanSession' )) {
 			return get_transient ( self::OAUTH_IN_PROGRESS ) != false;
 		}
 		public function setOauthInProgress($state) {
-			set_transient ( self::OAUTH_IN_PROGRESS, $state, 3 * self::MINUTES_IN_SECONDS );
+			$ttl = (int) apply_filters( 'post_smtp_oauth_in_progress_ttl', 3 * self::MINUTES_IN_SECONDS );
+			set_transient ( self::OAUTH_IN_PROGRESS, $state, max( 60, $ttl ) );
 		}
 		public function getOauthInProgress() {
 			return get_transient ( self::OAUTH_IN_PROGRESS );

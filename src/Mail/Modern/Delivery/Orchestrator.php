@@ -138,6 +138,14 @@ final class Orchestrator {
 			$envelope->processed
 		);
 
+		// Report & Tracking (and similar) may stage a log row during provider send (inner wp_mail).
+		if ( ! $is_fallback && ( null === $log_id || $log_id <= 0 ) ) {
+			$staged_after_send = apply_filters( 'post_smtp_current_email_id', false );
+			if ( is_numeric( $staged_after_send ) && (int) $staged_after_send > 0 ) {
+				$log_id = (int) $staged_after_send;
+			}
+		}
+
 		Events::recordAttempt(
 			$envelope->atts,
 			$connection,

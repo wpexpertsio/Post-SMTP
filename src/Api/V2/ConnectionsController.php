@@ -8,6 +8,7 @@
 namespace PostSMTP\Api\V2;
 
 use PostSMTP\Connections\ConnectionService;
+use PostSMTP\Connections\GmailRevampOAuth;
 use PostSMTP\Connections\MailerCatalog;
 use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
 use PostSMTP\Kernel\Data\ConnectionSchema;
@@ -71,6 +72,30 @@ final class ConnectionsController extends BaseController {
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( $this, 'deleteConnection' ),
+					'permission_callback' => array( $this, 'checkPermission' ),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/connections/(?P<index>\d+)/office365-oauth',
+			array(
+				array(
+					'methods'             => WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'disconnectOffice365OAuth' ),
+					'permission_callback' => array( $this, 'checkPermission' ),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/connections/(?P<index>\d+)/gmail-oauth',
+			array(
+				array(
+					'methods'             => WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'disconnectGmailOAuth' ),
 					'permission_callback' => array( $this, 'checkPermission' ),
 				),
 			)
@@ -199,6 +224,43 @@ final class ConnectionsController extends BaseController {
 		if ( empty( $result['success'] ) ) {
 			return new \WP_Error( 'connection_reorder_failed', $result['message'] ?? '', array( 'status' => 400 ) );
 		}
+		return rest_ensure_response( $result );
+	}
+
+	public function disconnectGmailOAuth( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
+		if ( ! GmailRevampOAuth::usesReactConnectionsAdmin() ) {
+			return new \WP_Error( 'gmail_revamp_inactive', __( 'Not available in legacy mode.', 'post-smtp' ), array( 'status' => 400 ) );
+		}
+
+		$index  = (int) $request['index'];
+		$result = $this->service->disconnectGmailManualOAuth( $index );
+		if ( empty( $result['success'] ) ) {
+			return new \WP_Error( 'gmail_oauth_disconnect_failed', $result['message'] ?? '', array( 'status' => 400 ) );
+		}
+		return rest_ensure_response( $result );
+	}
+
+	public function disconnectOffice365OAuth( WP_REST_Request $request ) {
+		$nonce_check = $this->requireRestNonce( $request );
+		if ( is_wp_error( $nonce_check ) ) {
+			return $nonce_check;
+		}
+
+		if ( ! Office365RevampOAuth::isActive() ) {
+			return new \WP_Error( 'office365_revamp_inactive', __( 'Not available in legacy mode.', 'post-smtp' ), array( 'status' => 400 ) );
+		}
+
+		$index  = (int) $request['index'];
+		$result = $this->service->disconnectOffice365ManualOAuth( $index );
+		if ( empty( $result['success'] ) ) {
+			return new \WP_Error( 'office365_disconnect_failed', $result['message'] ?? '', array( 'status' => 400 ) );
+		}
+
 		return rest_ensure_response( $result );
 	}
 

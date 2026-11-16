@@ -14,8 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class ModernConnectionRepository implements ConnectionRepositoryInterface {
 
 	public function getConnections(): array {
-		$connections = get_option( ConnectionSchema::OPTION_CONNECTIONS, array() );
-		return is_array( $connections ) ? $connections : array();
+		return ConnectionSchema::readConnectionsOption();
 	}
 
 	public function getConnection( $id ): array {

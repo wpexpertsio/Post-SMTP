@@ -80,6 +80,9 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
 		}
 
 		public function write_success_log( $log, $message, $transcript, $transport = null ) {
+			if ( ! empty( $GLOBALS['post_smtp_revamp_mail_in_progress'] ) ) {
+				return;
+			}
 		    $options = PostmanOptions::getInstance();
             if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION || $options->getRunMode() == PostmanOptions::RUN_MODE_LOG_ONLY ) {
                 $this->writeSuccessLog( $log, $message, $transcript, $transport );
@@ -87,6 +90,9 @@ if ( ! class_exists( 'PostmanEmailLogService' ) ) {
         }
 
         public function write_failed_log( $log, $message, $transcript, $transport = null, $statusMessage = null ) {
+			if ( ! empty( $GLOBALS['post_smtp_revamp_mail_in_progress'] ) ) {
+				return;
+			}
             $options = PostmanOptions::getInstance();
             if ( $options->getRunMode() == PostmanOptions::RUN_MODE_PRODUCTION || $options->getRunMode() == PostmanOptions::RUN_MODE_LOG_ONLY ) {
 				$this->writeFailureLog( $log, $transcript, $statusMessage, $transport, $message );

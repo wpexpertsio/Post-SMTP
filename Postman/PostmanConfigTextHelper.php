@@ -66,7 +66,9 @@ if ( ! class_exists( 'PostmanGoogleOAuthScribe' ) ) {
 		}
 		public function getCallbackUrl() {
 			// see https://codex.wordpress.org/Function_Reference/admin_url#Related
-			return admin_url( 'options-general.php' ) . '?page=postman';
+			$uri = admin_url( 'options-general.php' ) . '?page=postman';
+
+			return apply_filters( 'post_smtp_google_oauth_callback_uri', $uri );
 		}
 		function getCallbackDomain() {
 			$urlParts = parse_url( $this->getCallbackUrl() );

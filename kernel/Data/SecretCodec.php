@@ -67,6 +67,10 @@ final class SecretCodec {
 				'oauth_client_secret',
 				'office365_app_password',
 				'zohomail_client_secret',
+				'office365_access_token',
+				'office365_refresh_token',
+				'access_token',
+				'refresh_token',
 			)
 		);
 	}

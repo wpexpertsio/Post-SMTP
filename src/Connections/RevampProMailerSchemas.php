@@ -48,6 +48,11 @@ final class RevampProMailerSchemas {
 			return is_array( $figma ) ? $figma : $schema;
 		}
 
+		if ( 'office365_api' === $slug ) {
+			$figma = self::office365Options();
+			return is_array( $figma ) ? $figma : $schema;
+		}
+
 		return $schema;
 	}
 
@@ -71,6 +76,33 @@ final class RevampProMailerSchemas {
 		}
 
 		return \Post_SMTP_Pro_Zoho_Mail_Provider::getOptions();
+	}
+
+	/**
+	 * @return array<string,mixed>|null
+	 */
+	private static function office365Options(): ?array {
+		if ( ! defined( 'POST_SMTP_PRO_PATH' ) ) {
+			return null;
+		}
+
+		if ( ! interface_exists( '\PostSMTP\Kernel\Providers\ProviderInterface', false ) && defined( 'POST_SMTP_PATH' ) ) {
+			$iface = POST_SMTP_PATH . '/kernel/Providers/ProviderInterface.php';
+			if ( is_readable( $iface ) ) {
+				require_once $iface;
+			}
+		}
+
+		$path = POST_SMTP_PRO_PATH . 'src/Providers/Office365/Office365Provider.php';
+		if ( ! is_readable( $path ) ) {
+			return null;
+		}
+
+		if ( ! class_exists( '\PostSMTP\Pro\Providers\Office365\Office365Provider', true ) ) {
+			return null;
+		}
+
+		return \PostSMTP\Pro\Providers\Office365\Office365Provider::getOptions();
 	}
 
 	private static function loadProClass( string $relative_path, string $class_name ): bool {

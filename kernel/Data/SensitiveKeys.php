@@ -48,6 +48,10 @@ final class SensitiveKeys {
 			'cloudflare_email_api_key',
 			'oauth_client_secret',
 			'office365_app_password',
+			'office365_access_token',
+			'office365_refresh_token',
+			'access_token',
+			'refresh_token',
 			'zohomail_client_secret',
 			'ses_secret_access_key',
 		);
@@ -79,6 +83,10 @@ final class SensitiveKeys {
 			'oauth_client_secret',
 			'office365_app_id',
 			'office365_app_password',
+			'office365_access_token',
+			'office365_refresh_token',
+			'access_token',
+			'refresh_token',
 			'zohomail_client_secret',
 			'ses_secret_access_key',
 		);

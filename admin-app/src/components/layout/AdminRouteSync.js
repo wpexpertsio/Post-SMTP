@@ -25,10 +25,11 @@ const AdminRouteSync = () => {
 
 		params.delete( 'ps-route' );
 		const query = params.toString();
+		const hashPath = `#${ path }`;
 		const cleanUrl =
 			window.location.pathname +
 			( query ? `?${ query }` : '' ) +
-			window.location.hash;
+			hashPath;
 		window.history.replaceState( null, '', cleanUrl );
 	}, [ navigate ] );
 

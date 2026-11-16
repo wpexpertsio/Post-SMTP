@@ -7,6 +7,7 @@
 
 namespace PostSMTP\Kernel\Providers\Modern;
 
+use PostSMTP\Connections\GmailConnectionTokens;
 use PostSMTP\Kernel\Providers\ProviderInterface;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -120,13 +121,29 @@ final class GmailProvider extends AbstractApiProvider implements ProviderInterfa
 			return $pro_result;
 		}
 
-		$client_id     = (string) ( $connection['oauth_client_id'] ?? '' );
-		$client_secret = (string) ( $connection['oauth_client_secret'] ?? '' );
+		$client_id     = trim( (string) ( $connection['oauth_client_id'] ?? '' ) );
+		$client_secret = \PostSMTP\Kernel\Data\SecretCodec::decode( (string) ( $connection['oauth_client_secret'] ?? '' ) );
+		$client_secret = trim( $client_secret );
+		if ( preg_match( '/^•+$/u', $client_secret ) ) {
+			$client_secret = '';
+		}
 
 		if ( '' === $client_id || '' === $client_secret || '' === $from_email ) {
 			return array(
 				'success'    => false,
 				'message'    => __( 'Client ID, Client secret, and From email are required.', 'post-smtp' ),
+				'error_code' => 400,
+			);
+		}
+
+		$client_id_lower = strtolower( $client_id );
+		if ( false === strpos( $client_id_lower, 'googleusercontent.com' ) ) {
+			return array(
+				'success'    => false,
+				'message'    => __(
+					'Gmail Client ID must be from Google Cloud Console and end in .googleusercontent.com.',
+					'post-smtp'
+				),
 				'error_code' => 400,
 			);
 		}
@@ -151,6 +168,10 @@ final class GmailProvider extends AbstractApiProvider implements ProviderInterfa
 		$delegated = apply_filters( 'post_smtp_gmail_provider_send', null, $atts, $log_id, $connection, $processed_data );
 		if ( is_array( $delegated ) ) {
 			return $delegated;
+		}
+
+		if ( class_exists( GmailRevampLegacySend::class ) ) {
+			return GmailRevampLegacySend::send( $atts, $log_id, $connection, $processed_data );
 		}
 
 		if ( ! empty( $GLOBALS['post_smtp_revamp_mail_in_progress'] ) ) {

@@ -6,6 +6,19 @@ export default function useConnectionMutations() {
 
 	const invalidate = () => queryClient.invalidateQueries( { queryKey: [ 'connections' ] } );
 
+	const mergeConnectionsCache = ( data ) => {
+		if ( ! data?.connections || ! Array.isArray( data.connections ) ) {
+			invalidate();
+			return;
+		}
+		queryClient.setQueryData( [ 'connections' ], ( old ) => {
+			if ( ! old || typeof old !== 'object' ) {
+				return { ...data, connections: data.connections };
+			}
+			return { ...old, connections: data.connections };
+		} );
+	};
+
 	const reorder = useMutation( {
 		mutationFn: ( order ) =>
 			apiFetch( 'connections/order', {
@@ -30,7 +43,7 @@ export default function useConnectionMutations() {
 				method: 'POST',
 				body: row,
 			} ),
-		onSuccess: () => invalidate(),
+		onSuccess: ( data ) => mergeConnectionsCache( data ),
 	} );
 
 	const update = useMutation( {
@@ -39,7 +52,7 @@ export default function useConnectionMutations() {
 				method: 'PUT',
 				body: row,
 			} ),
-		onSuccess: () => invalidate(),
+		onSuccess: ( data ) => mergeConnectionsCache( data ),
 	} );
 
 	const remove = useMutation( {
@@ -50,5 +63,23 @@ export default function useConnectionMutations() {
 		onSuccess: () => invalidate(),
 	} );
 
-	return { reorder, toggleFallback, create, update, remove };
+	const disconnectOffice365OAuth = useMutation( {
+		mutationFn: ( index ) =>
+			apiFetch( `connections/${ index }/office365-oauth`, {
+				method: 'DELETE',
+			} ),
+		onSuccess: () => invalidate(),
+	} );
+
+	const disconnectGmailOAuth = useMutation( {
+		mutationFn: ( index ) =>
+			apiFetch( `connections/${ index }/gmail-oauth`, {
+				method: 'DELETE',
+			} ),
+		onSuccess: ( data ) => {
+			mergeConnectionsCache( data );
+		},
+	} );
+
+	return { reorder, toggleFallback, create, update, remove, disconnectOffice365OAuth, disconnectGmailOAuth };
 }

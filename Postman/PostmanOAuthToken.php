@@ -43,6 +43,13 @@ if (! class_exists ( 'PostmanOAuthToken.php' )) {
 		/**
 		 * Load the Postman OAuth token properties to the database
 		 */
+		/**
+		 * Re-read postman_auth_token (revamp per-connection tokens hydrate before send).
+		 */
+		public function reloadFromOption() {
+			$this->load();
+		}
+
 		private function load() {
 			$a = get_option ( PostmanOAuthToken::OPTIONS_NAME );
 

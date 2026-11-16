@@ -71,8 +71,21 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 		// Google's autoloader will try and load this so we list it first
 		require_once 'PostmanGmailApiModuleZendMailTransport.php';
 
-		//Load Google Client API
-        require_once 'libs/vendor/autoload.php';
+		// Google API client: LibraryLoader registers Composer; autoload must be allowed (not class_exists ... false).
+		if ( ! class_exists( Google_Client::class ) ) {
+			if ( class_exists( '\PostSMTP\Kernel\Libraries\LibraryLoader' ) ) {
+				\PostSMTP\Kernel\Libraries\LibraryLoader::init();
+			}
+			if (
+				! class_exists( Google_Client::class )
+				&& ! (
+					class_exists( '\PostSMTP\Kernel\Libraries\LibraryLoader' )
+					&& \PostSMTP\Kernel\Libraries\LibraryLoader::isVendorLoaded()
+				)
+			) {
+				require_once __DIR__ . '/libs/vendor/autoload.php';
+			}
+		}
 		
 		// build the Gmail Client
 		$authToken = PostmanOAuthToken::getInstance ();
@@ -96,7 +109,32 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
         $client->setRedirectUri( $this->getScribe()->getCallbackUrl() );
         
         if ( $this->gmail_oneclick_enabled ) {
-			$config = [];
+			$config = array();
+			if (
+				class_exists( '\PostSMTP\Pro\Bootstrap\RevampMailerRuntime', false )
+				&& \PostSMTP\Pro\Bootstrap\RevampMailerRuntime::usesRevampExperience()
+				&& class_exists( 'Postman_Connection_Resolver', false )
+			) {
+				$is_fallback = (bool) $fakeConfig;
+				$conn_id     = (int) Postman_Connection_Resolver::get_active_connection_id( $is_fallback );
+				$config['connection_id'] = $conn_id;
+				$config['revamp']        = true;
+
+				$conn_row = Postman_Connection_Resolver::get_connection( $conn_id );
+				$gmail_email = '';
+				if ( is_array( $conn_row ) ) {
+					if ( ! empty( $conn_row['user_email'] ) ) {
+						$gmail_email = sanitize_email( (string) $conn_row['user_email'] );
+					} elseif ( ! empty( $conn_row['sender_email'] ) ) {
+						$gmail_email = sanitize_email( (string) $conn_row['sender_email'] );
+					} elseif ( ! empty( $conn_row['from_email'] ) ) {
+						$gmail_email = sanitize_email( (string) $conn_row['from_email'] );
+					}
+				}
+				if ( is_email( $gmail_email ) ) {
+					$config['gmail_email'] = $gmail_email;
+				}
+			}
 			return new PostmanGmailApiModuleZendMailTransport ( self::HOST, $config );
 		}
 		try {

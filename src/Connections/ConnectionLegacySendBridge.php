@@ -17,14 +17,46 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class ConnectionLegacySendBridge {
 
 	public static function init(): void {
+		self::initRevampSendHooks();
 		add_action( 'post_smtp_prepare_legacy_mail_send', array( self::class, 'prepare_for_send' ), 10, 1 );
+	}
+
+	/**
+	 * Revamp mail pipeline: patch legacy options + OAuth tokens per connection index.
+	 */
+	public static function initRevampSendHooks(): void {
+		static $registered = false;
+		if ( $registered ) {
+			return;
+		}
+		$registered = true;
+		add_action( 'post_smtp_revamp_before_provider_send', array( self::class, 'before_revamp_provider_send' ), 10, 3 );
+	}
+
+	/**
+	 * @param array<string,mixed> $connection       Connection row.
+	 * @param bool                $is_fallback      Fallback attempt.
+	 * @param int                 $connection_index Connection index in postman_connections.
+	 */
+	public static function before_revamp_provider_send( array $connection, bool $is_fallback, int $connection_index ): void {
+		if ( $connection_index < 0 || ! class_exists( '\Postman_Connection_Resolver', false ) ) {
+			return;
+		}
+
+		set_transient( \Postman_Connection_Resolver::ROUTE_TRANSIENT, $connection_index, 120 );
+		self::apply_runtime_patch_for_connection( $connection, $is_fallback );
 	}
 
 	/**
 	 * @param bool $is_fallback When true, hydrate legacy fallback SMTP fields from the active fallback connection.
 	 */
 	public static function prepare_for_send( bool $is_fallback = false ): void {
-		if ( ! class_exists( '\Postman_Connection_Resolver' ) || \Postman_Connection_Resolver::is_legacy_mode() ) {
+		if ( ! class_exists( '\Postman_Connection_Resolver' ) ) {
+			return;
+		}
+
+		$connections = \Postman_Connection_Resolver::get_connections();
+		if ( empty( $connections ) && \Postman_Connection_Resolver::is_legacy_mode() ) {
 			return;
 		}
 
@@ -40,6 +72,21 @@ final class ConnectionLegacySendBridge {
 		$patch = self::map_row_to_legacy_options( $row, $is_fallback );
 		if ( empty( $patch ) ) {
 			return;
+		}
+
+		$provider = (string) ( $row['provider'] ?? $row['transport_type'] ?? '' );
+		if ( 'office365_api' === $provider && class_exists( '\PostSMTP\Pro\Connections\Office365ConnectionTokens', false ) ) {
+			$index = (int) \Postman_Connection_Resolver::get_active_connection_id( $is_fallback );
+			if ( $index >= 0 ) {
+				\PostSMTP\Pro\Connections\Office365ConnectionTokens::hydrateLegacyOAuthOption( $index );
+			}
+		}
+
+		if ( 'gmail_api' === $provider && class_exists( GmailConnectionTokens::class, false ) ) {
+			$index = (int) \Postman_Connection_Resolver::get_active_connection_id( $is_fallback );
+			if ( $index >= 0 ) {
+				GmailConnectionTokens::hydrateLegacyOAuthOption( $index );
+			}
 		}
 
 		PostmanOptions::getInstance()->apply_runtime_patch( $patch );
@@ -59,6 +106,27 @@ final class ConnectionLegacySendBridge {
 		$patch = self::map_row_to_legacy_options( $row, $is_fallback );
 		if ( empty( $patch ) ) {
 			return;
+		}
+
+		$provider = (string) ( $row['provider'] ?? $row['transport_type'] ?? '' );
+		if ( 'office365_api' === $provider && class_exists( '\PostSMTP\Pro\Connections\Office365ConnectionTokens', false ) ) {
+			$index = \PostSMTP\Pro\Connections\Office365ConnectionTokens::findConnectionIndex( $row );
+			if ( $index < 0 && class_exists( '\Postman_Connection_Resolver', false ) ) {
+				$index = (int) \Postman_Connection_Resolver::get_active_connection_id( $is_fallback );
+			}
+			if ( $index >= 0 ) {
+				\PostSMTP\Pro\Connections\Office365ConnectionTokens::hydrateLegacyOAuthOption( $index );
+			}
+		}
+
+		if ( 'gmail_api' === $provider && class_exists( GmailConnectionTokens::class, false ) ) {
+			$index = -1;
+			if ( class_exists( '\Postman_Connection_Resolver', false ) ) {
+				$index = (int) \Postman_Connection_Resolver::get_active_connection_id( $is_fallback );
+			}
+			if ( $index >= 0 ) {
+				GmailConnectionTokens::hydrateLegacyOAuthOption( $index );
+			}
 		}
 
 		PostmanOptions::getInstance()->apply_runtime_patch( $patch );
@@ -267,6 +335,8 @@ final class ConnectionLegacySendBridge {
 			'mailtrap_api_key'         => PostmanOptions::MAILTRAP_API_KEY,
 			'oauth_client_id'          => PostmanOptions::CLIENT_ID,
 			'oauth_client_secret'      => PostmanOptions::CLIENT_SECRET,
+			'office365_app_id'         => 'office365_app_id',
+			'office365_app_password'   => 'office365_app_password',
 		);
 	}
 }

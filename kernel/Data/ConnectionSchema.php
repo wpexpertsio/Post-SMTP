@@ -72,10 +72,21 @@ final class ConnectionSchema {
 		if ( ! empty( $sanitized['from_name'] ) && empty( $sanitized['sender_name'] ) ) {
 			$sanitized['sender_name'] = $sanitized['from_name'];
 		}
+		if ( ! empty( $sanitized['from_email'] ) && empty( $sanitized['sender_email'] ) ) {
+			$sanitized['sender_email'] = $sanitized['from_email'];
+		}
+		if ( ! empty( $sanitized['connection_title'] ) && empty( $sanitized['title'] ) ) {
+			$sanitized['title'] = $sanitized['connection_title'];
+		}
 
 		if ( isset( $sanitized['office365_connect_tab'] ) ) {
 			$tab = sanitize_key( (string) $sanitized['office365_connect_tab'] );
 			$sanitized['office365_connect_tab'] = in_array( $tab, array( 'one_click', 'manual' ), true ) ? $tab : '';
+		}
+
+		if ( isset( $sanitized['gmail_connect_tab'] ) ) {
+			$tab = sanitize_key( (string) $sanitized['gmail_connect_tab'] );
+			$sanitized['gmail_connect_tab'] = in_array( $tab, array( 'one_click', 'manual' ), true ) ? $tab : '';
 		}
 
 		return $sanitized;
@@ -95,5 +106,98 @@ final class ConnectionSchema {
 			}
 		}
 		return $masked;
+	}
+
+	/**
+	 * Read postman_connections tolerating corrupted serialized options (Local Live Link).
+	 *
+	 * @return array<int|string,array<string,mixed>>
+	 */
+	public static function readConnectionsOption(): array {
+		$stored = get_option( self::OPTION_CONNECTIONS, array() );
+		if ( ! is_array( $stored ) ) {
+			$stored = is_string( $stored ) ? maybe_unserialize( $stored ) : array();
+		}
+		if ( ! is_array( $stored ) ) {
+			return array();
+		}
+
+		$rows = array();
+		foreach ( $stored as $index => $row ) {
+			if ( is_array( $row ) ) {
+				$rows[ $index ] = $row;
+			}
+		}
+
+		return $rows;
+	}
+
+	/**
+	 * @param array<int|string,array<string,mixed>> $connections Connection rows.
+	 */
+	public static function writeConnectionsOption( array $connections ): bool {
+		$saved = update_option( self::OPTION_CONNECTIONS, $connections, false );
+
+		if ( $saved && self::connectionsPayloadMatchesOption( $connections, self::readConnectionsOption() ) ) {
+			return true;
+		}
+
+		global $wpdb;
+		if ( ! isset( $wpdb ) ) {
+			return (bool) $saved;
+		}
+
+		$exists = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name = %s",
+				self::OPTION_CONNECTIONS
+			)
+		);
+
+		$serialized = maybe_serialize( $connections );
+		if ( $exists > 0 ) {
+			$wpdb->update(
+				$wpdb->options,
+				array( 'option_value' => $serialized ),
+				array( 'option_name' => self::OPTION_CONNECTIONS ),
+				array( '%s' ),
+				array( '%s' )
+			);
+		} else {
+			$wpdb->insert(
+				$wpdb->options,
+				array(
+					'option_name'  => self::OPTION_CONNECTIONS,
+					'option_value' => $serialized,
+					'autoload'     => 'no',
+				),
+				array( '%s', '%s', '%s' )
+			);
+		}
+
+		wp_cache_delete( self::OPTION_CONNECTIONS, 'options' );
+
+		return true;
+	}
+
+	/**
+	 * @param array<int|string,array<string,mixed>> $expected Intended payload.
+	 * @param array<int|string,array<string,mixed>> $actual   Value read back from the DB.
+	 */
+	private static function connectionsPayloadMatchesOption( array $expected, array $actual ): bool {
+		if ( count( $expected ) !== count( $actual ) ) {
+			return false;
+		}
+
+		foreach ( $expected as $index => $row ) {
+			if ( ! isset( $actual[ $index ] ) || ! is_array( $actual[ $index ] ) ) {
+				return false;
+			}
+			if ( wp_json_encode( $row ) !== wp_json_encode( $actual[ $index ] ) ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

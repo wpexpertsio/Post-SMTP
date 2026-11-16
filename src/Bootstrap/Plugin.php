@@ -12,8 +12,9 @@ use PostSMTP\Connections\ConnectionLegacySendBridge;
 use PostSMTP\Connections\RevampProMailerSchemas;
 use PostSMTP\Mail\Modern\Register as ModernMailRegister;
 use PostSMTP\Connections\ConnectionOAuthGrantBridge;
-use PostSMTP\Connections\GmailConfigurePanelHooks;
-use PostSMTP\Connections\Office365ConfigurePanelHooks;
+use PostSMTP\Connections\ConnectionOAuthReturnBridge;
+use PostSMTP\Connections\GmailConnectionTokens;
+use PostSMTP\Connections\GmailRevampOAuth;
 use PostSMTP\Dashboard\DashboardReportsTrackingHooks;
 use PostSMTP\Kernel\Libraries\LibraryLoader;
 use PostSMTP\Notifications\FailureNotificationBridge;
@@ -41,15 +42,24 @@ final class Plugin {
 		add_action(
 			'plugins_loaded',
 			static function () {
+				if ( class_exists( GmailRevampOAuth::class ) ) {
+					GmailRevampOAuth::boot();
+				}
+			},
+			0
+		);
+
+		add_action(
+			'plugins_loaded',
+			static function () {
 				ApiRegistrar::init();
 				RevampProMailerSchemas::init();
 				FailureNotificationBridge::init();
 				ConnectionOAuthGrantBridge::init();
-				GmailConfigurePanelHooks::init();
-				Office365ConfigurePanelHooks::init();
-				ModernMailRegister::init();
-				if ( ! CohortResolver::usesRevampMailPipeline() ) {
-					ConnectionLegacySendBridge::init();
+				ConnectionOAuthReturnBridge::init();
+				ConnectionLegacySendBridge::initRevampSendHooks();
+				if ( class_exists( GmailConnectionTokens::class ) ) {
+					GmailConnectionTokens::init();
 				}
 				NotificationTeamsPanelHooks::init();
 				NotificationTwilioPanelHooks::init();

@@ -176,9 +176,17 @@ if ( ! class_exists( 'PostsmtpMailer', false ) && class_exists( 'PHPMailer', fal
 			return $this->postSend();
 		}
 
-		public function postman_wp_mail_result() {
+		public function postman_wp_mail_result( $prior = null ) {
+			if ( is_array( $prior ) ) {
+				$has_detail = ( isset( $prior['exception'] ) && $prior['exception'] instanceof \Exception )
+					|| ( isset( $prior['transcript'] ) && '' !== (string) $prior['transcript'] );
+				if ( $has_detail ) {
+					return $prior;
+				}
+			}
+
 			$result = array(
-				'time'       => '',
+				'time'       => is_array( $prior ) && isset( $prior['time'] ) ? $prior['time'] : '',
 				'exception'  => $this->error,
 				'transcript' => $this->transcript,
 			);

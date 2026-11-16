@@ -2008,7 +2008,11 @@ class Post_SMTP_New_Wizard {
             wp_send_json_error( array( 'message' => 'Office 365 One-Click is not available.' ), 500 );
         }
 
-        $auth_url = post_smtp_get_office365_auth_url();
+        $connection_id = isset( $_POST['connection_id'] ) && is_numeric( $_POST['connection_id'] )
+            ? (int) $_POST['connection_id']
+            : null;
+
+        $auth_url = post_smtp_get_office365_auth_url( $connection_id );
 
         if ( empty( $auth_url ) ) {
             wp_send_json_error( array( 'message' => 'Failed to generate Office 365 auth URL.' ), 500 );
@@ -2037,34 +2041,46 @@ class Post_SMTP_New_Wizard {
         }
 
         // Nonce check for CSRF protection.
-        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_office365_auth_url' ) ) {
+        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_gmail_auth_url' ) ) {
             wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ), 400 );
         }
 
-        if ( ! function_exists( 'post_smtp_get_office365_auth_url' ) ) {
-            wp_send_json_error( array( 'message' => 'Office 365 One-Click is not available.' ), 500 );
+        if ( ! function_exists( 'post_smtp_get_gmail_auth_url' ) ) {
+            wp_send_json_error( array( 'message' => 'Gmail One-Click is not available.' ), 500 );
         }
 
-        $auth_url = post_smtp_get_office365_auth_url();
+        $connection_id = isset( $_POST['connection_id'] ) && is_numeric( $_POST['connection_id'] )
+            ? (int) $_POST['connection_id']
+            : null;
+
+        $auth_url = post_smtp_get_gmail_auth_url( $connection_id );
 
         if ( empty( $auth_url ) ) {
-            wp_send_json_error( array( 'message' => 'Failed to generate Office 365 auth URL.' ), 500 );
-            if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_gmail_auth_url' ) ) {
-                wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ), 400 );
+            $payload = array( 'message' => 'Failed to generate Gmail auth URL.' );
+            if ( function_exists( 'post_smtp_get_gmail_auth_url_last_error' ) ) {
+                $detail = post_smtp_get_gmail_auth_url_last_error();
+                if ( '' !== $detail ) {
+                    $payload['detail']    = $detail;
+                    $payload['middleware'] = function_exists( 'post_smtp_gmail_oneclick_api_base' )
+                        ? post_smtp_gmail_oneclick_api_base()
+                        : '';
+                }
             }
-
-            if ( ! function_exists( 'post_smtp_get_gmail_auth_url' ) ) {
-                wp_send_json_error( array( 'message' => 'Gmail One-Click is not available.' ), 500 );
+            if ( function_exists( 'post_smtp_gmail_oneclick_debug_auth_enabled' )
+                && post_smtp_gmail_oneclick_debug_auth_enabled()
+                && function_exists( 'post_smtp_get_gmail_auth_url_last_debug' ) ) {
+                $payload['debug'] = post_smtp_get_gmail_auth_url_last_debug();
             }
-
-            $auth_url = post_smtp_get_gmail_auth_url();
-
-            if ( empty( $auth_url ) ) {
-                wp_send_json_error( array( 'message' => 'Failed to generate Gmail auth URL.' ), 500 );
-            }
-
-            wp_send_json_success( array( 'auth_url' => esc_url_raw( $auth_url ) ) );
+            wp_send_json_error( $payload, 500 );
         }
+
+        $success = array( 'auth_url' => esc_url_raw( $auth_url ) );
+        if ( function_exists( 'post_smtp_gmail_oneclick_debug_auth_enabled' )
+            && post_smtp_gmail_oneclick_debug_auth_enabled()
+            && function_exists( 'post_smtp_get_gmail_auth_url_last_debug' ) ) {
+            $success['debug'] = post_smtp_get_gmail_auth_url_last_debug();
+        }
+        wp_send_json_success( $success );
     }
     
 
@@ -2288,47 +2304,101 @@ class Post_SMTP_New_Wizard {
 	 */
 	public function handle_office365_oauth_redirect() {
 		// Check if the required OAuth parameters are present in the URL.
-		if ( isset( $_GET['action'] ) && $_GET['action'] === 'office365_oauth_redirect' ) {
-			                     
-            // Capability check: Only allow administrators to update OAuth tokens
-            if ( ! current_user_can( 'manage_options' ) ) {
-                wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'post-smtp' ) );
-            }
-            
-            // CSRF protection: Verify nonce (required by security report)
-            if ( ! isset( $_GET['_wpnonce'] ) || empty( $_GET['_wpnonce'] ) ) {
-                wp_die( esc_html__( 'Security check failed. Nonce is missing.', 'post-smtp' ) );
-            }
-            
-            // Verify the nonce
-            $nonce = sanitize_text_field( $_GET['_wpnonce'] );
-            if ( ! wp_verify_nonce( $nonce, 'office365_oauth_redirect' ) ) {
-                wp_die( esc_html__( 'Security check failed. Invalid nonce. Please try again.', 'post-smtp' ) );
-            }
+		if ( ! isset( $_GET['action'] ) || $_GET['action'] !== 'office365_oauth_redirect' ) {
+			return;
+		}
 
-            // Sanitize and retrieve URL parameters
-			$access_token  = sanitize_text_field( $_GET['access_token'] );
-			$refresh_token = isset( $_GET['refresh_token'] ) ? sanitize_text_field( $_GET['refresh_token'] ) : null;
-			$expires_in    = isset( $_GET['expires_in'] ) ? intval( $_GET['expires_in'] ) : 0;
-			$msg           = isset( $_GET['msg'] ) ? sanitize_text_field( $_GET['msg'] ) : '';
-			$user_email    = isset( $_GET['user_email'] ) ? sanitize_email( $_GET['user_email'] ) : '';
-			$auth_token_expires = time() + $expires_in;
-            $redirect_uri = admin_url();
-			// Prepare the OAuth data array for storing in WordPress options
-			$oauth_data = array(
-				'access_token'      => $access_token,
-				'refresh_token'     => $refresh_token,
-				'token_expires'        => $auth_token_expires,
-				'user_email'        => $user_email,
-                'OAUTH_REDIRECT_URI'       => $redirect_uri,
-                'OAUTH_SCOPES'             => 'openid profile offline_access Mail.Send Mail.Send.Shared',
-                'OAUTH_AUTHORITY'          => 'https://login.microsoftonline.com/common',
-                'OAUTH_AUTHORIZE_ENDPOINT' => '/oauth2/v2.0/authorize',
-                'OAUTH_TOKEN_ENDPOINT'     => '/oauth2/v2.0/token',
+		// Capability check: Only allow administrators to update OAuth tokens
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'post-smtp' ) );
+		}
+
+		// CSRF protection: Verify nonce (required by security report)
+		if ( ! isset( $_GET['_wpnonce'] ) || empty( $_GET['_wpnonce'] ) ) {
+			wp_die( esc_html__( 'Security check failed. Nonce is missing.', 'post-smtp' ) );
+		}
+
+		$nonce = sanitize_text_field( wp_unslash( (string) $_GET['_wpnonce'] ) );
+		if ( ! wp_verify_nonce( $nonce, 'office365_oauth_redirect' ) ) {
+			wp_die( esc_html__( 'Security check failed. Invalid nonce. Please try again.', 'post-smtp' ) );
+		}
+
+		if ( ! isset( $_GET['access_token'] ) || '' === (string) $_GET['access_token'] ) {
+			return;
+		}
+
+		$access_token  = sanitize_text_field( wp_unslash( (string) $_GET['access_token'] ) );
+		$refresh_token = isset( $_GET['refresh_token'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['refresh_token'] ) ) : '';
+		$expires_in    = isset( $_GET['expires_in'] ) ? (int) $_GET['expires_in'] : 0;
+		$msg           = isset( $_GET['msg'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['msg'] ) ) : '';
+		$user_email    = isset( $_GET['user_email'] ) ? sanitize_email( wp_unslash( (string) $_GET['user_email'] ) ) : '';
+		$auth_token_expires = time() + $expires_in;
+		$redirect_uri       = admin_url();
+
+		$oauth_data = array(
+			'access_token'             => $access_token,
+			'refresh_token'            => $refresh_token,
+			'token_expires'            => $auth_token_expires,
+			'user_email'               => $user_email,
+			'OAUTH_REDIRECT_URI'       => $redirect_uri,
+			'OAUTH_SCOPES'             => 'openid profile offline_access Mail.Send Mail.Send.Shared',
+			'OAUTH_AUTHORITY'          => 'https://login.microsoftonline.com/common',
+			'OAUTH_AUTHORIZE_ENDPOINT' => '/oauth2/v2.0/authorize',
+			'OAUTH_TOKEN_ENDPOINT'     => '/oauth2/v2.0/token',
+		);
+
+		$revamp_active = class_exists( '\PostSMTP\Pro\Connections\Office365RevampOAuth', false )
+			&& \PostSMTP\Pro\Connections\Office365RevampOAuth::isActive();
+
+		$connection_id = -1;
+		if ( isset( $_GET['connection_id'] ) && is_numeric( $_GET['connection_id'] ) ) {
+			$connection_id = (int) $_GET['connection_id'];
+		}
+
+		if ( $revamp_active ) {
+			set_transient( 'post_smtp_office365_oauth_connect_tab', 'one_click', 30 * MINUTE_IN_SECONDS );
+			if ( $connection_id >= 0 ) {
+				set_transient( 'post_smtp_office365_oauth_connection_id', $connection_id, 30 * MINUTE_IN_SECONDS );
+			}
+		}
+
+		$per_connection = class_exists( '\PostSMTP\Pro\Connections\Office365ConnectionTokens', false )
+			&& \PostSMTP\Pro\Connections\Office365ConnectionTokens::usesPerConnectionTokenStore();
+
+		if ( $revamp_active && class_exists( '\PostSMTP\Pro\Connections\Office365ConnectionTokens', false ) && '' !== $refresh_token ) {
+			$index = \PostSMTP\Pro\Connections\Office365ConnectionTokens::resolveIndexForOneClickCallback( $connection_id );
+			if ( $index >= 0 ) {
+				\PostSMTP\Pro\Connections\Office365ConnectionTokens::storeOnConnection(
+					$index,
+					$access_token,
+					$refresh_token,
+					$expires_in,
+					$user_email
+				);
+				$connection_id = $index;
+				$oauth_data['oauth_connection_id'] = $index;
+			}
+		}
+
+		if ( ! $per_connection ) {
+			update_option( 'postman_office365_oauth', $oauth_data, false );
+		}
+
+		if ( $revamp_active && $connection_id >= 0 && class_exists( '\PostSMTP\Pro\Connections\Office365RevampOAuth', false ) ) {
+			$success_msg = '' !== $msg
+				? $msg
+				: __( 'Microsoft 365 connected successfully.', 'post-smtp' );
+
+			$redirect = \PostSMTP\Pro\Connections\Office365RevampOAuth::connectionEditRedirectUrl(
+				$connection_id,
+				array(
+					'success'               => '1',
+					'msg'                   => $success_msg,
+					'office365_connect_tab' => 'one_click',
+				)
 			);
-
-			// Save the OAuth parameters to the WordPress options table.
-			update_option( 'postman_office365_oauth', $oauth_data );
+			wp_safe_redirect( $redirect );
+			exit;
 		}
 	}
 
@@ -2370,50 +2440,62 @@ class Post_SMTP_New_Wizard {
      * After processing, the user is redirected to a settings page for confirmation.
      */
     public function handle_gmail_oauth_redirect() {
-        // Check if the required OAuth parameters are present in the URL.
-        if ( isset( $_GET['action'] ) && $_GET['action'] === 'gmail_oauth_redirect' ) {
-            
-        // Ignore unrelated callbacks that accidentally reuse the same action parameter.
-        if ( ! isset( $_GET['access_token'] ) && ! isset( $_GET['error'] ) ) {
-            return;
-        }
-            
-        // Capability check: Only allow administrators to update OAuth tokens
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'post-smtp' ) );
-        }
-        
-        // CSRF protection: Verify nonce (required by security report)
-        if ( ! isset( $_GET['_wpnonce'] ) || empty( $_GET['_wpnonce'] ) ) {
-            wp_die( esc_html__( 'Security check failed. Nonce is missing.', 'post-smtp' ) );
-        }
-        
-        // Verify the nonce
-        $nonce = sanitize_text_field( $_GET['_wpnonce'] );
-        if ( ! wp_verify_nonce( $nonce, 'gmail_oauth_redirect' ) ) {
-            wp_die( esc_html__( 'Security check failed. Invalid nonce. Please try again.', 'post-smtp' ) );
-        }
-            
-            // Sanitize and retrieve URL parameters
-            $access_token  = isset( $_GET['access_token'] ) ? sanitize_text_field( $_GET['access_token'] ) : null;
-            $refresh_token = isset( $_GET['refresh_token'] ) ? sanitize_text_field( $_GET['refresh_token'] ) : null;
-            $expires_in    = isset( $_GET['expires_in'] ) ? intval( $_GET['expires_in'] ) : 0;
-            $msg           = isset( $_GET['msg'] ) ? sanitize_text_field( $_GET['msg'] ) : '';
-            $user_email    = isset( $_GET['user_email'] ) ? sanitize_email( $_GET['user_email'] ) : '';
-            $auth_token_expires = time() + $expires_in;
-
-            if ( $access_token ) {
-                $oauth_data = array(
-                    'access_token'      => $access_token,
-                    'refresh_token'     => $refresh_token,
-                    'auth_token_expires'=> $auth_token_expires,
-                    'vendor_name'       => 'google',
-                    'user_email'        => $user_email,
-                );
-                // Save the OAuth parameters to the WordPress options table.
-                update_option( 'postman_auth_token', $oauth_data );
+        if ( class_exists( '\PostSMTP\Connections\ConnectionOAuthReturnBridge', false )
+            && \PostSMTP\Connections\ConnectionOAuthReturnBridge::isGmailOneClickMiddlewareCallback() ) {
+            if ( defined( 'POST_SMTP_GMAIL_ONECLICK_HANDLED' ) ) {
+                return;
             }
         }
+
+        if ( class_exists( '\PostSMTP\Connections\GmailRevampOAuth', false ) ) {
+            \PostSMTP\Connections\GmailRevampOAuth::processOneClickMiddlewareReturn();
+            if ( defined( 'POST_SMTP_GMAIL_ONECLICK_HANDLED' ) ) {
+                return;
+            }
+        }
+
+        if ( ! isset( $_GET['action'] ) || 'gmail_oauth_redirect' !== $_GET['action'] ) {
+            return;
+        }
+        if ( ! isset( $_GET['access_token'] ) && ! isset( $_GET['error'] )
+            && ! ( class_exists( '\PostSMTP\Connections\GmailRevampOAuth', false )
+                && \PostSMTP\Connections\GmailRevampOAuth::hasCapturedOneClickPayload() ) ) {
+            return;
+        }
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return;
+        }
+        if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( (string) $_GET['_wpnonce'] ) ), 'gmail_oauth_redirect' ) ) {
+            return;
+        }
+
+        $access_token  = isset( $_GET['access_token'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['access_token'] ) ) : '';
+        $refresh_token = isset( $_GET['refresh_token'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['refresh_token'] ) ) : '';
+        $expires_in    = isset( $_GET['expires_in'] ) ? (int) $_GET['expires_in'] : 0;
+        $user_email    = isset( $_GET['user_email'] ) ? sanitize_email( wp_unslash( (string) $_GET['user_email'] ) ) : '';
+        if ( '' === $access_token ) {
+            return;
+        }
+
+        update_option(
+            'postman_auth_token',
+            array(
+                'access_token'       => $access_token,
+                'refresh_token'      => $refresh_token,
+                'auth_token_expires' => time() + max( 0, $expires_in ),
+                'vendor_name'        => 'google',
+                'user_email'         => $user_email,
+            ),
+            false
+        );
+
+        wp_safe_redirect(
+            remove_query_arg(
+                array( 'action', 'access_token', 'refresh_token', 'expires_in', 'user_email', '_wpnonce', 'msg', 'success' ),
+                admin_url( 'admin.php?page=postman/configuration_wizard&socket=gmail_api&step=2&success=1' )
+            )
+        );
+        exit;
     }
 }
 

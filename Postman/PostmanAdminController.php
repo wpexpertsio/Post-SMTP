@@ -118,8 +118,21 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				$session->unsetAction();
 			}
 
+			$incoming_state   = isset( $_GET['state'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['state'] ) ) : '';
+			$transaction_id   = $session->isSetOauthInProgress() ? (string) $session->getOauthInProgress() : '';
+			$is_gmail_return  = isset( $_GET['code'] )
+				&& '' !== $incoming_state
+				&& '' !== $transaction_id
+				&& hash_equals( $transaction_id, $incoming_state );
+
+			$gmail_revamp_state = class_exists( '\PostSMTP\Connections\GmailRevampOAuth', false )
+				&& '' !== $incoming_state
+				&& \PostSMTP\Connections\GmailRevampOAuth::isKnownIncomingState( $incoming_state );
+
 			$office365_state    = get_transient( 'office365_oauth_state' );
-			$office365_callback = ( isset( $_GET['code'] ) || isset( $_GET['error'] ) )
+			$office365_callback = ! $is_gmail_return
+				&& ! $gmail_revamp_state
+				&& ( isset( $_GET['code'] ) || isset( $_GET['error'] ) )
 				&& is_string( $office365_state )
 				&& '' !== $office365_state;
 
@@ -127,21 +140,45 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				$session->unsetOauthInProgress();
 			}
 
-			// test to see if an OAuth authentication is in progress
-			if ( ! $office365_callback && $session->isSetOauthInProgress() ) {
-				// there is only a three minute window that Postman will expect a Grant Code, once Grant is clicked by the user
-				$this->logger->debug( 'Looking for grant code' );
-				$transactionId = $session->getOauthInProgress();
-				$incomingState = isset( $_GET['state'] ) ? sanitize_text_field( $_GET['state'] ) : '';
-				if ( isset( $_GET ['code'] ) && ! empty( $incomingState ) && $incomingState === $transactionId ) {
-					$this->logger->debug( 'Found authorization grant code' );
+			$grant_code_present = isset( $_GET['code'] ) && '' !== (string) $_GET['code'];
+			$page_is_postman    = isset( $_GET['page'] ) && 'postman' === sanitize_text_field( wp_unslash( (string) $_GET['page'] ) );
 
-					// queue the function that processes the incoming grant code
-					$this->registerInitFunction( 'handleAuthorizationGrant' );
+			// test to see if an OAuth authentication is in progress
+			$state_matches = false;
+			$revamp_resume = false;
+			$grant_scheduled = false;
+			if ( $grant_code_present && '' !== $incoming_state && ( $page_is_postman || $gmail_revamp_state ) ) {
+				$transaction_id = $session->isSetOauthInProgress() ? (string) $session->getOauthInProgress() : '';
+				$state_matches  = '' !== $transaction_id && hash_equals( $transaction_id, $incoming_state );
+				$revamp_resume  = ! $state_matches
+					&& class_exists( '\PostSMTP\Connections\GmailRevampOAuth', false )
+					&& \PostSMTP\Connections\GmailRevampOAuth::shouldUseRevampOAuthReturn()
+					&& $gmail_revamp_state;
+
+				$revamp_known_state = $page_is_postman
+					&& $gmail_revamp_state
+					&& class_exists( '\PostSMTP\Connections\GmailRevampOAuth', false )
+					&& \PostSMTP\Connections\GmailRevampOAuth::shouldUseRevampOAuthReturn();
+
+				if ( $state_matches || $revamp_resume || $revamp_known_state ) {
+					if ( $revamp_resume && ! $session->isSetOauthInProgress() ) {
+						$session->setOauthInProgress( $incoming_state );
+					}
+					$this->logger->debug( 'Found authorization grant code' );
+					$revamp_handles_grant = $revamp_known_state
+						&& class_exists( '\PostSMTP\Connections\GmailRevampOAuth', false )
+						&& \PostSMTP\Connections\GmailRevampOAuth::shouldUseRevampOAuthReturn();
+					if ( ! $revamp_handles_grant ) {
+						$this->registerInitFunction( 'handleAuthorizationGrant' );
+					}
+					$grant_scheduled = true;
 					return;
 				}
 			}
-            do_action('post_smtp_handle_oauth', $this->messageHandler );
+
+			if ( ! self::shouldDeferOAuthToReturnBridge() ) {
+				do_action( 'post_smtp_handle_oauth', $this->messageHandler );
+			}
 
 			// continue to initialize the AdminController
 			add_action( 'init', array(
@@ -426,11 +463,27 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 		 * Handles the authorization grant
 		 */
 		function handleAuthorizationGrant() {
+			if ( class_exists( '\PostSMTP\Connections\GmailRevampOAuth', false ) ) {
+				if ( defined( 'POST_SMTP_GMAIL_GRANT_HANDLED' ) ) {
+					\PostSMTP\Connections\GmailRevampOAuth::redirectIfOAuthQueryStillPresent();
+					return;
+				}
+				if ( \PostSMTP\Connections\GmailRevampOAuth::shouldHandleRevampGoogleCallback() ) {
+					\PostSMTP\Connections\GmailRevampOAuth::exchangeGrantAndRedirect();
+					return;
+				}
+			}
+
 			$logger = $this->logger;
 			$options = $this->options;
 			$authorizationToken = $this->authorizationToken;
 			$logger->debug( 'Authorization in progress' );
-			$transactionId = PostmanSession::getInstance()->getOauthInProgress();
+			$session         = PostmanSession::getInstance();
+			$transactionId   = $session->getOauthInProgress();
+			$incoming_state  = isset( $_GET['state'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['state'] ) ) : '';
+			if ( ( ! is_string( $transactionId ) || '' === $transactionId ) && '' !== $incoming_state ) {
+				$transactionId = $incoming_state;
+			}
 			$message = '';
         	$redirect_uri = admin_url( "admin.php?page=postman/configuration_wizard&socket=gmail_api&step=2" );
 
@@ -441,10 +494,24 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			try {
 				if ( $authenticationManager->processAuthorizationGrantCode( $transactionId ) ) {
 					$logger->debug( 'Authorization successful' );
-					// save to database
-					$authorizationToken->save();
+					$grant_index = class_exists( '\PostSMTP\Connections\GmailRevampOAuth', false )
+						? \PostSMTP\Connections\GmailRevampOAuth::resolveConnectionId()
+						: -1;
+					if ( class_exists( '\PostSMTP\Connections\GmailConnectionTokens', false )
+						&& \PostSMTP\Connections\GmailConnectionTokens::shouldSkipGlobalAuthOption() ) {
+						\PostSMTP\Connections\GmailConnectionTokens::storeTokensAfterOAuthGrant( $grant_index );
+					} else {
+						$authorizationToken->save();
+						if ( class_exists( '\PostSMTP\Connections\GmailConnectionTokens', false ) ) {
+							\PostSMTP\Connections\GmailConnectionTokens::storeTokensAfterOAuthGrant( $grant_index );
+						}
+					}
 					$message = __( 'The OAuth 2.0 authorization was successful. Ready to send e-mail.', 'post-smtp' );
 					$this->messageHandler->addMessage( $message );
+
+					if ( self::maybe_redirect_gmail_revamp_oauth( true, $message ) ) {
+						return;
+					}
 
 					//Let's redirect to New Wizard
 					if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
@@ -460,6 +527,10 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 
 					$this->messageHandler->addError( $message );
 
+					if ( self::maybe_redirect_gmail_revamp_oauth( false, $message ) ) {
+						return;
+					}
+
 					//Let's redirect to New Wizard
 					if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
 						
@@ -474,6 +545,10 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				$message = __( 'The grant code from Google had no accompanying state and may be a forgery', 'post-smtp' );
 
 				$this->messageHandler->addError( $message );
+
+				if ( self::maybe_redirect_gmail_revamp_oauth( false, $message ) ) {
+					return;
+				}
 
 				//Let's redirect to New Wizard
                 if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
@@ -491,6 +566,10 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 				/* translators: %s is the error message */
 				$this->messageHandler->addError( $message );
 
+				if ( self::maybe_redirect_gmail_revamp_oauth( false, $message ) ) {
+					return;
+				}
+
 				//Let's redirect to New Wizard
                 if( !apply_filters( 'post_smtp_legacy_wizard', true ) ) {
                     
@@ -505,8 +584,65 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			PostmanUtils::unlock();
 			PostmanSession::getInstance()->unsetOauthInProgress();
 
+			if ( self::maybe_redirect_gmail_revamp_oauth( false, $message ) ) {
+				return;
+			}
+
 			// redirect home
 			PostmanUtils::redirect( PostmanUtils::POSTMAN_HOME_PAGE_RELATIVE_URL );
+		}
+
+		/**
+		 * After manual Gmail OAuth in the revamp admin, persist tokens on the connection row and redirect to edit.
+		 *
+		 * @param bool   $success Whether authorization succeeded.
+		 * @param string $message Admin notice message.
+		 * @return bool True when revamp handled the response (always exits before return).
+		 */
+		private static function maybe_redirect_gmail_revamp_oauth( $success, $message ) {
+			if ( ! class_exists( '\PostSMTP\Connections\GmailRevampOAuth', false )
+				|| ! \PostSMTP\Connections\GmailRevampOAuth::shouldUseRevampOAuthReturn() ) {
+				return false;
+			}
+
+			\PostSMTP\Connections\GmailRevampOAuth::redirectAfterManualGrant( (bool) $success, (string) $message );
+
+			return false;
+		}
+
+		/**
+		 * Revamp OAuth returns are handled on init/admin_init by ConnectionOAuthReturnBridge (Pro loads after core).
+		 */
+		private static function shouldDeferOAuthToReturnBridge(): bool {
+			if ( class_exists( '\PostSMTP\Connections\ConnectionOAuthReturnBridge', false )
+				&& \PostSMTP\Connections\ConnectionOAuthReturnBridge::isGmailOneClickMiddlewareCallback() ) {
+				return true;
+			}
+
+			if ( ! isset( $_GET['code'] ) && ! isset( $_GET['error'] ) ) {
+				return false;
+			}
+
+			if ( ! class_exists( '\PostSMTP\Connections\ConnectionOAuthReturnBridge', false ) ) {
+				return false;
+			}
+
+			$scope = isset( $_GET['scope'] ) ? wp_unslash( (string) $_GET['scope'] ) : '';
+			$google_scope = '' !== $scope
+				&& ( str_contains( $scope, 'googleapis.com' ) || str_contains( $scope, 'gmail.' ) );
+
+			if ( $google_scope
+				&& class_exists( '\PostSMTP\Connections\GmailRevampOAuth', false )
+				&& \PostSMTP\Connections\GmailRevampOAuth::shouldUseRevampOAuthReturn() ) {
+				return true;
+			}
+
+			if ( class_exists( '\PostSMTP\Pro\Connections\Office365OAuthGrantContext', false )
+				&& \PostSMTP\Pro\Connections\Office365OAuthGrantContext::shouldProcessOAuthReturn() ) {
+				return true;
+			}
+
+			return false;
 		}
 
 		/**
@@ -519,6 +655,14 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 			$authenticationManager = PostmanAuthenticationManagerFactory::getInstance()->createAuthenticationManager();
 			$transactionId = $authenticationManager->generateRequestTransactionId();
 			PostmanSession::getInstance()->setOauthInProgress( $transactionId );
+
+			/**
+			 * Fires when a Gmail manual OAuth round-trip starts (state is known).
+			 *
+			 * @param string $transaction_id OAuth state parameter.
+			 */
+			do_action( 'post_smtp_gmail_oauth_transaction_started', $transactionId );
+
 			$authenticationManager->requestVerificationCode( $transactionId );
 		}
 	}

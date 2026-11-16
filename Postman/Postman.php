@@ -244,10 +244,11 @@ class Postman {
 		// register the email transports
 		$this->registerTransports( $this->rootPluginFilenameAndPath );
 
-
-		// register the setup_admin function on plugins_loaded because we need to call
-		// current_user_can to verify the capability of the current user
-		if ( PostmanUtils::isAdmin() && is_admin() ) {
+		if ( $this->shouldDeferSetupAdminForGmailOneClickReturn() ) {
+			add_action( 'init', array( $this, 'maybeSetupAdminAfterGmailOneClick' ), 20 );
+		} elseif ( PostmanUtils::isAdmin() && is_admin() ) {
+			// register the setup_admin function on plugins_loaded because we need to call
+			// current_user_can to verify the capability of the current user
 			$this->setup_admin();
 		}
 
@@ -259,6 +260,42 @@ class Postman {
 			}
 		}
 		
+	}
+
+	/**
+	 * Gmail one-click middleware still exchanging tokens — avoid PostmanAdminController until handled or redirected.
+	 */
+	private function shouldDeferSetupAdminForGmailOneClickReturn() {
+		if ( defined( 'POST_SMTP_GMAIL_ONECLICK_HANDLED' ) ) {
+			return false;
+		}
+
+		if ( ! PostmanUtils::isAdmin() || ! is_admin() ) {
+			return false;
+		}
+
+		if ( ! class_exists( '\PostSMTP\Connections\ConnectionOAuthReturnBridge', false ) ) {
+			return false;
+		}
+
+		return \PostSMTP\Connections\ConnectionOAuthReturnBridge::isGmailOneClickMiddlewareCallback();
+	}
+
+	/**
+	 * Runs after {@see ConnectionOAuthReturnBridge::processGmailOneClickReturnEarly()} on init -99998.
+	 */
+	public function maybeSetupAdminAfterGmailOneClick() {
+		if ( $this->shouldDeferSetupAdminForGmailOneClickReturn() ) {
+			if ( class_exists( '\PostSMTP\Connections\GmailRevampOAuth', false ) ) {
+				\PostSMTP\Connections\GmailRevampOAuth::processOneClickMiddlewareReturn();
+			}
+		}
+
+		if ( ! PostmanUtils::isAdmin() || ! is_admin() ) {
+			return;
+		}
+
+		$this->setup_admin();
 	}
 
 	/**

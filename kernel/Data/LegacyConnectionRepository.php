@@ -14,15 +14,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class LegacyConnectionRepository implements ConnectionRepositoryInterface {
 
 	public function getConnections(): array {
-		return array();
+		return ConnectionSchema::readConnectionsOption();
 	}
 
 	public function getConnection( $id ): array {
-		return array();
+		if ( null === $id || '' === $id ) {
+			return array();
+		}
+
+		$connections = $this->getConnections();
+
+		return ( isset( $connections[ $id ] ) && is_array( $connections[ $id ] ) ) ? $connections[ $id ] : array();
 	}
 
 	public function saveConnections( array $connections ): bool {
-		return update_option( ConnectionSchema::OPTION_CONNECTIONS, $connections );
+		return ConnectionSchema::writeConnectionsOption( $connections );
 	}
 
 	public function getOptions(): array {

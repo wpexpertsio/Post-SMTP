@@ -29,6 +29,24 @@ final class Plan {
 		$service     = new ConnectionService();
 		$connections = $service->normalizeOnRead( $connections, $options );
 
+		// Tools → test email: only the connection chosen in the UI (route transient), never fallbacks.
+		if (
+			apply_filters( 'postman_test_email', false )
+			&& class_exists( '\Postman_Connection_Resolver', false )
+		) {
+			$route_key = \Postman_Connection_Resolver::get_route_key();
+			if ( null !== $route_key && is_numeric( $route_key ) ) {
+				$index = (int) $route_key;
+				if ( isset( $connections[ $index ] ) && is_array( $connections[ $index ] ) ) {
+					return array(
+						'primary'       => $connections[ $index ],
+						'primary_index' => $index,
+						'fallbacks'     => array(),
+					);
+				}
+			}
+		}
+
 		// Connections UI: index 0 is always the primary mailer slot.
 		$primary_index = 0;
 		$primary       = $connections[0] ?? null;

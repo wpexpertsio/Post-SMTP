@@ -7,6 +7,7 @@
 
 namespace PostSMTP\Admin;
 
+use PostSMTP\Connections\ConnectionOAuthReturnBridge;
 use PostSMTP\Rollout\CohortResolver;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,6 +27,27 @@ final class ReactAdminLoader {
 		add_action( 'in_admin_header', array( self::class, 'renderRoot' ), 99 );
 		add_filter( 'post_smtp__new_dashboard', '__return_true' );
 		add_action( 'admin_head', array( self::class, 'hideLegacyChrome' ) );
+		add_action( 'admin_head', array( self::class, 'syncPsRouteHashEarly' ), 1 );
+	}
+
+	/**
+	 * Apply ?ps-route= to the hash before React boots (OAuth return, submenu deep links).
+	 */
+	public static function syncPsRouteHashEarly(): void {
+		if ( ! self::isDashboardShellPage() ) {
+			return;
+		}
+
+		$route = isset( $_GET['ps-route'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['ps-route'] ) ) : '';
+		if ( '' === $route || ! preg_match( '#^[a-zA-Z0-9_\-/]+$#', $route ) ) {
+			return;
+		}
+
+		$hash = '#/' . ltrim( $route, '/' );
+		printf(
+			"<script>(function(){var want=%s;var h=window.location.hash||'';if(!h||h==='#'||h==='#/'){window.location.replace(window.location.pathname+window.location.search+want);}})();</script>\n",
+			wp_json_encode( $hash )
+		);
 	}
 
 	/**
@@ -215,7 +237,16 @@ final class ReactAdminLoader {
 			return;
 		}
 
+		if ( self::shouldSkipDashboardShell() ) {
+			return;
+		}
+
 		self::enqueueAssets( false );
+	}
+
+	private static function shouldSkipDashboardShell(): bool {
+		return class_exists( ConnectionOAuthReturnBridge::class, false )
+			&& ConnectionOAuthReturnBridge::shouldDeferReactAdminBootstrap();
 	}
 
 	private static function enqueueAssets( bool $migration_wizard = false ): void {

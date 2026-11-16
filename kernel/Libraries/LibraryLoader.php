@@ -15,6 +15,10 @@ final class LibraryLoader {
 
 	private static bool $loaded = false;
 
+	public static function isVendorLoaded(): bool {
+		return self::$loaded;
+	}
+
 	public static function init(): void {
 		if ( self::$loaded ) {
 			return;
