@@ -732,6 +732,11 @@ class Post_SMTP_New_Wizard {
      * @return bool
      */
     private function should_enqueue_wizard_assets( $hook ) {
+        // PostmanConfigurationController is only loaded in setup_admin() for manage_postman_smtp users.
+        if ( ! class_exists( 'PostmanConfigurationController' ) ) {
+            return false;
+        }
+
         $page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
 
         // Settings → Connections (Gmail one-click PRO popup uses wizard.css / wizard.js).
