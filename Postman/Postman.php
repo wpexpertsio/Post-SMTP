@@ -246,6 +246,8 @@ class Postman {
 
 		if ( $this->shouldDeferSetupAdminForGmailOneClickReturn() ) {
 			add_action( 'init', array( $this, 'maybeSetupAdminAfterGmailOneClick' ), 20 );
+		} elseif ( $this->shouldDeferSetupAdminForOffice365Return() ) {
+			add_action( 'init', array( $this, 'maybeSetupAdminAfterOffice365Return' ), 20 );
 		} elseif ( PostmanUtils::isAdmin() && is_admin() ) {
 			// register the setup_admin function on plugins_loaded because we need to call
 			// current_user_can to verify the capability of the current user
@@ -284,6 +286,53 @@ class Postman {
 	/**
 	 * Runs after {@see ConnectionOAuthReturnBridge::processGmailOneClickReturnEarly()} on init -99998.
 	 */
+	/**
+	 * Entra returns to /wp-admin/?code=… — run OAuth + redirect before PostmanAdminController / legacy handle_oauth.
+	 */
+	private function shouldDeferSetupAdminForOffice365Return() {
+		if ( defined( 'POST_SMTP_OFFICE365_GRANT_HANDLED' ) ) {
+			return false;
+		}
+
+		if ( ! is_admin() ) {
+			return false;
+		}
+
+		if ( ! isset( $_GET['code'] ) && ! isset( $_GET['error'] ) ) {
+			return false;
+		}
+
+		if ( ! class_exists( '\PostSMTP\Pro\Connections\Office365RevampOAuth', false ) ) {
+			return false;
+		}
+
+		if ( ! \PostSMTP\Pro\Connections\Office365RevampOAuth::isActive() ) {
+			return false;
+		}
+
+		if ( ! class_exists( '\PostSMTP\Pro\Connections\Office365OAuthGrantContext', false ) ) {
+			return false;
+		}
+
+		return \PostSMTP\Pro\Connections\Office365OAuthGrantContext::shouldProcessOAuthReturn();
+	}
+
+	public function maybeSetupAdminAfterOffice365Return() {
+		if ( class_exists( '\PostSMTP\Connections\ConnectionOAuthReturnBridge', false ) ) {
+			\PostSMTP\Connections\ConnectionOAuthReturnBridge::processOAuthReturns();
+		}
+
+		if ( defined( 'POST_SMTP_OFFICE365_GRANT_HANDLED' ) ) {
+			return;
+		}
+
+		if ( ! PostmanUtils::isAdmin() || ! is_admin() ) {
+			return;
+		}
+
+		$this->setup_admin();
+	}
+
 	public function maybeSetupAdminAfterGmailOneClick() {
 		if ( $this->shouldDeferSetupAdminForGmailOneClickReturn() ) {
 			if ( class_exists( '\PostSMTP\Connections\GmailRevampOAuth', false ) ) {

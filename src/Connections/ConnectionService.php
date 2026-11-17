@@ -96,6 +96,12 @@ final class ConnectionService {
 		$provider = (string) ( $row['provider'] ?? '' );
 		if ( 'office365_api' === $provider && class_exists( '\PostSMTP\Pro\Connections\Office365ConnectionTokens', false ) ) {
 			$row['office365_oauth_connected'] = \PostSMTP\Pro\Connections\Office365ConnectionTokens::isConnectedStored( $row );
+			$tokens                             = \PostSMTP\Pro\Connections\Office365ConnectionTokens::readTokensFromRow( $row );
+			if ( '' !== $tokens['user_email'] ) {
+				$row['office365_oauth_user_email'] = $tokens['user_email'];
+			} elseif ( ! $row['office365_oauth_connected'] ) {
+				$row['office365_oauth_user_email'] = '';
+			}
 		}
 
 		if ( 'gmail_api' === $provider && class_exists( GmailConnectionTokens::class, false ) ) {
@@ -144,12 +150,23 @@ final class ConnectionService {
 	 * @return array<int,array<string,mixed>>
 	 */
 	private static function enforceFallbackSlots( array $connections, array $limits ): array {
-		$max_slot = (int) ( $limits['max_fallback_slot_index'] ?? $limits['max_enabled_fallbacks'] ?? 1 );
+		$max_slot     = (int) ( $limits['max_fallback_slot_index'] ?? $limits['max_enabled_fallbacks'] ?? 1 );
+		$max_enabled  = (int) ( $limits['max_enabled_fallbacks'] ?? 1 );
+		$enabled_seen = 0;
+
 		foreach ( $connections as $index => &$row ) {
 			if ( ! is_array( $row ) || $index <= 0 ) {
 				continue;
 			}
 			if ( $index > $max_slot ) {
+				$row['fallback_enabled'] = false;
+				continue;
+			}
+			if ( empty( $row['fallback_enabled'] ) ) {
+				continue;
+			}
+			++$enabled_seen;
+			if ( $enabled_seen > $max_enabled ) {
 				$row['fallback_enabled'] = false;
 			}
 		}

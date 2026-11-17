@@ -112,8 +112,19 @@ final class ConnectionOAuthGrantBridge {
 			if ( class_exists( 'PostmanSession', false ) ) {
 				\PostmanSession::getInstance()->unsetOauthInProgress();
 			}
-			if ( null !== $connection_id && $connection_id >= 0 ) {
+			$tab = 'manual';
+			if ( isset( $_GET['office365_connect_tab'] ) ) {
+				$tab_candidate = sanitize_key( wp_unslash( (string) $_GET['office365_connect_tab'] ) );
+				if ( in_array( $tab_candidate, array( 'manual', 'one_click' ), true ) ) {
+					$tab = $tab_candidate;
+				}
+			}
+			if ( null !== $connection_id && $connection_id >= 0
+				&& class_exists( '\PostSMTP\Pro\Connections\Office365RevampOAuth', true ) ) {
+				\PostSMTP\Pro\Connections\Office365RevampOAuth::rememberGrant( (int) $connection_id, $tab );
+			} elseif ( null !== $connection_id && $connection_id >= 0 ) {
 				set_transient( 'post_smtp_office365_oauth_connection_id', (int) $connection_id, 30 * MINUTE_IN_SECONDS );
+				set_transient( 'post_smtp_office365_oauth_connect_tab', $tab, 30 * MINUTE_IN_SECONDS );
 			}
 			if ( self::redirectOffice365EntraOAuth() ) {
 				exit;
@@ -323,13 +334,21 @@ final class ConnectionOAuthGrantBridge {
 
 		if ( 'office365_api' === $provider ) {
 			$tab = 'manual';
-			if ( isset( $row['office365_connect_tab'] ) ) {
+			if ( isset( $_GET['office365_connect_tab'] ) ) {
+				$tab_candidate = sanitize_key( wp_unslash( (string) $_GET['office365_connect_tab'] ) );
+				if ( in_array( $tab_candidate, array( 'manual', 'one_click' ), true ) ) {
+					$tab = $tab_candidate;
+				}
+			} elseif ( isset( $row['office365_connect_tab'] ) ) {
 				$tab_candidate = sanitize_key( (string) $row['office365_connect_tab'] );
 				if ( in_array( $tab_candidate, array( 'manual', 'one_click' ), true ) ) {
 					$tab = $tab_candidate;
 				}
 			}
 			set_transient( 'post_smtp_office365_oauth_connect_tab', $tab, 30 * MINUTE_IN_SECONDS );
+			if ( $connection_id >= 0 && class_exists( '\PostSMTP\Pro\Connections\Office365RevampOAuth', true ) ) {
+				\PostSMTP\Pro\Connections\Office365RevampOAuth::rememberGrant( $connection_id, $tab );
+			}
 		}
 
 		if ( 'gmail_api' === $provider && $connection_id >= 0 ) {
@@ -940,23 +959,35 @@ final class ConnectionOAuthGrantBridge {
 		}
 
 		$client = new \OAuthOffice365( $oauth_client );
-		$state  = get_transient( \Post_Smtp_Office365::STATE );
-		if ( false === $state || ! is_string( $state ) || '' === $state ) {
-			$state = bin2hex( random_bytes( 16 ) );
-		}
-		if ( class_exists( '\PostSMTP\Pro\Connections\Office365OAuthGrantContext', true ) ) {
-			\PostSMTP\Pro\Connections\Office365OAuthGrantContext::rotateOAuthState( $state );
-		}
-		set_transient( \Post_Smtp_Office365::STATE, $state, 30 * MINUTE_IN_SECONDS );
 
 		$grant_connection = get_transient( 'post_smtp_office365_oauth_connection_id' );
 		$grant_tab        = get_transient( 'post_smtp_office365_oauth_connect_tab' );
 		$tab              = is_string( $grant_tab ) && in_array( $grant_tab, array( 'manual', 'one_click' ), true )
 			? $grant_tab
 			: 'manual';
-		if ( is_numeric( $grant_connection ) && (int) $grant_connection >= 0
-			&& class_exists( '\PostSMTP\Pro\Connections\Office365OAuthGrantContext', true ) ) {
-			\PostSMTP\Pro\Connections\Office365OAuthGrantContext::rememberStateBinding( (string) $state, (int) $grant_connection, $tab );
+		$connection_index = is_numeric( $grant_connection ) ? (int) $grant_connection : -1;
+		if ( $connection_index < 0 && isset( $_GET['connection_id'] ) && is_numeric( $_GET['connection_id'] ) ) {
+			$connection_index = max( 0, (int) $_GET['connection_id'] );
+		}
+
+		if ( $connection_index >= 0 && class_exists( '\PostSMTP\Pro\Connections\Office365RevampOAuth', true ) ) {
+			\PostSMTP\Pro\Connections\Office365RevampOAuth::rememberGrant( $connection_index, $tab );
+		}
+
+		if ( class_exists( '\PostSMTP\Pro\Connections\Office365OAuthGrantContext', true ) ) {
+			$state = \PostSMTP\Pro\Connections\Office365OAuthGrantContext::buildStateToken( $connection_index, $tab );
+			\PostSMTP\Pro\Connections\Office365OAuthGrantContext::rotateOAuthState( $state );
+		} else {
+			$state = get_transient( \Post_Smtp_Office365::STATE );
+			if ( false === $state || ! is_string( $state ) || '' === $state ) {
+				$state = bin2hex( random_bytes( 16 ) );
+			}
+		}
+
+		set_transient( \Post_Smtp_Office365::STATE, $state, 30 * MINUTE_IN_SECONDS );
+
+		if ( $connection_index >= 0 && class_exists( '\PostSMTP\Pro\Connections\Office365OAuthGrantContext', true ) ) {
+			\PostSMTP\Pro\Connections\Office365OAuthGrantContext::rememberStateBinding( (string) $state, $connection_index, $tab );
 		}
 
 		$url = $client->getOffice365AuthURL(

@@ -452,7 +452,12 @@ const Office365OneClickBlock = ( { office365, connectionId, values = {}, onChang
 	);
 };
 
-const buildManualAuthorizeUrl = ( baseUrl, connectionId, mailer = 'office365_api' ) => {
+const buildManualAuthorizeUrl = (
+	baseUrl,
+	connectionId,
+	mailer = 'office365_api',
+	connectTab = 'manual'
+) => {
 	if ( ! baseUrl ) {
 		return baseUrl;
 	}
@@ -467,6 +472,9 @@ const buildManualAuthorizeUrl = ( baseUrl, connectionId, mailer = 'office365_api
 		if ( mailer ) {
 			url.searchParams.set( 'mailer', mailer );
 		}
+		if ( connectTab === 'manual' || connectTab === 'one_click' ) {
+			url.searchParams.set( 'office365_connect_tab', connectTab );
+		}
 		return url.toString();
 	} catch {
 		const separator = baseUrl.includes( '?' ) ? '&' : '?';
@@ -476,6 +484,9 @@ const buildManualAuthorizeUrl = ( baseUrl, connectionId, mailer = 'office365_api
 			if ( ! Number.isNaN( id ) && id >= 0 ) {
 				href += `&connection_id=${ id }`;
 			}
+		}
+		if ( connectTab === 'manual' || connectTab === 'one_click' ) {
+			href += `&office365_connect_tab=${ encodeURIComponent( connectTab ) }`;
 		}
 		return href;
 	}
@@ -591,7 +602,13 @@ const Office365ManualConnectAction = ( { office365, connectionId, values, onChan
 		);
 	}
 
-	const authorizeUrl = buildManualAuthorizeUrl( office365.manualAuthorizeUrl, connectionId );
+	const connectTab = resolveOffice365ConnectTab( values, office365 );
+	const authorizeUrl = buildManualAuthorizeUrl(
+		office365.manualAuthorizeUrl,
+		connectionId,
+		'office365_api',
+		connectTab
+	);
 
 	return (
 		<a className="ps-v2-gmail-configure__connect-api" href={ authorizeUrl }>

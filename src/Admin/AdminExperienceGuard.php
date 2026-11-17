@@ -66,6 +66,11 @@ final class AdminExperienceGuard {
 
 	private static function guardLegacyExperience( string $page ): void {
 		if ( 'postman' === $page && ! empty( $_GET['ps-route'] ) ) {
+			$route = sanitize_text_field( wp_unslash( (string) $_GET['ps-route'] ) );
+			if ( self::shouldAllowPsRouteOnPostman( $route ) ) {
+				return;
+			}
+
 			wp_safe_redirect( admin_url( 'admin.php?page=postman' ) );
 			exit;
 		}
@@ -75,6 +80,25 @@ final class AdminExperienceGuard {
 			wp_safe_redirect( admin_url( 'admin.php?page=postman' ) );
 			exit;
 		}
+	}
+
+	/**
+	 * Revamp Connections OAuth returns use ps-route (and hash routes under connections/*).
+	 */
+	private static function shouldAllowPsRouteOnPostman( string $route ): bool {
+		if ( str_starts_with( $route, 'connections/' ) ) {
+			return true;
+		}
+
+		if ( isset( $_GET['success'] ) || isset( $_GET['msg'] ) ) {
+			return true;
+		}
+
+		if ( isset( $_GET['office365_connect_tab'] ) || isset( $_GET['gmail_connect_tab'] ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public static function enqueueLegacyHashGuard( string $hook ): void {

@@ -16,7 +16,7 @@ final class ConnectionLimits {
 	public const FREE_MAX_CONNECTIONS        = 10;
 	public const PRO_MAX_CONNECTIONS         = 10;
 	public const FREE_MAX_ENABLED_FALLBACKS  = 1;
-	public const PRO_MAX_ENABLED_FALLBACKS   = 2;
+	public const PRO_MAX_ENABLED_FALLBACKS   = 1;
 
 	public static function isPro(): bool {
 		if ( defined( 'POST_SMTP_PRO_VERSION' ) ) {

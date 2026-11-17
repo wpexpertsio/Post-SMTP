@@ -68,7 +68,13 @@ export default function useConnectionMutations() {
 			apiFetch( `connections/${ index }/office365-oauth`, {
 				method: 'DELETE',
 			} ),
-		onSuccess: () => invalidate(),
+		onSuccess: ( data ) => {
+			if ( data?.connections ) {
+				mergeConnectionsCache( data );
+			} else {
+				invalidate();
+			}
+		},
 	} );
 
 	const disconnectGmailOAuth = useMutation( {

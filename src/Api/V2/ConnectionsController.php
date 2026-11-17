@@ -9,6 +9,7 @@ namespace PostSMTP\Api\V2;
 
 use PostSMTP\Connections\ConnectionService;
 use PostSMTP\Connections\GmailRevampOAuth;
+use PostSMTP\Pro\Connections\Office365RevampOAuth;
 use PostSMTP\Connections\MailerCatalog;
 use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
 use PostSMTP\Kernel\Data\ConnectionSchema;
@@ -251,7 +252,7 @@ final class ConnectionsController extends BaseController {
 			return $nonce_check;
 		}
 
-		if ( ! Office365RevampOAuth::isActive() ) {
+		if ( ! class_exists( Office365RevampOAuth::class, true ) || ! Office365RevampOAuth::isActive() ) {
 			return new \WP_Error( 'office365_revamp_inactive', __( 'Not available in legacy mode.', 'post-smtp' ), array( 'status' => 400 ) );
 		}
 

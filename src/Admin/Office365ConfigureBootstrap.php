@@ -21,9 +21,7 @@ final class Office365ConfigureBootstrap {
 	 * @return array<string,mixed>
 	 */
 	public static function defaults(): array {
-		$redirect_uri = class_exists( Office365OAuthRedirectUri::class, false )
-			? Office365OAuthRedirectUri::resolve()
-			: esc_url_raw( admin_url( 'admin-post.php?action=postman/requestOauthGrant' ) );
+		$redirect_uri = self::resolveRedirectUriForEntra();
 		$redirect_scheme = wp_parse_url( $redirect_uri, PHP_URL_SCHEME );
 		$js_origin        = esc_url_raw( set_url_scheme( site_url(), is_string( $redirect_scheme ) ? $redirect_scheme : 'https' ) );
 
@@ -111,6 +109,45 @@ final class Office365ConfigureBootstrap {
 				)
 				: __( 'Connected to Microsoft 365 API', 'post-smtp' ),
 		);
+	}
+
+	/**
+	 * Entra Web redirect URIs must not include query strings (unlike the legacy grant kickoff URL).
+	 */
+	private static function resolveRedirectUriForEntra(): string {
+		if ( class_exists( Office365OAuthRedirectUri::class, true ) ) {
+			return Office365OAuthRedirectUri::resolve();
+		}
+
+		$scheme = 'http';
+		if ( is_ssl() ) {
+			$scheme = 'https';
+		} elseif ( defined( 'FORCE_SSL_ADMIN' ) && FORCE_SSL_ADMIN ) {
+			$scheme = 'https';
+		} else {
+			$home = (string) get_option( 'home', '' );
+			$site = (string) get_option( 'siteurl', '' );
+			if ( 0 === strpos( $home, 'https://' ) || 0 === strpos( $site, 'https://' ) ) {
+				$scheme = 'https';
+			} else {
+				$host = (string) wp_parse_url( $home ? $home : $site, PHP_URL_HOST );
+				if ( '' !== $host ) {
+					foreach ( array( '.localsite.io', '.local', '.loca.lt', '.test' ) as $suffix ) {
+						$len = strlen( $suffix );
+						if ( $len <= strlen( $host ) && substr( $host, -$len ) === $suffix ) {
+							$scheme = 'https';
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		$raw      = site_url( '/wp-admin/', $scheme );
+		$filtered = apply_filters( 'post_smtp_office365_oauth_redirect_uri', $raw );
+		$url      = is_string( $filtered ) && '' !== $filtered ? $filtered : $raw;
+
+		return trailingslashit( esc_url_raw( untrailingslashit( $url ) ) );
 	}
 
 	private static function isOneClickExtensionEnabled(): bool {
