@@ -110,8 +110,19 @@ class PostmanUtils {
 	}
 
 	public static function isCurrentPagePostmanAdmin( $page = 'postman' ) {
-		$result = (isset( $_REQUEST ['page'] ) && substr( $_REQUEST ['page'], 0, strlen( $page ) ) == $page);
-		return $result;
+		if ( ! isset( $_REQUEST['page'] ) ) {
+			return false;
+		}
+		$request_page = wp_unslash( $_REQUEST['page'] );
+		if ( is_array( $request_page ) ) {
+			return false;
+		}
+		if ( ! is_scalar( $request_page ) ) {
+			return false;
+		}
+		$request_page = (string) $request_page;
+
+		return substr( $request_page, 0, strlen( $page ) ) === $page;
 	}
 	/**
 	 * from http://stackoverflow.com/questions/834303/startswith-and-endswith-functions-in-php
