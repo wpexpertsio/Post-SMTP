@@ -7,6 +7,7 @@ import useConnectionMutations from '../hooks/useConnectionMutations';
 import MailerGrid from '../components/MailerGrid';
 import ConfigureMailerForm from '../components/ConfigureMailerForm';
 import { buildGmailOAuthSaveRow } from '../components/GmailConfigurePanel';
+import { buildOffice365OAuthSaveRow } from '../components/Office365ConfigurePanel';
 import FormNotice from '../components/FormNotice';
 import useMailerCatalog from '../hooks/useMailerCatalog';
 import ConnectionsChooseSidebar from '../components/ConnectionsChooseSidebar';
@@ -50,10 +51,12 @@ const AddConnectionView = () => {
 	const handleSave = async () => {
 		setNotice( null );
 		try {
-			const payload =
-				selectedProvider === 'gmail_api'
-					? buildGmailOAuthSaveRow( { ...formValues, provider: selectedProvider }, selectedProvider )
-					: { ...formValues, provider: selectedProvider };
+			let payload = { ...formValues, provider: selectedProvider };
+			if ( selectedProvider === 'gmail_api' ) {
+				payload = buildGmailOAuthSaveRow( payload, selectedProvider );
+			} else if ( selectedProvider === 'office365_api' ) {
+				payload = buildOffice365OAuthSaveRow( payload, selectedProvider );
+			}
 			const result = await create.mutateAsync( payload );
 			setNotice( { type: 'success', message: result?.message || 'Connection saved.' } );
 			const newId = typeof result?.id === 'number' ? result.id : parseInt( result?.id, 10 );

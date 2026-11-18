@@ -1994,6 +1994,12 @@ class Post_SMTP_New_Wizard {
      */
     public function ajax_get_office365_auth_url() {
 
+        if ( class_exists( '\PostSMTP\Pro\Connections\Configure\Office365OneClickAuth', false )
+            && \PostSMTP\Pro\Connections\Configure\Office365OneClickAuth::usesRevampAdmin() ) {
+            \PostSMTP\Pro\Connections\Configure\Office365OneClickAuth::ajaxGetAuthUrl();
+            return;
+        }
+
         // Capability check: Only allow administrators.
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( array( 'message' => 'Unauthorized.' ), 403 );
@@ -2330,6 +2336,10 @@ class Post_SMTP_New_Wizard {
 		$access_token  = sanitize_text_field( wp_unslash( (string) $_GET['access_token'] ) );
 		$refresh_token = isset( $_GET['refresh_token'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['refresh_token'] ) ) : '';
 		$expires_in    = isset( $_GET['expires_in'] ) ? (int) $_GET['expires_in'] : 0;
+		if ( $expires_in <= 0 && isset( $_GET['token_expires'] ) && is_numeric( $_GET['token_expires'] ) ) {
+			$expires_at = (int) $_GET['token_expires'];
+			$expires_in = $expires_at > time() ? $expires_at - time() : 0;
+		}
 		$msg           = isset( $_GET['msg'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['msg'] ) ) : '';
 		$user_email    = isset( $_GET['user_email'] ) ? sanitize_email( wp_unslash( (string) $_GET['user_email'] ) ) : '';
 		$auth_token_expires = time() + $expires_in;

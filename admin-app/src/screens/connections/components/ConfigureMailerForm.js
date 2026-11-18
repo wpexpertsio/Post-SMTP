@@ -229,6 +229,7 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 					onChange={ onChange }
 					renderField={ renderField }
 					connectionId={ connectionId }
+					onGrantError={ onGrantError }
 				/>
 			) : isOffice365OAuthLayout ? (
 				<Office365ConfigurePanel
@@ -237,6 +238,7 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 					onChange={ onChange }
 					renderField={ renderField }
 					connectionId={ connectionId }
+					onGrantError={ onGrantError }
 				/>
 			) : isZohoOAuthLayout ? (
 				<ZohoConfigurePanel

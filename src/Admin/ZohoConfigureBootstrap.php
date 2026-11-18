@@ -45,6 +45,10 @@ final class ZohoConfigureBootstrap {
 	 * @param int $connection_id Connection index in postman_connections.
 	 */
 	public static function oauthConnectUrl( int $connection_id ): string {
+		if ( class_exists( '\PostSMTP\Pro\Connections\Configure\ZohoConfigureHooks', true ) ) {
+			return \PostSMTP\Pro\Connections\Configure\ZohoConfigureHooks::oauthConnectUrl( $connection_id );
+		}
+
 		if ( class_exists( 'Post_SMTP_Pro_Zoho_Configure_Hooks', false ) ) {
 			return Post_SMTP_Pro_Zoho_Configure_Hooks::oauthConnectUrl( $connection_id );
 		}

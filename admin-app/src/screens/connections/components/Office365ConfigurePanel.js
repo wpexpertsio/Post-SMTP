@@ -102,7 +102,7 @@ const Office365ConnectModeTabs = ( { activeTab, onChange, office365 } ) => {
 	);
 };
 
-const postOneClickToggle = async ( ajax, enabled ) => {
+const postOneClickToggle = async ( ajax, enabled, connectionId ) => {
 	if ( ! ajax?.url || ! ajax?.action ) {
 		return { ok: false };
 	}
@@ -112,6 +112,12 @@ const postOneClickToggle = async ( ajax, enabled ) => {
 	if ( ajax.nonce ) {
 		body.append( '_ajax_nonce', ajax.nonce );
 		body.append( 'nonce', ajax.nonce );
+	}
+	if ( connectionId !== undefined && connectionId !== null ) {
+		const id = parseInt( connectionId, 10 );
+		if ( ! Number.isNaN( id ) && id >= 0 ) {
+			body.append( 'connection_id', String( id ) );
+		}
 	}
 	let json = null;
 	try {
@@ -158,10 +164,108 @@ const fetchOffice365AuthUrl = async ( authUrlAjax, connectionId ) => {
 	return '';
 };
 
-const Office365OneClickBlock = ( { office365, connectionId, values = {}, onChange } ) => {
+const resolveOffice365OneClickToggleOn = ( values, extensionEnabledProp, toggleCheckedProp ) => {
+	if ( values?.office365_connect_tab === 'manual' ) {
+		return false;
+	}
+	if ( values?.office365_connect_tab === 'one_click' ) {
+		return true;
+	}
+	if ( typeof toggleCheckedProp === 'boolean' ) {
+		return toggleCheckedProp;
+	}
+	return Boolean( extensionEnabledProp );
+};
+
+const parseConnectionIndex = ( connectionId ) => {
+	if ( connectionId === undefined || connectionId === null ) {
+		return null;
+	}
+	const id = parseInt( connectionId, 10 );
+	return ! Number.isNaN( id ) && id >= 0 ? id : null;
+};
+
+/**
+ * Add flow has no connection index until the row is saved; middleware needs connection_id.
+ */
+const ensureOffice365OneClickConnectionId = async ( {
+	connectionId,
+	values,
+	create,
+	onGrantError,
+	onChange,
+} ) => {
+	const existing = parseConnectionIndex( connectionId );
+	if ( null !== existing ) {
+		return existing;
+	}
+	if ( ! create?.mutateAsync ) {
+		onGrantError?.( 'Save the connection first, then sign in with Microsoft.' );
+		return null;
+	}
+	const row = buildOffice365OAuthSaveRow( {
+		...values,
+		provider: 'office365_api',
+		office365_connect_tab: 'one_click',
+	} );
+	const title = ( row.connection_title || row.title || '' ).trim();
+	if ( ! title ) {
+		onGrantError?.( 'Enter a connection title before signing in with Microsoft.' );
+		return null;
+	}
+	const fromEmail = ( row.from_email || row.sender_email || '' ).trim();
+	if ( ! fromEmail ) {
+		onGrantError?.( 'Enter a From email address before signing in with Microsoft.' );
+		return null;
+	}
+	try {
+		const result = await create.mutateAsync( row );
+		const newId =
+			typeof result?.id === 'number' ? result.id : parseInt( result?.id, 10 );
+		if ( Number.isNaN( newId ) || newId < 0 ) {
+			onGrantError?.( 'Could not create a connection before Microsoft sign-in.' );
+			return null;
+		}
+		const savedRow = result?.connections?.find( ( c ) => c.id === newId );
+		if ( typeof onChange === 'function' ) {
+			onChange( ( prev ) => ( {
+				...prev,
+				...( savedRow || row ),
+				office365_connect_tab: 'one_click',
+			} ) );
+		}
+		return newId;
+	} catch ( err ) {
+		onGrantError?.(
+			err?.message || 'Could not save the connection before Microsoft sign-in.'
+		);
+		return null;
+	}
+};
+
+export const buildOffice365OAuthSaveRow = ( values = {}, provider = 'office365_api' ) => {
+	const fromEmail = ( values.from_email || values.sender_email || '' ).trim();
+	const title = ( values.connection_title || values.title || '' ).trim();
+	return {
+		...values,
+		provider: values.provider || provider,
+		connection_title: title || values.connection_title,
+		title: title || values.title,
+		from_email: fromEmail,
+		sender_email: fromEmail,
+	};
+};
+
+const Office365OneClickBlock = ( {
+	office365,
+	connectionId,
+	values = {},
+	onChange,
+	onGrantError,
+} ) => {
 	const admin = getAdminConfig();
 	const bootstrapOneClick = office365.oneClick || admin.office365Configure?.oneClick || {};
-	const { disconnectOffice365OAuth } = useConnectionMutations();
+	const { disconnectOffice365OAuth, create } = useConnectionMutations();
 	const {
 		title = 'Connect Microsoft 365 in one click',
 		description = '',
@@ -184,24 +288,27 @@ const Office365OneClickBlock = ( { office365, connectionId, values = {}, onChang
 	const isBusinessPlan = Boolean(
 		bootstrapOneClick.isBusinessPlan || admin.isBusinessPlan
 	);
-	const canUseOneClick = hasPro && isBusinessPlan;
+
+	const toggleDisabled =
+		typeof toggleDisabledProp === 'boolean'
+			? toggleDisabledProp
+			: ! ( hasPro && isBusinessPlan );
+
+	const canUseOneClick = hasPro && ( isBusinessPlan || ! toggleDisabled );
 
 	const showBusinessTag =
 		typeof bootstrapOneClick.showBusinessTag === 'boolean'
 			? bootstrapOneClick.showBusinessTag
 			: hasPro && ! isBusinessPlan;
 
-	const toggleDisabled =
-		typeof toggleDisabledProp === 'boolean' ? toggleDisabledProp : ! canUseOneClick;
+	const initialToggleOn = resolveOffice365OneClickToggleOn(
+		values,
+		extensionEnabledProp,
+		toggleCheckedProp
+	);
 
-	const [ extensionEnabled, setExtensionEnabled ] = useState(
-		typeof extensionEnabledProp === 'boolean' ? extensionEnabledProp : false
-	);
-	const [ toggleChecked, setToggleChecked ] = useState(
-		typeof toggleCheckedProp === 'boolean'
-			? toggleCheckedProp
-			: Boolean( canUseOneClick && extensionEnabledProp )
-	);
+	const [ extensionEnabled, setExtensionEnabled ] = useState( initialToggleOn );
+	const [ toggleChecked, setToggleChecked ] = useState( initialToggleOn );
 	const [ toggleBusy, setToggleBusy ] = useState( false );
 	const [ liveSignInUrl, setLiveSignInUrl ] = useState( signInUrl );
 	const [ authFetchBusy, setAuthFetchBusy ] = useState( false );
@@ -211,35 +318,41 @@ const Office365OneClickBlock = ( { office365, connectionId, values = {}, onChang
 		typeof values?.office365_oauth_user_email === 'string'
 			? values.office365_oauth_user_email.trim()
 			: '';
-	const connectedEmail = rowEmail || bootstrapConnectedEmail;
 	const rowConnected = Boolean( values?.office365_oauth_connected );
-	const isConnected = rowConnected || connectedEmail !== '';
+	const hasSavedConnection =
+		connectionId !== undefined &&
+		connectionId !== null &&
+		! Number.isNaN( parseInt( connectionId, 10 ) ) &&
+		parseInt( connectionId, 10 ) >= 0;
+	const connectedEmail = rowEmail || ( hasSavedConnection ? bootstrapConnectedEmail : '' );
+	const isConnected =
+		rowConnected || ( connectedEmail !== '' && ( rowEmail !== '' || hasSavedConnection ) );
 
 	useEffect( () => {
-		setLiveSignInUrl( signInUrl );
+		if ( signInUrl ) {
+			setLiveSignInUrl( signInUrl );
+		}
 	}, [ signInUrl ] );
 
 	useEffect( () => {
-		if ( ! canUseOneClick || ! extensionEnabled || isConnected || liveSignInUrl ) {
+		if ( values?.office365_connect_tab === 'manual' ) {
+			setExtensionEnabled( false );
+			setToggleChecked( false );
 			return;
 		}
-		let cancelled = false;
-		( async () => {
-			const url = await fetchOffice365AuthUrl( authUrlAjax, connectionId );
-			if ( ! cancelled && url ) {
-				setLiveSignInUrl( url );
-			}
-		} )();
-		return () => {
-			cancelled = true;
-		};
+		const fromServer = resolveOffice365OneClickToggleOn(
+			values,
+			extensionEnabledProp,
+			toggleCheckedProp
+		);
+		setExtensionEnabled( fromServer );
+		setToggleChecked( fromServer );
 	}, [
-		authUrlAjax,
-		canUseOneClick,
-		connectionId,
-		extensionEnabled,
-		isConnected,
-		liveSignInUrl,
+		extensionEnabledProp,
+		toggleCheckedProp,
+		values?.office365_connect_tab,
+		values?.office365_oauth_connected,
+		values?.office365_oauth_user_email,
 	] );
 
 	const sectionTitle =
@@ -247,11 +360,9 @@ const Office365OneClickBlock = ( { office365, connectionId, values = {}, onChang
 	const sectionHint = office365.oneClickSectionHint || '';
 
 	const signInLocked = ! canUseOneClick || ! extensionEnabled;
-	const showSignIn =
-		canUseOneClick && extensionEnabled && Boolean( liveSignInUrl ) && ! isConnected;
 	const showConnected = canUseOneClick && extensionEnabled && isConnected;
 	const showLockedMicrosoftBtn =
-		signInLocked && ! showSignIn && ! showConnected;
+		signInLocked && ! showConnected;
 
 	const handleOneClickDisconnect = async () => {
 		if ( connectionId === undefined || connectionId === null ) {
@@ -282,7 +393,7 @@ const Office365OneClickBlock = ( { office365, connectionId, values = {}, onChang
 		const requestId = ++toggleRequestRef.current;
 		setToggleBusy( true );
 		try {
-			const result = await postOneClickToggle( toggleAjax, next );
+			const result = await postOneClickToggle( toggleAjax, next, connectionId );
 			if ( requestId !== toggleRequestRef.current ) {
 				return;
 			}
@@ -293,9 +404,13 @@ const Office365OneClickBlock = ( { office365, connectionId, values = {}, onChang
 					result.data?.enabled === true;
 				setToggleChecked( serverEnabled );
 				setExtensionEnabled( serverEnabled );
-				if ( serverEnabled && result.data?.sign_in_url ) {
-					setLiveSignInUrl( String( result.data.sign_in_url ) );
-				} else if ( ! serverEnabled ) {
+				if ( typeof onChange === 'function' ) {
+					onChange( ( prev ) => ( {
+						...prev,
+						office365_connect_tab: serverEnabled ? 'one_click' : 'manual',
+					} ) );
+				}
+				if ( ! serverEnabled ) {
 					setLiveSignInUrl( '' );
 				}
 			} else {
@@ -318,44 +433,54 @@ const Office365OneClickBlock = ( { office365, connectionId, values = {}, onChang
 		toggleDisabled,
 		upgradeUrl,
 		extensionEnabled,
+		onChange,
 	] );
 
-	const handleMicrosoftSignIn = useCallback( async () => {
-		if ( signInLocked || isConnected || authFetchBusy ) {
-			return;
-		}
-		if ( liveSignInUrl ) {
-			window.location.href = liveSignInUrl;
-			return;
-		}
-		setAuthFetchBusy( true );
-		try {
-			const url = await fetchOffice365AuthUrl( authUrlAjax, connectionId );
-			if ( url ) {
-				setLiveSignInUrl( url );
-				window.location.href = url;
+	const handleMicrosoftSignIn = useCallback(
+		async ( event ) => {
+			if ( event?.preventDefault ) {
+				event.preventDefault();
 			}
-		} finally {
-			setAuthFetchBusy( false );
-		}
-	}, [
-		authFetchBusy,
-		authUrlAjax,
-		connectionId,
-		isConnected,
-		liveSignInUrl,
-		signInLocked,
-	] );
+			if ( signInLocked || isConnected || authFetchBusy ) {
+				return;
+			}
+			setAuthFetchBusy( true );
+			try {
+				const grantConnectionId = await ensureOffice365OneClickConnectionId( {
+					connectionId,
+					values,
+					create,
+					onGrantError,
+					onChange,
+				} );
+				if ( null === grantConnectionId ) {
+					return;
+				}
+				const url = await fetchOffice365AuthUrl( authUrlAjax, grantConnectionId );
+				if ( url ) {
+					setLiveSignInUrl( url );
+					window.location.assign( url );
+				} else {
+					onGrantError?.( 'Could not start Microsoft sign-in. Try again.' );
+				}
+			} finally {
+				setAuthFetchBusy( false );
+			}
+		},
+		[
+			authFetchBusy,
+			authUrlAjax,
+			connectionId,
+			create,
+			isConnected,
+			onChange,
+			onGrantError,
+			signInLocked,
+			values,
+		]
+	);
 
-	const microsoftButton = showSignIn ? (
-		<a
-			href={ liveSignInUrl }
-			className="ps-v2-office365-configure__microsoft-btn ps-v2-office365-configure__microsoft-btn--brand"
-		>
-			<img src={ microsoftIcon } alt="" width="19" height="19" />
-			{ signInLabel }
-		</a>
-	) : showLockedMicrosoftBtn ? (
+	const microsoftButton = showLockedMicrosoftBtn ? (
 		<span
 			className="ps-v2-office365-configure__microsoft-btn ps-v2-office365-configure__microsoft-btn--brand ps-v2-office365-configure__microsoft-btn--locked"
 			aria-disabled="true"
@@ -372,7 +497,7 @@ const Office365OneClickBlock = ( { office365, connectionId, values = {}, onChang
 			disabled={ authFetchBusy }
 		>
 			<img src={ microsoftIcon } alt="" width="19" height="19" />
-			{ authFetchBusy ? '…' : signInLabel }
+			{ authFetchBusy ? 'Redirecting…' : signInLabel }
 		</button>
 	) : null;
 
@@ -677,7 +802,14 @@ const Office365ManualSection = ( { schema, office365, renderField, connectionId,
 	);
 };
 
-const Office365ConfigurePanel = ( { schema, renderField, connectionId, values = {}, onChange } ) => {
+const Office365ConfigurePanel = ( {
+	schema,
+	renderField,
+	connectionId,
+	values = {},
+	onChange,
+	onGrantError,
+} ) => {
 	const admin = getAdminConfig();
 	const office365 = admin.office365Configure || {};
 	const connectTab = resolveOffice365ConnectTab( values, office365 );
@@ -737,6 +869,7 @@ const Office365ConfigurePanel = ( { schema, renderField, connectionId, values = 
 							connectionId={ connectionId }
 							values={ values }
 							onChange={ onChange }
+							onGrantError={ onGrantError }
 						/>
 					) : (
 						<Office365ManualSection
