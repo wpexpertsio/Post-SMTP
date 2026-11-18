@@ -68,12 +68,10 @@ class Postman_Email_Tester {
             $args['headers']['API-KEY'] = $apikey;
         }
    
-        if ( $Fthis->requires_test_api_verification( $socket ) ) {
+        if ( $this->requires_test_api_verification( $socket ) ) {
             $this->handle_sockets_check( $from_email, $args, $socket  );
         } 
-        // else {
-        //     $this->handle_legacy_test( $email, $args );
-        // }
+
     }
 
     /**

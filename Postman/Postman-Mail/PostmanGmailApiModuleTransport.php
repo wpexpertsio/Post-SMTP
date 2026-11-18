@@ -86,47 +86,62 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
             )
         );
 		
-		// rebuild the google access token
-		$token = new stdClass ();
         $client->setApplicationName( 'Post SMTP ' . POST_SMTP_VER );
         $client->setAccessType( 'offline' );
         $client->setApprovalPrompt( 'force' );
         $client->setIncludeGrantedScopes( true );
         $client->setScopes( array( Gmail::MAIL_GOOGLE_COM ) );
         $client->setRedirectUri( $this->getScribe()->getCallbackUrl() );
-        
+        $client->setHttpClient(
+            new \PostSMTP\Vendor\GuzzleHttp\Client(
+                array(
+                    'connect_timeout' => 5,
+                    'timeout'         => 15,
+                )
+            )
+        );
+
         if ( $this->gmail_oneclick_enabled ) {
 			$config = [];
 			return new PostmanGmailApiModuleZendMailTransport ( self::HOST, $config );
 		}
 		try {
-			
-			//If Access Token Expired, get new one
-			if( $client->isAccessTokenExpired() ) {
-				$client->fetchAccessTokenWithRefreshToken( $authToken->getRefreshToken() );
-				
+			$refresh = $authToken->getRefreshToken();
+			if ( empty( $refresh ) ) {
+				throw new Exception( 'Gmail API token refresh failed: no refresh token' );
 			}
-			//Lets go with the old one
-			else {
-				$client->setAccessToken( $authToken->getAccessToken() );
-				$client->setRefreshToken( $authToken->getRefreshToken() );
-				
+
+			if ( $authToken->getAccessToken() ) {
+				$client->setAccessToken(
+					array(
+						'access_token'  => $authToken->getAccessToken(),
+						'expires_in'    => max( 0, (int) $authToken->getExpiryTime() - time() ),
+						'created'       => time(),
+						'refresh_token' => $refresh,
+					)
+				);
 			}
-			
-			
-		} catch( Exception $e ) {
-			
-			print_r( $e );
-			die;
-			
+
+			if ( $client->isAccessTokenExpired() ) {
+				$token_response = $client->fetchAccessTokenWithRefreshToken( $refresh );
+				if ( empty( $token_response['access_token'] ) ) {
+					$error = isset( $token_response['error'] ) ? $token_response['error'] : 'no access_token';
+					throw new Exception( 'Gmail API token refresh failed: ' . $error );
+				}
+
+				$authToken->setAccessToken( $token_response['access_token'] );
+				if ( ! empty( $token_response['expires_in'] ) ) {
+					$authToken->setExpiryTime( time() + (int) $token_response['expires_in'] );
+				}
+				if ( ! empty( $token_response['refresh_token'] ) ) {
+					$authToken->setRefreshToken( $token_response['refresh_token'] );
+				}
+				$authToken->save();
+			}
+		} catch ( Throwable $e ) {
+			throw new Exception( 'Gmail API token refresh failed: ' . $e->getMessage(), 0, $e );
 		}
-		
-		$token->access_token = $client->getAccessToken();
-		$token->refresh_token = $client->getRefreshToken();
-		$token->token_type = 'Bearer';
-		$token->expires_in = 3600;
-		$token->id_token = null;
-		$token->created = 0;
+
 		$service = new Gmail( $client );
      
 		$config [PostmanGmailApiModuleZendMailTransport::SERVICE_OPTION] = $service;
