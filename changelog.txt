@@ -2,6 +2,9 @@
 
 All notable changes to this plugin are documented in this file.
 
+= 4.0.4 - Nov 18, 2026 =
+* FIX - Prevented a fatal error when enqueuing wizard assets if PostmanConfigurationController is not loaded.
+
 = 4.0.3 - Nov 10, 2026 =
 * FIX - Fixed SMTP2GO API email formatting that caused valid emails to be rejected by the API.
 * FIX - Fixed cases where Post SMTP reported an email as failed even though it was successfully sent.

@@ -4,7 +4,7 @@ Contributors: wpexpertsio
 Tags: smtp, wordpress smtp, email logs, gmail smtp, office 365
 Requires at least: 5.6.0
 Tested up to: 7.1.4
-Stable tag: 4.0.3
+Stable tag: 4.0.4
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -439,6 +439,9 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 Important: If you are using version 2.8.7 or lower of our plugin, please update to the latest version as soon as possible. This update contains an urgent security fix that prevents potential vulnerabilities and attacks. We apologize for any inconvenience this may cause you and we appreciate your cooperation. Thank you for using our plugin.
 
 == Changelog ==
+
+= 4.0.4 - Nov 18, 2026 =
+* FIX - Prevented a fatal error when enqueuing wizard assets if PostmanConfigurationController is not loaded.
 
 = 4.0.3 - Nov 10, 2026 =
 * FIX - Fixed SMTP2GO API email formatting that caused valid emails to be rejected by the API.
