@@ -441,7 +441,7 @@ Important: If you are using version 2.8.7 or lower of our plugin, please update 
 == Changelog ==
 
 = 4.0.4 - Nov 18, 2026 =
-* FIX - Prevented a fatal error when enqueuing wizard assets if PostmanConfigurationController is not loaded.
+* FIX - Fixed login issues affecting non-administrator roles after updating to version 4.0.3.
 
 = 4.0.3 - Nov 10, 2026 =
 * FIX - Fixed SMTP2GO API email formatting that caused valid emails to be rejected by the API.
