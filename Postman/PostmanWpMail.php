@@ -232,7 +232,10 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			$message = new PostmanMessage();
 			$options = PostmanOptions::getInstance();
 			// the From is set now so that it can be overridden
-			$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
+			$transport = apply_filters( 'post_smtp_wp_mail_transport', null );
+			if ( ! $transport instanceof PostmanModuleTransport ) {
+				$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
+			}
 			if ( $transport !== null ) {
 				$fromEmail = $transport->getFromEmailAddress();
 				$fromName = $transport->getFromName();
@@ -271,7 +274,10 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			do_action( 'post_smtp_prepare_legacy_mail_send', (bool) $options->is_fallback );
 
 			// get the transport and create the transportConfig and engine
-			$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
+			$transport = apply_filters( 'post_smtp_wp_mail_transport', null );
+			if ( ! $transport instanceof PostmanModuleTransport ) {
+				$transport = PostmanTransportRegistry::getInstance()->getActiveTransport();
+			}
 
 			// create the Mail Engine
 			$engine = $transport->createMailEngine();

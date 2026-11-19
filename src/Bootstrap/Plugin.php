@@ -58,6 +58,7 @@ final class Plugin {
 				ConnectionOAuthGrantBridge::init();
 				ConnectionOAuthReturnBridge::init();
 				ConnectionLegacySendBridge::initRevampSendHooks();
+				ModernMailRegister::init();
 				if ( class_exists( GmailConnectionTokens::class ) ) {
 					GmailConnectionTokens::init();
 				}

@@ -7,6 +7,7 @@
 
 namespace PostSMTP\Mail\Modern;
 
+use PostSMTP\Mail\Modern\Legacy\RevampLegacyMailHooks;
 use PostSMTP\Mail\Modern\Settings\OptionsReconciler;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,5 +19,6 @@ final class Register {
 	public static function init(): void {
 		WpMailHandler::init();
 		OptionsReconciler::init();
+		RevampLegacyMailHooks::init();
 	}
 }
