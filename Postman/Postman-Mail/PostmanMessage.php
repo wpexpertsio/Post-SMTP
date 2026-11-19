@@ -119,8 +119,33 @@ if ( ! class_exists( 'PostmanMessage' ) ) {
 				$textBody = '';
 				$htmlBody = '';
 				$mode = '';
+
+				// Per RFC 2046 §5.1.1, MIME boundary delimiter lines are
+				// `--<boundary>` (between parts) and `--<boundary>--`
+				// (closing). Without recognising them, the loop below
+				// captures these markers into the body of whichever part
+				// is currently being read, and the recipient's email
+				// client renders them as visible text.
+				$delimiter         = ! empty( $this->boundary ) ? '--' . $this->boundary : '';
+				$closing_delimiter = ! empty( $this->boundary ) ? '--' . $this->boundary . '--' : '';
+
 				foreach ( $arr as $s ) {
 					$this->logger->trace( 'mode: ' . $mode . ' bodyline: ' . $s );
+
+					// Strip a trailing CR that explode() on PHP_EOL ('\n'
+					// on *nix) leaves behind when the body uses CRLF
+					// terminators, so the boundary comparison is exact.
+					$line = rtrim( $s, "\r" );
+
+					if ( '' !== $delimiter && ( $line === $delimiter || $line === $closing_delimiter ) ) {
+						// End of the current part. Reset to neutral mode
+						// so the next Content-Type line picks up the
+						// next part (or, for the closing delimiter, so
+						// trailing epilogue is ignored).
+						$mode = '';
+						continue;
+					}
+
 					if ( substr( $s, 0, 25 ) === 'Content-Type: text/plain;' ) {
 						$mode = 'foundText';
 					} else if ( substr( $s, 0, 24 ) === 'Content-Type: text/html;' ) {
