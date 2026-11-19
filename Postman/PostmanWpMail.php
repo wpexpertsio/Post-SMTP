@@ -511,6 +511,9 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			assert( ! empty( $transport ) );
 			assert( ! empty( $options ) );
 			assert( ! empty( $authorizationToken ) );
+			if ( apply_filters( 'post_smtp_skip_oauth_token_refresh', false, $transport, $options, $authorizationToken ) ) {
+				return;
+			}
 			// ensure the token is up-to-date
 			$this->logger->debug( 'Ensuring Access Token is up-to-date' );
 			// interact with the Authentication Manager

@@ -7,6 +7,8 @@
 
 namespace PostSMTP\Kernel\Providers\Modern;
 
+use PostSMTP\Kernel\Data\SecretCodec;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -48,9 +50,23 @@ abstract class AbstractApiProvider {
 		}
 
 		$body_text = wp_remote_retrieve_body( $response );
+		$message   = $body_text ?: sprintf( __( 'HTTP %d error.', 'post-smtp' ), $code );
+		$parsed    = json_decode( (string) $body_text, true );
+		if ( is_array( $parsed ) && ! empty( $parsed['errors'] ) && is_array( $parsed['errors'] ) ) {
+			$parts = array();
+			foreach ( $parsed['errors'] as $error ) {
+				if ( is_array( $error ) && ! empty( $error['message'] ) ) {
+					$parts[] = (string) $error['message'];
+				}
+			}
+			if ( ! empty( $parts ) ) {
+				$message = implode( ' ', $parts );
+			}
+		}
+
 		return array(
 			'success'    => false,
-			'message'    => $body_text ?: sprintf( __( 'HTTP %d error.', 'post-smtp' ), $code ),
+			'message'    => $message,
 			'send'       => false,
 			'error_code' => $code,
 		);
@@ -60,8 +76,15 @@ abstract class AbstractApiProvider {
 	 * @param array<string,mixed> $connection Connection row.
 	 */
 	protected function mapConnectionFields( array $connection ): array {
+		$api_key = (string) ( $connection['sendgrid_api_key'] ?? $connection['sendinblue_api_key'] ?? $connection['api_key'] ?? '' );
+		if ( preg_match( '/^•+$/u', $api_key ) ) {
+			$api_key = '';
+		} else {
+			$api_key = SecretCodec::decode( $api_key );
+		}
+
 		return array(
-			'api_key'    => $connection['sendgrid_api_key'] ?? $connection['sendinblue_api_key'] ?? $connection['api_key'] ?? '',
+			'api_key'    => $api_key,
 			'from_email' => $connection['sender_email'] ?? $connection['from_email'] ?? '',
 			'from_name'  => $connection['sender_name'] ?? $connection['from_name'] ?? get_bloginfo( 'name' ),
 		);

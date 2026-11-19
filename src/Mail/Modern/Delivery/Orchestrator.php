@@ -8,6 +8,7 @@
 namespace PostSMTP\Mail\Modern\Delivery;
 
 use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
+use PostSMTP\Kernel\Data\SecretCodec;
 use PostSMTP\Kernel\Providers\ProviderRegistry;
 use PostSMTP\Mail\Modern\EmailLog\Events;
 use PostSMTP\Mail\Modern\Envelope\Envelope;
@@ -121,6 +122,7 @@ final class Orchestrator {
 		bool $is_fallback,
 		int $connection_index
 	): array {
+		$connection    = SecretCodec::decodeConnectionRow( $connection );
 		$provider_slug = (string) ( $connection['provider'] ?? 'smtp' );
 		$provider      = $this->registry->create( $provider_slug );
 

@@ -8,6 +8,7 @@
 namespace PostSMTP\Connections;
 
 use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
+use PostSMTP\Kernel\Data\SecretCodec;
 use PostmanOptions;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -233,6 +234,11 @@ final class ConnectionLegacySendBridge {
 		} elseif ( in_array( $legacy_transport, array( 'gmail_api', 'office365_api', 'zohomail_api' ), true ) ) {
 			$patch[ PostmanOptions::AUTHENTICATION_TYPE ] = PostmanOptions::AUTHENTICATION_TYPE_OAUTH2;
 			$patch                                        = array_merge( self::clearPrimarySmtpCredentialFields(), $patch );
+			if ( 'gmail_api' === $legacy_transport ) {
+				$patch = array_merge( self::clearLegacyGmailOAuthCredentialFields(), $patch );
+				$patch[ PostmanOptions::CLIENT_ID ]     = self::resolveGmailOAuthClientIdFromRow( $row );
+				$patch[ PostmanOptions::CLIENT_SECRET ] = trim( SecretCodec::decode( (string) ( $row['oauth_client_secret'] ?? '' ) ) );
+			}
 		} else {
 			$patch = array_merge( self::clearPrimarySmtpCredentialFields(), $patch );
 		}
@@ -254,6 +260,42 @@ final class ConnectionLegacySendBridge {
 			PostmanOptions::BASIC_AUTH_PASSWORD  => '',
 			PostmanOptions::AUTHENTICATION_TYPE  => PostmanOptions::AUTHENTICATION_TYPE_NONE,
 		);
+	}
+
+	/**
+	 * Drop stale OAuth client fields from a previous mailer before patching Gmail API credentials.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private static function clearLegacyGmailOAuthCredentialFields(): array {
+		return array(
+			PostmanOptions::CLIENT_ID     => '',
+			PostmanOptions::CLIENT_SECRET => '',
+		);
+	}
+
+	/**
+	 * @param array<string,mixed> $row Connection row.
+	 */
+	private static function resolveGmailOAuthClientIdFromRow( array $row ): string {
+		$client_id = trim( SecretCodec::decode( (string) ( $row['oauth_client_id'] ?? '' ) ) );
+		if ( '' === $client_id ) {
+			return '';
+		}
+
+		if ( preg_match(
+			'/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i',
+			$client_id
+		) ) {
+			return '';
+		}
+
+		$client_id_lower = strtolower( $client_id );
+		if ( false === strpos( $client_id_lower, 'googleusercontent.com' ) ) {
+			return '';
+		}
+
+		return $client_id;
 	}
 
 	/**

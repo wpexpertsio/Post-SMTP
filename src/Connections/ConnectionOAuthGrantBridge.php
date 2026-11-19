@@ -241,7 +241,8 @@ final class ConnectionOAuthGrantBridge {
 		$sender_name   = (string) ( $row['sender_name'] ?? $row['from_name'] ?? '' );
 
 		if ( 'gmail_api' === $provider ) {
-			$client_id = self::resolveGmailOAuthClientIdFromRow( $row );
+			$client_id     = self::resolveGmailOAuthClientIdFromRow( $row );
+			$client_secret = SecretCodec::decode( $client_secret );
 		}
 
 		if ( 'office365_api' === $provider ) {
@@ -712,16 +713,11 @@ final class ConnectionOAuthGrantBridge {
 	 */
 	private static function resolveGmailOAuthClientIdFromRow( array $row ): string {
 		$client_id = trim( SecretCodec::decode( (string) ( $row['oauth_client_id'] ?? '' ) ) );
-		if ( '' === $client_id ) {
+		if ( '' === $client_id || self::looksLikeMicrosoftApplicationId( $client_id ) ) {
 			return '';
 		}
 
-		if ( ! self::looksLikeMicrosoftApplicationId( $client_id ) ) {
-			return $client_id;
-		}
-
-		$office_id = trim( SecretCodec::decode( (string) ( $row['office365_app_id'] ?? '' ) ) );
-		if ( '' !== $office_id && strcasecmp( $client_id, $office_id ) === 0 ) {
+		if ( ! self::isPlausibleGmailOAuthClientId( $client_id ) ) {
 			return '';
 		}
 

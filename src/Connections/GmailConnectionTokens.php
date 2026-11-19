@@ -271,8 +271,11 @@ final class GmailConnectionTokens {
 		);
 
 		if ( 'gmail_api' === $provider ) {
-			$new_row['oauth_client_id']     = SecretCodec::decode( (string) ( $options['oauth_client_id'] ?? '' ) );
-			$new_row['oauth_client_secret'] = SecretCodec::decode( (string) ( $options['oauth_client_secret'] ?? '' ) );
+			$candidate_id = SecretCodec::decode( (string) ( $options['oauth_client_id'] ?? '' ) );
+			if ( self::isPlausibleGmailOAuthClientId( $candidate_id ) ) {
+				$new_row['oauth_client_id']     = $candidate_id;
+				$new_row['oauth_client_secret'] = SecretCodec::decode( (string) ( $options['oauth_client_secret'] ?? '' ) );
+			}
 		}
 
 		if ( ! isset( $connections[ $index ] ) ) {
@@ -360,8 +363,11 @@ final class GmailConnectionTokens {
 			'title'          => (string) ( $options['sender_name'] ?? __( 'Gmail', 'post-smtp' ) ),
 		);
 
-		$new_row['oauth_client_id']     = SecretCodec::decode( (string) ( $options['oauth_client_id'] ?? '' ) );
-		$new_row['oauth_client_secret'] = SecretCodec::decode( (string) ( $options['oauth_client_secret'] ?? '' ) );
+		$candidate_id = SecretCodec::decode( (string) ( $options['oauth_client_id'] ?? '' ) );
+		if ( self::isPlausibleGmailOAuthClientId( $candidate_id ) ) {
+			$new_row['oauth_client_id']     = $candidate_id;
+			$new_row['oauth_client_secret'] = SecretCodec::decode( (string) ( $options['oauth_client_secret'] ?? '' ) );
+		}
 
 		$connections[] = $new_row;
 		$index         = count( $connections ) - 1;
@@ -901,6 +907,14 @@ final class GmailConnectionTokens {
 		};
 		add_filter( 'post_smtp_test_email_skip_fallback', $skip_fallback );
 
+		$skip_oauth_refresh = null;
+		if ( self::shouldSkipLegacyOAuthTokenRefreshForConnection( $connection ) ) {
+			$skip_oauth_refresh = static function () {
+				return true;
+			};
+			add_filter( 'post_smtp_skip_oauth_token_refresh', $skip_oauth_refresh, 10, 4 );
+		}
+
 		$headers     = $atts['headers'] ?? '';
 		$attachments = $atts['attachments'] ?? array();
 
@@ -914,6 +928,9 @@ final class GmailConnectionTokens {
 		);
 
 		remove_filter( 'post_smtp_test_email_skip_fallback', $skip_fallback );
+		if ( null !== $skip_oauth_refresh ) {
+			remove_filter( 'post_smtp_skip_oauth_token_refresh', $skip_oauth_refresh, 10 );
+		}
 
 		$result = apply_filters( 'postman_wp_mail_result', null );
 		if ( ! is_array( $result ) ) {
@@ -967,5 +984,53 @@ final class GmailConnectionTokens {
 		}
 
 		return 0;
+	}
+
+	/**
+	 * Gmail one-click sends via middleware; legacy Google OAuth refresh needs no client ID.
+	 *
+	 * @param array<string,mixed> $connection Active connection row.
+	 */
+	public static function shouldSkipLegacyOAuthTokenRefreshForConnection( array $connection ): bool {
+		if ( ! self::isGmailOneClickExtensionEnabled() ) {
+			return false;
+		}
+
+		$tab = sanitize_key( (string) ( $connection['gmail_connect_tab'] ?? '' ) );
+		if ( 'manual' === $tab ) {
+			$row_id = trim( SecretCodec::decode( (string) ( $connection['oauth_client_id'] ?? '' ) ) );
+			return '' === $row_id || ! self::isPlausibleGmailOAuthClientId( $row_id );
+		}
+
+		if ( 'one_click' === $tab ) {
+			return true;
+		}
+
+		$row_id = trim( SecretCodec::decode( (string) ( $connection['oauth_client_id'] ?? '' ) ) );
+
+		return '' === $row_id || ! self::isPlausibleGmailOAuthClientId( $row_id );
+	}
+
+	public static function isGmailOneClickExtensionEnabled(): bool {
+		$pro = get_option( 'post_smtp_pro', array() );
+
+		return is_array( $pro )
+			&& in_array( 'gmail-oneclick', $pro['extensions'] ?? array(), true );
+	}
+
+	private static function isPlausibleGmailOAuthClientId( string $client_id ): bool {
+		$client_id = trim( SecretCodec::decode( $client_id ) );
+		if ( '' === $client_id ) {
+			return false;
+		}
+
+		if ( preg_match(
+			'/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i',
+			$client_id
+		) ) {
+			return false;
+		}
+
+		return false !== strpos( strtolower( $client_id ), 'googleusercontent.com' );
 	}
 }
