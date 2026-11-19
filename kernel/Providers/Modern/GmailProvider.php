@@ -9,6 +9,7 @@ namespace PostSMTP\Kernel\Providers\Modern;
 
 use PostSMTP\Connections\GmailConnectionTokens;
 use PostSMTP\Kernel\Providers\ProviderInterface;
+use PostSMTP\Mail\Modern\Legacy\GmailRevampLegacySend;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
