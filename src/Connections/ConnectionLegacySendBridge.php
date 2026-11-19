@@ -238,6 +238,18 @@ final class ConnectionLegacySendBridge {
 				$patch = array_merge( self::clearLegacyGmailOAuthCredentialFields(), $patch );
 				$patch[ PostmanOptions::CLIENT_ID ]     = self::resolveGmailOAuthClientIdFromRow( $row );
 				$patch[ PostmanOptions::CLIENT_SECRET ] = trim( SecretCodec::decode( (string) ( $row['oauth_client_secret'] ?? '' ) ) );
+			} elseif ( 'office365_api' === $legacy_transport ) {
+				$app_id = trim( SecretCodec::decode( (string) ( $row['office365_app_id'] ?? '' ) ) );
+				$secret = trim( SecretCodec::decode( (string) ( $row['office365_app_password'] ?? '' ) ) );
+				if ( '' !== $app_id ) {
+					$patch['office365_app_id'] = SecretCodec::encodeSingleBase64( $app_id );
+				}
+				if ( '' !== $secret ) {
+					$patch['office365_app_password'] = SecretCodec::encodeSingleBase64( $secret );
+				}
+				$patch[ PostmanOptions::HOSTNAME ] = 'smtp.office365.com';
+				$patch[ PostmanOptions::PORT ]     = 443;
+				$patch[ PostmanOptions::SECURITY_TYPE ] = \PostmanOptions::SECURITY_TYPE_SMTPS;
 			}
 		} else {
 			$patch = array_merge( self::clearPrimarySmtpCredentialFields(), $patch );
