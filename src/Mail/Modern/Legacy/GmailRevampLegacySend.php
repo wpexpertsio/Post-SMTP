@@ -7,6 +7,8 @@
 
 namespace PostSMTP\Mail\Modern\Legacy;
 
+use PostSMTP\Connections\GmailConnectionTokens;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -21,7 +23,9 @@ final class GmailRevampLegacySend {
 	 * @return array{success:bool,message:string,send:bool,transcript?:string}
 	 */
 	public static function send( array $atts, ?int $log_id, array $connection, array $processed_data ): array {
-		unset( $log_id, $connection, $processed_data );
+		if ( class_exists( GmailConnectionTokens::class, false ) ) {
+			return GmailConnectionTokens::sendViaLegacyTransport( $atts, $log_id, $connection, $processed_data );
+		}
 
 		return RevampLegacyPostmanSend::send(
 			$atts,

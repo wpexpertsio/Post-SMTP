@@ -685,9 +685,7 @@ final class GmailConnectionTokens {
 
 		if ( self::usesPerConnectionTokenStore() ) {
 			self::primeSendFromConnection( $index );
-			if ( class_exists( '\PostmanOAuthToken', false ) && method_exists( '\PostmanOAuthToken', 'reloadFromOption' ) ) {
-				\PostmanOAuthToken::getInstance()->reloadFromOption();
-			}
+			self::applyToPostmanOAuthToken();
 			return;
 		}
 
@@ -778,6 +776,26 @@ final class GmailConnectionTokens {
 	}
 
 	/**
+	 * Push primed per-connection tokens into the legacy OAuth singleton (revamp sends).
+	 */
+	public static function applyToPostmanOAuthToken(): void {
+		if ( ! self::isSendContextPrimed() || ! class_exists( '\PostmanOAuthToken', false ) ) {
+			return;
+		}
+
+		$config = self::getSendConfig();
+		if ( '' === (string) ( $config[ self::REFRESH_TOKEN ] ?? '' ) ) {
+			return;
+		}
+
+		$token = \PostmanOAuthToken::getInstance();
+		$token->setAccessToken( (string) ( $config[ self::ACCESS_TOKEN ] ?? '' ) );
+		$token->setRefreshToken( (string) ( $config[ self::REFRESH_TOKEN ] ?? '' ) );
+		$token->setExpiryTime( (string) ( $config[ self::TOKEN_EXPIRES ] ?? '' ) );
+		$token->setVendorName( (string) ( $config['vendor_name'] ?? 'google' ) );
+	}
+
+	/**
 	 * @param mixed $pre Value from pre_option filter.
 	 * @return mixed
 	 */
@@ -804,7 +822,9 @@ final class GmailConnectionTokens {
 	public static function filterOptionRead( $value ) {
 		if ( self::isSendContextPrimed() ) {
 			$config = self::getSendConfig();
-			if ( is_array( $config ) && '' !== (string) ( $config['access_token'] ?? '' ) ) {
+			if ( is_array( $config )
+				&& '' !== (string) ( $config['access_token'] ?? '' )
+				&& '' !== (string) ( $config['refresh_token'] ?? '' ) ) {
 				return $config;
 			}
 		}
