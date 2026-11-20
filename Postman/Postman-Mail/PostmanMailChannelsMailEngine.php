@@ -47,12 +47,15 @@ class PostmanMailChannelsMailEngine implements PostmanMailEngine {
 		) );
 		$factory = new PostSMTP\Vendor\GuzzleHttp\Psr7\HttpFactory();
 		// Explicit dependencies avoid discovery and conflicts with other plugins.
+		// A custom user agent replaces the SDK's, so keep its token after ours.
 		return new PostSMTP\Vendor\MailChannels\Client(
 			$this->apiKey,
 			'https://api.mailchannels.net/tx/v1',
 			$http,
 			$factory,
-			$factory
+			$factory,
+			null,
+			'mailchannels-post-smtp/' . POST_SMTP_VER . ' ' . PostSMTP\Vendor\MailChannels\Version::userAgent()
 		);
 	}
 

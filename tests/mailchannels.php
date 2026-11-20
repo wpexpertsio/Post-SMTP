@@ -6,6 +6,7 @@ if ( PHP_SAPI !== 'cli' ) {
 define( 'ABSPATH', __DIR__ );
 define( 'POST_SMTP_ASSETS', '/assets/' );
 define( 'WP_DEBUG', true );
+define( 'POST_SMTP_VER', '4.0.2' );
 error_reporting( E_ALL & ~E_DEPRECATED );
 set_error_handler( function ( $level, $message, $file, $line ) {
 	if ( error_reporting() & $level ) {
@@ -156,6 +157,7 @@ check( $transport->isConfiguredAndReady(), 'Configured transport must be ready o
 $client = $engine->productionClient();
 check( $client instanceof PostSMTP\Vendor\MailChannels\Client, 'Must load the official, isolated SDK.' );
 check( $client->config()->baseUrl === 'https://api.mailchannels.net/tx/v1', 'Endpoint must be fixed.' );
+check( $client->config()->resolvedUserAgent() === 'mailchannels-post-smtp/4.0.2 mailchannels-php/' . PostSMTP\Vendor\MailChannels\Version::VERSION, 'User-Agent must name Post SMTP before the SDK.' );
 check( $client->config()->httpClient->getConfig( 'timeout' ) > 0, 'HTTP requests must have a timeout.' );
 check( ! class_exists( 'MailChannels\\Client', false ), 'Must not pollute the global SDK namespace.' );
 
