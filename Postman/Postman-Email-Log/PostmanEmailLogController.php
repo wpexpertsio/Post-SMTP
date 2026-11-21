@@ -203,6 +203,11 @@ class PostmanEmailLogController {
 		$postid = $this->getRequestParameter( 'email' );
 		if ( ! empty( $postid ) ) {
 			$meta_values = PostmanLogFields::get_instance()->get( $postid );
+			$log = array_map( 'current', (array) $meta_values );
+			if ( class_exists( 'PostmanMailChannelsTransport' ) && ! PostmanMailChannelsTransport::canResendLog( $log ) ) {
+				wp_send_json_error( array( 'message' => PostmanMailChannelsTransport::resendHoldMessage() ) );
+				return;
+			}
 
 			if ( isset( $_POST['mail_to'] ) && ! empty( $_POST['mail_to'] ) ) {
 				$emails = explode( ',', $_POST['mail_to'] );

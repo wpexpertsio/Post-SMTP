@@ -230,6 +230,10 @@ class Post_SMTP_Mobile_Rest_API {
             $log = $email_query_log->get_log( $id );
             $to = '';
 
+            if ( $log && class_exists( 'PostmanMailChannelsTransport' ) && ! PostmanMailChannelsTransport::canResendLog( $log ) ) {
+                wp_send_json_error( array( 'message' => PostmanMailChannelsTransport::resendHoldMessage() ), 200 );
+            }
+
             if( $log ) {
 
 				$to = $log['original_to'];

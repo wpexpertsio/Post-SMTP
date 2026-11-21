@@ -219,6 +219,13 @@ if ( ! class_exists( 'PSD_Rest_API' ) ) {
 			$log             = $email_query_log->get_log( $id );
 			$headers         = '';
 
+			if ( $log && class_exists( 'PostmanMailChannelsTransport' ) && ! PostmanMailChannelsTransport::canResendLog( $log ) ) {
+				return array(
+					'success' => false,
+					'message' => PostmanMailChannelsTransport::resendHoldMessage(),
+				);
+			}
+
 			if ( $log ) {
 				if ( ! empty( $recipient_email ) ) {
 					$emails = explode( ',', $recipient_email );

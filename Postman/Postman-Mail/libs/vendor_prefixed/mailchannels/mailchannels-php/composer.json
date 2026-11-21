@@ -1,0 +1,89 @@
+{
+    "name": "mailchannels/mailchannels-php",
+    "description": "Official PHP SDK for the MailChannels Email API.",
+    "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "mailchannels",
+        "email",
+        "sdk",
+        "smtp",
+        "psr-7",
+        "psr-18"
+    ],
+    "homepage": "https://www.mailchannels.com/",
+    "require": {
+        "php": ">=8.2",
+        "ext-json": "*",
+        "php-http/discovery": "^1.19",
+        "psr/http-client": "^1.0",
+        "psr/http-factory": "^1.0",
+        "psr/http-message": "^1.1 || ^2.0",
+        "psr/log": "^1.1 || ^2.0 || ^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5",
+        "guzzlehttp/guzzle": "^7.8",
+        "guzzlehttp/psr7": "^2.6",
+        "symfony/http-client": "^6.4 || ^7.0",
+        "symfony/mailer": "^6.4 || ^7.0 || ^8.0",
+        "symfony/webhook": "^7.2",
+        "symfony/remote-event": "^7.2",
+        "illuminate/mail": "^12.0 || ^13.0",
+        "nyholm/psr7": "^1.8",
+        "phpstan/phpstan": "^2.1",
+        "ext-sodium": "*"
+    },
+    "suggest": {
+        "guzzlehttp/guzzle": "PSR-18 client and PSR-17 factories in one package. Recommended for most projects; install this OR symfony/http-client, not both.",
+        "symfony/http-client": "Alternative PSR-18 client. Pair with nyholm/psr7 for PSR-17 factories. Install this OR guzzlehttp/guzzle, not both.",
+        "nyholm/psr7": "Standalone PSR-7 messages and PSR-17 factories. Required if you pick symfony/http-client; optional with guzzlehttp/guzzle.",
+        "symfony/mailer": "Required only if you use the Symfony Mailer transport (MailChannelsApiTransport / MailChannelsTransportFactory).",
+        "symfony/webhook": "Required only if you use the Symfony webhook processor (MailChannelsPayloadConverter). Requires version 7.2 or higher.",
+        "symfony/remote-event": "Required only if you use the Symfony webhook processor (MailChannelsPayloadConverter).",
+        "ext-sodium": "Required only if you use the Symfony webhook processor (MailChannelsPayloadConverter). Used for verifying webhook signatures.",
+        "illuminate/mail": "Required only if you use the Laravel Mail driver integration (MailChannelsServiceProvider)."
+    },
+    "autoload": {
+        "psr-4": {
+            "MailChannels\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MailChannels\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "phpunit": "phpunit",
+        "test:coverage": "phpunit --coverage-clover=coverage.xml --coverage-text",
+        "check-coverage": "php scripts/check-coverage.php coverage.xml 85",
+        "api-reference": "php scripts/generate-api-reference.php",
+        "api-version": "php scripts/update-api-version.php",
+        "phpstan": "phpstan analyse src tests --level=max --memory-limit=512M",
+        "ci": [
+            "@phpstan",
+            "@test:coverage",
+            "@check-coverage",
+            "@api-reference",
+            "git diff --exit-code -- docs/API_REFERENCE.md",
+            "@api-version",
+            "git diff --exit-code -- README.md"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MailChannels\\Plugins\\Laravel\\MailChannelsServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable"
+}
