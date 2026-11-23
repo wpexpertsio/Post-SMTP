@@ -22,7 +22,8 @@ export function connectionLabel( connection, fallbackTransport ) {
 	if ( ! connection ) {
 		return formatTransportLabel( fallbackTransport );
 	}
-	return connection.title || formatTransportLabel( connection.provider );
+	const title = connection.title || connection.connection_title || '';
+	return title.trim() || formatTransportLabel( connection.provider );
 }
 
 export function connectionEmail( connection, fallbackEmail ) {

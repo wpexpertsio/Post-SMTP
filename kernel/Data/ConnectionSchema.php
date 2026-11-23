@@ -63,21 +63,7 @@ final class ConnectionSchema {
 			}
 		}
 
-		if ( ! empty( $sanitized['connection_title'] ) && empty( $sanitized['title'] ) ) {
-			$sanitized['title'] = $sanitized['connection_title'];
-		}
-		if ( ! empty( $sanitized['from_email'] ) && empty( $sanitized['sender_email'] ) ) {
-			$sanitized['sender_email'] = $sanitized['from_email'];
-		}
-		if ( ! empty( $sanitized['from_name'] ) && empty( $sanitized['sender_name'] ) ) {
-			$sanitized['sender_name'] = $sanitized['from_name'];
-		}
-		if ( ! empty( $sanitized['from_email'] ) && empty( $sanitized['sender_email'] ) ) {
-			$sanitized['sender_email'] = $sanitized['from_email'];
-		}
-		if ( ! empty( $sanitized['connection_title'] ) && empty( $sanitized['title'] ) ) {
-			$sanitized['title'] = $sanitized['connection_title'];
-		}
+		self::syncCanonicalFromConfigureFormFields( $sanitized, $row );
 
 		if ( isset( $sanitized['office365_connect_tab'] ) ) {
 			$tab = sanitize_key( (string) $sanitized['office365_connect_tab'] );
@@ -90,6 +76,42 @@ final class ConnectionSchema {
 		}
 
 		return $sanitized;
+	}
+
+	/**
+	 * Revamp Connections UI edits connection_title / from_email / from_name; storage uses title / sender_*.
+	 * When those form keys are present on save, they win over stale canonical fields in the payload.
+	 *
+	 * @param array<string,mixed> $sanitized Output of field sanitization.
+	 * @param array<string,mixed> $raw       Raw request row (before sanitize).
+	 */
+	private static function syncCanonicalFromConfigureFormFields( array &$sanitized, array $raw ): void {
+		if ( array_key_exists( 'connection_title', $raw ) ) {
+			$connection_title = trim( (string) ( $sanitized['connection_title'] ?? '' ) );
+			if ( '' !== $connection_title ) {
+				$sanitized['title'] = $connection_title;
+			}
+		} elseif ( ! empty( $sanitized['connection_title'] ) && empty( $sanitized['title'] ) ) {
+			$sanitized['title'] = $sanitized['connection_title'];
+		}
+
+		if ( array_key_exists( 'from_email', $raw ) ) {
+			$from_email = trim( (string) ( $sanitized['from_email'] ?? '' ) );
+			if ( '' !== $from_email ) {
+				$sanitized['sender_email'] = $from_email;
+			}
+		} elseif ( ! empty( $sanitized['from_email'] ) && empty( $sanitized['sender_email'] ) ) {
+			$sanitized['sender_email'] = $sanitized['from_email'];
+		}
+
+		if ( array_key_exists( 'from_name', $raw ) ) {
+			$from_name = trim( (string) ( $sanitized['from_name'] ?? '' ) );
+			if ( '' !== $from_name ) {
+				$sanitized['sender_name'] = $from_name;
+			}
+		} elseif ( ! empty( $sanitized['from_name'] ) && empty( $sanitized['sender_name'] ) ) {
+			$sanitized['sender_name'] = $sanitized['from_name'];
+		}
 	}
 
 	/**

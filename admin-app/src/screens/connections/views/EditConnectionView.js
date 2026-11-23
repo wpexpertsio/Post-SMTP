@@ -10,6 +10,7 @@ import ConfigureMailerForm from '../components/ConfigureMailerForm';
 import { buildGmailOAuthSaveRow } from '../components/GmailConfigurePanel';
 import FormNotice from '../components/FormNotice';
 import QueryState from '../../../components/ui/QueryState';
+import { normalizeConnectionSaveRow } from '../model/normalizeConnectionSaveRow';
 
 const EditConnectionView = () => {
 	const { id } = useParams();
@@ -103,10 +104,11 @@ const EditConnectionView = () => {
 	const handleSave = async () => {
 		setNotice( null );
 		try {
-			const row =
+			let row =
 				connection.provider === 'gmail_api'
 					? buildGmailOAuthSaveRow( formValues, connection.provider )
 					: formValues;
+			row = normalizeConnectionSaveRow( row );
 			const result = await update.mutateAsync( { index, row } );
 			setNotice( { type: 'success', message: result?.message || 'Connection saved.' } );
 			const savedRow = result?.connections?.find( ( c ) => c.id === index );

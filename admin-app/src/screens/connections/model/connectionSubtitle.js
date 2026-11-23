@@ -8,7 +8,7 @@ export function connectionSubtitle( connection ) {
 		return '';
 	}
 
-	const email = connection.sender_email || connection.from_email || '';
+	const email = ( connection.from_email || connection.sender_email || '' ).trim();
 	const host = connection.hostname || connection.host || '';
 	const port = connection.port || '';
 	const provider = connection.provider || '';

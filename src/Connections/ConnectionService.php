@@ -85,12 +85,18 @@ final class ConnectionService {
 	public static function mapRowForConfigureForm( array $row ): array {
 		if ( ! empty( $row['title'] ) && empty( $row['connection_title'] ) ) {
 			$row['connection_title'] = $row['title'];
+		} elseif ( ! empty( $row['connection_title'] ) && empty( $row['title'] ) ) {
+			$row['title'] = $row['connection_title'];
 		}
 		if ( ! empty( $row['sender_email'] ) && empty( $row['from_email'] ) ) {
 			$row['from_email'] = $row['sender_email'];
+		} elseif ( ! empty( $row['from_email'] ) && empty( $row['sender_email'] ) ) {
+			$row['sender_email'] = $row['from_email'];
 		}
 		if ( ! empty( $row['sender_name'] ) && empty( $row['from_name'] ) ) {
 			$row['from_name'] = $row['sender_name'];
+		} elseif ( ! empty( $row['from_name'] ) && empty( $row['sender_name'] ) ) {
+			$row['sender_name'] = $row['from_name'];
 		}
 
 		$provider = (string) ( $row['provider'] ?? '' );

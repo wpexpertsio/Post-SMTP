@@ -12,6 +12,7 @@ import FormNotice from '../components/FormNotice';
 import useMailerCatalog from '../hooks/useMailerCatalog';
 import ConnectionsChooseSidebar from '../components/ConnectionsChooseSidebar';
 import iconChevronBack from '../../../assets/dashboard/connections/icon-chevron-back.svg';
+import { normalizeConnectionSaveRow } from '../model/normalizeConnectionSaveRow';
 
 const urls = getAdminUrls();
 
@@ -57,6 +58,7 @@ const AddConnectionView = () => {
 			} else if ( selectedProvider === 'office365_api' ) {
 				payload = buildOffice365OAuthSaveRow( payload, selectedProvider );
 			}
+			payload = normalizeConnectionSaveRow( payload );
 			const result = await create.mutateAsync( payload );
 			setNotice( { type: 'success', message: result?.message || 'Connection saved.' } );
 			const newId = typeof result?.id === 'number' ? result.id : parseInt( result?.id, 10 );
