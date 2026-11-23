@@ -250,6 +250,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'symfony/polyfill-php80' => array(
+            'pretty_version' => 'v1.31.0',
+            'version' => '1.31.0.0',
+            'reference' => '60328e362d8c5e0c673edec7557a5d0a59b3f5d',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../symfony/polyfill-php80',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'wikimedia/composer-merge-plugin' => array(
             'pretty_version' => 'v2.1.0',
             'version' => '2.1.0.0',

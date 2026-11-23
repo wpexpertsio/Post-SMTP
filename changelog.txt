@@ -2,6 +2,9 @@
 
 All notable changes to this plugin are documented in this file.
 
+= Unreleased =
+* FIX - Restored Gmail and API mailer delivery on PHP 7.4 by shipping the Symfony PHP 8.0 polyfill required by the updated Guzzle libraries (POSTSMTP-516).
+
 = 4.0.4 - Nov 18, 2026 =
 * FIX - Fixed login issues affecting non-administrator roles after updating to version 4.0.3.
 

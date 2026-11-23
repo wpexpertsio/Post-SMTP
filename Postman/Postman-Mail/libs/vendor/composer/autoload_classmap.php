@@ -806,6 +806,7 @@ return array(
     'PostSMTP\\Vendor\\Symfony\\Polyfill\\Intl\\Idn\\Resources\\unidata\\Regex' => $baseDir . '/vendor_prefixed/symfony/polyfill-intl-idn/Resources/unidata/Regex.php',
     'PostSMTP\\Vendor\\Symfony\\Polyfill\\Mbstring\\Mbstring' => $baseDir . '/vendor_prefixed/symfony/polyfill-mbstring/Mbstring.php',
     'PostSMTP\\Vendor\\Symfony\\Polyfill\\Php72\\Php72' => $baseDir . '/vendor_prefixed/symfony/polyfill-php72/Php72.php',
+    'PostSMTP\\Vendor\\Symfony\\Polyfill\\Php80\\Php80' => $baseDir . '/vendor_prefixed/symfony/polyfill-php80/Php80.php',
     'PostSMTP\\WP' => $baseDir . '/src/WP.php',
     'PostSMTP\\WPMailArgs' => $baseDir . '/src/WPMailArgs.php',
     'PostSMTP\\WPMailInitiator' => $baseDir . '/src/WPMailInitiator.php',

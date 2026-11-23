@@ -9,6 +9,7 @@ class ComposerStaticInit473736c55a35b9a077f93cfc42f4bbf5
     public static $files = array (
         '2bb094e40611cb5eccea789f32aff634' => __DIR__ . '/../..' . '/vendor_prefixed/symfony/polyfill-mbstring/bootstrap.php',
         '1fd84176824b5a44e7bd8da85eca7e14' => __DIR__ . '/../..' . '/vendor_prefixed/symfony/polyfill-php72/bootstrap.php',
+        'ffbeaf69f16b9a04d4f56e71aafb41ec' => __DIR__ . '/../..' . '/vendor_prefixed/symfony/polyfill-php80/bootstrap.php',
         '606299e0d90ec13f1e6b53164b8387df' => __DIR__ . '/../..' . '/vendor_prefixed/symfony/polyfill-intl-idn/bootstrap.php',
         '2d822e735b5b1897d96a7a28221d6513' => __DIR__ . '/../..' . '/vendor_prefixed/symfony/deprecation-contracts/function.php',
         '6fe0d6ea1deb6acc74bbe64573a83e1c' => __DIR__ . '/../..' . '/vendor_prefixed/guzzlehttp/guzzle/src/functions_include.php',
@@ -837,6 +838,7 @@ class ComposerStaticInit473736c55a35b9a077f93cfc42f4bbf5
         'PostSMTP\\Vendor\\Symfony\\Polyfill\\Intl\\Idn\\Resources\\unidata\\Regex' => __DIR__ . '/../..' . '/vendor_prefixed/symfony/polyfill-intl-idn/Resources/unidata/Regex.php',
         'PostSMTP\\Vendor\\Symfony\\Polyfill\\Mbstring\\Mbstring' => __DIR__ . '/../..' . '/vendor_prefixed/symfony/polyfill-mbstring/Mbstring.php',
         'PostSMTP\\Vendor\\Symfony\\Polyfill\\Php72\\Php72' => __DIR__ . '/../..' . '/vendor_prefixed/symfony/polyfill-php72/Php72.php',
+        'PostSMTP\\Vendor\\Symfony\\Polyfill\\Php80\\Php80' => __DIR__ . '/../..' . '/vendor_prefixed/symfony/polyfill-php80/Php80.php',
         'PostSMTP\\WP' => __DIR__ . '/../..' . '/src/WP.php',
         'PostSMTP\\WPMailArgs' => __DIR__ . '/../..' . '/src/WPMailArgs.php',
         'PostSMTP\\WPMailInitiator' => __DIR__ . '/../..' . '/src/WPMailInitiator.php',
