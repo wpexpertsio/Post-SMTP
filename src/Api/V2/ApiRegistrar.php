@@ -32,6 +32,7 @@ final class ApiRegistrar {
 				( new SettingsController() )->register_routes();
 				( new DashboardReportsTrackingController() )->register_routes();
 				( new DashboardReportsEmailQuotaController() )->register_routes();
+				( new SetupWizardController() )->register_routes();
 			}
 		);
 	}

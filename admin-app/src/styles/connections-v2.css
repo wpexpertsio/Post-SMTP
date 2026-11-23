@@ -81,6 +81,13 @@
 	margin-bottom: 20px;
 }
 
+.ps-v2-conn-panel__actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-shrink: 0;
+}
+
 .ps-v2-conn-panel__intro {
 	display: flex;
 	flex-direction: column;

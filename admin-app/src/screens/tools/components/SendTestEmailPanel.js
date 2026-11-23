@@ -122,9 +122,14 @@ const SendTestEmailPanel = () => {
 				<p className="ps-v2-tools-panel__lead">
 					Configure a mailer connection before you can send a test email.
 				</p>
-				<Link to="/connections" className="ps-v2-btn ps-v2-btn--primary">
-					Open Connections
-				</Link>
+				<div className="ps-v2-tools-empty__actions">
+					<Link to="/setup-wizard" className="ps-v2-btn ps-v2-btn--primary">
+						Open Setup Wizard
+					</Link>
+					<Link to="/connections" className="ps-v2-btn ps-v2-btn--ghost">
+						Open Connections
+					</Link>
+				</div>
 			</div>
 		);
 	}

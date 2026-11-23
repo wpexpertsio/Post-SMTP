@@ -9,6 +9,7 @@ namespace PostSMTP\Admin;
 
 use PostSMTP\Connections\ConnectionOAuthReturnBridge;
 use PostSMTP\Rollout\CohortResolver;
+use PostSMTP\SetupWizard\SetupWizardService;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -173,6 +174,8 @@ final class ReactAdminLoader {
 		$has_pro = defined( 'POST_SMTP_PRO_VERSION' )
 			|| ( function_exists( 'pspro_fs' ) && pspro_fs()->is_registered() );
 
+		$setup_wizard_complete = ( new SetupWizardService() )->isWizardComplete();
+
 		$config = array(
 			'apiRoot'        => esc_url_raw( rest_url( 'post-smtp/v2/' ) ),
 			'dashboardApi'   => esc_url_raw( rest_url( 'psd/v1/' ) ),
@@ -182,7 +185,9 @@ final class ReactAdminLoader {
 			'isLegacy'       => \PostSMTP\Kernel\Data\ConnectionRepositoryFactory::isLegacyMode(),
 			'isPro'          => (bool) $has_pro,
 			'hasReportTracking' => is_plugin_active( 'report-and-tracking-addon-premium/post-smtp-report-and-tracking.php' ),
-			'isConfigured'   => (bool) $configured,
+			'isConfigured'        => (bool) $configured,
+			'setupWizardComplete' => $setup_wizard_complete,
+			'showSetupWizardPrompt' => ! $setup_wizard_complete || ! $configured,
 			'transport'      => sanitize_text_field( (string) $transport ),
 			'senderEmail'    => sanitize_email( (string) $sender ),
 			'siteName'       => sanitize_text_field( get_bloginfo( 'name' ) ),
@@ -202,7 +207,8 @@ final class ReactAdminLoader {
 				'emailLog'    => admin_url( 'admin.php?page=postman#/email-logs' ),
 				'reports'       => ReactAdminSubmenu::reportsDashboardUrl(),
 				'reportsLegacy' => admin_url( 'admin.php?page=postman_email_log' ),
-				'wizard'      => admin_url( 'admin.php?page=postman/configuration_wizard' ),
+				'wizard'      => admin_url( 'admin.php?page=postman#/setup-wizard' ),
+				'setupWizard' => admin_url( 'admin.php?page=postman#/setup-wizard' ),
 				'portTest'    => admin_url( 'admin.php?page=postman/port_test' ),
 				'diagnostics' => admin_url( 'admin.php?page=postman/diagnostics' ),
 				'migration'   => admin_url( 'admin.php?page=' . self::MIGRATION_PAGE_SLUG ),

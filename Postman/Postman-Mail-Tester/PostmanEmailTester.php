@@ -262,6 +262,141 @@ class Postman_Email_Tester {
         return isset( $parts[1] ) ? strtolower( trim( $parts[1] ) ) : '';
     }
 
+    /**
+     * Domain authentication check for revamp REST (setup wizard).
+     *
+     * @param string $from_email Sender address.
+     * @param string $socket     Provider slug.
+     * @param string $apikey     Optional API key header.
+     * @return array<string,mixed>
+     */
+    public function check_domain_auth_for_api( $from_email, $socket, $apikey = '' ) {
+        $from_email = sanitize_email( (string) $from_email );
+        $socket     = sanitize_text_field( (string) $socket );
+        $apikey     = sanitize_text_field( (string) $apikey );
+
+        if ( '' === $from_email || '' === $socket ) {
+            return array(
+                'success' => false,
+                'message' => __( 'Missing sender email or mailer.', 'post-smtp' ),
+            );
+        }
+
+        if ( $this->is_default_domain_provider( $from_email, $socket ) ) {
+            return array(
+                'success'     => true,
+                'unavailable' => true,
+                'messages'    => array(
+                    __( 'Domain authentication check skipped for default provider domains.', 'post-smtp' ),
+                ),
+            );
+        }
+
+        if ( ! $this->requires_test_api_verification( $socket ) ) {
+            return array(
+                'success'     => true,
+                'unavailable' => true,
+                'messages'    => array(
+                    __( 'Domain authentication is not available for this mailer.', 'post-smtp' ),
+                ),
+            );
+        }
+
+        $args = array(
+            'method'  => 'GET',
+            'timeout' => 45,
+            'headers' => array(
+                'X-MT-Token-WP' => $this->x_mt_token_wp,
+                'IP'            => isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( (string) $_SERVER['REMOTE_ADDR'] ) ) : '',
+                'Site-URL'      => get_site_url(),
+            ),
+        );
+
+        if ( '' !== $apikey ) {
+            $args['headers']['API-KEY'] = $apikey;
+        }
+
+        $verify_response = wp_remote_post(
+            "{$this->base_url}/email-auth-check?test_email={$from_email}&selector={$socket}",
+            $args
+        );
+
+        if ( is_wp_error( $verify_response ) ) {
+            return array(
+                'success'     => true,
+                'unavailable' => true,
+                'messages'    => array( $verify_response->get_error_message() ),
+            );
+        }
+
+        $verify_code = wp_remote_retrieve_response_code( $verify_response );
+        $verify_body = wp_remote_retrieve_body( $verify_response );
+
+        if ( 429 === (int) $verify_code ) {
+            return array(
+                'success' => false,
+                'message' => __( 'Too many requests. Try again later.', 'post-smtp' ),
+            );
+        }
+
+        if ( 200 !== (int) $verify_code ) {
+            return array(
+                'success'  => true,
+                'messages' => array( __( 'Could not load domain authentication results.', 'post-smtp' ) ),
+            );
+        }
+
+        $decoded = json_decode( $verify_body, true );
+        if ( ! is_array( $decoded ) ) {
+            $decoded = json_decode( wp_json_encode( json_decode( $verify_body ) ), true );
+        }
+        if ( ! is_array( $decoded ) ) {
+            return array(
+                'success'  => true,
+                'messages' => array( __( 'Unexpected response from domain check.', 'post-smtp' ) ),
+            );
+        }
+
+        return array(
+            'success' => true,
+            'spf'     => $this->normalize_auth_record( $decoded, 'spf' ),
+            'dkim'    => $this->normalize_auth_record( $decoded, 'dkim' ),
+            'dmarc'   => $this->normalize_auth_record( $decoded, 'dmarc' ),
+            'raw'     => $decoded,
+            'messages'=> array(),
+        );
+    }
+
+    /**
+     * @param array<string,mixed> $payload Remote JSON.
+     * @return array{status:string,label?:string,detail?:string}
+     */
+    private function normalize_auth_record( array $payload, $key ) {
+        $record = $payload[ $key ] ?? null;
+        if ( is_array( $record ) ) {
+            $status = strtolower( (string) ( $record['status'] ?? $record['result'] ?? '' ) );
+            if ( '' === $status && isset( $record['valid'] ) ) {
+                $status = $record['valid'] ? 'pass' : 'fail';
+            }
+            return array(
+                'status' => in_array( $status, array( 'pass', 'ok', 'success', 'valid' ), true ) ? 'pass' : ( '' === $status ? 'unknown' : 'fail' ),
+                'label'  => (string) ( $record['label'] ?? strtoupper( $key ) ),
+                'detail' => (string) ( $record['message'] ?? $record['detail'] ?? '' ),
+            );
+        }
+        if ( is_bool( $record ) ) {
+            return array(
+                'status' => $record ? 'pass' : 'fail',
+                'label'  => strtoupper( $key ),
+            );
+        }
+
+        return array(
+            'status' => 'unknown',
+            'label'  => strtoupper( $key ),
+        );
+    }
+
 
 }
 Postman_Email_Tester::get_instance();

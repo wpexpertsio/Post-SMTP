@@ -1,8 +1,6 @@
 import { Link } from 'react-router-dom';
-import { getAdminUrls } from '../../../config/admin';
 
 const EmailLogsEmptyState = ( { filtered } ) => {
-	const urls = getAdminUrls();
 	const config = window.postSmtpAdmin || {};
 
 	if ( filtered ) {
@@ -23,9 +21,9 @@ const EmailLogsEmptyState = ( { filtered } ) => {
 					Finish setup
 				</Link>
 			) }
-			<a href={ urls.wizard } className="ps-el-btn ps-el-btn--ghost">
+			<Link to="/setup-wizard" className="ps-el-btn ps-el-btn--ghost">
 				Open wizard
-			</a>
+			</Link>
 		</div>
 	);
 };

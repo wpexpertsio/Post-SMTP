@@ -542,6 +542,36 @@ final class ConnectionService {
 	}
 
 	/**
+	 * Validate and authenticate a wizard draft row (targets primary index 0).
+	 *
+	 * @param array<string,mixed> $row Raw form row.
+	 * @return array{success:bool,message?:string,row?:array<string,mixed>}
+	 */
+	public function validateStagedRow( array $row, string $provider ): array {
+		$row['provider'] = sanitize_key( $provider );
+		$repo            = ConnectionRepositoryFactory::make();
+		$connections     = $this->normalizeOnRead( $repo->getConnections(), $repo->getOptions() );
+		$sanitized       = ConnectionSchema::sanitizeRow( $row );
+		$sanitized['provider'] = $row['provider'];
+		$skip_index      = isset( $connections[0] ) ? 0 : null;
+
+		$validate = $this->validateRow( $sanitized, $connections, $skip_index );
+		if ( ! $validate['success'] ) {
+			return $validate;
+		}
+
+		$auth = $this->authenticateRow( $sanitized );
+		if ( ! $auth['success'] ) {
+			return $auth;
+		}
+
+		return array(
+			'success' => true,
+			'row'     => $sanitized,
+		);
+	}
+
+	/**
 	 * @param array<int,array<string,mixed>> $connections Existing.
 	 * @param int|null                       $skip_index    Index being updated.
 	 * @return array{success:bool,message?:string}

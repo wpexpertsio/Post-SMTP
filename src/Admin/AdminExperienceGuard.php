@@ -53,7 +53,7 @@ final class AdminExperienceGuard {
 
 		$legacy_pages = array(
 			'postman/configuration'        => 'settings/general',
-			'postman/configuration_wizard' => 'connections',
+			'postman/configuration_wizard' => 'setup-wizard',
 		);
 
 		if ( isset( $legacy_pages[ $page ] ) ) {
@@ -86,7 +86,7 @@ final class AdminExperienceGuard {
 	 * Revamp Connections OAuth returns use ps-route (and hash routes under connections/*).
 	 */
 	private static function shouldAllowPsRouteOnPostman( string $route ): bool {
-		if ( str_starts_with( $route, 'connections/' ) ) {
+		if ( str_starts_with( $route, 'connections/' ) || str_starts_with( $route, 'setup-wizard' ) ) {
 			return true;
 		}
 

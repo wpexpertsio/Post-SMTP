@@ -1,12 +1,10 @@
 import wizardWandIcon from '../../../../assets/dashboard/wizard-wand.svg';
-import { getAdminUrls } from '../../../../config/admin';
+import { Link } from 'react-router-dom';
 
 /**
  * Figma: Post-SMTP-Dashboard-Revamp — node 672-4924
  */
 const SetupWizardBanner = () => {
-	const urls = getAdminUrls();
-
 	return (
 		<section className="ps-v2-wizard-banner" data-figma-node="672:4924">
 			<div className="ps-v2-wizard-banner__left">
@@ -18,9 +16,9 @@ const SetupWizardBanner = () => {
 					<p>Pick a mailer, connect it, send a test email.</p>
 				</div>
 			</div>
-			<a href={ urls.wizard } className="ps-v2-wizard-banner__cta">
+			<Link to="/setup-wizard" className="ps-v2-wizard-banner__cta">
 				Open Setup Wizard
-			</a>
+			</Link>
 		</section>
 	);
 };

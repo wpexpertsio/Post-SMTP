@@ -12,6 +12,7 @@ import HelpDocsScreen from './screens/help-docs/HelpDocsScreen';
 import ReportsScreen from './screens/reports/ReportsScreen';
 import SettingsRoutes from './screens/settings/SettingsRoutes';
 import MigrationWizardShell from './screens/migration/MigrationWizardShell';
+import SetupWizardShell from './screens/setup-wizard/SetupWizardShell';
 import { HeaderNotificationsProvider } from './context/HeaderNotificationsContext';
 import './styles.css';
 
@@ -95,6 +96,7 @@ const FullApp = () => (
 				</AppShell>
 			}
 		/>
+		<Route path="/setup-wizard" element={ <SetupWizardShell /> } />
 		<Route path="/migration" element={ <Navigate to="/" replace /> } />
 		<Route path="*" element={ <Navigate to="/" replace /> } />
 		</Routes>

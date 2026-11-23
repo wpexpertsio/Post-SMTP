@@ -5,7 +5,7 @@ import iconChevronFewer from '../../../assets/dashboard/connections/icon-chevron
 import { buildMailerGrid } from '../model/mailerGridLayout';
 import { mailerConnectionIcon } from '../model/mailerConnectionIcons';
 
-const MailerGrid = ( { items, selectedSlug, onSelect } ) => {
+const MailerGrid = ( { items, selectedSlug, onSelect, onRestrictedClick } ) => {
 	const [ expanded, setExpanded ] = useState( false );
 
 	const { rows, moreItems, hiddenMore } = useMemo(
@@ -26,6 +26,7 @@ const MailerGrid = ( { items, selectedSlug, onSelect } ) => {
 								item={ item }
 								selected={ selectedSlug === item.slug }
 								onSelect={ onSelect }
+								onRestrictedClick={ onRestrictedClick }
 							/>
 						) ) }
 					</div>

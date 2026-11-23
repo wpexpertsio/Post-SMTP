@@ -1,0 +1,186 @@
+.ps-app--setup-wizard {
+	min-height: 100vh;
+	background: var(--ps-v2-page, #f8f9fc);
+	font-family: Satoshi, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.ps-setup-wizard__top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20px 32px;
+	background: #fff;
+	border-bottom: 1px solid var(--ps-v2-border, #e5e8ef);
+}
+
+.ps-setup-wizard__exit {
+	border: 0;
+	background: transparent;
+	color: var(--ps-v2-blue, #4b6ef5);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.ps-setup-wizard__main {
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 32px 24px 64px;
+}
+
+.ps-setup-wizard__progress-list {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	list-style: none;
+	margin: 0 0 32px;
+	padding: 0;
+}
+
+.ps-setup-wizard__progress-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.ps-setup-wizard__progress-pill {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	border: 1px solid var(--ps-v2-border, #e5e8ef);
+	border-radius: 999px;
+	padding: 8px 16px;
+	background: #fff;
+	cursor: pointer;
+	font: inherit;
+}
+
+.ps-setup-wizard__progress-item.is-active .ps-setup-wizard__progress-pill {
+	border-color: var(--ps-v2-blue, #4b6ef5);
+	box-shadow: 0 0 0 1px var(--ps-v2-blue, #4b6ef5);
+}
+
+.ps-setup-wizard__progress-item.is-done .ps-setup-wizard__progress-pill {
+	background: var(--ps-v2-blue-soft, #eef3ff);
+}
+
+.ps-setup-wizard__progress-pill:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.ps-setup-wizard__progress-index {
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--ps-v2-blue-soft, #eef3ff);
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.ps-setup-wizard__progress-connector {
+	width: 24px;
+	height: 2px;
+	background: var(--ps-v2-border, #e5e8ef);
+}
+
+.ps-setup-wizard__panel {
+	background: #fff;
+	border: 1px solid var(--ps-v2-border-light, #eef1f6);
+	border-radius: var(--ps-v2-radius-lg, 12px);
+	padding: 28px;
+	box-shadow: var(--ps-v2-shadow-card);
+}
+
+.ps-setup-wizard__panel-head h1 {
+	margin: 0 0 8px;
+	font-size: 24px;
+}
+
+.ps-setup-wizard__panel-lead {
+	margin: 0 0 24px;
+	color: var(--ps-v2-text-muted, #6b7280);
+}
+
+.ps-setup-wizard__configure {
+	margin-bottom: 24px;
+}
+
+.ps-setup-wizard__actions {
+	display: flex;
+	gap: 12px;
+	justify-content: flex-end;
+	margin-top: 28px;
+	flex-wrap: wrap;
+}
+
+.ps-setup-wizard__actions--wrap {
+	justify-content: flex-start;
+}
+
+.ps-setup-wizard__test-form {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	margin-bottom: 28px;
+	max-width: 480px;
+}
+
+.ps-setup-wizard__domain {
+	margin-top: 8px;
+	padding-top: 24px;
+	border-top: 1px solid var(--ps-v2-border-light, #eef1f6);
+}
+
+.ps-setup-wizard__domain-grid {
+	display: grid;
+	gap: 12px;
+}
+
+.ps-setup-wizard__domain-check {
+	display: flex;
+	gap: 12px;
+	align-items: flex-start;
+}
+
+.ps-setup-wizard__domain-icon.is-pass img {
+	filter: none;
+}
+
+.ps-setup-wizard__summary {
+	display: grid;
+	gap: 20px;
+	grid-template-columns: 1fr;
+	margin-bottom: 24px;
+}
+
+@media (min-width: 768px) {
+	.ps-setup-wizard__summary {
+		grid-template-columns: 1fr 280px;
+		align-items: start;
+	}
+}
+
+.ps-setup-wizard__summary-card {
+	border: 1px solid var(--ps-v2-border, #e5e8ef);
+	border-radius: var(--ps-v2-radius-md, 8px);
+	padding: 20px;
+}
+
+.ps-setup-wizard__badge {
+	display: inline-block;
+	background: var(--ps-v2-blue-soft, #eef3ff);
+	color: var(--ps-v2-blue, #4b6ef5);
+	font-size: 12px;
+	font-weight: 700;
+	padding: 4px 10px;
+	border-radius: 999px;
+	margin-bottom: 12px;
+}
+
+.ps-setup-wizard__test-meta {
+	color: var(--ps-v2-text-muted, #6b7280);
+	font-size: 14px;
+}

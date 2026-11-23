@@ -207,6 +207,140 @@ final class TestEmailService {
 	}
 
 	/**
+	 * Send a test email using a staged connection row (setup wizard draft).
+	 *
+	 * @param array<string,mixed> $connection_row Decoded connection row.
+	 * @param array<string,mixed> $payload        recipient, subject, message.
+	 * @return array{success:bool,message:string,transcript?:string,time_ms?:int}
+	 */
+	public function sendWithDraftRow( array $connection_row, array $payload ): array {
+		$recipient_raw = $payload['recipient'] ?? $payload['email'] ?? '';
+		$recipient     = sanitize_email( (string) $recipient_raw );
+		$subject       = trim( (string) ( $payload['subject'] ?? '' ) );
+		$message       = (string) ( $payload['message'] ?? '' );
+
+		if ( '' === $recipient || ! is_email( $recipient ) ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Enter a valid recipient email address.', 'post-smtp' ),
+			);
+		}
+
+		if ( '' === $subject ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Subject cannot be empty.', 'post-smtp' ),
+			);
+		}
+
+		$row = SecretCodec::decodeConnectionRow( $connection_row );
+		$validate = $this->validateConnectionRow( $row );
+		if ( ! $validate['success'] ) {
+			return $validate;
+		}
+
+		$header = 'Content-Type: text/html; charset=UTF-8';
+		$body   = TestEmailMessageBuilder::buildHtmlEmail( $message );
+
+		$skip_fallback = static function () {
+			return true;
+		};
+		$test_mode = static function () {
+			return true;
+		};
+		$block_revamp_fallback = static function ( $try_fallback ) {
+			return false;
+		};
+
+		add_filter( 'post_smtp_test_email_skip_fallback', $skip_fallback );
+		add_filter( 'postman_test_email', $test_mode );
+		add_filter( 'post_smtp_should_try_fallback', $block_revamp_fallback );
+
+		ConnectionLegacySendBridge::apply_runtime_patch_for_connection( $row, false );
+		if ( class_exists( 'Postman_Connection_Resolver' ) ) {
+			set_transient( \Postman_Connection_Resolver::ROUTE_TRANSIENT, 0, 120 );
+		}
+
+		$provider = (string) ( $row['provider'] ?? $row['transport_type'] ?? '' );
+
+		$email_args = apply_filters(
+			'postman_test_email_args',
+			array(
+				'email'               => $recipient,
+				'subject'             => $subject,
+				'message'             => $body,
+				'header'              => $header,
+				'connection_provider' => $provider,
+				'connection_id'       => 0,
+			)
+		);
+
+		$mail_headers = $email_args['header'] ?? $header;
+		if ( is_array( $mail_headers ) ) {
+			$mail_headers = array_values(
+				array_filter(
+					array_map( 'trim', $mail_headers ),
+					static function ( $line ) {
+						return is_string( $line ) && '' !== $line;
+					}
+				)
+			);
+		} else {
+			$mail_headers = (string) $mail_headers;
+		}
+
+		$wp_mail_failed_message = '';
+		$capture_wp_mail_failed = static function ( $error ) use ( &$wp_mail_failed_message ) {
+			if ( $error instanceof \WP_Error && '' === $wp_mail_failed_message ) {
+				$wp_mail_failed_message = sanitize_text_field( (string) $error->get_error_message() );
+			}
+		};
+		add_action( 'wp_mail_failed', $capture_wp_mail_failed, 10, 1 );
+
+		$success = wp_mail(
+			(string) ( $email_args['email'] ?? $recipient ),
+			(string) ( $email_args['subject'] ?? $subject ),
+			(string) ( $email_args['message'] ?? $body ),
+			$mail_headers
+		);
+
+		remove_action( 'wp_mail_failed', $capture_wp_mail_failed, 10 );
+		remove_filter( 'post_smtp_test_email_skip_fallback', $skip_fallback );
+		remove_filter( 'postman_test_email', $test_mode );
+		remove_filter( 'post_smtp_should_try_fallback', $block_revamp_fallback );
+
+		if ( class_exists( 'Postman_Connection_Resolver' ) ) {
+			delete_transient( \Postman_Connection_Resolver::ROUTE_TRANSIENT );
+		}
+
+		$result = apply_filters( 'postman_wp_mail_result', null );
+		if ( ! is_array( $result ) ) {
+			$result = array();
+		}
+
+		if ( $success ) {
+			return array(
+				'success' => true,
+				'message' => __( 'Test email sent successfully. Check your recipient inbox.', 'post-smtp' ),
+				'time_ms' => isset( $result['time'] ) ? (int) $result['time'] : 0,
+			);
+		}
+
+		$error_message = __( 'The test email could not be sent. Check your connection settings and try again.', 'post-smtp' );
+		if ( isset( $result['exception'] ) && $result['exception'] instanceof \Exception ) {
+			$error_message = sanitize_text_field( $result['exception']->getMessage() );
+		} elseif ( '' !== $wp_mail_failed_message ) {
+			$error_message = $wp_mail_failed_message;
+		}
+
+		return array(
+			'success'    => false,
+			'message'    => $error_message,
+			'transcript' => isset( $result['transcript'] ) ? (string) $result['transcript'] : '',
+		);
+	}
+
+	/**
 	 * @return array{success:bool,preview?:array<string,string>,message?:string}
 	 */
 	public function preview( array $payload ): array {

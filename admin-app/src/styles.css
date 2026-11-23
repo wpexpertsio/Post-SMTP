@@ -10,6 +10,7 @@
 @import './styles/reports-v2.css';
 @import './styles/settings-v2.css';
 @import './styles/migration-v2.css';
+@import './styles/setup-wizard-v2.css';
 
 :root {
 	--ps-bg: #f8f9fc;
