@@ -6,6 +6,7 @@ import ZohoConfigurePanel from './ZohoConfigurePanel';
 import { mailerConnectionIcon } from '../model/mailerConnectionIcons';
 import useMailerCatalog from '../hooks/useMailerCatalog';
 import iconExternalLink from '../../../assets/dashboard/connections/helper/icon-external-link.svg';
+import { WizardForceSenderRow } from '../../setup-wizard/components/WizardSenderSection';
 
 const OAUTH_PROVIDERS = {
 	gmail_api: 'gmail_api',
@@ -112,20 +113,41 @@ const FIGMA_CONFIGURE_MAILERS = {
 	},
 };
 
-const buildFigmaConfigureBlocks = ( config ) => [
-	{ type: 'fields', keys: [ 'connection_title' ] },
-	{ type: 'divider' },
-	{ type: 'group', keys: [ 'from_name', 'prevent_sender_name_override' ] },
-	{ type: 'group', keys: [ 'from_email', 'prevent_sender_email_override' ] },
-	{ type: 'divider' },
-	{
-		type: 'credentials_section',
-		sectionKey: config.credentialsSection,
-		keys: config.credentialKeys,
-	},
-];
+const buildFigmaConfigureBlocks = ( config, isWizardLayout ) => {
+	const senderBlocks = isWizardLayout
+		? [
+				{ type: 'fields', keys: [ 'from_name' ] },
+				{ type: 'fields', keys: [ 'from_email' ] },
+				{ type: 'force_sender' },
+		  ]
+		: [
+				{ type: 'group', keys: [ 'from_name', 'prevent_sender_name_override' ] },
+				{ type: 'group', keys: [ 'from_email', 'prevent_sender_email_override' ] },
+		  ];
 
-const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId, onGrantError } ) => {
+	return [
+		{ type: 'fields', keys: [ 'connection_title' ] },
+		{ type: 'divider' },
+		...senderBlocks,
+		{ type: 'divider' },
+		{
+			type: 'credentials_section',
+			sectionKey: config.credentialsSection,
+			keys: config.credentialKeys,
+		},
+	];
+};
+
+const ConfigureMailerForm = ( {
+	schema,
+	values,
+	onChange,
+	provider,
+	connectionId,
+	onGrantError,
+	layoutVariant,
+} ) => {
+	const isWizardLayout = layoutVariant === 'wizard';
 	const urls = getAdminUrls();
 	const catalogQuery = useMailerCatalog();
 	const catalogItem = catalogQuery.data?.items?.find( ( item ) => item.slug === provider );
@@ -145,7 +167,7 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 	const iconUrl = mailerConnectionIcon( provider );
 	const figmaMailer = FIGMA_CONFIGURE_MAILERS[ provider ];
 	const useFigmaLayout = Boolean( figmaMailer );
-	const figmaBlocks = figmaMailer ? buildFigmaConfigureBlocks( figmaMailer ) : [];
+	const figmaBlocks = figmaMailer ? buildFigmaConfigureBlocks( figmaMailer, isWizardLayout ) : [];
 
 	const renderField = ( key ) => {
 		const field = schema?.fields?.[ key ];
@@ -188,7 +210,7 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 
 	return (
 		<div
-			className="ps-v2-configure-form"
+			className={ `ps-v2-configure-form${ isWizardLayout ? ' ps-v2-configure-form--wizard' : '' }` }
 			data-figma-node={
 				isGmailOAuthLayout
 					? schema?.configure_figma_node || '1310:15740'
@@ -199,17 +221,19 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 							: figmaMailer?.figmaNode || '672:5588'
 			}
 		>
-			<header className="ps-v2-configure-form__hero">
-				<div className="ps-v2-configure-form__hero-icon" aria-hidden="true">
-					{ iconUrl ? <img src={ iconUrl } alt="" width="26" height="26" /> : null }
-				</div>
-				<div>
-					<h3 className="ps-v2-configure-form__hero-title">{ configureTitle }</h3>
-					{ configureSubtitle && (
-						<p className="ps-v2-configure-form__hero-sub">{ configureSubtitle }</p>
-					) }
-				</div>
-			</header>
+			{ ! isWizardLayout && (
+				<header className="ps-v2-configure-form__hero">
+					<div className="ps-v2-configure-form__hero-icon" aria-hidden="true">
+						{ iconUrl ? <img src={ iconUrl } alt="" width="26" height="26" /> : null }
+					</div>
+					<div>
+						<h3 className="ps-v2-configure-form__hero-title">{ configureTitle }</h3>
+						{ configureSubtitle && (
+							<p className="ps-v2-configure-form__hero-sub">{ configureSubtitle }</p>
+						) }
+					</div>
+				</header>
+			) }
 
 			{ oauthUrl && (
 				<p className="ps-v2-configure-form__oauth">
@@ -230,6 +254,7 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 					renderField={ renderField }
 					connectionId={ connectionId }
 					onGrantError={ onGrantError }
+					layoutVariant={ layoutVariant }
 				/>
 			) : isOffice365OAuthLayout ? (
 				<Office365ConfigurePanel
@@ -239,13 +264,16 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 					renderField={ renderField }
 					connectionId={ connectionId }
 					onGrantError={ onGrantError }
+					layoutVariant={ layoutVariant }
 				/>
 			) : isZohoOAuthLayout ? (
 				<ZohoConfigurePanel
 					schema={ schema }
 					values={ values }
+					onChange={ onChange }
 					renderField={ renderField }
 					connectionId={ connectionId }
+					layoutVariant={ layoutVariant }
 				/>
 			) : useFigmaLayout ? (
 				<div className="ps-v2-configure-form__sections">
@@ -258,6 +286,15 @@ const ConfigureMailerForm = ( { schema, values, onChange, provider, connectionId
 								<div key={ `cred-${ index }` }>
 									{ renderCredentialsSection( block.sectionKey, block.keys ) }
 								</div>
+							);
+						}
+						if ( block.type === 'force_sender' ) {
+							return (
+								<WizardForceSenderRow
+									key="force-sender"
+									values={ values }
+									onChange={ onChange }
+								/>
 							);
 						}
 						if ( block.type === 'group' ) {

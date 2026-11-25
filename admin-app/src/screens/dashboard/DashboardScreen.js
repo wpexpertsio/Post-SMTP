@@ -10,6 +10,15 @@ import ProUpgradeBanner from './components/v2/ProUpgradeBanner';
 import RecentEmailsTable from './components/v2/RecentEmailsTable';
 import SetupWizardBanner from './components/v2/SetupWizardBanner';
 
+const hasPrimaryConnection = ( list ) =>
+	Array.isArray( list ) &&
+	list.some(
+		( c ) =>
+			c &&
+			c.id === 0 &&
+			String( c.provider || c.transport_type || '' ).trim() !== ''
+	);
+
 /**
  * Figma: Post-SMTP-Dashboard-Revamp — node 672-4911
  */
@@ -18,9 +27,16 @@ const DashboardScreen = () => {
 	const [ period, setPeriod ] = useState( 'week' );
 	const { stats, logs, connections, queries } = useDashboardData( period );
 
+	const connectionsSettled =
+		queries.connections.isSuccess || queries.connections.isError;
+	const showWizardBanner = connectionsSettled
+		? ! hasPrimaryConnection( connections )
+		: ! Boolean( config.hasPrimaryConnection ) &&
+			config.showSetupWizardPrompt !== false;
+
 	return (
 		<div className="ps-dashboard-v2">
-			<SetupWizardBanner />
+			{ showWizardBanner && <SetupWizardBanner /> }
 
 			<div className="ps-dashboard-v2__grid">
 				<div className="ps-dashboard-v2__main">

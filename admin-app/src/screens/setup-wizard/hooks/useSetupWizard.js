@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import apiFetch from '../../../api/client';
+import { getAdminConfig } from '../../../config/admin';
 
 export default function useSetupWizard() {
 	const queryClient = useQueryClient();
@@ -17,8 +18,30 @@ export default function useSetupWizard() {
 	const saveDraftMutation = useMutation( {
 		mutationFn: ( payload ) =>
 			apiFetch( 'setup-wizard/draft', { method: 'PUT', body: payload } ),
-		onSuccess: () => {
+		onSuccess: ( data ) => {
 			queryClient.invalidateQueries( { queryKey: [ 'setup-wizard' ] } );
+			queryClient.invalidateQueries( { queryKey: [ 'connections' ] } );
+			if ( data?.connections && Array.isArray( data.connections ) ) {
+				queryClient.setQueryData( [ 'connections' ], ( old ) => {
+					if ( ! old || typeof old !== 'object' ) {
+						return { connections: data.connections };
+					}
+					return { ...old, connections: data.connections };
+				} );
+				const hasPrimary = data.connections.some(
+					( c ) =>
+						c &&
+						c.id === 0 &&
+						String( c.provider || c.transport_type || '' ).trim() !== ''
+				);
+				if ( typeof window !== 'undefined' ) {
+					window.postSmtpAdmin = {
+						...getAdminConfig(),
+						hasPrimaryConnection: hasPrimary,
+						showSetupWizardPrompt: ! hasPrimary,
+					};
+				}
+			}
 		},
 	} );
 
@@ -43,6 +66,26 @@ export default function useSetupWizard() {
 
 	const completeMutation = useMutation( {
 		mutationFn: () => apiFetch( 'setup-wizard/complete', { method: 'POST', body: {} } ),
+		onSuccess: ( data ) => {
+			queryClient.invalidateQueries( { queryKey: [ 'setup-wizard' ] } );
+			queryClient.invalidateQueries( { queryKey: [ 'connections' ] } );
+			if ( data?.setup_wizard_complete && typeof window !== 'undefined' ) {
+				const hasPrimary = Array.isArray( data.connections )
+					? data.connections.some(
+							( c ) =>
+								c &&
+								c.id === 0 &&
+								String( c.provider || c.transport_type || '' ).trim() !== ''
+						)
+					: Boolean( getAdminConfig().hasPrimaryConnection );
+				window.postSmtpAdmin = {
+					...getAdminConfig(),
+					setupWizardComplete: true,
+					hasPrimaryConnection: hasPrimary,
+					showSetupWizardPrompt: ! hasPrimary,
+				};
+			}
+		},
 	} );
 
 	return {

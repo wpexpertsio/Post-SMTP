@@ -354,10 +354,11 @@ final class ConnectionService {
 	}
 
 	/**
-	 * @param array<string,mixed> $row Connection payload.
-	 * @return array{success:bool,message?:string,connections?:array}
+	 * @param array<string,mixed> $row                        Connection payload.
+	 * @param bool                $skip_provider_authenticate   True when the wizard already sent a test with this row.
+	 * @return array{success:bool,message?:string,connections?:array,id?:int}
 	 */
-	public function create( array $row ): array {
+	public function create( array $row, bool $skip_provider_authenticate = false ): array {
 		$repo        = ConnectionRepositoryFactory::make();
 		$connections = $this->normalizeOnRead( $repo->getConnections(), $repo->getOptions() );
 		$limits      = ConnectionLimits::get();
@@ -385,9 +386,11 @@ final class ConnectionService {
 				&& self::countEnabledFallbacks( $connections ) < $limits['max_enabled_fallbacks'];
 		}
 
-		$auth = $this->authenticateRow( $sanitized );
-		if ( ! $auth['success'] ) {
-			return $auth;
+		if ( ! $skip_provider_authenticate ) {
+			$auth = $this->authenticateRow( $sanitized );
+			if ( ! $auth['success'] ) {
+				return $auth;
+			}
 		}
 
 		$stored = SecretCodec::encodeConnectionRow( self::stripAdminOnlyFields( $sanitized ) );
@@ -417,7 +420,7 @@ final class ConnectionService {
 	 * @param array<string,mixed> $row Connection payload.
 	 * @return array{success:bool,message?:string,connections?:array}
 	 */
-	public function update( int $index, array $row ): array {
+	public function update( int $index, array $row, bool $skip_provider_authenticate = false ): array {
 		$repo        = ConnectionRepositoryFactory::make();
 		$connections = $this->normalizeOnRead( $repo->getConnections(), $repo->getOptions() );
 
@@ -443,9 +446,11 @@ final class ConnectionService {
 			unset( $sanitized['fallback_enabled'] );
 		}
 
-		$auth = $this->authenticateRow( $sanitized );
-		if ( ! $auth['success'] ) {
-			return $auth;
+		if ( ! $skip_provider_authenticate ) {
+			$auth = $this->authenticateRow( $sanitized );
+			if ( ! $auth['success'] ) {
+				return $auth;
+			}
 		}
 
 		$connections[ $index ] = SecretCodec::encodeConnectionRow( self::stripAdminOnlyFields( $sanitized ) );
@@ -455,6 +460,68 @@ final class ConnectionService {
 		return array(
 			'success'     => true,
 			'message'     => __( 'Connection saved.', 'post-smtp' ),
+			'connections' => $this->listForAdmin()['connections'],
+		);
+	}
+
+	/**
+	 * Setup wizard: create or fully replace primary connection (index 0), never append.
+	 *
+	 * @param array<string,mixed> $row Decoded connection row including provider.
+	 * @param bool                $skip_provider_authenticate Step 2 already validated credentials.
+	 * @return array{success:bool,message?:string,connections?:array,id?:int}
+	 */
+	public function upsertWizardPrimary( array $row, bool $skip_provider_authenticate = false ): array {
+		$repo        = ConnectionRepositoryFactory::make();
+		$connections = $this->normalizeOnRead( $repo->getConnections(), $repo->getOptions() );
+
+		if ( empty( $connections ) ) {
+			return $this->create( $row, $skip_provider_authenticate );
+		}
+
+		$existing    = $connections[0];
+		$sanitized   = ConnectionSchema::sanitizeRow( $row );
+		$provider    = (string) ( $row['provider'] ?? $sanitized['provider'] ?? '' );
+		if ( '' !== $provider ) {
+			$sanitized['provider'] = sanitize_key( $provider );
+		}
+
+		$existing_provider = (string) ( $existing['provider'] ?? $existing['transport_type'] ?? '' );
+		if ( $existing_provider !== $sanitized['provider'] ) {
+			$sanitized = $this->preserveMaskedSecrets( $existing, $sanitized );
+		} else {
+			$sanitized = $this->preserveMaskedSecrets( $existing, array_merge( $existing, $sanitized ) );
+		}
+
+		$validate = $this->validateRow( $sanitized, $connections, 0 );
+		if ( ! $validate['success'] ) {
+			return $validate;
+		}
+
+		unset( $sanitized['fallback_enabled'] );
+
+		if ( ! $skip_provider_authenticate ) {
+			$auth = $this->authenticateRow( $sanitized );
+			if ( ! $auth['success'] ) {
+				return $auth;
+			}
+		}
+
+		$connections[0] = SecretCodec::encodeConnectionRow( self::stripAdminOnlyFields( $sanitized ) );
+		$connections    = self::enforceFallbackSlots( $connections, ConnectionLimits::get() );
+		$repo->saveConnections( $connections );
+
+		$options = $repo->getOptions();
+		$options['primary_connection'] = 0;
+		$options['selected_primary']   = 0;
+		$repo->saveOptions( $options );
+
+		self::maybe_sync_primary_legacy_options( 0, $repo );
+
+		return array(
+			'success'     => true,
+			'message'     => __( 'Connection saved.', 'post-smtp' ),
+			'id'          => 0,
 			'connections' => $this->listForAdmin()['connections'],
 		);
 	}

@@ -109,7 +109,18 @@ final class SetupWizardService {
 
 		$sanitized = $check['row'] ?? ConnectionSchema::sanitizeRow( array_merge( $row, array( 'provider' => $provider ) ) );
 		$sanitized['provider'] = $provider;
-		$stored                = SecretCodec::encodeConnectionRow( $sanitized );
+
+		$service = new ConnectionService();
+		$persist = $service->upsertWizardPrimary( $sanitized, true );
+		if ( empty( $persist['success'] ) ) {
+			return $persist;
+		}
+
+		$repo    = ConnectionRepositoryFactory::make();
+		$primary = $repo->getConnections()[0] ?? array();
+		$stored  = is_array( $primary ) ? $primary : SecretCodec::encodeConnectionRow( $sanitized );
+
+		ConnectionLegacySendBridge::sync_primary_to_options();
 
 		$existing = $this->getDraftRaw();
 		$draft    = array(
@@ -135,8 +146,9 @@ final class SetupWizardService {
 		set_transient( $this->draftKey(), $draft, self::DRAFT_TTL );
 
 		return array(
-			'success' => true,
-			'draft'   => $this->getDraftForClient(),
+			'success'     => true,
+			'draft'       => $this->getDraftForClient(),
+			'connections' => $service->listForAdmin()['connections'] ?? array(),
 		);
 	}
 
@@ -154,15 +166,20 @@ final class SetupWizardService {
 	 */
 	public function sendTestEmail( array $payload ): array {
 		$draft = $this->getDraftRaw();
-		if ( empty( $draft['row'] ) || empty( $draft['provider'] ) ) {
+		if ( empty( $draft['provider'] ) ) {
 			return array(
 				'success' => false,
 				'message' => __( 'Complete connection setup before sending a test email.', 'post-smtp' ),
 			);
 		}
 
-		$row = SecretCodec::decodeConnectionRow( $draft['row'] );
-		$row['provider'] = (string) $draft['provider'];
+		$row = $this->resolveWizardPrimaryRow();
+		if ( empty( $row ) ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Save your connection on step 2 before sending a test email.', 'post-smtp' ),
+			);
+		}
 
 		$subject = trim( (string) ( $payload['subject'] ?? '' ) );
 		if ( '' === $subject ) {
@@ -197,17 +214,41 @@ final class SetupWizardService {
 	 */
 	public function domainAuth(): array {
 		$draft = $this->getDraftRaw();
-		if ( empty( $draft['row'] ) || empty( $draft['provider'] ) ) {
+		if ( empty( $draft['provider'] ) ) {
 			return array(
-				'success' => false,
-				'message' => __( 'No staged connection for domain authentication.', 'post-smtp' ),
+				'success'     => true,
+				'unavailable' => true,
+				'messages'    => array( __( 'No staged connection for domain authentication.', 'post-smtp' ) ),
 			);
 		}
 
-		$row      = SecretCodec::decodeConnectionRow( $draft['row'] );
-		$provider = (string) $draft['provider'];
-		$from     = sanitize_email( (string) ( $row['sender_email'] ?? $row['from_email'] ?? '' ) );
+		$row = $this->resolveWizardPrimaryRow();
+		if ( empty( $row ) ) {
+			return array(
+				'success'     => true,
+				'unavailable' => true,
+				'messages'    => array( __( 'Save your connection on step 2 first.', 'post-smtp' ) ),
+			);
+		}
+
+		$provider = (string) ( $draft['provider'] ?? $row['provider'] ?? '' );
+		$from     = $this->resolveSenderEmailFromRow( $row );
 		$api_key  = $this->extractApiKeyFromRow( $row, $provider );
+
+		if ( '' === $from ) {
+			return array(
+				'success'     => true,
+				'unavailable' => true,
+				'messages'    => array( __( 'Add a From email to check domain authentication.', 'post-smtp' ) ),
+			);
+		}
+
+		if ( ! class_exists( 'Postman_Email_Tester' ) && defined( 'POST_SMTP_PATH' ) ) {
+			$tester_file = POST_SMTP_PATH . '/Postman/Postman-Mail-Tester/PostmanEmailTester.php';
+			if ( is_readable( $tester_file ) ) {
+				require_once $tester_file;
+			}
+		}
 
 		if ( ! class_exists( 'Postman_Email_Tester' ) ) {
 			return array(
@@ -233,6 +274,17 @@ final class SetupWizardService {
 	 * @return array<string,mixed>
 	 */
 	public function complete(): array {
+		$service = new ConnectionService();
+
+		if ( $this->isWizardComplete() ) {
+			return array(
+				'success'               => true,
+				'message'               => __( 'Setup already complete.', 'post-smtp' ),
+				'setup_wizard_complete' => true,
+				'connections'           => $service->listForAdmin()['connections'] ?? array(),
+			);
+		}
+
 		$draft = $this->getDraftRaw();
 		if ( empty( $draft['row'] ) || empty( $draft['provider'] ) ) {
 			return array(
@@ -248,21 +300,12 @@ final class SetupWizardService {
 			);
 		}
 
-		$row = SecretCodec::decodeConnectionRow( $draft['row'] );
-		$row['provider'] = (string) $draft['provider'];
-
-		$repo        = ConnectionRepositoryFactory::make();
-		$connections = $repo->getConnections();
-		$service     = new ConnectionService();
-
-		if ( empty( $connections ) ) {
-			$result = $service->create( $row );
-		} else {
-			$result = $service->update( 0, $row );
-		}
-
-		if ( empty( $result['success'] ) ) {
-			return $result;
+		$row = $this->resolveWizardPrimaryRow();
+		if ( empty( $row ) ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Save your connection on step 2 before completing setup.', 'post-smtp' ),
+			);
 		}
 
 		update_option( self::OPTION_COMPLETE, true, false );
@@ -274,6 +317,7 @@ final class SetupWizardService {
 			'success'               => true,
 			'message'               => __( 'Setup complete. Your primary connection is ready.', 'post-smtp' ),
 			'setup_wizard_complete' => true,
+			'connections'           => $service->listForAdmin()['connections'] ?? array(),
 		);
 	}
 
@@ -315,6 +359,57 @@ final class SetupWizardService {
 
 	private function draftKey(): string {
 		return 'post_smtp_setup_wizard_draft_' . get_current_user_id();
+	}
+
+	/**
+	 * Primary connection row for wizard test send / domain auth (postman_connections[0]).
+	 *
+	 * @return array<string,mixed>
+	 */
+	private function resolveWizardPrimaryRow(): array {
+		$repo        = ConnectionRepositoryFactory::make();
+		$connections = $repo->getConnections();
+		$draft       = $this->getDraftRaw();
+		$provider    = (string) ( $draft['provider'] ?? '' );
+
+		if ( ! empty( $connections[0] ) && is_array( $connections[0] ) ) {
+			$service    = new ConnectionService();
+			$options    = $repo->getOptions();
+			$normalized = $service->normalizeOnRead( $connections, $options );
+			$row        = $normalized[0] ?? array();
+			if ( '' !== $provider ) {
+				$row['provider'] = $provider;
+			}
+			return $row;
+		}
+
+		if ( empty( $draft['row'] ) || ! is_array( $draft['row'] ) ) {
+			return array();
+		}
+
+		$row = SecretCodec::decodeConnectionRow( $draft['row'] );
+		if ( '' !== $provider ) {
+			$row['provider'] = $provider;
+		}
+
+		return $row;
+	}
+
+	/**
+	 * @param array<string,mixed> $row Decoded connection row.
+	 */
+	private function resolveSenderEmailFromRow( array $row ): string {
+		foreach ( array( 'sender_email', 'from_email', 'envelope_sender' ) as $key ) {
+			if ( empty( $row[ $key ] ) || ! is_string( $row[ $key ] ) ) {
+				continue;
+			}
+			$email = sanitize_email( trim( $row[ $key ] ) );
+			if ( '' !== $email ) {
+				return $email;
+			}
+		}
+
+		return '';
 	}
 
 	/**

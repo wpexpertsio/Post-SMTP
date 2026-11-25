@@ -14,6 +14,9 @@ use PostSMTP\Pro\Connections\Office365ConnectionTokens;
 use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
 use PostSMTP\Kernel\Data\SecretCodec;
 use PostSMTP\Kernel\Providers\ProviderRegistry;
+use PostSMTP\Mail\Modern\Envelope\EnvelopeFactory;
+use PostSMTP\Mail\Modern\Legacy\RevampLegacyPostmanSend;
+use PostSMTP\Rollout\CohortResolver;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -295,16 +298,63 @@ final class TestEmailService {
 				$wp_mail_failed_message = sanitize_text_field( (string) $error->get_error_message() );
 			}
 		};
-		add_action( 'wp_mail_failed', $capture_wp_mail_failed, 10, 1 );
 
-		$success = wp_mail(
-			(string) ( $email_args['email'] ?? $recipient ),
-			(string) ( $email_args['subject'] ?? $subject ),
-			(string) ( $email_args['message'] ?? $body ),
-			$mail_headers
+		$slug            = sanitize_key( $provider );
+		$registry        = new ProviderRegistry();
+		$has_native      = isset( $registry->all()[ $slug ] );
+		$use_revamp      = CohortResolver::usesRevampMailPipeline();
+		$failure_default = __( 'The test email could not be sent. Check your connection settings and try again.', 'post-smtp' );
+
+		$wp_atts = array(
+			'to'          => (string) ( $email_args['email'] ?? $recipient ),
+			'subject'     => (string) ( $email_args['subject'] ?? $subject ),
+			'message'     => (string) ( $email_args['message'] ?? $body ),
+			'headers'     => $mail_headers,
+			'attachments' => array(),
 		);
 
-		remove_action( 'wp_mail_failed', $capture_wp_mail_failed, 10 );
+		if ( $use_revamp && $has_native ) {
+			do_action( 'post_smtp_revamp_before_provider_send', $row, false, 0 );
+			$envelope    = EnvelopeFactory::fromWpMailArgs( $wp_atts );
+			$send_result = $registry->create( $slug )->send(
+				$envelope->atts,
+				null,
+				$row,
+				$envelope->processed
+			);
+		} elseif ( $use_revamp ) {
+			$send_result = RevampLegacyPostmanSend::send( $wp_atts, $failure_default );
+		} else {
+			add_action( 'wp_mail_failed', $capture_wp_mail_failed, 10, 1 );
+
+			$legacy_success = wp_mail(
+				$wp_atts['to'],
+				$wp_atts['subject'],
+				$wp_atts['message'],
+				$wp_atts['headers']
+			);
+
+			remove_action( 'wp_mail_failed', $capture_wp_mail_failed, 10 );
+
+			$result = apply_filters( 'postman_wp_mail_result', null );
+			if ( ! is_array( $result ) ) {
+				$result = array();
+			}
+
+			$error_message = $failure_default;
+			if ( isset( $result['exception'] ) && $result['exception'] instanceof \Exception ) {
+				$error_message = sanitize_text_field( $result['exception']->getMessage() );
+			} elseif ( '' !== $wp_mail_failed_message ) {
+				$error_message = $wp_mail_failed_message;
+			}
+
+			$send_result = array(
+				'success'    => (bool) $legacy_success,
+				'message'    => $legacy_success ? __( 'Test email sent successfully. Check your recipient inbox.', 'post-smtp' ) : $error_message,
+				'transcript' => isset( $result['transcript'] ) ? (string) $result['transcript'] : '',
+			);
+		}
+
 		remove_filter( 'post_smtp_test_email_skip_fallback', $skip_fallback );
 		remove_filter( 'postman_test_email', $test_mode );
 		remove_filter( 'post_smtp_should_try_fallback', $block_revamp_fallback );
@@ -313,30 +363,18 @@ final class TestEmailService {
 			delete_transient( \Postman_Connection_Resolver::ROUTE_TRANSIENT );
 		}
 
-		$result = apply_filters( 'postman_wp_mail_result', null );
-		if ( ! is_array( $result ) ) {
-			$result = array();
-		}
-
-		if ( $success ) {
+		if ( ! empty( $send_result['success'] ) ) {
 			return array(
 				'success' => true,
 				'message' => __( 'Test email sent successfully. Check your recipient inbox.', 'post-smtp' ),
-				'time_ms' => isset( $result['time'] ) ? (int) $result['time'] : 0,
+				'time_ms' => isset( $send_result['time'] ) ? (int) $send_result['time'] : 0,
 			);
-		}
-
-		$error_message = __( 'The test email could not be sent. Check your connection settings and try again.', 'post-smtp' );
-		if ( isset( $result['exception'] ) && $result['exception'] instanceof \Exception ) {
-			$error_message = sanitize_text_field( $result['exception']->getMessage() );
-		} elseif ( '' !== $wp_mail_failed_message ) {
-			$error_message = $wp_mail_failed_message;
 		}
 
 		return array(
 			'success'    => false,
-			'message'    => $error_message,
-			'transcript' => isset( $result['transcript'] ) ? (string) $result['transcript'] : '',
+			'message'    => (string) ( $send_result['message'] ?? $failure_default ),
+			'transcript' => isset( $send_result['transcript'] ) ? (string) $send_result['transcript'] : '',
 		);
 	}
 

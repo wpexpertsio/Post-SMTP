@@ -1,8 +1,13 @@
 import { useState } from '@wordpress/element';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import QueryState from '../../components/ui/QueryState';
-import WizardProgress from './components/WizardProgress';
-import { SetupWizardProvider, useSetupWizardContext } from './SetupWizardContext';
+import WizardSetupHeader from './components/WizardSetupHeader';
+import {
+	SetupWizardProvider,
+	useSetupWizardContext,
+	WIZARD_SKIP_DRAFT_RESTORE_KEY,
+} from './SetupWizardContext';
 import StepChooseMailer from './StepChooseMailer';
 import StepConfigure from './StepConfigure';
 import StepSendTest from './StepSendTest';
@@ -10,17 +15,25 @@ import StepAllSet from './StepAllSet';
 
 const SetupWizardBody = () => {
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const { step, maxStep, goToStep, wizard } = useSetupWizardContext();
 	const { bootstrapQuery } = wizard;
 	const [ showAllSet, setShowAllSet ] = useState( false );
 
-	const handleExit = async () => {
+	const handleExit = () => {
 		try {
-			await wizard.discardDraftMutation.mutateAsync();
+			window.sessionStorage.setItem( WIZARD_SKIP_DRAFT_RESTORE_KEY, '1' );
 		} catch {
-			// still navigate away
+			// sessionStorage unavailable
 		}
+		queryClient.setQueryData( [ 'setup-wizard' ], ( old ) => {
+			if ( ! old || typeof old !== 'object' ) {
+				return old;
+			}
+			return { ...old, draft: null };
+		} );
 		navigate( '/' );
+		wizard.discardDraftMutation.mutate();
 	};
 
 	let content = null;
@@ -34,27 +47,26 @@ const SetupWizardBody = () => {
 		content = <StepSendTest onAdvance={ () => setShowAllSet( true ) } />;
 	}
 
-	return (
-		<div className="ps-app ps-app--setup-wizard">
-			<header className="ps-setup-wizard__top">
-				<div className="ps-setup-wizard__brand">
-					<strong>Post SMTP Setup Wizard</strong>
-				</div>
-				<button type="button" className="ps-setup-wizard__exit" onClick={ handleExit }>
-					Exit Setup Wizard
-				</button>
-			</header>
+	const isAllSet = showAllSet || step >= 4;
 
-			<main className="ps-setup-wizard__main">
+	return (
+		<div className="ps-app ps-app--setup-wizard" data-figma-node="693:20457">
+			<WizardSetupHeader
+				figmaNode={ isAllSet ? '693:22064' : '693:20458' }
+				onExit={ handleExit }
+				current={ step }
+				maxReached={ maxStep }
+				onSelectStep={ isAllSet ? undefined : goToStep }
+				allStepsComplete={ isAllSet }
+			/>
+
+			<main className="ps-setup-wizard__stage">
 				<QueryState
 					isLoading={ bootstrapQuery.isLoading }
 					isError={ bootstrapQuery.isError }
 					error={ bootstrapQuery.error }
 				>
-					{ ! showAllSet && step <= 3 && (
-						<WizardProgress current={ step } maxReached={ maxStep } onSelect={ goToStep } />
-					) }
-					{ content }
+					<div className="ps-setup-wizard__stage-inner">{ content }</div>
 				</QueryState>
 			</main>
 		</div>

@@ -1,33 +1,32 @@
-const STEPS = [
-	{ id: 1, label: 'Choose mailer' },
-	{ id: 2, label: 'Configure' },
-	{ id: 3, label: 'Send test' },
-];
+const STEPS = [ 1, 2, 3 ];
 
-const WizardProgress = ( { current, maxReached, onSelect } ) => (
-	<nav className="ps-setup-wizard__progress" aria-label="Setup progress" data-figma-node="693:20458">
-		<ol className="ps-setup-wizard__progress-list">
+const WizardProgress = ( { current, maxReached, onSelect, allStepsComplete } ) => (
+	<nav
+		className={ `ps-setup-wizard__stepper${ allStepsComplete ? ' is-all-complete' : '' }` }
+		aria-label="Setup progress"
+		data-figma-node={ allStepsComplete ? '693:22128' : undefined }
+	>
+		<ol className="ps-setup-wizard__stepper-list">
 			{ STEPS.map( ( step, index ) => {
-				const done = current > step.id;
-				const active = current === step.id;
-				const canVisit = step.id <= maxReached;
+				const isActive = ! allStepsComplete && current === step;
+				const isDone = allStepsComplete || current > step;
+				const canVisit = step <= maxReached;
 				return (
-					<li
-						key={ step.id }
-						className={ `ps-setup-wizard__progress-item${ active ? ' is-active' : '' }${ done ? ' is-done' : '' }` }
-					>
+					<li key={ step } className="ps-setup-wizard__stepper-item">
 						<button
 							type="button"
-							className="ps-setup-wizard__progress-pill"
-							disabled={ ! canVisit }
-							onClick={ () => onSelect( step.id ) }
-							aria-current={ active ? 'step' : undefined }
+							className={ `ps-setup-wizard__step-dot${
+								isActive ? ' is-active' : ''
+							}${ isDone ? ' is-done' : '' }` }
+							disabled={ ! canVisit || allStepsComplete }
+							onClick={ () => onSelect?.( step ) }
+							aria-current={ isActive ? 'step' : undefined }
+							aria-label={ `Step ${ step }` }
 						>
-							<span className="ps-setup-wizard__progress-index">{ step.id }</span>
-							<span className="ps-setup-wizard__progress-label">{ step.label }</span>
+							{ step }
 						</button>
 						{ index < STEPS.length - 1 && (
-							<span className="ps-setup-wizard__progress-connector" aria-hidden="true" />
+							<span className="ps-setup-wizard__step-line" aria-hidden="true" />
 						) }
 					</li>
 				);

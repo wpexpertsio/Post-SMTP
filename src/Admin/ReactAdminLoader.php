@@ -174,7 +174,9 @@ final class ReactAdminLoader {
 		$has_pro = defined( 'POST_SMTP_PRO_VERSION' )
 			|| ( function_exists( 'pspro_fs' ) && pspro_fs()->is_registered() );
 
-		$setup_wizard_complete = ( new SetupWizardService() )->isWizardComplete();
+		$setup_wizard_complete  = ( new SetupWizardService() )->isWizardComplete();
+		$stored_connections     = \PostSMTP\Kernel\Data\ConnectionRepositoryFactory::make()->getConnections();
+		$has_primary_connection = self::hasPrimaryConnectionAtZero( $stored_connections );
 
 		$config = array(
 			'apiRoot'        => esc_url_raw( rest_url( 'post-smtp/v2/' ) ),
@@ -186,8 +188,9 @@ final class ReactAdminLoader {
 			'isPro'          => (bool) $has_pro,
 			'hasReportTracking' => is_plugin_active( 'report-and-tracking-addon-premium/post-smtp-report-and-tracking.php' ),
 			'isConfigured'        => (bool) $configured,
-			'setupWizardComplete' => $setup_wizard_complete,
-			'showSetupWizardPrompt' => ! $setup_wizard_complete || ! $configured,
+			'setupWizardComplete'    => $setup_wizard_complete,
+			'hasPrimaryConnection'   => $has_primary_connection,
+			'showSetupWizardPrompt'  => ! $has_primary_connection,
 			'transport'      => sanitize_text_field( (string) $transport ),
 			'senderEmail'    => sanitize_email( (string) $sender ),
 			'siteName'       => sanitize_text_field( get_bloginfo( 'name' ) ),
@@ -311,5 +314,25 @@ final class ReactAdminLoader {
 			 */
 			do_action( 'post_smtp_admin_dashboard_enqueue' );
 		}
+	}
+
+	/**
+	 * True when postman_connections[0] holds a saved primary row (setup wizard step 2+).
+	 *
+	 * @param array<int,mixed> $connections Raw option rows.
+	 */
+	private static function hasPrimaryConnectionAtZero( array $connections ): bool {
+		if ( ! isset( $connections[0] ) || ! is_array( $connections[0] ) ) {
+			return false;
+		}
+
+		$row = $connections[0];
+		if ( empty( $row ) ) {
+			return false;
+		}
+
+		$provider = trim( (string) ( $row['provider'] ?? $row['transport_type'] ?? '' ) );
+
+		return '' !== $provider;
 	}
 }

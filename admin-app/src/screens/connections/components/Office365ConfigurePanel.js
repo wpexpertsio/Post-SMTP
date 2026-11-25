@@ -4,6 +4,7 @@ import useConnectionMutations from '../hooks/useConnectionMutations';
 import iconExternalLink from '../../../assets/dashboard/connections/helper/icon-external-link.svg';
 import iconCopy from '../../../assets/dashboard/connections/helper/icon-copy.svg';
 import microsoftIcon from '../../../assets/dashboard/connections/mailers/microsoft.svg';
+import { renderConfigureSenderFields } from '../../setup-wizard/components/WizardSenderSection';
 
 const CopyReadonlyField = ( { label, hint, value } ) => {
 	const [ copied, setCopied ] = useState( false );
@@ -809,7 +810,9 @@ const Office365ConfigurePanel = ( {
 	values = {},
 	onChange,
 	onGrantError,
+	layoutVariant,
 } ) => {
+	const isWizardLayout = layoutVariant === 'wizard';
 	const admin = getAdminConfig();
 	const office365 = admin.office365Configure || {};
 	const connectTab = resolveOffice365ConnectTab( values, office365 );
@@ -848,14 +851,12 @@ const Office365ConfigurePanel = ( {
 			<div className="ps-v2-configure-form__sections">
 				{ renderField( 'connection_title' ) }
 				<hr className="ps-v2-configure-form__divider" />
-				<div className="ps-v2-configure-form__group">
-					{ renderField( 'from_name' ) }
-					{ renderField( 'prevent_sender_name_override' ) }
-				</div>
-				<div className="ps-v2-configure-form__group">
-					{ renderField( 'from_email' ) }
-					{ renderField( 'prevent_sender_email_override' ) }
-				</div>
+				{ renderConfigureSenderFields( {
+					isWizardLayout,
+					renderField,
+					values,
+					onChange,
+				} ) }
 				<hr className="ps-v2-configure-form__divider" />
 				<div className="ps-v2-gmail-configure__connect-mode">
 					<Office365ConnectModeTabs

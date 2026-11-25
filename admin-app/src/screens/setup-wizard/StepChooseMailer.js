@@ -1,5 +1,5 @@
 import { getAdminUrls, getAdminConfig } from '../../config/admin';
-import MailerGrid from '../connections/components/MailerGrid';
+import WizardMailerGrid from './components/WizardMailerGrid';
 import { useSetupWizardContext } from './SetupWizardContext';
 
 const StepChooseMailer = () => {
@@ -14,24 +14,24 @@ const StepChooseMailer = () => {
 	};
 
 	return (
-		<section className="ps-setup-wizard__panel" data-figma-node="693:20458">
-			<header className="ps-setup-wizard__panel-head">
-				<h1>Choose a mailer</h1>
-				<p className="ps-setup-wizard__panel-lead">
-					Not sure which one?{' '}
+		<article className="ps-setup-wizard__card ps-setup-wizard__card--step-1" data-figma-node="693:20535">
+			<header className="ps-setup-wizard__step-intro" data-figma-node="693:20536">
+				<div className="ps-setup-wizard__step-kicker">STEP 1</div>
+				<h1 className="ps-setup-wizard__step-title">Choose a Mailer</h1>
+				<p className="ps-setup-wizard__step-lead">
+					Not sure which one? Read the{' '}
 					<a href={ guideUrl } target="_blank" rel="noreferrer">
-						Read the mailer guide
+						mailer guide
 					</a>
 				</p>
 			</header>
 
-			<MailerGrid
+			<WizardMailerGrid
 				items={ items }
-				selectedSlug={ null }
 				onSelect={ selectProvider }
 				onRestrictedClick={ ! getAdminConfig().isPro ? handleRestricted : undefined }
 			/>
-		</section>
+		</article>
 	);
 };
 

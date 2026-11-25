@@ -4,6 +4,7 @@ import useConnectionMutations from '../hooks/useConnectionMutations';
 import iconExternalLink from '../../../assets/dashboard/connections/helper/icon-external-link.svg';
 import iconCopy from '../../../assets/dashboard/connections/helper/icon-copy.svg';
 import { gmailIcon, proCrownIcon } from '../../dashboard/components/v2/gmailBarAssets';
+import { renderConfigureSenderFields } from '../../setup-wizard/components/WizardSenderSection';
 
 const CopyReadonlyField = ( { label, hint, value } ) => {
 	const [ copied, setCopied ] = useState( false );
@@ -988,7 +989,16 @@ const resolveInitialUiConnectTab = ( values, gmail ) => {
 	return resolveGmailConnectTab( values, gmail );
 };
 
-const GmailConfigurePanel = ( { schema, values = {}, onChange, renderField, connectionId, onGrantError } ) => {
+const GmailConfigurePanel = ( {
+	schema,
+	values = {},
+	onChange,
+	renderField,
+	connectionId,
+	onGrantError,
+	layoutVariant,
+} ) => {
+	const isWizardLayout = layoutVariant === 'wizard';
 	const admin = getAdminConfig();
 	const gmail = admin.gmailConfigure || {};
 	const [ uiConnectTab, setUiConnectTab ] = useState( () =>
@@ -1054,14 +1064,12 @@ const GmailConfigurePanel = ( { schema, values = {}, onChange, renderField, conn
 			<div className="ps-v2-configure-form__sections">
 				{ renderField( 'connection_title' ) }
 				<hr className="ps-v2-configure-form__divider" />
-				<div className="ps-v2-configure-form__group">
-					{ renderField( 'from_name' ) }
-					{ renderField( 'prevent_sender_name_override' ) }
-				</div>
-				<div className="ps-v2-configure-form__group">
-					{ renderField( 'from_email' ) }
-					{ renderField( 'prevent_sender_email_override' ) }
-				</div>
+				{ renderConfigureSenderFields( {
+					isWizardLayout,
+					renderField,
+					values,
+					onChange,
+				} ) }
 				<hr className="ps-v2-configure-form__divider" />
 				<div
 					className="ps-v2-gmail-configure__connect-mode"

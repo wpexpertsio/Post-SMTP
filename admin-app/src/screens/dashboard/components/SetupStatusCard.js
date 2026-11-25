@@ -1,11 +1,7 @@
 import { Link } from 'react-router-dom';
-import Button from '../../../components/ui/Button';
 import { IconCheck } from '../../../components/ui/Icons';
-import { getAdminUrls } from '../../../config/admin';
 
 const SetupStatusCard = ( { isConfigured } ) => {
-	const urls = getAdminUrls();
-
 	return (
 		<section className={ `ps-setup-card${ isConfigured ? ' is-ready' : ' is-pending' }` }>
 			<div className="ps-setup-card__icon" aria-hidden="true">
@@ -37,7 +33,9 @@ const SetupStatusCard = ( { isConfigured } ) => {
 				) }
 			</div>
 			<div className="ps-setup-card__actions">
-				<Button variant="dark" href={ urls.wizard }>+ Open Setup Wizard</Button>
+				<Link to="/setup-wizard" className="ps-btn ps-btn--dark">
+					+ Open Setup Wizard
+				</Link>
 				<Link to="/connections" className="ps-btn ps-btn--outline">
 					Manage connections
 				</Link>

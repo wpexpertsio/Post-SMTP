@@ -277,8 +277,9 @@ class Postman_Email_Tester {
 
         if ( '' === $from_email || '' === $socket ) {
             return array(
-                'success' => false,
-                'message' => __( 'Missing sender email or mailer.', 'post-smtp' ),
+                'success'     => true,
+                'unavailable' => true,
+                'messages'    => array( __( 'Missing sender email or mailer.', 'post-smtp' ) ),
             );
         }
 
@@ -334,15 +335,17 @@ class Postman_Email_Tester {
 
         if ( 429 === (int) $verify_code ) {
             return array(
-                'success' => false,
-                'message' => __( 'Too many requests. Try again later.', 'post-smtp' ),
+                'success'     => true,
+                'unavailable' => true,
+                'messages'    => array( __( 'Too many requests. Try again later.', 'post-smtp' ) ),
             );
         }
 
         if ( 200 !== (int) $verify_code ) {
             return array(
-                'success'  => true,
-                'messages' => array( __( 'Could not load domain authentication results.', 'post-smtp' ) ),
+                'success'     => true,
+                'unavailable' => true,
+                'messages'    => array( __( 'Could not load domain authentication results.', 'post-smtp' ) ),
             );
         }
 
@@ -352,8 +355,9 @@ class Postman_Email_Tester {
         }
         if ( ! is_array( $decoded ) ) {
             return array(
-                'success'  => true,
-                'messages' => array( __( 'Unexpected response from domain check.', 'post-smtp' ) ),
+                'success'     => true,
+                'unavailable' => true,
+                'messages'    => array( __( 'Unexpected response from domain check.', 'post-smtp' ) ),
             );
         }
 

@@ -64,9 +64,6 @@ const ConnectionsManageView = () => {
 							</p>
 						</div>
 						<div className="ps-v2-conn-panel__actions">
-							<Link to="/setup-wizard" className="ps-v2-btn ps-v2-btn--ghost">
-								Setup Wizard
-							</Link>
 							<Link to="/connections/add" className="ps-v2-conn-add-btn">
 								Add connection
 							</Link>
