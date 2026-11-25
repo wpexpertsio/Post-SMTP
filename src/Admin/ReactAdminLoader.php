@@ -46,7 +46,7 @@ final class ReactAdminLoader {
 
 		$hash = '#/' . ltrim( $route, '/' );
 		printf(
-			"<script>(function(){var want=%s;var h=window.location.hash||'';if(!h||h==='#'||h==='#/'){window.location.replace(window.location.pathname+window.location.search+want);}})();</script>\n",
+			"<script>(function(){var want=%s;var h=window.location.hash||'';if(h!==want){window.location.replace(window.location.pathname+window.location.search+want);}})();</script>\n",
 			wp_json_encode( $hash )
 		);
 	}

@@ -5,6 +5,10 @@ import iconExternalLink from '../../../assets/dashboard/connections/helper/icon-
 import iconCopy from '../../../assets/dashboard/connections/helper/icon-copy.svg';
 import { gmailIcon, proCrownIcon } from '../../dashboard/components/v2/gmailBarAssets';
 import { renderConfigureSenderFields } from '../../setup-wizard/components/WizardSenderSection';
+import {
+	appendOAuthReturnRouteToParams,
+	appendOAuthReturnRouteToUrl,
+} from '../../../utils/oauthReturnRoute';
 
 const CopyReadonlyField = ( { label, hint, value } ) => {
 	const [ copied, setCopied ] = useState( false );
@@ -104,7 +108,7 @@ const GmailConnectModeTabs = ( { activeTab, onChange, gmail } ) => {
 	);
 };
 
-const fetchGmailAuthUrl = async ( authUrlAjax, connectionId ) => {
+const fetchGmailAuthUrl = async ( authUrlAjax, connectionId, oauthReturnRoute ) => {
 	if ( ! authUrlAjax?.url || ! authUrlAjax?.action ) {
 		return '';
 	}
@@ -120,6 +124,7 @@ const fetchGmailAuthUrl = async ( authUrlAjax, connectionId ) => {
 			body.append( 'connection_id', String( id ) );
 		}
 	}
+	appendOAuthReturnRouteToParams( body, oauthReturnRoute );
 
 	const response = await fetch( authUrlAjax.url, {
 		method: 'POST',
@@ -235,7 +240,14 @@ const resolveGmailOneClickToggleOn = ( values, extensionEnabledProp, toggleCheck
 	return Boolean( extensionEnabledProp );
 };
 
-const GmailOneClickBlock = ( { gmail, connectionId, values = {}, onChange, onGrantError } ) => {
+const GmailOneClickBlock = ( {
+	gmail,
+	connectionId,
+	values = {},
+	onChange,
+	onGrantError,
+	oauthReturnRoute,
+} ) => {
 	const admin = getAdminConfig();
 	const { disconnectGmailOAuth, create } = useConnectionMutations();
 	const bootstrapOneClick = gmail.oneClick || admin.gmailConfigure?.oneClick || {};
@@ -331,7 +343,7 @@ const GmailOneClickBlock = ( { gmail, connectionId, values = {}, onChange, onGra
 		}
 		let cancelled = false;
 		( async () => {
-			const url = await fetchGmailAuthUrl( authUrlAjax, connectionId );
+			const url = await fetchGmailAuthUrl( authUrlAjax, connectionId, oauthReturnRoute );
 			if ( ! cancelled && url ) {
 				setLiveSignInUrl( url );
 			}
@@ -346,6 +358,7 @@ const GmailOneClickBlock = ( { gmail, connectionId, values = {}, onChange, onGra
 		hasPro,
 		isConnected,
 		liveSignInUrl,
+		oauthReturnRoute,
 	] );
 
 	const signInLocked = ! hasPro || ! toggleChecked;
@@ -458,7 +471,7 @@ const GmailOneClickBlock = ( { gmail, connectionId, values = {}, onChange, onGra
 				if ( null === grantConnectionId ) {
 					return;
 				}
-				const url = await fetchGmailAuthUrl( authUrlAjax, grantConnectionId );
+				const url = await fetchGmailAuthUrl( authUrlAjax, grantConnectionId, oauthReturnRoute );
 				if ( url ) {
 					setLiveSignInUrl( url );
 					window.location.assign( url );
@@ -477,6 +490,7 @@ const GmailOneClickBlock = ( { gmail, connectionId, values = {}, onChange, onGra
 			isConnected,
 			onChange,
 			onGrantError,
+			oauthReturnRoute,
 			signInLocked,
 			values,
 		]
@@ -600,7 +614,13 @@ const GmailOneClickBlock = ( { gmail, connectionId, values = {}, onChange, onGra
 	);
 };
 
-const buildManualAuthorizeUrl = ( baseUrl, connectionId, mailer = 'gmail_api', connectTab = 'manual' ) => {
+const buildManualAuthorizeUrl = (
+	baseUrl,
+	connectionId,
+	mailer = 'gmail_api',
+	connectTab = 'manual',
+	oauthReturnRoute
+) => {
 	if ( ! baseUrl ) {
 		return baseUrl;
 	}
@@ -618,7 +638,7 @@ const buildManualAuthorizeUrl = ( baseUrl, connectionId, mailer = 'gmail_api', c
 		if ( connectTab === 'manual' || connectTab === 'one_click' ) {
 			url.searchParams.set( 'gmail_connect_tab', connectTab );
 		}
-		return url.toString();
+		return appendOAuthReturnRouteToUrl( url.toString(), oauthReturnRoute );
 	} catch {
 		const separator = baseUrl.includes( '?' ) ? '&' : '?';
 		let href = `${ baseUrl }${ separator }mailer=${ encodeURIComponent( mailer ) }`;
@@ -631,7 +651,7 @@ const buildManualAuthorizeUrl = ( baseUrl, connectionId, mailer = 'gmail_api', c
 		if ( connectTab === 'manual' || connectTab === 'one_click' ) {
 			href += `&gmail_connect_tab=${ encodeURIComponent( connectTab ) }`;
 		}
-		return href;
+		return appendOAuthReturnRouteToUrl( href, oauthReturnRoute );
 	}
 };
 
@@ -773,7 +793,15 @@ const gmailOAuthPrerequisitesMet = ( values = {}, connectionId ) => {
 	);
 };
 
-const GmailManualConnectAction = ( { gmail, connectionId, values, onChange, onGrantError } ) => {
+const GmailManualConnectAction = ( {
+	gmail,
+	connectionId,
+	values,
+	onChange,
+	onGrantError,
+	oauthReturnRoute,
+	onBeforeOAuthSave,
+} ) => {
 	const { disconnectGmailOAuth, update, create } = useConnectionMutations();
 	const [ isConnecting, setIsConnecting ] = useState( false );
 	const connectLabel = gmail.oneClick?.connectApiLabel || 'Connect to Gmail API';
@@ -848,7 +876,8 @@ const GmailManualConnectAction = ( { gmail, connectionId, values, onChange, onGr
 		manualAuthorizeUrl,
 		connectionId,
 		'gmail_api',
-		'manual'
+		'manual',
+		oauthReturnRoute
 	);
 
 	if ( ! gmailOAuthPrerequisitesMet( values, connectionId ) ) {
@@ -874,25 +903,34 @@ const GmailManualConnectAction = ( { gmail, connectionId, values, onChange, onGr
 		} );
 		try {
 			let grantUrl = authorizeUrl;
-			if ( connectionId === undefined || connectionId === null ) {
-				const result = await create.mutateAsync( row );
-				const newId =
-					typeof result?.id === 'number' ? result.id : parseInt( result?.id, 10 );
-				if ( Number.isNaN( newId ) || newId < 0 ) {
-					throw new Error( 'Could not save connection before OAuth.' );
-				}
-				grantUrl = buildManualAuthorizeUrl(
-					manualAuthorizeUrl,
-					newId,
-					'gmail_api',
-					'manual'
-				);
+			let grantId;
+
+			if ( typeof onBeforeOAuthSave === 'function' ) {
+				grantId = await onBeforeOAuthSave();
 			} else {
-				await update.mutateAsync( {
-					index: connectionId,
-					row,
-				} );
+				grantId = parseConnectionIndex( connectionId );
+				if ( null === grantId ) {
+					const result = await create.mutateAsync( row );
+					grantId =
+						typeof result?.id === 'number' ? result.id : parseInt( result?.id, 10 );
+				} else {
+					await update.mutateAsync( {
+						index: grantId,
+						row,
+					} );
+				}
 			}
+
+			if ( Number.isNaN( grantId ) || grantId < 0 ) {
+				throw new Error( 'Could not save connection before OAuth.' );
+			}
+			grantUrl = buildManualAuthorizeUrl(
+				manualAuthorizeUrl,
+				grantId,
+				'gmail_api',
+				'manual',
+				oauthReturnRoute
+			);
 			window.location.assign( grantUrl );
 		} catch ( err ) {
 			setIsConnecting( false );
@@ -919,7 +957,17 @@ const GmailManualConnectAction = ( { gmail, connectionId, values, onChange, onGr
 	);
 };
 
-const GmailManualSection = ( { schema, gmail, renderField, connectionId, values, onChange, onGrantError } ) => {
+const GmailManualSection = ( {
+	schema,
+	gmail,
+	renderField,
+	connectionId,
+	values,
+	onChange,
+	onGrantError,
+	oauthReturnRoute,
+	onBeforeOAuthSave,
+} ) => {
 	const manualKeys = [ 'oauth_client_id', 'oauth_client_secret' ];
 	const manualSection = schema?.sections?.gmail_manual || {};
 
@@ -973,6 +1021,8 @@ const GmailManualSection = ( { schema, gmail, renderField, connectionId, values,
 						values={ values }
 						onChange={ onChange }
 						onGrantError={ onGrantError }
+						oauthReturnRoute={ oauthReturnRoute }
+						onBeforeOAuthSave={ onBeforeOAuthSave }
 					/>
 				</div>
 				<hr className="ps-v2-gmail-configure__panel-divider" />
@@ -997,6 +1047,8 @@ const GmailConfigurePanel = ( {
 	connectionId,
 	onGrantError,
 	layoutVariant,
+	oauthReturnRoute,
+	onBeforeOAuthSave,
 } ) => {
 	const isWizardLayout = layoutVariant === 'wizard';
 	const admin = getAdminConfig();
@@ -1087,6 +1139,7 @@ const GmailConfigurePanel = ( {
 							values={ values }
 							onChange={ onChange }
 							onGrantError={ onGrantError }
+							oauthReturnRoute={ oauthReturnRoute }
 						/>
 					) : (
 						<GmailManualSection
@@ -1097,6 +1150,8 @@ const GmailConfigurePanel = ( {
 							values={ values }
 							onChange={ onChange }
 							onGrantError={ onGrantError }
+							oauthReturnRoute={ oauthReturnRoute }
+							onBeforeOAuthSave={ onBeforeOAuthSave }
 						/>
 					) }
 				</div>

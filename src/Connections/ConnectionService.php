@@ -386,11 +386,9 @@ final class ConnectionService {
 				&& self::countEnabledFallbacks( $connections ) < $limits['max_enabled_fallbacks'];
 		}
 
-		if ( ! $skip_provider_authenticate ) {
-			$auth = $this->authenticateRow( $sanitized );
-			if ( ! $auth['success'] ) {
-				return $auth;
-			}
+		$auth = $this->authenticateRow( $sanitized );
+		if ( ! $auth['success'] ) {
+			return $auth;
 		}
 
 		$stored = SecretCodec::encodeConnectionRow( self::stripAdminOnlyFields( $sanitized ) );
@@ -622,14 +620,23 @@ final class ConnectionService {
 		$sanitized['provider'] = $row['provider'];
 		$skip_index      = isset( $connections[0] ) ? 0 : null;
 
+		if ( isset( $connections[0] ) && is_array( $connections[0] ) ) {
+			$merged    = array_merge( $connections[0], $sanitized );
+			$merged    = $this->preserveMaskedSecrets( $connections[0], $merged );
+			$sanitized = ConnectionSchema::sanitizeRow( $merged );
+			$sanitized['provider'] = $row['provider'];
+		}
+
 		$validate = $this->validateRow( $sanitized, $connections, $skip_index );
 		if ( ! $validate['success'] ) {
 			return $validate;
 		}
 
-		$auth = $this->authenticateRow( $sanitized );
-		if ( ! $auth['success'] ) {
-			return $auth;
+		if ( ! $this->shouldSkipProviderAuthenticateForRow( $sanitized ) ) {
+			$auth = $this->authenticateRow( $sanitized );
+			if ( ! $auth['success'] ) {
+				return $auth;
+			}
 		}
 
 		return array(
@@ -696,8 +703,31 @@ final class ConnectionService {
 	}
 
 	/**
-	 * @param mixed $value Raw value.
+	 * Wizard / staged save: OAuth-completed rows already have tokens — do not re-require API secrets in the form payload.
+	 *
+	 * @param array<string,mixed> $row Sanitized merged row.
 	 */
+	private function shouldSkipProviderAuthenticateForRow( array $row ): bool {
+		$slug = sanitize_key( (string) ( $row['provider'] ?? '' ) );
+
+		if ( 'gmail_api' === $slug && class_exists( GmailConnectionTokens::class, false ) ) {
+			$decoded = SecretCodec::decodeConnectionRow( $row );
+			if ( GmailConnectionTokens::isConnectedStored( $decoded ) ) {
+				return true;
+			}
+		}
+
+		if ( 'office365_api' === $slug
+			&& class_exists( '\PostSMTP\Pro\Connections\Office365ConnectionTokens', false ) ) {
+			$decoded = SecretCodec::decodeConnectionRow( $row );
+			if ( \PostSMTP\Pro\Connections\Office365ConnectionTokens::isConnectedStored( $decoded ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	/**
 	 * @param array<string,mixed> $existing Stored row.
 	 * @param array<string,mixed> $incoming   Request payload.

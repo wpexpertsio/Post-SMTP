@@ -1,4 +1,5 @@
-import { useMemo, useState } from '@wordpress/element';
+import { useCallback, useEffect, useMemo, useState } from '@wordpress/element';
+import { OAUTH_PS_RETURN_ROUTE_SETUP_WIZARD } from '../../utils/oauthReturnRoute';
 import { useQuery } from '@tanstack/react-query';
 import apiFetch from '../../api/client';
 import iconChevronBack from '../../assets/dashboard/connections/icon-chevron-back.svg';
@@ -27,8 +28,20 @@ const StepConfigure = () => {
 		wizard,
 		refreshDraft,
 		bootstrap,
+		oauthReturnNotice,
+		clearOauthReturnNotice,
 	} = useSetupWizardContext();
 	const [ notice, setNotice ] = useState( null );
+
+	useEffect( () => {
+		if ( oauthReturnNotice?.message ) {
+			setNotice( {
+				type: oauthReturnNotice.type || 'success',
+				message: oauthReturnNotice.message,
+			} );
+			clearOauthReturnNotice();
+		}
+	}, [ oauthReturnNotice, clearOauthReturnNotice ] );
 
 	const providersQuery = useQuery( {
 		queryKey: [ 'providers', provider ],
@@ -52,6 +65,14 @@ const StepConfigure = () => {
 		}
 		return normalizeConnectionSaveRow( payload );
 	};
+
+	const onBeforeOAuthSave = useCallback( async () => {
+		const row = buildPayload();
+		await wizard.validateMutation.mutateAsync( { provider, row } );
+		const result = await wizard.saveDraftMutation.mutateAsync( { provider, row } );
+		refreshDraft( result?.draft );
+		return 0;
+	}, [ provider, wizard.validateMutation, wizard.saveDraftMutation, refreshDraft, formValues ] );
 
 	const handleNext = async () => {
 		setNotice( null );
@@ -92,7 +113,10 @@ const StepConfigure = () => {
 							values={ formValues }
 							onChange={ setFormValues }
 							provider={ provider }
+							connectionId={ 0 }
 							layoutVariant="wizard"
+							oauthReturnRoute={ OAUTH_PS_RETURN_ROUTE_SETUP_WIZARD }
+							onBeforeOAuthSave={ onBeforeOAuthSave }
 							onGrantError={ ( message ) => setNotice( { type: 'error', message } ) }
 						/>
 					</div>

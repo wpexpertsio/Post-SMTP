@@ -9,6 +9,7 @@ namespace PostSMTP\SetupWizard;
 
 use PostSMTP\Connections\ConnectionLegacySendBridge;
 use PostSMTP\Connections\ConnectionService;
+use PostSMTP\Connections\OAuthAdminReturnContext;
 use PostSMTP\Connections\MailerCatalog;
 use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
 use PostSMTP\Kernel\Data\ConnectionSchema;
@@ -121,6 +122,11 @@ final class SetupWizardService {
 		$stored  = is_array( $primary ) ? $primary : SecretCodec::encodeConnectionRow( $sanitized );
 
 		ConnectionLegacySendBridge::sync_primary_to_options();
+
+		if ( is_user_logged_in() ) {
+			OAuthAdminReturnContext::rememberPsRoute( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD );
+			OAuthAdminReturnContext::rememberPsRouteForConnection( 0, OAuthAdminReturnContext::ROUTE_SETUP_WIZARD );
+		}
 
 		$existing = $this->getDraftRaw();
 		$draft    = array(

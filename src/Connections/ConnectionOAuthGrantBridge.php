@@ -24,6 +24,7 @@ final class ConnectionOAuthGrantBridge {
 	);
 
 	public static function init(): void {
+		OAuthAdminReturnTrace::register();
 		add_action( 'admin_post_postman/requestOauthGrant', array( self::class, 'stripLegacyGrantHandlerForOffice365' ), 1 );
 		add_action( 'admin_post_postman/requestOauthGrant', array( self::class, 'onBeforeGrant' ), 5 );
 		add_action( 'admin_post_postman/requestOauthGrant', array( self::class, 'preventLegacyOffice365GrantHandler' ), 99 );
@@ -73,6 +74,8 @@ final class ConnectionOAuthGrantBridge {
 			return;
 		}
 
+		OAuthAdminReturnContext::captureFromGrantRequest();
+
 		$requested_id = isset( $_GET['connection_id'] ) ? absint( $_GET['connection_id'] ) : null;
 		$mailer_hint  = isset( $_GET['mailer'] ) ? sanitize_key( wp_unslash( (string) $_GET['mailer'] ) ) : '';
 
@@ -103,6 +106,7 @@ final class ConnectionOAuthGrantBridge {
 					$tab = $tab_candidate;
 				}
 			}
+			OAuthAdminReturnContext::rememberGrantReturnForConnection( (int) $connection_id );
 			GmailRevampOAuth::rememberGrant( (int) $connection_id, $tab );
 		}
 
@@ -118,6 +122,9 @@ final class ConnectionOAuthGrantBridge {
 				if ( in_array( $tab_candidate, array( 'manual', 'one_click' ), true ) ) {
 					$tab = $tab_candidate;
 				}
+			}
+			if ( null !== $connection_id && $connection_id >= 0 ) {
+				OAuthAdminReturnContext::rememberGrantReturnForConnection( (int) $connection_id );
 			}
 			if ( null !== $connection_id && $connection_id >= 0
 				&& class_exists( '\PostSMTP\Pro\Connections\Office365RevampOAuth', true ) ) {
@@ -226,12 +233,12 @@ final class ConnectionOAuthGrantBridge {
 		if ( '' !== $mailer_hint && in_array( $mailer_hint, self::OAUTH_PROVIDERS, true ) ) {
 			$provider = $mailer_hint;
 		} else {
-			$provider = self::resolveProviderFromRow( $row, $mailer_hint );
-			if ( ! in_array( $provider, self::OAUTH_PROVIDERS, true ) ) {
-				return array(
-					'success' => false,
-					'message' => __( 'This mailer does not use OAuth.', 'post-smtp' ),
-				);
+		$provider = self::resolveProviderFromRow( $row, $mailer_hint );
+		if ( ! in_array( $provider, self::OAUTH_PROVIDERS, true ) ) {
+			return array(
+				'success' => false,
+				'message' => __( 'This mailer does not use OAuth.', 'post-smtp' ),
+			);
 			}
 		}
 
@@ -581,9 +588,9 @@ final class ConnectionOAuthGrantBridge {
 					return $requested_id;
 				}
 			} else {
-				$provider = self::resolveProviderFromRow( $connections[ $requested_id ], $mailer_hint );
-				if ( in_array( $provider, self::OAUTH_PROVIDERS, true ) ) {
-					return $requested_id;
+			$provider = self::resolveProviderFromRow( $connections[ $requested_id ], $mailer_hint );
+			if ( in_array( $provider, self::OAUTH_PROVIDERS, true ) ) {
+				return $requested_id;
 				}
 			}
 		}
@@ -671,7 +678,7 @@ final class ConnectionOAuthGrantBridge {
 				return $mailer_hint;
 			}
 			if ( self::rowHasOAuthCredentials( $row, $mailer_hint ) ) {
-				return $mailer_hint;
+			return $mailer_hint;
 			}
 		}
 
@@ -900,6 +907,7 @@ final class ConnectionOAuthGrantBridge {
 	 * Microsoft 365 manual connect uses Entra OAuth (Pro), not the Gmail-style grant handler.
 	 */
 	private static function redirectOffice365EntraOAuth(): bool {
+	
 		if ( ! defined( 'POST_SMTP_PRO_PATH' ) ) {
 			return false;
 		}
@@ -970,8 +978,16 @@ final class ConnectionOAuthGrantBridge {
 			\PostSMTP\Pro\Connections\Office365RevampOAuth::rememberGrant( $connection_index, $tab );
 		}
 
+		$grant_ps_route = '';
+		if ( $connection_index >= 0 && class_exists( '\PostSMTP\Pro\Connections\Office365OAuthGrantContext', true ) ) {
+			$grant_ps_route = \PostSMTP\Pro\Connections\Office365OAuthGrantContext::resolveGrantPsRouteForConnection( $connection_index );
+		}
+
 		if ( class_exists( '\PostSMTP\Pro\Connections\Office365OAuthGrantContext', true ) ) {
-			$state = \PostSMTP\Pro\Connections\Office365OAuthGrantContext::buildStateToken( $connection_index, $tab );
+			$state_ps_route = \PostSMTP\Connections\OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $grant_ps_route
+				? $grant_ps_route
+				: null;
+			$state = \PostSMTP\Pro\Connections\Office365OAuthGrantContext::buildStateToken( $connection_index, $tab, $state_ps_route );
 			\PostSMTP\Pro\Connections\Office365OAuthGrantContext::rotateOAuthState( $state );
 		} else {
 			$state = get_transient( \Post_Smtp_Office365::STATE );
@@ -982,8 +998,17 @@ final class ConnectionOAuthGrantBridge {
 
 		set_transient( \Post_Smtp_Office365::STATE, $state, 30 * MINUTE_IN_SECONDS );
 
+		if ( $connection_index >= 0 ) {
+			OAuthAdminReturnContext::rememberGrantReturnForConnection( $connection_index );
+		}
+
 		if ( $connection_index >= 0 && class_exists( '\PostSMTP\Pro\Connections\Office365OAuthGrantContext', true ) ) {
-			\PostSMTP\Pro\Connections\Office365OAuthGrantContext::rememberStateBinding( (string) $state, $connection_index, $tab );
+			\PostSMTP\Pro\Connections\Office365OAuthGrantContext::rememberStateBinding(
+				(string) $state,
+				$connection_index,
+				$tab,
+				'' !== $grant_ps_route ? $grant_ps_route : null
+			);
 		}
 
 		$url = $client->getOffice365AuthURL(
@@ -1000,6 +1025,18 @@ final class ConnectionOAuthGrantBridge {
 		if ( false === strpos( $url, 'login.microsoftonline.com' ) ) {
 			return false;
 		}
+
+		OAuthAdminReturnTrace::record(
+			'office365_grant_start',
+			array(
+				'connection_index' => $connection_index,
+				'tab'              => $tab,
+				'grant_ps_route'   => $grant_ps_route,
+				'state'            => isset( $state ) ? (string) $state : '',
+				'ps_return_route'  => OAuthAdminReturnContext::readReturnRouteFromSuperglobals(),
+				'entra_url_host'   => wp_parse_url( $url, PHP_URL_HOST ),
+			)
+		);
 
 		wp_redirect( $url );
 		exit;

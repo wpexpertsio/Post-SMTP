@@ -5,6 +5,10 @@ import iconExternalLink from '../../../assets/dashboard/connections/helper/icon-
 import iconCopy from '../../../assets/dashboard/connections/helper/icon-copy.svg';
 import microsoftIcon from '../../../assets/dashboard/connections/mailers/microsoft.svg';
 import { renderConfigureSenderFields } from '../../setup-wizard/components/WizardSenderSection';
+import {
+	appendOAuthReturnRouteToParams,
+	appendOAuthReturnRouteToUrl,
+} from '../../../utils/oauthReturnRoute';
 
 const CopyReadonlyField = ( { label, hint, value } ) => {
 	const [ copied, setCopied ] = useState( false );
@@ -138,7 +142,7 @@ const postOneClickToggle = async ( ajax, enabled, connectionId ) => {
 	}
 };
 
-const fetchOffice365AuthUrl = async ( authUrlAjax, connectionId ) => {
+const fetchOffice365AuthUrl = async ( authUrlAjax, connectionId, oauthReturnRoute ) => {
 	if ( ! authUrlAjax?.url || ! authUrlAjax?.action ) {
 		return '';
 	}
@@ -153,6 +157,7 @@ const fetchOffice365AuthUrl = async ( authUrlAjax, connectionId ) => {
 			body.append( 'connection_id', String( id ) );
 		}
 	}
+	appendOAuthReturnRouteToParams( body, oauthReturnRoute );
 	const response = await fetch( authUrlAjax.url, {
 		method: 'POST',
 		body,
@@ -195,7 +200,20 @@ const ensureOffice365OneClickConnectionId = async ( {
 	create,
 	onGrantError,
 	onChange,
+	onBeforeOAuthSave,
 } ) => {
+	if ( typeof onBeforeOAuthSave === 'function' ) {
+		try {
+			const id = await onBeforeOAuthSave();
+			const parsed = parseConnectionIndex( id );
+			if ( null !== parsed ) {
+				return parsed;
+			}
+		} catch ( err ) {
+			onGrantError?.( err?.message || 'Could not save wizard settings before Microsoft sign-in.' );
+			return null;
+		}
+	}
 	const existing = parseConnectionIndex( connectionId );
 	if ( null !== existing ) {
 		return existing;
@@ -263,6 +281,8 @@ const Office365OneClickBlock = ( {
 	values = {},
 	onChange,
 	onGrantError,
+	oauthReturnRoute,
+	onBeforeOAuthSave,
 } ) => {
 	const admin = getAdminConfig();
 	const bootstrapOneClick = office365.oneClick || admin.office365Configure?.oneClick || {};
@@ -453,11 +473,16 @@ const Office365OneClickBlock = ( {
 					create,
 					onGrantError,
 					onChange,
+					onBeforeOAuthSave,
 				} );
 				if ( null === grantConnectionId ) {
 					return;
 				}
-				const url = await fetchOffice365AuthUrl( authUrlAjax, grantConnectionId );
+				const url = await fetchOffice365AuthUrl(
+					authUrlAjax,
+					grantConnectionId,
+					oauthReturnRoute
+				);
 				if ( url ) {
 					setLiveSignInUrl( url );
 					window.location.assign( url );
@@ -582,7 +607,8 @@ const buildManualAuthorizeUrl = (
 	baseUrl,
 	connectionId,
 	mailer = 'office365_api',
-	connectTab = 'manual'
+	connectTab = 'manual',
+	oauthReturnRoute
 ) => {
 	if ( ! baseUrl ) {
 		return baseUrl;
@@ -601,7 +627,7 @@ const buildManualAuthorizeUrl = (
 		if ( connectTab === 'manual' || connectTab === 'one_click' ) {
 			url.searchParams.set( 'office365_connect_tab', connectTab );
 		}
-		return url.toString();
+		return appendOAuthReturnRouteToUrl( url.toString(), oauthReturnRoute );
 	} catch {
 		const separator = baseUrl.includes( '?' ) ? '&' : '?';
 		let href = `${ baseUrl }${ separator }mailer=${ encodeURIComponent( mailer ) }`;
@@ -614,7 +640,7 @@ const buildManualAuthorizeUrl = (
 		if ( connectTab === 'manual' || connectTab === 'one_click' ) {
 			href += `&office365_connect_tab=${ encodeURIComponent( connectTab ) }`;
 		}
-		return href;
+		return appendOAuthReturnRouteToUrl( href, oauthReturnRoute );
 	}
 };
 
@@ -646,8 +672,17 @@ const resolveOffice365ManualConnected = ( values = {}, office365 = {} ) => {
 	return { connected, label };
 };
 
-const Office365ManualConnectAction = ( { office365, connectionId, values, onChange } ) => {
-	const { disconnectOffice365OAuth } = useConnectionMutations();
+const Office365ManualConnectAction = ( {
+	office365,
+	connectionId,
+	values,
+	onChange,
+	onGrantError,
+	oauthReturnRoute,
+	onBeforeOAuthSave,
+} ) => {
+	const { disconnectOffice365OAuth, update, create } = useConnectionMutations();
+	const [ isConnecting, setIsConnecting ] = useState( false );
 	const connectLabel =
 		office365.connectApiLabel ||
 		office365.oneClick?.connectApiLabel ||
@@ -721,29 +756,104 @@ const Office365ManualConnectAction = ( { office365, connectionId, values, onChan
 	}
 
 	if ( connectionId === undefined || connectionId === null ) {
-		return (
-			<p className="ps-v2-configure-form__section-hint">
-				Save the connection first, then use Connect to Microsoft API on the edit screen.
-			</p>
-		);
+		if ( typeof onBeforeOAuthSave !== 'function' ) {
+			return (
+				<p className="ps-v2-configure-form__section-hint">
+					Save the connection first, then use Connect to Microsoft API on the edit screen.
+				</p>
+			);
+		}
 	}
 
 	const connectTab = resolveOffice365ConnectTab( values, office365 );
+	const grantConnectionId = parseConnectionIndex( connectionId );
 	const authorizeUrl = buildManualAuthorizeUrl(
 		office365.manualAuthorizeUrl,
-		connectionId,
+		grantConnectionId ?? 0,
 		'office365_api',
-		connectTab
+		connectTab,
+		oauthReturnRoute
 	);
 
+	const handleConnect = async ( event ) => {
+		event.preventDefault();
+		if ( isConnecting ) {
+			return;
+		}
+		setIsConnecting( true );
+		const row = buildOffice365OAuthSaveRow( {
+			...values,
+			office365_connect_tab:
+				values?.office365_connect_tab === 'one_click' || values?.office365_connect_tab === 'manual'
+					? values.office365_connect_tab
+					: 'manual',
+		} );
+		try {
+			let grantUrl = authorizeUrl;
+			let grantId;
+
+			if ( typeof onBeforeOAuthSave === 'function' ) {
+				grantId = await onBeforeOAuthSave();
+			} else {
+				grantId = parseConnectionIndex( connectionId );
+				if ( null === grantId ) {
+					const result = await create.mutateAsync( row );
+					grantId =
+						typeof result?.id === 'number' ? result.id : parseInt( result?.id, 10 );
+				} else {
+					await update.mutateAsync( {
+						index: grantId,
+						row,
+					} );
+				}
+			}
+
+			if ( Number.isNaN( grantId ) || grantId < 0 ) {
+				throw new Error( 'Could not save connection before OAuth.' );
+			}
+			grantUrl = buildManualAuthorizeUrl(
+				office365.manualAuthorizeUrl,
+				grantId,
+				'office365_api',
+				connectTab,
+				oauthReturnRoute
+			);
+			window.location.assign( grantUrl );
+		} catch ( err ) {
+			setIsConnecting( false );
+			const message =
+				err?.message ||
+				err?.data?.message ||
+				'Could not save this connection. Check title, From email, and Microsoft credentials.';
+			if ( typeof onGrantError === 'function' ) {
+				onGrantError( message );
+			}
+		}
+	};
+
 	return (
-		<a className="ps-v2-gmail-configure__connect-api" href={ authorizeUrl }>
-			{ connectLabel }
+		<a
+			className="ps-v2-gmail-configure__connect-api"
+			href={ authorizeUrl }
+			aria-disabled={ isConnecting }
+			onClick={ handleConnect }
+		>
+			{ isConnecting ? 'Saving…' : connectLabel }
 		</a>
 	);
 };
 
-const Office365ManualSection = ( { schema, office365, renderField, connectionId, values, onChange } ) => {
+const Office365ManualSection = ( {
+	schema,
+	office365,
+	renderField,
+	connectionId,
+	values,
+	onChange,
+	onGrantError,
+	oauthReturnRoute,
+	onBeforeOAuthSave,
+} ) => {
 	const manualKeys = [ 'office365_app_id', 'office365_app_password' ];
 	const manualSection = schema?.sections?.office365_manual || {};
 
@@ -795,6 +905,9 @@ const Office365ManualSection = ( { schema, office365, renderField, connectionId,
 						connectionId={ connectionId }
 						values={ values }
 						onChange={ onChange }
+						onGrantError={ onGrantError }
+						oauthReturnRoute={ oauthReturnRoute }
+						onBeforeOAuthSave={ onBeforeOAuthSave }
 					/>
 				</div>
 				<hr className="ps-v2-gmail-configure__panel-divider" />
@@ -811,6 +924,8 @@ const Office365ConfigurePanel = ( {
 	onChange,
 	onGrantError,
 	layoutVariant,
+	oauthReturnRoute,
+	onBeforeOAuthSave,
 } ) => {
 	const isWizardLayout = layoutVariant === 'wizard';
 	const admin = getAdminConfig();
@@ -871,6 +986,8 @@ const Office365ConfigurePanel = ( {
 							values={ values }
 							onChange={ onChange }
 							onGrantError={ onGrantError }
+							oauthReturnRoute={ oauthReturnRoute }
+							onBeforeOAuthSave={ onBeforeOAuthSave }
 						/>
 					) : (
 						<Office365ManualSection
@@ -880,6 +997,9 @@ const Office365ConfigurePanel = ( {
 							connectionId={ connectionId }
 							values={ values }
 							onChange={ onChange }
+							oauthReturnRoute={ oauthReturnRoute }
+							onGrantError={ onGrantError }
+							onBeforeOAuthSave={ onBeforeOAuthSave }
 						/>
 					) }
 				</div>

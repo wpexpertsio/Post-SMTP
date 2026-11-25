@@ -7,7 +7,7 @@ import { mailerConnectionIcon } from '../model/mailerConnectionIcons';
 import useMailerCatalog from '../hooks/useMailerCatalog';
 import iconExternalLink from '../../../assets/dashboard/connections/helper/icon-external-link.svg';
 import { WizardForceSenderRow } from '../../setup-wizard/components/WizardSenderSection';
-
+import { OAUTH_PS_RETURN_ROUTE_CONNECTION_EDIT } from '../../../utils/oauthReturnRoute';
 const OAUTH_PROVIDERS = {
 	gmail_api: 'gmail_api',
 	office365_api: 'office365_api',
@@ -146,8 +146,12 @@ const ConfigureMailerForm = ( {
 	connectionId,
 	onGrantError,
 	layoutVariant,
+	oauthReturnRoute,
+	onBeforeOAuthSave,
 } ) => {
 	const isWizardLayout = layoutVariant === 'wizard';
+	const effectiveOauthReturnRoute =
+		oauthReturnRoute ?? ( isWizardLayout ? undefined : OAUTH_PS_RETURN_ROUTE_CONNECTION_EDIT );
 	const urls = getAdminUrls();
 	const catalogQuery = useMailerCatalog();
 	const catalogItem = catalogQuery.data?.items?.find( ( item ) => item.slug === provider );
@@ -255,6 +259,8 @@ const ConfigureMailerForm = ( {
 					connectionId={ connectionId }
 					onGrantError={ onGrantError }
 					layoutVariant={ layoutVariant }
+					oauthReturnRoute={ effectiveOauthReturnRoute }
+					onBeforeOAuthSave={ onBeforeOAuthSave }
 				/>
 			) : isOffice365OAuthLayout ? (
 				<Office365ConfigurePanel
@@ -265,6 +271,8 @@ const ConfigureMailerForm = ( {
 					connectionId={ connectionId }
 					onGrantError={ onGrantError }
 					layoutVariant={ layoutVariant }
+					oauthReturnRoute={ effectiveOauthReturnRoute }
+					onBeforeOAuthSave={ onBeforeOAuthSave }
 				/>
 			) : isZohoOAuthLayout ? (
 				<ZohoConfigurePanel
@@ -274,6 +282,7 @@ const ConfigureMailerForm = ( {
 					renderField={ renderField }
 					connectionId={ connectionId }
 					layoutVariant={ layoutVariant }
+					oauthReturnRoute={ effectiveOauthReturnRoute }
 				/>
 			) : useFigmaLayout ? (
 				<div className="ps-v2-configure-form__sections">

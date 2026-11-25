@@ -2014,6 +2014,10 @@ class Post_SMTP_New_Wizard {
             wp_send_json_error( array( 'message' => 'Office 365 One-Click is not available.' ), 500 );
         }
 
+        if ( class_exists( '\PostSMTP\Connections\OAuthAdminReturnContext', false ) ) {
+            \PostSMTP\Connections\OAuthAdminReturnContext::captureFromGrantRequest();
+        }
+
         $connection_id = isset( $_POST['connection_id'] ) && is_numeric( $_POST['connection_id'] )
             ? (int) $_POST['connection_id']
             : null;
@@ -2399,13 +2403,25 @@ class Post_SMTP_New_Wizard {
 				? $msg
 				: __( 'Microsoft 365 connected successfully.', 'post-smtp' );
 
+			$force_ps_route = null;
+			if ( class_exists( '\PostSMTP\Connections\OAuthAdminReturnContext', false ) ) {
+				$from_request = isset( $_GET['ps-route'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['ps-route'] ) ) : '';
+				if ( \PostSMTP\Connections\OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $from_request ) {
+					$force_ps_route = $from_request;
+				} elseif ( \PostSMTP\Connections\OAuthAdminReturnContext::ROUTE_SETUP_WIZARD
+					=== \PostSMTP\Connections\OAuthAdminReturnContext::readStoredPsRouteForConnection( $connection_id ) ) {
+					$force_ps_route = \PostSMTP\Connections\OAuthAdminReturnContext::ROUTE_SETUP_WIZARD;
+				}
+			}
+
 			$redirect = \PostSMTP\Pro\Connections\Office365RevampOAuth::connectionEditRedirectUrl(
 				$connection_id,
 				array(
 					'success'               => '1',
 					'msg'                   => $success_msg,
 					'office365_connect_tab' => 'one_click',
-				)
+				),
+				$force_ps_route
 			);
 			wp_safe_redirect( $redirect );
 			exit;

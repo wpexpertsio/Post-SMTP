@@ -3,6 +3,7 @@ import { getAdminConfig } from '../../../config/admin';
 import iconExternalLink from '../../../assets/dashboard/connections/helper/icon-external-link.svg';
 import iconCopy from '../../../assets/dashboard/connections/helper/icon-copy.svg';
 import { renderConfigureSenderFields } from '../../setup-wizard/components/WizardSenderSection';
+import { appendOAuthReturnRouteToUrl } from '../../../utils/oauthReturnRoute';
 
 const CopyReadonlyField = ( { label, hint, value } ) => {
 	const [ copied, setCopied ] = useState( false );
@@ -55,7 +56,7 @@ const CopyReadonlyField = ( { label, hint, value } ) => {
 	);
 };
 
-const buildConnectUrl = ( baseUrl, connectionId ) => {
+const buildConnectUrl = ( baseUrl, connectionId, oauthReturnRoute ) => {
 	if ( ! baseUrl ) {
 		return '';
 	}
@@ -67,9 +68,9 @@ const buildConnectUrl = ( baseUrl, connectionId ) => {
 				url.searchParams.set( 'connection_id', String( id ) );
 			}
 		}
-		return url.toString();
+		return appendOAuthReturnRouteToUrl( url.toString(), oauthReturnRoute );
 	} catch {
-		return baseUrl;
+		return appendOAuthReturnRouteToUrl( baseUrl, oauthReturnRoute );
 	}
 };
 
@@ -93,7 +94,7 @@ const zohoIsConnected = ( values, zohoDefaults ) => {
 	return Boolean( zohoDefaults?.oauth?.connected );
 };
 
-const ZohoConnectAction = ( { zoho, connectionId, hasCredentials } ) => {
+const ZohoConnectAction = ( { zoho, connectionId, hasCredentials, oauthReturnRoute } ) => {
 	const oauth = zoho.oauth || {};
 	const connectLabel = zoho.connectLabel || 'Connect to Zoho API';
 	const connectedLabel = zoho.connectedLabel || 'Connected to Zoho Mail API';
@@ -129,7 +130,7 @@ const ZohoConnectAction = ( { zoho, connectionId, hasCredentials } ) => {
 			: '';
 
 	if ( canConnect ) {
-		const href = buildConnectUrl( baseUrl, connectionId );
+		const href = buildConnectUrl( baseUrl, connectionId, oauthReturnRoute );
 		return (
 			<a
 				className="ps-v2-zoho-configure__connect-api"
@@ -154,7 +155,15 @@ const ZohoConnectAction = ( { zoho, connectionId, hasCredentials } ) => {
 	);
 };
 
-const ZohoConfigurePanel = ( { schema, values, onChange, renderField, connectionId, layoutVariant } ) => {
+const ZohoConfigurePanel = ( {
+	schema,
+	values,
+	onChange,
+	renderField,
+	connectionId,
+	layoutVariant,
+	oauthReturnRoute,
+} ) => {
 	const isWizardLayout = layoutVariant === 'wizard';
 	const admin = getAdminConfig();
 	const zohoDefaults = admin.zohoConfigure || {};
@@ -217,6 +226,7 @@ const ZohoConfigurePanel = ( { schema, values, onChange, renderField, connection
 						zoho={ zoho }
 						connectionId={ connectionId }
 						hasCredentials={ hasCredentials }
+						oauthReturnRoute={ oauthReturnRoute }
 					/>
 				</div>
 			</div>
