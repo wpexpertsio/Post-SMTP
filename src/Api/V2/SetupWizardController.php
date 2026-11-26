@@ -112,6 +112,11 @@ final class SetupWizardController extends BaseController {
 			return $nonce_check;
 		}
 
+		$write_check = $this->requireMailerWritePermission();
+		if ( is_wp_error( $write_check ) ) {
+			return $write_check;
+		}
+
 		$body = $request->get_json_params();
 		if ( ! is_array( $body ) ) {
 			$body = array();
@@ -135,6 +140,11 @@ final class SetupWizardController extends BaseController {
 			return $nonce_check;
 		}
 
+		$write_check = $this->requireMailerWritePermission();
+		if ( is_wp_error( $write_check ) ) {
+			return $write_check;
+		}
+
 		$body = $request->get_json_params();
 		if ( ! is_array( $body ) ) {
 			$body = array();
@@ -156,6 +166,11 @@ final class SetupWizardController extends BaseController {
 		$nonce_check = $this->requireRestNonce( $request );
 		if ( is_wp_error( $nonce_check ) ) {
 			return $nonce_check;
+		}
+
+		$write_check = $this->requireMailerWritePermission();
+		if ( is_wp_error( $write_check ) ) {
+			return $write_check;
 		}
 
 		return rest_ensure_response( $this->service->discardDraft() );
@@ -194,6 +209,11 @@ final class SetupWizardController extends BaseController {
 		$nonce_check = $this->requireRestNonce( $request );
 		if ( is_wp_error( $nonce_check ) ) {
 			return $nonce_check;
+		}
+
+		$write_check = $this->requireMailerWritePermission();
+		if ( is_wp_error( $write_check ) ) {
+			return $write_check;
 		}
 
 		$result = $this->service->complete();

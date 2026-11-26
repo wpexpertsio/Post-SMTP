@@ -11,6 +11,7 @@ use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
 use PostSMTP\Kernel\Data\ConnectionSchema;
 use PostSMTP\Kernel\Data\SecretCodec;
 use PostSMTP\Kernel\Providers\ProviderRegistry;
+use PostSMTP\Multisite\MultisitePolicy;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -197,6 +198,11 @@ final class ConnectionService {
 	 * @return array{success:bool,message?:string,connections?:array}
 	 */
 	public function reorder( array $order ): array {
+		$blocked = MultisitePolicy::blockedWriteResponse();
+		if ( null !== $blocked ) {
+			return $blocked;
+		}
+
 		$repo        = ConnectionRepositoryFactory::make();
 		$connections = $repo->getConnections();
 		$count       = count( $connections );
@@ -239,6 +245,11 @@ final class ConnectionService {
 	 * @return array{success:bool,message?:string,connections?:array}
 	 */
 	public function setFallbackEnabled( int $index, bool $enabled ): array {
+		$blocked = MultisitePolicy::blockedWriteResponse();
+		if ( null !== $blocked ) {
+			return $blocked;
+		}
+
 		if ( $index <= 0 ) {
 			return array(
 				'success' => false,
@@ -289,6 +300,11 @@ final class ConnectionService {
 	 * @return array{success:bool,message?:string,connections?:array}
 	 */
 	public function disconnectGmailManualOAuth( int $index ): array {
+		$blocked = MultisitePolicy::blockedWriteResponse();
+		if ( null !== $blocked ) {
+			return $blocked;
+		}
+
 		$repo        = ConnectionRepositoryFactory::make();
 		$connections = $this->normalizeOnRead( $repo->getConnections(), $repo->getOptions() );
 
@@ -321,6 +337,11 @@ final class ConnectionService {
 	}
 
 	public function disconnectOffice365ManualOAuth( int $index ): array {
+		$blocked = MultisitePolicy::blockedWriteResponse();
+		if ( null !== $blocked ) {
+			return $blocked;
+		}
+
 		$repo        = ConnectionRepositoryFactory::make();
 		$connections = $this->normalizeOnRead( $repo->getConnections(), $repo->getOptions() );
 
@@ -359,6 +380,11 @@ final class ConnectionService {
 	 * @return array{success:bool,message?:string,connections?:array,id?:int}
 	 */
 	public function create( array $row, bool $skip_provider_authenticate = false ): array {
+		$blocked = MultisitePolicy::blockedWriteResponse();
+		if ( null !== $blocked ) {
+			return $blocked;
+		}
+
 		$repo        = ConnectionRepositoryFactory::make();
 		$connections = $this->normalizeOnRead( $repo->getConnections(), $repo->getOptions() );
 		$limits      = ConnectionLimits::get();
@@ -419,6 +445,11 @@ final class ConnectionService {
 	 * @return array{success:bool,message?:string,connections?:array}
 	 */
 	public function update( int $index, array $row, bool $skip_provider_authenticate = false ): array {
+		$blocked = MultisitePolicy::blockedWriteResponse();
+		if ( null !== $blocked ) {
+			return $blocked;
+		}
+
 		$repo        = ConnectionRepositoryFactory::make();
 		$connections = $this->normalizeOnRead( $repo->getConnections(), $repo->getOptions() );
 
@@ -470,6 +501,11 @@ final class ConnectionService {
 	 * @return array{success:bool,message?:string,connections?:array,id?:int}
 	 */
 	public function upsertWizardPrimary( array $row, bool $skip_provider_authenticate = false ): array {
+		$blocked = MultisitePolicy::blockedWriteResponse();
+		if ( null !== $blocked ) {
+			return $blocked;
+		}
+
 		$repo        = ConnectionRepositoryFactory::make();
 		$connections = $this->normalizeOnRead( $repo->getConnections(), $repo->getOptions() );
 
@@ -528,6 +564,11 @@ final class ConnectionService {
 	 * @return array{success:bool,message?:string,connections?:array}
 	 */
 	public function delete( int $index ): array {
+		$blocked = MultisitePolicy::blockedWriteResponse();
+		if ( null !== $blocked ) {
+			return $blocked;
+		}
+
 		$repo        = ConnectionRepositoryFactory::make();
 		$connections = $repo->getConnections();
 

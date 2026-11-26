@@ -135,7 +135,28 @@ final class ReactAdminLoader {
 	 */
 	public static function isDashboardShellPage(): bool {
 		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
-		return 'postman' === $page;
+		if ( 'postman' === $page ) {
+			return true;
+		}
+
+		return in_array( $page, ReactAdminSubmenu::reactShellPageSlugs(), true );
+	}
+
+	private static function isReactAdminMenuHook( string $hook ): bool {
+		if ( 'toplevel_page_postman' === $hook ) {
+			return true;
+		}
+
+		foreach ( ReactAdminSubmenu::reactShellPageSlugs() as $slug ) {
+			if ( 'postman' === $slug ) {
+				continue;
+			}
+			if ( 'postman_page_' . $slug === $hook ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public static function hideLegacyChrome(): void {
@@ -163,12 +184,24 @@ final class ReactAdminLoader {
 		$transport  = 'default';
 		$sender     = '';
 
+		$is_multisite     = is_multisite();
+		$multisite_global = $is_multisite && class_exists( '\PostSMTP\Multisite\MultisitePolicy' )
+			&& \PostSMTP\Multisite\MultisitePolicy::isMultisiteGlobalSettingsEnabled();
+		$mailer_locked    = $is_multisite && class_exists( '\PostSMTP\Multisite\MultisitePolicy' )
+			&& \PostSMTP\Multisite\MultisitePolicy::shouldBlockChildMailerWrites();
+		$synced_with_main = $is_multisite && class_exists( '\PostSMTP\Multisite\MultisitePolicy' )
+			&& \PostSMTP\Multisite\MultisitePolicy::isChildSyncedWithMain();
+
 		if ( class_exists( '\PostmanTransportRegistry' ) && class_exists( '\PostmanOptions' ) ) {
 			$registry  = \PostmanTransportRegistry::getInstance();
 			$active    = $registry->getActiveTransport();
 			$configured = $active && $active->isConfiguredAndReady();
 			$transport  = \PostmanOptions::getInstance()->getTransportType();
 			$sender     = \PostmanOptions::getInstance()->getMessageSenderEmail();
+		}
+
+		if ( ! $configured && $synced_with_main && class_exists( '\PostSMTP\Multisite\MultisiteSyncService' ) ) {
+			$configured = \PostSMTP\Multisite\MultisiteSyncService::isSiteMailerConfigured( get_current_blog_id() );
 		}
 
 		$has_pro = defined( 'POST_SMTP_PRO_VERSION' )
@@ -188,6 +221,12 @@ final class ReactAdminLoader {
 			'isPro'          => (bool) $has_pro,
 			'hasReportTracking' => is_plugin_active( 'report-and-tracking-addon-premium/post-smtp-report-and-tracking.php' ),
 			'isConfigured'        => (bool) $configured,
+			'isMultisite'         => (bool) $is_multisite,
+			'multisiteGlobalSettings' => (bool) $multisite_global,
+			'mailerConfigLocked'  => (bool) $mailer_locked,
+			'syncedWithMain'      => (bool) $synced_with_main,
+			'isNetworkMainSite'   => $is_multisite && class_exists( '\PostSMTP\Multisite\MultisitePolicy' )
+				&& \PostSMTP\Multisite\MultisitePolicy::isNetworkMainSite(),
 			'setupWizardComplete'    => $setup_wizard_complete,
 			'hasPrimaryConnection'   => $has_primary_connection,
 			'showSetupWizardPrompt'  => ! $has_primary_connection,
@@ -242,7 +281,7 @@ final class ReactAdminLoader {
 	}
 
 	public static function enqueue( string $hook ): void {
-		if ( 'toplevel_page_postman' !== $hook ) {
+		if ( ! self::isReactAdminMenuHook( $hook ) ) {
 			return;
 		}
 

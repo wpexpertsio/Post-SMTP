@@ -204,22 +204,7 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		}
 
 		public function load() {
-
-			$options = get_option( self::POSTMAN_OPTIONS );
-
-			if ( is_multisite() ) {
-				$network_options = get_site_option( self::POSTMAN_NETWORK_OPTIONS );
-
-				$blog_id = get_current_blog_id();
-				if ( isset( $network_options['post_smtp_global_settings'] ) ) {
-					$blog_id = apply_filters( 'post_smtp_default_site_option', 1 );
-				}
-
-				switch_to_blog($blog_id);
-				$options = get_option( self::POSTMAN_OPTIONS );
-				restore_current_blog();
-			}
-
+			$options       = get_option( self::POSTMAN_OPTIONS );
 			$this->options = $options;
 		}
 
@@ -250,10 +235,16 @@ if ( ! class_exists( 'PostmanOptions' ) ) {
 		}
 		public function getMailLoggingEnabled() {
 			if ( isset( $this->options [ PostmanOptions::MAIL_LOG_ENABLED_OPTION ] ) ) {
-				return $this->options [ PostmanOptions::MAIL_LOG_ENABLED_OPTION ];
+				$value = $this->options [ PostmanOptions::MAIL_LOG_ENABLED_OPTION ];
 			} else {
-				return self::DEFAULT_MAIL_LOG_ENABLED;
+				$value = self::DEFAULT_MAIL_LOG_ENABLED;
 			}
+
+			if ( class_exists( '\PostSMTP\Multisite\MultisiteEmailLogSupport' ) ) {
+				$value = \PostSMTP\Multisite\MultisiteEmailLogSupport::filterLoggingEnabledValue( (string) $value );
+			}
+
+			return $value;
 		}
 		public function getRunMode() {
 			if ( defined( 'POST_SMTP_RUN_MODE' ) ) {

@@ -170,6 +170,11 @@ final class ConnectionsController extends BaseController {
 			return $nonce_check;
 		}
 
+		$write_check = $this->requireMailerWritePermission();
+		if ( is_wp_error( $write_check ) ) {
+			return $write_check;
+		}
+
 		$row = $request->get_json_params();
 		if ( ! is_array( $row ) ) {
 			$row = array();
@@ -185,6 +190,11 @@ final class ConnectionsController extends BaseController {
 		$nonce_check = $this->requireRestNonce( $request );
 		if ( is_wp_error( $nonce_check ) ) {
 			return $nonce_check;
+		}
+
+		$write_check = $this->requireMailerWritePermission();
+		if ( is_wp_error( $write_check ) ) {
+			return $write_check;
 		}
 
 		$index = (int) $request['index'];
@@ -205,6 +215,11 @@ final class ConnectionsController extends BaseController {
 			return $nonce_check;
 		}
 
+		$write_check = $this->requireMailerWritePermission();
+		if ( is_wp_error( $write_check ) ) {
+			return $write_check;
+		}
+
 		$index  = (int) $request['index'];
 		$result = $this->service->delete( $index );
 		if ( empty( $result['success'] ) ) {
@@ -217,6 +232,11 @@ final class ConnectionsController extends BaseController {
 		$nonce_check = $this->requireRestNonce( $request );
 		if ( is_wp_error( $nonce_check ) ) {
 			return $nonce_check;
+		}
+
+		$write_check = $this->requireMailerWritePermission();
+		if ( is_wp_error( $write_check ) ) {
+			return $write_check;
 		}
 
 		$body  = $request->get_json_params();
@@ -232,6 +252,11 @@ final class ConnectionsController extends BaseController {
 		$nonce_check = $this->requireRestNonce( $request );
 		if ( is_wp_error( $nonce_check ) ) {
 			return $nonce_check;
+		}
+
+		$write_check = $this->requireMailerWritePermission();
+		if ( is_wp_error( $write_check ) ) {
+			return $write_check;
 		}
 
 		if ( ! GmailRevampOAuth::usesReactConnectionsAdmin() ) {
@@ -250,6 +275,11 @@ final class ConnectionsController extends BaseController {
 		$nonce_check = $this->requireRestNonce( $request );
 		if ( is_wp_error( $nonce_check ) ) {
 			return $nonce_check;
+		}
+
+		$write_check = $this->requireMailerWritePermission();
+		if ( is_wp_error( $write_check ) ) {
+			return $write_check;
 		}
 
 		if ( ! class_exists( Office365RevampOAuth::class, true ) || ! Office365RevampOAuth::isActive() ) {
@@ -271,6 +301,11 @@ final class ConnectionsController extends BaseController {
 			return $nonce_check;
 		}
 
+		$write_check = $this->requireMailerWritePermission();
+		if ( is_wp_error( $write_check ) ) {
+			return $write_check;
+		}
+
 		$index   = (int) $request['index'];
 		$body    = $request->get_json_params();
 		$enabled = ! empty( $body['enabled'] );
@@ -286,6 +321,11 @@ final class ConnectionsController extends BaseController {
 		$nonce_check = $this->requireRestNonce( $request );
 		if ( is_wp_error( $nonce_check ) ) {
 			return $nonce_check;
+		}
+
+		$write_check = $this->requireMailerWritePermission();
+		if ( is_wp_error( $write_check ) ) {
+			return $write_check;
 		}
 
 		$repo        = ConnectionRepositoryFactory::make();

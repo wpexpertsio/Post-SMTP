@@ -19,15 +19,15 @@ final class LegacyRevertPage {
 	public const PAGE_SLUG = 'post_smtp_revert_legacy';
 
 	public static function init(): void {
-		if ( CohortResolver::current() !== CohortResolver::COHORT_MIGRATED ) {
-			return;
-		}
-
 		add_action( 'admin_menu', array( self::class, 'registerPage' ), 99 );
 		add_action( 'admin_post_post_smtp_revert_legacy', array( self::class, 'handleRevert' ) );
 	}
 
 	public static function registerPage(): void {
+		if ( CohortResolver::current() !== CohortResolver::COHORT_MIGRATED ) {
+			return;
+		}
+
 		add_submenu_page(
 			'postman',
 			__( 'Revert to Legacy', 'post-smtp' ),

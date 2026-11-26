@@ -84,16 +84,6 @@ class PostmanInstaller {
 		}
 
 		if ( function_exists( 'is_multisite' ) && is_multisite() ) {
-			
-			$network_options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS );
-
-			if( isset( $network_options['post_smtp_global_settings']) ) {
-				$options['post_smtp_global_settings'] = '1';	
-			}
-
-            $options['post_smtp_allow_overwrite'] = '1';
-            update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, $options );
-			
 			// handle network activation
 			// from https://wordpress.org/support/topic/new-function-wp_get_sites?replies=11
 			// run the activation function for each blog id

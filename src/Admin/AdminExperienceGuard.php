@@ -21,7 +21,7 @@ final class AdminExperienceGuard {
 	}
 
 	public static function handleAdminInitRedirects(): void {
-		if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) {
+		if ( ! is_admin() || ! self::currentUserCanAccessPostSmtpAdmin() ) {
 			return;
 		}
 
@@ -41,13 +41,9 @@ final class AdminExperienceGuard {
 			exit;
 		}
 
-		if ( ReactAdminSubmenu::SLUG_HELP === $page ) {
-			wp_safe_redirect( ReactAdminSubmenu::helpDocsUrl() );
-			exit;
-		}
-
-		if ( ReactAdminSubmenu::SLUG_MOBILE_APP === $page ) {
-			wp_safe_redirect( ReactAdminSubmenu::mobileAppDashboardUrl() );
+		$revamp_route = ReactAdminSubmenu::routeForPageSlug( $page );
+		if ( null !== $revamp_route ) {
+			wp_safe_redirect( ReactAdminSubmenu::dashboardUrlForRoute( $revamp_route ) );
 			exit;
 		}
 
@@ -99,6 +95,15 @@ final class AdminExperienceGuard {
 		}
 
 		return false;
+	}
+
+	private static function currentUserCanAccessPostSmtpAdmin(): bool {
+		if ( current_user_can( 'manage_options' ) ) {
+			return true;
+		}
+
+		return class_exists( '\Postman', false )
+			&& current_user_can( \Postman::MANAGE_POSTMAN_CAPABILITY_NAME );
 	}
 
 	public static function enqueueLegacyHashGuard( string $hook ): void {

@@ -43,6 +43,7 @@ const SortableConnectionList = ( {
 	onToggleFallback,
 	togglePending,
 	onDelete,
+	readOnly = false,
 } ) => {
 	const sensors = useSensors(
 		useSensor( PointerSensor ),
@@ -52,6 +53,9 @@ const SortableConnectionList = ( {
 	const ids = connections.map( ( c ) => String( c.id ) );
 
 	const handleDragEnd = ( event ) => {
+		if ( readOnly ) {
+			return;
+		}
 		const { active, over } = event;
 		if ( ! over || active.id === over.id ) {
 			return;
@@ -61,6 +65,26 @@ const SortableConnectionList = ( {
 		const newOrder = arrayMove( connections, oldIndex, newIndex ).map( ( c ) => c.id );
 		onReorder( newOrder );
 	};
+
+	if ( readOnly ) {
+		return (
+			<ul className="ps-v2-conn-list">
+				{ connections.map( ( connection, index ) => (
+					<li key={ connection.id } className="ps-v2-conn-row-wrap">
+						<ConnectionRow
+							connection={ connection }
+							index={ connection.id }
+							isPrimary={ index === 0 }
+							onToggleFallback={ onToggleFallback }
+							togglePending={ togglePending }
+							onDelete={ onDelete }
+							readOnly
+						/>
+					</li>
+				) ) }
+			</ul>
+		);
+	}
 
 	return (
 		<DndContext sensors={ sensors } collisionDetection={ closestCenter } onDragEnd={ handleDragEnd }>

@@ -13,20 +13,25 @@ const ConnectionRow = ( {
 	togglePending,
 	onDelete,
 	dragHandleProps,
+	readOnly = false,
 } ) => {
 	const role = connection.role || ( isPrimary ? 'primary' : connection.fallback_enabled ? 'fallback' : 'inactive' );
 	const subtitle = connectionSubtitle( connection );
 
 	return (
 		<li className="ps-v2-conn-row">
-			<button
-				type="button"
-				className="ps-v2-conn-row__handle"
-				aria-label="Drag to reorder"
-				{ ...dragHandleProps }
-			>
-				<img src={ iconDrag } alt="" width="8" height="15" aria-hidden="true" />
-			</button>
+			{ ! readOnly ? (
+				<button
+					type="button"
+					className="ps-v2-conn-row__handle"
+					aria-label="Drag to reorder"
+					{ ...dragHandleProps }
+				>
+					<img src={ iconDrag } alt="" width="8" height="15" aria-hidden="true" />
+				</button>
+			) : (
+				<span className="ps-v2-conn-row__handle ps-v2-conn-row__handle--static" aria-hidden="true" />
+			) }
 			<div className="ps-v2-conn-row__avatar">
 				<MailerAvatar provider={ connection.provider || connection.transport_type } />
 			</div>
@@ -38,7 +43,11 @@ const ConnectionRow = ( {
 				<ConnectionStatusToggle
 					role={ role }
 					checked={ isPrimary ? true : Boolean( connection.fallback_enabled ) }
-					disabled={ togglePending || ( ! isPrimary && connection.can_toggle_fallback === false ) }
+					disabled={
+						readOnly ||
+						togglePending ||
+						( ! isPrimary && connection.can_toggle_fallback === false )
+					}
 					title={
 						! isPrimary && connection.can_toggle_fallback === false
 							? 'Drag this connection up to enable it as a fallback'
@@ -46,21 +55,25 @@ const ConnectionRow = ( {
 					}
 					onChange={ ( enabled ) => onToggleFallback( index, enabled ) }
 				/>
-				<Link
-					to={ `/connections/${ index }/edit` }
-					className="ps-v2-conn-row__icon-btn"
-					aria-label="Edit connection"
-				>
-					<img src={ iconEdit } alt="" width="35" height="35" />
-				</Link>
-				<button
-					type="button"
-					className="ps-v2-conn-row__icon-btn ps-v2-conn-row__icon-btn--danger"
-					aria-label="Delete connection"
-					onClick={ () => onDelete( index ) }
-				>
-					<img src={ iconDelete } alt="" width="13" height="15" />
-				</button>
+				{ ! readOnly && (
+					<>
+						<Link
+							to={ `/connections/${ index }/edit` }
+							className="ps-v2-conn-row__icon-btn"
+							aria-label="Edit connection"
+						>
+							<img src={ iconEdit } alt="" width="35" height="35" />
+						</Link>
+						<button
+							type="button"
+							className="ps-v2-conn-row__icon-btn ps-v2-conn-row__icon-btn--danger"
+							aria-label="Delete connection"
+							onClick={ () => onDelete( index ) }
+						>
+							<img src={ iconDelete } alt="" width="13" height="15" />
+						</button>
+					</>
+				) }
 			</div>
 		</li>
 	);

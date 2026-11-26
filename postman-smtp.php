@@ -304,7 +304,20 @@ function ps_fs_submenu_addon_visibility_handler( $is_visible, $id ) {
 	if (
 		class_exists( '\PostSMTP\Rollout\CohortResolver' )
 		&& \PostSMTP\Rollout\CohortResolver::usesReactAdmin()
-		&& in_array( $id, array( 'contact', 'support', 'pricing' ), true )
+		&& in_array(
+			$id,
+			array(
+				'contact',
+				'support',
+				'pricing',
+				'account',
+				'addons',
+				'affiliation',
+				'contact_us',
+				'support_forum',
+			),
+			true
+		)
 	) {
 		return false;
 	}

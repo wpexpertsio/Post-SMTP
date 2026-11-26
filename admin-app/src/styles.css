@@ -1054,3 +1054,25 @@ a.ps-mailer:hover {
 	height: 6px;
 	border-width: 1.5px;
 }
+
+.ps-multisite-notice {
+	margin: 0 0 16px;
+	padding: 12px 16px;
+	border-radius: var(--ps-v2-radius-md, 8px);
+	border: 1px solid var(--ps-v2-border, #e5e8ef);
+	background: var(--ps-v2-surface, #fff);
+	font-size: 14px;
+	line-height: 1.45;
+	color: var(--ps-v2-text-secondary, #4b5563);
+}
+
+.ps-multisite-notice--info,
+.ps-v2-notice.ps-v2-notice--info.ps-multisite-notice {
+	border-color: var(--ps-v2-blue-border, #c5d9ff);
+	background: var(--ps-v2-blue-banner, #e8f2ff);
+}
+
+.ps-v2-notice.ps-v2-notice--warning.ps-multisite-notice {
+	border-color: #fcd34d;
+	background: #fffbeb;
+}

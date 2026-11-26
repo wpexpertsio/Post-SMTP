@@ -10,6 +10,7 @@ namespace PostSMTP\Connections;
 use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
 use PostSMTP\Kernel\Data\ConnectionSchema;
 use PostSMTP\Kernel\Data\SecretCodec;
+use PostSMTP\Multisite\MultisitePolicy;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -72,6 +73,14 @@ final class ConnectionOAuthGrantBridge {
 	public static function onBeforeGrant(): void {
 		if ( ! class_exists( '\PostmanOptions' ) ) {
 			return;
+		}
+
+		if ( MultisitePolicy::shouldBlockChildMailerWrites() ) {
+			wp_die(
+				esc_html__( 'Mailer settings are managed on the main site. Ask a network administrator to sync sites.', 'post-smtp' ),
+				esc_html__( 'Post SMTP', 'post-smtp' ),
+				array( 'response' => 403 )
+			);
 		}
 
 		OAuthAdminReturnContext::captureFromGrantRequest();

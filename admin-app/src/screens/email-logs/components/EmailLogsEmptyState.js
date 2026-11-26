@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
+import { getAdminConfig } from '../../../config/admin';
 
 const EmailLogsEmptyState = ( { filtered } ) => {
-	const config = window.postSmtpAdmin || {};
+	const config = getAdminConfig();
+	const mailerLocked = Boolean( config.mailerConfigLocked );
+	const synced = Boolean( config.syncedWithMain );
 
 	if ( filtered ) {
 		return (
@@ -15,15 +18,21 @@ const EmailLogsEmptyState = ( { filtered } ) => {
 	return (
 		<div className="ps-el-empty">
 			<h3>No emails yet</h3>
-			<p>Sent messages will appear here once logging is enabled and mail starts flowing.</p>
-			{ ! config.isConfigured && (
+			<p>
+				{ synced || mailerLocked
+					? 'This log lists mail sent from this site only. Trigger a test or form email on this subsite to see entries here.'
+					: 'Sent messages will appear here once logging is enabled and mail starts flowing.' }
+			</p>
+			{ ! mailerLocked && ! config.isConfigured && (
 				<Link to="/connections" className="ps-el-btn ps-el-btn--primary">
 					Finish setup
 				</Link>
 			) }
-			<Link to="/setup-wizard" className="ps-el-btn ps-el-btn--ghost">
-				Open wizard
-			</Link>
+			{ ! mailerLocked && (
+				<Link to="/setup-wizard" className="ps-el-btn ps-el-btn--ghost">
+					Open wizard
+				</Link>
+			) }
 		</div>
 	);
 };

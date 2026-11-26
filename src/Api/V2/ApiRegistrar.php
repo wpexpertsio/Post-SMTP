@@ -33,6 +33,9 @@ final class ApiRegistrar {
 				( new DashboardReportsTrackingController() )->register_routes();
 				( new DashboardReportsEmailQuotaController() )->register_routes();
 				( new SetupWizardController() )->register_routes();
+				if ( is_multisite() ) {
+					( new MultisiteSyncController() )->register_routes();
+				}
 			}
 		);
 	}

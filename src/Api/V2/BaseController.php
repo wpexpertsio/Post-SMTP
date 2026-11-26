@@ -7,6 +7,7 @@
 
 namespace PostSMTP\Api\V2;
 
+use PostSMTP\Multisite\MultisitePolicy;
 use WP_REST_Controller;
 use WP_REST_Request;
 
@@ -46,5 +47,20 @@ abstract class BaseController extends WP_REST_Controller {
 		}
 
 		return true;
+	}
+
+	/**
+	 * @return true|\WP_Error
+	 */
+	protected function requireMailerWritePermission() {
+		if ( ! MultisitePolicy::shouldBlockChildMailerWrites() ) {
+			return true;
+		}
+
+		return new \WP_Error(
+			'multisite_mailer_locked',
+			__( 'Mailer settings are managed on the main site. Ask a network administrator to sync sites.', 'post-smtp' ),
+			array( 'status' => 403 )
+		);
 	}
 }

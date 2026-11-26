@@ -210,7 +210,10 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
 
 
 		function wpmu_options() {
-		    $options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS );
+		    $options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, array() );
+		    if ( ! is_array( $options ) ) {
+		        $options = array();
+		    }
 		    ?>
             <input type="hidden" name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_global_settings]" value="null">
             <input type="hidden" name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_allow_overwrite]" value="null">
@@ -221,7 +224,10 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
                         <?php _e( 'Enable global settings', 'post-smtp' ); ?>
                     </th>
                     <td>
-                        <?php $checked = checked( $options['post_smtp_global_settings'], 1, false ); ?>
+                        <?php
+						$global_on = isset( $options['post_smtp_global_settings'] ) && '1' === (string) $options['post_smtp_global_settings'];
+						$checked   = checked( $global_on, true, false );
+						?>
                         <label for="post-smtp-global-settings">
                             <input id="post-smtp-global-settings" type="checkbox"
                                    name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_global_settings]"
@@ -229,7 +235,7 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
                                    <?php echo $checked; ?>
                             >
                             <p class="description">
-                                <?php _e('Same settings as the main site/blog (id:1)', 'post-smtp' ); ?>
+                                <?php _e( 'Lock mailer settings on child sites and use Sync sites below to copy configuration from the main site (blog ID 1).', 'post-smtp' ); ?>
                             </p>
                         </label>
                     </td>
@@ -239,7 +245,10 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
                         <?php _e( 'Allow user to load saved options', 'post-smtp' ); ?>
                     </th>
                     <td>
-                        <?php $checked = checked( $options['post_smtp_allow_overwrite'], 1, false ); ?>
+                        <?php
+						$allow_overwrite = isset( $options['post_smtp_allow_overwrite'] ) && '1' === (string) $options['post_smtp_allow_overwrite'];
+						$checked         = checked( $allow_overwrite, true, false );
+						?>
                         <label for="post-smtp-allow-overwrite">
                             <input id="post-smtp-allow-overwrite" type="checkbox"
                                    name="<?php echo PostmanOptions::POSTMAN_NETWORK_OPTIONS; ?>[post_smtp_allow_overwrite]"
@@ -254,14 +263,27 @@ if ( ! class_exists( 'PostmanAdminController' ) ) {
         }
 
         function update_wpmu_options() {
-            $options = get_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS );
 		    if ( isset( $_POST[ PostmanOptions::POSTMAN_NETWORK_OPTIONS ] ) ) {
-		        foreach ( $_POST[ PostmanOptions::POSTMAN_NETWORK_OPTIONS ] as $key => $value ) {
-                    $options[$key] = sanitize_text_field( $value );
+                $incoming = wp_unslash( $_POST[ PostmanOptions::POSTMAN_NETWORK_OPTIONS ] );
+                if ( ! is_array( $incoming ) ) {
+                    $incoming = array();
+                }
+
+                $options = array();
+		        foreach ( $incoming as $key => $value ) {
+                    $key = sanitize_key( (string) $key );
 
                     if ( $value == 'null' ) {
-                        unset( $options[$key] );
+                        continue;
                     }
+
+                    if ( '1' === (string) sanitize_text_field( $value ) ) {
+                        $options[ $key ] = '1';
+                    }
+                }
+
+                if ( class_exists( '\PostSMTP\Multisite\MultisitePolicy' ) ) {
+                    $options = \PostSMTP\Multisite\MultisitePolicy::sanitizeNetworkOptions( $options );
                 }
 
                 update_site_option( PostmanOptions::POSTMAN_NETWORK_OPTIONS, $options );

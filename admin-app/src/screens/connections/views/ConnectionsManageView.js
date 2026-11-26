@@ -7,8 +7,10 @@ import ConnectionEmptyState from '../components/ConnectionEmptyState';
 import ConnectionsChooseSidebar from '../components/ConnectionsChooseSidebar';
 import SortableConnectionList from '../components/dnd/SortableConnectionList';
 import FormNotice from '../components/FormNotice';
+import { getAdminConfig } from '../../../config/admin';
 
 const ConnectionsManageView = () => {
+	const mailerLocked = Boolean( getAdminConfig().mailerConfigLocked );
 	const [ notice, setNotice ] = useState( null );
 	const connectionsQuery = useConnections();
 	const { reorder, toggleFallback, remove } = useConnectionMutations();
@@ -64,9 +66,11 @@ const ConnectionsManageView = () => {
 							</p>
 						</div>
 						<div className="ps-v2-conn-panel__actions">
-							<Link to="/connections/add" className="ps-v2-conn-add-btn">
-								Add connection
-							</Link>
+							{ ! mailerLocked && (
+								<Link to="/connections/add" className="ps-v2-conn-add-btn">
+									Add connection
+								</Link>
+							) }
 						</div>
 					</header>
 
@@ -91,6 +95,7 @@ const ConnectionsManageView = () => {
 									onToggleFallback={ handleToggle }
 									togglePending={ toggleFallback.isPending }
 									onDelete={ handleDelete }
+									readOnly={ mailerLocked }
 								/>
 								<p className="ps-v2-conn-legend">
 									<strong>Primary</strong> sends every email · <strong>Fallback</strong> takes over if

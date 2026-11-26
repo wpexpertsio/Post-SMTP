@@ -23,6 +23,7 @@ use PostSMTP\Notifications\NotificationTwilioPanelHooks;
 use PostSMTP\Settings\SettingsEmailLogsPanelHooks;
 use PostSMTP\Settings\SettingsEmailQueuePanelHooks;
 use PostSMTP\Settings\SettingsEmailReportingPanelHooks;
+use PostSMTP\Multisite\MultisiteModule;
 use PostSMTP\Rollout\CohortResolver;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -68,6 +69,7 @@ final class Plugin {
 				SettingsEmailLogsPanelHooks::init();
 				SettingsEmailQueuePanelHooks::init();
 				DashboardReportsTrackingHooks::init();
+				MultisiteModule::init();
 			},
 			20
 		);
