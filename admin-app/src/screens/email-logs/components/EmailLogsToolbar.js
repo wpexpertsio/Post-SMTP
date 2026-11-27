@@ -23,6 +23,8 @@ const EmailLogsToolbar = ( {
 	exportBusy,
 	deleteDisabled,
 	settings,
+	mainwpSiteOptions,
+	showMainwpSiteFilter,
 } ) => {
 	const showQueued = settings?.show_queued;
 	const statusOptions = showQueued
@@ -98,6 +100,14 @@ const EmailLogsToolbar = ( {
 						value={ filters.source }
 						options={ sourceOptions }
 						onChange={ ( source ) => onChange( { source, page: '1' } ) }
+					/>
+				) }
+				{ showMainwpSiteFilter && ( mainwpSiteOptions || [] ).length > 0 && (
+					<EmailLogsFilterSelect
+						label="Site"
+						value={ filters.siteId || 'all' }
+						options={ mainwpSiteOptions }
+						onChange={ ( siteId ) => onChange( { siteId, page: '1' } ) }
 					/>
 				) }
 				<button

@@ -14,6 +14,8 @@ const EmailLogsTable = ( {
 	onDeleteRow,
 	showOpened,
 	showAttachments,
+	showMainwpSite,
+	onFilterBySite,
 } ) => {
 	const pageIds = items.map( ( row ) => row.id );
 	const allSelected = pageIds.length > 0 && pageIds.every( ( id ) => selectedIds.includes( id ) );
@@ -38,6 +40,7 @@ const EmailLogsTable = ( {
 				<span className="ps-el-table__cell ps-el-table__cell--date">Date &amp; Time</span>
 				<span className="ps-el-table__cell ps-el-table__cell--status">Status</span>
 				{ showOpened && <span className="ps-el-table__cell ps-el-table__cell--opened">Opened</span> }
+				{ showMainwpSite && <span className="ps-el-table__cell ps-el-table__cell--site">Site</span> }
 				<span className="ps-el-table__cell ps-el-table__cell--actions">Actions</span>
 			</div>
 			{ items.map( ( row ) => {
@@ -92,6 +95,24 @@ const EmailLogsTable = ( {
 						{ showOpened && (
 							<span className="ps-el-table__cell ps-el-table__cell--opened">
 								<EmailLogOpenedIndicator opened={ row.opened } />
+							</span>
+						) }
+						{ showMainwpSite && (
+							<span className="ps-el-table__cell ps-el-table__cell--site">
+								{ row.mainwp_site_id ? (
+									<button
+										type="button"
+										className="ps-text-link"
+										onClick={ ( e ) => {
+											e.stopPropagation();
+											onFilterBySite?.( row.mainwp_site_id );
+										} }
+									>
+										{ row.mainwp_site_label || row.mainwp_site_id }
+									</button>
+								) : (
+									'—'
+								) }
 							</span>
 						) }
 						<span className="ps-el-table__cell ps-el-table__cell--actions" onClick={ ( e ) => e.stopPropagation() }>

@@ -83,6 +83,14 @@ final class ConnectionOAuthGrantBridge {
 			);
 		}
 
+		if ( class_exists( '\PostSMTP\MainWP\MainwpPolicy' ) && \PostSMTP\MainWP\MainwpPolicy::shouldBlockChildMailerWrites() ) {
+			wp_die(
+				esc_html__( 'Mailer settings are managed on the MainWP dashboard site.', 'post-smtp' ),
+				esc_html__( 'Post SMTP', 'post-smtp' ),
+				array( 'response' => 403 )
+			);
+		}
+
 		OAuthAdminReturnContext::captureFromGrantRequest();
 
 		$requested_id = isset( $_GET['connection_id'] ) ? absint( $_GET['connection_id'] ) : null;

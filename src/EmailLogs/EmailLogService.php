@@ -46,6 +46,7 @@ final class EmailLogService {
 		$form     = isset( $params['form'] ) ? sanitize_text_field( (string) $params['form'] ) : 'all';
 		$source   = isset( $params['source'] ) ? sanitize_text_field( (string) $params['source'] ) : 'all';
 		$date     = isset( $params['date'] ) ? sanitize_text_field( (string) $params['date'] ) : 'all';
+		$site_id  = isset( $params['site_id'] ) ? sanitize_text_field( (string) $params['site_id'] ) : '';
 
 		$query_args = array(
 			'start'                    => ( $page - 1 ) * $per_page,
@@ -81,6 +82,10 @@ final class EmailLogService {
 			$query_args['to'] = $range['to'];
 		}
 
+		if ( '' !== $site_id && 'all' !== $site_id && '-1' !== $site_id ) {
+			$query_args['site_id'] = $site_id;
+		}
+
 		$logs_query = new \PostmanEmailQueryLog();
 		$rows       = $logs_query->get_logs( $query_args );
 		$filtered   = $logs_query->get_filtered_rows_count();
@@ -99,10 +104,14 @@ final class EmailLogService {
 		$rows = $this->attachOpenTrackingEvents( $rows );
 		$rows = $this->attachStoredAttachmentFlags( $rows );
 
+		$site_labels = class_exists( '\PostSMTP\MainWP\MainwpChildSitesService' )
+			? ( new \PostSMTP\MainWP\MainwpChildSitesService() )->site_map()
+			: array();
+
 		$items = array();
 		foreach ( $rows as $row ) {
 			$row     = apply_filters( 'ps_email_logs_row', $row );
-			$items[] = EmailLogNormalizer::normalize_list_row( $row );
+			$items[] = EmailLogNormalizer::normalize_list_row( $row, $site_labels );
 		}
 
 		return array(
@@ -112,6 +121,7 @@ final class EmailLogService {
 			'page'     => $page,
 			'per_page' => $per_page,
 			'facets'   => $this->get_facets(),
+			'mainwp_site_filter' => ! empty( $site_labels ),
 		);
 	}
 

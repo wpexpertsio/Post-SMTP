@@ -105,6 +105,7 @@ final class EmailLogsController extends BaseController {
 			'form'     => sanitize_text_field( (string) ( $request->get_param( 'form' ) ?? '' ) ),
 			'source'   => sanitize_text_field( (string) ( $request->get_param( 'source' ) ?? '' ) ),
 			'date'     => sanitize_text_field( (string) ( $request->get_param( 'date' ) ?? '' ) ),
+			'site_id'  => sanitize_text_field( (string) ( $request->get_param( 'site_id' ) ?? '' ) ),
 		);
 
 		return rest_ensure_response( $this->service->list_logs( $params ) );

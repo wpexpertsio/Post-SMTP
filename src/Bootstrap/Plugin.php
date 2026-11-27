@@ -23,6 +23,7 @@ use PostSMTP\Notifications\NotificationTwilioPanelHooks;
 use PostSMTP\Settings\SettingsEmailLogsPanelHooks;
 use PostSMTP\Settings\SettingsEmailQueuePanelHooks;
 use PostSMTP\Settings\SettingsEmailReportingPanelHooks;
+use PostSMTP\MainWP\MainwpModule;
 use PostSMTP\Multisite\MultisiteModule;
 use PostSMTP\Rollout\CohortResolver;
 
@@ -70,6 +71,7 @@ final class Plugin {
 				SettingsEmailQueuePanelHooks::init();
 				DashboardReportsTrackingHooks::init();
 				MultisiteModule::init();
+				MainwpModule::init();
 			},
 			20
 		);

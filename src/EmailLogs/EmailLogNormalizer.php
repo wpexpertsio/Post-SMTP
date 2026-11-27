@@ -17,9 +17,28 @@ final class EmailLogNormalizer {
 	 * @param object|array<string,mixed> $row Raw DB row.
 	 * @return array<string,mixed>
 	 */
-	public static function normalize_list_row( $row ): array {
+	/**
+	 * @param object|array<string,mixed>     $row         Raw DB row.
+	 * @param array<string,string>           $site_labels Optional MainWP id => name map.
+	 * @return array<string,mixed>
+	 */
+	public static function normalize_list_row( $row, array $site_labels = array() ): array {
 		$row = (array) $row;
 		$success_raw = isset( $row['success'] ) ? (string) $row['success'] : '';
+
+		$mainwp_site_id    = '';
+		$mainwp_site_label = '';
+		if ( isset( $row['site_id'] ) && '' !== (string) $row['site_id'] ) {
+			$raw_site = wp_strip_all_tags( (string) $row['site_id'] );
+			$mainwp_site_id = sanitize_text_field( $raw_site );
+			if ( isset( $site_labels[ $mainwp_site_id ] ) ) {
+				$mainwp_site_label = $site_labels[ $mainwp_site_id ];
+			} elseif ( isset( $row['site_label'] ) ) {
+				$mainwp_site_label = sanitize_text_field( (string) $row['site_label'] );
+			} else {
+				$mainwp_site_label = $mainwp_site_id;
+			}
+		}
 
 		return array(
 			'id'              => isset( $row['id'] ) ? (int) $row['id'] : 0,
@@ -38,6 +57,8 @@ final class EmailLogNormalizer {
 			'has_attachments' => self::has_attachments( $row ),
 			'has_body'        => self::row_has_stored_body( $row ),
 			'form'            => isset( $row['event_type'] ) ? (string) $row['event_type'] : '',
+			'mainwp_site_id'    => $mainwp_site_id,
+			'mainwp_site_label' => $mainwp_site_label,
 		);
 	}
 

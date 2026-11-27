@@ -3,6 +3,10 @@ import { getAdminConfig } from '../config/admin';
 const MultisiteMailerNotice = () => {
 	const config = getAdminConfig();
 
+	if ( config.mainwpChildUsesParent ) {
+		return null;
+	}
+
 	if ( ! config.isMultisite ) {
 		return null;
 	}

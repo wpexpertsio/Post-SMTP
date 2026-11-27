@@ -187,8 +187,17 @@ final class ReactAdminLoader {
 		$is_multisite     = is_multisite();
 		$multisite_global = $is_multisite && class_exists( '\PostSMTP\Multisite\MultisitePolicy' )
 			&& \PostSMTP\Multisite\MultisitePolicy::isMultisiteGlobalSettingsEnabled();
-		$mailer_locked    = $is_multisite && class_exists( '\PostSMTP\Multisite\MultisitePolicy' )
+		$multisite_mailer_locked = $is_multisite && class_exists( '\PostSMTP\Multisite\MultisitePolicy' )
 			&& \PostSMTP\Multisite\MultisitePolicy::shouldBlockChildMailerWrites();
+		$mainwp_child            = class_exists( '\PostSMTP\MainWP\MainwpPolicy' )
+			&& \PostSMTP\MainWP\MainwpPolicy::isChildUsingParentMailer();
+		$mainwp_mailer_locked    = class_exists( '\PostSMTP\MainWP\MainwpPolicy' )
+			&& \PostSMTP\MainWP\MainwpPolicy::shouldBlockChildMailerWrites();
+		$mainwp_parent_ok        = class_exists( '\PostSMTP\MainWP\MainwpPolicy' )
+			&& \PostSMTP\MainWP\MainwpPolicy::isParentConfiguredForChild();
+		$mainwp_dashboard        = class_exists( '\PostSMTP\MainWP\MainwpPolicy' )
+			&& \PostSMTP\MainWP\MainwpPolicy::isMainwpDashboard();
+		$mailer_locked           = $multisite_mailer_locked || $mainwp_mailer_locked;
 		$synced_with_main = $is_multisite && class_exists( '\PostSMTP\Multisite\MultisitePolicy' )
 			&& \PostSMTP\Multisite\MultisitePolicy::isChildSyncedWithMain();
 
@@ -202,6 +211,10 @@ final class ReactAdminLoader {
 
 		if ( ! $configured && $synced_with_main && class_exists( '\PostSMTP\Multisite\MultisiteSyncService' ) ) {
 			$configured = \PostSMTP\Multisite\MultisiteSyncService::isSiteMailerConfigured( get_current_blog_id() );
+		}
+
+		if ( $mainwp_child && $mainwp_parent_ok ) {
+			$configured = true;
 		}
 
 		$has_pro = defined( 'POST_SMTP_PRO_VERSION' )
@@ -224,6 +237,9 @@ final class ReactAdminLoader {
 			'isMultisite'         => (bool) $is_multisite,
 			'multisiteGlobalSettings' => (bool) $multisite_global,
 			'mailerConfigLocked'  => (bool) $mailer_locked,
+			'mainwpChildUsesParent' => (bool) $mainwp_child,
+			'mainwpParentConfigured' => (bool) $mainwp_parent_ok,
+			'mainwpDashboard'       => (bool) $mainwp_dashboard,
 			'syncedWithMain'      => (bool) $synced_with_main,
 			'isNetworkMainSite'   => $is_multisite && class_exists( '\PostSMTP\Multisite\MultisitePolicy' )
 				&& \PostSMTP\Multisite\MultisitePolicy::isNetworkMainSite(),

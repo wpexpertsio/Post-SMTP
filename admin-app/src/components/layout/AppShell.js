@@ -1,5 +1,6 @@
 import TopNav from './TopNav';
 import MultisiteMailerNotice from '../MultisiteMailerNotice';
+import MainwpMailerNotice from '../MainwpMailerNotice';
 
 const AppShell = ( { children, title, showEyebrow = true, hideTitle = false, mainClassName = '' } ) => (
 	<div className="ps-app">
@@ -13,6 +14,7 @@ const AppShell = ( { children, title, showEyebrow = true, hideTitle = false, mai
 					<h1>{ title }</h1>
 				</header>
 			) }
+			<MainwpMailerNotice />
 			<MultisiteMailerNotice />
 			{ children }
 		</main>

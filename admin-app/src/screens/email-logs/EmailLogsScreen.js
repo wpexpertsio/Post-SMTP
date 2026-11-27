@@ -12,6 +12,8 @@ import useEmailLogs from './hooks/useEmailLogs';
 import useEmailLogDetail from './hooks/useEmailLogDetail';
 import useEmailLogSettings from './hooks/useEmailLogSettings';
 import useEmailLogMutations from './hooks/useEmailLogMutations';
+import useMainwpChildSites from './hooks/useMainwpChildSites';
+import { getAdminConfig } from '../../config/admin';
 import EmailLogsToolbar from './components/EmailLogsToolbar';
 import EmailLogsTable from './components/EmailLogsTable';
 import EmailLogsPagination from './components/EmailLogsPagination';
@@ -22,7 +24,9 @@ import ConfirmDialog from './components/ConfirmDialog';
 const EmailLogsScreen = () => {
 	const [ searchParams, setSearchParams ] = useSearchParams();
 	const filters = useMemo( () => parseFiltersFromSearchParams( searchParams ), [ searchParams ] );
+	const adminConfig = getAdminConfig();
 	const logsQuery = useEmailLogs( filters );
+	const mainwpSitesQuery = useMainwpChildSites();
 	const settingsQuery = useEmailLogSettings();
 	const detailQuery = useEmailLogDetail( filters.logId );
 	const { remove, resend, exportLogs } = useEmailLogMutations();
@@ -39,6 +43,18 @@ const EmailLogsScreen = () => {
 	}
 
 	const total = data.total || 0;
+	const showMainwpSite =
+		Boolean( adminConfig.mainwpDashboard ) &&
+		( Boolean( data.mainwp_site_filter ) || ( mainwpSitesQuery.data?.sites || [] ).length > 0 );
+
+	const mainwpSiteOptions = [
+		{ value: 'all', label: 'All sites' },
+		...( mainwpSitesQuery.data?.sites || [] ).map( ( site ) => ( {
+			value: site.id,
+			label: site.name,
+		} ) ),
+	];
+
 	const toolbarSettings = {
 		...settings,
 		facetsMailers: data.facets?.mailers || [],
@@ -156,6 +172,8 @@ const EmailLogsScreen = () => {
 					settings={ toolbarSettings }
 					exportBusy={ exportLogs.isPending }
 					deleteDisabled={ selectedIds.length === 0 || remove.isPending }
+					showMainwpSiteFilter={ showMainwpSite }
+					mainwpSiteOptions={ mainwpSiteOptions }
 				/>
 
 				<QueryState isLoading={ logsQuery.isLoading } isError={ logsQuery.isError } error={ logsQuery.error }>
@@ -179,6 +197,8 @@ const EmailLogsScreen = () => {
 								}
 								showOpened={ settings.show_opened_column }
 								showAttachments={ settings.show_attachments }
+								showMainwpSite={ showMainwpSite }
+								onFilterBySite={ ( siteId ) => patchFilters( { siteId, page: '1' } ) }
 							/>
 							<EmailLogsPagination
 								page={ filters.page }
