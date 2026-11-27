@@ -514,6 +514,14 @@ if ( ! class_exists( 'PostmanWpMail' ) ) {
 			if ( apply_filters( 'post_smtp_skip_oauth_token_refresh', false, $transport, $options, $authorizationToken ) ) {
 				return;
 			}
+			$client_id     = trim( (string) $options->getClientId() );
+			$client_secret = trim( (string) $options->getClientSecret() );
+			if ( $transport->isOAuthUsed( $options->getAuthenticationType() )
+				&& $transport->isServiceProviderGoogle( $options->getHostname() )
+				&& ( '' === $client_id || '' === $client_secret ) ) {
+				$this->logger->debug( 'Skipping OAuth token refresh: Gmail without local client credentials (one-click).' );
+				return;
+			}
 			// ensure the token is up-to-date
 			$this->logger->debug( 'Ensuring Access Token is up-to-date' );
 			// interact with the Authentication Manager

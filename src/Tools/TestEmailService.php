@@ -9,6 +9,7 @@ namespace PostSMTP\Tools;
 
 use PostSMTP\Connections\ConnectionLegacySendBridge;
 use PostSMTP\Connections\ConnectionService;
+use PostSMTP\Connections\GmailConnectionTokens;
 use PostSMTP\Connections\MailerCatalog;
 use PostSMTP\Pro\Connections\Office365ConnectionTokens;
 use PostSMTP\Kernel\Data\ConnectionRepositoryFactory;
@@ -550,6 +551,22 @@ final class TestEmailService {
 					'success' => false,
 					'message' => __( 'Connect to Microsoft API on this connection before sending a test email.', 'post-smtp' ),
 				);
+			}
+		}
+
+		if ( 'gmail_api' === $slug && class_exists( GmailConnectionTokens::class, false ) ) {
+			$tab = isset( $row['gmail_connect_tab'] )
+				? sanitize_key( (string) $row['gmail_connect_tab'] )
+				: '';
+			if ( 'one_click' === $tab || GmailConnectionTokens::isConnectedStored( SecretCodec::decodeConnectionRow( $row ) ) ) {
+				$decoded   = SecretCodec::decodeConnectionRow( $row );
+				$has_oauth = GmailConnectionTokens::isConnectedStored( $decoded );
+				if ( ! $has_oauth ) {
+					return array(
+						'success' => false,
+						'message' => __( 'Sign in with Google on this connection before sending a test email.', 'post-smtp' ),
+					);
+				}
 			}
 		}
 

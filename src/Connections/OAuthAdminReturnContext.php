@@ -39,9 +39,6 @@ final class OAuthAdminReturnContext {
 		}
 
 		$raw = self::readReturnRouteFromSuperglobals();
-		if ( self::ROUTE_SETUP_WIZARD !== $raw && self::isGrantRequestFromSetupWizardReferer() ) {
-			$raw = self::ROUTE_SETUP_WIZARD;
-		}
 
 		if ( self::ROUTE_CONNECTION_EDIT === $raw ) {
 			$connection_id = self::readConnectionIdFromSuperglobals();
@@ -183,9 +180,8 @@ final class OAuthAdminReturnContext {
 			return;
 		}
 
-		$stored = self::readStoredPsRouteForUser();
-		if ( self::ROUTE_SETUP_WIZARD === $stored ) {
-			self::rememberPsRouteForConnection( $connection_id, self::ROUTE_SETUP_WIZARD );
+		if ( self::ROUTE_CONNECTION_EDIT === $from_request ) {
+			return;
 		}
 	}
 
@@ -254,9 +250,13 @@ final class OAuthAdminReturnContext {
 			return self::ROUTE_SETUP_WIZARD;
 		}
 
-		$stored = self::readStoredPsRouteForConnection( $connection_id );
-		if ( self::ROUTE_SETUP_WIZARD === $stored ) {
+		$stored_connection = self::readStoredPsRouteForConnection( $connection_id );
+		if ( self::ROUTE_SETUP_WIZARD === $stored_connection ) {
 			return self::ROUTE_SETUP_WIZARD;
+		}
+
+		if ( '' !== $incoming_ps_route && str_starts_with( $incoming_ps_route, 'connections/' ) ) {
+			return $incoming_ps_route;
 		}
 
 		if ( '' !== $state && self::office365StateEmbedsSetupWizard( $state ) ) {

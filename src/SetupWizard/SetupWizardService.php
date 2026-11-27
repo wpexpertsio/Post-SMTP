@@ -346,6 +346,8 @@ final class SetupWizardService {
 			)
 			: array();
 
+		$row = $this->mergeDraftRowWithLivePrimary( $row, (string) $raw['provider'] );
+
 		return array(
 			'provider'       => (string) $raw['provider'],
 			'row'            => $row,
@@ -353,6 +355,57 @@ final class SetupWizardService {
 			'last_recipient' => (string) ( $raw['last_recipient'] ?? '' ),
 			'tested_at'      => (string) ( $raw['tested_at'] ?? '' ),
 		);
+	}
+
+	/**
+	 * Wizard draft can lag behind postman_connections[0] after OAuth (tokens saved on the row, not the transient).
+	 *
+	 * @param array<string,mixed> $draft_row   Masked form row from draft transient.
+	 * @param string              $provider    Draft provider slug.
+	 * @return array<string,mixed>
+	 */
+	private function mergeDraftRowWithLivePrimary( array $draft_row, string $provider ): array {
+		$live = $this->resolveWizardPrimaryRow();
+		if ( empty( $live ) || ! is_array( $live ) ) {
+			return $draft_row;
+		}
+
+		$live_provider = sanitize_key( (string) ( $live['provider'] ?? '' ) );
+		if ( '' === $live_provider || $live_provider !== sanitize_key( $provider ) ) {
+			return $draft_row;
+		}
+
+		$masked_live = ConnectionSchema::maskSecrets( ConnectionService::mapRowForConfigureForm( $live ) );
+
+		$overlay_keys = array(
+			'gmail_connect_tab',
+			'gmail_oauth_connected',
+			'gmail_oauth_user_email',
+			'office365_connect_tab',
+			'office365_oauth_connected',
+			'office365_oauth_user_email',
+			'access_token',
+			'refresh_token',
+			'auth_token_expires',
+			'user_email',
+		);
+
+		foreach ( $overlay_keys as $key ) {
+			if ( ! array_key_exists( $key, $masked_live ) ) {
+				continue;
+			}
+			$value = $masked_live[ $key ];
+			if ( is_string( $value ) && '' === trim( $value ) ) {
+				continue;
+			}
+			if ( 'gmail_oauth_connected' === $key || 'office365_oauth_connected' === $key ) {
+				$draft_row[ $key ] = (bool) $value;
+				continue;
+			}
+			$draft_row[ $key ] = $value;
+		}
+
+		return $draft_row;
 	}
 
 	/**

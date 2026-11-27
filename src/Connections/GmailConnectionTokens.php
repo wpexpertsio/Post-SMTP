@@ -992,23 +992,21 @@ final class GmailConnectionTokens {
 	 * @param array<string,mixed> $connection Active connection row.
 	 */
 	public static function shouldSkipLegacyOAuthTokenRefreshForConnection( array $connection ): bool {
-		if ( ! self::isGmailOneClickExtensionEnabled() ) {
+		$provider = (string) ( $connection['provider'] ?? $connection['transport_type'] ?? '' );
+		if ( 'gmail_api' !== $provider ) {
 			return false;
 		}
 
 		$tab = sanitize_key( (string) ( $connection['gmail_connect_tab'] ?? '' ) );
-		if ( 'manual' === $tab ) {
-			$row_id = trim( SecretCodec::decode( (string) ( $connection['oauth_client_id'] ?? '' ) ) );
-			return '' === $row_id || ! self::isPlausibleGmailOAuthClientId( $row_id );
-		}
-
 		if ( 'one_click' === $tab ) {
 			return true;
 		}
 
 		$row_id = trim( SecretCodec::decode( (string) ( $connection['oauth_client_id'] ?? '' ) ) );
+		$has_local_oauth_app = '' !== $row_id && self::isPlausibleGmailOAuthClientId( $row_id );
 
-		return '' === $row_id || ! self::isPlausibleGmailOAuthClientId( $row_id );
+		// Middleware one-click: no Google Cloud app on the site — refresh uses middleware, not PostmanGoogleAuthenticationManager.
+		return ! $has_local_oauth_app;
 	}
 
 	public static function isGmailOneClickExtensionEnabled(): bool {

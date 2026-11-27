@@ -784,6 +784,7 @@ final class GmailRevampOAuth {
 			'_wpnonce',
 			'connection_id',
 			'ps-route',
+			'setup_wizard',
 		);
 
 		$payload = array();
@@ -864,15 +865,15 @@ final class GmailRevampOAuth {
 		);
 
 		if ( null === $ps_route && class_exists( OAuthAdminReturnContext::class, false ) ) {
-			if ( $connection_id >= 0 ) {
-				$stored = OAuthAdminReturnContext::readStoredPsRouteForConnection( $connection_id );
-				if ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $stored ) {
-					$ps_route = $stored;
-				}
-			}
-			if ( null === $ps_route
+			$from_grant = OAuthAdminReturnContext::readReturnRouteFromSuperglobals();
+			if ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $from_grant ) {
+				$ps_route = $from_grant;
+			} elseif (
+				OAuthAdminReturnContext::ROUTE_CONNECTION_EDIT !== $from_grant
+				&& $connection_id >= 0
 				&& OAuthAdminReturnContext::ROUTE_SETUP_WIZARD
-					=== OAuthAdminReturnContext::readStoredPsRouteForUser() ) {
+					=== OAuthAdminReturnContext::readStoredPsRouteForConnection( $connection_id )
+			) {
 				$ps_route = OAuthAdminReturnContext::ROUTE_SETUP_WIZARD;
 			}
 		}
@@ -1308,9 +1309,6 @@ final class GmailRevampOAuth {
 
 		$route = OAuthAdminReturnContext::readReturnRouteFromSuperglobals();
 		if ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD !== $route ) {
-			$route = OAuthAdminReturnContext::readStoredPsRouteForUser( $user_id );
-		}
-		if ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD !== $route ) {
 			return;
 		}
 
@@ -1370,16 +1368,21 @@ final class GmailRevampOAuth {
 
 		$consumed_route    = self::consumeOneClickReturnPsRoute();
 		$incoming_ps_route = self::oneClickRequestValue( 'ps-route' );
+		$setup_wizard_flag = strtolower( trim( self::oneClickRequestValue( 'setup_wizard' ) ) );
 		$force_ps_route    = null;
-		if ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $consumed_route ) {
+		if ( in_array( $setup_wizard_flag, array( '1', 'true', 'yes', 'on' ), true ) ) {
+			$force_ps_route = OAuthAdminReturnContext::ROUTE_SETUP_WIZARD;
+		} elseif ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $consumed_route ) {
 			$force_ps_route = $consumed_route;
 		} elseif ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $incoming_ps_route ) {
 			$force_ps_route = $incoming_ps_route;
-		} elseif ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD
-			=== OAuthAdminReturnContext::readStoredPsRouteForConnection( (int) self::$grant_redirect_connection_id ) ) {
+		} elseif (
+			OAuthAdminReturnContext::ROUTE_SETUP_WIZARD
+				=== OAuthAdminReturnContext::readStoredPsRouteForConnection( (int) self::$grant_redirect_connection_id )
+		) {
 			$force_ps_route = OAuthAdminReturnContext::ROUTE_SETUP_WIZARD;
-		} elseif ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === OAuthAdminReturnContext::readStoredPsRouteForUser() ) {
-			$force_ps_route = OAuthAdminReturnContext::ROUTE_SETUP_WIZARD;
+		} elseif ( '' !== $incoming_ps_route && str_starts_with( $incoming_ps_route, 'connections/' ) ) {
+			$force_ps_route = sanitize_text_field( $incoming_ps_route );
 		}
 
 		$redirect_target = self::connectionEditRedirectUrl( self::$grant_redirect_connection_id, $extra, $force_ps_route );
@@ -1606,15 +1609,17 @@ final class GmailRevampOAuth {
 			}
 		}
 
-		$ps_route = OAuthAdminReturnContext::resolveIncomingReturnRoute();
-		if ( '' === $ps_route && $connection_id >= 0 ) {
-			$ps_route = OAuthAdminReturnContext::readStoredPsRouteForConnection( $connection_id );
-		}
-		if ( '' === $ps_route ) {
-			$stored_user = OAuthAdminReturnContext::readStoredPsRouteForUser();
-			if ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $stored_user ) {
-				$ps_route = $stored_user;
-			}
+		$from_request = OAuthAdminReturnContext::readReturnRouteFromSuperglobals();
+		if ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $from_request ) {
+			$ps_route = OAuthAdminReturnContext::ROUTE_SETUP_WIZARD;
+		} elseif ( OAuthAdminReturnContext::ROUTE_CONNECTION_EDIT === $from_request ) {
+			$ps_route = $connection_id >= 0
+				? 'connections/' . (int) $connection_id . '/edit'
+				: 'connections/add';
+		} elseif ( $connection_id >= 0 ) {
+			$ps_route = 'connections/' . (int) $connection_id . '/edit';
+		} else {
+			$ps_route = OAuthAdminReturnContext::resolveIncomingReturnRoute();
 		}
 
 		set_transient(

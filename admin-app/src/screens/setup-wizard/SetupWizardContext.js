@@ -34,6 +34,11 @@ export const SetupWizardProvider = ( { children } ) => {
 	const [ draftMeta, setDraftMeta ] = useState( null );
 	const didRestoreFromBootstrap = useRef( false );
 	const activeProviderRef = useRef( null );
+	/** OAuth redirect landed on setup-wizard — stay on step 2 until user continues (once). */
+	const oauthReturnPendingRef = useRef(
+		typeof window !== 'undefined' &&
+			new URLSearchParams( window.location.search ).get( 'ps-route' ) === 'setup-wizard'
+	);
 
 	useEffect( () => {
 		activeProviderRef.current = provider;
@@ -76,18 +81,7 @@ export const SetupWizardProvider = ( { children } ) => {
 			}
 		}
 
-		let resumeOAuthReturn = false;
-		try {
-			resumeOAuthReturn = window.sessionStorage.getItem( WIZARD_OAUTH_RETURN_KEY ) === '1';
-		} catch {
-			// sessionStorage unavailable
-		}
-
 		if ( didRestoreFromBootstrap.current ) {
-			if ( resumeOAuthReturn ) {
-				setStep( 2 );
-				setMaxStep( 2 );
-			}
 			return;
 		}
 		didRestoreFromBootstrap.current = true;
@@ -95,10 +89,17 @@ export const SetupWizardProvider = ( { children } ) => {
 		if ( draft?.provider ) {
 			setProvider( draft.provider );
 			setFormValues( { provider: draft.provider, ...draft.row } );
-			const inferred = resumeOAuthReturn ? 2 : stepFromDraft( draft );
-			const reached = resumeOAuthReturn ? 2 : draft.test_passed ? 3 : Math.max( 2, inferred );
+			let inferred = stepFromDraft( draft );
+			let reached;
+			if ( oauthReturnPendingRef.current ) {
+				inferred = 2;
+				reached = 2;
+				oauthReturnPendingRef.current = false;
+			} else {
+				reached = draft.test_passed ? 3 : Math.max( 2, inferred );
+			}
 			setStep( inferred );
-			setMaxStep( reached );
+			setMaxStep( ( prev ) => Math.max( prev, reached ) );
 		}
 	}, [ bootstrap, wizard.discardDraftMutation ] );
 
@@ -128,11 +129,11 @@ export const SetupWizardProvider = ( { children } ) => {
 		const msg = params.get( 'msg' );
 		const success = params.get( 'success' );
 		const psRoute = params.get( 'ps-route' );
-		const onSetupWizardRoute = psRoute === 'setup-wizard';
-		if ( ! onSetupWizardRoute && ! msg && success !== '1' ) {
+		if ( psRoute !== 'setup-wizard' ) {
 			return;
 		}
 
+		oauthReturnPendingRef.current = true;
 		try {
 			window.sessionStorage.setItem( WIZARD_OAUTH_RETURN_KEY, '1' );
 		} catch {
@@ -147,34 +148,43 @@ export const SetupWizardProvider = ( { children } ) => {
 		}
 
 		setStep( 2 );
-		setMaxStep( 2 );
+		setMaxStep( ( prev ) => Math.max( prev, 2 ) );
 
 		const oauthTab = params.get( 'office365_connect_tab' );
 		const gmailTab = params.get( 'gmail_connect_tab' );
 
 		const syncAfterOAuth = async () => {
-			await queryClient.invalidateQueries( { queryKey: [ 'connections' ] } );
-			await queryClient.invalidateQueries( { queryKey: [ 'setup-wizard' ] } );
+			let connectionsData = null;
+			let wizardData = null;
 
-			let connectionsData = queryClient.getQueryData( [ 'connections' ] );
-			if ( ! connectionsData?.connections ) {
-				try {
-					connectionsData = await queryClient.fetchQuery( {
-						queryKey: [ 'connections' ],
-						queryFn: () => apiFetch( 'connections' ),
-					} );
-				} catch {
-					connectionsData = null;
-				}
+			try {
+				await queryClient.invalidateQueries( { queryKey: [ 'connections' ] } );
+				await queryClient.invalidateQueries( { queryKey: [ 'setup-wizard' ] } );
+
+				connectionsData = await queryClient.fetchQuery( {
+					queryKey: [ 'connections' ],
+					queryFn: () => apiFetch( 'connections' ),
+				} );
+				wizardData = await queryClient.fetchQuery( {
+					queryKey: [ 'setup-wizard' ],
+					queryFn: () => apiFetch( 'setup-wizard' ),
+				} );
+			} catch {
+				connectionsData = null;
+				wizardData = null;
 			}
 
 			const primary = connectionsData?.connections?.find( ( c ) => c?.id === 0 );
-			if ( primary ) {
-				setProvider( ( prev ) => primary.provider || prev );
+			const draftRow = wizardData?.draft?.row;
+
+			if ( primary || draftRow ) {
+				const source = primary || draftRow;
+				setProvider( ( prev ) => source.provider || prev );
 				setFormValues( ( prev ) => ( {
 					...prev,
-					...primary,
-					provider: primary.provider || prev?.provider,
+					...( draftRow || {} ),
+					...( primary || {} ),
+					provider: source.provider || prev?.provider,
 					...( oauthTab === 'manual' || oauthTab === 'one_click'
 						? { office365_connect_tab: oauthTab }
 						: {} ),
@@ -202,6 +212,7 @@ export const SetupWizardProvider = ( { children } ) => {
 
 		params.delete( 'msg' );
 		params.delete( 'success' );
+		params.delete( 'ps-route' );
 		params.delete( 'office365_connect_tab' );
 		params.delete( 'gmail_connect_tab' );
 		const query = params.toString();

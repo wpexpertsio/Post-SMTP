@@ -247,6 +247,7 @@ const GmailOneClickBlock = ( {
 	onChange,
 	onGrantError,
 	oauthReturnRoute,
+	onBeforeOAuthSave,
 } ) => {
 	const admin = getAdminConfig();
 	const { disconnectGmailOAuth, create } = useConnectionMutations();
@@ -461,6 +462,9 @@ const GmailOneClickBlock = ( {
 			}
 			setAuthFetchBusy( true );
 			try {
+				if ( typeof onBeforeOAuthSave === 'function' ) {
+					await onBeforeOAuthSave();
+				}
 				const grantConnectionId = await ensureGmailOneClickConnectionId( {
 					connectionId,
 					values,
@@ -489,6 +493,7 @@ const GmailOneClickBlock = ( {
 			create,
 			isConnected,
 			onChange,
+			onBeforeOAuthSave,
 			onGrantError,
 			oauthReturnRoute,
 			signInLocked,
@@ -1140,6 +1145,7 @@ const GmailConfigurePanel = ( {
 							onChange={ onChange }
 							onGrantError={ onGrantError }
 							oauthReturnRoute={ oauthReturnRoute }
+							onBeforeOAuthSave={ onBeforeOAuthSave }
 						/>
 					) : (
 						<GmailManualSection

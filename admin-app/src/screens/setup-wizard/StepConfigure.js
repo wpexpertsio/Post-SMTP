@@ -9,7 +9,7 @@ import ConfigureMailerForm from '../connections/components/ConfigureMailerForm';
 import { buildGmailOAuthSaveRow } from '../connections/components/GmailConfigurePanel';
 import { buildOffice365OAuthSaveRow } from '../connections/components/Office365ConfigurePanel';
 import { normalizeConnectionSaveRow } from '../connections/model/normalizeConnectionSaveRow';
-import { useSetupWizardContext } from './SetupWizardContext';
+import { useSetupWizardContext, WIZARD_OAUTH_RETURN_KEY } from './SetupWizardContext';
 
 const wizardConfigureSubtitle = ( label, schema ) => {
 	if ( schema?.description ) {
@@ -81,6 +81,11 @@ const StepConfigure = () => {
 			await wizard.validateMutation.mutateAsync( { provider, row } );
 			const result = await wizard.saveDraftMutation.mutateAsync( { provider, row } );
 			refreshDraft( result?.draft );
+			try {
+				window.sessionStorage.removeItem( WIZARD_OAUTH_RETURN_KEY );
+			} catch {
+				// sessionStorage unavailable
+			}
 			bumpMaxStep( ( prev ) => Math.max( prev, 3 ) );
 			setStep( 3 );
 		} catch ( err ) {

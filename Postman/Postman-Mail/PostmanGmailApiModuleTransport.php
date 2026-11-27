@@ -57,6 +57,42 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
 
 	
 	/**
+	 * Middleware send when one-click is on or the active connection has no local Google OAuth app.
+	 *
+	 * @param mixed $fakeConfig Fallback transport flag.
+	 */
+	private function shouldDeliverViaOneClickMiddleware( $fakeConfig ) {
+		if ( $this->gmail_oneclick_enabled ) {
+			return true;
+		}
+
+		if ( class_exists( 'Postman_Connection_Resolver', false ) ) {
+			$is_fallback = (bool) $fakeConfig;
+			$conn_id     = (int) Postman_Connection_Resolver::get_active_connection_id( $is_fallback );
+			$row         = Postman_Connection_Resolver::get_connection( $conn_id );
+			if ( is_array( $row ) && class_exists( '\PostSMTP\Connections\GmailConnectionTokens', false ) ) {
+				if ( class_exists( '\PostSMTP\Kernel\Data\SecretCodec', false ) ) {
+					$row = \PostSMTP\Kernel\Data\SecretCodec::decodeConnectionRow( $row );
+				}
+				return \PostSMTP\Connections\GmailConnectionTokens::shouldSkipLegacyOAuthTokenRefreshForConnection( $row );
+			}
+		}
+
+		$client_id     = trim( (string) $this->options->getClientId() );
+		$client_secret = trim( (string) $this->options->getClientSecret() );
+		if ( '' === $client_id && '' === $client_secret ) {
+			if ( class_exists( 'Postman_Connection_Resolver', false )
+				&& Postman_Connection_Resolver::is_gmail_oneclick_enabled() ) {
+				return true;
+			}
+			$auth_token = PostmanOAuthToken::getInstance();
+			return '' !== trim( (string) $auth_token->getRefreshToken() );
+		}
+
+		return false;
+	}
+
+	/**
 	 * (non-PHPdoc)
 	 *
 	 * @see PostmanZendModuleTransport::createZendMailTransport()
@@ -108,13 +144,11 @@ class PostmanGmailApiModuleTransport extends PostmanAbstractZendModuleTransport 
         $client->setScopes( array( Gmail::MAIL_GOOGLE_COM ) );
         $client->setRedirectUri( $this->getScribe()->getCallbackUrl() );
         
-        if ( $this->gmail_oneclick_enabled ) {
-			$config = array();
-			if (
-				class_exists( '\PostSMTP\Pro\Bootstrap\RevampMailerRuntime', false )
-				&& \PostSMTP\Pro\Bootstrap\RevampMailerRuntime::usesRevampExperience()
-				&& class_exists( 'Postman_Connection_Resolver', false )
-			) {
+        if ( $this->shouldDeliverViaOneClickMiddleware( $fakeConfig ) ) {
+			$config = array(
+				'use_middleware' => true,
+			);
+			if ( class_exists( 'Postman_Connection_Resolver', false ) ) {
 				$is_fallback = (bool) $fakeConfig;
 				$conn_id     = (int) Postman_Connection_Resolver::get_active_connection_id( $is_fallback );
 				$config['connection_id'] = $conn_id;

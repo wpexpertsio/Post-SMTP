@@ -775,9 +775,22 @@ final class ConnectionService {
 	 * @return array<string,mixed>
 	 */
 	private function preserveMaskedSecrets( array $existing, array $incoming ): array {
+		$preserve_if_empty = array(
+			'access_token',
+			'refresh_token',
+			'auth_token_expires',
+			'user_email',
+			'oauth_client_secret',
+			'office365_app_password',
+		);
+
 		foreach ( $incoming as $key => $value ) {
 			if ( is_string( $value ) && preg_match( '/^•+$/u', $value ) ) {
 				$incoming[ $key ] = $existing[ $key ] ?? '';
+				continue;
+			}
+			if ( in_array( $key, $preserve_if_empty, true ) && is_string( $value ) && '' === trim( $value ) ) {
+				unset( $incoming[ $key ] );
 			}
 		}
 		return $incoming;
@@ -822,7 +835,11 @@ final class ConnectionService {
 			$row['role_label'],
 			$row['fallback_priority'],
 			$row['id'],
-			$row['can_toggle_fallback']
+			$row['can_toggle_fallback'],
+			$row['gmail_oauth_connected'],
+			$row['gmail_oauth_user_email'],
+			$row['office365_oauth_connected'],
+			$row['office365_oauth_user_email']
 		);
 		return $row;
 	}

@@ -29,5 +29,21 @@ export function normalizeConnectionSaveRow( row ) {
 		out.sender_name = fromName;
 	}
 
+	const adminOnlyKeys = [
+		'id',
+		'role',
+		'role_label',
+		'fallback_priority',
+		'can_toggle_fallback',
+		'gmail_oauth_connected',
+		'gmail_oauth_user_email',
+		'office365_oauth_connected',
+		'office365_oauth_user_email',
+	];
+
+	for ( const key of adminOnlyKeys ) {
+		delete out[ key ];
+	}
+
 	return out;
 }

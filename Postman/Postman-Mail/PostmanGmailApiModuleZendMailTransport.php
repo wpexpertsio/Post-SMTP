@@ -216,7 +216,8 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 
 			$result = array ();
 			try {
-				if ( $this->gmail_oneclick_enabled ) {
+				$use_middleware = $this->gmail_oneclick_enabled || ! empty( $this->_config['use_middleware'] );
+				if ( $use_middleware ) {
 				  // Prepare payload.
 					$payload = array(
 						'message'   => $encodedMessage,
@@ -258,11 +259,11 @@ if (! class_exists ( 'PostmanGmailApiModuleZendMailTransport' )) {
 					$body = wp_remote_retrieve_body( $response );
 					$result_output = json_decode( $body, true );
 					if ( $response_code !== 200 || empty( $result_output ) ) {
-						
-    				$error_code = $response_code;
-
-			    	throw new Exception("PostSMTP GMAIL API Error: $error_message (HTTP Code: $error_code)");
-						
+						$error_code    = $response_code;
+						$error_message = isset( $result_output['message'] )
+							? (string) $result_output['message']
+							: wp_remote_retrieve_body( $response );
+						throw new Exception( "PostSMTP GMAIL API Error: $error_message (HTTP Code: $error_code)" );
 					}
 					// ✅ Ensure email send response contains "data".
 					if ( !isset( $result_output['data'] ) ) {
