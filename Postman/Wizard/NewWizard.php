@@ -2050,6 +2050,10 @@ class Post_SMTP_New_Wizard {
             wp_send_json_error( array( 'message' => 'Unauthorized.' ), 403 );
         }
 
+        if ( class_exists( '\PostSMTP\Connections\OAuthAdminReturnContext', false ) ) {
+            \PostSMTP\Connections\OAuthAdminReturnContext::captureFromGrantRequest();
+        }
+
         // Nonce check for CSRF protection.
         if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ps_get_gmail_auth_url' ) ) {
             wp_send_json_error( array( 'message' => 'Invalid or missing nonce.' ), 400 );

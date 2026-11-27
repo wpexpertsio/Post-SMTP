@@ -856,20 +856,38 @@ final class GmailRevampOAuth {
 	 *
 	 * @return array{url:string,hash:string}
 	 */
-	public static function oneClickMiddlewareClientSiteUrlParts( int $connection_id = -1 ): array {
+	public static function oneClickMiddlewareClientSiteUrlParts( int $connection_id = -1, ?string $ps_route = null ): array {
 		$query = array(
 			'page'              => 'postman',
 			'action'            => 'gmail_oauth_redirect',
 			'gmail_connect_tab' => 'one_click',
 		);
 
+		if ( null === $ps_route && class_exists( OAuthAdminReturnContext::class, false ) ) {
+			if ( $connection_id >= 0 ) {
+				$stored = OAuthAdminReturnContext::readStoredPsRouteForConnection( $connection_id );
+				if ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $stored ) {
+					$ps_route = $stored;
+				}
+			}
+			if ( null === $ps_route
+				&& OAuthAdminReturnContext::ROUTE_SETUP_WIZARD
+					=== OAuthAdminReturnContext::readStoredPsRouteForUser() ) {
+				$ps_route = OAuthAdminReturnContext::ROUTE_SETUP_WIZARD;
+			}
+		}
+
 		if ( $connection_id >= 0 ) {
 			$query['connection_id'] = $connection_id;
-			$query['ps-route']      = 'connections/' . $connection_id . '/edit';
-			$hash                   = '#/connections/' . $connection_id . '/edit';
+			if ( null === $ps_route || '' === $ps_route ) {
+				$ps_route = 'connections/' . $connection_id . '/edit';
+			}
+			$query['ps-route'] = sanitize_text_field( $ps_route );
+			$hash              = '#/' . ltrim( $ps_route, '/' );
 		} else {
-			$query['ps-route'] = 'connections/add';
-			$hash              = '#/connections/add';
+			$ps_route          = ( null !== $ps_route && '' !== $ps_route ) ? sanitize_text_field( $ps_route ) : 'connections/add';
+			$query['ps-route'] = $ps_route;
+			$hash              = '#/' . ltrim( $ps_route, '/' );
 		}
 
 		return array(
@@ -902,9 +920,17 @@ final class GmailRevampOAuth {
 			}
 		}
 
+		$callback_ps_route = self::oneClickRequestValue( 'ps-route' );
+		if ( '' === $callback_ps_route && isset( $_GET['ps-route'] ) ) {
+			$callback_ps_route = sanitize_text_field( wp_unslash( (string) $_GET['ps-route'] ) );
+		}
+		if ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $callback_ps_route ) {
+			return 'revamp';
+		}
+
 		if ( 'postman' === $page ) {
 			$ps_route = isset( $_GET['ps-route'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['ps-route'] ) ) : '';
-			if ( str_starts_with( $ps_route, 'connections/' ) ) {
+			if ( str_starts_with( $ps_route, 'connections/' ) || OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $ps_route ) {
 				return 'revamp';
 			}
 		}
@@ -1265,6 +1291,44 @@ final class GmailRevampOAuth {
 		return self::resolveRedirectConnectionId();
 	}
 
+	private static function oneClickReturnRouteTransientKey( int $user_id = 0 ): string {
+		$user_id = $user_id > 0 ? $user_id : get_current_user_id();
+
+		return 'post_smtp_gmail_oneclick_return_ps_route_' . max( 0, (int) $user_id );
+	}
+
+	/**
+	 * Persist setup-wizard return across the middleware OAuth round-trip (grant start → callback).
+	 */
+	public static function rememberOneClickReturnPsRouteFromGrantRequest(): void {
+		$user_id = get_current_user_id();
+		if ( $user_id <= 0 || ! class_exists( OAuthAdminReturnContext::class, false ) ) {
+			return;
+		}
+
+		$route = OAuthAdminReturnContext::readReturnRouteFromSuperglobals();
+		if ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD !== $route ) {
+			$route = OAuthAdminReturnContext::readStoredPsRouteForUser( $user_id );
+		}
+		if ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD !== $route ) {
+			return;
+		}
+
+		set_transient( self::oneClickReturnRouteTransientKey( $user_id ), $route, self::GRANT_CONTEXT_TTL );
+	}
+
+	public static function consumeOneClickReturnPsRoute(): string {
+		$user_id = get_current_user_id();
+		if ( $user_id <= 0 ) {
+			return '';
+		}
+
+		$cached = get_transient( self::oneClickReturnRouteTransientKey( $user_id ) );
+		delete_transient( self::oneClickReturnRouteTransientKey( $user_id ) );
+
+		return is_string( $cached ) ? sanitize_text_field( $cached ) : '';
+	}
+
 	public static function redirectAfterOneClickGrant( bool $success, string $message ): void {
 		if ( ! defined( 'POST_SMTP_GMAIL_GRANT_HANDLED' ) ) {
 			define( 'POST_SMTP_GMAIL_GRANT_HANDLED', true );
@@ -1288,6 +1352,9 @@ final class GmailRevampOAuth {
 			$ps_route = self::boundPsRouteForOAuthState( $incoming_state );
 			if ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $ps_route ) {
 				OAuthAdminReturnContext::rememberPsRoute( $ps_route );
+				if ( $connection_id >= 0 ) {
+					OAuthAdminReturnContext::rememberPsRouteForConnection( $connection_id, $ps_route );
+				}
 			}
 		}
 
@@ -1301,8 +1368,26 @@ final class GmailRevampOAuth {
 			$extra['msg'] = wp_strip_all_tags( $message );
 		}
 
-		$redirect_target = self::connectionEditRedirectUrl( self::$grant_redirect_connection_id, $extra );
+		$consumed_route    = self::consumeOneClickReturnPsRoute();
+		$incoming_ps_route = self::oneClickRequestValue( 'ps-route' );
+		$force_ps_route    = null;
+		if ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $consumed_route ) {
+			$force_ps_route = $consumed_route;
+		} elseif ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === $incoming_ps_route ) {
+			$force_ps_route = $incoming_ps_route;
+		} elseif ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD
+			=== OAuthAdminReturnContext::readStoredPsRouteForConnection( (int) self::$grant_redirect_connection_id ) ) {
+			$force_ps_route = OAuthAdminReturnContext::ROUTE_SETUP_WIZARD;
+		} elseif ( OAuthAdminReturnContext::ROUTE_SETUP_WIZARD === OAuthAdminReturnContext::readStoredPsRouteForUser() ) {
+			$force_ps_route = OAuthAdminReturnContext::ROUTE_SETUP_WIZARD;
+		}
+
+		$redirect_target = self::connectionEditRedirectUrl( self::$grant_redirect_connection_id, $extra, $force_ps_route );
 		$redirect_target = remove_query_arg( self::oneClickQueryArgsToStrip(), $redirect_target );
+
+		if ( false !== strpos( $redirect_target, 'ps-route=setup-wizard' ) ) {
+			OAuthAdminReturnContext::clearForCurrentUser( max( 0, (int) self::$grant_redirect_connection_id ) );
+		}
 
 		wp_safe_redirect( $redirect_target );
 		exit;
@@ -1313,10 +1398,11 @@ final class GmailRevampOAuth {
 	 *
 	 * @param int                 $connection_id Connection index in postman_connections.
 	 * @param array<string,mixed> $query_args    success, msg, gmail_connect_tab, ….
+	 * @param string|null         $force_ps_route setup-wizard when grant started from setup wizard.
 	 */
-	public static function connectionEditRedirectUrl( int $connection_id, array $query_args = array() ): string {
+	public static function connectionEditRedirectUrl( int $connection_id, array $query_args = array(), ?string $force_ps_route = null ): string {
 		if ( class_exists( OAuthAdminReturnContext::class, false ) ) {
-			return OAuthAdminReturnContext::redirectAfterOAuth( $connection_id, $query_args );
+			return OAuthAdminReturnContext::redirectAfterOAuth( $connection_id, $query_args, $force_ps_route );
 		}
 
 		$route = $connection_id >= 0
